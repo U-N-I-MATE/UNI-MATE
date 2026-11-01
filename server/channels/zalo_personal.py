@@ -134,10 +134,10 @@ def _bo_dau(s: str) -> str:
 def tag_ten_trong_cau(text: str, danh_ba, bo_qua=(), chiem=()) -> list:
     """`[(pos, uid, len)]` (UTF-16 units) for every "@Name" in `text` that names someone in `danh_ba`.
 
-    Field report 2026-10-14: a bot told to tag "@Minh Quý" and "@Phạm Đại" wrote both names, but only
+    Field report 2026-10-14: a bot told to tag "@Ngọc Lan" and "@Phạm Đại" wrote both names, but only
     the person it was answering got a real Zalo tag; the others were plain text and Zalo notified no
     one. `danh_ba` is `[{uid, name}]` (conversations.group_speakers: everyone who has written in the
-    group). Longest names are tried first ("@Minh Quý Phạm" beats "@Minh Quý"), case and diacritics
+    group). Longest names are tried first ("@Ngọc Lan Phạm" beats "@Ngọc Lan"), case and diacritics
     are ignored ("@minh quy" still tags), a name must end on a word boundary, and `bo_qua` holds uids
     already tagged (the person being answered) or never to tag (the account itself).
 

@@ -10,7 +10,7 @@ Chủ repo chụp lại khung chat trên điện thoại, chỗ đáng lẽ là 
     "must_report_missing_evidence": true,
     "no_false_action_claim": true,
     "type": "text",
-    "content": "Chào anh Minh Quy!"
+    "content": "Chào anh Ngoc Lan!"
     }
 
 Nguyên nhân: capsule nhét thẳng object đó vào prompt dưới nhãn `Output contract: {...}`. Đặt

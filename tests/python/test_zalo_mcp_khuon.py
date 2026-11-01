@@ -210,7 +210,7 @@ check("phiên dựng lại thì epoch KHÁC (số không bao giờ tái dùng)",
 # 4. Tên nhóm: cuộc chat lạ (kể cả tin đã có threadType) làm mới bảng tên
 # ============================================================
 # Nhóm mới vào chưa có trong bảng tên (làm mới 5 phút một lần) thì cuộc chat không có tiêu đề, và
-# Hộp thư lấy tên NGƯỜI NHẮN ĐẦU TIÊN làm tên nhóm (chủ thấy nhóm "Test Bot Zalo" hiện là "Minh Quý").
+# Hộp thư lấy tên NGƯỜI NHẮN ĐẦU TIÊN làm tên nhóm (chủ thấy nhóm "Test Bot Zalo" hiện là "Ngọc Lan").
 EP["v"] = 6
 zc._TT.clear()
 DAP["zalo_list_threads"] = lambda a: {"threads": [

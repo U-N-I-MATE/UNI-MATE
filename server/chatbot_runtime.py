@@ -203,7 +203,7 @@ _TU_MO_CHAT = " Đã tìm kỹ mà vẫn không có thì nói bạn chưa có th
 
 
 # Engine notices that come back as an ordinary ANSWER rather than as an error, so the "turn failed" branch never
-# saw them. Field report 2026-10-13: a Zalo group got "@Minh Quý You've hit your session limit · resets 4:40am (UTC)"
+# saw them. Field report 2026-10-13: a Zalo group got "@Ngọc Lan You've hit your session limit · resets 4:40am (UTC)"
 # from the bot, tagged to the person who asked. Matched only when the notice IS the whole short reply
 # (limit_learner.subscription_dominates), never when a real answer quotes it.
 _CAU_ENGINE_RE = re.compile(

@@ -72,12 +72,12 @@ check("nhưng bước SAU đó vẫn nhận",
 # Nhãn otpauth: tên workspace tiếng Việt có dấu làm vài app hiện chuỗi hỏng, dấu ':' phá cú pháp.
 # Nhãn GIỮ dấu tiếng Việt (phần trăm-mã-hoá UTF-8, đúng Key Uri Format) nhưng phải bỏ dấu ':'
 # vì nó là dấu ngăn giữa issuer và tên tài khoản - lọt vào là vỡ cú pháp nhãn.
-_uri = totp.otpauth_uri(S, "Minh Quý", "UNI MATE của Quý: bản 1")
+_uri = totp.otpauth_uri(S, "Ngọc Lan", "UNI MATE của Quý: bản 1")
 import urllib.parse as _up   # noqa: E402
 _nhan = _up.unquote(_up.urlparse(_uri).path).lstrip("/")
 check("otpauth đúng dạng và chỉ còn MỘT dấu ':' (của scheme)",
       _uri.startswith("otpauth://totp/") and _uri.count(":") == 1)
-check("nhãn GIỮ nguyên dấu tiếng Việt", _nhan == "UNI MATE của Quý bản 1:Minh Quý")
+check("nhãn GIỮ nguyên dấu tiếng Việt", _nhan == "UNI MATE của Quý bản 1:Ngọc Lan")
 check("dấu ':' trong tên workspace bị bỏ, không phá nhãn", _nhan.count(":") == 1)
 # `period`/`digits` cố ý KHÔNG có mặt khi chúng đúng bằng mặc định - xem mục 1b, chúng chỉ làm
 # QR dày lên mà không thêm thông tin nào. Phần bắt buộc được kiểm kỹ hơn ở đó.
@@ -125,7 +125,7 @@ finally:
 
 # Tên workspace nằm HAI chỗ trong URI nên mỗi ký tự tốn gấp đôi. Đo thật: 48 ký tự đẩy QR
 # từ v6 lên v11 (69 ô) - đủ để quét không ra nữa.
-_dai = totp.otpauth_uri(S, "nguyenvanadmin" * 3, "Cong ty TNHH Thuong mai Dich vu Minh Quy Sai Gon")
+_dai = totp.otpauth_uri(S, "nguyenvanadmin" * 3, "Cong ty TNHH Thuong mai Dich vu Ngoc Lan Sai Gon")
 check("tên workspace/tài khoản dài bị cắt để QR không phình", len(_dai) <= 180)
 
 # Tên hiển thị trong app: USER_NAME (tên người tự đặt) thắng auth.username (thường là "admin",
@@ -133,7 +133,7 @@ check("tên workspace/tài khoản dài bị cắt để QR không phình", len(
 _cfg_gia = {"auth": {"username": "admin"}}
 _env_cu = os.environ.get("USER_NAME")
 try:
-    for _v, _mong in (("Minh Quý", "Minh Quý"), ("Bạn", "admin"), ("", "admin"), ("  ", "admin")):
+    for _v, _mong in (("Ngọc Lan", "Ngọc Lan"), ("Bạn", "admin"), ("", "admin"), ("  ", "admin")):
         os.environ["USER_NAME"] = _v
         check(f"USER_NAME={_v!r} -> app hiện {_mong!r}", main._ten_hien_thi(_cfg_gia) == _mong)
     os.environ.pop("USER_NAME", None)
@@ -155,7 +155,7 @@ def _px_moi_o(uri):
 
 
 for _ten, _tk in (("UNI MATE", "admin"),
-                  ("Cong ty TNHH Thuong mai Dich vu Minh Quy Sai Gon", "nguyenvanadmin")):
+                  ("Cong ty TNHH Thuong mai Dich vu Ngoc Lan Sai Gon", "nguyenvanadmin")):
     _px, _svg = _px_moi_o(totp.otpauth_uri(S, _tk, _ten))
     check(f"CANARY: mỗi ô >= 7px ở cỡ tự nhiên (workspace {len(_ten)} ký tự) - đang {_px:.1f}px",
           _px >= 7)

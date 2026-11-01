@@ -80,7 +80,7 @@ def kiem(secret: str, ma: str, *, buoc_da_dung: int = 0, luc: float | None = Non
 def _sach(s: str) -> str:
     """Dọn nhãn otpauth, GIỮ NGUYÊN dấu tiếng Việt.
 
-    Bản đầu bóc sạch dấu ("Minh Quý" -> "Minh Quy") vì sợ app Authenticator hiện chuỗi hỏng.
+    Bản đầu bóc sạch dấu ("Ngọc Lan" -> "Ngoc Lan") vì sợ app Authenticator hiện chuỗi hỏng.
     Nỗi sợ đó lỗi thời: Key Uri Format cho phép nhãn là UTF-8 phần trăm-mã-hoá, và các app
     phổ biến (Google, Microsoft, 1Password, Bitwarden) đọc đúng từ lâu. Với một sản phẩm dùng
     tiếng Việt thì hiện đúng tên người ta đáng giá hơn nhiều so với rủi ro đó.

@@ -39,13 +39,13 @@ function check(name, cond) {
 (async () => {
   // ---- 1. Wikilink co thu muc, khong duoi .md -> khop DUOI duong dan (kieu Obsidian) ----
   FILES = [
-    HOME + "/07 - Wiki/business/Danh Muc Du An Dang Lam - Minh Quy.md",
+    HOME + "/07 - Wiki/business/Danh Muc Du An Dang Lam - Ngoc Lan.md",
     HOME + "/06 - Sources/khac.md",
   ];
-  let hit = await wkResolve("business/Danh Muc Du An Dang Lam - Minh Quy");
+  let hit = await wkResolve("business/Danh Muc Du An Dang Lam - Ngoc Lan");
   check("duoi path: tim thay", !!hit);
   check("duoi path: dung file", hit && hit.ceil === FILES[0]);
-  check("duoi path: rel bo tien to home", hit && hit.rel === "07 - Wiki/business/Danh Muc Du An Dang Lam - Minh Quy.md");
+  check("duoi path: rel bo tien to home", hit && hit.rel === "07 - Wiki/business/Danh Muc Du An Dang Lam - Ngoc Lan.md");
 
   // ---- 2. Chi TEN note (khong thu muc), file nam sau trong cay ----
   FILES = [HOME + "/07 - Wiki/_entities/Chi Nga - Khach Coaching Performance Ads.md"];

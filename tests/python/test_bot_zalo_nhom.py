@@ -274,12 +274,12 @@ async def chay():
     CONN["env"] = {"HOME": "/state/zalo-1"}
     GUI.clear()
     zc._TAY.clear()
-    KHO_TIN.append(nhom_msg("@Uni Vũ đổi bộ não ở đâu vậy", "t1", nguoi="Minh Quý", uid="7770777"))
+    KHO_TIN.append(nhom_msg("@Uni Vũ đổi bộ não ở đâu vậy", "t1", nguoi="Ngọc Lan", uid="7770777"))
     await doc()
     check("bot trả lời trong nhóm bằng tin CÓ TAG người hỏi (qua CLI), không gửi thêm bản thường qua MCP",
           len(cli_goi) == 1 and GUI == [], (cli_goi, GUI))
     check("tin mở đầu bằng '@Tên' của đúng người hỏi, tag đúng uid và đúng vị trí",
-          cli_goi and cli_goi[0]["pos"] == [NHOM, "@Minh Quý " + TRA_LOI["v"]] and cli_goi[0]["opts"] == ["-t", "1", "--mention", "0:7770777:9"],
+          cli_goi and cli_goi[0]["pos"] == [NHOM, "@Ngọc Lan " + TRA_LOI["v"]] and cli_goi[0]["opts"] == ["-t", "1", "--mention", "0:7770777:9"],
           cli_goi)
     cau_tag = cli_goi[0]["pos"][1] if cli_goi else ""
     n0 = len(LUOT_ENGINE)
@@ -290,7 +290,7 @@ async def chay():
     # Mỗi tin gửi đi chỉ có MỘT tiếng vọng, nên thử kiểu có cờ isSelf trên một lượt trả lời mới.
     cli_goi.clear()
     zc._TAY.clear()
-    KHO_TIN.append(nhom_msg("@Uni Vũ hướng dẫn giúp em cách đổi bộ não", "t3", nguoi="Minh Quý", uid="7770777"))
+    KHO_TIN.append(nhom_msg("@Uni Vũ hướng dẫn giúp em cách đổi bộ não", "t3", nguoi="Ngọc Lan", uid="7770777"))
     await doc()
     cau_tag = cli_goi[0]["pos"][1] if cli_goi else ""
     KHO_TIN.append({"threadId": NHOM, "from": UID_BOT, "senderName": "Uni Vũ", "type": "text", "isSelf": True,

@@ -2,7 +2,7 @@
 
     python tests/run.py dua_token_claude
 
-Bệnh thật (chủ repo báo 02/09, hai vợ chồng dùng chung một unimate.minhquy.vn): UNI MATE chạy
+Bệnh thật (chủ repo báo 02/09, hai vợ chồng dùng chung một unimate.example.com): UNI MATE chạy
 nhiều tiến trình `claude` song song trên ĐÚNG MỘT file ~/.claude/.credentials.json. Refresh
 token OAuth là loại dùng một lần, nên khi token hết hạn đúng lúc hai người cùng chat thì lượt
 chạy sau ăn "refresh token was already used" - còn file thì vẫn lành, nên người kia không

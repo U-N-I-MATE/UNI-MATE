@@ -454,7 +454,7 @@ class ContextCompiler:
         object này" - và nó phát thật. Chủ repo chụp lại đúng cảnh đó: khung chat hiện
 
             {"channel":"dashboard","language":"match_user","must_report_missing_evidence":true,
-             "no_false_action_claim":true,"type":"text","content":"Chào anh Minh Quy!"}
+             "no_false_action_claim":true,"type":"text","content":"Chào anh Ngoc Lan!"}
 
         thay cho câu chào. Nghĩa là bật chế độ tiết kiệm token xong thì câu trả lời thành rác
         - đủ để huỷ hoại cả tính năng.

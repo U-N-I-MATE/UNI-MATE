@@ -95,14 +95,14 @@ h = TM.replyStatusHtml({ id: 9, replies: [{ agent_key: "__leader__", status: "do
 check("dòng chỗ trống đã giao cho điều phối: ẩn", h === "");
 
 // ───────────── người tạo và dòng đầu nhóm ─────────────
-const team = { team_id: "tm1", leader_key: "ag_lan", creator: { kind: "owner", you: true, name: "minhquy" },
+const team = { team_id: "tm1", leader_key: "ag_lan", creator: { kind: "owner", you: true, name: "ngoclan" },
   members: [{ agent_key: "ag_lan", slug: "lan", name: "Lan", status: "active", role: "leader" },
     { agent_key: "ag_m", slug: "m", name: "Minh", status: "active", role: "member" }] };
 check("đầu nhóm: 'Bạn + 2 cộng sự · Lan điều phối'", TM.headLine(team) === "Bạn + 2 cộng sự · Lan điều phối", TM.headLine(team));
 check("chưa có điều phối: nói rõ", TM.headLine(Object.assign({}, team, { leader_key: null })).includes(vi["teams.no_leader_short"]));
 const mh = TM.membersHtml(team, [], null);
-check("ngăn Nhóm: dòng Bạn (tên đăng nhập do server cấp) · Người tạo nhóm/quản lý, đứng đầu", mh.indexOf("Bạn (minhquy)") >= 0 &&
-  mh.indexOf("Bạn (minhquy)") < mh.indexOf("Lan") && mh.includes(vi["teams.pick.you_role"]), mh.slice(0, 300));
+check("ngăn Nhóm: dòng Bạn (tên đăng nhập do server cấp) · Người tạo nhóm/quản lý, đứng đầu", mh.indexOf("Bạn (ngoclan)") >= 0 &&
+  mh.indexOf("Bạn (ngoclan)") < mh.indexOf("Lan") && mh.includes(vi["teams.pick.you_role"]), mh.slice(0, 300));
 check("chữ 'trưởng nhóm' trên giao diện nhóm đổi thành 'điều phối'",
   Object.keys(vi).filter((k) => k.indexOf("teams.") === 0 && /trưởng nhóm/i.test(vi[k])).length === 0 &&
   Object.keys(en).filter((k) => k.indexOf("teams.") === 0 && /\blead\b/i.test(en[k])).length === 0);

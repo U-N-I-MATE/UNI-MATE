@@ -72,10 +72,10 @@ check("hai link vault: path a dung", has(h, 'data-vault-path="thu muc/a.md"'));
 check("hai link vault: path b dung", has(h, 'data-vault-path="thu muc/b.md"'));
 
 // ---- 13. Wikilink [[..]] -> link dieu huong ----
-h = mdToHtml("Da cap nhat [[business/Danh Muc Du An - Minh Quy]] xong");
+h = mdToHtml("Da cap nhat [[business/Danh Muc Du An - Ngoc Lan]] xong");
 check("wikilink: co the a jv-wikilink", has(h, "jv-wikilink"));
-check("wikilink: data-vault-path giu target goc", has(h, 'data-vault-path="business/Danh Muc Du An - Minh Quy"'));
-check("wikilink: chu hien thi = target", has(h, ">business/Danh Muc Du An - Minh Quy</a>"));
+check("wikilink: data-vault-path giu target goc", has(h, 'data-vault-path="business/Danh Muc Du An - Ngoc Lan"'));
+check("wikilink: chu hien thi = target", has(h, ">business/Danh Muc Du An - Ngoc Lan</a>"));
 
 // ---- 14. Wikilink co alias [[path|chu]] ----
 h = mdToHtml("Xem [[notes/abc|Ten dep]] nhe");

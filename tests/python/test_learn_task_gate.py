@@ -22,7 +22,7 @@ def _lyDo(title, intent=""):
 def test_loai_viec_can_tay_nguoi_dung():
     """Cookie/đăng nhập/OTP: chỉ chủ mới làm được, worker không có trình duyệt đăng nhập."""
     assert _lyDo("Cập nhật cookie Facebook cá nhân (đã hết hạn)")
-    assert _lyDo("Xác thực Google Workspace OAuth tài khoản hi@minhquy.vn")
+    assert _lyDo("Xác thực Google Workspace OAuth tài khoản chu.moi@example.com")
     assert _lyDo("Đăng nhập lại Zalo", "phiên hết hạn cần quét mã QR")
 
 

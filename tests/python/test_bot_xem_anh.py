@@ -50,7 +50,7 @@ URL = "https://f21-zpc.zdn.vn/jpg/7316/abc.jpg"
 # ============================================================
 conn = {"id": "zalo-1", "label": "Uni Vũ"}
 ten = {"G1": {"name": "Zoom | UNI MATE", "type": "group"}}
-anh = {"id": "m1", "threadId": "G1", "threadType": "group", "senderId": "777", "senderName": "Minh Quý", "type": "chat.photo",
+anh = {"id": "m1", "threadId": "G1", "threadType": "group", "senderId": "777", "senderName": "Ngọc Lan", "type": "chat.photo",
        "text": "@Uni Vũ đây em", "timestamp": int(time.time() * 1000),
        "attachment": {"type": "chat.photo", "url": URL, "description": "@Uni Vũ đây em"}}
 ev = zc.chuan_hoa_tin(conn, anh, ten)
@@ -124,7 +124,7 @@ META = {"co_anh": True, "image_url": URL, "chat_id": "G1", "message_id": "m1"}
 LABEL = cr._KEM_ANH
 
 
-def see(meta, text="[Minh Quý] @Uni Vũ đây em"):
+def see(meta, text="[Ngọc Lan] @Uni Vũ đây em"):
     HTTP.clear()
     return asyncio.run(cr.anh_cho_bot(text, meta, CFG))
 
@@ -133,7 +133,7 @@ out, paths = see(META)
 saved = list((brain / "attachments" / "zalo" / "G1").glob("m1.*"))
 check("the photo is saved into the bot's brain under attachments/zalo/<chat>", len(saved) == 1 and saved[0].read_bytes() == JPEG, saved)
 check("the photo path is returned for the bot's own model, the caption kept as the text",
-      paths == [str(saved[0].resolve())] and out == "[Minh Quý] @Uni Vũ đây em", (out, paths))
+      paths == [str(saved[0].resolve())] and out == "[Ngọc Lan] @Uni Vũ đây em", (out, paths))
 check("no second model describes the photo (ChatGPT is not called)", DESCRIBED == [])
 see(META)
 check("the same message is not downloaded twice", HTTP == [], HTTP)

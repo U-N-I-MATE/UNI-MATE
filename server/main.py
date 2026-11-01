@@ -1473,7 +1473,7 @@ def _doi_phien_that(request: Request):
 
 
 def _ten_hien_thi(cfg=None) -> str:
-    """Tên NGƯỜI để hiện trong app Authenticator, sau tên workspace: "UNI MATE: Minh Quý".
+    """Tên NGƯỜI để hiện trong app Authenticator, sau tên workspace: "UNI MATE: Ngọc Lan".
 
     Thứ tự ưu tiên có lý do: `USER_NAME` là tên người dùng tự đặt cho chính mình, còn
     `auth.username` là tên ĐĂNG NHẬP - thường là "admin", đúng về kỹ thuật nhưng vô nghĩa khi

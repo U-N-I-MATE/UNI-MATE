@@ -1881,7 +1881,7 @@ class SessionStore:
 
     def name_group_session(self, session_id: str, group_name: str) -> bool:
         """Phiên của bot trong NHÓM mang tên NHÓM (chủ dự án 2026-09-30): cả nhóm dùng chung một mạch, nên tên theo
-        tin đầu ("[Minh Quý] @Uni Vũ hầy") chỉ nói người nhắn đầu tiên và các phiên trong lịch sử Agent nhìn giống
+        tin đầu ("[Ngọc Lan] @Uni Vũ hầy") chỉ nói người nhắn đầu tiên và các phiên trong lịch sử Agent nhìn giống
         hệt nhau. Chỉ đặt khi phiên chưa có tên (không ghi đè tên chủ tự đặt) và tên nhóm đã biết: nhóm mới có lúc chưa
         có tiêu đề, lượt sau gọi lại là đặt kịp. Trả True nếu vừa đặt."""
         name = " ".join(str(group_name or "").split())[:80]

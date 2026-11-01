@@ -633,7 +633,7 @@ def _conv_public(r: dict) -> dict:
         if d.get("chat_type") == "group":
             # KHÔNG mượn tên khách: khách gắn với cuộc chat là NGƯỜI NHẮN ĐẦU TIÊN, nên nhóm
             # chưa biết tên hiện thành tên một người trong nhóm (chủ thấy nhóm "Test Bot Zalo"
-            # hiện là "Minh Quý"). Đuôi id đủ để phân biệt các nhóm chưa rõ tên với nhau.
+            # hiện là "Ngọc Lan"). Đuôi id đủ để phân biệt các nhóm chưa rõ tên với nhau.
             cid = str(d.get("external_chat_id") or "")
             import localefmt
             d["title"] = (localefmt.chu(f"Nhóm …{cid[-6:]}", f"Group …{cid[-6:]}") if cid
@@ -902,7 +902,7 @@ def cuoc_chat_cua_tai_khoan(channel: str, account_id: str, q: str = "", limit: i
 def group_speakers(account_key: str, chat_id: str, limit: int = 300) -> List[dict]:
     """Người ĐÃ NHẮN trong một cuộc chat: `[{uid, name, ts}]`, mới nhất trước, tên là tên ở tin gần nhất của người đó.
 
-    Dùng để đổi "@minhquy" thành ID Zalo thật khi tag người trong nhóm (plugin `zalo-group`): kho này có sẵn, tức thì, không
+    Dùng để đổi "@ngoclan" thành ID Zalo thật khi tag người trong nhóm (plugin `zalo-group`): kho này có sẵn, tức thì, không
     tốn một lượt gọi mạng. `account_key` là khoá tài khoản kho dùng (`"<kênh>:<id>"`, ví dụ `zalo_personal:zalo-1`). Người
     chưa từng nhắn thì không có ở đây (đã có danh sách thành viên từ Zalo lo phần đó); tin của CHÍNH chủ không mang id nên
     cũng không có."""

@@ -2,7 +2,7 @@
 
     python tests/run.py bot_zalo_tag      (KHÔNG mạng, không gọi npx thật: MCP giả và CLI giả)
 
-Chủ dự án (30/09/2026): khách hỏi trong nhóm thì bot mở đầu bằng "@Minh Quý ...". Tool gửi tin của MCP chỉ nhận chữ nên tag đi qua chính
+Chủ dự án (30/09/2026): khách hỏi trong nhóm thì bot mở đầu bằng "@Ngọc Lan ...". Tool gửi tin của MCP chỉ nhận chữ nên tag đi qua chính
 `zalo-agent-cli` (`msg send --mention`), xem `server/zalo_cli.py`. Tin đi dưới TÊN CHỦ vào một nhóm thật, nên những chỗ có thể làm hỏng
 được canh kỹ:
 
@@ -79,22 +79,22 @@ def send(text, chat_type="group", mention=None, chat=GROUP):
     return asyncio.run(zp.gui({"id": CID}, chat, text, chat_type, mention))
 
 
-LAN = {"uid": "7770001", "name": "Minh Quý"}
+LAN = {"uid": "7770001", "name": "Ngọc Lan"}
 
 # ============================================================
 # 1. Dựng chữ có tag
 # ============================================================
-t, pos, ln = zp.tagged_text("Dạ để em hướng dẫn nhé", "Minh Quý")
-check("chưa có @Tên thì đặt '@Tên ' ở ĐẦU tin", t == "@Minh Quý Dạ để em hướng dẫn nhé" and pos == 0 and ln == 9, (t, pos, ln))
-t, pos, ln = zp.tagged_text("Dạ anh @minh quý xem giúp nhé", "Minh Quý")
+t, pos, ln = zp.tagged_text("Dạ để em hướng dẫn nhé", "Ngọc Lan")
+check("chưa có @Tên thì đặt '@Tên ' ở ĐẦU tin", t == "@Ngọc Lan Dạ để em hướng dẫn nhé" and pos == 0 and ln == 9, (t, pos, ln))
+t, pos, ln = zp.tagged_text("Dạ anh @ngọc lan xem giúp nhé", "Ngọc Lan")
 check("model đã tự viết @Tên (khác hoa thường) thì tag đúng chỗ đó, không tag hai lần",
-      t == "Dạ anh @minh quý xem giúp nhé" and pos == 7 and ln == 9, (t, pos, ln))
+      t == "Dạ anh @ngọc lan xem giúp nhé" and pos == 7 and ln == 9, (t, pos, ln))
 t, pos, ln = zp.tagged_text("Chào @Quýnh nhé", "Quý")
 check("CANARY: '@Quý' không ăn vào đầu '@Quýnh' (tên dài hơn của người khác)",
       t == "@Quý Chào @Quýnh nhé" and pos == 0 and ln == 4, (t, pos, ln))
-t, pos, ln = zp.tagged_text("🎉 chúc mừng @Minh Quý nhé", "Minh Quý")
+t, pos, ln = zp.tagged_text("🎉 chúc mừng @Ngọc Lan nhé", "Ngọc Lan")
 check("CANARY: có emoji đứng trước thì vị trí tính theo UTF-16 (emoji = 2), không theo ký tự Python",
-      pos == len("🎉 chúc mừng ") + 1 and t[len("🎉 chúc mừng "):].startswith("@Minh Quý"), (t, pos, ln))
+      pos == len("🎉 chúc mừng ") + 1 and t[len("🎉 chúc mừng "):].startswith("@Ngọc Lan"), (t, pos, ln))
 
 check("uid phải là số, tên phải có",
       zp._clean_mention({"uid": "7770001", "name": "Quý"}) == ("7770001", "Quý")
@@ -104,7 +104,7 @@ check("uid phải là số, tên phải có",
       and zp._clean_mention({"uid": "", "name": "Quý"}) == ("", "")
       and zp._clean_mention(None) == ("", "") and zp._clean_mention("7770001") == ("", ""))
 check("tên có nhiều dấu cách hoặc xuống dòng được gọn về một dòng",
-      zp._clean_mention({"uid": "7770001", "name": "Minh   Quý\n"}) == ("7770001", "Minh Quý"))
+      zp._clean_mention({"uid": "7770001", "name": "Ngọc   Lan\n"}) == ("7770001", "Ngọc Lan"))
 
 # ============================================================
 # 2. Gửi có tag qua CLI
@@ -114,27 +114,27 @@ ok, loi = send("Dạ để em hướng dẫn nhé", mention=LAN)
 check("nhóm + có người hỏi: gửi bằng CLI, KHÔNG qua MCP", ok and not loi and len(CLI) == 1 and MCP == [], (ok, loi, CLI, MCP))
 c = CLI[0]
 check("lệnh đúng: msg send <nhóm> <nội dung có tag> -t 1 --mention pos:uid:len",
-      c["command"] == ["msg", "send"] and c["pos"] == [GROUP, "@Minh Quý Dạ để em hướng dẫn nhé"]
+      c["command"] == ["msg", "send"] and c["pos"] == [GROUP, "@Ngọc Lan Dạ để em hướng dẫn nhé"]
       and c["opts"] == ["-t", "1", "--mention", "0:7770001:9"], c)
 check("chạy trong thư mục phiên của ĐÚNG tài khoản Zalo", c["conn"] == {"home": "/state/zalo-1"}, c["conn"])
 check("có trần thời gian riêng cho một dòng chữ (không chờ 120 giây)", c["timeout"] == zp.TAG_TIMEOUT and zp.TAG_TIMEOUT <= 60)
 check("CANARY: tiếng vọng của tin CÓ TAG được nhớ (không thì vòng đọc tưởng chủ tự nhắn và bot im 10 phút)",
-      zc._la_tieng_vong(CID, GROUP, "@Minh Quý Dạ để em hướng dẫn nhé"))
+      zc._la_tieng_vong(CID, GROUP, "@Ngọc Lan Dạ để em hướng dẫn nhé"))
 
 reset()
-ok, _ = send("Dạ anh @Minh Quý xem giúp em", mention=LAN)
+ok, _ = send("Dạ anh @Ngọc Lan xem giúp em", mention=LAN)
 check("model đã viết @Tên thì giữ nguyên chữ và tag đúng vị trí đó",
-      ok and CLI[0]["pos"][1] == "Dạ anh @Minh Quý xem giúp em" and CLI[0]["opts"][-1] == "7:7770001:9", CLI)
+      ok and CLI[0]["pos"][1] == "Dạ anh @Ngọc Lan xem giúp em" and CLI[0]["opts"][-1] == "7:7770001:9", CLI)
 
 reset()
 ok, _ = send("- Bước 1: mở trang Models", mention=LAN)
 # Since 0.413.0 a Markdown bullet "- " goes out as "• " (zalo_markup.to_zalo); a "-" glued to a word stays as written.
 check("tin bắt đầu bằng '-' vẫn ổn: chữ đã có '@Tên ' đứng đầu nên không thành cờ",
-      ok and CLI[0]["pos"][1].startswith("@Minh Quý • Bước 1"), CLI)
+      ok and CLI[0]["pos"][1].startswith("@Ngọc Lan • Bước 1"), CLI)
 reset()
 ok, _ = send("-5% cho đơn hôm nay", mention=LAN)
 check("'-' dính chữ ở đầu tin giữ nguyên, '@Tên ' đứng trước nên không thành cờ",
-      ok and CLI[0]["pos"][1] == "@Minh Quý -5% cho đơn hôm nay", CLI)
+      ok and CLI[0]["pos"][1] == "@Ngọc Lan -5% cho đơn hôm nay", CLI)
 
 # ============================================================
 # 3. Khi nào KHÔNG tag
@@ -217,10 +217,10 @@ zp.gui = fake_gui
 try:
     reset()
     tb = zp.Transport(CID, None, answer_fn=None)
-    meta = {"user_id": "7770001", "user_name": "Minh Quý", "chat_id": GROUP}
+    meta = {"user_id": "7770001", "user_name": "Ngọc Lan", "chat_id": GROUP}
     asyncio.run(tb._gui(GROUP, "Dạ em chào", "group", meta))
     check("Transport trả lời trong nhóm: truyền người hỏi (uid + tên) xuống lớp gửi",
-          GOI[-1]["mention"] == {"uid": "7770001", "name": "Minh Quý"} and GOI[-1]["type"] == "group", GOI)
+          GOI[-1]["mention"] == {"uid": "7770001", "name": "Ngọc Lan"} and GOI[-1]["type"] == "group", GOI)
     check("và vẫn nhớ tiếng vọng của câu gốc TRƯỚC khi gửi", zc._la_tieng_vong(CID, GROUP, "Dạ em chào"))
     asyncio.run(tb._gui("5550002", "Dạ em chào", "private", meta))
     check("Transport trả lời chat riêng: không tag ai", GOI[-1]["mention"] is None, GOI[-1])
@@ -250,38 +250,38 @@ check("channels.gui chuyển `mention` cho kênh, và không thêm gì khi ngư�
 # ============================================================
 # 6. Tag MỌI người được nhắc "@Tên" trong câu (0.123.0)
 # ============================================================
-# Báo cáo 14/10/2026: bot được dặn tag "@Minh Quý" và "@Phạm Đại", viết đủ hai tên, nhưng chỉ người
+# Báo cáo 14/10/2026: bot được dặn tag "@Ngọc Lan" và "@Phạm Đại", viết đủ hai tên, nhưng chỉ người
 # đang được trả lời có tag thật; tên còn lại là chữ thường nên Zalo không báo ai.
-DANH_BA = [{"uid": "7770001", "name": "Minh Quý"}, {"uid": "7770002", "name": "Phạm Đại"},
-           {"uid": "7770003", "name": "Minh Quý Trần"}, {"uid": "7770009", "name": "Uni Vũ"}]
+DANH_BA = [{"uid": "7770001", "name": "Ngọc Lan"}, {"uid": "7770002", "name": "Phạm Đại"},
+           {"uid": "7770003", "name": "Ngọc Lan Trần"}, {"uid": "7770009", "name": "Uni Vũ"}]
 zp._danh_ba_nhom = lambda cid, chat: list(DANH_BA)
 zc._ID_MINH[CID] = {"uid": "7770009", "ten": "Uni Vũ"}
 KHACH = {"uid": "7770005", "name": "Lan"}
 
 reset()
-ok, _ = send("Dạ em đã báo @Minh Quý và @Phạm Đại xem giúp chị ạ", mention=KHACH)
+ok, _ = send("Dạ em đã báo @Ngọc Lan và @Phạm Đại xem giúp chị ạ", mention=KHACH)
 c = CLI[0] if CLI else {}
-txt = "@Lan Dạ em đã báo @Minh Quý và @Phạm Đại xem giúp chị ạ"
+txt = "@Lan Dạ em đã báo @Ngọc Lan và @Phạm Đại xem giúp chị ạ"
 specs = [x for x in c.get("opts", []) if x.count(":") == 2]
 check("CANARY: người được trả lời VÀ hai người được nhắc tên đều có tag thật, một lần gửi",
       c.get("pos") == [GROUP, txt] and specs == [
-          f"0:7770005:4", f"{txt.index('@Minh Quý')}:7770001:9", f"{txt.index('@Phạm Đại')}:7770002:9"], c)
+          f"0:7770005:4", f"{txt.index('@Ngọc Lan')}:7770001:9", f"{txt.index('@Phạm Đại')}:7770002:9"], c)
 check("các tag đi sau MỘT cờ --mention (CLI nhận danh sách)", c.get("opts", [])[:3] == ["-t", "1", "--mention"], c)
 
 reset()
-ok, _ = send("Anh @minh quy ơi, chị Lan hỏi giá", mention=None)
+ok, _ = send("Anh @ngoc lan ơi, chị Hoa hỏi giá", mention=None)
 c = CLI[0] if CLI else {}
 check("không có người được trả lời (chủ gõ ở Hộp thư) mà câu có @Tên: vẫn tag, không phân biệt hoa thường và dấu",
       ok and len(CLI) == 1 and MCP == [] and [x for x in c["opts"] if x.count(":") == 2] == ["4:7770001:9"], (CLI, MCP))
 
 reset()
-send("Nhờ @Minh Quý Trần kiểm tra", mention=None)
-check("tên dài thắng tên ngắn trùng đầu ('@Minh Quý Trần' không thành '@Minh Quý')",
+send("Nhờ @Ngọc Lan Trần kiểm tra", mention=None)
+check("tên dài thắng tên ngắn trùng đầu ('@Ngọc Lan Trần' không thành '@Ngọc Lan')",
       CLI and [x for x in CLI[0]["opts"] if x.count(":") == 2] == ["4:7770003:14"], CLI)
 
 reset()
-send("Chào @Minh Quýnh và @Uni Vũ", mention=None)
-check("không ăn vào đầu tên dài hơn ('@Minh Quýnh'), không tự tag chính tài khoản: gửi thường",
+send("Chào @Ngọc Lanh và @Uni Vũ", mention=None)
+check("không ăn vào đầu tên dài hơn ('@Ngọc Lanh'), không tự tag chính tài khoản: gửi thường",
       CLI == [] and len(MCP) == 1, (CLI, MCP))
 
 reset()
@@ -295,28 +295,28 @@ check("người được trả lời được nhắc hai lần: chỉ một tag"
 # ============================================================
 # Zalo's own mention markup (0.234.0)
 # ============================================================
-# Field report 2026-10-19: the group saw `<a_mention href="zm://Profile/..._mention">@Minh</a_mention> Quý Dạ anh`
+# Field report 2026-10-19: the group saw `<a_mention href="zm://Profile/..._mention">@Ngọc</a_mention> Lan Dạ anh`
 # as plain code. The markup goes, the person still gets a real tag.
-RAW = '<a_mention href="zm://Profile/7770001_mention">@Minh</a_mention> Quý Dạ anh 😊'
+RAW = '<a_mention href="zm://Profile/7770001_mention">@Ngọc</a_mention> Lan Dạ anh 😊'
 check("markup stripped, the @Name between the tags stays",
-      zc.strip_mention_markup(RAW) == "@Minh Quý Dạ anh 😊"
+      zc.strip_mention_markup(RAW) == "@Ngọc Lan Dạ anh 😊"
       and zc.strip_mention_markup('<A_MENTION href="x">@Lan</A_MENTION>') == "@Lan"
       and zc.strip_mention_markup("Dạ anh <3 nhé") == "Dạ anh <3 nhé" and zc.strip_mention_markup(None) == "")
 
 reset()
 ok, _ = send(RAW, mention=LAN)
 check("CANARY: group reply carrying the markup goes out clean, tagged at the right spot",
-      ok and CLI and CLI[0]["pos"][1] == "@Minh Quý Dạ anh 😊" and CLI[0]["opts"][-1] == "0:7770001:9", CLI)
+      ok and CLI and CLI[0]["pos"][1] == "@Ngọc Lan Dạ anh 😊" and CLI[0]["opts"][-1] == "0:7770001:9", CLI)
 
 reset()
 ok, _ = send(RAW, chat_type="private")
 check("private chat: markup stripped too, and the cleaned text is remembered as our echo",
-      ok and MCP and MCP[0]["text"] == "@Minh Quý Dạ anh 😊" and zc._la_tieng_vong(CID, GROUP, "@Minh Quý Dạ anh 😊"), MCP)
+      ok and MCP and MCP[0]["text"] == "@Ngọc Lan Dạ anh 😊" and zc._la_tieng_vong(CID, GROUP, "@Ngọc Lan Dạ anh 😊"), MCP)
 
 ev = zc.chuan_hoa_tin(CONN, {"threadId": GROUP, "type": 1, "senderId": "7770002", "senderName": "Lan",
-                             "text": '<a_mention href="zm://Profile/7770001_mention">@Minh Quý</a_mention> xem giúp em'}, {})
+                             "text": '<a_mention href="zm://Profile/7770001_mention">@Ngọc Lan</a_mention> xem giúp em'}, {})
 check("incoming message: the bot reads @Name, never the markup (so it does not copy it)",
-      ev and ev["text"] == "@Minh Quý xem giúp em", ev)
+      ev and ev["text"] == "@Ngọc Lan xem giúp em", ev)
 
 # 0.309.0 (field report 2026-10-25, Zalo on a phone): a BROKEN tag survived, `@Hotline Gsmsuppliershref="zm://Profile/
 # 102631062_mention">@Trinh Tran</a_mention>`, and two whole tags back to back glued the names ("@A@B").
@@ -332,8 +332,8 @@ check("a tag cut off before its '>' leaves only the name",
 check("ordinary text with @ or links is untouched",
       zc.strip_mention_markup("mail a@b.com, xem https://zm.vn/x") == "mail a@b.com, xem https://zm.vn/x")
 check("a Zalo send tool called directly (owner chat, reminder) is cleaned too, other tools are not",
-      zalo_markup.clean_send_args("zalo_send_message", {"threadId": "1", "text": RAW})["text"] == "@Minh Quý Dạ anh 😊"
-      and zalo_markup.clean_send_args("zalo_send_mention", {"message": RAW})["message"] == "@Minh Quý Dạ anh 😊"
+      zalo_markup.clean_send_args("zalo_send_message", {"threadId": "1", "text": RAW})["text"] == "@Ngọc Lan Dạ anh 😊"
+      and zalo_markup.clean_send_args("zalo_send_mention", {"message": RAW})["message"] == "@Ngọc Lan Dạ anh 😊"
       and zalo_markup.clean_send_args("zalo_get_messages", {"text": RAW})["text"] == RAW)
 _pool_src = (SERVER / "mcp_client.py").read_text(encoding="utf-8")
 check("the MCP pool cleans every zalo_send* call, the one path all tool calls share",
