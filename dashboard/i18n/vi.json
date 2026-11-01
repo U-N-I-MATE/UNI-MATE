@@ -390,6 +390,7 @@
   "vbanner.init": "Khởi tạo cấu trúc",
   "drop.msg": "Thả file vào đây → lưu vào Sources",
   "fm.title": "Chọn brain (folder chứa ghi chú .md)",
+  "fm.path_ph": "Dán đường dẫn thư mục rồi bấm Enter",
   "fm.use": "Dùng folder này",
   "wz.welcome": "Chào mừng tới UNI MATE",
   "wz.intro": "Vài bước nhanh để bắt đầu. Mọi thứ đổi lại được sau trong",

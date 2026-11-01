@@ -3381,6 +3381,10 @@ loadCustomBrains();
 const folderModal = document.getElementById("folderModal");
 const fmList = document.getElementById("fmList");
 const fmPath = document.getElementById("fmPath");
+const fmPathInput = document.getElementById("fmPathInput");
+fmPathInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { e.preventDefault(); fmBrowse(fmPathInput.value.trim().replace(/^"|"$/g, "")); }
+});
 const fmHint = document.getElementById("fmHint");
 let fmCurrent = "";
 
@@ -3390,7 +3394,11 @@ async function fmBrowse(path) {
     const res = await fetch(`/browse?path=${encodeURIComponent(path || "")}`);
     const data = await res.json();
     fmCurrent = data.path || "";
-    fmPath.textContent = fmCurrent || window.t("app.drives");
+    // Ô đường dẫn vừa BÁO đang đứng ở đâu vừa NHẬN một đường dẫn dán vào (Enter). Cuộn tìm từng
+    // tầng trong danh sách dài (ổ D có hàng chục thư mục) là cách duy nhất trước đây, và trên
+    // laptop cửa sổ thấp thì thư mục cần tìm nằm ngoài khung nhìn (chủ dự án gặp 01/11/2026).
+    fmPathInput.value = fmCurrent;
+    fmPathInput.placeholder = fmCurrent ? "" : window.t("app.drives");
     fmList.innerHTML = "";
     if (data.parent !== null && data.parent !== undefined) {
       const up = document.createElement("div");

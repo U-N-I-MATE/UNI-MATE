@@ -390,6 +390,7 @@
   "vbanner.init": "Set up structure",
   "drop.msg": "Drop files here → saved to Sources",
   "fm.title": "Pick a brain (a folder of .md notes)",
+  "fm.path_ph": "Paste a folder path and press Enter",
   "fm.use": "Use this folder",
   "wz.welcome": "Welcome to UNI MATE",
   "wz.intro": "A few quick steps to get going. Everything can be changed later in",
