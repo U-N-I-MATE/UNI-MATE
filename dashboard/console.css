@@ -84,10 +84,10 @@ body.in-console .hud-actions { display: none; }
    cũng phát sáng cam theo. */
 .rail-brand .brand-mark {
   display: flex; flex: none;
-  filter: drop-shadow(0 0 8px rgba(255, 107, 43, 0.55));
+  filter: drop-shadow(0 0 8px rgba(159, 136, 216, 0.55));
 }
 /* Chữ hiệu: cùng kiểu với .brand-text trên thanh trên (đậm, giãn chữ) để hai chỗ là một
-   thương hiệu chứ không phải hai. "OS" nhạt hơn, đúng như thanh trên vẫn vẽ. */
+   thương hiệu chứ không phải hai. Tên sản phẩm là "UNI MATE" (bỏ chữ "OS" của bản gốc). */
 .rail-brand-text {
   font-family: var(--font); font-size: 14px; font-weight: 700; letter-spacing: 2.5px;
   color: var(--text); white-space: nowrap; filter: none;
@@ -506,7 +506,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
   transition: transform 0.18s, border-color 0.18s;
 }
 .gcard:hover { transform: translateY(-2px); border-color: var(--accent-line); }
-.gcard.current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 8px 30px rgba(255, 107, 43, 0.18); }
+.gcard.current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 8px 30px rgba(159, 136, 216, 0.18); }
 .gcard-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .gcard-name { font-family: var(--font); font-weight: 700; font-size: 16px; }
 .gcard-tag {
@@ -1378,7 +1378,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
 /* The copy beside the search box is the phone's; the navbar keeps the computer's. */
 .kho-hd-dt { display: none; }
 /* `font: inherit` là BẮT BUỘC trên mọi <button>: phần tử form không thừa kế phông của trang,
-   trình duyệt áp phông hệ thống riêng. Thiếu nó thì giữa một trang Be Vietnam Pro có vài nút hiện
+   trình duyệt áp phông hệ thống riêng. Thiếu nó thì giữa một trang UNI Sans có vài nút hiện
    bằng phông mặc định của máy - trông như trang bị lỗi tải phông. */
 .kho-tab { white-space: nowrap; padding: 11px 16px; font: inherit; font-size: 15px;
   font-weight: 500; color: var(--text2); background: none; border: 0;
@@ -1857,7 +1857,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
   border: 1px solid var(--border); background: none; color: var(--text2); cursor: pointer;
   font-family: var(--font); font-size: 13px; font-weight: 700; white-space: nowrap; }
 .ws-seg button:hover { color: var(--accent); border-color: var(--accent); }
-.ws-seg button.on { color: var(--accent); border-color: #7d532d; background: rgba(255, 122, 60, .12); }
+.ws-seg button.on { color: var(--accent); border-color: var(--accent-line); background: rgba(159, 136, 216, .12); }
 .ws-search, .ws-group { width: 100%; box-sizing: border-box; padding: 7px 9px; border-radius: 9px;
   border: 1px solid var(--border); background: none; color: var(--text); font-family: var(--font);
   font-size: 13px; }
@@ -1886,7 +1886,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
   padding: 7px 9px; border-radius: 9px; border: 1px solid transparent; background: none;
   color: var(--text2); cursor: pointer; font-family: var(--font); }
 .ws-item:hover { background: var(--surface-1); color: var(--text); }
-.ws-item.on { border-color: #7d532d; background: rgba(255, 122, 60, .12); color: var(--text); }
+.ws-item.on { border-color: var(--accent-line); background: rgba(159, 136, 216, .12); color: var(--text); }
 .ws-item-ic { flex: none; opacity: .8; }
 .ws-item-text { min-width: 0; display: flex; flex-direction: column; }
 .ws-item-text strong { font-size: 13.5px; font-weight: 600; overflow: hidden;
@@ -1905,7 +1905,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
 .ws-tag-note { display: flex; align-items: flex-start; gap: 6px; margin-top: 6px; padding: 6px 8px;
   border-radius: 8px; font-size: 12px; line-height: 1.4; background: var(--info-wash); color: var(--info-ink);
   overflow-wrap: anywhere; flex-basis: 100%; }
-.ws-tag-note.loi { background: var(--warn-wash, rgba(255, 122, 60, .12)); color: var(--text); }
+.ws-tag-note.loi { background: var(--warn-wash, rgba(159, 136, 216, .12)); color: var(--text); }
 .ws-tag-note-x { flex: none; margin-left: auto; background: none; border: 0; color: inherit; cursor: pointer; padding: 0; }
 .ws-tag-note-x svg { width: 13px; height: 13px; }
 .ws-tag-new { display: flex; gap: 6px; padding: 4px 6px 6px; }
@@ -1984,13 +1984,13 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
 .ws-step strong { font-size: 13px; font-weight: 600; }
 .ws-step small { font-size: 11.5px; color: var(--text3); }
 .ws-step .ws-who { font-size: 11.5px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
-.ws-step.dang { border-color: #7d532d; background: rgba(255, 122, 60, .08); }
+.ws-step.dang { border-color: var(--accent-line); background: rgba(159, 136, 216, .08); }
 .ws-step.dang .ws-num { color: var(--accent); border-color: var(--accent); }
 .ws-step.xong .ws-num { color: #6fd08c; border-color: #6fd08c; }
 .ws-step.loi { border-color: #ff8b8b; }
 .ws-step.loi .ws-num, .ws-step.loi small { color: #ff8b8b; }
-.ws-wait { margin-top: 8px; padding: 8px; border-radius: 9px; border: 1px solid #7d532d;
-  background: rgba(255, 122, 60, .1); font-size: 12.5px; }
+.ws-wait { margin-top: 8px; padding: 8px; border-radius: 9px; border: 1px solid var(--accent-line);
+  background: rgba(159, 136, 216, .1); font-size: 12.5px; }
 .ws-wait small { display: block; margin-top: 4px; font-size: 11px; color: var(--text3); }
 
 /* Tab Lịch sử gắn CHÍNH cột lịch sử của trang Trò chuyện (sessions-ui.js, chế độ gọn). Khung
@@ -3579,7 +3579,7 @@ span.tmp-lead { cursor: default; }
 .ws-item-end > .ws-auto, .ws-item-end > .ws-rs-confirm { pointer-events: auto; position: relative; }
 .ws-item-end > .ws-auto { margin: 0; min-height: 20px; padding: 0 4px 0 7px; gap: 4px; font-size: 12px; font-weight: 600;
   color: var(--text3); background: var(--surface-2, rgba(0, 0, 0, .05)); border-radius: 999px; }
-.ws-item-end > .ws-auto.is-on { color: var(--accent-ink, var(--accent)); background: var(--accent-wash, rgba(255, 122, 60, .12)); }
+.ws-item-end > .ws-auto.is-on { color: var(--accent-ink, var(--accent)); background: var(--accent-wash, rgba(159, 136, 216, .12)); }
 .ws-auto .toggle-sm { width: 24px; height: 14px; }
 .ws-auto .toggle-sm span { background: var(--bg3); border-color: var(--border); }
 .ws-auto .toggle-sm span::before { width: 10px; height: 10px; left: 1px; top: 1px; background: var(--text3); }
@@ -3829,7 +3829,7 @@ body.col-resizing { cursor: col-resize; user-select: none; }
 .tm-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 3px 4px 3px 10px; border-radius: 999px;
   background: var(--surface-2, var(--bg2)); border: 1px solid var(--border); font-size: 14px; color: var(--text); }
 .tm-chip svg { width: 15px; height: 15px; flex: none; color: var(--text2); }
-.tm-chip-folder { background: var(--accent-wash, rgba(255, 122, 60, .12)); border-color: transparent; }
+.tm-chip-folder { background: var(--accent-wash, rgba(159, 136, 216, .12)); border-color: transparent; }
 .tm-chip-folder svg { color: var(--accent); }
 .tm-chip-name { min-width: 0; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border: 0; background: none;
   padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
@@ -3867,7 +3867,7 @@ body.col-resizing { cursor: col-resize; user-select: none; }
 .tm-info-members, .tm-info-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .tm-info-members li, .tm-info-list li { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 15px; }
 .tm-info-members li > span:not(.tm-ava):not(.tm-info-badge) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tm-info-badge { margin-left: auto; font-size: 12.5px; color: var(--accent-ink, var(--accent)); background: var(--accent-wash, rgba(255, 122, 60, .12));
+.tm-info-badge { margin-left: auto; font-size: 12.5px; color: var(--accent-ink, var(--accent)); background: var(--accent-wash, rgba(159, 136, 216, .12));
   border-radius: 999px; padding: 1px 8px; }
 .tm-info-list a { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; color: var(--text); text-decoration: none; }
 .tm-info-list a:hover span { text-decoration: underline; }

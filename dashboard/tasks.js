@@ -1094,20 +1094,30 @@
   }
 
   // ---------- habits: list head, mascot, checkbox, streak card (0.424.0) ----------
-  // The mascot is UNI MATE's own star (dashboard/pet.js): all feeling sits in the eyes, no mouth.
-  var PET_STAR = "M145 81 Q160 59.4 175 81 L177.9 85.1 Q195.8 110.7 225.8 119.9 L230.6 121.3 Q255.7 128.9 239.8 149.8 L236.8 153.8 Q217.9 178.8 218.5 210.1 L218.6 215.1 Q219.1 241.4 194.3 232.8 L189.6 231.1 Q160 220.8 130.4 231.1 L125.7 232.8 Q100.9 241.4 101.4 215.1 L101.5 210.1 Q102.1 178.8 83.2 153.8 L80.2 149.8 Q64.3 128.9 89.4 121.3 L94.2 119.9 Q124.2 110.7 142.1 85.1 Z";
+  // The mascot is UNI MATE's own mascot (dashboard/pet.js, SHAPES.uni): the D2 "bright eyes" of UNI TECH
+  // (owner, 01/11/2026). Purple body, gold dot, pink cheeks, white-sclera eyes; closed eyes are white strokes.
+  // All feeling sits in the eyes, no mouth.
+  var PET_UNI = "M75.76 100.7 Q75.76 60.14 97.6 60.14 Q121 60.14 121 81.98 Q160 69.5 199 81.98 Q199 60.14 222.4 60.14 Q244.24 60.14 244.24 100.7 V139.7 Q244.24 219.26 160 219.26 Q75.76 219.26 75.76 139.7 Z";
+  function petEye(cx, cy, k) {   // white sclera, dark pupil, highlight; k scales the open eye
+    return '<ellipse class="sc" cx="' + cx + '" cy="' + cy + '" rx="' + (14 * k) + '" ry="' + (16.4 * k) + '"/>'
+      + '<ellipse class="pu" cx="' + cx + '" cy="' + (cy + 3.1 * k) + '" rx="' + (8.6 * k) + '" ry="' + (10.9 * k) + '"/>'
+      + '<circle class="sc" cx="' + (cx - 3.1 * k) + '" cy="' + (cy - 2.3 * k) + '" r="' + (3.9 * k) + '"/>';
+  }
   var PET_EYES = {
-    neutral: '<ellipse rx="7.2" ry="17.5"/>', curious: '<ellipse cy="-2" rx="8.4" ry="21"/>', excited: '<ellipse cy="-1" rx="9.2" ry="22.5"/>',
-    happy: '<path class="pl" d="M-9 6 Q0 -7 9 6"/>', sleepy: '<path class="pl" d="M-9 6 H9"/>',
-    suspicious: ['<path class="pl" d="M-9 -3 H9"/>', '<path class="pl" d="M-9 2 H9"/>'],
-    wink: ['<path class="pl" d="M-9 3 Q0 -7 9 3"/>', '<ellipse rx="7.2" ry="17.5"/>'],
-    love: '<path d="M0 11 C-15 0 -13 -13 -5.5 -13 C-2 -13 0 -10 0 -7.5 C0 -10 2 -13 5.5 -13 C13 -13 15 0 0 11 Z"/>',
-    gang: ['<path class="pl" d="M-8 -9 L6 0 L-8 9"/>', '<path class="pl" d="M8 -9 L-6 0 L8 9"/>']
+    neutral: function (x) { return petEye(x, 0, 1); }, curious: function (x) { return petEye(x, -2, 1.12); },
+    excited: function (x) { return petEye(x, -1, 1.22); },
+    happy: function (x) { return '<path class="pl" d="M' + (x - 12.5) + ' 6.2 Q' + x + ' -10.9 ' + (x + 12.5) + ' 6.2"/>'; },
+    sleepy: function (x) { return '<path class="pl" d="M' + (x - 12.5) + ' -1.6 Q' + x + ' 10.9 ' + (x + 12.5) + ' -1.6"/>'; },
+    suspicious: function (x) { return '<path class="pl" d="M' + (x - 12.5) + ' -4 H' + (x + 12.5) + ' M' + (x - 12.5) + ' 3 H' + (x + 12.5) + '"/>'; },
+    wink: function (x, phai) { return phai ? petEye(x, 0, 1) : '<path class="pl" d="M' + (x - 12.5) + ' 4 Q' + x + ' -10 ' + (x + 12.5) + ' 4"/>'; },
+    love: function (x) { return '<path class="ht" transform="translate(' + x + ' 0) scale(1.35)" d="M0 11 C-15 0 -13 -13 -5.5 -13 C-2 -13 0 -10 0 -7.5 C0 -10 2 -13 5.5 -13 C13 -13 15 0 0 11 Z"/>'; },
+    gang: function (x, phai) { return '<path class="pl" d="' + (phai ? 'M' + (x + 11) + ' -12 L' + (x - 8) + ' 0 L' + (x + 11) + ' 12' : 'M' + (x - 11) + ' -12 L' + (x + 8) + ' 0 L' + (x - 11) + ' 12') + '"/>'; }
   };
   function jstar(mood) {
-    var e = PET_EYES[mood] || PET_EYES.neutral, L = typeof e === "string" ? e : e[0], R = typeof e === "string" ? e : e[1];
-    var flat = /sleepy|love/.test(mood), dx = flat ? 0 : 7, dy = flat ? 6 : -4;
-    return '<svg class="nv-star m-' + mood + '" viewBox="56 50 208 200" aria-hidden="true"><path d="' + PET_STAR + '" fill="#fd6100"/><g class="je"><g transform="translate(' + (145 + dx) + " " + (160 + dy) + ')">' + L + '</g><g transform="translate(' + (175 + dx) + " " + (160 + dy) + ')">' + R + "</g></g></svg>";
+    var e = PET_EYES[mood] || PET_EYES.neutral, flat = /sleepy|love/.test(mood), dx = flat ? 0 : 6, dy = flat ? 4 : -3;
+    return '<svg class="nv-star m-' + mood + '" viewBox="70 50 180 180" aria-hidden="true"><path class="th" d="' + PET_UNI + '"/>'
+      + '<circle class="ch" cx="160" cy="108.5" r="15.6"/><ellipse class="ma" cx="105.4" cy="181.8" rx="12.5" ry="7"/><ellipse class="ma" cx="214.6" cy="181.8" rx="12.5" ry="7"/>'
+      + '<g class="je" transform="translate(' + (160 + dx) + " " + (158.4 + dy) + ')">' + e(-31.2, false) + e(31.2, true) + "</g></svg>";
   }
   var FLAME = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c.6 3.4 5.5 6 5.5 11.2A5.6 5.6 0 0 1 12 19.5a5.6 5.6 0 0 1-5.5-5.8c0-2.6 1.4-4.2 2.6-5.4.2 1.8 1 2.9 2.2 3.4C11 9 11 5.6 12 2.5z"/></svg>';
   // The tick of a habit: a ring; an icy dot while frozen; a dashed ring on a rest day; a flame when done.

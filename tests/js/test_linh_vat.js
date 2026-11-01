@@ -115,7 +115,7 @@ check("dấu ấn thay ruột ô .brand-mark, không thay cả khối thương h
   /var LO_DAU_AN = "\.rail-brand \.brand-mark, \.brand \.brand-icon";/.test(pet));
 check("index.html: .rail-brand có ô dấu ấn riêng và chữ UNI MATE",
   /<div class="rail-brand"><span class="brand-mark">/.test(html)
-  && /<span class="rail-brand-text">UNI MATE <i>OS<\/i><\/span>/.test(html));
+  && /<span class="rail-brand-text">UNI MATE<\/span>/.test(html));
 check("css: thu gọn thanh bên thì giấu chữ, chỉ còn dấu ấn",
   /\.rail\.collapsed \.rail-brand-text \{ display: none; \}/.test(railCss));
 // Quầng sáng cam phải ở ô DẤU ẤN chứ không ở cả khối: filter của cha ăn xuống cả cây con và

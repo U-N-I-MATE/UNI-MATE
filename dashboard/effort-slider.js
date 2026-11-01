@@ -81,10 +81,10 @@
     var cv = el.querySelector(".eff-cv"), ctx = cv.getContext && cv.getContext("2d");
     var parts = [], raf = 0, alive = true;
     // Measured once and on resize or theme/motion changes, never inside the animation frame.
-    var W = 0, H = 0, accent = "#ff7a3c", still = reduced();
+    var W = 0, H = 0, accent = "#9F88D8", still = reduced();
     function measure() {
       W = track.clientWidth * 2; H = track.clientHeight * 2;
-      accent = getComputedStyle(el).getPropertyValue("--accent").trim() || "#ff7a3c";
+      accent = getComputedStyle(el).getPropertyValue("--accent").trim() || "#9F88D8";
     }
     var mq = null;
     try { mq = window.matchMedia("(prefers-reduced-motion: reduce)"); } catch (e) {}

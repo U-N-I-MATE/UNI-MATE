@@ -853,7 +853,7 @@
     if (_clCss) return; _clCss = true;
     const css = `
     .cl-wrap{max-width:820px;margin:0 auto}
-    .upd-card{margin-bottom:24px;padding:18px;border:1px solid rgba(255,107,43,.28);border-radius:16px;background:linear-gradient(135deg,rgba(255,107,43,.08),rgba(124,58,237,.05))}
+    .upd-card{margin-bottom:24px;padding:18px;border:1px solid var(--accent-line);border-radius:16px;background:linear-gradient(135deg,var(--accent-wash),var(--accent2-wash))}
     .upd-card .gcard-btn{width:auto}
     .upd-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
     .upd-name{font-family:var(--font);font-size:17px;font-weight:700;color:var(--text)}
@@ -1367,7 +1367,7 @@
     .si-field textarea{min-height:80px;resize:vertical;font-family:inherit}
     .si-row{display:flex;gap:10px;flex-wrap:wrap}
     .si-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--hairline);background:var(--surface-2);color:var(--text);cursor:pointer;font-size:14px}
-    .si-chip.sel{border-color:var(--accent);background:rgba(255,138,60,.15);color:var(--accent-ink)}
+    .si-chip.sel{border-color:var(--accent);background:var(--accent-wash-2);color:var(--accent-ink)}
     .si-level-note{flex-basis:100%;margin-top:6px;font-size:14px;line-height:1.45;color:var(--text2)}
     .si-level-note.is-full{color:var(--warn-ink, var(--text))}
     @media (pointer:coarse){.si-level-note{font-size:16px}}

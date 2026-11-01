@@ -24,7 +24,7 @@ stays with it as that licence requires.
 | Component | Where | Licence | Notice |
 |---|---|---|---|
 | Harness² prompt definitions (Google LLC), https://github.com/google-research/harness2 | `third_party/harness2/`, adapted in `server/improvement_harness2_compose.py` | Apache-2.0 | `third_party/harness2/LICENSE`, `third_party/harness2/PROVENANCE.md` |
-| Be Vietnam Pro and Montserrat fonts | `dashboard/fonts/` | SIL Open Font License 1.1 | `dashboard/fonts/OFL.txt` |
+| UNI Sans font (U.N.I), derived from Be Vietnam Pro (The Be Vietnam Pro Project Authors) | `dashboard/fonts/` | SIL Open Font License 1.1 | `dashboard/fonts/OFL.txt` |
 | CMU Pronouncing Dictionary (Carnegie Mellon University) | `server/data_phien_am/` | BSD-style | `server/data_phien_am/LICENSE-cmudict` |
 | flag-icons, Copyright (c) 2013 Panayiotis Lipiridis | `docs/assets/flags/` | MIT | `docs/assets/flags/README.md` |
 | acorn 8.14.0 (tests only, not shipped in the app) | `tests/js/vendor/` | MIT | `tests/js/vendor/acorn-LICENSE` |

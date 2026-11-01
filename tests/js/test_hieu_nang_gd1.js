@@ -23,8 +23,8 @@ const fontsCss = read("dashboard/fonts/fonts.css");
 const urls = [...fontsCss.matchAll(/url\(([^)]+)\)/g)].map(m => m[1].split("?")[0]);
 check("every font file the sheet names exists", urls.length >= 12 && urls.every(u => fs.existsSync(path.join(ROOT, "dashboard/fonts", u))));
 check("font URLs carry ?v= so they are cached for a year", /url\([^)]+\.woff2\?v=\d+\)/.test(fontsCss) && !/url\([^)?]+\.woff2\)/.test(fontsCss));
-check("Be Vietnam Pro and Montserrat, Vietnamese subset included",
-  /font-family: 'Be Vietnam Pro'/.test(fontsCss) && /font-family: 'Montserrat'/.test(fontsCss) && /vietnamese\.woff2/.test(fontsCss));
+check("UNI Sans (brand font, 4 weights), Vietnamese subset included",
+  /font-family: 'UNI Sans'/.test(fontsCss) && [400, 500, 600, 700].every(w => fontsCss.includes("font-weight: " + w + ";")) && /vietnamese\.woff2/.test(fontsCss));
 check("the OFL licence ships with the fonts", /SIL Open Font License/.test(read("dashboard/fonts/OFL.txt")));
 
 // ───────── coalesced reads (fetch-gop.js) ─────────
