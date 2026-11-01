@@ -866,5 +866,15 @@ check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/
     /try \{ tt = hamTrangTri\(s\) \|\| \{\}; \} catch \(e\) \{ tt = \{\}; \}/.test(ss));
 }
 
+// Off workflows must stay listed and carry an on/off switch: a workflow created from chat starts off,
+// and hiding it left the owner no way to find or turn it on (owner, 01/11/2026).
+{
+  const ws = fs.readFileSync(path.join(root, "dashboard", "workspace.js"), "utf8");
+  check("the list keeps off workflows", ws.includes('S.workflows = sapXep(r[1].workflows, "last_run_at")'));
+  check("each workflow row draws the switch", ws.includes("wfToggleHtml(x) + '</div>'"));
+  check("the switch posts to the toggle route", ws.includes('api("/workflows/toggle"'));
+  check("only the server answer changes the state", ws.includes("if (x) x.status = r.status;"));
+}
+
 if (fails.length) { console.log("\nFAIL:", fails.length, fails); process.exit(1); }
 console.log("\nOK - workspace");

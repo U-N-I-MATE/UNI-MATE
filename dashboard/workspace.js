@@ -493,7 +493,8 @@
     loadJobCounts().then(function (ok) { if (ok && active && S.loai === "agent") veDanhSach(); });
     loadUnread().then(function (ok) { if (ok && active && S.loai === "agent") veDanhSach(); });
     S.agents = sapXep(r[0].agents, "last_chat_at");
-    S.workflows = sapXep(r[1].workflows.filter(function (w) { return w.status === "active"; }), "last_run_at");
+    // Off workflows stay listed: a workflow created from chat starts off, and the switch on its row is the way to turn it on.
+    S.workflows = sapXep(r[1].workflows, "last_run_at");
     daTai = true;
     return true;
   }
@@ -1109,7 +1110,7 @@
       .filter(Boolean).join("\n") : "";
     var nTin = laAgent ? chuaDoc(x.slug) : 0;
     return '<div class="ws-item-wrap' + (x.pinned ? " ghim" : "") + (he ? " he" : "") + (coTt ? " co-tt" : "") + (nTin ? " has-unread" : "") +
-      (laAgent ? " has-end" : "") + '"' + (jst ? ' data-st="' + jst + '"' : "") + '>' +
+      " has-end" + '"' + (jst ? ' data-st="' + jst + '"' : "") + '>' +
       '<button type="button" class="ws-item' + (x.slug === chon ? " on" : "") + '" aria-pressed="' + (x.slug === chon) + '" data-slug="' + esc(x.slug) + '"' +
         (title ? ' title="' + esc(title) + '"' : "") + '>' +
       '<span class="ws-item-ic">' + (laAgent ? avatar(x, 40)
@@ -1124,14 +1125,46 @@
       // Cụm nằm ngoài nút chọn mục (không lồng nút trong nút); CSS đặt nó BÊN TRONG thẻ.
       (laAgent ? '<div class="ws-item-end">' + gioNhanHtml(x.last_chat_at) + tinHtml(x) +
         (!he && window.UniMateResonanceAgent
-          ? window.UniMateResonanceAgent.rowToggleHtml(S.rs[x.slug], { saving: !!S.rsSaving[x.slug] }) : "") + '</div>' : "") +
+          ? window.UniMateResonanceAgent.rowToggleHtml(S.rs[x.slug], { saving: !!S.rsSaving[x.slug] }) : "") + '</div>'
+        : '<div class="ws-item-end">' + wfToggleHtml(x) + '</div>') +
       (he ? "" : '<button type="button" class="ws-item-more" data-more="' + esc(x.slug) + '" title="' +
         esc(t("ws.manage")) + '" aria-label="' + esc(t("ws.manage")) + '">' + ic("ellipsis-vertical") + '</button>') +
       '</div>';
   }
+  // The on/off switch of one workflow row. Off only blocks unattended runs (server: _WORKFLOW_UNATTENDED_SOURCES);
+  // the Run button keeps working either way, so it stays enabled.
+  var wfSaving = {};
+  function wfToggleHtml(x) {
+    var on = x.status === "active", saving = !!wfSaving[x.slug];
+    var aria = t(on ? "ws.wf_state_on" : "ws.wf_state_off") + " · " + x.name;
+    return '<label class="ws-rs ws-auto' + (on ? " is-on" : "") + (saving ? " is-saving" : "") + '" title="' + esc(aria) + '">' +
+      '<span class="ws-rs-text">' + esc(t(on ? "ws.wf_on" : "ws.wf_off")) + '</span>' +
+      '<span class="toggle toggle-sm"><input type="checkbox" class="ws-wf-toggle" data-wf="' + esc(x.slug) + '" role="switch"' +
+      ' aria-checked="' + on + '" aria-label="' + esc(aria) + '"' + (on ? " checked" : "") + (saving ? " disabled" : "") +
+      '><span></span></span></label>';
+  }
+  // The file is the source of truth: only the server's answer changes the row, a failure says why under the filter bar.
+  async function doiTrangThaiQuyTrinh(slug) {
+    if (wfSaving[slug]) return;
+    wfSaving[slug] = true; veDanhSach();
+    var r = null;
+    try { r = await api("/workflows/toggle", { method: "POST", body: fd({ slug: slug, brain: brain() }) }); } catch (e) { r = null; }
+    delete wfSaving[slug];
+    var x = S.workflows.find(function (w) { return w.slug === slug; });
+    if (r && r.ok) { if (x) x.status = r.status; S.tagNote = null; }
+    else S.tagNote = { loi: true, msg: t("ws.wf_toggle_failed", { error: (r && r.error) || "" }) };
+    if (active && S.loai === "workflow") veDanhSach();
+  }
   // Nối dây cho các nút vừa vẽ. Gọi lại sau MỖI lần vẽ: innerHTML mới là node mới, handler cũ
   // chết theo node cũ.
   function noiDanhSach(host) {
+    host.querySelectorAll(".ws-wf-toggle").forEach(function (box) {
+      box.onclick = function (e) { e.stopPropagation(); };
+      box.onchange = function () {
+        box.checked = !box.checked;   // the row redraws from the server's answer
+        doiTrangThaiQuyTrinh(box.dataset.wf);
+      };
+    });
     host.querySelectorAll("[data-slug]").forEach(function (b) {
       b.addEventListener("mouseenter", function () { hienTheMini(b); });
       b.addEventListener("mouseleave", anTheMini);
