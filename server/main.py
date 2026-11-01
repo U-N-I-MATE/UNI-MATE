@@ -1278,6 +1278,8 @@ async def stop(payload: dict = Body(None)):
     session_id = str(data.get("session_id") or "").strip()
     tag = str(data.get("tag") or "").strip()
     if session_id:
+        # Stop means stop: what the owner sent while this turn ran must not start by itself afterwards.
+        steer_inbox.INBOX.stop(session_id)
         job_tag = _CHAT_RUNTIME.cancel_session(session_id)
         n = cancel_all(job_tag) if job_tag else 0
         return {"ok": True, "cancelled": max(1, n) if job_tag else 0}
@@ -11462,11 +11464,18 @@ async def execute_workflow_graph(brain, slug, input="", tools=None, session_id="
             await queue.put(None)
 
     task = asyncio.create_task(drive())
-    while True:
-        event = await queue.get()
-        if event is None:
-            break
-        yield event
+    try:
+        while True:
+            event = await queue.get()
+            if event is None:
+                break
+            yield event
+    finally:
+        # The chat turn was stopped (or the client left) and closed this stream: the run must stop with it,
+        # not keep calling agents in the background after the owner pressed Stop.
+        if not task.done():
+            task.cancel()
+            await asyncio.wait({task}, timeout=15)
     result = await task
     # ESCALATED và STOPPED là dừng có chủ đích, không phải lỗi runtime.
     _CONTEXT_RUNTIME.finish(
@@ -11802,11 +11811,18 @@ async def _execute_workflow_resume_raw(brain, slug, task_id, node_id, code, tool
             await queue.put(None)
 
     task = asyncio.create_task(drive())
-    while True:
-        event = await queue.get()
-        if event is None:
-            break
-        yield event
+    try:
+        while True:
+            event = await queue.get()
+            if event is None:
+                break
+            yield event
+    finally:
+        # The chat turn was stopped (or the client left) and closed this stream: the run must stop with it,
+        # not keep calling agents in the background after the owner pressed Stop.
+        if not task.done():
+            task.cancel()
+            await asyncio.wait({task}, timeout=15)
     result = await task
     _CONTEXT_RUNTIME.finish(
         trace, "COMPLETED" if result.status == "COMPLETED" else "COMPLETED_WITH_ERROR",
@@ -18502,7 +18518,8 @@ async def websocket_endpoint(ws: WebSocket):
                 if _steer_left:
                     # Sent while this turn ran but never read by it: the next turn of this chat, right after this one.
                     asyncio.create_task(_start_steer_turn(conv_sid, [i["text"] for i in _steer_left], brain,
-                                                          [i["id"] for i in _steer_left]))
+                                                          [i["id"] for i in _steer_left],
+                                                          now=steer_inbox.INBOX.pop_now(conv_sid)))
                 tien_trinh_nen.bo_tag(turn_tag)   # lượt lỗi/bị dừng không tới bước nhận nuôi
                 turn_context.reset(_luot_token)
                 context_runtime.reset_trace(_trace_token)
@@ -18518,6 +18535,10 @@ async def websocket_endpoint(ws: WebSocket):
             ws = _SendProxy(conv_sid, runtime_trace)
             _trace_token = context_runtime.bind_trace(runtime_trace)
             _luot_token = turn_context.bind(turn_context.make("dashboard", chat_id=conv_sid, la_chu=True))
+            # The workflow's steps are not this chat: nothing in them may read what the owner sends meanwhile
+            # (bind=False), and those messages run as the next turn once the run ends.
+            steer_inbox.INBOX.open(conv_sid, turn_tag, bind=False)
+            steer_inbox.INBOX.set_live(conv_sid, False)
 
             async def emit(frame):
                 await ws.send_text(json.dumps(frame, ensure_ascii=False))
@@ -18563,6 +18584,11 @@ async def websocket_endpoint(ws: WebSocket):
                 await send_raw({"type": "error", "content": _cau, "session_id": conv_sid,
                                 **context_runtime.event_fields(runtime_trace)})
             finally:
+                _steer_left = steer_inbox.INBOX.close(conv_sid, turn_tag)
+                if _steer_left:
+                    asyncio.create_task(_start_steer_turn(conv_sid, [i["text"] for i in _steer_left], brain,
+                                                          [i["id"] for i in _steer_left],
+                                                          now=steer_inbox.INBOX.pop_now(conv_sid)))
                 turn_context.reset(_luot_token)
                 context_runtime.reset_trace(_trace_token)
                 await send_raw({"type": "turn_done", "session_id": conv_sid,
@@ -18953,11 +18979,15 @@ async def websocket_endpoint(ws: WebSocket):
                 _TG_SESS.pop(khoa_mach, None)
             await push_to_chat(conv_sid, out or "(việc nền xong nhưng không có nội dung)", viec=viec)
 
-        async def _start_steer_turn(conv_sid, texts, brain, ids):
+        async def _start_steer_turn(conv_sid, texts, brain, ids, now=False):
             """0.206.0: messages sent while a turn was running that it never read (a one-shot CLI engine, or it was
             already writing its final answer) run as the next turn of the same chat, once that turn has ended. They are
-            in the history already (stored when they arrived), so only the engine gets the wrapped prompt."""
+            in the history already (stored when they arrived), so only the engine gets the wrapped prompt.
+            `now`: the owner pressed Send now, so the cut turn's work is weighed against the message first."""
+            _gen = steer_inbox.INBOX.stop_gen(conv_sid)
             for _ in range(1200):
+                if steer_inbox.INBOX.stop_gen(conv_sid) != _gen:
+                    return   # Stop was pressed while this waited: nothing sent earlier starts by itself
                 if not _CHAT_RUNTIME.get_job(conv_sid):
                     break
                 await asyncio.sleep(0.5)
@@ -18966,8 +18996,8 @@ async def websocket_endpoint(ws: WebSocket):
             turn_tag = f"chat:{conv_sid[:12]}:{uuid.uuid4().hex[:8]}"
             runtime_trace = _CONTEXT_RUNTIME.start_turn(conv_sid, brain, "dashboard")
             task = asyncio.create_task(run_turn(
-                conv_sid, steer_inbox.followup_prompt(texts), brain, turn_tag, runtime_trace, False,
-                user_text="\n\n".join(texts)))
+                conv_sid, (steer_inbox.triage_prompt if now else steer_inbox.followup_prompt)(texts), brain, turn_tag,
+                runtime_trace, False, user_text="\n\n".join(texts)))
             _CHAT_RUNTIME.register_job(
                 conv_sid, task, turn_tag,
                 runtime_task_id=runtime_trace.task_id if runtime_trace else "",
@@ -19059,6 +19089,8 @@ async def websocket_endpoint(ws: WebSocket):
                 continue
             if action == "stop":
                 _sid = payload.get("session_id") or ""
+                if _sid:
+                    steer_inbox.INBOX.stop(_sid)   # waiting messages do not run after a Stop (steer_inbox.stop)
                 _tag = _CHAT_RUNTIME.cancel_session(_sid)
                 if _tag:
                     cancel_all(_tag)     # giết subprocess engine của đúng lượt đó
@@ -19082,6 +19114,21 @@ async def websocket_endpoint(ws: WebSocket):
                     asyncio.create_task(_start_steer_turn(_sid, [_txt], _row.get("brain") or "brain", []))
                 await send_client({"type": "steer_ack", "session_id": _sid, "client_id": _cid,
                                    "steer_id": _id, "mode": _mode})
+                continue
+            if action == "steer_now":
+                # "Send now" on a message that waits: cut the running turn so the message is read at once. The turn's
+                # own close hands what waits to _start_steer_turn, which opens with triage_prompt (read it first).
+                _sid = str(payload.get("session_id") or "").strip()
+                _ok = bool(_sid and steer_inbox.INBOX.waiting(_sid))
+                if _ok:
+                    steer_inbox.INBOX.mark_now(_sid)
+                    _tag = _CHAT_RUNTIME.cancel_session(_sid)
+                    if _tag:
+                        cancel_all(_tag)
+                    else:
+                        steer_inbox.INBOX.pop_now(_sid)
+                        _ok = False
+                await send_client({"type": "steer_now_ack", "session_id": _sid, "ok": _ok})
                 continue
             if action == "wf_resume":
                 # Nút Duyệt ở cột phải trang Cộng sự: chạy tiếp lần đang chờ, kết quả về cùng phiên.

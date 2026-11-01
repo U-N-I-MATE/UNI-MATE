@@ -6,6 +6,14 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.429.3] - 2026-11-01
+### Thêm mới
+- **Nút "Gửi ngay" cho tin nhắn gửi thêm lúc UNI MATE đang làm:** bấm là dừng việc dở để UNI MATE đọc tin đó trước, đối chiếu với phần đã làm rồi mới làm tiếp hoặc hỏi lại bạn.
+- **Trang Cộng sự hiện cả quy trình đang tắt, có công tắc Bật/Tắt ngay trên dòng.** Quy trình tạo từ chat mặc định tắt nên trước đây không thấy để bật.
+
+### Sửa lỗi
+- **Bấm Dừng là dừng hẳn:** tin gửi thêm còn chờ không tự chạy sau đó, và quy trình đang chạy trong chat dừng theo chứ không chạy ngầm tiếp.
+
 ## [0.429.2] - 2026-11-01
 ### Sửa lỗi
 - **Khung chat giờ hiện tiến trình khi chạy quy trình:** từng bước, từng lệnh đang chạy hiện ngay trong chat, bấm dòng tóm tắt để xem hết. Trước đây chỉ có một dòng trạng thái.

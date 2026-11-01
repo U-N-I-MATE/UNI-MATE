@@ -6,6 +6,14 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.429.3] - 2026-11-01
+### Added
+- **A "Send now" button on a message sent while UNI MATE works:** it stops the work in progress so UNI MATE reads that message first, weighs it against what was done, then carries on or asks you.
+- **The Partners page lists switched-off workflows too, with an On/Off switch on the row.** Workflows created from chat start off, so before you could not find them to switch on.
+
+### Fixed
+- **Stop now stops for good:** messages still waiting do not run by themselves afterwards, and a workflow running in the chat stops with it instead of carrying on in the background.
+
 ## [0.429.2] - 2026-11-01
 ### Fixed
 - **The chat now shows progress while a workflow runs:** each step and command appears in the chat, and tapping the summary line lists them all. Before there was only one status line.

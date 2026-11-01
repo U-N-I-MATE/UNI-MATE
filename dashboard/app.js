@@ -59,6 +59,7 @@ function syncActiveUI() {
 }
 
 function stopCurrent() {
+  try { dungTinDangCho(); } catch (e) {}   // Stop: messages still waiting will not run by themselves
   try { ketThucTheoLoi(false); } catch (e) {}
   voice.stopSpeaking();
   const sid = savedSessionId;
@@ -1270,6 +1271,11 @@ function handleMessage(data) {
     // Một việc nền vừa báo xong = hàng đợi vừa đổi. Hỏi lại ngay thay vì đợi hết nhịp 6 giây,
     // để dải trạng thái không còn khoe một việc vừa kết thúc.
     try { if (window.UniMateBackground) window.UniMateBackground.refresh(); } catch (e) {}
+    return;
+  }
+  if (data.type === "steer_now_ack") {
+    // "Send now" was taken (the running turn is being cut) or came too late (the turn had already ended).
+    try { trangThaiBoSung(data); } catch (e) {}
     return;
   }
   if (data.type === "steer_ack" || data.type === "steer_read" || data.type === "steer_turn") {
@@ -2491,12 +2497,52 @@ function guiBoSung(msg, atts) {
   syncActiveUI();
   return true;
 }
+// "Send now" (Gửi ngay) on a message that waits for the running turn: the server cuts the turn and the message opens
+// the next one, weighed against the work left half done (steer_inbox.triage_prompt). One button per waiting message.
+const _guiNgayCho = new Set();   // status lines that still carry a Send now button
+function nutGuiNgay(el, sid) {
+  if (!el || !sid || el.querySelector(".steer-now")) return;
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "steer-now";
+  b.textContent = window.t("app.steer_now");
+  b.title = window.t("app.steer_now_title");
+  b.addEventListener("click", () => {
+    // No socket: leave the button as it is so the owner can press it again once the page reconnects.
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      b.disabled = true;
+      ws.send(JSON.stringify({ action: "steer_now", session_id: sid }));
+    }
+  });
+  el.dataset.sid = sid;
+  el.appendChild(document.createTextNode(" "));
+  el.appendChild(b);
+  _guiNgayCho.add(el);
+}
+function boNutGuiNgay(el) {
+  if (!el) return;
+  const b = el.querySelector(".steer-now");
+  if (b) b.remove();
+  _guiNgayCho.delete(el);
+}
+// Stop pressed: every message still waiting is dropped by the server (steer_inbox.stop), say so on its line.
+function dungTinDangCho() {
+  Array.from(_guiNgayCho).forEach(el => { boNutGuiNgay(el); el.textContent = window.t("app.steer_stopped"); });
+}
 function trangThaiBoSung(data) {
-  const ghi = (el, key) => { if (el) el.textContent = window.t(key); };
+  const ghi = (el, key) => { if (el) { boNutGuiNgay(el); el.textContent = window.t(key); } };
+  if (data.type === "steer_now_ack") {
+    Array.from(_guiNgayCho).filter(el => el.dataset.sid === data.session_id).forEach(el => {
+      if (data.ok) ghi(el, "app.steer_now_done");
+      else boNutGuiNgay(el);   // the turn had just ended: the message already runs on its own
+    });
+    return;
+  }
   if (data.type === "steer_ack") {
     const el = _boSungEl[data.client_id];
     if (el && data.steer_id) _boSungEl["s" + data.steer_id] = el;
     ghi(el, data.mode === "live" ? "app.steer_live" : "app.steer_after");
+    if (data.steer_id) nutGuiNgay(el, data.session_id);
   } else {
     (data.ids || []).forEach(id => ghi(_boSungEl["s" + id], data.type === "steer_read" ? "app.steer_read" : "app.steer_turn"));
   }
@@ -3215,7 +3261,7 @@ const vbText = document.getElementById("vbText");
 const vbInit = document.getElementById("vbInit");
 // Người dùng bấm nút đóng trên khung báo thiếu cấu trúc thì NHỚ cho đúng bộ não đó và đúng danh sách
 // thiếu lúc ấy, không nhắc lại mỗi lần mở app hay đổi bộ não. Kho ghi chú có sẵn (Obsidian...)
-// thường cố ý không có các thư mục mẫu này (chủ dự án nối kho Bonao_AI 01/11/2026). Nhớ theo
+// thường cố ý không có các thư mục mẫu này (vd một kho ghi chú có sẵn được nối làm bộ não). Nhớ theo
 // bộ não chứ không theo danh sách thiếu: danh sách tự đổi khi UNI MATE tạo `memory/` lúc trò
 // chuyện, nhớ theo danh sách thì khung lại hiện như chưa từng tắt. Mục "thiếu thiết yếu" (như
 // sources) cũng được tắt: kho có sẵn vẫn chạy bình thường khi không có chúng.

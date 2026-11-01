@@ -26,6 +26,37 @@ def check(name, cond):
         fails.append(name)
 
 
+_b = si.SteerInbox()
+_b.open("st", "tag", bind=False)
+check("bind=False leaves the context unbound", si.current_sid() == "")
+_b.put("st", "dừng và báo")
+_g = _b.stop_gen("st")
+check("Stop returns what waited and moves the generation",
+      [i["text"] for i in _b.stop("st")] == ["dừng và báo"] and _b.stop_gen("st") == _g + 1)
+check("nothing is left to run after Stop", _b.close("st", "tag") == [])
+_src = open(os.path.join(str(SERVER), "main.py"), encoding="utf8").read()
+check("both workflow generators cancel the run when closed", _src.count("await asyncio.wait({task}, timeout=15)") == 2)
+check("a waiting follow-up turn checks Stop", "stop_gen(conv_sid) != _gen" in _src)
+# "Send now" (Gửi ngay): the server cuts the turn only when a message really waits, and the leftovers of that cut
+# turn open the next one with triage_prompt; a mark with nothing left ends with the turn.
+_n = si.SteerInbox()
+_n.open("sn", "tn")
+check("nothing waits before a message is sent", not _n.waiting("sn"))
+_n.put("sn", "đổi hướng")
+check("a held message waits", _n.waiting("sn"))
+_n.mark_now("sn")
+check("Send now leftovers keep the mark for the next turn", len(_n.close("sn", "tn")) == 1 and _n.pop_now("sn") and not _n.pop_now("sn"))
+_n.open("sn", "tn2"); _n.mark_now("sn")
+check("a mark with nothing left ends with the turn", _n.close("sn", "tn2") == [] and not _n.pop_now("sn"))
+check("triage prompt asks to read the message first", "Gửi ngay" in si.triage_prompt(["x"]) and "<<<\nx\n>>>" in si.triage_prompt(["x"]))
+check("websocket action steer_now cuts the turn only when a message waits",
+      'if action == "steer_now":' in _src and "steer_inbox.INBOX.waiting(_sid)" in _src
+      and '"type": "steer_now_ack"' in _src)
+check("the next turn after Send now opens with triage_prompt",
+      "steer_inbox.triage_prompt if now else steer_inbox.followup_prompt" in _src
+      and _src.count("now=steer_inbox.INBOX.pop_now(conv_sid)") == 2)
+check("Stop (button and HTTP) drops what waited", _src.count("steer_inbox.INBOX.stop(") == 2)
+
 box = si.SteerInbox()
 reads = []
 box.on_read = lambda sid, ids: reads.append((sid, ids))
@@ -158,8 +189,8 @@ check("websocket action steer stores the message and answers with steer_ack",
 check("every chat turn opens and closes the inbox", "_steer_tok = steer_inbox.INBOX.open(conv_sid, turn_tag)" in src
       and "_steer_left = steer_inbox.INBOX.close(conv_sid, turn_tag, _steer_tok)" in src)
 check("leftovers run as the next turn", "asyncio.create_task(_start_steer_turn(conv_sid, [i[\"text\"] for i in _steer_left]" in src)
-check("one-shot engines (Grok, Antigravity, Codex, the one-call path) say after",
-      src.count("steer_inbox.INBOX.set_live(conv_sid, False)") == 4)
+check("one-shot engines (Grok, Antigravity, Codex, the one-call path) and workflow runs say after",
+      src.count("steer_inbox.INBOX.set_live(conv_sid, False)") == 5)
 check("three API loops read pending messages",
       (SERVER / "engine.py").read_text(encoding="utf-8").count("steer_inbox.INBOX.take_note_current()") == 3)
 for f in ("steer_inbox.py",):

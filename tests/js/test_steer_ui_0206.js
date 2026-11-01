@@ -30,5 +30,15 @@ const keys = ["app.steer_send", "app.steer_sent", "app.steer_live", "app.steer_a
 check("strings in both languages", keys.every((k) => vi[k] && en[k]));
 check("no long dashes in the new strings", keys.every((k) => !/[–—]/.test(vi[k] + en[k])));
 
+const tt = app.slice(app.indexOf("function nutGuiNgay(el, sid) {"), app.indexOf("// 0.173.1: one automatic /goal round"));
+check("Send now button appears only for a message that really waits", /if \(data\.steer_id\) nutGuiNgay\(el, data\.session_id\)/.test(tt));
+check("Send now asks the server to cut the turn", /action: "steer_now", session_id: sid/.test(tt));
+check("Send now button leaves once the message is read or running", /boNutGuiNgay\(el\); el\.textContent/.test(tt));
+check("Send now ack is routed", /data\.type === "steer_now_ack"\) \{/.test(app));
+const nowKeys = ["app.steer_now", "app.steer_now_title", "app.steer_now_done"];
+check("Send now strings in both languages", nowKeys.every((k) => vi[k] && en[k] && !/[\u2013\u2014]/.test(vi[k] + en[k])));
+
+check("Stop clears Send now and marks waiting messages", /function stopCurrent\(\) \{[\s\S]{0,120}dungTinDangCho\(\)/.test(app) && !!(vi["app.steer_stopped"] && en["app.steer_stopped"]));
+
 if (fails) { console.log(`\n${fails} FAILED`); process.exit(1); }
 console.log("\nPASS");

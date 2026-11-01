@@ -49,12 +49,28 @@ def followup_prompt(texts: List[str]) -> str:
             "Giờ làm theo các tin này, theo đúng thứ tự:\n\n" + body)
 
 
+def triage_prompt(texts: List[str]) -> str:
+    """The turn after the owner pressed "Send now": the running turn was cut, read the message before anything else.
+    Model prompt: Vietnamese."""
+    body = "\n\n".join(f"<<<\n{t}\n>>>" for t in texts)
+    return ("[UNI MATE] Người dùng vừa bấm Gửi ngay nên việc đang làm dở đã bị cắt. Đây là lời của chính họ:\n" + body + "\n"
+            "Xử lý tin này trước, theo thứ tự:\n"
+            "1. Xác định tin nói gì: sửa hướng, bổ sung, câu hỏi hay việc mới độc lập.\n"
+            "2. Đối chiếu với việc đang dở: có phải đổi cách làm không, phần đã làm có phải bỏ hoặc sửa không.\n"
+            "3. Có chỗ chưa hiểu, hoặc cần họ quyết định mới làm tiếp đúng được: DỪNG tại đây, không gọi thêm tool. "
+            "Nói ngắn mình hiểu tin thế nào, việc cũ đã tới đâu, rồi hỏi đúng điều cần xác nhận.\n"
+            "4. Đã rõ: nói một câu kết luận rồi làm theo hướng đó, tiếp từ chỗ dở chứ không làm lại từ đầu. "
+            "Kiểm tra phần có thể bị cắt giữa chừng (tệp ghi dở, lệnh chưa xong) trước khi làm tiếp.")
+
+
 class SteerInbox:
     def __init__(self, clock: Callable[[], float] = time.time):
         self._lock = threading.Lock()
         self._pending: Dict[str, List[dict]] = {}
         self._live: Dict[str, bool] = {}
         self._tags: Dict[str, str] = {}
+        self._stops: Dict[str, int] = {}
+        self._now: set = set()
         self._ids = itertools.count(1)
         self._clock = clock
         self.on_read: Optional[Callable[[str, List[int]], None]] = None
@@ -63,13 +79,14 @@ class SteerInbox:
         self._sinks: Dict[str, Callable[[List[str]], None]] = {}
 
     # -- one turn's lifetime --
-    def open(self, sid: str, tag: str = "") -> contextvars.Token:
-        """A turn of this chat starts: it can take input mid-way until an engine says otherwise (set_live)."""
+    def open(self, sid: str, tag: str = "", bind: bool = True) -> Optional[contextvars.Token]:
+        """A turn of this chat starts: it can take input mid-way until an engine says otherwise (set_live).
+        bind=False: nothing running in this context may read the messages (a workflow's steps are not this chat)."""
         with self._lock:
             self._live[sid] = True
             if tag:
                 self._tags[tag] = sid
-        return _CURRENT.set(sid)
+        return _CURRENT.set(sid) if bind else None
 
     def set_live(self, sid: str, live: bool) -> None:
         with self._lock:
@@ -84,6 +101,8 @@ class SteerInbox:
             if tag:
                 self._tags.pop(tag, None)
             left = self._pending.pop(sid, [])
+            if not left:
+                self._now.discard(sid)   # "Send now" with nothing left to hand on: the mark ends with this turn
         if token is not None:
             try:
                 _CURRENT.reset(token)
@@ -102,6 +121,30 @@ class SteerInbox:
         with self._lock:
             return self._pending.pop(sid, [])
 
+    def stop(self, sid: str) -> List[dict]:
+        """The owner pressed Stop: nothing sent earlier may start by itself afterwards. Returns what was waiting and
+        moves stop_gen, which a follow-up turn still waiting for this chat checks before it starts."""
+        with self._lock:
+            self._stops[sid] = self._stops.get(sid, 0) + 1
+            return self._pending.pop(sid, [])
+
+    def stop_gen(self, sid: str) -> int:
+        with self._lock:
+            return self._stops.get(sid, 0)
+
+    def mark_now(self, sid: str) -> None:
+        """The owner pressed "Send now": the turn about to be cut hands its leftovers on with triage_prompt."""
+        with self._lock:
+            self._now.add(sid)
+
+    def pop_now(self, sid: str) -> bool:
+        """Was the turn of `sid` cut by "Send now"? Forgets the mark (one turn only)."""
+        with self._lock:
+            if sid in self._now:
+                self._now.discard(sid)
+                return True
+            return False
+
     def requeue(self, sid: str, items: List[dict]) -> bool:
         """Put back messages an engine took but could not hand over (Codex refused a steer because its turn had just
         ended): ahead of anything newer, so the next turn runs them in order. False once the turn is over."""
@@ -118,6 +161,11 @@ class SteerInbox:
     def live(self, sid: str) -> bool:
         with self._lock:
             return bool(self._live.get(sid))
+
+    def waiting(self, sid: str) -> bool:
+        """At least one message waits for the running turn of `sid` (what "Send now" acts on)."""
+        with self._lock:
+            return bool(self._pending.get(sid))
 
     # -- the owner sends --
     def put(self, sid: str, text: str) -> Optional[dict]:
