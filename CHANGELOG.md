@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.429.4] - 2026-11-01
+### Cải thiện
+- **Kiểm thử tự động bớt báo đỏ oan:** một bộ kiểm vốn chạy vài giây mà hiếm hoi bị treo thì được chạy lại một lần, và log ghi rõ chỗ treo.
+
 ## [0.429.3] - 2026-11-01
 ### Thêm mới
 - **Nút "Gửi ngay" cho tin nhắn gửi thêm lúc UNI MATE đang làm:** bấm là dừng việc dở để UNI MATE đọc tin đó trước, đối chiếu với phần đã làm rồi mới làm tiếp hoặc hỏi lại bạn.

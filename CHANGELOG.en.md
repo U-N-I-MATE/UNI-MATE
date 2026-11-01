@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.429.4] - 2026-11-01
+### Improved
+- **Fewer false alarms from the automatic tests:** a test that normally takes seconds and hangs once in a while is run again once, and the log shows where it hung.
+
 ## [0.429.3] - 2026-11-01
 ### Added
 - **A "Send now" button on a message sent while UNI MATE works:** it stops the work in progress so UNI MATE reads that message first, weighs it against what was done, then carries on or asks you.

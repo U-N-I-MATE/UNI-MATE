@@ -253,8 +253,10 @@ def main() -> int:
     node = shutil.which("node")
     # Chốt trung tâm (review T3 J P2-2): MỌI test chạy qua đây đều không dựng được engine phán xử hay lượt học thật, kể cả
     # test không nạp tests/python/_paths.py. `agent_judge.Judge` từ chối mọi hàm hỏi model chưa đánh dấu là engine giả.
+    # PYTHONUNBUFFERED: a file that hangs is killed, and buffered stdout dies with it. Lượt main 1a409633 (01/11/2026) treo
+    # 30 phút ở test_webhook_spec_matrix mà log chỉ còn vài dòng stderr, không biết treo ở mục nào.
     env = dict(os.environ, PYTHONIOENCODING="utf-8", UNIMATE_NO_REAL_JUDGE_ENGINE="1", UNIMATE_NO_REAL_REVIEW_ENGINE="1",
-               UNIMATE_NO_REAL_TEAM_ENGINE="1")
+               UNIMATE_NO_REAL_TEAM_ENGINE="1", PYTHONUNBUFFERED="1")
 
     viec = []
     if not chi_js:
@@ -305,13 +307,13 @@ def main() -> int:
     for d in sao:
         cho_trong.put(d)
 
-    def chay_do_gio(cmd):
+    def chay_do_gio(cmd, han_giay=None):
         goc = cho_trong.get()
         try:
             cmd = [str(goc / Path(c).relative_to(ROOT)) if Path(c).is_relative_to(ROOT / "tests") else c
                    for c in cmd]
             t = time.perf_counter()
-            r = chay_mot(cmd, env, cwd=goc, han_giay=ts["timeout"])
+            r = chay_mot(cmd, env, cwd=goc, han_giay=han_giay or ts["timeout"])
             return r, time.perf_counter() - t
         finally:
             cho_trong.put(goc)
@@ -356,13 +358,22 @@ def main() -> int:
     if ts["jobs"] > 1:
         theo_ten = dict((n, c) for c, n in viec)
         chay_lai = [t for t, r in do_day_du if r.returncode != 124 and t not in CHAY_RIENG]
-        if len(chay_lai) > 10:
+        qua_nhieu = len(chay_lai) > 10
+        if qua_nhieu:
             ra(f"\n{len(chay_lai)} file đỏ khi chạy chung: quá nhiều để là nhiễu do chạy song song, không chạy lại.")
             chay_lai = []
-        for ten in chay_lai:
-            r, g = chay_do_gio(theo_ten[ten])
+        # Một file NHANH (số đo dưới 2 phút) mà quá giờ là treo hiếm gặp, không phải chậm: lượt main 1a409633 treo
+        # test_webhook_spec_matrix 1800 giây, các lượt khác cùng mã chạy 11-17 giây. Chạy lại một mình MỘT lần với hạn
+        # ngắn (20 lần số đo, ít nhất 2 phút) để một lần treo không làm đỏ cả lượt, mà treo thật thì vẫn đỏ, chỉ tốn
+        # thêm vài phút. File chậm quá giờ vẫn không chạy lại (lần treo 26/10).
+        giay_do = doc_thoi_gian() if not qua_nhieu and any(r.returncode == 124 for _, r in do_day_du) else {}
+        treo_nhanh = {t: max(120, int(giay_do[t] * 20)) for t, r in do_day_du
+                      if r.returncode == 124 and t in giay_do and giay_do[t] < 120}
+        for ten in chay_lai + list(treo_nhanh):
+            r, g = chay_do_gio(theo_ten[ten], treo_nhanh.get(ten))
             if r.returncode == 0:
-                ra(f"  chạy lại một mình: ok   {ten}  (đỏ khi chạy chung với file khác)")
+                ra(f"  chạy lại một mình: ok   {ten}  "
+                   + ("(treo một lần, chạy lại xong bình thường)" if ten in treo_nhanh else "(đỏ khi chạy chung với file khác)"))
                 cuu.append(ten)
             else:
                 ra(f"  chạy lại một mình: ĐỎ   {ten}")
