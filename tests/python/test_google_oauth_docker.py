@@ -74,7 +74,7 @@ check("docker-compose.yml chính không tự mở cổng 8000 (máy đang dùng 
 
 # ---- 3. lời nhắc khi bấm Kết nối ----
 class _Req:
-    def __init__(self, body, host="localhost:7777"):
+    def __init__(self, body, host="localhost:8688"):
         self._b = body
         self.url = type("U", (), {"scheme": "http", "netloc": host})()
         self.headers = {}

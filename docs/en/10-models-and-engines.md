@@ -49,7 +49,7 @@ In short: **capability lives in UNI MATE, not in the model.** The three CLI engi
 
 ## Where to find it in UNI MATE
 
-1. Open the UNI MATE dashboard (port `7777` by default).
+1. Open the UNI MATE dashboard (port `8688` by default).
 2. In the left sidebar, open the **Connections** group and click **Models**.
 3. The **Cloud Model** tab shows 2 blocks in order: **◆ Usage order** ("signed-in providers, the top card is MAIN") and **◆ Background model** ("loops · Kanban tasks · reminders · self-learning"). At the bottom is a **＋ Connect another provider (N)** button, which reveals the providers not yet connected. Since 0.406.0, when no provider is signed in yet (a first visit), this button moves to the **top** with the provider list already open. Each block has an (i) button next to its name for a short explanation.
 

@@ -47,7 +47,7 @@ check("a bell item carries the picker value of its brain", it.get("brain_ui") ==
 src = (ROOT / "server" / "main.py").read_text(encoding="utf-8")
 import json  # noqa: E402
 got = []
-with client.websocket_connect("/ws", headers={"host": "127.0.0.1:7777", "origin": "http://127.0.0.1:7777"}) as ws:
+with client.websocket_connect("/ws", headers={"host": "127.0.0.1:8688", "origin": "http://127.0.0.1:8688"}) as ws:
     ws.send_text(json.dumps({"message": "chào", "brain": "brain", "session_id": sid}))
     t0 = time.time()
     while time.time() - t0 < 20:

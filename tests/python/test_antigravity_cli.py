@@ -361,10 +361,10 @@ os.environ.pop("UNIMATE_AGY_MCP_CONFIG", None)
 os.environ.pop("UNIMATE_AGY_MCP_HOME", None)
 
 _brain = Path(tempfile.mkdtemp(prefix="unimate-agybrain-"))
-_hub = antigravity_cli.hub_entry("http://127.0.0.1:7777/hub/mcp",
+_hub = antigravity_cli.hub_entry("http://127.0.0.1:8688/hub/mcp",
                                  {"Authorization": "Bearer x", "X-UniMate-Vault": str(_brain)})
 
-check("CANARY: entry dùng khoá `serverUrl` của agy", _hub.get("serverUrl") == "http://127.0.0.1:7777/hub/mcp", _hub)
+check("CANARY: entry dùng khoá `serverUrl` của agy", _hub.get("serverUrl") == "http://127.0.0.1:8688/hub/mcp", _hub)
 check("CANARY: KHÔNG còn `httpUrl` (khoá của Gemini CLI - thủ phạm cũ)", "httpUrl" not in _hub, _hub)
 check("giữ header hub", (_hub.get("headers") or {}).get("Authorization") == "Bearer x", _hub)
 # Chỗ này KHÔNG đo được (máy dựng bản này bị chặn mạng, không tải nổi `agy`), nên phải có
@@ -410,7 +410,7 @@ check("trang_thai_mcp() thấy hub đã đấu", antigravity_cli.trang_thai_mcp(
 # CANARY: soi trạng thái phải nhận CẢ HAI tên khoá, không thì đặt UNIMATE_AGY_MCP_KEY=url
 # xong thẻ Models báo "chưa đấu" cho một cấu hình hoàn toàn đúng.
 os.environ["UNIMATE_AGY_MCP_KEY"] = "url"
-antigravity_cli.ghi_mcp_settings(_brain, antigravity_cli.hub_entry("http://127.0.0.1:7777/hub/mcp"))
+antigravity_cli.ghi_mcp_settings(_brain, antigravity_cli.hub_entry("http://127.0.0.1:8688/hub/mcp"))
 check("CANARY: entry chỉ có khoá `url` vẫn được tính là đã đấu",
       antigravity_cli.trang_thai_mcp(_brain).get("ok") is True,
       antigravity_cli.trang_thai_mcp(_brain))

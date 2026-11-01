@@ -381,7 +381,7 @@ giữ phần đã đối chiếu đúng với code ngày 01/10/2026. Code trỏ 
 - `test_voice_chunker.js`, `test_voice_v3_mot_luong.js`, `test_voice_v2_day_noi.js`: cắt cụm và dây nối.
 - `test_ui_actions.js`: ba danh sách trang và hai danh sách nhóm phải khớp. `test_ui_bridge.py`, `test_desktop_apps_plugin.py`, `test_channel_ui_prompt.py`, `test_ui_context.js`: điều khiển giao diện và khối ngữ cảnh.
 - `test_tts_stream.py`: Edge stream, lỗi ngay thành 502. `test_voice_privacy.py`: query `/tts` không vào log.
-- `test_luu_cai_dat_giong.py`: lưu rồi đọc lại cài đặt giọng (bẫy: phải dùng `base_url=http://127.0.0.1:7777`, không thì 403).
+- `test_luu_cai_dat_giong.py`: lưu rồi đọc lại cài đặt giọng (bẫy: phải dùng `base_url=http://127.0.0.1:8688`, không thì 403).
 - `test_stt_ao_giac.py`, `test_stt_route.py`, `test_voice_ear_select.py`, `test_voice_ear_upload.js`: tai nghe lại.
 - `test_voice_brain.py`, `test_voice_transcript_integrity.py`, `test_voice_turn_integrity.py`, `test_voice_ten_unimate.py`, `test_nghe_sua.py`, `test_voice_tap_am.py`: marker, rào `UNIMATE_NGHE`, sửa tên UNI MATE.
 - `test_viec_nen_giong_khong_chet_lang.py`, `test_viec_nen_giong_dung_khung_chat.py`: việc nền giữ tham chiếu, báo về đúng khung chat.

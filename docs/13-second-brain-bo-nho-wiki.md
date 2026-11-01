@@ -39,7 +39,7 @@ Biến `BRAIN_PATH` chỉ còn là biến cũ từ thời UNI MATE có một bra
 
 ## Mở ở đâu trong UNI MATE
 
-Second Brain không nằm gọn trong một trang riêng mà rải ở vài chỗ trên dashboard (cổng mặc định `7777`). Rail điều hướng bên trái gom các trang thành nhóm, phải mở nhóm mới thấy mục con:
+Second Brain không nằm gọn trong một trang riêng mà rải ở vài chỗ trên dashboard (cổng mặc định `8688`). Rail điều hướng bên trái gom các trang thành nhóm, phải mở nhóm mới thấy mục con:
 
 1. **Thanh trên cùng, góc trái**: ô chọn brain cùng 3 nút nhỏ ➕ 🗑 📁. Đây là nơi tạo, chọn, xoá brain.
 2. **Khung chat** (màn **UNI MATE** hoặc trang **Trò chuyện**, nhóm **Trợ lý**): nơi thả file để INGEST và ra lệnh "nhớ điều này".

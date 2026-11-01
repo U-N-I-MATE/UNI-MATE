@@ -60,7 +60,7 @@ main._apply_mcp = lambda *a, **k: None
 def turn(text):
     sid = store.create_session(brain="brain", channel="web")
     got = []
-    with client.websocket_connect("/ws", headers={"host": "127.0.0.1:7777", "origin": "http://127.0.0.1:7777"}) as ws:
+    with client.websocket_connect("/ws", headers={"host": "127.0.0.1:8688", "origin": "http://127.0.0.1:8688"}) as ws:
         ws.send_text(json.dumps({"message": text, "brain": "brain", "session_id": sid}))
         t0 = time.time()
         while time.time() - t0 < 20:

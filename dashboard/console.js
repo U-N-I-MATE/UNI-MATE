@@ -2780,7 +2780,7 @@
         on ? (j.ly_do ? window.t("cs.ov_auto_broken") : window.t("cs.ov_auto_on")) : window.t("cs.ov_auto_off");
       const meta = document.getElementById("ovAutoMeta");
       meta.innerHTML = on
-        ? esc(window.t("cs.ov_auto_meta_on_a")) + " <code>localhost:7777</code> " + esc(window.t("cs.ov_auto_meta_on_b"))
+        ? esc(window.t("cs.ov_auto_meta_on_a")) + " <code>" + esc(typeof location !== "undefined" && location.port ? "localhost:" + location.port : (typeof location !== "undefined" && location.host) || "localhost") + "</code> " + esc(window.t("cs.ov_auto_meta_on_b"))
         : esc(window.t("cs.ov_auto_meta_off"));
       if (j.ly_do) meta.innerHTML += '<br><span class="dim">' + WARN_ICON + " " + esc(j.ly_do) + "</span>";
       const btn = document.getElementById("ovAutoToggle");
@@ -6983,8 +6983,18 @@
       const lech = basic ? null : VC.lechGioi(sel.value, readSel.value.startsWith("edge:") ? readSel.value.slice(5) : readSel.value);
       const box = $("vcMismatch");
       const doiSang = lech ? VC.giongCungGioi(liveVoices, lech.doc) : "";
-      box.hidden = !(lech && doiSang);
+      // A different gender can be a deliberate choice: "Keep as is" silences this exact male/female pairing on
+      // this browser, and the warning only returns for the opposite pairing.
+      const keepKey = lech ? `${lech.goi}|${lech.doc}` : "";
+      let keptKey = "";
+      try { keptKey = localStorage.getItem("unimate.vc_mismatch_kept") || ""; } catch (_) {}
+      box.hidden = !(lech && doiSang) || keptKey === keepKey;
       if (lech && doiSang) {
+        $("vcMismatchKeep").textContent = t("settings.vc_mismatch_keep");
+        $("vcMismatchKeep").onclick = () => {
+          try { localStorage.setItem("unimate.vc_mismatch_kept", keepKey); } catch (_) {}
+          box.hidden = true;
+        };
         $("vcMismatchTxt").textContent = t("settings.vc_mismatch", { call: tenGioi(lech.goi).toLowerCase(), read: tenGioi(lech.doc).toLowerCase() });
         const fix = $("vcMismatchFix");
         fix.textContent = t("settings.vc_mismatch_fix", { voice: nhanGiong(doiSang) });
@@ -7741,7 +7751,7 @@
       // trang Tổng quan lẫn trang Cài đặt, viết hai bản thì sớm muộn hai bản nói khác nhau.
       // Bản trước trang này bỏ qua hẳn cờ `stale`, nên cùng một máy hỏng mà hai trang nói khác nhau.
       document.getElementById("setAutoMeta").innerHTML = (on
-        ? esc(window.t("cs.st_auto_meta_on_a")) + " <code>localhost:7777</code> " + esc(window.t("cs.st_auto_meta_on_b"))
+        ? esc(window.t("cs.st_auto_meta_on_a")) + " <code>" + esc(typeof location !== "undefined" && location.port ? "localhost:" + location.port : (typeof location !== "undefined" && location.host) || "localhost") + "</code> " + esc(window.t("cs.st_auto_meta_on_b"))
         : esc(window.t("cs.st_auto_meta_off")))
         + (j.ly_do ? '<br><span class="dim">' + WARN_ICON + " " + esc(j.ly_do) + "</span>" : "");
       const button = document.getElementById("setAutoToggle");

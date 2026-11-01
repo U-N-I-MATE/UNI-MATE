@@ -33,14 +33,14 @@ Zum Aktualisieren: Klicke in Docker Manager auf **Redeploy** (Image `:latest`, `
 ```
 docker compose -f docker-compose.yml up -d
 ```
-Öffne http://localhost:7777. Für HTTPS über Caddy füge `-f docker-compose.https.yml` hinzu.
+Öffne http://localhost:8688. Für HTTPS über Caddy füge `-f docker-compose.https.yml` hinzu.
 
 ## Option 3 - Direkt ausführen (Windows, ohne Docker)
 
 1. Installiere Python 3.12 + Node 22.
 2. Führe im Projektordner einmal `setup.bat` aus: Es legt .venv an, installiert die Abhängigkeiten und installiert für dich die beiden CLI-Engines (Claude Code, Codex).
 3. `start-unimate.bat` startet UNI MATE im Hintergrund (`stop-unimate.bat` beendet es).
-4. Öffne http://localhost:7777.
+4. Öffne http://localhost:8688.
 
 ## Sobald es läuft
 

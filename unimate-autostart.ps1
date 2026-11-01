@@ -6,7 +6,7 @@
 # khong can quyen admin), tro vao `wscript start-unimate.vbs /open`: dang nhap may la server
 # tu chay NEN roi tu mo dashboard trong cua so rieng. install.ps1 goi file nay mac dinh.
 # Truoc 0.306.0 file nay dat shortcut trong thu muc Startup, con dashboard ghi Run key: hai
-# muc cung bat thi luc dang nhap hai ban UNI MATE gianh nhau cong 7777. Gio chi con Run key,
+# muc cung bat thi luc dang nhap hai ban UNI MATE gianh nhau cong 8688. Gio chi con Run key,
 # shortcut cu bi xoa khi install/uninstall.
 # ============================================================
 param([string]$Action = "status")

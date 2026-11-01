@@ -27,7 +27,7 @@ There are **two** chat surfaces sharing one conversation, so switching between t
 
 ### The main "UNI MATE" screen
 
-Left navigation rail, group **Assistant** → item **UNI MATE**. This is also the default screen when you open the dashboard (port 7777 by default), so it is already open when the page loads.
+Left navigation rail, group **Assistant** → item **UNI MATE**. This is also the default screen when you open the dashboard (port 8688 by default), so it is already open when the page loads.
 
 | Area | Position | Contents |
 |---|---|---|

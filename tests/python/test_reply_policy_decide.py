@@ -86,14 +86,14 @@ class Judge:
 
 
 async def docs_yes(text):
-    return {"co": True, "khoi": "Đoạn tài liệu khớp về cổng 7777."}
+    return {"co": True, "khoi": "Đoạn tài liệu khớp về cổng 8688."}
 
 
 async def docs_no(text):
     return {"co": False, "khoi": ""}
 
 
-Q = "UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?"
+Q = "UNI MATE báo lỗi cổng 8688 đang bị dùng thì làm sao ạ?"
 
 # ============================================================
 # 1. Quyết định
@@ -120,7 +120,7 @@ j = Judge("reply", 0.9)
 d = run(rp.decide(ev(Q, ts=NOW + 1), P, store=st, ask=j, doc_search=docs_yes, now=NOW + 1))
 check("câu hỏi có căn cứ + model nói reply 0.9 >= 0.6: trả lời", d.verdict == "reply" and d.score == 0.9 and d.threshold == 0.60, d)
 check("tốn đúng một lượt model", len(j.prompts) == 1 and j.purposes == ["judge"])
-check("prompt có tin cần quyết và tài liệu khớp", "cổng 7777" in j.prompts[0] and "Đoạn tài liệu khớp" in j.prompts[0])
+check("prompt có tin cần quyết và tài liệu khớp", "cổng 8688" in j.prompts[0] and "Đoạn tài liệu khớp" in j.prompts[0])
 check("đã mở cửa theo dõi cho lời tự nói", len(st.open_watches("bot_a", "g1", NOW + 2)) == 1)
 
 j = Judge("reply", 0.5)
@@ -224,12 +224,12 @@ check("nhãn đã ghi vào nhật ký", st.get_decision(d1.decision_id)["label"]
 class Learner(Judge):
     async def __call__(self, prompt, purpose=""):
         self.prompts.append(prompt)
-        seen = "-> reply" in prompt and "cổng 7777" in prompt.split("## Ca tương tự")[1].split("## Cuộc trò chuyện")[0]
+        seen = "-> reply" in prompt and "cổng 8688" in prompt.split("## Ca tương tự")[1].split("## Cuộc trò chuyện")[0]
         return json.dumps({"verdict": "reply" if seen else "silent", "score": 0.9 if seen else 0.3, "reason": "học"})
 
 
 jl = Learner()
-d2 = run(rp.decide(ev("UNI MATE báo lỗi cổng 7777 đang bị dùng thì phải làm sao nhỉ?", bot_id="bot_learn", sender="u3",
+d2 = run(rp.decide(ev("UNI MATE báo lỗi cổng 8688 đang bị dùng thì phải làm sao nhỉ?", bot_id="bot_learn", sender="u3",
                       name="Lan", ts=NOW + 300), A, store=st, ask=jl, doc_search=docs_yes, now=NOW + 300))
 check("lần sau tin giống: prompt CÓ ca vừa học", "-> reply" in jl.prompts[0] and "label:missed" in jl.prompts[0])
 check("lần sau tin giống: bot nói (đã học ngay, không chờ gom theo tuần)", d2.verdict == "reply", d2)
@@ -239,17 +239,17 @@ check("ngưỡng thấp hơn gốc sau khi học", abs(d2.threshold - 0.55) < 1e
 jl2 = Learner()
 run(rp.decide(ev("cho mình hỏi cách đổi bộ não khác với", bot_id="bot_learn", sender="u4", name="Mai", ts=NOW + 310),
               A, store=st, ask=jl2, doc_search=docs_yes, now=NOW + 310))
-check("tin khác chủ đề không kéo ca cũ vào prompt", "cổng 7777" not in jl2.prompts[0].split("## Ca tương tự")[1].split("## Cuộc trò chuyện")[0])
+check("tin khác chủ đề không kéo ca cũ vào prompt", "cổng 8688" not in jl2.prompts[0].split("## Ca tương tự")[1].split("## Cuộc trò chuyện")[0])
 
 # Ca dương giống làm tin không giống câu hỏi vẫn thành ứng viên.
-st.add_case("bot_pos", "g1", "cổng 7777 đang bị dùng bởi tiến trình khác", {"address_level": "none", "follow_up": False,
+st.add_case("bot_pos", "g1", "cổng 8688 đang bị dùng bởi tiến trình khác", {"address_level": "none", "follow_up": False,
             "question": False}, "reply", "chủ dạy", "owner", 1.0, now=NOW)
 B = mk_profile(bot_id="bot_pos")
 jp = Judge("reply", 0.9)
-dp = run(rp.decide(ev("cổng 7777 đang bị dùng bởi một tiến trình cũ", bot_id="bot_pos", ts=NOW + 320), B, store=st,
+dp = run(rp.decide(ev("cổng 8688 đang bị dùng bởi một tiến trình cũ", bot_id="bot_pos", ts=NOW + 320), B, store=st,
                    ask=jp, doc_search=docs_yes, now=NOW + 320))
 check("ca dương giống làm tin thường thành ứng viên", dp.candidate and len(jp.prompts) == 1 and dp.verdict == "reply", dp)
-dq = run(rp.decide(ev("cổng 7777 đang bị dùng bởi một tiến trình cũ", bot_id="bot_pos", ts=NOW + 321), B, store=st,
+dq = run(rp.decide(ev("cổng 8688 đang bị dùng bởi một tiến trình cũ", bot_id="bot_pos", ts=NOW + 321), B, store=st,
                    ask=Judge("reply", 0.9), doc_search=docs_no, now=NOW + 321))
 check("nhưng ca đã học KHÔNG được miễn luật căn cứ tài liệu", dq.silence_code == "no_grounding", dq)
 

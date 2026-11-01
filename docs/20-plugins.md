@@ -34,7 +34,7 @@ Nói ngắn: skill là **tri thức cách làm**, plugin là **mã chạy thật
 
 ## Mở ở đâu trong UNI MATE
 
-Mở dashboard (mặc định tại cổng 7777), nhìn thanh điều hướng bên trái, bấm nhóm **Năng lực** để mở ra, rồi bấm mục **Plugins**. Đầu trang hiện tiêu đề **Plugins** kèm dòng phụ "Tool/hook native cho mọi engine".
+Mở dashboard (mặc định tại cổng 8688), nhìn thanh điều hướng bên trái, bấm nhóm **Năng lực** để mở ra, rồi bấm mục **Plugins**. Đầu trang hiện tiêu đề **Plugins** kèm dòng phụ "Tool/hook native cho mọi engine".
 
 Ngay dưới tiêu đề là ba khối giới thiệu:
 

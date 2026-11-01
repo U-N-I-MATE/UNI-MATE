@@ -33,14 +33,14 @@
 ```
 docker compose -f docker-compose.yml up -d
 ```
-打开 http://localhost:7777。如需通过 Caddy 提供 HTTPS，再加上 `-f docker-compose.https.yml`。
+打开 http://localhost:8688。如需通过 Caddy 提供 HTTPS，再加上 `-f docker-compose.https.yml`。
 
 ## 方式三 - 直接运行（Windows，不使用 Docker）
 
 1. 安装 Python 3.12 + Node 22。
 2. 在项目文件夹中运行一次 `setup.bat`，它会创建 .venv、安装依赖，并为你安装两个 CLI 引擎（Claude Code、Codex）。
 3. 运行 `start-unimate.bat` 在后台启动（用 `stop-unimate.bat` 停止）。
-4. 打开 http://localhost:7777。
+4. 打开 http://localhost:8688。
 
 ## 运行起来之后
 

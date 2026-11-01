@@ -81,7 +81,7 @@ def chay_lui(*, reset_rc=0, head="old1234567890", pip_rc=0, lui_len=False, pip_m
         updater.git_dirty = lambda: False
         updater.pip_install = pip_gia
         sys.argv = ["updater.py", "--old-sha", "old1234567890abcdef",
-                    "--old-version", "0.55.28", "--target", "9.9.9", "--port", "7777"]
+                    "--old-version", "0.55.28", "--target", "9.9.9", "--port", "8688"]
         ma = updater.main()
     finally:
         (updater.run, updater.poll_health, updater.start_server, updater.stop_server,

@@ -116,7 +116,7 @@ RUN useradd -u 10001 -m -d /home/unimate unimate \
 
 # Writable state under /data; ALL second brains under /brains (mount riêng → git-backup được).
 ENV UNIMATE_HOST=0.0.0.0 \
-    UNIMATE_PORT=7777 \
+    UNIMATE_PORT=8688 \
     UNIMATE_STATE_DIR=/data/state \
     BRAIN_PATH=/data/brain \
     BRAINS_DIR=/brains \
@@ -152,11 +152,11 @@ USER unimate
 # Persist state (/data) + brains (/brains) + Claude auth + Codex auth (login ChatGPT).
 VOLUME ["/data", "/brains", "/home/unimate/.claude", "/home/unimate/.codex"]
 
-EXPOSE 7777
+EXPOSE 8688
 
 # Healthcheck hits the public /health endpoint with stdlib only (no curl).
 HEALTHCHECK --interval=30s --timeout=5s --start-period=25s --retries=3 \
-    CMD python -c "import urllib.request,os,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:'+os.getenv('UNIMATE_PORT','7777')+'/health',timeout=4).status==200 else 1)" || exit 1
+    CMD python -c "import urllib.request,os,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:'+os.getenv('UNIMATE_PORT','8688')+'/health',timeout=4).status==200 else 1)" || exit 1
 
 # tini reaps node subprocesses; entrypoint.sh links ~/.local, ~/.antigravity, ~/.config
 # into /data/home first so CLI người dùng tự cài (agy) + đăng nhập của nó SỐNG QUA UPDATE

@@ -6,7 +6,7 @@ set -u
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PIDF="${APP_DIR}/server/unimate.pid"
-PORT="${UNIMATE_PORT:-7777}"
+PORT="${UNIMATE_PORT:-8688}"
 
 if [ -f "${PIDF}" ]; then
   kill "$(cat "${PIDF}")" 2>/dev/null

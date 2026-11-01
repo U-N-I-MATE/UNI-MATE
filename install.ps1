@@ -4,7 +4,7 @@
 #   powershell -ExecutionPolicy Bypass -File install.ps1
 #
 # Cai het trong mot luot: Python deps (venv) + BON bo nao CLI chay bang goi thue bao
-# (claude, codex, agy, grok) + .env + giai phong port 7777, roi bat server.
+# (claude, codex, agy, grok) + .env + giai phong port 8688, roi bat server.
 #
 # Vi sao co file nay: truoc day nguoi dung Windows phai tu di bon duong khac nhau (setup.bat
 # chi cai claude + codex; agy va grok phai tu mo PowerShell go tung lenh cua nha cung cap),
@@ -26,7 +26,7 @@ param(
   [switch]$NoStart,      # cai xong khong tu bat server
   [switch]$NoAutostart,  # khong bat tu khoi dong cung Windows (mac dinh BAT tu 0.306.0)
   [switch]$SkipCli,      # bo qua buoc cai 4 CLI (chi cai Python deps)
-  [int]$Port = 0         # cong chay UNI MATE (ghi vao .env); bo trong = giu .env, mac dinh 7777
+  [int]$Port = 0         # cong chay UNI MATE (ghi vao .env); bo trong = giu .env, mac dinh 8688
 )
 
 $ErrorActionPreference = "Continue"
@@ -172,9 +172,9 @@ if ((-not (Test-Path ".env")) -and (Test-Path "env.example")) {
   Ok ".env da co"
 }
 
-# CONG CHAY: mac dinh 7777. Doi cong (vi du chay song song voi mot ban khac dang giu 7777) bang dong
+# CONG CHAY: mac dinh 8688. Doi cong (vi du chay song song voi mot ban khac dang giu 8688) bang dong
 # UNIMATE_PORT=... trong .env; bien moi truong UNIMATE_PORT neu co thi thang (giong server: load_dotenv
-# khong ghi de bien da co). Moi buoc ben duoi chi dung $Port, khong viet cung 7777.
+# khong ghi de bien da co). Moi buoc ben duoi chi dung $Port, khong viet cung 8688.
 function Get-UniPort($root) {
   if ($env:UNIMATE_PORT -match '^\d+$') { return [int]$env:UNIMATE_PORT }
   $f = Join-Path $root ".env"
@@ -182,7 +182,7 @@ function Get-UniPort($root) {
     $m = Select-String -Path $f -Pattern '^\s*UNIMATE_PORT\s*=\s*(\d+)' | Select-Object -First 1
     if ($m) { return [int]$m.Matches[0].Groups[1].Value }
   }
-  return 7777
+  return 8688
 }
 if ($Port -gt 0) {
   $envf = Join-Path $Root ".env"

@@ -27,10 +27,10 @@ If WScript.Arguments.Count > 0 Then
   If LCase(WScript.Arguments(0)) = "/open" Then MoDashboard
 End If
 
-' Cong trong .env (dong UNIMATE_PORT=...), khong co thi 7777 - giong server (load_dotenv).
+' Cong trong .env (dong UNIMATE_PORT=...), khong co thi 8688 - giong server (load_dotenv).
 Function PortTuEnv()
   Dim f, ts, dong, re, m
-  PortTuEnv = "7777"
+  PortTuEnv = "8688"
   f = root & "\.env"
   If Not fso.FileExists(f) Then Exit Function
   Set re = New RegExp

@@ -41,7 +41,7 @@ Cách sao chép nhanh bằng lệnh (chạy trong thư mục dự án):
 - Windows PowerShell: `Copy-Item env.example .env`
 - Git Bash / Linux / macOS: `cp env.example .env`
 
-Lưu ý về dấu `#`: dòng bắt đầu bằng `#` là dòng chú thích, UNI MATE bỏ qua. Muốn bật một biến đang bị chú thích, xoá dấu `#` ở đầu dòng đó. Ví dụ đổi từ `# UNIMATE_PORT=7777` thành `UNIMATE_PORT=8080`.
+Lưu ý về dấu `#`: dòng bắt đầu bằng `#` là dòng chú thích, UNI MATE bỏ qua. Muốn bật một biến đang bị chú thích, xoá dấu `#` ở đầu dòng đó. Ví dụ đổi từ `# UNIMATE_PORT=8688` thành `UNIMATE_PORT=8080`.
 
 ## Danh sách các biến
 
@@ -59,7 +59,7 @@ Gom theo chức năng. Cột "Mặc định" là giá trị dùng khi bạn đ�
 | Biến | Ý nghĩa | Mặc định | Khi nào đổi |
 |---|---|---|---|
 | `UNIMATE_HOST` | Địa chỉ server nghe. `127.0.0.1` = chỉ máy này truy cập được. `0.0.0.0` = nghe mọi nơi (public, ai có địa chỉ đều vào được) | `127.0.0.1` (Docker image đặt sẵn `0.0.0.0`) | Chỉ đổi sang `0.0.0.0` khi chạy trên VPS/server và muốn truy cập từ máy khác. Khi đó phải bật đăng nhập (xem nhóm 3). |
-| `UNIMATE_PORT` | Cổng nghe của dashboard | `7777` | Cổng `7777` bị chiếm hoặc muốn cổng khác. Đổi xong nhớ mở đúng cổng đó trên trình duyệt. |
+| `UNIMATE_PORT` | Cổng nghe của dashboard | `8688` | Cổng `8688` bị chiếm hoặc muốn cổng khác. Đổi xong nhớ mở đúng cổng đó trên trình duyệt. |
 
 Chi tiết quan trọng về `UNIMATE_HOST`: UNI MATE dùng cơ chế "an toàn mặc định". Nếu bạn để địa chỉ nghe KHÔNG phải loopback (tức khác `127.0.0.1`, `localhost`, `::1`), server tự coi là đang chạy public và **tự bật bắt buộc đăng nhập** để không ai vào được nếu chưa có tài khoản. Lý do: bộ não AI chạy với đầy quyền trên máy, để hở là nguy hiểm.
 
@@ -221,7 +221,7 @@ UNIMATE_ALLOWED_HOSTS=unimate.tencuaban.com
 
 **Sửa .env rồi mà không thấy đổi gì.** Bạn chưa khởi động lại UNI MATE. `.env` chỉ đọc lúc khởi động. Tắt server rồi mở lại.
 
-**Đổi cổng xong không vào được app.** Bạn đang mở trình duyệt ở cổng cũ. Ví dụ đổi `UNIMATE_PORT=8080` thì phải mở `http://localhost:8080`, không phải `7777` nữa.
+**Đổi cổng xong không vào được app.** Bạn đang mở trình duyệt ở cổng cũ. Ví dụ đổi `UNIMATE_PORT=8080` thì phải mở `http://localhost:8080`, không phải `8688` nữa.
 
 **Đăng nhập đúng mật khẩu nhưng cứ bị đá về trang login.** Nhiều khả năng bạn đã bật `UNIMATE_SECURE_COOKIE=1` nhưng thực tế đang truy cập qua HTTP (không phải HTTPS). Cookie Secure chỉ gửi qua HTTPS nên trình duyệt không giữ được phiên. Xoá dòng đó hoặc đặt về tắt, khởi động lại.
 

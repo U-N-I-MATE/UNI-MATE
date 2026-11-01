@@ -39,7 +39,7 @@ The starting brain is named **Brain Default** and lives at `brains/Brain Default
 
 ## Where to open it in UNI MATE
 
-The Second Brain does not live on one dedicated page but is spread across several places on the dashboard (default port `7777`). The left navigation rail groups pages, so you have to open a group to see its items:
+The Second Brain does not live on one dedicated page but is spread across several places on the dashboard (default port `8688`). The left navigation rail groups pages, so you have to open a group to see its items:
 
 1. **Top bar, left corner**: the brain selector plus 3 small buttons ➕ 🗑 📁. This is where you create, choose and delete brains.
 2. **The chat box** (the **UNI MATE** screen or the **Chat** page, **Assistant** group): where you drop files to INGEST and say "remember this".

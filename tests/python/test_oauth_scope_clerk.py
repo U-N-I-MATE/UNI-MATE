@@ -62,7 +62,7 @@ store[conn_id] = {"client_id": "dcr-client-1"}   # đã tự đăng ký từ tr�
 oauth_mcp._save(store)
 MD = {"authorization_endpoint": "https://clerk.example/oauth/authorize", "token_endpoint": "https://clerk.example/oauth/token",
       "scopes_supported": CLERK, "_www_scope": "", "_prm_scopes": []}
-REDIR = "http://localhost:7777/connect/oauth/callback"
+REDIR = "http://localhost:8688/connect/oauth/callback"
 
 
 def q_of(url):

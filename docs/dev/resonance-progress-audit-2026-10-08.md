@@ -11,7 +11,7 @@ Phần còn lại của tài liệu là ảnh chụp lúc rà (sáng 08/10), gi�
 
 ## Bổ sung sau báo cáo kiểm cục bộ
 
-Theo báo cáo Claude được chủ dự án chuyển lại: server thử localhost 0.86.0 đã đạt 13 kiểm không model và một chat thật (1 Opus, engine ok, turn completed). ChatGPT chưa chạy lại; cần gắn báo cáo/log và commit vào hồ sơ triển khai. Không suy ra server thật cổng 7777 hoặc VPS đã được kiểm. VPS vẫn chưa kiểm vì kết nối Hostinger ngắt.
+Theo báo cáo Claude được chủ dự án chuyển lại: server thử localhost 0.86.0 đã đạt 13 kiểm không model và một chat thật (1 Opus, engine ok, turn completed). ChatGPT chưa chạy lại; cần gắn báo cáo/log và commit vào hồ sơ triển khai. Không suy ra server thật cổng 8688 hoặc VPS đã được kiểm. VPS vẫn chưa kiểm vì kết nối Hostinger ngắt.
 
 A1 thu hẹp về phiên agent; giao từ chat thường tách sau A1. Xem review và chỉ dẫn Claude (`exports/reviews/Resonance-A1-review-and-Claude-instructions-2026-10-08.md`, ngoài git, chỉ có trên máy chủ dự án).
 

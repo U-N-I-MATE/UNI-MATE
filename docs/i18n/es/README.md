@@ -59,13 +59,13 @@ Ejecútalo en tu portátil o en un VPS pequeño. Háblale con la voz. Conecta Cl
 | **Windows** | `git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate; powershell -ExecutionPolicy Bypass -File install.ps1` |
 | **Docker** | `curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml && docker compose up -d` |
 
-Después abre **http://localhost:7777**. El instalador configura Python, los cuatro cerebros CLI de suscripción (`claude`, `codex`, `agy`, `grok`) y un `.env`, y luego arranca el servidor. Inicias sesión en cada cerebro **desde la página Models del panel**, sin tener que escribir más comandos.
+Después abre **http://localhost:8688**. El instalador configura Python, los cuatro cerebros CLI de suscripción (`claude`, `codex`, `agy`, `grok`) y un `.env`, y luego arranca el servidor. Inicias sesión en cada cerebro **desde la página Models del panel**, sin tener que escribir más comandos.
 
 > [!NOTE]
 > ¿Instalaste otra CLI **después** de que UNI MATE ya estuviera en marcha? **Reinicia UNI MATE.** Un proceso en ejecución conserva el PATH con el que arrancó, así que no puede ver una CLI instalada más tarde.
 
 <p align="center">
-<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="Terminal animada: el instalador de una línea prepara Python, los cuatro cerebros CLI por suscripción y un .env, y luego avisa que UNI MATE está funcionando en http://localhost:7777">
+<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="Terminal animada: el instalador de una línea prepara Python, los cuatro cerebros CLI por suscripción y un .env, y luego avisa que UNI MATE está funcionando en http://localhost:8688">
 </p>
 
 ---
@@ -287,7 +287,7 @@ docker compose run --rm unimate claude auth login --claudeai   # sign in to Clau
 docker compose up -d                                          # pull the image and run
 ```
 
-Abre `http://<vps-ip>:7777` y define enseguida el usuario y la contraseña de administrador (al menos 8 caracteres), o predefine `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` en el entorno. Después activa la 2FA.
+Abre `http://<vps-ip>:8688` y define enseguida el usuario y la contraseña de administrador (al menos 8 caracteres), o predefine `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` en el entorno. Después activa la 2FA.
 
 Acceso remoto sin dominio: `docker compose --profile tunnel up -d`, y luego `docker compose logs tunnel | grep trycloudflare` muestra un enlace HTTPS.
 
@@ -315,13 +315,13 @@ git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-`install.ps1` lo hace todo de una pasada: Python, venv y bibliotecas, los cuatro cerebros CLI de suscripción (`claude`, `codex`, `agy`, `grok`), el `.env`, libera el puerto 7777 y arranca el servidor. Termina con una tabla que indica qué cerebros están listos. Sin `winget`, instala primero a mano Python 3.12 (marca "Add python.exe to PATH") y Node.js LTS, y vuelve a ejecutarlo.
+`install.ps1` lo hace todo de una pasada: Python, venv y bibliotecas, los cuatro cerebros CLI de suscripción (`claude`, `codex`, `agy`, `grok`), el `.env`, libera el puerto 8688 y arranca el servidor. Termina con una tabla que indica qué cerebros están listos. Sin `winget`, instala primero a mano Python 3.12 (marca "Add python.exe to PATH") y Node.js LTS, y vuelve a ejecutarlo.
 
 ```
 Run with a visible window (live log):  setup.bat
 Run silently from then on:             start-unimate.vbs   (log at server\unimate.log)
 Stop:                                  stop-unimate.bat
-Dashboard:                             http://localhost:7777
+Dashboard:                             http://localhost:8688
 ```
 
 🪟 **Ábrelo como una app:** después de la primera ejecución, haz doble clic en **`UNI MATE.bat`**. El servidor arranca en segundo plano y el panel se abre en **su propia ventana**, con su propia entrada en la barra de tareas. Para arrancar al iniciar sesión: `unimate-autostart.bat install` (para quitarlo: `uninstall`).
@@ -389,7 +389,7 @@ Todas las líneas pueden quedarse vacías y UNI MATE sigue funcionando. Copia `e
 | Variable | Significado | Valor por defecto |
 |---|---|---|
 | `UNIMATE_HOST` | Dirección de escucha. `127.0.0.1` = solo esta máquina, `0.0.0.0` = pública | `127.0.0.1` |
-| `UNIMATE_PORT` | Puerto | `7777` |
+| `UNIMATE_PORT` | Puerto | `8688` |
 | `UNIMATE_REQUIRE_LOGIN` | `1`/`0` para forzar el inicio de sesión o desactivarlo (por defecto: activado cuando escucha de forma pública) | *(auto)* |
 | `UNIMATE_ADMIN_USER` / `UNIMATE_ADMIN_PASSWORD` | Crea el administrador durante el despliegue | - |
 | `UNIMATE_ALLOWED_HOSTS` | Hostnames adicionales en la lista de permitidos (protección contra CSRF y DNS rebinding) | localhost + tu dominio |
@@ -424,7 +424,7 @@ En la app: **Settings → Updates → Update now**, con una barra de progreso y 
 | Síntoma | Qué hacer |
 |---|---|
 | La página Models dice que una CLI no está instalada, pero sí lo está | **Reinicia UNI MATE**: el proceso en ejecución conserva el PATH del momento en que arrancó. |
-| El puerto 7777 está ocupado y la nueva versión no arranca | Detén primero el proceso antiguo (`stop-unimate.bat`, o mata el PID) y vuelve a arrancar. |
+| El puerto 8688 está ocupado y la nueva versión no arranca | Detén primero el proceso antiguo (`stop-unimate.bat`, o mata el PID) y vuelve a arrancar. |
 | Hostinger no puede descargar la imagen | Pon el paquete de GHCR en **Public** y espera a que termine la compilación de GitHub Actions. |
 | Un cerebro dice que no tiene la sesión iniciada | **Models** → la tarjeta de ese proveedor → iniciar sesión. |
 

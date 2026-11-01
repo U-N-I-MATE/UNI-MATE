@@ -14851,7 +14851,7 @@ async def do_update():
     try:
         py = _sys.executable
         updater = str(PROJECT_ROOT / "server" / "updater.py")
-        port = os.getenv("UNIMATE_PORT", "7777")
+        port = os.getenv("UNIMATE_PORT", "8688")
         args = [py, updater, "--old-sha", old_sha, "--old-version", cur,
                 "--target", latest or "", "--port", str(port),
                 "--server-pid", str(os.getpid())]
@@ -22004,9 +22004,9 @@ def _tg_chat_busy(chat) -> bool:
 
 def _unimate_port() -> int:
     try:
-        return int(os.getenv("UNIMATE_PORT", "7777"))
+        return int(os.getenv("UNIMATE_PORT", "8688"))
     except ValueError:
-        return 7777
+        return 8688
 
 
 def _tg_compact_bg(sess, prov, api_key, api_model):
@@ -22162,7 +22162,7 @@ def _tg_lich_su_kho(store, conv_sid, text):
     `session_id` của Claude Code / Codex / Grok / Antigravity. Restart server (bấm nút cập
     nhật là restart) xoá sạch chúng, nên lượt kế mở mạch TAY KHÔNG dù bản ghi vẫn còn nguyên
     trong SQLite. Người dùng báo đúng triệu chứng đó ngày 28/08/2026: mỗi lần cập nhật là
-    phải dạy lại từ cách xưng hô tới quy ước đặt tên file, trong khi localhost:7777 không sao
+    phải dạy lại từ cách xưng hô tới quy ước đặt tên file, trong khi localhost:8688 không sao
     (trình duyệt giữ `session_id` và dashboard đọc lại transcript mỗi lượt).
 
     Trả về `(danh sách tin, tóm tắt đã nén)`. Bỏ lượt user ĐANG hỏi - `_tg_answer` đã ghi nó
@@ -28520,7 +28520,7 @@ if __name__ == "__main__":
     # 127.0.0.1: chỉ máy này truy cập được (an toàn - tránh người khác trong mạng LAN
     # chạy Claude full quyền trên máy + vault của bạn). Đổi qua UNIMATE_HOST nếu cần.
     host = os.getenv("UNIMATE_HOST", "127.0.0.1")
-    port = int(os.getenv("UNIMATE_PORT", "7777"))
+    port = int(os.getenv("UNIMATE_PORT", "8688"))
     uvicorn.run("main:app", host=host, port=port, reload=False, ws_per_message_deflate=ws_compat.wanted())
 
 

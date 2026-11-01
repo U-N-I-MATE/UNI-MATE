@@ -20,7 +20,7 @@ For anything bigger than a small fix, open an issue first so the direction can b
 ```bash
 git clone https://github.com/<you>/UNI-MATE.git && cd UNI-MATE
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt pytest
-.venv/bin/python -m uvicorn main:app --app-dir server --port 7777   # http://localhost:7777
+.venv/bin/python -m uvicorn main:app --app-dir server --port 8688   # http://localhost:8688
 ```
 
 `install.sh` (Linux/macOS) and `install.ps1` (Windows) do the full install, including the CLI brains, if you want the complete app. To keep your experiments away from your real data, point `UNIMATE_STATE_DIR` and `BRAINS_DIR` at a scratch folder.

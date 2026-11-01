@@ -1,6 +1,6 @@
 # D0: kiểm bản 0.86.0 trên localhost (08/10/2026)
 
-**Mức bằng chứng: vận hành cục bộ.** Đây KHÔNG phải kiểm VPS, cũng không phải kiểm server đang chạy ở cổng 7777 của máy chủ dự án. VPS chưa kiểm vì kết nối Hostinger trong phiên làm việc bị ngắt.
+**Mức bằng chứng: vận hành cục bộ.** Đây KHÔNG phải kiểm VPS, cũng không phải kiểm server đang chạy ở cổng 8688 của máy chủ dự án. VPS chưa kiểm vì kết nối Hostinger trong phiên làm việc bị ngắt.
 
 | Mục | Giá trị |
 |---|---|

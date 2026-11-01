@@ -33,10 +33,10 @@ for cid in ("google-workspace", "google-tasks"):
 # ---- 2. host_kieu_local phân biệt đúng public/local ----
 import web_security  # noqa: E402
 
-for h, mong in [("localhost", True), ("127.0.0.1:7777", True), ("[::1]:7777", True),
-                ("192.168.1.5:7777", True), ("10.0.0.2", True), ("mymac.local", True),
+for h, mong in [("localhost", True), ("127.0.0.1:8688", True), ("[::1]:8688", True),
+                ("192.168.1.5:8688", True), ("10.0.0.2", True), ("mymac.local", True),
                 ("unimate.example.com", False), ("https://unimate.phamquangdai.com", False),
-                ("8.8.8.8:7777", False)]:
+                ("8.8.8.8:8688", False)]:
     check(f"host_kieu_local({h!r}) == {mong}", web_security.host_kieu_local(h) is mong)
 
 # ---- 3. /connect/add chặn đúng ca, khuôn can_force ----

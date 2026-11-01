@@ -23,13 +23,13 @@ A great many errors disappear after one of these, so try them before worrying:
 | Symptom | What to do |
 |---|---|
 | You edited code (or just updated) and **nothing changed** | If a `.py` file changed: **restart the server** (Windows: `stop-unimate.bat` then `start-unimate.vbs`; Docker: `docker compose restart`). If only the interface changed: press **Ctrl+Shift+R**. |
-| **Port 7777 is held** and the new build will not come up | Kill the old process FIRST, then start again. Windows: run `stop-unimate.bat`, or `taskkill /F /PID <pid>` with the PID holding the port. Docker: `docker compose down` then `docker compose up -d`. |
+| **Port 8688 is held** and the new build will not come up | Kill the old process FIRST, then start again. Windows: run `stop-unimate.bat`, or `taskkill /F /PID <pid>` with the PID holding the port. Docker: `docker compose down` then `docker compose up -d`. |
 | **Hostinger cannot pull the image** | Set the GHCR package to **Public** (GitHub, the repo, Packages, choose `UNI-MATE`, Package settings, Visibility = Public). Then wait for the GitHub Action build to finish (the repo's Actions tab) and Deploy again. |
 | Opening the app shows the **create-admin screen** on a public server | No admin exists yet, so whoever opens the link first can create it. Create the account now (password at least 8 characters), or next time preset the env vars `UNIMATE_ADMIN_USER` and `UNIMATE_ADMIN_PASSWORD` at deploy time and sign straight in. Once inside, turn on 2FA. |
 | **Claude reports it is not signed in** (UNI MATE cannot answer) | Sign the Claude "brain" in once. In the app: open **Models**, on the Claude Code card click **Sign in to Claude**, open the link, paste the code if asked. By command: `claude auth login --claudeai` (on Docker, run it in the App terminal). |
 | **The Files page errors at "Loading..."** | The server has no Files endpoint yet (a 404). **Restart the server** to load the new endpoint, then press **Ctrl+Shift+R**. |
 | Images in old conversations show a grey **Image expired** box | By design: `attachments/` and `inbox/` are a cache, and files over 30 days (or when the 300MB ceiling is passed) are cleared. See "Old images and files disappear" below for how to keep them or turn clearing off. |
-| Voice / microphone will not turn on | Browsers only grant microphone permission over **HTTPS** (or on localhost). Opening `http://<ip>:7777` is always blocked. Use an `https://` URL (Hostinger `*.hstgr.cloud`, Cloudflare Tunnel, or a custom domain with SSL). See [Branding and custom domains](15-branding-and-domains.md). |
+| Voice / microphone will not turn on | Browsers only grant microphone permission over **HTTPS** (or on localhost). Opening `http://<ip>:8688` is always blocked. Use an `https://` URL (Hostinger `*.hstgr.cloud`, Cloudflare Tunnel, or a custom domain with SSL). See [Branding and custom domains](15-branding-and-domains.md). |
 | You updated in the app but **the version did not change** | Wait a little longer; if it still reports the old build, check the update log: `update.log` in the state folder (`server/update.log` locally, `/data/state/update.log` on Docker), or `docker compose logs`. |
 | **`unimate` reports 401** or "invalid token" | The token is wrong or was revoked. Create a new one at **Account > API tokens** then run `unimate login <address>` again. See [The UNI MATE CLI](24-cli.md). |
 | **`unimate task add` / `unimate brain ls` report 403** | Your token is the **chat only** kind. These commands need a **full power** token, so create one at Account > API tokens. |
@@ -49,14 +49,14 @@ UNI MATE has two parts that run differently, so refreshing them differs too:
 
 If neither helps, check that you are on the right port and the right brain.
 
-## Port 7777 is held and the new build will not come up
+## Port 8688 is held and the new build will not come up
 
-UNI MATE's default port is **7777**. When an old process has not fully stopped and you start a new build, the new one errors because the port is busy. Work through it in order:
+UNI MATE's default port is **8688**. When an old process has not fully stopped and you start a new build, the new one errors because the port is busy. Work through it in order:
 
 1. Stop the old process first. Windows: run `stop-unimate.bat`. If it persists, find the PID holding the port then `taskkill /F /PID <pid>`. Docker: `docker compose down`.
 2. Start again. Windows: `start-unimate.vbs`. Docker: `docker compose up -d`.
 
-To move to another port (when 7777 collides with other software), set `UNIMATE_PORT` in the `.env` file; see [.env configuration](16-env-configuration.md).
+To move to another port (when 8688 collides with other software), set `UNIMATE_PORT` in the `.env` file; see [.env configuration](16-env-configuration.md).
 
 ## Hostinger cannot pull the image
 
@@ -210,7 +210,7 @@ How to set variables: [.env configuration](16-env-configuration.md). Note: the s
 
 ### The microphone will not turn on over remote access?
 
-Browsers require **HTTPS** before granting microphone permission (localhost aside). Opening the app on a bare IP like `http://<ip>:7777` always blocks the microphone with no manual override. The fix: use an `https://` URL through Hostinger (`*.hstgr.cloud`), Cloudflare Tunnel (which gives a `https://...trycloudflare.com` URL), or a custom domain with SSL. See [Branding and custom domains](15-branding-and-domains.md).
+Browsers require **HTTPS** before granting microphone permission (localhost aside). Opening the app on a bare IP like `http://<ip>:8688` always blocks the microphone with no manual override. The fix: use an `https://` URL through Hostinger (`*.hstgr.cloud`), Cloudflare Tunnel (which gives a `https://...trycloudflare.com` URL), or a custom domain with SSL. See [Branding and custom domains](15-branding-and-domains.md).
 
 ## Still stuck?
 

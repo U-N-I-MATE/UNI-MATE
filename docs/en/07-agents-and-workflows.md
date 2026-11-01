@@ -15,7 +15,7 @@ Related: choosing an agent model in [Models & engines](10-models-and-engines.md)
 
 ## Where to find it in UNI MATE
 
-Open **Capabilities > Partners** in the dashboard sidebar (port 7777 by default). The page has **Agents | Workflows** tabs. Skills and Plugins remain in Capabilities.
+Open **Capabilities > Partners** in the dashboard sidebar (port 8688 by default). The page has **Agents | Workflows** tabs. Skills and Plugins remain in Capabilities.
 
 - Left: choose a tab, search or filter by tag (workflows: by group), then select a partner. Recently used agents and workflows appear first.
 - Centre: chat with the selected partner.
@@ -305,7 +305,7 @@ Only the owner (or background work the owner scheduled) can give a Team a job. C
 - **Missing settings or history:** use the details button above chat to open the right column, especially on narrow screens.
 - **Missing workflow agent:** create that agent first, then select it in the step editor.
 - **Connection loss or run error:** read the chat message and run history before sending the request again.
-- **Page stuck loading:** check the server on port 7777 and see [Troubleshooting & FAQ](17-troubleshooting.md).
+- **Page stuck loading:** check the server on port 8688 and see [Troubleshooting & FAQ](17-troubleshooting.md).
 
 ## Related
 

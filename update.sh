@@ -71,7 +71,7 @@ else
     echo "==> Asked launchd to restart UNI MATE. Logs: server/unimate.log"
   else
     # Mac / Linux không systemd: kill tiến trình đang giữ cổng rồi chạy lại nền (như install.sh)
-    PORT="${UNIMATE_PORT:-7777}"
+    PORT="${UNIMATE_PORT:-8688}"
     PIDS="$(lsof -ti tcp:"$PORT" 2>/dev/null || true)"
     if [ -n "$PIDS" ]; then
       echo "==> Stopping the old process (PID: $PIDS)..."

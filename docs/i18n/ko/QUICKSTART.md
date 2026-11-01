@@ -33,14 +33,14 @@
 ```
 docker compose -f docker-compose.yml up -d
 ```
-http://localhost:7777 을 엽니다. Caddy를 통해 HTTPS를 쓰려면 `-f docker-compose.https.yml` 을 추가합니다.
+http://localhost:8688 을 엽니다. Caddy를 통해 HTTPS를 쓰려면 `-f docker-compose.https.yml` 을 추가합니다.
 
 ## 방법 3 - 직접 실행 (Windows, Docker 없이)
 
 1. Python 3.12 + Node 22를 설치합니다.
 2. 프로젝트 폴더에서 `setup.bat` 을 한 번 실행합니다. .venv를 만들고, 의존성을 설치하고, CLI 엔진 두 가지(Claude Code, Codex)도 대신 설치해 줍니다.
 3. `start-unimate.bat` 으로 백그라운드에서 실행합니다(멈추려면 `stop-unimate.bat`).
-4. http://localhost:7777 을 엽니다.
+4. http://localhost:8688 을 엽니다.
 
 ## 실행한 다음에는
 

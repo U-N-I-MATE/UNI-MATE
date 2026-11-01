@@ -59,13 +59,13 @@
 | **Windows** | `git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate; powershell -ExecutionPolicy Bypass -File install.ps1` |
 | **Docker** | `curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml && docker compose up -d` |
 
-그런 다음 **http://localhost:7777** 을 엽니다. 설치 프로그램이 Python, 구독형 CLI 브레인 네 가지(`claude`, `codex`, `agy`, `grok`), `.env` 를 준비한 뒤 서버를 시작합니다. 각 브레인 로그인은 **대시보드의 Models 페이지에서** 하므로 더 이상 명령을 입력할 필요가 없습니다.
+그런 다음 **http://localhost:8688** 을 엽니다. 설치 프로그램이 Python, 구독형 CLI 브레인 네 가지(`claude`, `codex`, `agy`, `grok`), `.env` 를 준비한 뒤 서버를 시작합니다. 각 브레인 로그인은 **대시보드의 Models 페이지에서** 하므로 더 이상 명령을 입력할 필요가 없습니다.
 
 > [!NOTE]
 > UNI MATE가 이미 실행 중인 **상태에서** CLI를 추가로 설치했나요? **UNI MATE를 재시작하세요.** 실행 중인 프로세스는 시작할 때의 PATH를 그대로 유지하므로 나중에 설치한 CLI를 인식하지 못합니다.
 
 <p align="center">
-<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="애니메이션 터미널: 한 줄짜리 설치 명령이 Python, 구독형 CLI 브레인 네 가지, .env 를 준비한 다음 UNI MATE가 http://localhost:7777 에서 실행 중이라고 알려 줍니다">
+<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="애니메이션 터미널: 한 줄짜리 설치 명령이 Python, 구독형 CLI 브레인 네 가지, .env 를 준비한 다음 UNI MATE가 http://localhost:8688 에서 실행 중이라고 알려 줍니다">
 </p>
 
 ---
@@ -287,7 +287,7 @@ docker compose run --rm unimate claude auth login --claudeai   # sign in to Clau
 docker compose up -d                                          # pull the image and run
 ```
 
-`http://<vps-ip>:7777` 을 열고 곧바로 관리자 사용자 이름과 비밀번호(8자 이상)를 설정하거나, 환경 변수에 `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` 를 미리 지정해 둡니다. 그다음 2FA를 켜세요.
+`http://<vps-ip>:8688` 을 열고 곧바로 관리자 사용자 이름과 비밀번호(8자 이상)를 설정하거나, 환경 변수에 `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` 를 미리 지정해 둡니다. 그다음 2FA를 켜세요.
 
 도메인 없이 원격 접속하려면: `docker compose --profile tunnel up -d` 를 실행한 뒤 `docker compose logs tunnel | grep trycloudflare` 를 실행하면 HTTPS 링크가 출력됩니다.
 
@@ -315,13 +315,13 @@ git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-`install.ps1` 이 한 번에 모두 처리합니다: Python, venv와 라이브러리, 구독형 CLI 브레인 네 가지(`claude`, `codex`, `agy`, `grok`), `.env`, 7777 포트 확보, 서버 시작까지. 마지막에는 어떤 브레인이 준비되었는지 표로 보여 줍니다. `winget` 이 없다면 Python 3.12("Add python.exe to PATH" 체크)와 Node.js LTS를 먼저 직접 설치한 뒤 다시 실행하세요.
+`install.ps1` 이 한 번에 모두 처리합니다: Python, venv와 라이브러리, 구독형 CLI 브레인 네 가지(`claude`, `codex`, `agy`, `grok`), `.env`, 8688 포트 확보, 서버 시작까지. 마지막에는 어떤 브레인이 준비되었는지 표로 보여 줍니다. `winget` 이 없다면 Python 3.12("Add python.exe to PATH" 체크)와 Node.js LTS를 먼저 직접 설치한 뒤 다시 실행하세요.
 
 ```
 Run with a visible window (live log):  setup.bat
 Run silently from then on:             start-unimate.vbs   (log at server\unimate.log)
 Stop:                                  stop-unimate.bat
-Dashboard:                             http://localhost:7777
+Dashboard:                             http://localhost:8688
 ```
 
 🪟 **앱처럼 열기:** 처음 실행한 뒤에는 **`UNI MATE.bat`** 을 더블클릭합니다. 서버가 백그라운드에서 시작되고 대시보드가 작업 표시줄 항목을 가진 **별도 창** 으로 열립니다. 로그인 시 자동 시작: `unimate-autostart.bat install`(제거: `uninstall`).
@@ -389,7 +389,7 @@ UNI MATE를 열면 설정 마법사가 브라우저 언어로 차근차근 안�
 | 변수 | 의미 | 기본값 |
 |---|---|---|
 | `UNIMATE_HOST` | 수신 주소. `127.0.0.1` = 이 컴퓨터만, `0.0.0.0` = 공개 | `127.0.0.1` |
-| `UNIMATE_PORT` | 포트 | `7777` |
+| `UNIMATE_PORT` | 포트 | `8688` |
 | `UNIMATE_REQUIRE_LOGIN` | `1`/`0` 으로 로그인 강제를 켜거나 끔(기본: 공개 주소에 바인딩하면 켜짐) | *(자동)* |
 | `UNIMATE_ADMIN_USER` / `UNIMATE_ADMIN_PASSWORD` | 배포 시 관리자 생성 | - |
 | `UNIMATE_ALLOWED_HOSTS` | 허용 목록에 추가할 호스트 이름(CSRF 및 DNS 리바인딩 방어) | localhost + 내 도메인 |
@@ -424,7 +424,7 @@ UNI MATE를 열면 설정 마법사가 브라우저 언어로 차근차근 안�
 | 증상 | 해결 방법 |
 |---|---|
 | CLI를 설치했는데 Models 페이지에 설치되지 않았다고 나옴 | **UNI MATE를 재시작하세요**: 실행 중인 프로세스는 시작할 때의 PATH를 유지합니다. |
-| 7777 포트가 사용 중이라 새 빌드가 시작되지 않음 | 먼저 이전 프로세스를 멈추고(`stop-unimate.bat`, 또는 PID 종료) 다시 시작하세요. |
+| 8688 포트가 사용 중이라 새 빌드가 시작되지 않음 | 먼저 이전 프로세스를 멈추고(`stop-unimate.bat`, 또는 PID 종료) 다시 시작하세요. |
 | Hostinger가 이미지를 가져오지 못함 | GHCR 패키지를 **Public** 으로 설정하고 GitHub Action 빌드가 끝날 때까지 기다리세요. |
 | 브레인이 로그인되지 않았다고 함 | **Models** → 해당 제공자 카드 → 로그인. |
 

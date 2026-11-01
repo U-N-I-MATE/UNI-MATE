@@ -94,7 +94,7 @@ How to choose: if you need **instructions** for working with existing tools, wri
 
 ## Where to find it in UNI MATE
 
-Open the dashboard (port 7777 by default), look at the left navigation, open the **Capabilities** group and click **Skills**. That group has 4 items: Agents, Skills, Workflows, Plugins.
+Open the dashboard (port 8688 by default), look at the left navigation, open the **Capabilities** group and click **Skills**. That group has 4 items: Agents, Skills, Workflows, Plugins.
 
 The page header reads **Skills** with a status line such as "3/5 enabled · source `skills/`". That tells you how many skills are on out of the total, and reminds you that the source is the current brain's `skills/` folder.
 

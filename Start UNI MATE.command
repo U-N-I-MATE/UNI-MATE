@@ -3,5 +3,5 @@
 cd "$(dirname "$0")" || exit 1
 bash "bin/unimate-start.sh"
 echo ""
-echo "UNI MATE is running at http://127.0.0.1:7777"
+echo "UNI MATE is running at http://127.0.0.1:8688"
 echo "This window can be closed - the server keeps running in the background."

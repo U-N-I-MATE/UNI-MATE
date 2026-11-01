@@ -25,7 +25,7 @@ Loops can be edited directly by opening the `.md` file in Obsidian or the [File 
 
 ## Where to find it in UNI MATE
 
-1. Open the UNI MATE dashboard (`http://localhost:7777` by default).
+1. Open the UNI MATE dashboard (`http://localhost:8688` by default).
 2. In the left navigation rail, open the **Work** group.
 3. Click **Recurring jobs**.
 

@@ -34,7 +34,7 @@ In short: a skill is **know-how**, a plugin is **code that really runs**, an MCP
 
 ## Where to open it in UNI MATE
 
-Open the dashboard (default port 7777), look at the left navigation rail, click the **Capabilities** group to open it, then click **Plugins**. The page header reads **Plugins** with the subtitle "Native tools/hooks for every engine".
+Open the dashboard (default port 8688), look at the left navigation rail, click the **Capabilities** group to open it, then click **Plugins**. The page header reads **Plugins** with the subtitle "Native tools/hooks for every engine".
 
 Right under the heading are three introductory blocks:
 

@@ -1,8 +1,8 @@
 # Dung UNI MATE - giet theo DUNG python cua venv nay (moi tien trinh cha/con), khong dua vao port/tieu de.
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
-# CONG CHAY: mac dinh 7777. Doi cong (vi du chay song song voi mot ban khac dang giu 7777) bang dong
+# CONG CHAY: mac dinh 8688. Doi cong (vi du chay song song voi mot ban khac dang giu 8688) bang dong
 # UNIMATE_PORT=... trong .env; bien moi truong UNIMATE_PORT neu co thi thang (giong server: load_dotenv
-# khong ghi de bien da co). Moi buoc ben duoi chi dung $Port, khong viet cung 7777.
+# khong ghi de bien da co). Moi buoc ben duoi chi dung $Port, khong viet cung 8688.
 function Get-UniPort($root) {
   if ($env:UNIMATE_PORT -match '^\d+$') { return [int]$env:UNIMATE_PORT }
   $f = Join-Path $root ".env"
@@ -10,7 +10,7 @@ function Get-UniPort($root) {
     $m = Select-String -Path $f -Pattern '^\s*UNIMATE_PORT\s*=\s*(\d+)' | Select-Object -First 1
     if ($m) { return [int]$m.Matches[0].Groups[1].Value }
   }
-  return 7777
+  return 8688
 }
 $Port = Get-UniPort $Root
 $killed = $false

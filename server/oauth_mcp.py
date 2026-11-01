@@ -112,7 +112,7 @@ def _meta_token_error(tk, redirect_uri=""):
     e = (tk or {}).get("error") or {}
     msg = e.get("message") or (json.dumps(tk, ensure_ascii=False)[:200] if tk
                                else localefmt.chu("không rõ", "unknown"))
-    rd = redirect_uri or "http://localhost:7777/connect/oauth/callback"
+    rd = redirect_uri or "http://localhost:8688/connect/oauth/callback"
     return localefmt.chu(
         f"Facebook từ chối: {msg}. Kiểm tra: (1) 'Valid OAuth Redirect URIs' trong app khớp CHÍNH XÁC "
         f"{rd} (dùng 'localhost' KHÔNG phải 127.0.0.1); (2) App đang ở Development Mode và bạn là "

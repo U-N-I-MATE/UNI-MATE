@@ -1,9 +1,9 @@
 """
 web_security.py - Chống CSRF + DNS-rebinding cho web API cục bộ của UNI MATE.
 
-Vì sao cần: dashboard nghe ở localhost:7777. Khi CHƯA đặt mật khẩu (chạy cá nhân trên máy),
+Vì sao cần: dashboard nghe ở localhost:8688. Khi CHƯA đặt mật khẩu (chạy cá nhân trên máy),
 một trang web độc bất kỳ trong trình duyệt của user có thể:
-  1. fetch/POST tới http://localhost:7777/... → server VẪN xử lý (CORS chỉ chặn ĐỌC kết quả,
+  1. fetch/POST tới http://localhost:8688/... → server VẪN xử lý (CORS chỉ chặn ĐỌC kết quả,
      không chặn request chạy) → hành động có side-effect vẫn xảy ra (CSRF-to-localhost).
   2. Trỏ một tên miền của kẻ tấn công về 127.0.0.1 (DNS-rebinding) để lách kiểm tra origin.
 
@@ -68,12 +68,12 @@ def external_base(url_scheme, host, xf_proto="", xf_host="") -> str:
 
 
 def host_only(v) -> str:
-    """Bóc hostname (bỏ scheme + path + port). Giữ IPv6 trong ngoặc: '[::1]:7777' → '::1'."""
+    """Bóc hostname (bỏ scheme + path + port). Giữ IPv6 trong ngoặc: '[::1]:8688' → '::1'."""
     v = (v or "").strip().lower()
     if "://" in v:
         v = v.split("://", 1)[1]
     v = v.split("/", 1)[0]
-    if v.startswith("["):            # [::1]:7777 hoặc [::1]
+    if v.startswith("["):            # [::1]:8688 hoặc [::1]
         return v[1:].split("]", 1)[0]
     if v.count(":") == 1:            # host:port
         return v.split(":", 1)[0]

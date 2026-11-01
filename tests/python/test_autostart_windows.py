@@ -2,7 +2,7 @@
 
     python tests/run.py autostart      (KHÔNG mạng, không đụng registry thật)
 
-Chủ repo gửi ảnh chụp trình duyệt sau khi mở máy (2026-08-09): `localhost:7777` trả
+Chủ repo gửi ảnh chụp trình duyệt sau khi mở máy (2026-08-09): `localhost:8688` trả
 ERR_CONNECTION_REFUSED, kèm "hình như chức năng mở UNI MATE cùng máy startup đang không hoạt động".
 
 Cả tính năng này nằm gọn trong một dòng registry `HKCU\\...\\Run` trỏ `wscript start-unimate.vbs`.

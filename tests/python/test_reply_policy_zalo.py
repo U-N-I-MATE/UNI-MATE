@@ -83,7 +83,7 @@ async def _engine(text, meta, progress, *, channel="", bot=None):
 
 BRAIN = Path(tempfile.mkdtemp(prefix="brain-rp-zalo-"))
 (BRAIN / "cai-dat.md").write_text(
-    "# Hướng dẫn cài đặt UNI MATE\n\n## Lỗi cổng 7777 đang được dùng\n\nNếu UNI MATE báo lỗi cổng 7777 đang được dùng, "
+    "# Hướng dẫn cài đặt UNI MATE\n\n## Lỗi cổng 8688 đang được dùng\n\nNếu UNI MATE báo lỗi cổng 8688 đang được dùng, "
     "hãy tắt tiến trình UNI MATE cũ rồi khởi động lại bằng file start-unimate.bat.\n\n## Đổi bộ não của UNI MATE\n\n"
     "Vào trang Models, chọn bộ não mới ở mục Model chính rồi bấm Lưu.\n", encoding="utf-8")
 chatbot_runtime.wire(answer=_engine, brain_root=lambda b: str(BRAIN),
@@ -91,7 +91,7 @@ chatbot_runtime.wire(answer=_engine, brain_root=lambda b: str(BRAIN),
 
 
 class Judge:
-    """Người phán xử giả. `mode`: silent | reply | learn (nói nếu prompt có ca 'label:missed' về cổng 7777)."""
+    """Người phán xử giả. `mode`: silent | reply | learn (nói nếu prompt có ca 'label:missed' về cổng 8688)."""
 
     def __init__(self):
         self.mode = "silent"
@@ -110,7 +110,7 @@ class Judge:
         self.prompts.append(prompt)
         ex = prompt.split("## Ca tương tự")[1].split("## Cuộc trò chuyện")[0] if "## Ca tương tự" in prompt else ""
         if self.mode == "learn":
-            say = "label:missed" in ex and "7777" in ex
+            say = "label:missed" in ex and "8688" in ex
             return json.dumps({"verdict": "reply" if say else "silent", "score": 0.9 if say else 0.3, "reason": "học"})
         if self.mode == "reply":
             return json.dumps({"verdict": "reply", "score": 0.9, "reason": "ok"})
@@ -199,7 +199,7 @@ async def chay():
 
     # Im nhầm rồi bị hỏi lại.
     J.mode = "silent"
-    Q = "UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?"
+    Q = "UNI MATE báo lỗi cổng 8688 đang bị dùng thì làm sao ạ?"
     KHO_TIN.append(msg(Q, "b3", giay_truoc=6, uid=UID_A))
     await doc()
     check("câu hỏi có tài liệu nhưng model chưa chắc: im", not GUI and len(J.prompts) == 1, (GUI, len(J.prompts)))
@@ -218,7 +218,7 @@ async def chay():
     # Lần sau CÙNG loại tin: bot nói ngay, không chờ đợt tổng hợp nào.
     J.mode = "learn"
     n_p = len(J.prompts)
-    KHO_TIN.append(msg("UNI MATE báo lỗi cổng 7777 đang bị dùng thì phải làm sao nhỉ?", "b5", giay_truoc=3, uid=UID_B, nguoi="Học viên B"))
+    KHO_TIN.append(msg("UNI MATE báo lỗi cổng 8688 đang bị dùng thì phải làm sao nhỉ?", "b5", giay_truoc=3, uid=UID_B, nguoi="Học viên B"))
     await doc()
     check("prompt lần này CÓ ca vừa học", len(J.prompts) == n_p + 1 and "label:missed" in J.prompts[-1])
     check("và bot nói (đã học tức thì)", len(GUI) == 1 and GUI[0]["threadId"] == NHOM, GUI)
@@ -261,10 +261,10 @@ async def chay():
     import conversations  # noqa: E402
     J.mode = "reply"
     off1 = st.get_offset(bid, NHOM)
-    KHO_TIN.append(msg("cho mình hỏi lỗi cổng 7777 lần nữa nhé mọi người", "t1", giay_truoc=3, uid="7770005", nguoi="Học viên E"))
+    KHO_TIN.append(msg("cho mình hỏi lỗi cổng 8688 lần nữa nhé mọi người", "t1", giay_truoc=3, uid="7770005", nguoi="Học viên E"))
     await doc()
     check("(chuẩn bị) bot tự nói một lần nữa", len(GUI) == 1, GUI)
-    d_tq = next(d for d in st.recent_decisions(bid, 50) if d["text"].startswith("cho mình hỏi lỗi cổng 7777 lần nữa"))
+    d_tq = next(d for d in st.recent_decisions(bid, 50) if d["text"].startswith("cho mình hỏi lỗi cổng 8688 lần nữa"))
     with conversations._conn() as cx:
         conv_id = cx.execute("SELECT id FROM conversations WHERE external_chat_id=?", (NHOM,)).fetchone()[0]
     conversations.dat_che_do(conv_id, "human")
@@ -286,7 +286,7 @@ async def chay():
     os.environ["UNIMATE_REPLY_POLICY_SHADOW"] = "1"      # công tắc của người vận hành, không phải của chủ bot
     J.mode = "silent"
     n_dec = len(st.recent_decisions(bid, 500))
-    KHO_TIN.append(msg("Bước cài đặt Node như nào mọi người, lỗi cổng 7777 nữa", "c1", giay_truoc=3, uid="7770003", nguoi="Học viên C"))
+    KHO_TIN.append(msg("Bước cài đặt Node như nào mọi người, lỗi cổng 8688 nữa", "c1", giay_truoc=3, uid="7770003", nguoi="Học viên C"))
     await doc(0.6)
     check("chạy thử: luật cũ vẫn quyết (câu hỏi có tài liệu nên bot nói)", len(GUI) == 1, GUI)
     sh = [d for d in st.recent_decisions(bid, 500) if d["mode"] == "shadow"]
@@ -326,10 +326,10 @@ async def chay():
         conv_id2 = cx.execute("SELECT id FROM conversations WHERE external_chat_id=?", (NHOM,)).fetchone()[0]
     conversations.dat_che_do(conv_id2, "human")
     n_p = len(J.prompts)
-    KHO_TIN.append(msg("cho mình hỏi lỗi cổng 7777 lần cuối nhé mọi người", "tq1", giay_truoc=2, uid="7770008", nguoi="Học viên H"))
+    KHO_TIN.append(msg("cho mình hỏi lỗi cổng 8688 lần cuối nhé mọi người", "tq1", giay_truoc=2, uid="7770008", nguoi="Học viên H"))
     await doc()
     check("đã Tiếp quản: bot im và KHÔNG tốn lượt phán xử", not GUI and len(J.prompts) == n_p, (GUI, len(J.prompts) - n_p))
-    d_tq2 = next(d for d in st.recent_decisions(bid, 50) if d["text"].startswith("cho mình hỏi lỗi cổng 7777 lần cuối"))
+    d_tq2 = next(d for d in st.recent_decisions(bid, 50) if d["text"].startswith("cho mình hỏi lỗi cổng 8688 lần cuối"))
     check("nhật ký ghi mã taken_over", d_tq2["silence_code"] == "taken_over", d_tq2)
     with conversations._conn() as cx:
         vao_hop_thu = cx.execute("SELECT COUNT(*) FROM messages WHERE text LIKE ?", ("%lần cuối nhé mọi người%",)).fetchone()[0]
@@ -346,7 +346,7 @@ async def chay():
 
     chatbot_runtime.PolicyHooks.prepare = _boom
     sach()
-    KHO_TIN.append(msg("@Uni Vũ cho hỏi lỗi cổng 7777 với", "z1", giay_truoc=2, uid="7770006", nguoi="Học viên F"))
+    KHO_TIN.append(msg("@Uni Vũ cho hỏi lỗi cổng 8688 với", "z1", giay_truoc=2, uid="7770006", nguoi="Học viên F"))
     await doc()
     chatbot_runtime.PolicyHooks.prepare = orig
     check("prepare ném lỗi: tin gọi tên VẪN được trả lời bằng luật cũ", len(GUI) == 1, GUI)

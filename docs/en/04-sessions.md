@@ -205,7 +205,7 @@ The conversation history lives in `conversations.db` on the machine running UNI 
 Most likely you are in a different brain. The list only shows the selected brain's conversations. Switch back and open the panel again.
 
 **Opening the panel shows "Failed to load the list."**
-The UNI MATE server may not be running or just restarted. Check that it is up on the default port (7777) and try again. See [Troubleshooting & FAQ](17-troubleshooting.md).
+The UNI MATE server may not be running or just restarted. Check that it is up on the default port (8688) and try again. See [Troubleshooting & FAQ](17-troubleshooting.md).
 
 **A conversation from last week is not at the bottom of the list.**
 The list loads 20 at a time. Scroll down and click **Show 20 more** a few times, or faster, type a keyword into the search box.

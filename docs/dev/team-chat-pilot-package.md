@@ -11,7 +11,7 @@ engine giả KHÔNG chứng minh chất lượng thảo luận, phán xử hay h
   đồng đội, tự rà soát) đã ghép ở nhánh T3 (cuối `054975b3`, review xác minh đạt).
 - Checkout sạch (`git status` rỗng), `.venv` của repo, state MỚI trong thư mục tạm (không dùng state thật của chủ), brain pilot
   riêng gồm 4 trợ lý có vai khác nhau: điều phối (Lan), số liệu (Minh), nội dung (Hoa), kiểm chứng (Tuấn).
-- Server sandbox trên cổng 7788 (không bao giờ 7777), `UNIMATE_STATE_DIR` trỏ state tạm. Tắt bằng cổng
+- Server sandbox trên cổng 7788 (không bao giờ 8688), `UNIMATE_STATE_DIR` trỏ state tạm. Tắt bằng cổng
   (`Get-NetTCPConnection -LocalPort 7788 | Stop-Process`), không theo dòng lệnh.
 - Engine và provider do chủ chọn trên trang Models của sandbox (UNI MATE không tự chọn model). Ghi lại: engine nhóm (model riêng
   của từng trợ lý hay model chính), engine việc nền (lô phán xử, lượt quét). Không API trả phí nếu chủ không nói rõ.

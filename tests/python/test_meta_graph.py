@@ -72,12 +72,12 @@ async def oauth_tests():
     oauth_mcp.mcp_store.connection_secrets = lambda cid: {"client_id": "APPID", "client_secret": "SECRET"}
     oauth_mcp.httpx = _FakeHttpx
     try:
-        res = await oauth_mcp.start_auth("cmeta", "http://127.0.0.1:7777/connect/oauth/callback")
+        res = await oauth_mcp.start_auth("cmeta", "http://127.0.0.1:8688/connect/oauth/callback")
         check("start_auth: ok + có url", res.get("ok") and res.get("url"))
         u = urllib.parse.urlparse(res["url"])
         q = urllib.parse.parse_qs(u.query)
         check("authorize: redirect ĐỔI 127.0.0.1 → localhost",
-              q["redirect_uri"][0] == "http://localhost:7777/connect/oauth/callback")
+              q["redirect_uri"][0] == "http://localhost:8688/connect/oauth/callback")
         check("authorize: KHÔNG có PKCE (code_challenge)", "code_challenge" not in q)
         check("authorize: scope dấu cách đúng", q["scope"][0] == "ads_read business_management")
         check("authorize: client_id từ secrets BYO", q["client_id"][0] == "APPID")
@@ -108,7 +108,7 @@ async def oauth_tests():
             "__aexit__": lambda s, *a: asyncio.sleep(0, False),
             "get": lambda s, url, params=None: asyncio.sleep(0, _Resp({"error": {"message": "redirect_uri isn't valid"}})),
         })})
-        r2 = await oauth_mcp.start_auth("cmeta2", "http://127.0.0.1:7777/connect/oauth/callback")
+        r2 = await oauth_mcp.start_auth("cmeta2", "http://127.0.0.1:8688/connect/oauth/callback")
         st2 = urllib.parse.parse_qs(urllib.parse.urlparse(r2["url"]).query)["state"][0]
         cb2 = await oauth_mcp.handle_callback(st2, "BADCODE")
         check("callback lỗi: surface message Meta + mẹo localhost",

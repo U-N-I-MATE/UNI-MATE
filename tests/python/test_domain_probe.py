@@ -42,7 +42,7 @@ def check(name, cond, detail=""):
         _fails.append(name)
 
 
-cl = TestClient(main.app, client=("127.0.0.1", 50000), base_url="http://localhost:7777")
+cl = TestClient(main.app, client=("127.0.0.1", 50000), base_url="http://localhost:8688")
 DOMAIN = "unimate.tisavn.com"
 c.update_settings({"domain": {"custom": DOMAIN}})
 

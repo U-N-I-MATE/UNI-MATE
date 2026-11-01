@@ -19,12 +19,12 @@ VPS Hostinger → **Docker Manager → Compose → URL** → dán link rồi **D
 ```
 https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml
 ```
-Hostinger pull image + chạy. Mở app bằng `http://<ip-vps>:7777` (IP xem ở hPanel → VPS) → ra
+Hostinger pull image + chạy. Mở app bằng `http://<ip-vps>:8688` (IP xem ở hPanel → VPS) → ra
 màn **tạo tài khoản admin**.
 
-> 🌐 **Muốn LINK RIÊNG có HTTPS (bỏ `:7777`, để mic/voice chạy) mà KHÔNG cần mua tên miền?** Dùng
+> 🌐 **Muốn LINK RIÊNG có HTTPS (bỏ `:8688`, để mic/voice chạy) mà KHÔNG cần mua tên miền?** Dùng
 > `docker-compose.hostinger.yml` + đặt `DOMAIN_NAME=unimate.<hostname-vps>.hstgr.cloud` - xem mục
-> **"Link mặc định + HTTPS trên Hostinger"** ở phần HTTPS bên dưới. Compose gốc này chỉ vào được bằng IP:7777.
+> **"Link mặc định + HTTPS trên Hostinger"** ở phần HTTPS bên dưới. Compose gốc này chỉ vào được bằng IP:8688.
 
 **3 việc làm 1 lần:**
 1. **Để image GHCR ở chế độ Public:** GitHub → repo `UNI-MATE` → **Packages** → `UNI-MATE`
@@ -55,7 +55,7 @@ curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-co
 docker compose run --rm unimate claude auth login --claudeai   # ĐĂNG NHẬP CLAUDE 1 LẦN (link + code)
 docker compose up -d                                          # pull image GHCR + chạy
 ```
-Mở `http://<ip-vps>:7777` (hoặc qua tunnel ở dưới) → ra màn tạo tài khoản admin.
+Mở `http://<ip-vps>:8688` (hoặc qua tunnel ở dưới) → ra màn tạo tài khoản admin.
 Muốn build từ source thay vì pull: `curl -O .../docker-compose.build.yml` rồi
 `docker compose -f docker-compose.build.yml up -d --build`.
 
@@ -73,7 +73,7 @@ Mọi ghi chú / vault / settings nằm trong Docker volume (`unimate-data`, `cl
 ### 🔒 HTTPS tự động
 
 > ⚠️ **Voice/mic BẮT BUỘC HTTPS.** Trình duyệt chỉ cho cấp quyền micro/camera trên `https://` (hoặc
-> localhost) - mở bằng `http://<ip>:7777` thì mic luôn bị chặn, KHÔNG bật tay được. **Không có chứng
+> localhost) - mở bằng `http://<ip>:8688` thì mic luôn bị chặn, KHÔNG bật tay được. **Không có chứng
 > chỉ HTTPS nào cấp cho IP trần** → muốn mic chạy phải dùng 1 trong các cách dưới (tên miền hoặc tunnel).
 >
 > **Nhanh nhất (không cần tên miền) - Cloudflare Tunnel:**
@@ -112,7 +112,7 @@ link riêng chạy HTTPS mà không cần mua tên miền. **Lưu ý (đã kiể
 > **Mở ra là có link VPS (từ 0.302.0):** trên VPS không có Traefik (Ubuntu 26 trắng), bỏ trống `DOMAIN_NAME` cũng
 > được. Gateway đọc tên VPS (`srvXXXX.hstgr.cloud`) và tự cấp HTTPS cho cả `unimate.srvXXXX.hstgr.cloud` lẫn chính
 > `srvXXXX.hstgr.cloud` (từ 0.304.0; tên nào trỏ về máy thì tên đó có chứng chỉ). **Cài đặt → Tên miền** cho biết
-> link đã chạy chưa, hay còn đang chờ chứng chỉ. Bấm **Open** ra `http://<ip>:7777`, trang tự chuyển sang link
+> link đã chạy chưa, hay còn đang chờ chứng chỉ. Bấm **Open** ra `http://<ip>:8688`, trang tự chuyển sang link
 > HTTPS đó ngay khi nó chạy và đúng là Uni này. Thêm `?stay=1` vào link IP nếu muốn ở lại. Ứng dụng cài từ Catalog
 > của Hostinger (vd `omniroute-xxxx.srv....hstgr.cloud`) được Hostinger báo sẵn tên VPS lúc cài; cài bằng
 > "Compose from URL" thì không, nên nút Open không tự ghi được link đó. Trên mẫu Ubuntu 24 có Traefik thì vẫn
@@ -128,8 +128,8 @@ link riêng chạy HTTPS mà không cần mua tên miền. **Lưu ý (đã kiể
 > **Traefik không lo việc cập nhật.** Traefik (hay Caddy) chỉ lo HTTPS cho tên miền. Cập nhật là việc của container
 > `unimate-watchtower` đi kèm, nên nút **⬆ Cập nhật ngay** trong app chạy như nhau trên Ubuntu 24 lẫn 26.
 
-> Thiếu `DOMAIN_NAME` thì vẫn deploy được (chạy tạm ở `:7777`, chưa có HTTPS), và từ 0.302.0 nút **Open** mở
-> `http://<ip-vps>:7777` chứ không ra `localhost` nữa (nút Open đi theo tên miền trong nhãn Traefik, bản cũ ghi
+> Thiếu `DOMAIN_NAME` thì vẫn deploy được (chạy tạm ở `:8688`, chưa có HTTPS), và từ 0.302.0 nút **Open** mở
+> `http://<ip-vps>:8688` chứ không ra `localhost` nữa (nút Open đi theo tên miền trong nhãn Traefik, bản cũ ghi
 > `localhost` ở đó). Không biết hostname VPS? Mở UNI MATE bằng IP → **Cài đặt → Tên miền**: UNI MATE tự dò và hiện sẵn
 > dòng `DOMAIN_NAME=unimate.srvXXXX.hstgr.cloud` kèm nút sao chép. Không thấy ô Environment? Bấm **Manage → sửa .yaml**,
 > đổi hai dòng nhãn thành `- traefik.enable=true` và
@@ -145,7 +145,7 @@ link riêng chạy HTTPS mà không cần mua tên miền. **Lưu ý (đã kiể
 Không cần đặt `DOMAIN` lúc chạy nữa - bật Caddy một lần rồi khai báo tên miền trong giao diện.
 1. Bật Caddy (On-Demand TLS): `docker compose -f docker-compose.yml -f docker-compose.https.yml up -d`
    *(cần Docker Compose v2.23.1+ - kiểm tra `docker compose version`)*
-2. Mở `http://<ip-vps>:7777` → **Cài đặt → Giọng nói, thương hiệu & truy cập → Tên miền & SSL** → nhập `unimate.tencuaban.com` → **Lưu & kiểm tra**.
+2. Mở `http://<ip-vps>:8688` → **Cài đặt → Giọng nói, thương hiệu & truy cập → Tên miền & SSL** → nhập `unimate.tencuaban.com` → **Lưu & kiểm tra**.
 3. Wizard hiện đúng bản ghi DNS cần tạo (A: `unimate.tencuaban.com → <ip-vps>`) và có nút sao chép.
    Trỏ DNS xong, đợi lan.
 4. Mở `https://unimate.tencuaban.com` → Caddy **tự xin + gia hạn** chứng chỉ ở lần mở đầu, cookie
@@ -172,7 +172,7 @@ riêng, không bản nào thấy brain hay tài khoản của bản nào.
 | `UNIMATE_HOST_PORT` | Một cổng máy chủ chỉ một container giữ được | `port is already allocated` |
 | `DOMAIN_NAME` | Mỗi link phải trỏ về đúng một bản | Hai bản giành nhau một link |
 
-Bỏ trống cả ba = `unimate` + cổng `7777`, tức **y hệt cách cài cũ** - đang chạy một bản thì không
+Bỏ trống cả ba = `unimate` + cổng `8688`, tức **y hệt cách cài cũ** - đang chạy một bản thì không
 phải sửa gì.
 
 ### Trên Hostinger Docker Manager
@@ -205,7 +205,7 @@ curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-co
 curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.multi.yml
 cat > .env <<'EOF'
 UNIMATE_NAME=unimate-shop
-UNIMATE_HOST_PORT=7777
+UNIMATE_HOST_PORT=8688
 UNIMATE_BIND=127.0.0.1
 DOMAIN_NAME=shop.tencuaban.com
 UNIMATE_ADMIN_USER=admin
@@ -227,7 +227,7 @@ phát hiện bản mới qua nhãn Docker**, không phải sửa gì ở proxy, 
 > nên phải tạo ngay sau khi chạy.
 
 > `UNIMATE_BIND=127.0.0.1` thu cổng về loopback vì đã có proxy lo HTTPS. Vẫn vào gỡ rối được bằng
-> `ssh -L 7777:localhost:7777 user@<ip-vps>` khi DNS chưa lan tới.
+> `ssh -L 8688:localhost:8688 user@<ip-vps>` khi DNS chưa lan tới.
 
 **Cập nhật** vẫn là `./update.sh` trong từng thư mục - script đọc `.env` của thư mục đang đứng
 nên chỉ đụng đúng bản đó. Bản đầu tiên đang chạy `docker-compose.https.yml` (Caddy nằm trong
@@ -263,7 +263,7 @@ Mở giao diện UNI MATE từ máy khác mà KHÔNG cần mở port / không c�
 2. Bật tunnel: `docker compose --profile tunnel up -d`
 3. Lấy URL: `docker compose logs tunnel | grep trycloudflare` → mở `https://<ngẫu-nhiên>.trycloudflare.com` trên trình duyệt bất kỳ, đăng nhập mật khẩu. Giờ xem & thao tác UNI MATE từ xa.
 
-**URL cố định (tên miền riêng, kiểu `*.hstgr.cloud`):** tạo *named tunnel* ở Cloudflare Zero Trust (miễn phí) → lấy token → `TUNNEL_TOKEN=...` vào `.env` → đổi dòng `command` của service `tunnel` sang bản `run --token` (comment sẵn trong `docker-compose.yml`), trỏ tới `http://unimate:7777`. Quick tunnel đổi URL mỗi lần restart; named tunnel cho URL ổn định.
+**URL cố định (tên miền riêng, kiểu `*.hstgr.cloud`):** tạo *named tunnel* ở Cloudflare Zero Trust (miễn phí) → lấy token → `TUNNEL_TOKEN=...` vào `.env` → đổi dòng `command` của service `tunnel` sang bản `run --token` (comment sẵn trong `docker-compose.yml`), trỏ tới `http://unimate:8688`. Quick tunnel đổi URL mỗi lần restart; named tunnel cho URL ổn định.
 
 ---
 
@@ -286,7 +286,7 @@ Quản lý dịch vụ: `journalctl -u unimate -f` · `sudo systemctl restart un
 ## Cách 3 - Windows (máy cá nhân)
 
 Double-click `setup.bat` (chạy hiện cửa sổ) hoặc `start-unimate.vbs` (chạy ngầm).
-Dừng bằng `stop-unimate.bat`. Mở http://localhost:7777
+Dừng bằng `stop-unimate.bat`. Mở http://localhost:8688
 
 ---
 
@@ -295,7 +295,7 @@ Dừng bằng `stop-unimate.bat`. Mở http://localhost:7777
 | Biến | Ý nghĩa | Mặc định |
 |---|---|---|
 | `UNIMATE_HOST` | Địa chỉ nghe. `127.0.0.1` = chỉ máy này; `0.0.0.0` = mọi nơi (Docker tự đặt) | `127.0.0.1` |
-| `UNIMATE_PORT` | Cổng | `7777` |
+| `UNIMATE_PORT` | Cổng | `8688` |
 | `UNIMATE_STATE_DIR` | Nơi UNI MATE ghi state (settings, sessions, loop config) | `server/` (Docker: `/data/state`) |
 | `OBSIDIAN_VAULT_PATH` | Vault Second Brain chính | `vault/` trong repo (Docker: `/data/vault`) |
 | `BRAIN_PATH` | Thư mục brain | `brain/` trong repo (Docker: `/data/brain`) |

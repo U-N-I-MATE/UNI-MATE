@@ -4209,7 +4209,7 @@ function alertMic(err) {
     // UNI MATE qua địa chỉ LAN hoặc tên miền chưa có HTTPS.
     if (!window.isSecureContext) {
       alert(window.t("app.mic_insecure") + "\n" + "\n"
-        + window.t("app.mic_insecure_fix"));
+        + window.t("app.mic_insecure_fix", { port: location.port || "8688" }));
     } else {
       alert(window.t("app.mic_denied") + "\n" + "\n"
         + window.t("app.mic_denied_fix"));

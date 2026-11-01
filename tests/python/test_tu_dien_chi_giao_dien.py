@@ -66,7 +66,7 @@ check("the server normalises an unknown code to its default (so the dashboard mu
 import main  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
-r = TestClient(main.app, base_url="http://127.0.0.1:7777").get("/settings")
+r = TestClient(main.app, base_url="http://127.0.0.1:8688").get("/settings")
 s = r.json()
 check(f"GET /settings answers ({r.status_code})", r.status_code == 200)
 check("lang_list stays the languages the server speaks", [x["ma"] for x in s.get("lang_list", [])] == list(L.LANGS),

@@ -110,7 +110,7 @@ def has_launchd_job():
 
     Bài học 14/08/2026: updater kill PID server -> launchd KeepAlive respawn ngay tức thì,
     trong khi updater cũng Popen một bản uvicorn của riêng nó -> hai tiến trình giành cổng
-    7777, unimate.log đầy "[Errno 48] address already in use". Nhãn job đổi được qua env
+    8688, unimate.log đầy "[Errno 48] address already in use". Nhãn job đổi được qua env
     UNIMATE_LAUNCHD_LABEL (mặc định com.unimate.os)."""
     if sys.platform != "darwin":
         return False
@@ -238,7 +238,7 @@ def start_server(mode, port=""):
         host = os.getenv("UNIMATE_HOST", "127.0.0.1")
         logf = open(us.STATE_DIR / "unimate.log", "a", encoding="utf-8")
         subprocess.Popen(   # noqa: UNIMATE_CONSOLE - server mới phải sống lâu hơn updater
-            [venv_python(), "-m", "uvicorn", "main:app", "--host", host, "--port", str(port or "7777")],
+            [venv_python(), "-m", "uvicorn", "main:app", "--host", host, "--port", str(port or "8688")],
             cwd=str(ROOT / "server"), stdout=logf, stderr=subprocess.STDOUT,
             start_new_session=True,
             env={**os.environ, "UNIMATE_STATE_DIR": os.getenv("UNIMATE_STATE_DIR", str(us.STATE_DIR))})
@@ -534,7 +534,7 @@ def main():
     ap.add_argument("--old-sha", default="")
     ap.add_argument("--old-version", default="")
     ap.add_argument("--target", default="")
-    ap.add_argument("--port", default=os.getenv("UNIMATE_PORT", "7777"))
+    ap.add_argument("--port", default=os.getenv("UNIMATE_PORT", "8688"))
     ap.add_argument("--server-pid", type=int, default=0,
                     help="PID server đang chạy (để chế độ nohup kill đúng tiến trình)")
     ap.add_argument("--systemd-worker", action="store_true",

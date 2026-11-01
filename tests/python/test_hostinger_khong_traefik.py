@@ -59,7 +59,7 @@ script = gw["entrypoint"][2].replace("$$", "$")
 SH = shutil.which("sh")
 
 
-def run(env_domain, busy=False, port="7777", host="vm", dns=None, name=None):
+def run(env_domain, busy=False, port="8688", host="vm", dns=None, name=None):
     d = Path(tempfile.mkdtemp(prefix="gw-"))
     (d / "bin").mkdir()
     (d / "config").mkdir()

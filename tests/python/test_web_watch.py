@@ -145,7 +145,7 @@ def test_loi_gian_dan_roi_tu_dung_va_bao_mot_lan():
 # ---------------------------------------------------------------- an toàn địa chỉ
 
 
-@pytest.mark.parametrize("url", ["http://127.0.0.1/", "http://localhost:7777/hub/mcp", "http://10.0.0.5/",
+@pytest.mark.parametrize("url", ["http://127.0.0.1/", "http://localhost:8688/hub/mcp", "http://10.0.0.5/",
                                  "http://169.254.169.254/latest/meta-data/", "ftp://example.com/",
                                  "https://example.com:8443/", "file:///etc/passwd"])
 def test_chan_mang_noi_bo_va_dia_chi_la(url):

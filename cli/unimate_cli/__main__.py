@@ -46,7 +46,7 @@ def _parser() -> argparse.ArgumentParser:
     sub.add_parser("profiles", help="các hồ sơ đã lưu")
 
     s = sub.add_parser("up", help="bật UNI MATE đã cài trên máy này rồi gắn vào")
-    s.add_argument("--port", type=int, default=7777)
+    s.add_argument("--port", type=int, default=8688)
     s.add_argument("--url", default="")
 
     s = sub.add_parser("task", help="việc Kanban")

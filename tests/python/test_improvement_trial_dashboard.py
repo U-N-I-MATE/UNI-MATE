@@ -89,7 +89,7 @@ class DashboardTests(unittest.TestCase):
         self.stack = contextlib.ExitStack()
         self.addCleanup(self.stack.close)
         self.stack.enter_context(patch.object(Path, "home", return_value=self.root))
-        self.stack.enter_context(patch.dict(os.environ, {"UNIMATE_PORT": "7777",
+        self.stack.enter_context(patch.dict(os.environ, {"UNIMATE_PORT": "8688",
             "UNIMATE_ENABLE_USER_PLUGINS": "", "UNIMATE_ENABLE_VAULT_PLUGINS": "", "UNIMATE_DISABLE_PACKS": "", "UNIMATE_FILES_ROOT": "brain"}))
         os.environ.pop("CLAUDE_CONFIG_DIR", None)
         for obj, name, value in ((H, "CLAUDE_MD_PATH", self.app / "CLAUDE.md"), (H.cfgmod, "STATE_DIR", self.state),
@@ -308,7 +308,7 @@ class DashboardTests(unittest.TestCase):
              patch.object(H.context_compiler, "_DONG_HO_NOW", lambda: local):
             expected = H.build_system_prompt(str(self.brain), lang=decision, project_id="project-1", session_id="session-1")
             expected += H.channel_context.build_channel_block("dashboard", {"session_id": "session-1"},
-                telegram_running=False, port=7777, brain_root=str(self.brain))
+                telegram_running=False, port=8688, brain_root=str(self.brain))
         value = self.capture()
         self.assertEqual(value["baseline_context"]["content"], expected)
         self.assertNotIn("PRIVATE INPUT", json.dumps(value))

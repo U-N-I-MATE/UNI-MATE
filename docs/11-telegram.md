@@ -18,7 +18,7 @@ Xem thêm engine và model ở [Models & engine](10-models-va-engine.md), công 
 
 ## Mở ở đâu trong UNI MATE
 
-1. Mở dashboard UNI MATE (mặc định `http://localhost:7777`).
+1. Mở dashboard UNI MATE (mặc định `http://localhost:8688`).
 2. Nhìn thanh điều hướng bên trái, mở nhóm **Kết nối** rồi bấm mục **Kênh**.
 3. Bạn sẽ thấy thẻ **Telegram** với các ô: bật/tắt bot, Bot token, Chat ID được phép dùng, và 2 nút **Lưu & bật** / **Gửi test**.
 

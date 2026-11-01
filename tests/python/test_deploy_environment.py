@@ -85,7 +85,7 @@ check(
     "UNIMATE_AUTO_UPDATE có mặc định TẮT → bỏ trống là hành vi cũ, không ai bị tự restart bất ngờ",
     "${UNIMATE_AUTO_UPDATE:-false}" in hostinger_src,
 )
-for knob, mac_dinh in (("UNIMATE_NAME", "unimate"), ("UNIMATE_HOST_PORT", "7777")):
+for knob, mac_dinh in (("UNIMATE_NAME", "unimate"), ("UNIMATE_HOST_PORT", "8688")):
     check(
         f"{knob} có mặc định ({mac_dinh}) → cài bản đầu bỏ trống vẫn chạy y như trước",
         f"${{{knob}:-{mac_dinh}}}" in hostinger_src,
@@ -114,7 +114,7 @@ check("compose build không lặp mặc định Docker image", not build.get("en
 dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
 for key in (
     "UNIMATE_HOST=0.0.0.0",
-    "UNIMATE_PORT=7777",
+    "UNIMATE_PORT=8688",
     "UNIMATE_STATE_DIR=/data/state",
     "BRAINS_DIR=/brains",
     "OBSIDIAN_VAULT_PATH=/data/vault",

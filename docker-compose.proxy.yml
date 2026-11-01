@@ -14,7 +14,7 @@
 #   docker compose -f docker-compose.proxy.yml -p unimate-proxy up -d
 #
 # SAU ĐÓ mỗi bản UNI MATE chạy ở THƯ MỤC RIÊNG với .env riêng (xem docker-compose.multi.yml):
-#   UNIMATE_NAME=unimate-shop     UNIMATE_HOST_PORT=7777   DOMAIN_NAME=shop.tencuaban.com
+#   UNIMATE_NAME=unimate-shop     UNIMATE_HOST_PORT=8688   DOMAIN_NAME=shop.tencuaban.com
 #   UNIMATE_NAME=unimate-ca-nhan  UNIMATE_HOST_PORT=7778   DOMAIN_NAME=canhan.tencuaban.com
 #
 # Proxy TỰ PHÁT HIỆN bản mới qua nhãn Docker - thêm hay bớt một bản KHÔNG phải sửa gì ở đây,

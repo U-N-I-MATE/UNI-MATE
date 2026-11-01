@@ -106,7 +106,7 @@ def sig_of(text, **kw):
     return rp.compute_signals(e, P, a, NOW), a
 
 
-for t in ("UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?", "cho mình hỏi cách đổi bộ não với",
+for t in ("UNI MATE báo lỗi cổng 8688 đang bị dùng thì làm sao ạ?", "cho mình hỏi cách đổi bộ não với",
           "khong vao duoc trang models, huong dan giup em", "có ai biết vì sao bị lỗi không"):
     check(f"question_score cao: {t[:40]}", rp._sig(sig_of(t)[0], "question_score") >= 0.5)
 for t in ("haha đúng rồi cả nhà ơi", "ok", "?", "mai mình đi ăn nhé", "https://youtu.be/abc123xyz"):

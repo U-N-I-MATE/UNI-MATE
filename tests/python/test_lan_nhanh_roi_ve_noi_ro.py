@@ -81,7 +81,7 @@ sau_exc = doan[doan.index("except Exception as e:"):] if m_exc else ""
 check("đường trót lọt XOÁ lỗi cũ trước khi đọc marker", "voice_brain.xoa_loi_lan_nhanh()" in sau_exc)
 
 # ---- 3. /voice/options trả last_error ----
-cl = TestClient(main.app, base_url="http://127.0.0.1:7777")
+cl = TestClient(main.app, base_url="http://127.0.0.1:8688")
 vb.xoa_loi_lan_nhanh()
 r = cl.get("/voice/options")
 check("GET /voice/options 200", r.status_code == 200)

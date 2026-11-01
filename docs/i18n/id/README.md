@@ -59,13 +59,13 @@ Jalankan di laptop atau VPS kecil. Ajak bicara dengan suara. Pasang Claude, Chat
 | **Windows** | `git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate; powershell -ExecutionPolicy Bypass -File install.ps1` |
 | **Docker** | `curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml && docker compose up -d` |
 
-Lalu buka **http://localhost:7777**. Installer akan menyiapkan Python, empat otak CLI berlangganan (`claude`, `codex`, `agy`, `grok`) dan sebuah `.env`, lalu menjalankan server. Anda login ke setiap otak **di halaman Models pada dashboard**, tanpa perlu mengetik perintah lagi.
+Lalu buka **http://localhost:8688**. Installer akan menyiapkan Python, empat otak CLI berlangganan (`claude`, `codex`, `agy`, `grok`) dan sebuah `.env`, lalu menjalankan server. Anda login ke setiap otak **di halaman Models pada dashboard**, tanpa perlu mengetik perintah lagi.
 
 > [!NOTE]
 > Menginstal CLI tambahan **setelah** UNI MATE sudah berjalan? **Restart UNI MATE.** Proses yang sedang berjalan tetap memakai PATH saat ia pertama dijalankan, sehingga tidak bisa melihat CLI yang diinstal belakangan.
 
 <p align="center">
-<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="Terminal animasi: installer satu baris menyiapkan Python, empat otak CLI berlangganan dan sebuah .env, lalu melaporkan bahwa UNI MATE berjalan di http://localhost:7777">
+<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="Terminal animasi: installer satu baris menyiapkan Python, empat otak CLI berlangganan dan sebuah .env, lalu melaporkan bahwa UNI MATE berjalan di http://localhost:8688">
 </p>
 
 ---
@@ -287,7 +287,7 @@ docker compose run --rm unimate claude auth login --claudeai   # sign in to Clau
 docker compose up -d                                          # pull the image and run
 ```
 
-Buka `http://<vps-ip>:7777` dan segera atur username dan password admin (minimal 8 karakter), atau isi lebih dulu `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` di environment. Lalu aktifkan 2FA.
+Buka `http://<vps-ip>:8688` dan segera atur username dan password admin (minimal 8 karakter), atau isi lebih dulu `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` di environment. Lalu aktifkan 2FA.
 
 Akses jarak jauh tanpa domain: `docker compose --profile tunnel up -d`, lalu `docker compose logs tunnel | grep trycloudflare` akan menampilkan link HTTPS.
 
@@ -315,13 +315,13 @@ git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-`install.ps1` mengerjakan semuanya sekaligus: Python, venv dan library, empat otak CLI berlangganan (`claude`, `codex`, `agy`, `grok`), `.env`, mengosongkan port 7777, dan menjalankan server. Di akhir ia menampilkan tabel otak mana saja yang sudah siap. Tanpa `winget`, instal dulu Python 3.12 (centang "Add python.exe to PATH") dan Node.js LTS secara manual, lalu jalankan lagi.
+`install.ps1` mengerjakan semuanya sekaligus: Python, venv dan library, empat otak CLI berlangganan (`claude`, `codex`, `agy`, `grok`), `.env`, mengosongkan port 8688, dan menjalankan server. Di akhir ia menampilkan tabel otak mana saja yang sudah siap. Tanpa `winget`, instal dulu Python 3.12 (centang "Add python.exe to PATH") dan Node.js LTS secara manual, lalu jalankan lagi.
 
 ```
 Run with a visible window (live log):  setup.bat
 Run silently from then on:             start-unimate.vbs   (log at server\unimate.log)
 Stop:                                  stop-unimate.bat
-Dashboard:                             http://localhost:7777
+Dashboard:                             http://localhost:8688
 ```
 
 🪟 **Buka seperti aplikasi:** setelah dijalankan pertama kali, klik dua kali **`UNI MATE.bat`**. Server berjalan di background dan dashboard terbuka di **jendelanya sendiri** dengan entri taskbar sendiri. Jalankan saat login: `unimate-autostart.bat install` (hapus: `uninstall`).
@@ -389,7 +389,7 @@ Setiap baris boleh dibiarkan kosong dan UNI MATE tetap berjalan. Salin `env.exam
 | Variabel | Arti | Default |
 |---|---|---|
 | `UNIMATE_HOST` | Alamat listen. `127.0.0.1` = hanya mesin ini, `0.0.0.0` = publik | `127.0.0.1` |
-| `UNIMATE_PORT` | Port | `7777` |
+| `UNIMATE_PORT` | Port | `8688` |
 | `UNIMATE_REQUIRE_LOGIN` | `1`/`0` untuk memaksa login aktif atau nonaktif (default: aktif saat di-bind secara publik) | *(otomatis)* |
 | `UNIMATE_ADMIN_USER` / `UNIMATE_ADMIN_PASSWORD` | Membuat admin saat deploy | - |
 | `UNIMATE_ALLOWED_HOSTS` | Hostname tambahan di allow-list (perlindungan CSRF dan DNS rebinding) | localhost + domain Anda |
@@ -424,7 +424,7 @@ Di aplikasi: **Settings → Updates → Update now**, dengan progress bar dan to
 | Gejala | Yang harus dilakukan |
 |---|---|
 | Halaman Models bilang sebuah CLI belum terinstal, padahal sudah | **Restart UNI MATE**: proses yang berjalan tetap memakai PATH saat ia dijalankan. |
-| Port 7777 terpakai dan build baru tidak mau jalan | Hentikan dulu proses lama (`stop-unimate.bat`, atau kill PID-nya), lalu jalankan lagi. |
+| Port 8688 terpakai dan build baru tidak mau jalan | Hentikan dulu proses lama (`stop-unimate.bat`, atau kill PID-nya), lalu jalankan lagi. |
 | Hostinger tidak bisa menarik image | Atur package GHCR menjadi **Public** dan tunggu build GitHub Action selesai. |
 | Sebuah otak bilang belum login | **Models** → kartu provider tersebut → login. |
 

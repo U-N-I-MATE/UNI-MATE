@@ -21,7 +21,7 @@ Trang cho bạn: bộ lọc 8 kỳ và 4 nhà cung cấp, các thẻ tổng kèm
 
 ## Mở ở đâu trong UNI MATE
 
-Mở dashboard (mặc định tại cổng 7777). Trên thanh điều hướng bên trái, bấm mở nhóm **Hệ thống** (nhóm này được ghim ở đáy thanh), chọn **Cài đặt → Mức dùng**.
+Mở dashboard (mặc định tại cổng 8688). Trên thanh điều hướng bên trái, bấm mở nhóm **Hệ thống** (nhóm này được ghim ở đáy thanh), chọn **Cài đặt → Mức dùng**.
 
 Tab **Mức dùng** chứa các bộ lọc, thống kê token và chi phí.
 

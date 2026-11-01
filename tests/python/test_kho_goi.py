@@ -5,7 +5,7 @@
 Không cần pytest, KHÔNG chạm mạng thật (mọi lần tải đều thay bằng hàm giả).
 
 Đây là đường đầu tiên trong UNI MATE mà SERVER TỰ ĐI GỌI một địa chỉ nó không nghĩ ra, tức bề mặt
-SSRF đầu tiên. Rất cụ thể: `mcp_hub` đặt hub ở `http://127.0.0.1:7777/hub/mcp` và hub cầm toàn
+SSRF đầu tiên. Rất cụ thể: `mcp_hub` đặt hub ở `http://127.0.0.1:8688/hub/mcp` và hub cầm toàn
 bộ khoá của người dùng; trên máy ảo đám mây thì `169.254.169.254` trả credential của chính máy
 đó. Nên phần lớn test này canh đúng một câu hỏi: có địa chỉ nào lọt vào trong nhà không.
 

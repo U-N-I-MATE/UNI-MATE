@@ -239,6 +239,9 @@ const base = (call, extra = {}) => Object.assign({
   check("0.298.0: the first row is named the call voice on ChatGPT Live", m.vcVoiceLbl.textContent === "settings.vc_voice_call");
   check("0.298.0: male call voice with a female reading voice is flagged",
     m.vcMismatch.hidden === false && m.vcMismatchFix.textContent === 'settings.vc_mismatch_fix{"voice":"Juniper · settings.vc_g_f"}');
+  m.vcMismatchKeep.onclick();
+  check("keeping the mismatch hides the warning", m.vcMismatch.hidden === true);
+  m.vcMismatch.hidden = false;
   m.vcMismatchFix.onclick(); await settle0();
   check("0.298.0: one click picks a female call voice, saves it and clears the warning",
     JSON.stringify(r.saves.at(-1)) === '["voice",{"chatgpt_voice":"juniper"}]' && m.vcMismatch.hidden === true);

@@ -6,7 +6,7 @@ Owner report 24/10/2026: after installing on Hostinger, Open led to localhost in
 Open follows the concrete Host(...) rule in the Traefik labels, and the compose put Host(`localhost`) there whenever
 DOMAIN_NAME was empty. Checks:
   1. with DOMAIN_NAME empty the labels carry no Host rule and traefik.enable is empty (Open falls back to the
-     published port, http://<ip>:7777); with DOMAIN_NAME set they are exactly as before;
+     published port, http://<ip>:8688); with DOMAIN_NAME set they are exactly as before;
   2. the Settings page offers the free srv<id>.hstgr.cloud name from reverse DNS, only for a .hstgr.cloud name.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -68,7 +68,7 @@ two = rendered({"DOMAIN_NAME": "b.srv1.hstgr.cloud", "UNIMATE_NAME": "unimate-b"
 check("second instance keeps its own router name", two.get("traefik.http.routers.unimate-b.rule") == "Host(`b.srv1.hstgr.cloud`)", two)
 check("the rest of the Traefik labels unchanged",
       yes.get("traefik.http.routers.unimate.entrypoints") == "websecure"
-      and yes.get("traefik.http.services.unimate.loadbalancer.server.port") == "7777")
+      and yes.get("traefik.http.services.unimate.loadbalancer.server.port") == "8688")
 
 # ---- 2. the free name ----
 from routes import domain as dom   # noqa: E402
@@ -123,7 +123,7 @@ import asyncio  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 import main  # noqa: E402
 
-cl = TestClient(main.app, base_url="http://127.0.0.1:7777")
+cl = TestClient(main.app, base_url="http://127.0.0.1:8688")
 who = cl.get("/domain/whoami")
 check("/domain/whoami is public and returns this process's id", who.status_code == 200 and who.json().get("id") == dom._WHOAMI)
 check("auth middleware lists both paths as public", '"/domain/auto", "/domain/whoami"' in (ROOT / "server" / "main.py").read_text(encoding="utf-8"))

@@ -18,7 +18,7 @@ For engines and models see [Models & engines](10-models-and-engines.md); for MCP
 
 ## Where to find it in UNI MATE
 
-1. Open the UNI MATE dashboard (`http://localhost:7777` by default).
+1. Open the UNI MATE dashboard (`http://localhost:8688` by default).
 2. In the left navigation rail, open the **Connections** group and click **Channels**.
 3. You will see the **Telegram** card with fields for enabling the bot, the Bot token, the allowed Chat IDs, and 2 buttons: **Save & enable** / **Send test**.
 

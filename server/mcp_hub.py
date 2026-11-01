@@ -90,9 +90,9 @@ def hub_token():
 
 def hub_port():
     try:
-        return int(os.getenv("UNIMATE_PORT", "7777"))
+        return int(os.getenv("UNIMATE_PORT", "8688"))
     except ValueError:
-        return 7777
+        return 8688
 
 
 def hub_url():
@@ -2047,7 +2047,7 @@ def codex_profile_name():
     Cổng mặc định giữ nguyên tên "unimate" để máy đang chạy không phải sinh file mới.
     """
     p = hub_port()
-    return "unimate" if p == 7777 else f"unimate-{p}"
+    return "unimate" if p == 8688 else f"unimate-{p}"
 
 
 def codex_profile_path():

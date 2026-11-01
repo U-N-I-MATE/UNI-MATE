@@ -160,7 +160,7 @@ try:
     from pathlib import Path as _P
     cfg = _P(_tf.mkdtemp(prefix="sdk-mcp-")) / "hub.json"
     cfg.write_text(json.dumps({"mcpServers": {"unimate": {
-        "type": "http", "url": "http://127.0.0.1:7777/hub/mcp",
+        "type": "http", "url": "http://127.0.0.1:8688/hub/mcp",
         "headers": {"Authorization": "Bearer t", "X-UniMate-Mode": "full"}}}}), encoding="utf-8")
 
     e = ClaudeSDK(tag="chat"); e.mcp_config = str(cfg); e.unimate_mode = "full"

@@ -78,9 +78,9 @@ _DAYPART_WORDS = ("sang", "trua", "chieu", "toi")
 
 def _port() -> int:
     try:
-        return int(os.getenv("UNIMATE_PORT", "7777"))
+        return int(os.getenv("UNIMATE_PORT", "8688"))
     except (TypeError, ValueError):
-        return 7777
+        return 8688
 
 
 def _today() -> str:

@@ -2,7 +2,7 @@
 //
 // Owner 24/10/2026: "khi cài nó tự cài 1 đường dẫn của vps hostinger sẵn để khách hàng mở luôn" (like a Hostinger
 // catalog app that opens on <app>.srv<id>.hstgr.cloud). A pasted compose cannot learn the VPS name at install time, so
-// hPanel's Open button lands on http://<ip>:7777. This page then asks /domain/auto; the server answers with the https
+// hPanel's Open button lands on http://<ip>:8688. This page then asks /domain/auto; the server answers with the https
 // link only when that link already answers as THIS UNI MATE over a valid certificate (routes/domain.py), so the move never
 // lands on a dead or foreign page. Only from a bare IP over http, never on localhost or a domain. Add ?stay=1 to stay.
 (function () {

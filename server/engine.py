@@ -1273,7 +1273,7 @@ async def single_tool_plan(provider, api_key, model, messages, reasoning, tool_s
     url, actual_model = endpoints[provider]
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     if provider == "openrouter":
-        headers.update({"HTTP-Referer": "http://localhost:7777", "X-Title": "UNI MATE"})
+        headers.update({"HTTP-Referer": "http://localhost:8688", "X-Title": "UNI MATE"})
     payload = {
         "model": actual_model, "messages": list(messages), "tools": [tool_spec],
         "tool_choice": {"type": "function", "function": {"name": fn}},
@@ -1331,7 +1331,7 @@ async def _openrouter_stream_once(api_key, model, messages, reasoning="off", fas
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:7777",
+        "HTTP-Referer": "http://localhost:8688",
         "X-Title": "UNI MATE",
     }
     if _is_claude_model(model):
@@ -2377,7 +2377,7 @@ async def gemini_chat_with_mcp(api_key, model, messages, reasoning, mcp_tools, m
 
 async def openrouter_chat_with_mcp(api_key, model, messages, reasoning, mcp_tools, mcp_route):
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
-               "HTTP-Referer": "http://localhost:7777", "X-Title": "UNI MATE"}
+               "HTTP-Referer": "http://localhost:8688", "X-Title": "UNI MATE"}
     extra = {}
     if reasoning not in (None, "", "off"):
         extra["reasoning"] = {"effort": api_effort(reasoning)}

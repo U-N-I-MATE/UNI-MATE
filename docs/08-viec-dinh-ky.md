@@ -25,7 +25,7 @@ Việc lặp được sửa trực tiếp bằng cách mở file `.md` trong Obs
 
 ## Mở ở đâu trong UNI MATE
 
-1. Mở dashboard UNI MATE (mặc định `http://localhost:7777`).
+1. Mở dashboard UNI MATE (mặc định `http://localhost:8688`).
 2. Nhìn thanh điều hướng bên trái, bấm nhóm **Việc** để mở ra.
 3. Bấm mục **Việc định kỳ**.
 

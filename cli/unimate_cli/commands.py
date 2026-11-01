@@ -259,7 +259,7 @@ def up(args) -> int:
     Vẫn MỘT server, MỘT brain - CLI chỉ là thứ khởi động nó. Gói CLI KHÔNG chứa server, nên
     lệnh này chỉ chạy khi máy đã có bản cài UNI MATE; không có thì nói thẳng chứ không giả vờ.
     """
-    url = (getattr(args, "url", "") or "http://127.0.0.1:7777").rstrip("/")
+    url = (getattr(args, "url", "") or "http://127.0.0.1:8688").rstrip("/")
     if _dang_chay(url):
         r.tieu_de("UNI MATE đã chạy sẵn ở " + url)
     else:
@@ -276,7 +276,7 @@ def up(args) -> int:
         try:
             subprocess.Popen(
                 [py, "-m", "uvicorn", "main:app", "--app-dir", "server",
-                 "--host", "127.0.0.1", "--port", str(getattr(args, "port", 7777) or 7777)],
+                 "--host", "127.0.0.1", "--port", str(getattr(args, "port", 8688) or 8688)],
                 cwd=str(goc), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                 start_new_session=True)
         except Exception as e:

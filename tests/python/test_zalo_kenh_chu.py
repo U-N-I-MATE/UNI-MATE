@@ -179,7 +179,7 @@ import channel_context
 
 khoi = channel_context.build_channel_block(
     "zalo", {"chat_id": "zalo:abc", "user_name": "Ted", "chat_type": "private"},
-    port=7777, brain_root="/b")
+    port=8688, brain_root="/b")
 check("nhận diện đúng nguồn", "Nguồn tin nhắn này: Zalo" in khoi)
 check("nói rõ CHƯA gửi được tài liệu, thay vì để UNI MATE hứa hão",
       "CHƯA có API gửi tài liệu" in khoi, khoi[:0])

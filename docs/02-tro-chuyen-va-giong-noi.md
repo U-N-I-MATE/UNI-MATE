@@ -27,7 +27,7 @@ Có **hai** chỗ chat, dùng chung một cuộc hội thoại nên chuyển qua
 
 ### Màn chính "UNI MATE"
 
-Rail điều hướng bên trái, nhóm **Trợ lý** → mục **UNI MATE**. Đây cũng là màn hình mặc định khi mở dashboard (mặc định ở cổng 7777), mở trang lên là đã ở đây.
+Rail điều hướng bên trái, nhóm **Trợ lý** → mục **UNI MATE**. Đây cũng là màn hình mặc định khi mở dashboard (mặc định ở cổng 8688), mở trang lên là đã ở đây.
 
 | Khu vực | Vị trí | Nội dung |
 |---|---|---|

@@ -32,14 +32,14 @@ Cập nhật bản mới: bấm **⬆ Cập nhật ngay** trong app (trang Cập
 ```
 docker compose -f docker-compose.yml up -d
 ```
-Mở http://localhost:7777. Muốn HTTPS qua Caddy: thêm `-f docker-compose.https.yml`.
+Mở http://localhost:8688. Muốn HTTPS qua Caddy: thêm `-f docker-compose.https.yml`.
 
 ## Cách 3 - Chạy trực tiếp (Windows, không Docker)
 
 1. Cài Python 3.12 + Node 22.
 2. Trong thư mục dự án: `setup.bat` một lần - tạo .venv, cài deps, và cài sẵn hai engine CLI (Claude Code, Codex).
 3. `start-unimate.bat` để chạy nền (tắt: `stop-unimate.bat`).
-4. Mở http://localhost:7777.
+4. Mở http://localhost:8688.
 
 ## Sau khi chạy
 

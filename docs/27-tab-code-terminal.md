@@ -17,7 +17,7 @@ Muốn viết code thì không cần trang riêng: gắn một thư mục vào b
 
 ## Mở ở đâu trong UNI MATE
 
-1. Mở dashboard UNI MATE (mặc định cổng 7777).
+1. Mở dashboard UNI MATE (mặc định cổng 8688).
 2. Rail điều hướng bên trái, mở nhóm **Code**, bấm mục **Terminal**.
 3. Terminal tự mở và tự nối. Bấm vào khung đen rồi gõ như terminal bình thường.
 

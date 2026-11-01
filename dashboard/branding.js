@@ -148,7 +148,7 @@
       if (guide) guide.style.display = "none";
       setStatus("domainStatus", window.t("brand.no_domain"), false);
       // 0.302.0: on a Hostinger VPS the server reads the free srv<id>.hstgr.cloud name from reverse DNS and offers the
-      // exact DOMAIN_NAME line. Without it, hPanel's Open button only reaches http://<ip>:7777 (owner report 24/10).
+      // exact DOMAIN_NAME line. Without it, hPanel's Open button only reaches http://<ip>:8688 (owner report 24/10).
       var sg = j && j.suggested_domain;
       var gw = (j && j.gateway) || {};
       var gwNames = (gw.names || []).join(", ");

@@ -15,7 +15,7 @@ start it like a normal app.
 ## Run
 
 - **`UNI MATE.app`** (repo root) - double-click in Finder to start the server and
-  open `http://127.0.0.1:7777`. Keep the `.app` inside the repo folder (it finds
+  open `http://127.0.0.1:8688`. Keep the `.app` inside the repo folder (it finds
   the repo relative to its own location).
 - **`Start UNI MATE.command`** / **`Stop UNI MATE.command`** - double-clickable
   Finder alternatives.
@@ -30,7 +30,7 @@ start it like a normal app.
 
 - Every script resolves the repo location from its own path, so the repo can live
   anywhere.
-- Default port is `7777`; override with the `UNIMATE_PORT` environment variable.
+- Default port is `8688`; override with the `UNIMATE_PORT` environment variable.
 - Bound to `127.0.0.1` (local only). Because it's `localhost`, the browser allows
   the microphone, so voice works without HTTPS. Use Chrome or Edge for speech
   recognition.

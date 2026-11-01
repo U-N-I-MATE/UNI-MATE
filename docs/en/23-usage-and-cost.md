@@ -21,7 +21,7 @@ The page gives you: a filter of 8 periods and 4 providers, summary cards with a 
 
 ## Where to open it in UNI MATE
 
-Open the dashboard (default port 7777). On the left navigation rail, open the **System** group (pinned at the bottom of the rail), then choose **Settings → Usage**.
+Open the dashboard (default port 8688). On the left navigation rail, open the **System** group (pinned at the bottom of the rail), then choose **Settings → Usage**.
 
 The **Usage** tab contains the filters, token statistics and costs.
 

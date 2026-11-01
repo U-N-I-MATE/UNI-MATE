@@ -30,8 +30,8 @@ def check(name, cond, extra=""):
 main.cfgmod.gate_active = lambda: True          # a password is set (the tunnel only runs with one)
 main.cfgmod.auth_enabled = lambda: True
 
-local = TestClient(main.app, base_url="http://127.0.0.1:7777", client=("127.0.0.1", 50000))
-remote = TestClient(main.app, base_url="http://127.0.0.1:7777", client=("203.0.113.9", 50000))
+local = TestClient(main.app, base_url="http://127.0.0.1:8688", client=("127.0.0.1", 50000))
+remote = TestClient(main.app, base_url="http://127.0.0.1:8688", client=("203.0.113.9", 50000))
 HOPS = {"cf-connecting-ip": "198.51.100.7", "x-forwarded-for": "198.51.100.7", "x-real-ip": "198.51.100.7",
         "forwarded": "for=198.51.100.7"}
 BODY = {"text": "x", "delay_min": 5, "mode": "task", "muc_quyen": "full", "brain": "brain"}

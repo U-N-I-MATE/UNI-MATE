@@ -15,10 +15,10 @@ Type=simple
 User=__USER__
 WorkingDirectory=__APP_DIR__/server
 Environment="UNIMATE_HOST=127.0.0.1"
-Environment="UNIMATE_PORT=7777"
+Environment="UNIMATE_PORT=8688"
 Environment="UNIMATE_STATE_DIR=__APP_DIR__/server"
 Environment="PATH=__APP_DIR__/.venv/bin:/usr/local/bin:/usr/bin:/bin"
-ExecStart=__APP_DIR__/.venv/bin/python -m uvicorn main:app --host 127.0.0.1 --port 7777
+ExecStart=__APP_DIR__/.venv/bin/python -m uvicorn main:app --host 127.0.0.1 --port 8688
 Restart=always
 RestartSec=5
 KillMode=mixed

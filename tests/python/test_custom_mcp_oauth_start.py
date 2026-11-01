@@ -13,7 +13,7 @@ import mcp_store  # noqa: E402
 
 
 class Request:
-    url = SimpleNamespace(scheme="http", netloc="localhost:7777")
+    url = SimpleNamespace(scheme="http", netloc="localhost:8688")
     headers = {}
 
     def __init__(self, conn_id):

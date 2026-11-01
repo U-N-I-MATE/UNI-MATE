@@ -5,7 +5,7 @@
 Ba triệu chứng chủ dự án gặp khi nhờ Claude cài UNI MATE trên máy Windows mới (16/09), cả ba đều
 cùng một gốc:
 
-  1. Cài xong, mở localhost:7777, đăng nhập thì báo "thiếu CLI".
+  1. Cài xong, mở localhost:8688, đăng nhập thì báo "thiếu CLI".
   2. Nhờ Claude sửa thì chat được, nhưng cài thêm Antigravity CLI xong là Claude Code lại bị
      báo "chưa cài" và bắt cài lại từ đầu.
   3. Có lúc còn báo thiếu claude-agent-sdk.

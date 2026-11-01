@@ -189,7 +189,7 @@ Giải pháp (0.9.3): thêm nhánh EXPLICIT trong `oauth_mcp.start_auth`. Connec
 
 Tại sao chọn remote chính chủ thay vì connector `google-workspace` (workspace-mcp local, đã có): remote không cần uv/node, chạy VPS headless, OAuth qua redirect dashboard (không mở browser lúc gọi tool - workspace-mcp local mở browser lần đầu nên fail trên headless). workspace-mcp phơi 45 tool (phình context nặng); 2 connector focus chỉ 8 + 12 tool. Giữ google-workspace cho ai cần cả Drive/Docs/Sheets trong 1 mối.
 
-CHƯA test được vòng OAuth end-to-end (cần OAuth client + đăng nhập Google thật của user). Đã test: probe endpoint + tool list thật, dựng URL authorize (unit test: offline/consent/scope/PKCE/không có param resource), bóc email id_token, phân loại quyền 17 case. User phải: tạo OAuth client "Ứng dụng web" trong GCP, thêm redirect `http://localhost:7777/connect/oauth/callback` (+ domain nếu VPS), bật Calendar API / Gmail API, thêm mình vào Test users.
+CHƯA test được vòng OAuth end-to-end (cần OAuth client + đăng nhập Google thật của user). Đã test: probe endpoint + tool list thật, dựng URL authorize (unit test: offline/consent/scope/PKCE/không có param resource), bóc email id_token, phân loại quyền 17 case. User phải: tạo OAuth client "Ứng dụng web" trong GCP, thêm redirect `http://localhost:8688/connect/oauth/callback` (+ domain nếu VPS), bật Calendar API / Gmail API, thêm mình vào Test users.
 
 ## 7. Lộ trình (mỗi phase ship được, dùng được ngay)
 

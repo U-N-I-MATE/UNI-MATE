@@ -59,13 +59,13 @@
 | **Windows** | `git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate; powershell -ExecutionPolicy Bypass -File install.ps1` |
 | **Docker** | `curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml && docker compose up -d` |
 
-あとは **http://localhost:7777** を開くだけです。インストーラーは Python、サブスクリプションで動く 4 つの CLI 頭脳（`claude`、`codex`、`agy`、`grok`）と `.env` をセットアップし、サーバーを起動します。各頭脳へのサインインは **ダッシュボードの Models ページ** で行えるので、もうコマンドを打つ必要はありません。
+あとは **http://localhost:8688** を開くだけです。インストーラーは Python、サブスクリプションで動く 4 つの CLI 頭脳（`claude`、`codex`、`agy`、`grok`）と `.env` をセットアップし、サーバーを起動します。各頭脳へのサインインは **ダッシュボードの Models ページ** で行えるので、もうコマンドを打つ必要はありません。
 
 > [!NOTE]
 > UNI MATE の起動 **後に** CLI を追加でインストールした場合は、**UNI MATE を再起動してください。** 実行中のプロセスは起動時の PATH を保持しているため、あとからインストールした CLI は見えません。
 
 <p align="center">
-<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="アニメーションするターミナル：1 行のインストーラーが Python、4 つのサブスクリプション CLI 頭脳、.env を準備し、UNI MATE が http://localhost:7777 で動作中であることを表示します">
+<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="アニメーションするターミナル：1 行のインストーラーが Python、4 つのサブスクリプション CLI 頭脳、.env を準備し、UNI MATE が http://localhost:8688 で動作中であることを表示します">
 </p>
 
 ---
@@ -287,7 +287,7 @@ docker compose run --rm unimate claude auth login --claudeai   # sign in to Clau
 docker compose up -d                                          # pull the image and run
 ```
 
-`http://<vps-ip>:7777` を開き、すぐに管理者のユーザー名とパスワード（8 文字以上）を設定します。または、環境変数に `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` をあらかじめ設定しておきます。そのあと 2FA を有効にしてください。
+`http://<vps-ip>:8688` を開き、すぐに管理者のユーザー名とパスワード（8 文字以上）を設定します。または、環境変数に `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` をあらかじめ設定しておきます。そのあと 2FA を有効にしてください。
 
 ドメインなしでリモートアクセスするには：`docker compose --profile tunnel up -d` を実行し、`docker compose logs tunnel | grep trycloudflare` で HTTPS のリンクが表示されます。
 
@@ -315,13 +315,13 @@ git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-`install.ps1` は、Python、venv とライブラリ、サブスクリプションで動く 4 つの CLI 頭脳（`claude`、`codex`、`agy`、`grok`）、`.env`、ポート 7777 の解放、サーバーの起動までを一度に行います。最後に、どの頭脳が使える状態かを表で示します。`winget` がない場合は、先に Python 3.12（「Add python.exe to PATH」にチェック）と Node.js LTS を手動でインストールしてから、もう一度実行してください。
+`install.ps1` は、Python、venv とライブラリ、サブスクリプションで動く 4 つの CLI 頭脳（`claude`、`codex`、`agy`、`grok`）、`.env`、ポート 8688 の解放、サーバーの起動までを一度に行います。最後に、どの頭脳が使える状態かを表で示します。`winget` がない場合は、先に Python 3.12（「Add python.exe to PATH」にチェック）と Node.js LTS を手動でインストールしてから、もう一度実行してください。
 
 ```
 Run with a visible window (live log):  setup.bat
 Run silently from then on:             start-unimate.vbs   (log at server\unimate.log)
 Stop:                                  stop-unimate.bat
-Dashboard:                             http://localhost:7777
+Dashboard:                             http://localhost:8688
 ```
 
 🪟 **アプリのように開く：** 初回の実行後は **`UNI MATE.bat`** をダブルクリックします。サーバーがバックグラウンドで起動し、ダッシュボードが **専用のウィンドウ** で、タスクバーにも独立して表示されます。ログイン時に起動するには：`unimate-autostart.bat install`（解除は `uninstall`）。
@@ -389,7 +389,7 @@ UNI MATE を開くと、セットアップウィザードがブラウザの言�
 | 変数 | 意味 | デフォルト |
 |---|---|---|
 | `UNIMATE_HOST` | 待ち受けアドレス。`127.0.0.1` = このマシンのみ、`0.0.0.0` = 公開 | `127.0.0.1` |
-| `UNIMATE_PORT` | ポート | `7777` |
+| `UNIMATE_PORT` | ポート | `8688` |
 | `UNIMATE_REQUIRE_LOGIN` | `1`/`0` でログイン必須を強制的にオン／オフ（デフォルト：公開アドレスにバインドしたときはオン） | *（自動）* |
 | `UNIMATE_ADMIN_USER` / `UNIMATE_ADMIN_PASSWORD` | デプロイ時に管理者を作成 | - |
 | `UNIMATE_ALLOWED_HOSTS` | 許可リストに追加するホスト名（CSRF と DNS リバインディング対策） | localhost + あなたのドメイン |
@@ -424,7 +424,7 @@ UNI MATE を開くと、セットアップウィザードがブラウザの言�
 | 症状 | 対処 |
 |---|---|
 | CLI はインストール済みなのに、Models ページに未インストールと表示される | **UNI MATE を再起動してください**：実行中のプロセスは起動時の PATH を保持しています。 |
-| ポート 7777 が使用中で、新しいビルドが起動しない | 先に古いプロセスを停止し（`stop-unimate.bat`、または PID を kill）、もう一度起動します。 |
+| ポート 8688 が使用中で、新しいビルドが起動しない | 先に古いプロセスを停止し（`stop-unimate.bat`、または PID を kill）、もう一度起動します。 |
 | Hostinger がイメージを取得できない | GHCR パッケージを **Public** にし、GitHub Action のビルド完了を待ちます。 |
 | 頭脳がサインインしていないと言う | **Models** → そのプロバイダーのカード → サインイン。 |
 

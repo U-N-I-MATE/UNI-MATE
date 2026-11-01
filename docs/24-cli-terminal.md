@@ -63,7 +63,7 @@ Cấu hình lưu ở `~/.unimate/config.json`, quyền `600` (chỉ chủ máy �
 ### Nhiều UNI MATE cùng lúc
 
 ```bash
-unimate login http://localhost:7777 --name nha
+unimate login http://localhost:8688 --name nha
 unimate login https://unimate.congty.com --name congty --brain brain-cty
 unimate --profile congty "tuần này bên công ty thế nào"
 unimate profiles          # xem các hồ sơ đã lưu, dấu * là mặc định

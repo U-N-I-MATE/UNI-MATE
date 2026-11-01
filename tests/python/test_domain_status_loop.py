@@ -90,7 +90,7 @@ async def run(n_requests):
 
     t = asyncio.create_task(ticker())
     transport = httpx.ASGITransport(app=main.app, client=("127.0.0.1", 50000))
-    async with httpx.AsyncClient(transport=transport, base_url="http://127.0.0.1:7777") as cl:
+    async with httpx.AsyncClient(transport=transport, base_url="http://127.0.0.1:8688") as cl:
         rs = await asyncio.gather(*[cl.get("/domain/status") for _ in range(n_requests)])
     stop.set()
     await t

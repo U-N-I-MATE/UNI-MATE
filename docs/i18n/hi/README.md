@@ -59,13 +59,13 @@
 | **Windows** | `git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate; powershell -ExecutionPolicy Bypass -File install.ps1` |
 | **Docker** | `curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml && docker compose up -d` |
 
-फिर **http://localhost:7777** खोलिए। Installer Python, चारों subscription CLI ब्रेन (`claude`, `codex`, `agy`, `grok`) और एक `.env` सेट करता है, फिर server शुरू कर देता है। हर ब्रेन में sign in आप **dashboard के Models page पर** करते हैं, अब commands टाइप करने की ज़रूरत नहीं।
+फिर **http://localhost:8688** खोलिए। Installer Python, चारों subscription CLI ब्रेन (`claude`, `codex`, `agy`, `grok`) और एक `.env` सेट करता है, फिर server शुरू कर देता है। हर ब्रेन में sign in आप **dashboard के Models page पर** करते हैं, अब commands टाइप करने की ज़रूरत नहीं।
 
 > [!NOTE]
 > UNI MATE पहले से चल रहा था और उसके **बाद** आपने कोई और CLI इंस्टॉल की? **UNI MATE को restart कीजिए।** चलता हुआ process वही PATH रखता है जिसके साथ वह शुरू हुआ था, इसलिए बाद में इंस्टॉल की गई CLI उसे दिखाई नहीं देती।
 
 <p align="center">
-<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="Animated terminal: एक लाइन वाला installer Python, चारों subscription CLI ब्रेन और एक .env सेट करता है, फिर बताता है कि UNI MATE http://localhost:7777 पर चल रहा है">
+<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="Animated terminal: एक लाइन वाला installer Python, चारों subscription CLI ब्रेन और एक .env सेट करता है, फिर बताता है कि UNI MATE http://localhost:8688 पर चल रहा है">
 </p>
 
 ---
@@ -287,7 +287,7 @@ docker compose run --rm unimate claude auth login --claudeai   # sign in to Clau
 docker compose up -d                                          # pull the image and run
 ```
 
-`http://<vps-ip>:7777` खोलिए और तुरंत admin username और password सेट कीजिए (कम से कम 8 अक्षर), या environment में पहले से `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` सेट कर दीजिए। फिर 2FA चालू कीजिए।
+`http://<vps-ip>:8688` खोलिए और तुरंत admin username और password सेट कीजिए (कम से कम 8 अक्षर), या environment में पहले से `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` सेट कर दीजिए। फिर 2FA चालू कीजिए।
 
 बिना domain के remote access: `docker compose --profile tunnel up -d`, फिर `docker compose logs tunnel | grep trycloudflare` एक HTTPS link दिखाता है।
 
@@ -315,13 +315,13 @@ git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-`install.ps1` एक ही बार में सब कर देता है: Python, venv और libraries, चारों subscription CLI ब्रेन (`claude`, `codex`, `agy`, `grok`), `.env`, port 7777 खाली करना और server शुरू करना। आख़िर में यह एक table दिखाता है कि कौन-से ब्रेन तैयार हैं। अगर `winget` नहीं है, तो पहले Python 3.12 ("Add python.exe to PATH" पर tick करके) और Node.js LTS हाथ से इंस्टॉल कीजिए, फिर इसे दोबारा चलाइए।
+`install.ps1` एक ही बार में सब कर देता है: Python, venv और libraries, चारों subscription CLI ब्रेन (`claude`, `codex`, `agy`, `grok`), `.env`, port 8688 खाली करना और server शुरू करना। आख़िर में यह एक table दिखाता है कि कौन-से ब्रेन तैयार हैं। अगर `winget` नहीं है, तो पहले Python 3.12 ("Add python.exe to PATH" पर tick करके) और Node.js LTS हाथ से इंस्टॉल कीजिए, फिर इसे दोबारा चलाइए।
 
 ```
 Run with a visible window (live log):  setup.bat
 Run silently from then on:             start-unimate.vbs   (log at server\unimate.log)
 Stop:                                  stop-unimate.bat
-Dashboard:                             http://localhost:7777
+Dashboard:                             http://localhost:8688
 ```
 
 🪟 **इसे app की तरह खोलिए:** पहली बार चलाने के बाद **`UNI MATE.bat`** पर double-click कीजिए। Server background में शुरू होता है और dashboard **अपनी अलग window** में खुलता है, जिसकी taskbar में अपनी entry होती है। Login पर शुरू करने के लिए: `unimate-autostart.bat install` (हटाने के लिए: `uninstall`)।
@@ -389,7 +389,7 @@ UNI MATE खोलिए और setup wizard आपको आपके browser �
 | Variable | मतलब | Default |
 |---|---|---|
 | `UNIMATE_HOST` | Listen address। `127.0.0.1` = सिर्फ़ यही मशीन, `0.0.0.0` = public | `127.0.0.1` |
-| `UNIMATE_PORT` | Port | `7777` |
+| `UNIMATE_PORT` | Port | `8688` |
 | `UNIMATE_REQUIRE_LOGIN` | Login को ज़बरदस्ती चालू या बंद करने के लिए `1`/`0` (default: public रूप से bind होने पर चालू) | *(auto)* |
 | `UNIMATE_ADMIN_USER` / `UNIMATE_ADMIN_PASSWORD` | Deploy के समय admin बनाइए | - |
 | `UNIMATE_ALLOWED_HOSTS` | Allow-list में अतिरिक्त hostnames (CSRF और DNS-rebinding से सुरक्षा) | localhost + आपका domain |
@@ -424,7 +424,7 @@ App में: **Settings → Updates → Update now**, progress bar के स�
 | समस्या | क्या करें |
 |---|---|
 | Models page कहता है कि कोई CLI इंस्टॉल नहीं है, जबकि वह है | **UNI MATE को restart कीजिए**: चलता हुआ process वही PATH रखता है जो उसके शुरू होने के समय था। |
-| Port 7777 पहले से इस्तेमाल में है और नया build शुरू नहीं होता | पहले पुराना process रोकिए (`stop-unimate.bat`, या PID को kill कीजिए), फिर दोबारा शुरू कीजिए। |
+| Port 8688 पहले से इस्तेमाल में है और नया build शुरू नहीं होता | पहले पुराना process रोकिए (`stop-unimate.bat`, या PID को kill कीजिए), फिर दोबारा शुरू कीजिए। |
 | Hostinger image pull नहीं कर पाता | GHCR package को **Public** कीजिए और GitHub Action build पूरा होने का इंतज़ार कीजिए। |
 | कोई ब्रेन कहता है कि वह signed in नहीं है | **Models** → उस provider का card → sign in। |
 

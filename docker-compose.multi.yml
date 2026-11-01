@@ -11,7 +11,7 @@
 #   curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.multi.yml
 #   cat > .env <<'EOF'
 #   UNIMATE_NAME=unimate-shop
-#   UNIMATE_HOST_PORT=7777
+#   UNIMATE_HOST_PORT=8688
 #   UNIMATE_BIND=127.0.0.1
 #   DOMAIN_NAME=shop.tencuaban.com
 #   UNIMATE_ADMIN_USER=admin
@@ -47,7 +47,7 @@ services:
     labels:
       # Proxy dùng chung đọc đúng hai nhãn này rồi tự dựng site + xin chứng chỉ.
       caddy: ${DOMAIN_NAME:?DOMAIN_NAME chưa đặt - thêm DOMAIN_NAME=ten-mien-cua-ban vào .env}
-      caddy.reverse_proxy: "{{upstreams 7777}}"
+      caddy.reverse_proxy: "{{upstreams 8688}}"
 
 networks:
   unimate-web:

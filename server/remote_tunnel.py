@@ -210,9 +210,9 @@ def install_binary() -> str:
 
 def local_port() -> int:
     try:
-        return int(os.getenv("UNIMATE_PORT", "7777"))
+        return int(os.getenv("UNIMATE_PORT", "8688"))
     except ValueError:
-        return 7777
+        return 8688
 
 
 def local_target() -> str:
@@ -237,7 +237,7 @@ def parse_ingress(line: str):
     """[(hostname, service)] from the "Updated to new configuration" line of a token tunnel, or None.
 
     cloudflared logs the ingress rules the owner set in the Cloudflare dashboard as an escaped JSON string:
-    config="{\\"ingress\\":[{\\"hostname\\":\\"unimate.example.com\\", \\"service\\":\\"http://localhost:7777\\"}, ...]}"
+    config="{\\"ingress\\":[{\\"hostname\\":\\"unimate.example.com\\", \\"service\\":\\"http://localhost:8688\\"}, ...]}"
     Reading them back lets Settings show the real address without asking the owner to type it a second time.
     """
     if "Updated to new configuration" not in (line or ""):
@@ -253,7 +253,7 @@ def parse_ingress(line: str):
 
 
 def service_points_here(service: str) -> bool:
-    """Whether an ingress service such as http://localhost:7777 reaches this UNI MATE."""
+    """Whether an ingress service such as http://localhost:8688 reaches this UNI MATE."""
     m = re.match(r"^https?://(\[[^\]]+\]|[^/:]+)(?::(\d+))?", (service or "").strip().lower())
     if not m:
         return False

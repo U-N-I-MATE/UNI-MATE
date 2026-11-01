@@ -94,7 +94,7 @@ Chọn thế nào: cần **hướng dẫn** làm việc bằng công cụ sẵn 
 
 ## Mở ở đâu trong UNI MATE
 
-Mở dashboard (mặc định tại cổng 7777), nhìn thanh điều hướng bên trái, mở nhóm **Năng lực** rồi bấm mục **Skills**. Nhóm này có 4 mục: Agents, Skills, Workflows, Plugins.
+Mở dashboard (mặc định tại cổng 8688), nhìn thanh điều hướng bên trái, mở nhóm **Năng lực** rồi bấm mục **Skills**. Nhóm này có 4 mục: Agents, Skills, Workflows, Plugins.
 
 Đầu trang có tiêu đề **Skills** kèm dòng trạng thái, ví dụ "3/5 bật · nguồn `skills/`". Con số này cho biết bao nhiêu skill đang bật trên tổng số, và nhắc rằng nguồn skill là thư mục `skills/` của brain hiện tại.
 

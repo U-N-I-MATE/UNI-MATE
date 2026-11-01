@@ -134,7 +134,7 @@ asyncio.run(_run())
 
 
 # ─────────── 2. UNI MATE phải BIẾT mã phiên và nói đúng sự thật ───────────
-blk = channel_context.build_channel_block("dashboard", {"session_id": "abc123"}, port=7777)
+blk = channel_context.build_channel_block("dashboard", {"session_id": "abc123"}, port=8688)
 check("khối kênh dashboard nêu mã phiên chat hiện tại", "abc123" in blk)
 check("dạy UNI MATE gắn chat_id 'web:<sid>' khi giao việc", '"chat_id":"web:abc123"' in blk)
 check("dạy UNI MATE gắn owner_chat cho loop", 'owner_chat: "web:abc123"' in blk)
@@ -143,12 +143,12 @@ check("cấm hứa ngồi đợi rồi tổng hợp",
 check("chỉ đường thay thế: giao thêm việc tổng hợp bằng deps", "deps" in blk)
 
 # Không có mã phiên (đường gọi cũ) thì không được vỡ, chỉ là thiếu khối đó.
-blk0 = channel_context.build_channel_block("dashboard", port=7777)
+blk0 = channel_context.build_channel_block("dashboard", port=8688)
 check("thiếu mã phiên vẫn dựng được khối kênh, không nổ", "Dashboard web UNI MATE" in blk0)
 check("thiếu mã phiên thì không bịa ra hướng dẫn web:", "web:" not in blk0)
 
 # Telegram giữ nguyên đường cũ.
-tblk = channel_context.build_channel_block("telegram", {"chat_id": "999"}, port=7777)
+tblk = channel_context.build_channel_block("telegram", {"chat_id": "999"}, port=8688)
 check("nhánh Telegram vẫn dạy kèm chat_id như cũ", '\\"chat_id\\":\\"999\\"' in tblk or '"chat_id":"999"' in tblk)
 
 

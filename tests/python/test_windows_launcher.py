@@ -49,7 +49,7 @@ check("cd /d về thư mục script trước (không tin working directory kế 
 
 # ---- autostart ----
 # 0.306.0: autostart ghi CHUNG một mục với nút trong dashboard (HKCU Run "UniMateOS"), không còn shortcut trong
-# Startup: hai mục cùng bật là lúc đăng nhập hai bản UNI MATE giành nhau cổng 7777.
+# Startup: hai mục cùng bật là lúc đăng nhập hai bản UNI MATE giành nhau cổng 8688.
 check("autostart ghi HKCU Run (không cần admin), cùng tên với dashboard",
       "CurrentVersion\\Run" in ps1 and '$Name = "UniMateOS"' in ps1)
 check("lệnh trỏ wscript + start-unimate.vbs /open (chạy nền rồi mở dashboard)",

@@ -54,7 +54,7 @@
 
   <div class="row">
     <div class="label">TTS - GIỌNG ĐỌC (EDGE TTS BACKEND)</div>
-    <p style="font-size:12px;color:#22c55e;margin-bottom:10px">⬤ Dùng giọng Vietnamese từ Microsoft Edge - yêu cầu backend đang chạy ở localhost:7777</p>
+    <p style="font-size:12px;color:#22c55e;margin-bottom:10px">⬤ Dùng giọng Vietnamese từ Microsoft Edge - yêu cầu backend UNI MATE đang chạy</p>
     <select id="voiceSelect" style="margin-bottom:10px">
       <option value="en-US-EmmaMultilingualNeural">Emma - Nữ · vui tươi, rõ chữ · đa ngôn ngữ</option>
       <option value="vi-VN-HoaiMyNeural">Hoài My (nữ) - tự nhiên, ấm áp</option>
@@ -138,12 +138,13 @@
       const ratePct = ((parseFloat(rate.value) - 1) * 100).toFixed(0);
       const ratePctStr = (ratePct >= 0 ? "+" : "") + ratePct + "%";
 
-      const backendUp = await fetch("http://localhost:7777/health").then(() => true).catch(() => false);
+      const backend = location.protocol === "file:" ? "http://localhost:8688" : location.origin;
+      const backendUp = await fetch(`${backend}/health`).then(() => true).catch(() => false);
 
       if (backendUp) {
         ttsStatus.textContent = "Đang dùng Edge TTS backend...";
         if (currentAudio) currentAudio.pause();
-        const url = `http://localhost:7777/tts?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(voiceName)}&rate=${encodeURIComponent(ratePctStr)}`;
+        const url = `${backend}/tts?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(voiceName)}&rate=${encodeURIComponent(ratePctStr)}`;
         currentAudio = new Audio(url);
         currentAudio.onplay = () => ttsStatus.textContent = `▶ Đang đọc bằng ${voiceName} (Edge TTS, ${ratePctStr})`;
         currentAudio.onended = () => ttsStatus.textContent = "✓ Đọc xong";

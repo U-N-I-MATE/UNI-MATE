@@ -37,7 +37,7 @@ The quick way to copy by command (run in the project folder):
 - Windows PowerShell: `Copy-Item env.example .env`
 - Git Bash / Linux / macOS: `cp env.example .env`
 
-A note on `#`: a line starting with `#` is a comment and UNI MATE ignores it. To enable a commented variable, delete the `#` at the start of that line. For example change `# UNIMATE_PORT=7777` into `UNIMATE_PORT=8080`.
+A note on `#`: a line starting with `#` is a comment and UNI MATE ignores it. To enable a commented variable, delete the `#` at the start of that line. For example change `# UNIMATE_PORT=8688` into `UNIMATE_PORT=8080`.
 
 ## The list of variables
 
@@ -55,7 +55,7 @@ Grouped by function. The "Default" column is the value used when you leave it em
 | Variable | Meaning | Default | When to change |
 |---|---|---|---|
 | `UNIMATE_HOST` | The address the server listens on. `127.0.0.1` = only this machine can reach it. `0.0.0.0` = listen everywhere (public, anyone with the address gets in) | `127.0.0.1` (the Docker image presets `0.0.0.0`) | Only switch to `0.0.0.0` when running on a VPS/server and wanting access from other machines. You must then turn login on (see group 3). |
-| `UNIMATE_PORT` | The dashboard's listening port | `7777` | Port `7777` is taken or you want another one. After changing, open that port in the browser. |
+| `UNIMATE_PORT` | The dashboard's listening port | `8688` | Port `8688` is taken or you want another one. After changing, open that port in the browser. |
 
 An important detail about `UNIMATE_HOST`: UNI MATE uses a "safe by default" rule. If the listening address is NOT loopback (anything other than `127.0.0.1`, `localhost`, `::1`), the server treats itself as public and **turns forced login on** so nobody gets in without an account. The reason: an AI brain runs with full power on the machine, and leaving it open is dangerous.
 
@@ -212,7 +212,7 @@ In the second example, because `UNIMATE_HOST=0.0.0.0` (public) UNI MATE turns fo
 
 **You edited .env but nothing changed.** You have not restarted UNI MATE. `.env` is only read at startup. Stop the server and start it again.
 
-**After changing the port you cannot reach the app.** Your browser is still on the old port. Changing to `UNIMATE_PORT=8080` means opening `http://localhost:8080`, not `7777`.
+**After changing the port you cannot reach the app.** Your browser is still on the old port. Changing to `UNIMATE_PORT=8080` means opening `http://localhost:8080`, not `8688`.
 
 **The right password keeps bouncing back to the sign-in page.** Most likely you turned `UNIMATE_SECURE_COOKIE=1` on while actually browsing over HTTP (not HTTPS). A Secure cookie is only sent over HTTPS, so the browser cannot hold the session. Delete that line or set it off, then restart.
 

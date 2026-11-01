@@ -101,16 +101,16 @@ check("quick link read from the box cloudflared prints", rt.parse_quick_url(box)
 check("the request to api.trycloudflare.com is not taken for the link",
       rt.parse_quick_url('failed to request quick Tunnel: Post "https://api.trycloudflare.com/tunnel"') == "")
 cfg_line = ('2026-10-20T03:47:15Z INF Updated to new configuration config="{\\"ingress\\":[{\\"hostname\\":'
-            '\\"UniMate.Example.com\\", \\"service\\":\\"http://localhost:7777\\"}, {\\"service\\":\\"http_status:404\\"}],'
+            '\\"UniMate.Example.com\\", \\"service\\":\\"http://localhost:8688\\"}, {\\"service\\":\\"http_status:404\\"}],'
             ' \\"warp-routing\\":{\\"enabled\\":false}}" version=3')
 check("hostname and service read from a token tunnel's config line",
-      rt.parse_ingress(cfg_line) == [("unimate.example.com", "http://localhost:7777")])
+      rt.parse_ingress(cfg_line) == [("unimate.example.com", "http://localhost:8688")])
 check("an unrelated line is not a config line", rt.parse_ingress("INF Starting tunnel") is None)
-check("localhost:7777 points at this UNI MATE", rt.service_points_here("http://localhost:7777"))
-check("127.0.0.1:7777 points at this UNI MATE", rt.service_points_here("http://127.0.0.1:7777"))
+check("localhost:8688 points at this UNI MATE", rt.service_points_here("http://localhost:8688"))
+check("127.0.0.1:8688 points at this UNI MATE", rt.service_points_here("http://127.0.0.1:8688"))
 check("another port does not", not rt.service_points_here("http://localhost:8080"))
-check("another machine does not", not rt.service_points_here("http://192.168.1.5:7777"))
-check("default target is loopback on the UNI MATE port", rt.local_target() == "http://127.0.0.1:7777")
+check("another machine does not", not rt.service_points_here("http://192.168.1.5:8688"))
+check("default target is loopback on the UNI MATE port", rt.local_target() == "http://127.0.0.1:8688")
 
 # ============================================================
 # 2. Settings: encrypted at rest, hidden from GET /settings, forces login
@@ -148,7 +148,7 @@ rt.MANAGER._find = lambda: str(fake)
 rt.MANAGER._install = lambda: (_ for _ in ()).throw(AssertionError("must not download in this test"))
 rt.PASSWORD_CHECK_EVERY = 1
 
-cl = TestClient(main.app, client=("127.0.0.1", 50000), base_url="http://localhost:7777")
+cl = TestClient(main.app, client=("127.0.0.1", 50000), base_url="http://localhost:8688")
 PW = "matkhau123"
 
 r = cl.post("/remote-access/enable", data={"mode": "quick"})
@@ -175,7 +175,7 @@ check("quick mode accepted", r.status_code == 200 and r.json().get("ok"), r.text
 check("quick mode reaches running with the trycloudflare link",
       wait_for(lambda: rt.MANAGER.status()["state"] == "running" and rt.MANAGER.status()["url"].endswith(".trycloudflare.com")))
 first = calls.read_text().splitlines()[-1]
-check("quick mode points cloudflared at this server", "--url http://127.0.0.1:7777" in first and "--no-autoupdate" in first, first)
+check("quick mode points cloudflared at this server", "--url http://127.0.0.1:8688" in first and "--no-autoupdate" in first, first)
 pid_quick = rt.MANAGER._proc.pid
 check("pid file written", (Path(c.STATE_DIR) / "remote-tunnel.pid").read_text().strip() == str(pid_quick))
 
@@ -297,7 +297,7 @@ check("owner enables HTTPS -> UNI MATE retries by itself and runs on the ts.net 
       wait_for(lambda: rt.MANAGER.status()["state"] == "running"
                and rt.MANAGER.status()["url"] == "https://may-cua-quy.tail1234.ts.net", 15))
 check("serve points tailscaled at this server on :443",
-      "serve --bg --https=443 http://127.0.0.1:7777" in ts_lines(), ts_lines()[-3:])
+      "serve --bg --https=443 http://127.0.0.1:8688" in ts_lines(), ts_lines()[-3:])
 check("no cloudflared started in tailscale mode", rt.MANAGER._proc is None or rt.MANAGER._proc.poll() is not None)
 
 offs = serve_offs()
@@ -336,7 +336,7 @@ check("turned off -> serve switched off", r.status_code == 200 and serve_offs() 
 # ============================================================
 # 5. A cloudflared left behind by an earlier run is killed on start
 # ============================================================
-stray = subprocess.Popen([str(fake), "tunnel", "--url", "http://127.0.0.1:7777"], stdout=subprocess.DEVNULL)
+stray = subprocess.Popen([str(fake), "tunnel", "--url", "http://127.0.0.1:8688"], stdout=subprocess.DEVNULL)
 (Path(c.STATE_DIR) / "remote-tunnel.pid").write_text(str(stray.pid))
 time.sleep(0.3)
 check("stray cloudflared is killed", rt.kill_stray() is True and wait_for(lambda: stray.poll() is not None, 5))

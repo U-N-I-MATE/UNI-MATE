@@ -7,7 +7,7 @@ This page covers two things: changing UNI MATE's logo/avatar to your own image, 
 ## What this feature is
 
 - **Avatar (logo):** replace the default UNI MATE image with your own. The new image appears immediately in the top left corner, in the sidebar, on the sign-in screen, in the welcome window, and becomes the browser tab icon (favicon) too.
-- **Custom domain (HTTPS):** instead of opening UNI MATE by IP and port (something like `http://12.34.56.78:7777`), you use a memorable domain with the HTTPS padlock. UNI MATE obtains the HTTPS certificate itself (On-Demand TLS through Caddy), and there is an **Enable SSL** button to request the certificate on demand rather than waiting.
+- **Custom domain (HTTPS):** instead of opening UNI MATE by IP and port (something like `http://12.34.56.78:8688`), you use a memorable domain with the HTTPS padlock. UNI MATE obtains the HTTPS certificate itself (On-Demand TLS through Caddy), and there is an **Enable SSL** button to request the certificate on demand rather than waiting.
 
 One important note up front: the **Custom domain** section only works when you deploy UNI MATE with Docker on a VPS with ports 80/443 open. If you run UNI MATE on a personal machine (Windows, macOS), use the **Remote access** section right below it instead: UNI MATE sets up a Cloudflare Tunnel itself, with HTTPS and even your own domain, no VPS needed. See [Remote access on a Windows or macOS computer](#remote-access-on-a-windows-or-macos-computer). Deploy details in [.env configuration](16-env-configuration.md) and the `DEPLOY.md` file in the project folder.
 
@@ -108,7 +108,7 @@ You need a free Cloudflare account and a domain that uses Cloudflare DNS.
 
 1. Go to [one.dash.cloudflare.com](https://one.dash.cloudflare.com), **Networks**, **Tunnels**, click **Create a tunnel**, pick **Cloudflared** and give it a name.
 2. On the connector install step, copy the command (the Windows or the Mac one, either works). **You do not need to run it**: paste the whole line into the **Cloudflare tunnel token** box in UNI MATE, and UNI MATE picks the token out of it.
-3. On the **Public Hostname** step: pick a subdomain (for example `unimate.yourdomain.com`), set Service to **HTTP** and put the service address UNI MATE shows in the URL box (by default `127.0.0.1:7777`, with a copy button).
+3. On the **Public Hostname** step: pick a subdomain (for example `unimate.yourdomain.com`), set Service to **HTTP** and put the service address UNI MATE shows in the URL box (by default `127.0.0.1:8688`, with a copy button).
 4. Back in UNI MATE, pick **Your own domain** and click **Turn on remote access**. Once the status reads **Running**, UNI MATE reads the hostname you set and shows the link `https://unimate.yourdomain.com`.
 
 The token is stored encrypted, never sent back to the browser, and handed to `cloudflared` through an environment variable rather than on the command line.
@@ -195,7 +195,7 @@ A Hostinger VPS already runs the Traefik reverse proxy handling SSL, and Traefik
 1. Point DNS: the record `A  <your domain> → <Hostinger VPS IP>`.
 2. Deploy with the compose file carrying Hostinger's Traefik labels: `docker-compose.hostinger.yml` (Docker Manager → Compose → URL).
 3. Click **Copy variable** in the wizard, set `DOMAIN_NAME=<your domain>` in Docker Manager then click **Redeploy**. The wizard also shows the current Traefik route so you can compare.
-4. Open `https://<domain>`; Traefik requests the certificate on the first visit. No more entering through `:7777`.
+4. Open `https://<domain>`; Traefik requests the certificate on the first visit. No more entering through `:8688`.
 
 If you try to click Enable SSL on Hostinger (through the API, say), UNI MATE refuses and states plainly that Hostinger manages HTTPS through Traefik, so set `DOMAIN_NAME` in Docker Manager and Redeploy.
 

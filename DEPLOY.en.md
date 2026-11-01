@@ -20,13 +20,13 @@ On the Hostinger VPS go to **Docker Manager → Compose → URL**, paste the lin
 ```
 https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml
 ```
-Hostinger pulls the image and runs it. Open the app at `http://<vps-ip>:7777` (the IP is in
+Hostinger pulls the image and runs it. Open the app at `http://<vps-ip>:8688` (the IP is in
 hPanel → VPS) and you get the **create admin account** screen.
 
-> 🌐 **Want a PRIVATE LINK with HTTPS (dropping `:7777` so the mic and voice work) WITHOUT buying a
+> 🌐 **Want a PRIVATE LINK with HTTPS (dropping `:8688` so the mic and voice work) WITHOUT buying a
 > domain?** Use `docker-compose.hostinger.yml` and set `DOMAIN_NAME=unimate.<vps-hostname>.hstgr.cloud`;
 > see **"The default link + HTTPS on Hostinger"** in the HTTPS section below. This base compose file
-> is only reachable by IP:7777.
+> is only reachable by IP:8688.
 
 **3 things to do once:**
 1. **Set the GHCR image to Public:** GitHub → the `UNI-MATE` repo → **Packages** → `UNI-MATE`
@@ -59,7 +59,7 @@ curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-co
 docker compose run --rm unimate claude auth login --claudeai   # SIGN CLAUDE IN ONCE (link + code)
 docker compose up -d                                          # pull the GHCR image and run
 ```
-Open `http://<vps-ip>:7777` (or through a tunnel, below) and you get the create-admin screen.
+Open `http://<vps-ip>:8688` (or through a tunnel, below) and you get the create-admin screen.
 To build from source instead of pulling: `curl -O .../docker-compose.build.yml` then
 `docker compose -f docker-compose.build.yml up -d --build`.
 
@@ -77,7 +77,7 @@ Every note, vault and setting lives in Docker volumes (`unimate-data`, `claude-a
 ### 🔒 Automatic HTTPS
 
 > ⚠️ **Voice and the mic REQUIRE HTTPS.** Browsers only grant microphone and camera permission over
-> `https://` (or on localhost), so opening `http://<ip>:7777` always blocks the mic with no manual
+> `https://` (or on localhost), so opening `http://<ip>:8688` always blocks the mic with no manual
 > override. **No HTTPS certificate is issued for a bare IP**, so making the mic work means one of the
 > ways below (a domain or a tunnel).
 >
@@ -119,7 +119,7 @@ you **must set a `DOMAIN_NAME` variable**:
 > stay empty. The gateway reads the VPS name (`srvXXXX.hstgr.cloud`) and issues HTTPS for both
 > `unimate.srvXXXX.hstgr.cloud` and `srvXXXX.hstgr.cloud` itself (since 0.304.0; whichever points at the machine gets a
 > certificate). **Settings → Domain** says whether the link works yet or is still waiting for its certificate. **Open** reaches
-> `http://<ip>:7777`, and the page moves to that HTTPS link as soon as it works and answers as this UNI MATE. Add
+> `http://<ip>:8688`, and the page moves to that HTTPS link as soon as it works and answers as this UNI MATE. Add
 > `?stay=1` to the IP link to stay. Apps installed from Hostinger's Catalog (e.g. `omniroute-xxxx.srv....hstgr.cloud`)
 > are told the VPS name at install time; a "Compose from URL" deploy is not, so the Open button cannot carry that link.
 > On the Ubuntu 24 template with Traefik, set `DOMAIN_NAME` once: open UNI MATE by IP → **Settings → Domain** shows
@@ -136,8 +136,8 @@ you **must set a `DOMAIN_NAME` variable**:
 > **Traefik does not handle updates.** Traefik (or Caddy) only provides HTTPS for the domain. Updates are done by the
 > bundled `unimate-watchtower` container, so the **⬆ Update now** button works the same on Ubuntu 24 and 26.
 
-> Without `DOMAIN_NAME` it still deploys (running temporarily on `:7777` with no HTTPS), and since 0.302.0 the
-> **Open** button goes to `http://<vps-ip>:7777` instead of `localhost` (Open follows the domain in the Traefik
+> Without `DOMAIN_NAME` it still deploys (running temporarily on `:8688` with no HTTPS), and since 0.302.0 the
+> **Open** button goes to `http://<vps-ip>:8688` instead of `localhost` (Open follows the domain in the Traefik
 > label, which used to say `localhost`). Don't know the VPS hostname? Open UNI MATE by IP → **Settings → Domain**: UNI MATE
 > looks it up and shows the line `DOMAIN_NAME=unimate.srvXXXX.hstgr.cloud` with a copy button. No Environment box?
 > Click **Manage → edit the .yaml** and change the two label lines to `- traefik.enable=true` and
@@ -155,7 +155,7 @@ you **must set a `DOMAIN_NAME` variable**:
 You no longer set `DOMAIN` at run time; enable Caddy once then declare the domain in the interface.
 1. Enable Caddy (On-Demand TLS): `docker compose -f docker-compose.yml -f docker-compose.https.yml up -d`
    *(needs Docker Compose v2.23.1+, check with `docker compose version`)*
-2. Open `http://<vps-ip>:7777` → **Settings → Voice, branding and access → Domain and SSL** → enter
+2. Open `http://<vps-ip>:8688` → **Settings → Voice, branding and access → Domain and SSL** → enter
    `unimate.yourname.com` → **Save and check**.
 3. The wizard shows the exact DNS record to create (A: `unimate.yourname.com → <vps-ip>`) with a copy
    button. Point the DNS then wait for propagation.
@@ -184,7 +184,7 @@ and no instance sees another's brain or accounts.
 | `UNIMATE_HOST_PORT` | One host port can only be held by one container | `port is already allocated` |
 | `DOMAIN_NAME` | Each link must point at exactly one instance | Two instances fighting over one link |
 
-Leaving all three empty gives `unimate` plus port `7777`, which is **exactly the old install**, so
+Leaving all three empty gives `unimate` plus port `8688`, which is **exactly the old install**, so
 running a single instance needs no change at all.
 
 ### On Hostinger Docker Manager
@@ -218,7 +218,7 @@ curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-co
 curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.multi.yml
 cat > .env <<'EOF'
 UNIMATE_NAME=unimate-shop
-UNIMATE_HOST_PORT=7777
+UNIMATE_HOST_PORT=8688
 UNIMATE_BIND=127.0.0.1
 DOMAIN_NAME=shop.yourname.com
 UNIMATE_ADMIN_USER=admin
@@ -241,7 +241,7 @@ not need restarting.
 > opens the link first can create the admin, so create it right after starting.
 
 > `UNIMATE_BIND=127.0.0.1` pulls the port back to loopback because the proxy handles HTTPS. You can
-> still get in to debug with `ssh -L 7777:localhost:7777 user@<vps-ip>` while DNS has not propagated.
+> still get in to debug with `ssh -L 8688:localhost:8688 user@<vps-ip>` while DNS has not propagated.
 
 **Updating** is still `./update.sh` in each folder; the script reads the `.env` of the folder you are
 standing in so it only touches that instance. If the first instance runs `docker-compose.https.yml`
@@ -287,7 +287,7 @@ Open the UNI MATE interface from another machine with NO open ports and NO domai
 **A stable URL (your own domain, `*.hstgr.cloud` style):** create a *named tunnel* in Cloudflare Zero
 Trust (free), take the token, put `TUNNEL_TOKEN=...` into `.env`, change the `tunnel` service's
 `command` line to the `run --token` variant (commented out in `docker-compose.yml`), and point it at
-`http://unimate:7777`. A quick tunnel changes its URL on every restart; a named tunnel gives a stable one.
+`http://unimate:8688`. A quick tunnel changes its URL on every restart; a named tunnel gives a stable one.
 
 ---
 
@@ -311,7 +311,7 @@ Managing the service: `journalctl -u unimate -f` · `sudo systemctl restart unim
 ## Way 3 - Windows (a personal machine)
 
 Double-click `setup.bat` (which shows a window) or `start-unimate.vbs` (which runs in the background).
-Stop it with `stop-unimate.bat`. Open http://localhost:7777
+Stop it with `stop-unimate.bat`. Open http://localhost:8688
 
 ---
 
@@ -320,7 +320,7 @@ Stop it with `stop-unimate.bat`. Open http://localhost:7777
 | Variable | Meaning | Default |
 |---|---|---|
 | `UNIMATE_HOST` | The listening address. `127.0.0.1` = this machine only; `0.0.0.0` = everywhere (Docker sets this itself) | `127.0.0.1` |
-| `UNIMATE_PORT` | The port | `7777` |
+| `UNIMATE_PORT` | The port | `8688` |
 | `UNIMATE_STATE_DIR` | Where UNI MATE writes state (settings, sessions, loop configuration) | `server/` (Docker: `/data/state`) |
 | `OBSIDIAN_VAULT_PATH` | The main Second Brain vault | `vault/` in the repo (Docker: `/data/vault`) |
 | `BRAIN_PATH` | The brain folder | `brain/` in the repo (Docker: `/data/brain`) |

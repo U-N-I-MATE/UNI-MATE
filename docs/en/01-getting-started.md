@@ -18,8 +18,8 @@ The first time you open the app, a wizard appears and walks you through exactly 
 
 ## Where to find it
 
-- On a personal machine, open a browser at `http://localhost:7777` (7777 is the default port).
-- On a VPS or Docker, use the address your provider gave you, e.g. `http://<vps-ip>:7777` or an HTTPS link like `https://<app>.<vps>.hstgr.cloud`.
+- On a personal machine, open a browser at `http://localhost:8688` (8688 is the default port).
+- On a VPS or Docker, use the address your provider gave you, e.g. `http://<vps-ip>:8688` or an HTTPS link like `https://<app>.<vps>.hstgr.cloud`.
 
 Once setup is done, the related items sit on the navigation rail on the left. The rail has 7 groups, and **you have to open a group before its items appear**:
 
@@ -34,7 +34,7 @@ Once setup is done, the related items sit on the navigation rail on the left. Th
 
 ### Step 1: Open the app and meet the wizard
 
-Open `http://localhost:7777` (or your VPS address). If this is the first run and no account exists, UNI MATE shows a **Welcome to UNI MATE** window with three numbered sections.
+Open `http://localhost:8688` (or your VPS address). If this is the first run and no account exists, UNI MATE shows a **Welcome to UNI MATE** window with three numbered sections.
 
 On a personal machine (localhost), the password field is optional and can be left empty. When running publicly (VPS/Docker), UNI MATE requires a username and password before letting you through; the prompt "Set a username and password (at least 8 characters) to protect UNI MATE on a public server. Once inside, turning on 2FA is recommended." then appears under the button.
 
@@ -150,11 +150,11 @@ Detail: [Chat & voice](../02-tro-chuyen-va-giong-noi.md) and [Branding & domains
 
 ### General tab: Start with Windows
 
-This group **only appears on the Windows build**; the Docker/Linux build hides it entirely. The **Auto-start UNI MATE** card shows the state ("On" or "Off") and has a single button: **Enable auto-start** or **Disable auto-start**. When on, UNI MATE runs in the background as soon as you sign in to Windows, and `localhost:7777` is ready.
+This group **only appears on the Windows build**; the Docker/Linux build hides it entirely. The **Auto-start UNI MATE** card shows the state ("On" or "Off") and has a single button: **Enable auto-start** or **Disable auto-start**. When on, UNI MATE runs in the background as soon as you sign in to Windows, and `localhost:8688` is ready.
 
 #### When the card says "On but not running"
 
-If you boot the machine and `localhost:7777` reports **ERR_CONNECTION_REFUSED**, reopen this page. UNI MATE checks three causes and writes the cause straight under the card, because none of the three leaves an error anywhere:
+If you boot the machine and `localhost:8688` reports **ERR_CONNECTION_REFUSED**, reopen this page. UNI MATE checks three causes and writes the cause straight under the card, because none of the three leaves an error anywhere:
 
 - **Windows is blocking this startup entry.** In Task Manager's **Startup** tab, pressing Disable deletes nothing - it just sets a flag telling Windows to skip the entry. Plenty of "clean up your PC, speed up boot" tools set the same flag without asking. Pressing **Enable auto-start** again clears it.
 - **The install folder moved** and the startup command still points at the old path. Press enable again to update it.
@@ -263,7 +263,7 @@ When UNI MATE runs publicly (listening on `0.0.0.0`, i.e. VPS/Docker/Hostinger) 
 - **Update says "Already updating, hold on.":** another update is in flight. Wait for it to finish and try again.
 - **Docker/VPS says the Docker image is still being packaged:** the new version was just released and its image is usually ready 2 to 5 minutes later. Try again in a few minutes. If Watchtower finishes without replacing the version, the page shows why and the button works again right away.
 - **No "⬆ Update now" button:** you are on Docker without Watchtower running, which since 0.55.56 means the stack was built from an older compose file. The Updates panel says exactly what your machine is missing. On a self-managed VPS, fetch the current `docker-compose.yml` and run `docker compose up -d --pull always`; on Hostinger, hit Redeploy in Docker Manager. Sticking with the old file? `docker compose --profile update up -d` starts Watchtower on its own.
-- **The port is right but nothing loads:** check that the address really is `http://localhost:7777` (or the VPS IP with port 7777). If you just changed code, restart the server and try again.
+- **The port is right but nothing loads:** check that the address really is `http://localhost:8688` (or the VPS IP with port 8688). If you just changed code, restart the server and try again.
 
 Still stuck? See [Troubleshooting & FAQ](../17-khac-phuc-su-co.md).
 

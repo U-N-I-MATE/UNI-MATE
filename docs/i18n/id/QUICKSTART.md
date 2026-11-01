@@ -33,14 +33,14 @@ Untuk memperbarui: tekan **Redeploy** di Docker Manager (image `:latest`, `pull_
 ```
 docker compose -f docker-compose.yml up -d
 ```
-Buka http://localhost:7777. Untuk HTTPS lewat Caddy, tambahkan `-f docker-compose.https.yml`.
+Buka http://localhost:8688. Untuk HTTPS lewat Caddy, tambahkan `-f docker-compose.https.yml`.
 
 ## Opsi 3 - Jalankan langsung (Windows, tanpa Docker)
 
 1. Instal Python 3.12 + Node 22.
 2. Di folder proyek, jalankan `setup.bat` sekali: script ini membuat .venv, menginstal dependency, dan menginstalkan dua engine CLI (Claude Code, Codex) untuk Anda.
 3. `start-unimate.bat` untuk menjalankan di background (`stop-unimate.bat` untuk menghentikan).
-4. Buka http://localhost:7777.
+4. Buka http://localhost:8688.
 
 ## Setelah berjalan
 

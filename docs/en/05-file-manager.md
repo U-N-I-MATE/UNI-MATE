@@ -34,7 +34,7 @@ How to set environment variables is in [.env configuration](16-env-configuration
 
 ## Where to find it in UNI MATE
 
-1. Open the UNI MATE dashboard (port 7777 by default).
+1. Open the UNI MATE dashboard (port 8688 by default).
 2. In the left navigation rail, open the **Brain** group and click **Files**.
 3. The page shows a search box on top, a toolbar under it, then the file and folder list. On first entry, UNI MATE shows the root of the selected brain.
 

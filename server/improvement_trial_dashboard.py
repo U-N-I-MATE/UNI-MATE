@@ -673,7 +673,7 @@ class DashboardContextCapture:
         content += host.main_prompt_rendering.render_clock_language(_clock(now, language, locale["tz"], host.lang_registry),
                                                                     host.lang_mod.khoi_ngon_ngu(language_decision))
         content += host.main_prompt_rendering.render_usage_block(total)
-        port_raw = os.environ.get("UNIMATE_PORT", "7777")
+        port_raw = os.environ.get("UNIMATE_PORT", "8688")
         if not port_raw.isdecimal() or not 1 <= int(port_raw) <= 65535:
             raise ValueError("unsupported_dashboard_port")
         tg = host._TG_BOT is not None

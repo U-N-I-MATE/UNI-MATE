@@ -18,8 +18,8 @@ Lần đầu mở app, một bộ cài đặt (wizard) sẽ hiện ra và dẫn 
 
 ## Mở ở đâu trong UNI MATE
 
-- Trên máy cá nhân, mở trình duyệt và vào `http://localhost:7777` (cổng mặc định là 7777).
-- Trên VPS hoặc Docker, dùng địa chỉ mà nhà cung cấp cấp cho bạn, ví dụ `http://<ip-vps>:7777` hoặc link HTTPS dạng `https://<app>.<vps>.hstgr.cloud`.
+- Trên máy cá nhân, mở trình duyệt và vào `http://localhost:8688` (cổng mặc định là 8688).
+- Trên VPS hoặc Docker, dùng địa chỉ mà nhà cung cấp cấp cho bạn, ví dụ `http://<ip-vps>:8688` hoặc link HTTPS dạng `https://<app>.<vps>.hstgr.cloud`.
 
 Sau khi thiết lập xong, các mục liên quan nằm trên rail điều hướng bên trái. Rail gom thành 7 nhóm, **phải bấm mở nhóm mới thấy mục con**:
 
@@ -34,7 +34,7 @@ Sau khi thiết lập xong, các mục liên quan nằm trên rail điều hư�
 
 ### Bước 1: Mở app và gặp bộ cài đặt
 
-Mở `http://localhost:7777` (hoặc địa chỉ VPS của bạn). Nếu đây là lần đầu và chưa có tài khoản, UNI MATE hiện cửa sổ **Chào mừng tới UNI MATE** với 3 mục đánh số sẵn.
+Mở `http://localhost:8688` (hoặc địa chỉ VPS của bạn). Nếu đây là lần đầu và chưa có tài khoản, UNI MATE hiện cửa sổ **Chào mừng tới UNI MATE** với 3 mục đánh số sẵn.
 
 Nếu bạn chạy trên máy cá nhân (localhost), mục mật khẩu là tùy chọn, có thể bỏ trống. Nếu bạn chạy công khai (VPS/Docker), UNI MATE bắt buộc bạn đặt tên đăng nhập và mật khẩu mới cho qua; lúc đó dòng nhắc "Đặt tên đăng nhập và mật khẩu (tối thiểu 8 ký tự) để bảo vệ UNI MATE trên server công khai. Sau khi vào, nên bật thêm 2FA." hiện ngay dưới nút.
 
@@ -150,11 +150,11 @@ Chi tiết xem [Trò chuyện & giọng nói](02-tro-chuyen-va-giong-noi.md) và
 
 ### Tab Chung: Khởi động cùng Windows
 
-Nhóm này **chỉ hiện trên bản chạy Windows**; bản Docker/Linux ẩn hẳn. Thẻ **Tự bật UNI MATE** cho biết trạng thái ("Bật" hoặc "Tắt") và có một nút duy nhất: **Bật tự khởi động** hoặc **Tắt tự khởi động**. Khi bật, UNI MATE tự chạy nền lúc bạn đăng nhập Windows, mở `localhost:7777` là dùng được.
+Nhóm này **chỉ hiện trên bản chạy Windows**; bản Docker/Linux ẩn hẳn. Thẻ **Tự bật UNI MATE** cho biết trạng thái ("Bật" hoặc "Tắt") và có một nút duy nhất: **Bật tự khởi động** hoặc **Tắt tự khởi động**. Khi bật, UNI MATE tự chạy nền lúc bạn đăng nhập Windows, mở `localhost:8688` là dùng được.
 
 #### Khi thẻ ghi "Bật nhưng không chạy"
 
-Mở máy lên mà `localhost:7777` báo **ERR_CONNECTION_REFUSED** thì mở lại trang này. UNI MATE tự kiểm ba nguyên nhân và ghi thẳng nguyên nhân dưới thẻ, vì cả ba đều **không để lại lỗi ở đâu**:
+Mở máy lên mà `localhost:8688` báo **ERR_CONNECTION_REFUSED** thì mở lại trang này. UNI MATE tự kiểm ba nguyên nhân và ghi thẳng nguyên nhân dưới thẻ, vì cả ba đều **không để lại lỗi ở đâu**:
 
 - **Windows đang chặn mục khởi động này.** Task Manager, thẻ **Startup**, khi bạn bấm Disable thì nó không xoá gì cả, chỉ ghi một cờ để Windows bỏ qua. Nhiều phần mềm "dọn máy, tăng tốc khởi động" cũng tắt bằng đúng cờ đó mà không hỏi. Bấm **Bật tự khởi động** lại là UNI MATE tự gỡ cờ.
 - **Thư mục cài đặt đã đổi chỗ**, lệnh khởi động còn trỏ đường dẫn cũ. Bấm bật lại để cập nhật.
@@ -263,7 +263,7 @@ Khi UNI MATE chạy công khai (nghe trên `0.0.0.0`, tức VPS/Docker/Hostinger
 - **Bấm cập nhật nhưng báo "Đang cập nhật rồi, chờ chút.":** một lần cập nhật khác đang chạy. Chờ tiến trình chạy xong rồi thử lại.
 - **Docker/VPS báo "image Docker còn đang đóng gói":** bản mới vừa phát hành, image Docker thường xong sau 2 đến 5 phút. Thử lại sau ít phút. Nếu Watchtower chạy xong mà không thay được bản mới, trang báo lý do và nút bấm lại được ngay.
 - **Không thấy nút "⬆ Cập nhật ngay":** bạn đang chạy Docker mà Watchtower chưa chạy. Khung Cập nhật nói rõ máy bạn thiếu gì. Trên VPS tự quản, chạy `docker compose --profile update up -d` một lần rồi tải lại trang - `docker compose up -d` thường lệ KHÔNG bật Watchtower vì nó nằm trong profile riêng. Trên Hostinger thì không bật được, dùng Redeploy.
-- **Mở đúng cổng nhưng không thấy app:** kiểm tra địa chỉ có đúng `http://localhost:7777` (hoặc IP VPS kèm cổng 7777) không. Nếu vừa sửa code, khởi động lại server rồi thử lại.
+- **Mở đúng cổng nhưng không thấy app:** kiểm tra địa chỉ có đúng `http://localhost:8688` (hoặc IP VPS kèm cổng 8688) không. Nếu vừa sửa code, khởi động lại server rồi thử lại.
 
 Còn vướng, xem thêm [Khắc phục sự cố & FAQ](17-khac-phuc-su-co.md).
 

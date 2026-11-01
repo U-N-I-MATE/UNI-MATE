@@ -15,7 +15,7 @@ Liên quan: chọn model cho agent xem [Models & engine](10-models-va-engine.md)
 
 ## Mở ở đâu trong UNI MATE
 
-Mở **Năng lực > Cộng sự** trên thanh bên của dashboard (mặc định tại cổng 7777). Trang có hai tab **Trợ lý | Quy trình**. Skills và Plugins vẫn nằm trong nhóm Năng lực.
+Mở **Năng lực > Cộng sự** trên thanh bên của dashboard (mặc định tại cổng 8688). Trang có hai tab **Trợ lý | Quy trình**. Skills và Plugins vẫn nằm trong nhóm Năng lực.
 
 - Cột trái: chọn tab, tìm theo tên hoặc lọc theo tag (quy trình: theo nhóm), rồi chọn cộng sự. Trợ lý vừa trò chuyện và quy trình vừa chạy được xếp lên đầu.
 - Cột giữa: khung chat của cộng sự đang chọn.
@@ -322,7 +322,7 @@ Chỉ chủ (hoặc việc nền chủ đã lên lịch) mới giao được. Bo
 - **Không thấy cài đặt hay lịch sử:** mở cột chi tiết bằng nút ở đầu khung chat, nhất là trên màn hình hẹp.
 - **Thiếu trợ lý trong quy trình:** tạo trợ lý đó trước rồi sửa bước để chọn đúng trợ lý.
 - **Mất kết nối hoặc chạy lỗi:** đọc thông báo trong chat và lịch sử chạy trước khi gửi lại yêu cầu.
-- **Trang tải mãi:** kiểm tra server ở cổng 7777, rồi xem [Khắc phục sự cố & FAQ](17-khac-phuc-su-co.md).
+- **Trang tải mãi:** kiểm tra server ở cổng 8688, rồi xem [Khắc phục sự cố & FAQ](17-khac-phuc-su-co.md).
 
 ## Liên quan
 

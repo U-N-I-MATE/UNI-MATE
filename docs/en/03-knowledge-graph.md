@@ -18,7 +18,7 @@ To see where this data comes from, read [Second Brain: memory, Wiki, INGEST](13-
 
 ## Opening the graph
 
-1. Open the dashboard, by default at `http://<machine-address>:7777`.
+1. Open the dashboard, by default at `http://<machine-address>:8688`.
 2. In the left navigation rail, open the **Assistant** group and select **UNI MATE**.
 3. The graph occupies the middle of the screen.
 

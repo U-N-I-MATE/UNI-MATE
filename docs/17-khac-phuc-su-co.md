@@ -23,13 +23,13 @@ Rất nhiều lỗi biến mất sau một trong hai việc này, nên thử tr�
 | Hiện tượng | Cách xử lý |
 |---|---|
 | Sửa code (hoặc vừa cập nhật) mà **không thấy đổi** | Nếu đổi file `.py`: **khởi động lại server** (Windows: `stop-unimate.bat` rồi `start-unimate.vbs`; Docker: `docker compose restart`). Nếu chỉ đổi giao diện: nhấn **Ctrl+Shift+R**. |
-| **Cổng 7777 bị giữ**, bản mới không lên được | Tắt tiến trình cũ TRƯỚC rồi mới bật lại. Windows: chạy `stop-unimate.bat`, hoặc `taskkill /F /PID <pid>` với PID đang giữ cổng. Docker: `docker compose down` rồi `docker compose up -d`. |
+| **Cổng 8688 bị giữ**, bản mới không lên được | Tắt tiến trình cũ TRƯỚC rồi mới bật lại. Windows: chạy `stop-unimate.bat`, hoặc `taskkill /F /PID <pid>` với PID đang giữ cổng. Docker: `docker compose down` rồi `docker compose up -d`. |
 | **Hostinger không pull được image** | Đặt package GHCR ở chế độ **Public** (GitHub, repo, mục Packages, chọn `UNI-MATE`, Package settings, Visibility = Public). Sau đó đợi GitHub Action build xong (xem tab Actions của repo) rồi Deploy lại. |
 | Mở app ra **màn tạo tài khoản admin** trên server public | Chưa có admin nên ai mở link trước sẽ tạo được admin. Tạo tài khoản ngay (mật khẩu tối thiểu 8 ký tự), hoặc lần sau đặt sẵn env `UNIMATE_ADMIN_USER` và `UNIMATE_ADMIN_PASSWORD` lúc deploy để đăng nhập luôn. Vào được rồi thì bật 2FA. |
 | **Claude báo chưa đăng nhập** (UNI MATE không trả lời được) | Đăng nhập lại "bộ não" Claude 1 lần. Cách trong app: mở **Models**, ở thẻ Claude Code bấm **Đăng nhập Claude**, mở link, dán code nếu được yêu cầu. Cách bằng lệnh: `claude auth login --claudeai` (Docker: chạy trong App terminal). |
 | **Trang Tệp tin báo lỗi ở "Đang tải..."** | Máy chủ chưa có endpoint Tệp tin (báo lỗi 404). **Khởi động lại server** để nạp endpoint mới, rồi nhấn **Ctrl+Shift+R**. |
 | Ảnh trong hội thoại cũ hiện ô xám **Ảnh đã hết hạn** | Đúng thiết kế: `attachments/` và `inbox/` là vùng cache, file quá 30 ngày (hoặc khi vượt trần 300MB) bị dọn. Xem mục "Ảnh và file cũ biến mất" bên dưới để biết cách giữ lại hoặc tắt hẳn. |
-| Voice / micro không bật được | Trình duyệt chỉ cấp quyền micro trên **HTTPS** (hoặc localhost). Mở qua `http://<ip>:7777` sẽ luôn bị chặn. Dùng URL `https://` (Hostinger `*.hstgr.cloud`, Cloudflare Tunnel, hoặc tên miền riêng có SSL). Xem [Thương hiệu & tên miền riêng](15-thuong-hieu-ten-mien.md). |
+| Voice / micro không bật được | Trình duyệt chỉ cấp quyền micro trên **HTTPS** (hoặc localhost). Mở qua `http://<ip>:8688` sẽ luôn bị chặn. Dùng URL `https://` (Hostinger `*.hstgr.cloud`, Cloudflare Tunnel, hoặc tên miền riêng có SSL). Xem [Thương hiệu & tên miền riêng](15-thuong-hieu-ten-mien.md). |
 | Cập nhật trong app xong mà **phiên bản không đổi** | Đợi thêm; nếu vẫn báo bản cũ, kiểm tra log cập nhật: `update.log` trong thư mục state (`server/update.log` khi chạy local, `/data/state/update.log` trên Docker), hoặc `docker compose logs`. |
 | **`unimate` báo 401** hoặc "token không hợp lệ" | Token sai hoặc đã bị thu hồi. Tạo cái mới ở **Tài khoản > Token API** rồi `unimate login <địa-chỉ>` lại. Xem [UNI MATE CLI](24-cli-terminal.md). |
 | **`unimate task add` / `unimate brain ls` báo 403** | Token của bạn là loại **chỉ chat**. Những lệnh này cần token **toàn quyền** - tạo thêm một cái ở Tài khoản > Token API. |
@@ -49,14 +49,14 @@ UNI MATE gồm hai phần chạy khác nhau, nên cách làm mới cũng khác:
 
 Nếu làm cả hai vẫn không đổi, kiểm tra bạn có đang mở đúng cổng và đúng brain hay không.
 
-## Cổng 7777 bị giữ, bản mới không lên
+## Cổng 8688 bị giữ, bản mới không lên
 
-Cổng mặc định của UNI MATE là **7777**. Khi một tiến trình cũ chưa tắt hẳn mà bạn bật bản mới, bản mới sẽ báo lỗi vì cổng đang bận. Xử lý theo thứ tự:
+Cổng mặc định của UNI MATE là **8688**. Khi một tiến trình cũ chưa tắt hẳn mà bạn bật bản mới, bản mới sẽ báo lỗi vì cổng đang bận. Xử lý theo thứ tự:
 
 1. Tắt tiến trình cũ trước. Windows: chạy `stop-unimate.bat`. Nếu vẫn còn, tìm PID đang giữ cổng rồi `taskkill /F /PID <pid>`. Docker: `docker compose down`.
 2. Bật lại. Windows: `start-unimate.vbs`. Docker: `docker compose up -d`.
 
-Muốn đổi sang cổng khác (khi 7777 đụng phần mềm khác), đặt biến `UNIMATE_PORT` trong file `.env`; xem [Cấu hình .env](16-cau-hinh-env.md).
+Muốn đổi sang cổng khác (khi 8688 đụng phần mềm khác), đặt biến `UNIMATE_PORT` trong file `.env`; xem [Cấu hình .env](16-cau-hinh-env.md).
 
 ## Hostinger không pull được image
 
@@ -212,7 +212,7 @@ Xem cách đặt biến ở [Cấu hình .env](16-cau-hinh-env.md). Lưu ý: nú
 
 ### Truy cập từ xa mà micro không bật được?
 
-Trình duyệt bắt buộc **HTTPS** mới cho cấp quyền micro (trừ localhost). Mở app qua IP trần `http://<ip>:7777` thì micro luôn bị chặn và không có cách bật tay. Giải pháp: dùng URL `https://` qua Hostinger (`*.hstgr.cloud`), Cloudflare Tunnel (cho URL `https://...trycloudflare.com`), hoặc tên miền riêng có SSL. Xem [Thương hiệu & tên miền riêng](15-thuong-hieu-ten-mien.md).
+Trình duyệt bắt buộc **HTTPS** mới cho cấp quyền micro (trừ localhost). Mở app qua IP trần `http://<ip>:8688` thì micro luôn bị chặn và không có cách bật tay. Giải pháp: dùng URL `https://` qua Hostinger (`*.hstgr.cloud`), Cloudflare Tunnel (cho URL `https://...trycloudflare.com`), hoặc tên miền riêng có SSL. Xem [Thương hiệu & tên miền riêng](15-thuong-hieu-ten-mien.md).
 
 ## Vẫn chưa xử lý được?
 

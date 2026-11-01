@@ -17,7 +17,7 @@ To write code you need no separate page: attach a folder to any chat and UNI MAT
 
 ## Where to open it in UNI MATE
 
-1. Open the UNI MATE dashboard (default port 7777).
+1. Open the UNI MATE dashboard (default port 8688).
 2. On the left navigation rail, open the **Code** group and click **Terminal**.
 3. The terminal opens and connects itself. Click the black panel and type as in any terminal.
 

@@ -35,7 +35,7 @@ def check(name, cond):
 
 
 # The browser on the machine itself: loopback address, no forwarding header.
-cl = TestClient(main.app, client=("127.0.0.1", 50000), base_url="http://localhost:7777")
+cl = TestClient(main.app, client=("127.0.0.1", 50000), base_url="http://localhost:8688")
 PW = "matkhau123"
 SEC = totp.sinh_secret()
 REC = totp.sinh_ma_khoi_phuc()
@@ -104,7 +104,7 @@ os.environ["UNIMATE_REQUIRE_LOGIN"] = "1"
 r = disable(password=PW, code=next_code())
 check("public server (require_login) -> 403", r.status_code == 403 and c.auth_enabled())
 os.environ["UNIMATE_REQUIRE_LOGIN"] = "0"
-lan = TestClient(main.app, client=("192.168.1.20", 50000), base_url="http://localhost:7777")
+lan = TestClient(main.app, client=("192.168.1.20", 50000), base_url="http://localhost:8688")
 for k, v in dict(cl.cookies).items():
     lan.cookies.set(k, v)
 r = lan.post("/auth/disable", data={"password": PW, "code": next_code()})

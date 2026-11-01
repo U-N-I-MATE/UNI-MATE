@@ -36,15 +36,15 @@ def check(name, cond, them=""):
 
 # ---- 1. pure decision ------------------------------------------------------------------
 d = ws.ws_decision
-check("same origin passes", d("127.0.0.1:7777", "http://127.0.0.1:7777", False) is None)
+check("same origin passes", d("127.0.0.1:8688", "http://127.0.0.1:8688", False) is None)
 check("localhost page to 127.0.0.1 socket passes (both loopback)",
-      d("127.0.0.1:7777", "http://localhost:7777", False) is None)
-check("no Origin (not a browser) passes", d("127.0.0.1:7777", None, False) is None)
-check("CANARY: foreign page blocked with no password", d("127.0.0.1:7777", "https://evil.example", False) is not None)
-check("foreign page blocked with a password too", d("127.0.0.1:7777", "https://evil.example", True) is not None)
-check("Origin null (sandboxed iframe, file://) blocked", d("127.0.0.1:7777", "null", False) is not None)
-check("DNS rebinding Host blocked without a password", d("evil.example:7777", "http://evil.example:7777", False) is not None)
-check("LAN IP same origin passes", d("192.168.1.10:7777", "http://192.168.1.10:7777", False) is None)
+      d("127.0.0.1:8688", "http://localhost:8688", False) is None)
+check("no Origin (not a browser) passes", d("127.0.0.1:8688", None, False) is None)
+check("CANARY: foreign page blocked with no password", d("127.0.0.1:8688", "https://evil.example", False) is not None)
+check("foreign page blocked with a password too", d("127.0.0.1:8688", "https://evil.example", True) is not None)
+check("Origin null (sandboxed iframe, file://) blocked", d("127.0.0.1:8688", "null", False) is not None)
+check("DNS rebinding Host blocked without a password", d("evil.example:8688", "http://evil.example:8688", False) is not None)
+check("LAN IP same origin passes", d("192.168.1.10:8688", "http://192.168.1.10:8688", False) is None)
 check("malformed Host refused", d("a/b", None, False) is not None)
 
 
@@ -56,13 +56,13 @@ async def echo(websocket):
 
 inner = Starlette(routes=[WebSocketRoute("/ws/terminal", echo)])
 app = ws.WebSocketGuard(inner, gate_active=lambda: False)
-client = TestClient(app, base_url="http://127.0.0.1:7777")
+client = TestClient(app, base_url="http://127.0.0.1:8688")
 
-with client.websocket_connect("/ws/terminal", headers={"host": "127.0.0.1:7777", "origin": "http://127.0.0.1:7777"}) as s:
+with client.websocket_connect("/ws/terminal", headers={"host": "127.0.0.1:8688", "origin": "http://127.0.0.1:8688"}) as s:
     check("dashboard's own socket still connects", s.receive_text() == "hi")
 
 try:
-    with client.websocket_connect("/ws/terminal", headers={"host": "127.0.0.1:7777", "origin": "https://evil.example"}) as s:
+    with client.websocket_connect("/ws/terminal", headers={"host": "127.0.0.1:8688", "origin": "https://evil.example"}) as s:
         s.receive_text()
     bi_chan = False
 except WebSocketDisconnect as e:

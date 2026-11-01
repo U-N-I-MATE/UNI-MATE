@@ -126,7 +126,7 @@ Note: if the server is still running public (or you set `UNIMATE_REQUIRE_LOGIN=1
 
 This layer runs in the background and needs nothing turned on, but it is worth knowing about because it is occasionally the culprit behind a puzzling 403.
 
-The problem it solves: the dashboard listens on `localhost:7777`. When you have **not** set a password, any web page open in your browser can still fire a POST request at `http://localhost:7777/...`. The browser stops that page from READING the result, but it does not stop the request from running, so the action still happens. An attacker can also point one of their domains at `127.0.0.1` to slip past origin checks.
+The problem it solves: the dashboard listens on `localhost:8688`. When you have **not** set a password, any web page open in your browser can still fire a POST request at `http://localhost:8688/...`. The browser stops that page from READING the result, but it does not stop the request from running, so the action still happens. An attacker can also point one of their domains at `127.0.0.1` to slip past origin checks.
 
 UNI MATE blocks both paths with a gate standing in front of the login gate itself:
 
@@ -224,7 +224,7 @@ About the `secure` cookie: by default UNI MATE does **not** force it, so it runs
 
 - **Always set the admin before going public.** The surest way is setting `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` at deploy time, so the server is never without an admin.
 - **Use a long enough password.** At least 8 characters; a long, hard to guess phrase is better.
-- **Run over HTTPS for remote access.** Use a custom domain (a Hostinger `*.hstgr.cloud` name, say) or Cloudflare Tunnel rather than exposing raw port 7777 to the Internet. How to point a domain and enable HTTPS: [Branding and custom domains](15-branding-and-domains.md).
+- **Run over HTTPS for remote access.** Use a custom domain (a Hostinger `*.hstgr.cloud` name, say) or Cloudflare Tunnel rather than exposing raw port 8688 to the Internet. How to point a domain and enable HTTPS: [Branding and custom domains](15-branding-and-domains.md).
 - **Localhost plus a tunnel you run yourself means setting `UNIMATE_REQUIRE_LOGIN=1`.** When the machine only listens on localhost but you run a tunnel (cloudflared, ngrok...) outside UNI MATE, UNI MATE cannot tell it is public, so force login manually. The **Remote access** section in Settings does not need this: UNI MATE knows its tunnel is on, forces login and only runs it once a password is set.
 - **Turn on two-factor (2FA) right after the first sign-in.** If the password leaks, a stranger still lacks the TOTP code on your phone.
 - **Back up `.secret_key` alongside `settings.json`.** Missing either one means re-entering every API key.

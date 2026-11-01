@@ -232,7 +232,7 @@ async def part_hub_http():
 
 
 async def part_engines():
-    shared = {"unimate": {"type": "http", "url": "http://127.0.0.1:7777/hub/mcp",
+    shared = {"unimate": {"type": "http", "url": "http://127.0.0.1:8688/hub/mcp",
                         "headers": {"Authorization": "Bearer T", "X-UniMate-Bot": "1"}}}
     snapshot = json.dumps(shared, sort_keys=True)
 

@@ -25,8 +25,8 @@ def check(name, cond):
         _fails.append(name)
 
 
-web = channel_context.build_channel_block("dashboard", {"session_id": "s123"}, False, 7777, "/brain")
-tg = channel_context.build_channel_block("telegram", {"chat_id": 1, "user_name": "A"}, True, 7777, "/brain")
+web = channel_context.build_channel_block("dashboard", {"session_id": "s123"}, False, 8688, "/brain")
+tg = channel_context.build_channel_block("telegram", {"chat_id": 1, "user_name": "A"}, True, 8688, "/brain")
 
 check("web: nhắc unimate_ui", "unimate_ui" in web)
 check("web: nhắc unimate_app_open / unimate_app_close", "unimate_app_open" in web and "unimate_app_close" in web)

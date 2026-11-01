@@ -34,7 +34,7 @@ Cách chỉnh biến môi trường xem [Cấu hình .env](16-cau-hinh-env.md).
 
 ## Mở ở đâu trong UNI MATE
 
-1. Mở dashboard UNI MATE (mặc định ở cổng 7777).
+1. Mở dashboard UNI MATE (mặc định ở cổng 8688).
 2. Trên rail điều hướng bên trái, mở nhóm **Bộ não** rồi bấm mục **Tệp tin**.
 3. Trang hiện ô tìm kiếm ở trên cùng, dưới đó là thanh công cụ, dưới nữa là danh sách file/thư mục. Lần đầu vào, UNI MATE hiển thị thư mục gốc của brain đang chọn.
 

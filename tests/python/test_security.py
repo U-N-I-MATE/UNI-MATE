@@ -125,19 +125,19 @@ for bad in ("../etc/passwd", "../../secret", "/etc/passwd"):
 # ---- 9. Quyết định CSRF / DNS-rebinding ----
 web_security.invalidate()
 check("cùng-origin ghi → cho qua",
-      web_security.csrf_decision("POST", "localhost:7777", "http://localhost:7777", False) is None)
+      web_security.csrf_decision("POST", "localhost:8688", "http://localhost:8688", False) is None)
 check("cross-origin ghi → chặn 403",
-      (web_security.csrf_decision("POST", "localhost:7777", "http://evil.example", False) or (0,))[0] == 403)
+      (web_security.csrf_decision("POST", "localhost:8688", "http://evil.example", False) or (0,))[0] == 403)
 check("không có Origin (curl/CLI) ghi → cho qua",
-      web_security.csrf_decision("POST", "localhost:7777", None, False) is None)
+      web_security.csrf_decision("POST", "localhost:8688", None, False) is None)
 check("cross-origin ĐỌC (GET) → cho qua (không mutating)",
-      web_security.csrf_decision("GET", "localhost:7777", "http://evil.example", False) is None)
+      web_security.csrf_decision("GET", "localhost:8688", "http://evil.example", False) is None)
 check("no-auth + host lạ (rebinding) → chặn",
       (web_security.csrf_decision("GET", "evil.example", None, False) or (0,))[0] == 403)
 check("no-auth + host localhost → cho qua",
-      web_security.csrf_decision("GET", "127.0.0.1:7777", None, False) is None)
+      web_security.csrf_decision("GET", "127.0.0.1:8688", None, False) is None)
 check("no-auth + host IP → cho qua",
-      web_security.csrf_decision("GET", "192.168.1.9:7777", None, False) is None)
+      web_security.csrf_decision("GET", "192.168.1.9:8688", None, False) is None)
 check("đã bật auth + host lạ → cho qua (không khoá nhầm deploy)",
       web_security.csrf_decision("GET", "some-domain.com", None, True) is None)
 
@@ -170,11 +170,11 @@ check("external_base: sau proxy https → lấy X-Forwarded-Proto",
       web_security.external_base("http", "unimate.example.com", "https", "")
       == "https://unimate.example.com")
 check("external_base: X-Forwarded-Host thắng host nội bộ",
-      web_security.external_base("http", "10.0.0.5:7777", "https", "unimate.example.com")
+      web_security.external_base("http", "10.0.0.5:8688", "https", "unimate.example.com")
       == "https://unimate.example.com")
 check("external_base: không proxy → giữ nguyên scheme/host của request",
-      web_security.external_base("http", "localhost:7777", "", "")
-      == "http://localhost:7777")
+      web_security.external_base("http", "localhost:8688", "", "")
+      == "http://localhost:8688")
 check("external_base: header nhiều giá trị (proxy chồng) → lấy giá trị ĐẦU",
       web_security.external_base("http", "x", "https, http", "a.com, b.com")
       == "https://a.com")

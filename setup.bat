@@ -70,9 +70,9 @@ if not "%UNIMATE_NO_AUTOSTART%"=="1" (
   if not errorlevel 1 echo     OK  Tu khoi dong cung Windows: BAT
 )
 
-REM Cong chay: bien UNIMATE_PORT neu co, khong thi dong UNIMATE_PORT=... trong .env, khong thi 7777.
+REM Cong chay: bien UNIMATE_PORT neu co, khong thi dong UNIMATE_PORT=... trong .env, khong thi 8688.
 if "%UNIMATE_PORT%"=="" for /f "tokens=1,* delims==" %%a in ('findstr /r /b /c:"UNIMATE_PORT=[0-9]" ".env" 2^>nul') do set "UNIMATE_PORT=%%b"
-if "%UNIMATE_PORT%"=="" set UNIMATE_PORT=7777
+if "%UNIMATE_PORT%"=="" set UNIMATE_PORT=8688
 REM Giai phong cong chay neu dang bi chiem
 echo [4/4] Giai phong port %UNIMATE_PORT%...
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%UNIMATE_PORT% " ^| findstr "LISTENING"') do (

@@ -11,7 +11,7 @@ chỗ chặn nằm hết ở FILE CÀI ĐẶT, và đều là cùng một loại
 
 Năm cái tên toàn cục đó:
   1. `container_name: unimate`            -> bản hai chết ngay lúc `up` ("name is already in use")
-  2. cổng máy chủ `7777:7777`           -> bản hai chết ("port is already allocated")
+  2. cổng máy chủ `8688:8688`           -> bản hai chết ("port is already allocated")
   3. tên router/service Traefik `unimate` -> bản sau đè bản trước, một trong hai tên miền chết
   4. `/etc/systemd/system/unimate.service`-> install.sh bản hai ghi đè dịch vụ bản một
   5. `~/.codex/unimate.config.toml`       -> hai bản native chung $HOME ghi đè profile của nhau,
@@ -74,8 +74,8 @@ BAN2 = {"UNIMATE_NAME": "unimate-shop", "UNIMATE_HOST_PORT": "7778",
 for f in ("docker-compose.yml", "docker-compose.build.yml", "docker-compose.hostinger.yml"):
     j = load(f)["services"]["unimate"]
     check(f"{f}: mặc định vẫn là container 'unimate'", j["container_name"] == "unimate")
-    check(f"{f}: mặc định vẫn nghe cổng 7777 công khai",
-          any(str(p).endswith("7777:7777") and not str(p).startswith("127.")
+    check(f"{f}: mặc định vẫn nghe cổng 8688 công khai",
+          any(str(p).endswith("8688:8688") and not str(p).startswith("127.")
               for p in j["ports"]))
 
 # ============================================================
@@ -84,7 +84,7 @@ for f in ("docker-compose.yml", "docker-compose.build.yml", "docker-compose.host
 vps = load("docker-compose.yml", BAN2)["services"]
 check("compose VPS: container mang tên của bản", vps["unimate"]["container_name"] == "unimate-shop")
 check("compose VPS: cổng máy chủ đổi theo bản",
-      any("7778:7777" in str(p) for p in vps["unimate"]["ports"]))
+      any("7778:8688" in str(p) for p in vps["unimate"]["ports"]))
 check("compose VPS: chỉ MỘT binding cổng (khai thêm ở override là Docker báo cổng đã chiếm)",
       len(vps["unimate"]["ports"]) == 1)
 check("compose VPS: tunnel mang tên của bản", vps["tunnel"]["container_name"] == "unimate-shop-tunnel")
@@ -108,7 +108,7 @@ check("Hostinger: watchtower KHÔNG mở ra Traefik (container nội bộ)",
 host = load("docker-compose.hostinger.yml", BAN2)["services"]["unimate"]
 check("Hostinger: container mang tên của bản", host["container_name"] == "unimate-shop")
 check("Hostinger: cổng dự phòng đổi theo bản",
-      any("7778:7777" in str(p) for p in host["ports"]))
+      any("7778:8688" in str(p) for p in host["ports"]))
 nhan = " ".join(host["labels"])
 for phan in ("routers.unimate-shop.rule", "routers.unimate-shop.service=unimate-shop",
              "services.unimate-shop.loadbalancer"):
@@ -140,7 +140,7 @@ check("multi: giữ CẢ mạng default (khai networks ở service là THAY danh
 check("multi: gắn nhãn tên miền cho proxy tự phát hiện",
       msvc["labels"]["caddy"] == "shop.tencuaban.com")
 check("multi: nhãn trỏ đúng cổng trong container",
-      "7777" in str(msvc["labels"]["caddy.reverse_proxy"]))
+      "8688" in str(msvc["labels"]["caddy.reverse_proxy"]))
 # Cái bẫy đắt nhất của compose nhiều file: `ports` bị NỐI CHỒNG chứ không thay thế.
 check("multi: KHÔNG khai lại ports (nối chồng là hai binding cùng một cổng)",
       "ports" not in msvc)
@@ -156,10 +156,10 @@ check("bản Caddy cũ nói rõ nó chỉ dành cho máy chạy MỘT bản",
 # ============================================================
 ins = src("install.sh")
 check("install.sh: tên dịch vụ lấy từ UNIMATE_NAME", 'SVC="${UNIMATE_NAME:-unimate}"' in ins)
-check("install.sh: cổng lấy từ UNIMATE_PORT", 'PORT="${UNIMATE_PORT:-7777}"' in ins)
+check("install.sh: cổng lấy từ UNIMATE_PORT", 'PORT="${UNIMATE_PORT:-8688}"' in ins)
 check("install.sh: ghi unit theo tên bản, không đè unimate.service",
       '/etc/systemd/system/$SVC.service' in ins)
-check("install.sh: không còn --port 7777 đóng cứng", "--port 7777" not in ins)
+check("install.sh: không còn --port 8688 đóng cứng", "--port 8688" not in ins)
 check("install.sh: chặn tên có ký tự lạ trước khi ghi vào /etc/systemd",
       "UNIMATE_NAME may only contain" in ins)
 

@@ -6,6 +6,15 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.429.2] - 2026-11-01
+### Cải thiện
+- **Cổng mặc định của UNI MATE giờ là 8688** ở bản cài mới, Docker, script cài và tài liệu. Máy nào đã đặt cổng riêng trong `.env` thì vẫn giữ cổng đó.
+- **Thẻ Tự bật, lời nhắc micro và trang thử giọng hiện đúng cổng đang chạy**, không còn ghi cố định một địa chỉ.
+- **Nghe thử giọng ChatGPT Live giờ tự giới thiệu là Uni.** Thu lại cả 9 mẫu giọng.
+
+### Sửa lỗi
+- **Cảnh báo giọng gọi khác giới tính giọng đọc có thêm nút "Giữ nguyên, không nhắc nữa".** Bạn chủ động chọn vậy thì màn hình thôi nhắc lại.
+
 ## [0.429.1] - 2026-11-01
 ### Thêm mới
 - **UNI MATE 01: bản đầu tiên của UNI MATE.** Trợ lý AI tự cài trên máy, sản phẩm của UNI TECH, Công ty TNHH Dịch vụ và Thương mại U.N.I.

@@ -49,14 +49,14 @@ def _reminder_json(block):
 
 # ---- Telegram CÓ brain_root ----
 tg = cc.build_channel_block("telegram", {"chat_id": "12345"}, telegram_running=True,
-                            port=7777, brain_root=BRAIN)
+                            port=8688, brain_root=BRAIN)
 check("TG: recipe /reminders có field brain đúng path (substring)", f'"brain":{json.dumps(BRAIN)}' in tg)
 rj = _reminder_json(tg)
 check("TG: body /reminders là JSON hợp lệ", isinstance(rj, dict))
 check("TG: brain trong body = path phiên", (rj or {}).get("brain") == BRAIN)
 check("TG: vẫn giữ chat_id đúng người", (rj or {}).get("chat_id") == "12345")
 check("TG: gợi ý dùng tool unimate_schedule", "unimate_schedule" in tg)
-check("TG: fallback huỷ dùng đúng POST /reminders/cancel", "POST http://127.0.0.1:7777/reminders/cancel" in tg)
+check("TG: fallback huỷ dùng đúng POST /reminders/cancel", "POST http://127.0.0.1:8688/reminders/cancel" in tg)
 check("TG: fallback huỷ dùng form-data id + brain", '--data-urlencode "id=<r_id>"' in tg
       and f'--data-urlencode "brain={BRAIN}"' in tg)
 check("TG: cấm DELETE/JSON và sửa thẳng reminders.json", "KHÔNG gọi DELETE" in tg
@@ -66,19 +66,19 @@ sendfile_blobs = [b for b in re.findall(r"-d '(\{.*?\})'", " ".join(tg.split("\n
 check("TG: recipe send-file KHÔNG chèn brain", sendfile_blobs and all('"brain"' not in b for b in sendfile_blobs))
 
 # ---- Telegram KHÔNG brain_root → tương thích cũ, không có brain, có cảnh báo ----
-tg0 = cc.build_channel_block("telegram", {"chat_id": "1"}, telegram_running=True, port=7777)
+tg0 = cc.build_channel_block("telegram", {"chat_id": "1"}, telegram_running=True, port=8688)
 rj0 = _reminder_json(tg0)
 check("TG không brain_root: body KHÔNG có field brain", isinstance(rj0, dict) and "brain" not in rj0)
 check("TG không brain_root: có ghi chú rơi về Brain Default", "Brain Default" in tg0)
 
 # ---- Dashboard CÓ brain_root ----
-dash = cc.build_channel_block("dashboard", telegram_running=True, port=7777, brain_root=BRAIN)
+dash = cc.build_channel_block("dashboard", telegram_running=True, port=8688, brain_root=BRAIN)
 check("Dashboard: recipe /reminders có brain đúng path", f'"brain":{json.dumps(BRAIN)}' in dash)
 rjd = _reminder_json(dash)
 check("Dashboard: body /reminders JSON hợp lệ + brain đúng", isinstance(rjd, dict) and rjd.get("brain") == BRAIN)
 
 # ---- Dashboard KHÔNG brain_root → không brain (tương thích) ----
-dash0 = cc.build_channel_block("dashboard", telegram_running=True, port=7777)
+dash0 = cc.build_channel_block("dashboard", telegram_running=True, port=8688)
 rjd0 = _reminder_json(dash0)
 check("Dashboard không brain_root: body KHÔNG có brain", isinstance(rjd0, dict) and "brain" not in rjd0)
 

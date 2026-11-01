@@ -29,7 +29,7 @@ check("the OFL licence ships with the fonts", /SIL Open Font License/.test(read(
 
 // ───────── coalesced reads (fetch-gop.js) ─────────
 const G = require(path.join(ROOT, "dashboard/fetch-gop.js"));
-const O = "http://127.0.0.1:7777";
+const O = "http://127.0.0.1:8688";
 check("GET /settings is coalesced", G.gopDuoc("/settings", undefined, O) && G.gopDuoc("/agents?brain=b", { method: "GET" }, O));
 check("a write is never coalesced", !G.gopDuoc("/settings", { method: "POST", body: "x" }, O));
 check("a call with its own AbortController is not coalesced (one abort would kill the other)",

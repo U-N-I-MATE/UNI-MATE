@@ -71,7 +71,7 @@ if hasattr(os, "getuid"):
             patch.object(updater, "stop_server", lambda *x, **k: ran.append("stop")), \
             patch.object(updater.subprocess, "run",
                          lambda c, **k: ran.append(c[0]) or SimpleNamespace(returncode=0, stdout="", stderr="")), \
-            patch.object(sys, "argv", ["updater.py", "--old-sha", "abc", "--port", "7777"]):
+            patch.object(sys, "argv", ["updater.py", "--old-sha", "abc", "--port", "8688"]):
         rc = updater.main()
     check("systemd: the first updater only hands over to the worker, it never stops the service itself",
           rc == 0 and ran == ["systemd-run"], ran)
@@ -81,7 +81,7 @@ if hasattr(os, "getuid"):
             patch.object(updater, "stop_server", lambda *x, **k: ran.append("stop")), \
             patch.object(updater.subprocess, "run",
                          lambda c, **k: SimpleNamespace(returncode=1, stdout="", stderr="Access denied")), \
-            patch.object(sys, "argv", ["updater.py", "--old-sha", "abc", "--port", "7777"]):
+            patch.object(sys, "argv", ["updater.py", "--old-sha", "abc", "--port", "8688"]):
         rc = updater.main()
     st = us.read_state()
     check("systemd-run refused: UNI MATE is left running and the screen says why",
@@ -106,7 +106,7 @@ if hasattr(os, "getuid"):
 
     OK = SimpleNamespace(returncode=0, stdout="", stderr="")
     NO_BUS = SimpleNamespace(returncode=1, stdout="", stderr="Failed to connect to bus: No medium found")
-    a = SimpleNamespace(old_sha="abc123", old_version="0.1.0", target="0.2.0", port="7777", server_pid=42)
+    a = SimpleNamespace(old_sha="abc123", old_version="0.1.0", target="0.2.0", port="8688", server_pid=42)
 
     seen = []
     with patch.object(updater.os, "geteuid", lambda: 1000), \
@@ -144,16 +144,16 @@ if hasattr(os, "getuid"):
     with patch.object(updater, "_unit_main_pid", lambda name: 4242), \
             patch.object(updater, "_kill_pid", lambda pid, timeout_s=15: killed.append(pid)), \
             patch.object(updater, "log", logs.append):
-        updater.stop_server("systemd-signal", 4242, "7777")
+        updater.stop_server("systemd-signal", 4242, "8688")
         check("signal mode: stopping does not touch the running server", killed == [])
-        updater.start_server("systemd-signal", "7777")
+        updater.start_server("systemd-signal", "8688")
         check("signal mode: starting signals the unit's main process so systemd brings up the new code",
               killed == [4242])
 
     modes = []
     with patch.object(updater, "service_mode", lambda *x, **k: "systemd"), \
             patch.object(updater, "stop_server", lambda m, *x, **k: modes.append(m) or (_ for _ in ()).throw(SystemExit(7))), \
-            patch.object(sys, "argv", ["updater.py", "--old-sha", "abc", "--port", "7777",
+            patch.object(sys, "argv", ["updater.py", "--old-sha", "abc", "--port", "8688",
                                        "--systemd-worker", "--restart-by-signal"]):
         try:
             updater.main()

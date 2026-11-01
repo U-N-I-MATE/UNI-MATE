@@ -63,7 +63,7 @@ The configuration is saved at `~/.unimate/config.json` with `600` permissions (o
 ### Several UNI MATE instances at once
 
 ```bash
-unimate login http://localhost:7777 --name home
+unimate login http://localhost:8688 --name home
 unimate login https://unimate.company.com --name company --brain brain-company
 unimate --profile company "how is the company side this week"
 unimate profiles          # list saved profiles, the * marks the default

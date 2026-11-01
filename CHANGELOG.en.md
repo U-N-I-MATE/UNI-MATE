@@ -6,6 +6,15 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.429.2] - 2026-11-01
+### Improved
+- **UNI MATE's default port is now 8688** on new installs, Docker, install scripts and docs. A machine with its own port in `.env` keeps that port.
+- **The auto-start card, the mic hint and the voice test page show the port actually in use** instead of a fixed address.
+- **ChatGPT Live voice samples now introduce themselves as Uni.** All 9 samples were re-recorded.
+
+### Fixed
+- **The warning about call and reading voices of different genders gains a "Keep as is, don't remind me" button.** If you chose that on purpose, the screen stops nagging.
+
 ## [0.429.1] - 2026-11-01
 ### Added
 - **UNI MATE 01: the first release of UNI MATE.** A self-hosted AI assistant by UNI TECH, U.N.I SERVICE AND TRADING CO., LTD.

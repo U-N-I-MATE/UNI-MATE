@@ -392,7 +392,7 @@ Models page.
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
-cd server && python main.py        # http://127.0.0.1:7777
+cd server && python main.py        # http://127.0.0.1:8688
 ```
 
 `UNIMATE_HOST` and `UNIMATE_PORT` change the bind address. `install.sh`, `setup.bat` and the

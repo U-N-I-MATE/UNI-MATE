@@ -8,7 +8,7 @@
 # NHIEU BAN TREN CUNG MOT MAY: clone vao THU MUC KHAC roi dat hai bien truoc khi chay.
 #   UNIMATE_NAME=unimate-shop UNIMATE_PORT=7778 ./install.sh
 # UNIMATE_NAME dat ten dich vu systemd (unimate-shop.service); UNIMATE_PORT la cong nghe.
-# Bo trong ca hai = unimate.service + cong 7777, y het truoc day.
+# Bo trong ca hai = unimate.service + cong 8688, y het truoc day.
 # ============================================================================
 set -euo pipefail
 
@@ -22,9 +22,9 @@ APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$APP_DIR"
 
 # Ten dich vu + cong cua BAN NAY. Truoc day ca hai deu dong cung, nen cai ban thu hai la ghi de
-# /etc/systemd/system/unimate.service cua ban thu nhat va hai ban tranh nhau cong 7777.
+# /etc/systemd/system/unimate.service cua ban thu nhat va hai ban tranh nhau cong 8688.
 SVC="${UNIMATE_NAME:-unimate}"
-PORT="${UNIMATE_PORT:-7777}"
+PORT="${UNIMATE_PORT:-8688}"
 case "$SVC" in
   *[!A-Za-z0-9._-]*) err "UNIMATE_NAME may only contain letters, digits, '.', '_' and '-' (got: $SVC)"; exit 1;;
 esac

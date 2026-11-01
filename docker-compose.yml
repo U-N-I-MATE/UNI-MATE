@@ -39,7 +39,7 @@ services:
       UNIMATE_ADMIN_USER: ${UNIMATE_ADMIN_USER:-}
       UNIMATE_ADMIN_PASSWORD: ${UNIMATE_ADMIN_PASSWORD:-}
     ports:
-      # Cổng MÁY CHỦ lấy từ biến (trong container vẫn luôn là 7777). Bản thứ hai đặt
+      # Cổng MÁY CHỦ lấy từ biến (trong container vẫn luôn là 8688). Bản thứ hai đặt
       # UNIMATE_HOST_PORT=7778 là hết đụng cổng.
       #
       # UNIMATE_BIND = địa chỉ nghe trên máy chủ. Mặc định 0.0.0.0 (y như trước: mở ra Internet, vào
@@ -49,7 +49,7 @@ services:
       # Vì sao là BIẾN chứ không phải một dòng ports trong file override: compose NỐI CHỒNG danh
       # sách ports của các file -f chứ không thay thế, nên khai lại ở override là ra hai binding
       # cùng một cổng và Docker báo "port is already allocated".
-      - "${UNIMATE_BIND:-0.0.0.0}:${UNIMATE_HOST_PORT:-7777}:7777"
+      - "${UNIMATE_BIND:-0.0.0.0}:${UNIMATE_HOST_PORT:-8688}:8688"
     volumes:
       - unimate-data:/data                       # state: settings/mật khẩu/sessions/loop (có secret → KHÔNG git)
       - unimate-brains:/brains                   # MỌI second brain (kiến thức của bạn) - bền qua mọi update
@@ -60,7 +60,7 @@ services:
       - claude-auth:/home/unimate/.claude        # token đăng nhập Claude (giữ qua mọi update!)
       - codex-auth:/home/unimate/.codex          # token đăng nhập ChatGPT/Codex (codex login - giữ qua update)
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request,os,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:'+os.getenv('UNIMATE_PORT','7777')+'/health',timeout=4).status==200 else 1)"]
+      test: ["CMD", "python", "-c", "import urllib.request,os,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:'+os.getenv('UNIMATE_PORT','8688')+'/health',timeout=4).status==200 else 1)"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -77,7 +77,7 @@ services:
       - unimate
     # `unimate` ở đây là TÊN SERVICE trong compose, không phải tên container - mỗi project có mạng
     # riêng nên tên này không đụng nhau giữa các bản, giữ nguyên là đúng.
-    command: tunnel --no-autoupdate --url http://unimate:7777
+    command: tunnel --no-autoupdate --url http://unimate:8688
     # URL cố định: tạo named tunnel ở Cloudflare Zero Trust → TUNNEL_TOKEN env → đổi command thành:
     #   command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
 

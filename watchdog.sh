@@ -2,7 +2,7 @@
 # ============================================================================
 # UNI MATE - watchdog cho Mac chạy dưới launchd.
 #
-# Vì sao có file này: vụ treo 14/08/2026. Server SỐNG (vẫn giữ cổng 7777, kernel vẫn nhận
+# Vì sao có file này: vụ treo 14/08/2026. Server SỐNG (vẫn giữ cổng 8688, kernel vẫn nhận
 # TCP) nhưng event loop đông cứng - /health không trả lời, SIGTERM bị phớt, phải kill -9.
 # KeepAlive của launchd chỉ cứu tiến trình CHẾT, không cứu tiến trình treo. Con chó canh
 # này gọi /health mỗi phút; hỏng NGUONG lần liên tiếp thì `launchctl kickstart -k` - launchd
@@ -13,7 +13,7 @@
 #   ./watchdog.sh check       một nhát kiểm tra (launchd gọi định kỳ; chạy tay cũng được)
 #   ./watchdog.sh status      đang cài chưa + đếm hỏng + mấy dòng log cuối
 #
-# Cấu hình qua env hoặc .env cùng thư mục: UNIMATE_PORT (7777), UNIMATE_LAUNCHD_LABEL
+# Cấu hình qua env hoặc .env cùng thư mục: UNIMATE_PORT (8688), UNIMATE_LAUNCHD_LABEL
 # (com.unimate.os), UNIMATE_STATE_DIR (./server), UNIMATE_WATCHDOG_FAILS (3).
 # ============================================================================
 set -euo pipefail
@@ -27,7 +27,7 @@ if [ -f .env ]; then
   : "${UNIMATE_LAUNCHD_LABEL:=$(_env UNIMATE_LAUNCHD_LABEL)}"
   : "${UNIMATE_STATE_DIR:=$(_env UNIMATE_STATE_DIR)}"
 fi
-PORT="${UNIMATE_PORT:-7777}"
+PORT="${UNIMATE_PORT:-8688}"
 LABEL="${UNIMATE_LAUNCHD_LABEL:-com.unimate.os}"
 STATE_DIR="${UNIMATE_STATE_DIR:-$PWD/server}"
 TARGET="gui/$(id -u)/$LABEL"

@@ -276,9 +276,9 @@ def _probe_reason(code: str, hostinger: bool) -> str:
                              "check again; after 10 minutes, check that port 80 is open for Let's Encrypt.")
     if code == "bad_gateway":
         return localefmt.chu("Proxy đã nhận tên miền nhưng không gọi được UNI MATE (502). Kiểm tra container UNI MATE đang "
-                             "chạy và nhãn loadbalancer.server.port=7777.",
+                             "chạy và nhãn loadbalancer.server.port=8688.",
                              "The proxy knows the domain but cannot reach UNI MATE (502). Check that the UNI MATE "
-                             "container is running and loadbalancer.server.port=7777.")
+                             "container is running and loadbalancer.server.port=8688.")
     if code == "other_unimate":
         return localefmt.chu("Tên miền này đang mở một bản UNI MATE KHÁC (ví dụ stack thứ hai trên cùng VPS). Kiểm tra "
                              "DOMAIN_NAME của từng stack.",
@@ -349,7 +349,7 @@ def _make_router() -> APIRouter:
         """Public: the https link a browser that opened UNI MATE by IP should move to, or "" (0.302.0).
 
         Owner 24/10/2026: "khi cài nó tự cài 1 đường dẫn của vps hostinger sẵn để khách hàng mở luôn". hPanel's Open
-        reaches http://<ip>:7777; the page asks here and moves to https://unimate.srv<id>.hstgr.cloud (served by the
+        reaches http://<ip>:8688; the page asks here and moves to https://unimate.srv<id>.hstgr.cloud (served by the
         gateway, or by Traefik with DOMAIN_NAME) once that link answers as THIS UNI MATE over a valid certificate.
         Hostinger stack only, cached a few minutes.
         """

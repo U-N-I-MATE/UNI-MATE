@@ -41,12 +41,12 @@
 | **Windows** | `powershell -ExecutionPolicy Bypass -File install.ps1` |
 | **Linux / macOS** | `chmod +x install.sh && ./install.sh` |
 
-Lệnh đó cài trọn gói: Python + thư viện, **bốn bộ não CLI chạy bằng gói thuê bao bạn đang có** (`claude`, `codex`, `agy`, `grok`), `.env`, rồi bật server ở `http://localhost:7777`. Sau đó đăng nhập từng bộ não **ngay trong trang Models** của dashboard, không phải gõ lệnh nữa.
+Lệnh đó cài trọn gói: Python + thư viện, **bốn bộ não CLI chạy bằng gói thuê bao bạn đang có** (`claude`, `codex`, `agy`, `grok`), `.env`, rồi bật server ở `http://localhost:8688`. Sau đó đăng nhập từng bộ não **ngay trong trang Models** của dashboard, không phải gõ lệnh nữa.
 
 > ⚠️ Cài thêm một CLI **sau khi** UNI MATE đã chạy thì **khởi động lại UNI MATE**. Tiến trình đang chạy giữ PATH của lúc nó bật, nên CLI vừa cài nó chưa thấy.
 
 <p align="center">
-<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="Terminal động: lệnh cài một dòng dựng Python, bốn bộ não CLI chạy bằng gói thuê bao và file .env, rồi báo UNI MATE đang chạy ở http://localhost:7777">
+<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="Terminal động: lệnh cài một dòng dựng Python, bốn bộ não CLI chạy bằng gói thuê bao và file .env, rồi báo UNI MATE đang chạy ở http://localhost:8688">
 </p>
 
 ---
@@ -178,7 +178,7 @@ nhật bằng nút trong app). Các biến kỹ thuật về cổng, state, brai
 
 Deploy → đợi 1-3 phút Traefik cấp SSL → mở `https://<DOMAIN_NAME>`. (Chi tiết + xử lý sự cố: [DEPLOY.md](../../../DEPLOY.md).)
 
-> Chỉ muốn chạy nhanh bằng `http://<ip>:7777` (chưa cần tên miền): dùng `docker-compose.yml` (Cách 2).
+> Chỉ muốn chạy nhanh bằng `http://<ip>:8688` (chưa cần tên miền): dùng `docker-compose.yml` (Cách 2).
 
 **3 việc làm 1 lần:**
 1. **Để image GHCR ở chế độ Public:** GitHub → repo → **Packages** → `UNI-MATE` → *Package settings* → Visibility = **Public**.
@@ -200,7 +200,7 @@ curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-co
 docker compose run --rm unimate claude auth login --claudeai   # đăng nhập Claude 1 lần
 docker compose up -d                                          # pull image + chạy
 ```
-Mở `http://<ip-vps>:7777` → màn tạo tài khoản admin: đặt tên đăng nhập + mật khẩu (tối thiểu 8 ký tự), làm ngay sau khi chạy vì ai mở link trước sẽ tạo được admin (hoặc đặt sẵn `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` trong env). Vào được rồi thì bật 2FA.
+Mở `http://<ip-vps>:8688` → màn tạo tài khoản admin: đặt tên đăng nhập + mật khẩu (tối thiểu 8 ký tự), làm ngay sau khi chạy vì ai mở link trước sẽ tạo được admin (hoặc đặt sẵn `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` trong env). Vào được rồi thì bật 2FA.
 
 ### Cách 3 - Cài trực tiếp lên Linux/macOS (không Docker)
 
@@ -221,7 +221,7 @@ git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-`install.ps1` làm trọn một lượt: Python + venv + thư viện, rồi **cả bốn bộ não CLI chạy bằng gói thuê bao** (`claude`, `codex`, `agy`, `grok`), tạo `.env`, giải phóng port 7777 và bật server. Cuối cùng nó in một bảng cho biết bộ não nào đã sẵn sàng. Đăng nhập từng bộ não ngay trong **trang Models** của dashboard, không cần gõ lệnh.
+`install.ps1` làm trọn một lượt: Python + venv + thư viện, rồi **cả bốn bộ não CLI chạy bằng gói thuê bao** (`claude`, `codex`, `agy`, `grok`), tạo `.env`, giải phóng port 8688 và bật server. Cuối cùng nó in một bảng cho biết bộ não nào đã sẵn sàng. Đăng nhập từng bộ não ngay trong **trang Models** của dashboard, không cần gõ lệnh.
 
 Không có `winget` để tự cài Python/Node thì cài tay trước: Python 3.12 (tick "Add python.exe to PATH") và Node.js LTS, rồi chạy lại.
 
@@ -229,7 +229,7 @@ Không có `winget` để tự cài Python/Node thì cài tay trước: Python 3
 Chạy hiện cửa sổ (xem log trực tiếp):  setup.bat
 Chạy ngầm từ lần sau:                  start-unimate.vbs   (log ở server\unimate.log)
 Dừng:                                  stop-unimate.bat
-Mở dashboard:                          http://localhost:7777
+Mở dashboard:                          http://localhost:8688
 ```
 
 > ⚠️ **Cài thêm một CLI sau khi UNI MATE đang chạy thì phải khởi động lại UNI MATE** (`stop-unimate.bat` rồi `start-unimate.vbs`). Tiến trình đang chạy giữ PATH của lúc nó bật, nên CLI vừa cài nó không thấy - trang Models sẽ vẫn báo "CLI chưa cài" cho một CLI đã nằm sẵn trên ổ đĩa.
@@ -316,7 +316,7 @@ File mẫu cố ý **chỉ có dòng `TÊN=giá trị`, không một dòng chú 
 | Biến | Ý nghĩa | Mặc định |
 |---|---|---|
 | `UNIMATE_HOST` | Địa chỉ nghe. `127.0.0.1`=chỉ máy này; `0.0.0.0`=public | `127.0.0.1` |
-| `UNIMATE_PORT` | Cổng | `7777` |
+| `UNIMATE_PORT` | Cổng | `8688` |
 | `UNIMATE_REQUIRE_LOGIN` | `1`/`0` ép bật/tắt bắt buộc đăng nhập (mặc định: bật khi bind public) | *(auto)* |
 | `UNIMATE_ADMIN_USER` / `UNIMATE_ADMIN_PASSWORD` | Tạo sẵn admin lúc deploy (khuyến nghị khi chạy public) | - |
 | `UNIMATE_ALLOWED_HOSTS` | Thêm hostname vào danh sách cho phép (chống CSRF / DNS-rebinding) | localhost + tên miền đã đặt |
@@ -392,7 +392,7 @@ Zalo Agent MCP ──────────────┤          │       
 | Hiện tượng | Cách xử lý |
 |---|---|
 | Sửa code mà không thấy đổi | Đã đổi `.py`? **Khởi động lại server** (Windows: `stop-unimate.bat` → `start-unimate.vbs`). Đổi giao diện? **Ctrl+Shift+R**. |
-| Port 7777 bị giữ, bản mới không lên | Kill tiến trình cũ TRƯỚC (`stop-unimate.bat`, hoặc `taskkill /F /PID <pid>`), rồi start lại. |
+| Port 8688 bị giữ, bản mới không lên | Kill tiến trình cũ TRƯỚC (`stop-unimate.bat`, hoặc `taskkill /F /PID <pid>`), rồi start lại. |
 | Hostinger không pull được image | Để package GHCR = **Public**; đợi GitHub Action build xong (tab Actions). |
 | Bộ não báo chưa đăng nhập | Vào **Models**, thẻ nhà cung cấp tương ứng, bấm đăng nhập. Hoặc chạy 1 lần `claude auth login --claudeai` (Docker: trong App terminal). |
 | Ảnh cũ trong hội thoại hiện ô xám | Đúng thiết kế: `attachments/` là vùng cache, hết hạn 30 ngày hoặc 300MB. Xem [Khắc phục sự cố](../../../docs/17-khac-phuc-su-co.md). |
@@ -412,7 +412,7 @@ UNI-MATE/
 ├── tests/               # Bộ test Python
 ├── docs/                # Hướng dẫn sử dụng chi tiết (27 trang + mục lục; bản tiếng Anh ở docs/en/)
 ├── Dockerfile           # Image: python + Node + Claude CLI
-├── docker-compose.yml   # Production (pull image GHCR) - VPS thường, vào bằng http://<ip>:7777
+├── docker-compose.yml   # Production (pull image GHCR) - VPS thường, vào bằng http://<ip>:8688
 ├── docker-compose.hostinger.yml  # Cho Hostinger: tên miền + HTTPS qua Traefik (đặt DOMAIN_NAME)
 ├── docker-compose.https.yml      # Auto-HTTPS bằng Caddy cho VPS thường (kèm file trên)
 ├── install.sh           # Cài native Linux/macOS

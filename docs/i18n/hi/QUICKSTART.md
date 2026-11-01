@@ -33,14 +33,14 @@ Update करने के लिए: Docker Manager में **Redeploy** द�
 ```
 docker compose -f docker-compose.yml up -d
 ```
-http://localhost:7777 खोलिए। Caddy के ज़रिए HTTPS के लिए `-f docker-compose.https.yml` जोड़िए।
+http://localhost:8688 खोलिए। Caddy के ज़रिए HTTPS के लिए `-f docker-compose.https.yml` जोड़िए।
 
 ## विकल्प 3 - सीधे चलाइए (Windows, बिना Docker)
 
 1. Python 3.12 + Node 22 इंस्टॉल कीजिए।
 2. Project folder में एक बार `setup.bat` चलाइए: यह .venv बनाता है, dependencies इंस्टॉल करता है, और आपके लिए दोनों CLI engines (Claude Code, Codex) भी इंस्टॉल कर देता है।
 3. Background में चलाने के लिए `start-unimate.bat` (रोकने के लिए `stop-unimate.bat`)।
-4. http://localhost:7777 खोलिए।
+4. http://localhost:8688 खोलिए।
 
 ## चालू होने के बाद
 

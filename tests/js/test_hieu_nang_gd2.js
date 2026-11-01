@@ -81,7 +81,7 @@ async function loader() {
 
 // ───────── retry (fetch-gop.js) ─────────
 const G = require(path.join(ROOT, "dashboard/fetch-gop.js"));
-const O = "http://127.0.0.1:7777";
+const O = "http://127.0.0.1:8688";
 check("502, 503, 504 and Cloudflare 520-530 mean 'server not reachable yet'", [502, 503, 504, 520, 530].every(G.maTam) && ![500, 404, 401, 200].some(G.maTam));
 check("a GET to the server retries", G.thuLaiDuoc("/sessions?brain=a", undefined, O));
 check("a write never retries", !G.thuLaiDuoc("/settings", { method: "POST", body: "x" }, O));

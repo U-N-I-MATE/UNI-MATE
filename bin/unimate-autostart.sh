@@ -12,7 +12,7 @@ set -u
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Nhãn PHẢI khớp mặc định của updater.py/watchdog.sh (com.unimate.os): update trên Mac nhận
 # diện launchd qua đúng nhãn này để đổi ca bằng kickstart -k; lệch nhãn là updater tưởng
-# không có launchd, kill PID + nohup -> KeepAlive respawn giành cổng 7777.
+# không có launchd, kill PID + nohup -> KeepAlive respawn giành cổng 8688.
 LABEL="${UNIMATE_LAUNCHD_LABEL:-com.unimate.os}"
 PLIST="${HOME}/Library/LaunchAgents/${LABEL}.plist"
 # 0.306.0: agent thứ hai, chạy MỘT LẦN mỗi lần đăng nhập: chờ server lên rồi mở dashboard trên trình duyệt
@@ -21,7 +21,7 @@ PLIST="${HOME}/Library/LaunchAgents/${LABEL}.plist"
 # UNIMATE_AUTOSTART_OPEN=0 thì chỉ chạy nền, không mở gì.
 OPEN_LABEL="${LABEL}.open"
 OPEN_PLIST="${HOME}/Library/LaunchAgents/${OPEN_LABEL}.plist"
-PORT="${UNIMATE_PORT:-7777}"
+PORT="${UNIMATE_PORT:-8688}"
 PY="${APP_DIR}/.venv/bin/python"
 ACTION="${1:-install}"
 

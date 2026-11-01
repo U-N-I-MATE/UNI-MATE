@@ -245,13 +245,13 @@ finally:
 # --- updater.py --dry-run (không thực thi git/pip) ---
 import subprocess as _sp  # noqa: E402
 _upd = os.path.join(str(SERVER), "updater.py")
-_p = _sp.run([sys.executable, _upd, "--dry-run", "--port", "7777", "--server-pid", "123"],
+_p = _sp.run([sys.executable, _upd, "--dry-run", "--port", "8688", "--server-pid", "123"],
              capture_output=True, text=True, env={**os.environ})
 check("updater --dry-run (kèm --server-pid) thoát 0", _p.returncode == 0)
 check("updater --dry-run in PLAN", "PLAN:" in (_p.stdout or ""))
 
 # --- updater: 4 chế độ restart (bug thật: Mac không có systemd bị chặn cứng không update được;
-# rồi 14/08/2026 Mac CÓ launchd mà updater kill PID + nohup → launchd respawn giành cổng 7777) ---
+# rồi 14/08/2026 Mac CÓ launchd mà updater kill PID + nohup → launchd respawn giành cổng 8688) ---
 import updater as _updmod  # noqa: E402
 check("service_mode: Windows -> windows", _updmod.service_mode("nt") == "windows")
 check("service_mode: Linux có systemd -> systemd",

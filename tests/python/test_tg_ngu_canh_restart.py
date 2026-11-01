@@ -5,7 +5,7 @@
 Vì sao có file này. Người dùng báo ngày 28/08/2026, nguyên văn:
 
   "mỗi lần update bản mới bấm nút update thì bên telegram nó mất hết ký ức, quên sạch mọi
-   thứ, từ cách xưng hô tới quy trình đặt tên file. Còn ở localhost:7777 thì bình thường.
+   thứ, từ cách xưng hô tới quy trình đặt tên file. Còn ở localhost:8688 thì bình thường.
    Trí nhớ với lưu trữ thì vẫn còn, nhưng đoạn chat liên tục thì như là không nhớ gì."
 
 Đo lại trên máy trước khi vá thì đúng y như vậy, và lý do nằm ở chỗ dữ liệu SỐNG Ở ĐÂU:

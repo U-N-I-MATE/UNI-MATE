@@ -7,7 +7,7 @@ Trang này hướng dẫn hai việc: đổi logo/avatar của UNI MATE thành �
 ## Tính năng này là gì
 
 - **Ảnh đại diện (logo/avatar):** thay ảnh UNI MATE mặc định bằng ảnh của bạn. Ảnh mới hiện ngay ở góc trên bên trái, ở thanh bên, ở màn hình đăng nhập, ở cửa sổ chào mừng, và làm luôn icon tab trình duyệt (favicon).
-- **Tên miền riêng (HTTPS):** thay vì mở UNI MATE bằng địa chỉ IP kèm cổng (kiểu `http://12.34.56.78:7777`), bạn dùng một tên miền dễ nhớ và có khóa an toàn HTTPS. UNI MATE tự cấp chứng chỉ HTTPS (cơ chế On-Demand TLS qua Caddy), và có nút **Bật SSL** để chủ động xin chứng chỉ ngay thay vì ngồi đợi.
+- **Tên miền riêng (HTTPS):** thay vì mở UNI MATE bằng địa chỉ IP kèm cổng (kiểu `http://12.34.56.78:8688`), bạn dùng một tên miền dễ nhớ và có khóa an toàn HTTPS. UNI MATE tự cấp chứng chỉ HTTPS (cơ chế On-Demand TLS qua Caddy), và có nút **Bật SSL** để chủ động xin chứng chỉ ngay thay vì ngồi đợi.
 
 Lưu ý quan trọng ngay từ đầu: phần **Tên miền riêng** chỉ hoạt động khi bạn deploy UNI MATE bằng Docker trên VPS và đã mở cổng 80/443. Nếu bạn chạy UNI MATE trên máy cá nhân (Windows, macOS), hãy dùng mục **Truy cập từ xa** ngay bên dưới: UNI MATE tự dựng Cloudflare Tunnel, có HTTPS và cả tên miền riêng mà không cần VPS. Xem [Truy cập từ xa trên máy Windows hoặc macOS](#truy-cập-từ-xa-trên-máy-windows-hoặc-macos). Chi tiết deploy xem [Cấu hình .env](16-cau-hinh-env.md) và file `DEPLOY.md` trong thư mục dự án.
 
@@ -108,7 +108,7 @@ Cần một tài khoản Cloudflare miễn phí và một tên miền đang dùn
 
 1. Vào [one.dash.cloudflare.com](https://one.dash.cloudflare.com), mục **Networks**, chọn **Tunnels**, bấm **Create a tunnel**, chọn **Cloudflared**, đặt tên.
 2. Ở bước cài connector, bấm sao chép dòng lệnh (bản Windows hay Mac đều được). **Không cần chạy lệnh đó**, chỉ cần dán nguyên dòng vào ô **Token tunnel Cloudflare** trong UNI MATE. UNI MATE tự lấy token ra.
-3. Sang bước **Public Hostname**: chọn tên miền con (ví dụ `unimate.tencuaban.com`), Service chọn **HTTP**, ô URL điền địa chỉ dịch vụ UNI MATE hiện ra (mặc định `127.0.0.1:7777`, có nút sao chép).
+3. Sang bước **Public Hostname**: chọn tên miền con (ví dụ `unimate.tencuaban.com`), Service chọn **HTTP**, ô URL điền địa chỉ dịch vụ UNI MATE hiện ra (mặc định `127.0.0.1:8688`, có nút sao chép).
 4. Quay lại UNI MATE, chọn **Tên miền riêng**, bấm **Bật truy cập từ xa**. Khi trạng thái là **Đang chạy**, UNI MATE đọc tên miền bạn vừa đặt và hiện link `https://unimate.tencuaban.com`.
 
 Token được mã hoá khi lưu, không bao giờ gửi ngược ra trình duyệt, và đưa cho `cloudflared` qua biến môi trường chứ không nằm trên dòng lệnh.
@@ -195,7 +195,7 @@ Hostinger VPS đã cài sẵn reverse proxy Traefik lo SSL, và cổng 80/443 đ
 1. Trỏ DNS: bản ghi `A  <tên miền của bạn> → <IP VPS Hostinger>`.
 2. Deploy bằng file compose có nhãn Traefik của Hostinger: `docker-compose.hostinger.yml` (Docker Manager → Compose → URL).
 3. Bấm **Sao chép biến** trong wizard, đặt `DOMAIN_NAME=<tên miền của bạn>` trong Docker Manager rồi bấm **Redeploy**. Wizard hiện luôn route Traefik hiện tại để bạn đối chiếu.
-4. Mở `https://<tên miền>`; Traefik tự xin chứng chỉ ở lần đầu. Không còn phải vào bằng `:7777`.
+4. Mở `https://<tên miền>`; Traefik tự xin chứng chỉ ở lần đầu. Không còn phải vào bằng `:8688`.
 
 Nếu bạn cố bấm Bật SSL trên Hostinger (ví dụ qua API), UNI MATE từ chối và nói rõ: Hostinger quản lý HTTPS bằng Traefik, hãy đặt `DOMAIN_NAME` trong Docker Manager rồi Redeploy.
 

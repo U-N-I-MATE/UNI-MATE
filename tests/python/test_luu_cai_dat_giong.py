@@ -37,7 +37,7 @@ def check(name, cond):
 
 # base_url phải là host được phép: rào chống DNS-rebinding (web_security) trả 403 cho
 # "testserver" mặc định của TestClient, và 403 đó sẽ che mất lỗi thật đang cần đo.
-cl = TestClient(main.app, base_url="http://127.0.0.1:7777")
+cl = TestClient(main.app, base_url="http://127.0.0.1:8688")
 
 
 def luu(data: dict):

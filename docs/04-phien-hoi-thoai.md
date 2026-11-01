@@ -217,7 +217,7 @@ Lịch sử hội thoại nằm trong tệp `conversations.db` trên chính máy
 Nhiều khả năng bạn đang ở một bộ não khác. Danh sách chỉ hiện cuộc thuộc bộ não đang chọn. Đổi lại đúng bộ não rồi mở bảng lần nữa.
 
 **Bấm mở bảng nhưng hiện "Lỗi tải danh sách."**
-Máy chủ UNI MATE có thể chưa chạy hoặc vừa khởi động lại. Kiểm tra máy chủ đang chạy ở cổng mặc định (7777) rồi thử lại. Xem thêm [Khắc phục sự cố & FAQ](17-khac-phuc-su-co.md).
+Máy chủ UNI MATE có thể chưa chạy hoặc vừa khởi động lại. Kiểm tra máy chủ đang chạy ở cổng mặc định (8688) rồi thử lại. Xem thêm [Khắc phục sự cố & FAQ](17-khac-phuc-su-co.md).
 
 **Không thấy cuộc trò chuyện từ tuần trước ở cuối danh sách.**
 Danh sách chỉ nạp 20 cuộc một lần. Cuộn xuống cuối và bấm **Xem thêm 20** vài lần, hoặc nhanh hơn là gõ một từ khoá vào ô tìm kiếm.

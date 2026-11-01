@@ -169,7 +169,7 @@ if os.name == "nt":
     fake = TMP / "codex.cmd"
 os.environ["FAKE_ARGV"] = str(TMP / "argv.jsonl")
 (TMP / "codex-home" / "unimate.config.toml").write_text(
-    '[mcp_servers.unimate]\nurl = "http://127.0.0.1:7777/hub/mcp"\nstartup_timeout_sec = 20\n'
+    '[mcp_servers.unimate]\nurl = "http://127.0.0.1:8688/hub/mcp"\nstartup_timeout_sec = 20\n'
     '[mcp_servers.unimate.http_headers]\n"Authorization" = "Bearer tok"\n"X-UniMate-Mode" = "full"\n', encoding="utf-8")
 
 
@@ -219,7 +219,7 @@ check("app-server: the message sent while the command ran reached the same turn"
 argv = rows[0] if rows else []
 check("app-server: started as app-server with the profile as -c, never -p",
       argv[-1:] == ["app-server"] and "-p" not in argv
-      and 'mcp_servers.unimate.url="http://127.0.0.1:7777/hub/mcp"' in argv
+      and 'mcp_servers.unimate.url="http://127.0.0.1:8688/hub/mcp"' in argv
       and 'mcp_servers.unimate.http_headers.X-UniMate-Mode="full"' in argv)
 tstart = next((r["thread/start"] for r in rows if isinstance(r, dict) and "thread/start" in r), {})
 check("app-server: model, sandbox and approval go in thread/start",

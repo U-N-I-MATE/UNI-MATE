@@ -33,14 +33,14 @@
 ```
 docker compose -f docker-compose.yml up -d
 ```
-Откройте http://localhost:7777. Для HTTPS через Caddy добавьте `-f docker-compose.https.yml`.
+Откройте http://localhost:8688. Для HTTPS через Caddy добавьте `-f docker-compose.https.yml`.
 
 ## Вариант 3 - Прямой запуск (Windows, без Docker)
 
 1. Установите Python 3.12 + Node 22.
 2. В папке проекта один раз запустите `setup.bat`: он создаст .venv, установит зависимости и сам поставит два CLI-движка (Claude Code, Codex).
 3. `start-unimate.bat` для запуска в фоне (`stop-unimate.bat` для остановки).
-4. Откройте http://localhost:7777.
+4. Откройте http://localhost:8688.
 
 ## Когда всё запущено
 

@@ -59,13 +59,13 @@
 | **Windows** | `git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate; powershell -ExecutionPolicy Bypass -File install.ps1` |
 | **Docker** | `curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml && docker compose up -d` |
 
-然后打开 **http://localhost:7777**。安装程序会配置好 Python、四个订阅制 CLI 大脑（`claude`、`codex`、`agy`、`grok`）以及 `.env`，随后启动服务器。每个大脑都在**仪表盘的 Models（模型）页面**上登录，无需再敲命令。
+然后打开 **http://localhost:8688**。安装程序会配置好 Python、四个订阅制 CLI 大脑（`claude`、`codex`、`agy`、`grok`）以及 `.env`，随后启动服务器。每个大脑都在**仪表盘的 Models（模型）页面**上登录，无需再敲命令。
 
 > [!NOTE]
 > 在 UNI MATE 已经运行**之后**又安装了新的 CLI？请**重启 UNI MATE**。正在运行的进程保留的是它启动时的 PATH，因此看不到之后才安装的 CLI。
 
 <p align="center">
-<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="动画终端：一行安装命令装好 Python、四个订阅制 CLI 大脑和 .env，然后提示 UNI MATE 已在 http://localhost:7777 运行">
+<img src="../../../docs/assets/diagrams/install-terminal.svg" width="100%" alt="动画终端：一行安装命令装好 Python、四个订阅制 CLI 大脑和 .env，然后提示 UNI MATE 已在 http://localhost:8688 运行">
 </p>
 
 ---
@@ -287,7 +287,7 @@ docker compose run --rm unimate claude auth login --claudeai   # sign in to Clau
 docker compose up -d                                          # pull the image and run
 ```
 
-打开 `http://<vps-ip>:7777`，立即设置管理员用户名和密码（至少 8 个字符），或者在环境变量中预先设置 `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD`。然后开启 2FA。
+打开 `http://<vps-ip>:8688`，立即设置管理员用户名和密码（至少 8 个字符），或者在环境变量中预先设置 `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD`。然后开启 2FA。
 
 没有域名时的远程访问：运行 `docker compose --profile tunnel up -d`，然后 `docker compose logs tunnel | grep trycloudflare` 会打印出一个 HTTPS 链接。
 
@@ -315,13 +315,13 @@ git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-`install.ps1` 一次性完成所有工作：Python、venv 和依赖库、四个订阅制 CLI 大脑（`claude`、`codex`、`agy`、`grok`）、`.env`、释放 7777 端口并启动服务器。最后它会显示一张表格，列出哪些大脑已经就绪。如果没有 `winget`，请先手动安装 Python 3.12（勾选 "Add python.exe to PATH"）和 Node.js LTS，然后重新运行。
+`install.ps1` 一次性完成所有工作：Python、venv 和依赖库、四个订阅制 CLI 大脑（`claude`、`codex`、`agy`、`grok`）、`.env`、释放 8688 端口并启动服务器。最后它会显示一张表格，列出哪些大脑已经就绪。如果没有 `winget`，请先手动安装 Python 3.12（勾选 "Add python.exe to PATH"）和 Node.js LTS，然后重新运行。
 
 ```
 Run with a visible window (live log):  setup.bat
 Run silently from then on:             start-unimate.vbs   (log at server\unimate.log)
 Stop:                                  stop-unimate.bat
-Dashboard:                             http://localhost:7777
+Dashboard:                             http://localhost:8688
 ```
 
 🪟 **像应用一样打开：** 首次运行之后，双击 **`UNI MATE.bat`**。服务器会在后台启动，仪表盘在**独立窗口**中打开，并拥有自己的任务栏图标。登录时自动启动：`unimate-autostart.bat install`（移除：`uninstall`）。
@@ -389,7 +389,7 @@ Dashboard:                             http://localhost:7777
 | 变量 | 含义 | 默认值 |
 |---|---|---|
 | `UNIMATE_HOST` | 监听地址。`127.0.0.1` = 仅本机，`0.0.0.0` = 公开 | `127.0.0.1` |
-| `UNIMATE_PORT` | 端口 | `7777` |
+| `UNIMATE_PORT` | 端口 | `8688` |
 | `UNIMATE_REQUIRE_LOGIN` | `1`/`0` 强制开启或关闭登录（默认：公开绑定时开启） | *（自动）* |
 | `UNIMATE_ADMIN_USER` / `UNIMATE_ADMIN_PASSWORD` | 在部署时创建管理员 | - |
 | `UNIMATE_ALLOWED_HOSTS` | 额外加入允许列表的主机名（CSRF 和 DNS 重绑定防护） | localhost + 你的域名 |
@@ -424,7 +424,7 @@ Dashboard:                             http://localhost:7777
 | 症状 | 处理方法 |
 |---|---|
 | Models 页面说某个 CLI 没有安装，但实际上已经安装 | **重启 UNI MATE**：正在运行的进程保留的是它启动时的 PATH。 |
-| 7777 端口被占用，新版本无法启动 | 先停止旧进程（`stop-unimate.bat`，或结束对应 PID），然后重新启动。 |
+| 8688 端口被占用，新版本无法启动 | 先停止旧进程（`stop-unimate.bat`，或结束对应 PID），然后重新启动。 |
 | Hostinger 无法拉取镜像 | 把 GHCR 包设为 **Public**，并等待 GitHub Action 构建完成。 |
 | 某个大脑提示尚未登录 | **Models** → 该提供商的卡片 → 登录。 |
 

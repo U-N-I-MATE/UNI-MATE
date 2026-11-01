@@ -18,7 +18,7 @@ Xem thêm nơi dữ liệu này được tạo ra: [Second Brain: bộ nhớ, Wi
 
 ## Mở đồ thị
 
-1. Mở dashboard, mặc định tại `http://<địa-chỉ-máy>:7777`.
+1. Mở dashboard, mặc định tại `http://<địa-chỉ-máy>:8688`.
 2. Trên thanh điều hướng bên trái, mở nhóm **Trợ lý** rồi chọn **UNI MATE**.
 3. Đồ thị nằm ở vùng giữa màn hình.
 

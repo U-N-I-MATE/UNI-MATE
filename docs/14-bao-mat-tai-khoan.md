@@ -130,7 +130,7 @@ Lưu ý: nếu server vẫn đang chạy public (hoặc bạn đặt `UNIMATE_RE
 
 Đây là lớp bảo vệ chạy ngầm, bạn không phải bật gì, nhưng nên biết nó tồn tại vì đôi khi nó là thủ phạm của lỗi 403 khó hiểu.
 
-Vấn đề nó giải: dashboard nghe ở `localhost:7777`. Khi bạn **chưa** đặt mật khẩu, một trang web bất kỳ đang mở trong trình duyệt của bạn vẫn có thể bắn request POST tới `http://localhost:7777/...`. Trình duyệt chặn trang đó ĐỌC kết quả, nhưng không chặn request chạy, nên hành động vẫn xảy ra. Kẻ tấn công cũng có thể trỏ một tên miền của chúng về `127.0.0.1` để lách kiểm tra nguồn gốc.
+Vấn đề nó giải: dashboard nghe ở `localhost:8688`. Khi bạn **chưa** đặt mật khẩu, một trang web bất kỳ đang mở trong trình duyệt của bạn vẫn có thể bắn request POST tới `http://localhost:8688/...`. Trình duyệt chặn trang đó ĐỌC kết quả, nhưng không chặn request chạy, nên hành động vẫn xảy ra. Kẻ tấn công cũng có thể trỏ một tên miền của chúng về `127.0.0.1` để lách kiểm tra nguồn gốc.
 
 UNI MATE chặn hai đường đó bằng một cổng gác đứng trước cả cổng đăng nhập:
 
@@ -228,7 +228,7 @@ Về cookie `secure`: mặc định UNI MATE **không** ép cookie `secure` đ�
 
 - **Luôn đặt admin trước khi công khai.** Cách chắc nhất là đặt `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` khi deploy, để server không có lúc nào trống admin.
 - **Đặt mật khẩu đủ dài.** Tối thiểu 8 ký tự; dùng cụm dài, khó đoán.
-- **Chạy qua HTTPS khi truy cập từ xa.** Dùng tên miền riêng (ví dụ Hostinger `*.hstgr.cloud`) hoặc Cloudflare Tunnel thay vì phơi cổng 7777 thô ra Internet. Cách trỏ tên miền và bật HTTPS xem [Thương hiệu & tên miền riêng](15-thuong-hieu-ten-mien.md).
+- **Chạy qua HTTPS khi truy cập từ xa.** Dùng tên miền riêng (ví dụ Hostinger `*.hstgr.cloud`) hoặc Cloudflare Tunnel thay vì phơi cổng 8688 thô ra Internet. Cách trỏ tên miền và bật HTTPS xem [Thương hiệu & tên miền riêng](15-thuong-hieu-ten-mien.md).
 - **Localhost + tunnel tự chạy thì bật `UNIMATE_REQUIRE_LOGIN=1`.** Khi máy chỉ nghe localhost nhưng bạn tự chạy tunnel (cloudflared, ngrok...) bên ngoài UNI MATE, UNI MATE không tự biết là đang public, nên hãy ép login thủ công. Dùng mục **Truy cập từ xa** trong Cài đặt thì không cần: UNI MATE biết tunnel đang bật, tự bắt đăng nhập và chỉ chạy khi đã có mật khẩu.
 - **Bật xác thực 2 lớp (2FA) ngay sau lần đăng nhập đầu.** Lộ mật khẩu thì kẻ lạ vẫn thiếu mã TOTP trên điện thoại bạn.
 - **Sao lưu `.secret_key` cùng `settings.json`.** Thiếu một trong hai là phải nhập lại toàn bộ API key.

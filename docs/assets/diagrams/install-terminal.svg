@@ -1,6 +1,6 @@
 <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t d">
 <title id="t">Install UNI MATE with one command</title>
-<desc id="d">A terminal clones the UNI-MATE repository, runs install.sh, checks the Python environment, the four subscription CLIs and the .env file, then starts UNI MATE at http://localhost:7777, and a browser window opens the dashboard.</desc>
+<desc id="d">A terminal clones the UNI-MATE repository, runs install.sh, checks the Python environment, the four subscription CLIs and the .env file, then starts UNI MATE at http://localhost:8688, and a browser window opens the dashboard.</desc>
 <defs>
 <radialGradient id="gl" cx="0.78" cy="0.2" r="0.75"><stop offset="0" stop-color="#7c3aed" stop-opacity=".14"/><stop offset="1" stop-color="#7c3aed" stop-opacity="0"/></radialGradient>
 <pattern id="gr" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity=".04"/></pattern>
@@ -63,7 +63,7 @@
 <g class="ol3"><text x="92" y="404" fill="#4ade80" font-weight="700">✓</text><text x="116" y="404" fill="#d1d5db">Antigravity CLI</text><text x="330.2" y="404" fill="#9ca3af">(agy)</text></g>
 <g class="ol4"><text x="92" y="438" fill="#4ade80" font-weight="700">✓</text><text x="116" y="438" fill="#d1d5db">Grok Build</text><text x="330.2" y="438" fill="#9ca3af">(grok)</text></g>
 <g class="ol5"><text x="92" y="472" fill="#4ade80" font-weight="700">✓</text><text x="116" y="472" fill="#d1d5db">.env created</text></g>
-<g class="ol6"><text x="92" y="516" fill="#f97316">▶</text><text x="116" y="516" fill="#fb923c" font-weight="700" textLength="418.2" lengthAdjust="spacing">UNI MATE is running at http://localhost:7777</text><rect class="blink" x="542.2" y="500" width="10" height="20" rx="1.5" fill="#fb923c"/></g>
+<g class="ol6"><text x="92" y="516" fill="#f97316">▶</text><text x="116" y="516" fill="#fb923c" font-weight="700" textLength="418.2" lengthAdjust="spacing">UNI MATE is running at http://localhost:8688</text><rect class="blink" x="542.2" y="500" width="10" height="20" rx="1.5" fill="#fb923c"/></g>
 </g>
 <g class="br">
 <rect x="748" y="310" width="370" height="236" rx="14" fill="#000" opacity=".45" filter="url(#sh)"/>
@@ -75,7 +75,7 @@
 <line x1="742" y1="336" x2="1112" y2="336" stroke="#2a2a40"/>
 <rect x="756" y="346" width="342" height="30" rx="15" fill="#0b0b14" stroke="#2a2a40"/>
 <circle cx="774" cy="361" r="4.5" fill="#4ade80"/>
-<text x="788" y="367" fill="#d1d5db" font-size="16" font-family="ui-monospace, 'SFMono-Regular', Consolas, 'Courier New', monospace">localhost:7777 <tspan fill="#9ca3af">· UNI MATE</tspan></text>
+<text x="788" y="367" fill="#d1d5db" font-size="16" font-family="ui-monospace, 'SFMono-Regular', Consolas, 'Courier New', monospace">localhost:8688 <tspan fill="#9ca3af">· UNI MATE</tspan></text>
 <path d="M784,399 C787.74,412.26 787.74,412.26 801,416 C787.74,419.74 787.74,419.74 784,433 C780.26,419.74 780.26,419.74 767,416 C780.26,412.26 780.26,412.26 784,399Z" fill="#f97316"/>
 <text x="812" y="424" fill="#ffffff" font-size="22" font-weight="700" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Arial, sans-serif">UNI MATE</text>
 <text x="766" y="464" fill="#9ca3af" font-size="16" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Arial, sans-serif">Sign in to a brain on the Models page</text>

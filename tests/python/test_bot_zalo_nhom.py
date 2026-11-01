@@ -107,8 +107,8 @@ async def _engine(text, meta, progress, *, channel="", bot=None):
 BRAIN = Path(tempfile.mkdtemp(prefix="brain-zpnhom-"))
 (BRAIN / "cai-dat.md").write_text(
     "# Hướng dẫn cài đặt UNI MATE\n\n"
-    "## Lỗi cổng 7777 đang được dùng\n\n"
-    "Nếu UNI MATE báo lỗi cổng 7777 đang được dùng, hãy tắt tiến trình UNI MATE cũ rồi khởi động lại "
+    "## Lỗi cổng 8688 đang được dùng\n\n"
+    "Nếu UNI MATE báo lỗi cổng 8688 đang được dùng, hãy tắt tiến trình UNI MATE cũ rồi khởi động lại "
     "bằng file start-unimate.bat.\n\n"
     "## Đổi bộ não của UNI MATE\n\n"
     "Vào trang Models, chọn bộ não mới ở mục Model chính rồi bấm Lưu. Đổi bộ não không làm mất "
@@ -125,7 +125,7 @@ chatbot_runtime.wire(answer=_engine, brain_root=lambda b: str(BRAIN),
 import chatbot_tu_dong as td  # noqa: E402
 
 CAU_HOI = [
-    "UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?",
+    "UNI MATE báo lỗi cổng 8688 đang bị dùng thì làm sao ạ?",
     "cho mình hỏi cách đổi bộ não với",
     "khong vao duoc trang models, huong dan giup em",
     "Bước cài đặt Node như nào mọi người",
@@ -188,7 +188,7 @@ async def chay():
     check("bật bot chạy được", ok, err)
 
     # ---------- 1. nhóm CHƯA cho phép: im tuyệt đối nhưng hiện lên hàng chờ ------------------
-    KHO_TIN.append(nhom_msg("@Uni Vũ cho hỏi lỗi cổng 7777", "a1", thread=NHOM_LA))
+    KHO_TIN.append(nhom_msg("@Uni Vũ cho hỏi lỗi cổng 8688", "a1", thread=NHOM_LA))
     KHO_TIN.append(nhom_msg("haha", "a2", thread=NHOM_LA))
     n0 = len(LUOT_ENGINE)
     await doc()
@@ -202,7 +202,7 @@ async def chay():
 
     # ---------- 2. nhóm đã cho phép, chế độ "được gọi tên" -----------------------------------
     chatbot_store.update_bot(bid, {"groups": [NHOM]})
-    KHO_TIN.append(nhom_msg("UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?", "b1"))
+    KHO_TIN.append(nhom_msg("UNI MATE báo lỗi cổng 8688 đang bị dùng thì làm sao ạ?", "b1"))
     n0 = len(LUOT_ENGINE)
     await doc()
     check("không tag thì bot im (mặc định chỉ khi được gọi tên)", not GUI and len(LUOT_ENGINE) == n0, GUI)
@@ -373,7 +373,7 @@ async def chay():
     NHOM_MOI, NHOM_MO = "5550055", "5550066"
     THREADS.append({"threadId": NHOM_MOI, "name": "Nhóm mới vào", "type": "group"})
     n_list = len(LIST_CALLS)
-    KHO_TIN.append(_khong_loai("@Uni Vũ cho hỏi lỗi cổng 7777", "u1", NHOM_MOI))
+    KHO_TIN.append(_khong_loai("@Uni Vũ cho hỏi lỗi cổng 8688", "u1", NHOM_MOI))
     n0 = len(LUOT_ENGINE)
     await doc()
     check("cuộc chat lạ chưa có trong bảng thì HỎI LẠI bảng ngay, không chờ hết hạn",
@@ -395,7 +395,7 @@ async def chay():
     GUI.clear()
     truoc_log = len(chatbot_log.doc(bid, 500))
 
-    KHO_TIN.append(nhom_msg("UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?", "c1",
+    KHO_TIN.append(nhom_msg("UNI MATE báo lỗi cổng 8688 đang bị dùng thì làm sao ạ?", "c1",
                             uid="7770101", nguoi="Học viên B"))
     n0 = len(LUOT_ENGINE)
     await doc(0.4)
@@ -405,13 +405,13 @@ async def chay():
     check("model được dạy đây là tin nhóm không ai gọi tên và quyền im lặng",
           "không ai gọi tên bạn" in LUOT_ENGINE[-1]["prompt"] and "[IM_LANG]" in LUOT_ENGINE[-1]["prompt"])
     check("và có TÀI LIỆU tra sẵn trong prompt (căn cứ để trả lời)",
-          "7777" in LUOT_ENGINE[-1]["prompt"])
+          "8688" in LUOT_ENGINE[-1]["prompt"])
 
     # ---- 0.102.1: a Tự đánh giá turn that FAILS stays out of the group ----
     # Seen 2026-10-12 in a 69-member Zalo group: the engine failed on a message nobody addressed to the bot, and the
     # bot posted "Em đang gặp trục trặc kỹ thuật..." tagged to that person.
-    for ma, loi, cau in (("lt-x", RuntimeError("engine sập"), "UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?"),
-                         ("lt-s", "⚠ Codex không trả về nội dung nào.", "UNI MATE báo lỗi cổng 7777 khi khởi động thì xử lý sao ạ?")):
+    for ma, loi, cau in (("lt-x", RuntimeError("engine sập"), "UNI MATE báo lỗi cổng 8688 đang bị dùng thì làm sao ạ?"),
+                         ("lt-s", "⚠ Codex không trả về nội dung nào.", "UNI MATE báo lỗi cổng 8688 khi khởi động thì xử lý sao ạ?")):
         GUI.clear()
         LOI_ENGINE["v"] = loi
         n0 = len(LUOT_ENGINE)
@@ -425,7 +425,7 @@ async def chay():
               ghi and ("Codex" if isinstance(loi, str) else "engine sập") in ghi[0]["loi"], ghi[:1])
     GUI.clear()
     LOI_ENGINE["v"] = "⚠ Codex không trả về nội dung nào."
-    KHO_TIN.append(nhom_msg("Uni Vũ ơi lỗi cổng 7777 làm sao em", "lt-g", uid="7770299", nguoi="Học viên C"))
+    KHO_TIN.append(nhom_msg("Uni Vũ ơi lỗi cổng 8688 làm sao em", "lt-g", uid="7770299", nguoi="Học viên C"))
     await doc(0.4)
     # Chủ repo 15/10/2026: trục trặc kỹ thuật không gửi gì cho khách, kể cả người đã gọi bot.
     # Chủ nghe ở chuông thông báo của UNI MATE, lỗi gốc nằm trong nhật ký bot.
@@ -483,7 +483,7 @@ async def chay():
     # ---------- 4. nhường người đang nhắn tay ------------------------------------------------
     GUI.clear()
     zc.NHUONG_GIAY = 0.4
-    KHO_TIN.append(nhom_msg("UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?", "d1", uid="7770106"))
+    KHO_TIN.append(nhom_msg("UNI MATE báo lỗi cổng 8688 đang bị dùng thì làm sao ạ?", "d1", uid="7770106"))
     await zc.doc_mot_lan(dict(CONN))
     await asyncio.sleep(0.1)
     KHO_TIN.append({"threadId": NHOM, "from": UID_BOT, "senderName": "Uni Vũ", "type": "text",
@@ -514,7 +514,7 @@ async def chay():
     # giá sẽ cho qua và bot tự trả lời chính nó. (Từ 0.85.5 không còn khoảng nghỉ nào để dựa vào.)
     GUI.clear()
     zc._TAY.clear()
-    TRA_LOI["v"] = ("Bạn thử đổi bộ não ở trang Models của Uni nhé, còn lỗi cổng 7777 thì bạn "
+    TRA_LOI["v"] = ("Bạn thử đổi bộ não ở trang Models của Uni nhé, còn lỗi cổng 8688 thì bạn "
                     "đã tắt tiến trình cũ chưa?")
     KHO_TIN.append(nhom_msg("Đổi bộ não của UNI MATE ở đâu vậy mọi người?", "w1", uid="7770401"))
     await doc(0.4)

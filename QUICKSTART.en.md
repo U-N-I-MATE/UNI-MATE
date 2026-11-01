@@ -32,14 +32,14 @@ To update: press **⬆ Update now** in the app (Updates page), or **Redeploy** i
 ```
 docker compose -f docker-compose.yml up -d
 ```
-Open http://localhost:7777. For HTTPS through Caddy, add `-f docker-compose.https.yml`.
+Open http://localhost:8688. For HTTPS through Caddy, add `-f docker-compose.https.yml`.
 
 ## Option 3 - Run directly (Windows, no Docker)
 
 1. Install Python 3.12 + Node 22.
 2. In the project folder run `setup.bat` once - it creates .venv, installs dependencies, and installs the two CLI engines (Claude Code, Codex) for you.
 3. `start-unimate.bat` to run in the background (`stop-unimate.bat` to stop).
-4. Open http://localhost:7777.
+4. Open http://localhost:8688.
 
 ## Once it is running
 

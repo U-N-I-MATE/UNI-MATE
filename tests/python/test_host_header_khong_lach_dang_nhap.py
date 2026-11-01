@@ -41,7 +41,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-cl = TestClient(main.app, base_url="http://127.0.0.1:7777")
+cl = TestClient(main.app, base_url="http://127.0.0.1:8688")
 
 
 def ma(duong, host=None):
@@ -55,31 +55,31 @@ check("chưa đăng nhập: GET /agents trả 401", ma("/agents") == 401)
 # scope["path"]). Lớp hai chặn Host méo trả 400, mà nó nằm SAU _auth_guard trong chồng
 # middleware - nhận 400 nghĩa là lớp một đã mở cửa và chỉ còn lớp hai gánh. Cả hai lớp đều
 # giữ request khỏi endpoint, nhưng test phải đo được từng lớp một.
-for host in ("127.0.0.1:7777/static",          # tiền tố trong _AUTH_PUBLIC_PREFIX
-             "127.0.0.1:7777/health",
-             "127.0.0.1:7777/static/..",       # lách bằng đường đi lùi
-             "127.0.0.1:7777/",                # tiền tố là chính "/" trong _AUTH_PUBLIC_EXACT
-             "127.0.0.1:7777/auth/login"):     # đường công khai trong _AUTH_PUBLIC_EXACT
+for host in ("127.0.0.1:8688/static",          # tiền tố trong _AUTH_PUBLIC_PREFIX
+             "127.0.0.1:8688/health",
+             "127.0.0.1:8688/static/..",       # lách bằng đường đi lùi
+             "127.0.0.1:8688/",                # tiền tố là chính "/" trong _AUTH_PUBLIC_EXACT
+             "127.0.0.1:8688/auth/login"):     # đường công khai trong _AUTH_PUBLIC_EXACT
     check(f"Host {host!r}: /agents vẫn trả 401 (lớp một chặn)", ma("/agents", host) == 401)
 
 # Phải là ĐÚNG 401. Nếu chỉ đòi "khác 200" thì ca chưa vá cũng lọt: hàng rào mở ra rồi,
 # endpoint mới là chỗ trả 422 vì thiếu field - đọc vội tưởng đã chặn.
 check("Host méo POST /kanban/task trả 401 (chặn ở hàng rào, không phải 422 ở endpoint)",
-      cl.post("/kanban/task", headers={"host": "127.0.0.1:7777/static"},
+      cl.post("/kanban/task", headers={"host": "127.0.0.1:8688/static"},
               json={"title": "x"}).status_code == 401)
 
 # ---- 2) Host méo bị chặn thẳng ở web_security, không chỉ "không lọt" ----
-for xau in ("127.0.0.1:7777/static", "a.com@evil.com", "a.com\\static", "a b.com",
+for xau in ("127.0.0.1:8688/static", "a.com@evil.com", "a.com\\static", "a b.com",
             "a.com?x=1", "a.com#f"):
     check(f"host_hop_le({xau!r}) là False", web_security.host_hop_le(xau) is False)
 
-for tot in ("127.0.0.1:7777", "localhost", "[::1]:7777", "unimate.example.com", ""):
+for tot in ("127.0.0.1:8688", "localhost", "[::1]:8688", "unimate.example.com", ""):
     check(f"host_hop_le({tot!r}) là True", web_security.host_hop_le(tot) is True)
 
-d = web_security.csrf_decision("GET", "127.0.0.1:7777/static", None, True)
+d = web_security.csrf_decision("GET", "127.0.0.1:8688/static", None, True)
 check("csrf_decision chặn 400 với Host méo", bool(d) and d[0] == 400)
 check("csrf_decision vẫn cho qua Host bình thường",
-      web_security.csrf_decision("GET", "127.0.0.1:7777", None, True) is None)
+      web_security.csrf_decision("GET", "127.0.0.1:8688", None, True) is None)
 
 # ---- 3) Đường dẫn bình thường KHÔNG bị khoá nhầm (rào mới không được bắt oan) ----
 check("/health vẫn mở không cần đăng nhập", ma("/health") == 200)

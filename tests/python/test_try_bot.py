@@ -57,7 +57,7 @@ async def _engine(text, meta, progress, *, channel="", bot=None, **kw):
 
 BRAIN = Path(tempfile.mkdtemp(prefix="brain-try-"))
 (BRAIN / "cai-dat.md").write_text(
-    "# Hướng dẫn cài đặt UNI MATE\n\n## Lỗi cổng 7777 đang được dùng\n\nNếu UNI MATE báo lỗi cổng 7777 đang được dùng, "
+    "# Hướng dẫn cài đặt UNI MATE\n\n## Lỗi cổng 8688 đang được dùng\n\nNếu UNI MATE báo lỗi cổng 8688 đang được dùng, "
     "hãy tắt tiến trình UNI MATE cũ rồi khởi động lại bằng file start-unimate.bat.\n", encoding="utf-8")
 chatbot_runtime.wire(answer=_engine, brain_root=lambda b: str(BRAIN),
                      read_agent=lambda br, slug: ({"name": "Lan", "role": "Trợ lý cài đặt UNI MATE"}, "Trả lời ngắn gọn."),
@@ -97,7 +97,7 @@ chatbot_store.update_bot(bid, {"muc_quyen": "full", "xac_nhan_rui_ro": True})
 check("(setup) bot is set to full permission", chatbot_store.get_bot(bid).get("muc_quyen") == "full")
 
 # ---- 1. Private message: answered, read-only, clean session --------------------------------------
-r = run(bid, "UNI MATE báo lỗi cổng 7777 thì làm sao?")
+r = run(bid, "UNI MATE báo lỗi cổng 8688 thì làm sao?")
 check("private: ok and would reply", r.get("ok") and r.get("would_reply") is True and r.get("stage") == "answered", r)
 check("private: returns the Agent's answer", r.get("text") == REPLY["v"], r)
 check("private: lists the documents it found", any("cai-dat" in str(s) for s in (r.get("sources") or [])), r.get("sources"))
@@ -121,7 +121,7 @@ check("group with no allowed group: assumed allowed, and the result says so",
       "group_assumed_allowed" in (r.get("notes") or []), r.get("notes"))
 
 # ---- 3. Group, called by @tag -> answered ---------------------------------------------------------
-r = run(bid, "@Uni Vũ lỗi cổng 7777 xử lý sao", chat_type="group", mentioned=True)
+r = run(bid, "@Uni Vũ lỗi cổng 8688 xử lý sao", chat_type="group", mentioned=True)
 check("group, tagged: answered", r.get("would_reply") is True and r.get("stage") == "answered" and len(CALLS) == 1, r)
 check("group: the engine sees who is speaking like a real group turn",
       CALLS and CALLS[-1]["meta"].get("chat_type") == "group", CALLS and CALLS[-1]["meta"])
@@ -130,13 +130,13 @@ check("group: the engine sees who is speaking like a real group turn",
 chatbot_store.update_bot(bid, {"reply_when": "auto"})
 CALLS.clear()
 J.verdict = "silent"
-r = run(bid, "UNI MATE báo lỗi cổng 7777 thì làm sao ạ?", chat_type="group", mentioned=False)
+r = run(bid, "UNI MATE báo lỗi cổng 8688 thì làm sao ạ?", chat_type="group", mentioned=False)
 check("auto, judge says silent: would stay silent, stage judge",
       r.get("would_reply") is False and r.get("stage") == "judge" and r.get("code") in ("judge_silent", "below_threshold"), r)
 check("judge result carries the judge's reason and score", "chuyện phiếm" in str(r.get("reason")) and r.get("score") == 0.2, r)
 check("judge asked once, engine not called", J.calls == 1 and CALLS == [], (J.calls, CALLS))
 J.verdict = "reply"
-r = run(bid, "UNI MATE báo lỗi cổng 7777 thì làm sao ạ?", chat_type="group", mentioned=False)
+r = run(bid, "UNI MATE báo lỗi cổng 8688 thì làm sao ạ?", chat_type="group", mentioned=False)
 check("auto, judge says reply: answered with the Agent's text",
       r.get("would_reply") is True and r.get("stage") == "answered" and r.get("text") == REPLY["v"], r)
 check("answered result keeps the judge's score", r.get("score") == 0.92, r)
