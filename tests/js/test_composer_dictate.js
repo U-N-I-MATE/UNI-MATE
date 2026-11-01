@@ -103,7 +103,7 @@ const tick = () => new Promise(r => setTimeout(r, 0));
   runs[0].say("xin chào", true);
   runs[0].onend();                       // Chrome stops after a silence, the owner has not pressed stop
   check("a run ended by the browser restarts while still recording", runs.length === 2 && d.active());
-  runs[1].say("UNI MATE", false);
+  runs[1].say("Uni", false);
   check("the new run keeps the words heard before", texts[texts.length - 1] === "xin chào Uni");
   d.stop(); await tick();
   check("stop ends with idle and no further run", states[states.length - 1] === "idle" && runs.length === 2 && !d.active());

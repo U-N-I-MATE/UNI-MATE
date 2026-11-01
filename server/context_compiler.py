@@ -1167,7 +1167,7 @@ class DeterministicQualityGate:
         "không có tool", "không có công cụ", "không thể truy cập công cụ",
         "i do not have access to tools", "no tools available",
     )
-    # Chỉ bắt claim HÀNH ĐỘNG CỦA CHÍNH ASSISTANT: chủ ngữ ngôi thứ nhất/UniMate, hoặc
+    # Chỉ bắt claim HÀNH ĐỘNG CỦA CHÍNH ASSISTANT: chủ ngữ ngôi thứ nhất/UNI MATE, hoặc
     # câu tỉnh lược mở đầu bằng "Đã <động từ>". Tường thuật dữ liệu ("Khách A đã gửi
     # 3 email", "Cuộc họp đã tạo tuần trước vẫn còn") KHÔNG được chặn - đây là use case
     # chính của đường read-only. Regex chạy trên text thô nên giữ cả dạng có dấu.
