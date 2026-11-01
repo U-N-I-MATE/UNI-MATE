@@ -339,11 +339,14 @@
       //           vài tệp vào bộ não - nên cài xong mà nó nằm im là một cái bẫy chứ không phải
       //           một lớp an toàn. Vấp thật khi thử đường di trú: kết nối đang chết, người dùng
       //           bấm cài đúng gói cần, và KHÔNG có gì xảy ra vì gói vào máy ở trạng thái tắt.
+      //   có mã nhưng mở từ lối khác với `batSan` (vd vừa quét QR Zalo): bật, và dòng phụ nói rõ gói
+      //           CÓ chạy mã, bật sẵn vì người dùng vừa tự đấu dịch vụ này - không được ghi "chỉ dữ liệu".
       + '<button class="pkm-gat" id="pkBat" type="button" aria-pressed="' + (batSan ? "true" : "false") + '">'
       + '<span><span class="pkm-gat-t">' + tw("store.inspect.enable.title") + '</span>'
       + '<span class="pkm-gat-s">'
-      + (batSan ? tw("store.inspect.enable.on_note")
-                : tw("store.inspect.enable.off_note"))
+      + (!batSan ? tw("store.inspect.enable.off_note")
+          : coMa ? tw("store.inspect.enable.on_note_code")
+          : tw("store.inspect.enable.on_note"))
       + '</span></span>'
       + '<span class="pkm-cong"><span></span></span></button>'
       + '</div>'
