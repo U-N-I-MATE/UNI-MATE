@@ -3208,6 +3208,24 @@ function connectGraphWatch() {
 const vaultBanner = document.getElementById("vaultBanner");
 const vbText = document.getElementById("vbText");
 const vbInit = document.getElementById("vbInit");
+// Người dùng bấm ✕ trên khung báo thiếu cấu trúc thì NHỚ cho đúng bộ não đó và đúng danh sách
+// thiếu lúc ấy, không nhắc lại mỗi lần mở app hay đổi bộ não. Kho ghi chú có sẵn (Obsidian...)
+// thường cố ý không có các thư mục mẫu này (chủ dự án nối kho Bonao_AI 01/11/2026). Nhớ theo
+// bộ não chứ không theo danh sách thiếu: danh sách tự đổi khi UNI MATE tạo `memory/` lúc trò
+// chuyện, nhớ theo danh sách thì khung lại hiện như chưa từng tắt. Mục "thiếu thiết yếu" (như
+// sources) cũng được tắt: kho có sẵn vẫn chạy bình thường khi không có chúng.
+const VB_TAT = "unimate.vaultBannerOff";
+let _vbChuKy = "";
+function vbDaTat(brain, chuKy) {
+  try { return (JSON.parse(localStorage.getItem(VB_TAT) || "{}") || {})[brain] === chuKy; } catch (e) { return false; }
+}
+function vbGhiTat(brain, chuKy) {
+  try {
+    const m = JSON.parse(localStorage.getItem(VB_TAT) || "{}") || {};
+    m[brain] = chuKy;
+    localStorage.setItem(VB_TAT, JSON.stringify(m));
+  } catch (e) {}
+}
 
 async function checkVault() {
   try {
@@ -3216,6 +3234,8 @@ async function checkVault() {
       vaultBanner.classList.remove("show");
     } else {
       const miss = d.items.filter(i => !i.present).map(i => i.label).join(", ");
+      _vbChuKy = "tat";
+      if (vbDaTat(currentBrainPath(), _vbChuKy)) { vaultBanner.classList.remove("show"); return; }
       vbText.textContent = d.ok
         ? window.t("app.vault_ok_missing", { miss: miss })
         : window.t("app.vault_bad", { miss: miss });
@@ -3242,7 +3262,10 @@ vbInit.addEventListener("click", async () => {
   vbInit.disabled = false;
 });
 
-document.getElementById("vbClose").addEventListener("click", () => vaultBanner.classList.remove("show"));
+document.getElementById("vbClose").addEventListener("click", () => {
+  vaultBanner.classList.remove("show");
+  if (_vbChuKy) vbGhiTat(currentBrainPath(), _vbChuKy);
+});
 
 // Đổi tông: bảng màu danh mục đổi theo, mà chữ "% Vault" đã gắn màu inline lúc dựng
 // nên phải tô lại, không thì nhãn giữ màu rực của tông tối và nhợt hẳn trên giấy.
