@@ -54,7 +54,7 @@ P = prof()
 CERTAIN = [
     "uni vũ ơi", "Uni Vũ ơi giúp anh cái", "uni vu oi", "alo uni vu", "ê uni vũ",
     "chào uni vũ", "hi uni vu, hỏi cái này", "@Uni Vũ xem giúp", "Uni Vũ giúp anh cái này",
-    "uni vu à, hôm nay có gì mới", "UNI MATE VŨ ƠI!!!", "  uni   vũ  ơi  ",
+    "uni vu à, hôm nay có gì mới", "UNI VŨ ƠI!!!", "  uni   vũ  ơi  ",
 ]
 POSSIBLE = ["hỏi uni vũ xem", "cảm ơn uni vũ", "nhờ uni vu chút", "để mình hỏi lại uni vũ"]
 NONE = ["mai họp mấy giờ", "@Lan xem giúp", "hôm nay unimate chạy chậm quá", "vũ ơi", "unimate", "", "   "]

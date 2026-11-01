@@ -66,7 +66,7 @@ _goc_mcp = voice_ear._mcp_labels
 voice_ear._mcp_labels = lambda: ["Pancake POS", "Gmail", "unimate"]
 tv = voice_ear.vocab({"voice": {"hotwords": "Webcake"}})
 check("từ mồi có tên trợ lý, từ người dùng khai và tên kết nối MCP",
-      tv[:2] == ["Uni", "Webcake"] and "Pancake POS" in tv and "Gmail" in tv)
+      tv[:3] == ["Uni", "UNI MATE", "Webcake"] and "Pancake POS" in tv and "Gmail" in tv)
 check("từ mồi không lặp tên trợ lý khi kết nối trùng tên", [t.lower() for t in tv].count("unimate") == 1)
 check("lớp sửa mờ nghe_sua.tu_vung KHÔNG nhận tên MCP",
       "Pancake POS" not in nghe_sua.tu_vung({"voice": {"hotwords": "Webcake"}}))

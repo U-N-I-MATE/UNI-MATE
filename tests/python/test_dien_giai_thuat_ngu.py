@@ -34,7 +34,7 @@ NHAN = [
     ("cave là gì", "KV là gì"),
     ("vẫn không nhận ra huyết áp Action luôn", "vẫn không nhận ra GitHub Actions luôn"),
     ("anh hỏi về khít half action", "anh hỏi về GitHub Actions"),
-    ("xin chào David", "xin chào Uni"),
+    ("xin chào Diu ni", "xin chào Uni"),
     ("xem đơn trên pan cake", "xem đơn trên Pancake"),
 ]
 for cu, moi in NHAN:

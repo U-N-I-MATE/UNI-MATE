@@ -1,8 +1,8 @@
-"""Nói "UNI MATE" mà máy nghe chép "David" thì UNI MATE vẫn hiểu là gọi mình (0.64.38).
+"""Gọi "Uni" mà máy nghe chép "Ưu ni", "Diu ni" thì UNI MATE vẫn hiểu là gọi mình (0.64.38).
 
 0.64.32 gỡ lớp sửa tên ở cửa WebSocket cùng lúc với việc chặn AI viết lại câu, và dặn bộ não
-giọng "không tự đoán tên người". Kết quả (chủ dự án 24/09): UNI MATE đáp "anh nói là David" và
-bong bóng giữ nguyên "David". Test này giữ cả ba mắt xích: lớp sửa tất định, chỗ gọi nó trước
+giọng "không tự đoán tên người". Kết quả (chủ dự án 24/09): trợ lý đáp lại đúng chữ nghe sai và
+bong bóng giữ nguyên chữ nghe sai. Test này giữ cả ba mắt xích: lớp sửa tất định, chỗ gọi nó trước
 khi lưu tin, và lời dặn bộ não giọng.
 """
 import os
@@ -37,7 +37,7 @@ class TenUniMate(unittest.TestCase):
     def test_bo_nao_giong_hieu_theo_ngu_canh(self):
         p = voice_brain.SYSTEM_PROMPT
         self.assertIn("HIỂU CÂU THEO NGỮ CẢNH", p)
-        self.assertIn("không nói người dùng đã nói 'David'", p)
+        self.assertIn("không nói người dùng đã nói 'Diu ni'", p)
         self.assertNotIn("NGUYÊN VĂN", voice_brain.GHI_CHU_TAT_LOC)
 
     def test_bo_nao_chinh_duoc_dan_hieu_theo_ngu_canh(self):

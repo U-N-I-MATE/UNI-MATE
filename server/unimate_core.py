@@ -39,7 +39,8 @@ _def_cache: Dict[str, Any] = {"mtime": None, "value": None}
 
 
 def is_core_slug(slug: Any) -> bool:
-    return str(slug or "").strip().lower() == SLUG
+    # "UNI MATE Core" viết hai chữ nên tên tự đặt ra slug "uni-mate-core": coi như cùng slug giữ chỗ.
+    return str(slug or "").strip().lower().replace("-", "") == SLUG.replace("-", "")
 
 
 def is_core_channel(channel: Any) -> bool:

@@ -56,7 +56,7 @@ check("a run of emoji presentation selectors is removed", rp.clean_chat_text("ok
 # Removing (not replacing with a space) means a marker split by a hidden character is put back together
 # and then caught by the marker filter, instead of slipping past it in two halves.
 check("an internal marker split by a zero-width space is still removed",
-      "UNI MATE" not in rp.clean_chat_text("a UNI MATE​_TASK b"), rp.clean_chat_text("a UNI MATE​_TASK b"))
+      "UNIMATE" not in rp.clean_chat_text("a UNIMATE​_TASK b"), rp.clean_chat_text("a UNIMATE​_TASK b"))
 check("clean_block removes hidden characters too and keeps its line breaks",
       rp.clean_block("dòng 1" + tags("x") + "\ndòng‮ 2") == "dòng 1\ndòng 2",
       rp.clean_block("dòng 1" + tags("x") + "\ndòng‮ 2"))

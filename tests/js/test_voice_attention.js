@@ -10,14 +10,14 @@ now += 29999;
 assert.equal(gate.waiting(), false, 'still awake just before 30 seconds');
 now += 2;
 assert.equal(gate.waiting(), true);
-for (const text of ['mua ngay hôm nay', 'ừ', 'Ich habe dich', 'anh vừa xem UNI MATE trên TV', 'UNI MATEcript']) {
+for (const text of ['mua ngay hôm nay', 'ừ', 'Ich habe dich', 'anh vừa xem Uni trên TV', 'university', 'Unicode']) {
   assert.equal(gate.preview(text), false);
   assert.equal(gate.accept(text), false);
 }
 assert.equal(gate.waiting(), true, 'noise must not extend the conversation');
-assert.equal(gate.preview('UNI MATE'), true);
+assert.equal(gate.preview('Uni'), true);
 assert.equal(gate.waiting(), true, 'interim wake is not permission to accept a revised final');
-assert.equal(gate.accept('David'), false);
+assert.equal(gate.accept('Diu ni'), false);
 assert.equal(gate.accept('Uni ơi, đưa anh về trò chuyện'), true);
 assert.equal(gate.accept('không'), true, 'short followup preserved');
 now += 29000;
@@ -50,12 +50,12 @@ for (const text of ['', '  ', 'ừ', 'ok.', '!!', '123 456']) {
 
 // 0.65.15: câu gần giống tên gọi chỉ được đưa cho tai nghe lại, KHÔNG mở rào.
 const near = new Attention({ now: () => 0 });
-assert.equal(near.wakeCandidate('David ơi mở trang kết nối'), false, 'stopped gate offers nothing');
+assert.equal(near.wakeCandidate('Diu ni ơi mở trang kết nối'), false, 'stopped gate offers nothing');
 near.start();
-for (const text of ['David ơi mở trang kết nối', 'hey Davis', 'Gia vít ơi', 'Javix, mở Telegram']) {
+for (const text of ['Diu ni ơi mở trang kết nối', 'hey Yu ni', 'Ưu ni ơi', 'Yuni, mở Telegram']) {
   assert.equal(near.wakeCandidate(text), true, text);
 }
-for (const text of ['mua ngay hôm nay', 'anh vừa gặp David', 'Davidson', 'Uni ơi']) {
+for (const text of ['mua ngay hôm nay', 'anh vừa gặp Diu ni', 'Yunisa', 'Uni ơi', 'dịu nhỉ']) {
   assert.equal(near.wakeCandidate(text), false, text);
 }
 

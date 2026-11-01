@@ -408,8 +408,8 @@ check("prompt kèm nhãn tiếng Việt của trang", "plugins (công cụ)" in 
       and "skills (kỹ năng)" in vb.SYSTEM_PROMPT and "workspace (cộng sự, trợ lý, quy trình)" in vb.SYSTEM_PROMPT)
 
 # ---- 7. Dòng UNIMATE_NGHE: câu người dùng đã diễn giải (0.59.25) ----
-# Vì sao: bong bóng người dùng hiện chữ thô của máy nghe ("David"), UNI MATE lại trả lời như đã
-# hiểu "UNI MATE"; chủ dự án không biết đã diễn giải hay chưa. Bộ não giọng viết dòng đầu
+# Vì sao: bong bóng người dùng hiện chữ thô của máy nghe ("Diu ni"), UNI MATE lại trả lời như đã
+# hiểu "Uni"; chủ dự án không biết đã diễn giải hay chưa. Bộ não giọng viết dòng đầu
 # UNIMATE_NGHE, server bóc ra thay tin người dùng, không bao giờ đọc ra loa.
 check("prompt bộ não giọng dạy dòng UNIMATE_NGHE ở dòng đầu", vb.NGHE_MARKER in vb.SYSTEM_PROMPT)
 r, n = vb.parse_nghe("UNIMATE_NGHE: Uni ơi mở lịch\nỪ, để xem ngay.\nUNIMATE_ASK_MAIN: mở lịch")
@@ -434,7 +434,7 @@ from pathlib import Path as _P  # noqa: E402
 from sessions import SessionStore  # noqa: E402
 _st = SessionStore(_P(os.environ["UNIMATE_STATE_DIR"]) / "nghe.db")
 _sid = _st.create_session(brain="b", engine="e", model="m")
-_st.append_message(_sid, "user", "hey David mở lịch")
+_st.append_message(_sid, "user", "hey Diu ni mở lịch")
 check("replace_last_message: thay tin người dùng cuối",
       _st.replace_last_message(_sid, "user", "hey Uni mở lịch") is True
       and _st.get_messages(_sid)[-1]["content"] == "hey Uni mở lịch")
