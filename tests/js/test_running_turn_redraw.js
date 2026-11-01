@@ -40,6 +40,7 @@ function makeCtx(turnState, opts = {}) {
       return b;
     },
     showActivity(html) { shown.push(html); ctx.activityEl = { id: "chip" }; },
+    veKhoiBuoc(t, running) { ctx.stepsRedrawn = running; },
     chatAppend(el) { appended.push(el); },
     scrollBottom() {},
   };
@@ -54,6 +55,7 @@ function makeCtx(turnState, opts = {}) {
   ctx.redrawRunningTurn();
   assert.deepEqual(shown, ["T(app.act_thinking)"]);
   assert.equal(ctx.created || 0, 0, "no bubble for a turn that has written nothing");
+  assert.equal(ctx.stepsRedrawn, true, "the steps block comes back with the chip");
 }
 
 // 2. Running with text the page never received (frames lost while away): a bubble shows the server's text.
