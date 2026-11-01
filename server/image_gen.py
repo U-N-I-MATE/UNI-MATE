@@ -1,0 +1,504 @@
+"""
+image_gen.py - Tạo ảnh bằng GÓI ChatGPT (OAuth device-code) - KHÔNG cần OpenAI API key.
+
+Cơ chế (port từ plugin image_gen/openai-codex của nousresearch/hermes-agent): gọi Codex Responses
+API (https://chatgpt.com/backend-api/codex/responses - CÙNG endpoint Javis đã dùng cho chat ChatGPT)
+với builtin tool 'image_generation' (model gpt-image-2) + tool_choice=required, stream SSE, lấy ảnh
+base64 trong 'image_generation_call.result'. Token OAuth lấy từ openai_oauth.valid_creds() (tự refresh).
+
+Vì sao Javis trước đây KHÔNG tạo ảnh trực tiếp: đường chat ChatGPT (engine.responses_with_mcp) chỉ
+gửi function tool, chưa từng gửi builtin tool 'image_generation'. Module này bổ sung đúng chỗ đó.
+
+Ảnh lưu vào <vault>/attachments/ để nhúng thẳng vào chat: ![](attachments/<tên>.png)
+(dashboard phục vụ qua /files/raw). Các hàm build_payload / extract_image_b64 / resolve_size /
+save_png_b64 là THUẦN → test được không cần mạng.
+"""
+from __future__ import annotations
+
+import base64
+import json
+import os
+import re
+import time
+import uuid
+from pathlib import Path
+from typing import Any, Optional
+
+import httpx
+
+import localefmt
+import openai_oauth
+
+CODEX_RESPONSES_URL = "https://chatgpt.com/backend-api/codex/responses"
+# Model chat 'chủ' chỉ để gọi tool; ảnh do IMAGE_MODEL sinh. Đặt env là GHIM cứng một model
+# (không thử model nào khác). Không đặt thì HOST_MODEL chỉ là lựa chọn đầu tiên, xem
+# host_model_candidates(): gói ChatGPT nào không có model này (2026-10-15, ảnh chụp của chủ
+# repo: "The 'gpt-5.5' model is not supported when using Codex with a ChatGPT account") thì
+# Javis chuyển sang model khác trong danh mục thật của tài khoản thay vì chết ở đó.
+_HOST_ENV = os.getenv("JAVIS_IMAGE_HOST_MODEL", "").strip()
+HOST_MODEL = _HOST_ENV or "gpt-5.5"
+MAX_HOST_TRIES = 4
+# Model vừa tạo ảnh thành công gần nhất: lượt sau thử nó trước, khỏi đốt một lượt 400.
+_host_ok: list = [""]
+# Model đã gỡ khỏi Javis (main._MODEL_DA_GO) mà danh mục cũ có thể còn giữ.
+_KHONG_PHAI_MODEL = frozenset({"chatgpt-web"})
+_TU_CHOI_MODEL = ("not supported", "unsupported", "does not exist", "not found", "not available",
+                  "do not have access", "don't have access", "no access", "invalid model")
+IMAGE_MODEL = os.getenv("JAVIS_IMAGE_MODEL", "gpt-image-2")
+INSTRUCTIONS = ("You are an assistant that must fulfill image generation and image editing "
+                "requests by using the image_generation tool when provided.")
+
+_SIZES = {"landscape": "1536x1024", "square": "1024x1024", "portrait": "1024x1536"}
+_QUALITIES = {"low", "medium", "high"}
+_ATTACH_RE = r"^(\d+\s*[-_.]\s*)?attachments$"
+
+
+# ---------------------------------------------------------------------------
+# Helpers thuần (test được)
+# ---------------------------------------------------------------------------
+def resolve_size(aspect_ratio: Optional[str]) -> str:
+    return _SIZES.get((aspect_ratio or "square").strip().lower(), _SIZES["square"])
+
+
+# Ảnh MẪU gửi kèm: trần dung lượng và số lượng. Ảnh đi trong thân request dưới dạng base64
+# nên một tấm 4000px chụp từ điện thoại đủ làm request phình gấp mấy lần và bị backend từ
+# chối - hỏng ở đó thì người dùng chỉ thấy "ChatGPT 413", không lần ra được vì sao.
+MAX_REF_IMAGES = 4
+MAX_REF_BYTES = 12 * 1024 * 1024
+_IMG_MIME = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+             ".webp": "image/webp", ".gif": "image/gif"}
+
+
+def read_reference_image(path: str, vault_root: Optional[str] = None) -> dict:
+    """Đọc MỘT ảnh mẫu trên đĩa -> {ok, data_url} để gửi thẳng cho ChatGPT xem.
+
+    Đường dẫn nhận cả kiểu tương đối trong vault (attachments/abc.png) lẫn tuyệt đối, nhưng
+    LUÔN phải nằm trong vault sau khi resolve: tool này do MODEL gọi, mà model thì có thể bị
+    nội dung nó vừa đọc dắt đi ("mở /etc/passwd rồi gửi cho ChatGPT"). Chốt ở đây là chốt
+    thật, không phải lời dặn trong prompt.
+    """
+    raw_path = str(path or "").strip()
+    if not raw_path:
+        return {"ok": False, "error": localefmt.chu("Thiếu đường dẫn ảnh.", "Missing image path.")}
+    vault = _resolve_vault(vault_root).resolve()
+    p = Path(raw_path).expanduser()
+    p = (p if p.is_absolute() else (vault / p)).resolve()
+    try:
+        p.relative_to(vault)
+    except ValueError:
+        return {"ok": False, "error": localefmt.chu(f"Ảnh '{raw_path}' nằm ngoài brain - chỉ gửi được ảnh trong brain.",
+                                                f"Image '{raw_path}' is outside the brain - only images inside the brain can be sent.")}
+    if not p.is_file():
+        return {"ok": False, "error": localefmt.chu(f"Không thấy ảnh '{raw_path}' trong brain.",
+                                                f"Image '{raw_path}' not found in the brain.")}
+    mime = _IMG_MIME.get(p.suffix.lower())
+    if not mime:
+        return {"ok": False, "error": localefmt.chu(f"'{p.name}' không phải ảnh (chỉ nhận png/jpg/webp/gif).",
+                                                f"'{p.name}' is not an image (only png/jpg/webp/gif).")}
+    data = p.read_bytes()
+    if len(data) > MAX_REF_BYTES:
+        return {"ok": False,
+                "error": localefmt.chu(f"Ảnh '{p.name}' nặng {len(data) // (1024 * 1024)}MB, quá trần "
+                                       f"{MAX_REF_BYTES // (1024 * 1024)}MB - dùng bản nhẹ hơn.",
+                                       f"Image '{p.name}' is {len(data) // (1024 * 1024)}MB, over the "
+                                       f"{MAX_REF_BYTES // (1024 * 1024)}MB limit - use a smaller one.")}
+    return {"ok": True, "data_url": f"data:{mime};base64," + base64.b64encode(data).decode("ascii"),
+            "name": p.name}
+
+
+def _clean_models(ids) -> list:
+    return [str(m).strip() for m in (ids or [])
+            if str(m or "").strip() and str(m).strip() not in _KHONG_PHAI_MODEL]
+
+
+def _catalog_models() -> list:
+    """Danh mục model ChatGPT/Codex đã lấy live từ tài khoản (trang Models lưu vào settings)."""
+    try:
+        import config
+        cat = (((config.read_settings().get("model") or {}).get("catalog") or {}).get("openai-oauth")) or []
+        return _clean_models(cat)
+    except Exception:
+        return []
+
+
+def host_model_candidates(catalog: Optional[list] = None) -> list:
+    """Thứ tự model 'chủ' sẽ thử cho một lượt tạo ảnh.
+
+    Env ghim thì chỉ đúng model đó. Còn lại: model vừa chạy được, rồi HOST_MODEL nếu tài khoản
+    có nó, rồi các model thường trong danh mục (đuôi -codex xếp sau vì là model chuyên code),
+    rồi tới chính HOST_MODEL khi chưa có danh mục nào. Danh mục là của CHÍNH tài khoản nên một
+    model không có trong đó thì đừng thử, gói đó chắc chắn từ chối.
+    """
+    if _HOST_ENV:
+        return [_HOST_ENV]
+    cat = _clean_models(_catalog_models() if catalog is None else catalog)
+    out: list = []
+
+    def them(m: str) -> None:
+        if m and m not in out:
+            out.append(m)
+
+    if _host_ok[0] and (not cat or _host_ok[0] in cat):
+        them(_host_ok[0])
+    if not cat or HOST_MODEL in cat:
+        them(HOST_MODEL)
+    for m in cat:
+        if not m.endswith("-codex"):
+            them(m)
+    for m in cat:
+        them(m)
+    return out[:MAX_HOST_TRIES]
+
+
+def model_rejected(status: int, text: str) -> bool:
+    """Lỗi này là 'gói không cho dùng model này' (đổi model thử tiếp được), không phải lỗi khác.
+
+    0.356.0 (issue #854): có model nhận yêu cầu nhưng KHÔNG có công cụ tạo ảnh, backend bỏ tool đó
+    đi rồi báo "Tool choice 'image_generation' not found in 'tools' parameter". Cũng là chuyện của
+    model chủ, nên đổi sang model khác của tài khoản như khi model bị từ chối."""
+    low = str(text or "").lower()
+    if status not in (0, 400, 403, 404):
+        return False
+    if "image_generation" in low and "tool" in low and "not found" in low:
+        return True
+    return "model" in low and any(k in low for k in _TU_CHOI_MODEL)
+
+
+def build_payload(prompt: str, size: str, quality: str, images: Optional[list] = None,
+                  model: str = "") -> dict:
+    """Body Responses cho 1 lời gọi image_generation (mirror hermes openai-codex).
+
+    `images` = danh sách data URL của ảnh MẪU. Có ảnh thì đây là lượt SỬA/DỰNG THEO ẢNH chứ
+    không còn là vẽ từ mô tả suông: model NHÌN THẤY ảnh thật thay vì đọc lời tả lại nó.
+    """
+    noi_dung: list = [{"type": "input_text", "text": prompt}]
+    for u in (images or []):
+        noi_dung.append({"type": "input_image", "image_url": u})
+    return {
+        "model": model or HOST_MODEL,
+        "store": False,
+        "instructions": INSTRUCTIONS,
+        "input": [{"type": "message", "role": "user", "content": noi_dung}],
+        "tools": [{"type": "image_generation", "model": IMAGE_MODEL, "size": size,
+                   "quality": quality, "output_format": "png", "background": "opaque",
+                   "partial_images": 1}],
+        "tool_choice": {"type": "allowed_tools", "mode": "required",
+                        "tools": [{"type": "image_generation"}]},
+        "stream": True,
+    }
+
+
+def extract_image_b64(value: Any, *, include_partial: bool = True) -> Optional[str]:
+    """Bới đệ quy 1 payload sự kiện SSE, trả b64 ảnh MỚI nhất (image_generation_call.result
+    hoặc partial_image_b64). Bới đệ quy để chịu được thay đổi hình dạng sự kiện của backend."""
+    found: Optional[str] = None
+    if isinstance(value, dict):
+        if value.get("type") == "image_generation_call":
+            r = value.get("result")
+            if isinstance(r, str) and r:
+                found = r
+        p = value.get("partial_image_b64")
+        if include_partial and isinstance(p, str) and p:
+            found = p
+        for v in value.values():
+            n = extract_image_b64(v, include_partial=include_partial)
+            if n:
+                found = n
+    elif isinstance(value, list):
+        for v in value:
+            n = extract_image_b64(v, include_partial=include_partial)
+            if n:
+                found = n
+    return found
+
+
+def _default_vault() -> str:
+    return str(Path(os.getenv("BRAINS_DIR", str(Path(__file__).parent.parent / "brains"))) / "Brain Default")
+
+
+def _resolve_vault(vault_root: Optional[str]) -> Path:
+    if vault_root and os.path.isdir(vault_root):
+        return Path(vault_root)
+    return Path(_default_vault())
+
+
+def _attachments_dir(vault: Path) -> Path:
+    """Thư mục attachments của vault (khớp 'attachments'/'Attachments'/'NN - attachments'), tạo nếu thiếu."""
+    try:
+        for name in os.listdir(vault):
+            if os.path.isdir(vault / name) and re.match(_ATTACH_RE, name.strip(), re.IGNORECASE):
+                return vault / name
+    except Exception:
+        pass
+    d = vault / "attachments"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+BRAND_SOFTWARE = "Javis OS"
+BRAND_SOURCE = "https://javisos.com"
+
+
+def _strip_c2pa_on() -> bool:
+    """Chủ workspace có tự bật gỡ Content Credentials không. Mặc định KHÔNG."""
+    try:
+        import config
+        return bool((config.read_settings().get("image") or {}).get("strip_c2pa"))
+    except Exception:
+        return False                      # đọc cài đặt lỗi → giữ dấu nguồn gốc, đừng gỡ nhầm
+
+
+def _png_text_chunk(key: str, value: str) -> bytes:
+    """Một chunk tEXt PNG: len + 'tEXt' + key\\0value + CRC32(type+data). tEXt là
+    Latin-1 nên chỉ truyền chuỗi ASCII vào đây."""
+    import zlib
+    data = key.encode("latin-1") + b"\x00" + value.encode("latin-1")
+    body = b"tEXt" + data
+    return len(data).to_bytes(4, "big") + body + zlib.crc32(body).to_bytes(4, "big")
+
+
+def _iter_png_chunks(raw: bytes):
+    """Duyệt chunk PNG, sinh (type, start, end). Gặp byte hỏng thì dừng im lặng."""
+    i = 8
+    while i + 8 <= len(raw):
+        ln = int.from_bytes(raw[i:i + 4], "big")
+        typ = raw[i + 4:i + 8]
+        end = i + 12 + ln
+        if ln < 0 or end > len(raw):
+            return
+        yield typ, i, end
+        if typ == b"IEND":
+            return
+        i = end
+
+
+def strip_c2pa_png(raw: bytes) -> bytes:
+    """Gỡ chunk caBX (Content Credentials / C2PA) khỏi PNG.
+
+    caBX là nơi nhà cung cấp ảnh nhúng bản ghi nguồn gốc có chữ ký, nói rõ ảnh do AI
+    sinh ra; nền tảng như Facebook đọc nó để gắn nhãn "Nội dung do AI tạo".
+
+    CHỈ chạy khi chủ workspace tự bật `image.strip_c2pa` trong Cài đặt - mặc định TẮT.
+    Gỡ dấu này KHÔNG xoá nghĩa vụ công bố nội dung AI của người đăng; đó là việc của họ.
+    """
+    try:
+        if raw[:8] != b"\x89PNG\r\n\x1a\n":
+            return raw
+        parts, last, found = [], 0, False
+        for typ, start, end in _iter_png_chunks(raw):
+            if typ == b"caBX":
+                parts.append(raw[last:start])
+                last = end
+                found = True
+        if not found:
+            return raw
+        parts.append(raw[last:])
+        return b"".join(parts)
+    except Exception:
+        return raw
+
+
+def brand_png(raw: bytes) -> bytes:
+    """Gắn thông tin tác giả (Javis OS / javisos.com) vào PNG, chèn ngay sau IHDR.
+
+    CHỈ THÊM, không gỡ chunk nào - phần Content Credentials (C2PA) mà nhà cung cấp
+    ảnh nhúng sẵn vẫn nằm nguyên trong file. Lưu ý: vì thêm chunk làm đổi byte của
+    file, chữ ký C2PA cũ có thể không còn khớp khi đem đi kiểm; đó là hệ quả kỹ
+    thuật của việc ghi metadata, không phải chủ đích gỡ nguồn gốc.
+
+    File không phải PNG hợp lệ thì trả nguyên xi, không làm hỏng ảnh.
+    """
+    try:
+        if raw[:8] != b"\x89PNG\r\n\x1a\n":
+            return raw
+        ihdr_len = int.from_bytes(raw[8:12], "big")
+        end = 8 + 12 + ihdr_len                      # hết chunk IHDR
+        if raw[12:16] != b"IHDR" or end > len(raw):
+            return raw
+        block = (_png_text_chunk("Software", BRAND_SOFTWARE)
+                 + _png_text_chunk("Source", BRAND_SOURCE)
+                 + _png_text_chunk("Creation Time", time.strftime("%Y-%m-%dT%H:%M:%S%z")))
+        return raw[:end] + block + raw[end:]
+    except Exception:
+        return raw                                    # gắn nhãn hỏng thì thà mất nhãn còn hơn mất ảnh
+
+
+def save_png_b64(b64: str, vault_root: Optional[str], prefix: str = "javis-img") -> dict:
+    """Giải mã b64 → lưu PNG vào <vault>/attachments. Trả {ok, rel_path, abs_path, file}."""
+    try:
+        raw = base64.b64decode(b64)
+    except Exception as e:
+        return {"ok": False, "error": localefmt.chu(f"Ảnh base64 hỏng: {e}", f"Broken base64 image: {e}")}
+    if not raw:
+        return {"ok": False, "error": localefmt.chu("Ảnh rỗng.", "Empty image.")}
+    if _strip_c2pa_on():
+        raw = strip_c2pa_png(raw)
+    raw = brand_png(raw)
+    vault = _resolve_vault(vault_root)
+    adir = _attachments_dir(vault)
+    fname = f"{prefix}-{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}.png"
+    fpath = adir / fname
+    try:
+        fpath.write_bytes(raw)
+    except Exception as e:
+        return {"ok": False, "error": localefmt.chu(f"Lưu ảnh lỗi: {e}", f"Saving the image failed: {e}")}
+    rel = os.path.relpath(fpath, vault).replace(os.sep, "/")
+    return {"ok": True, "rel_path": rel, "abs_path": str(fpath), "file": fname}
+
+
+def _headers(token: str, account_id: str) -> dict:
+    # KHỚP đúng bộ header engine.responses_with_mcp đã chạy được (qua Cloudflare backend Codex).
+    return {
+        "Authorization": f"Bearer {token}", "chatgpt-account-id": account_id or "",
+        "OpenAI-Beta": "responses=experimental", "originator": "codex_cli_rs",
+        "session_id": str(uuid.uuid4()), "Content-Type": "application/json",
+        "Accept": "text/event-stream", "User-Agent": "javis-os/0.3 (codex)",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Gọi thật
+# ---------------------------------------------------------------------------
+async def generate_chatgpt(prompt: str, aspect_ratio: str = "square", quality: str = "medium",
+                           vault_root: Optional[str] = None, timeout_s: float = 300.0,
+                           images: Optional[list] = None) -> dict:
+    """Tạo 1 ảnh bằng gói ChatGPT. Trả {ok, rel_path, abs_path, size, quality, aspect} hoặc {ok:False, error}.
+
+    `images` = danh sách đường dẫn ảnh MẪU trong brain. Có ảnh thì ChatGPT NHÌN THẤY ảnh thật
+    (gửi kèm dạng input_image) rồi sửa/dựng theo, thay vì đọc một đoạn tả lại ảnh - đó là khác
+    biệt giữa "giống hệt cái chai này" và "vẽ một cái chai nghe mô tả na ná".
+    """
+    prompt = (prompt or "").strip()
+    if not prompt:
+        return {"ok": False, "error": localefmt.chu("Thiếu mô tả ảnh (prompt).", "Missing image description (prompt).")}
+    aspect = (aspect_ratio or "square").strip().lower()
+    if aspect not in _SIZES:
+        aspect = "square"
+    quality = (quality or "medium").strip().lower()
+    if quality not in _QUALITIES:
+        quality = "medium"
+
+    creds = openai_oauth.valid_creds()
+    if not creds or not creds.get("access_token"):
+        return {"ok": False, "error": localefmt.chu("Chưa kết nối ChatGPT (OAuth). Vào trang Model đăng nhập ChatGPT rồi thử lại.",
+                                                "ChatGPT (OAuth) is not connected. Sign in to ChatGPT on the Models page and try again.")}
+
+    # Đọc ảnh mẫu TRƯỚC khi gọi mạng: ảnh sai đường dẫn thì báo ngay và nói rõ ảnh nào,
+    # thay vì đốt một lượt gọi rồi trả về một tấm vẽ từ mô tả suông mà người dùng tưởng là
+    # đã dựng theo ảnh của mình.
+    ds_anh = [x for x in (images or []) if str(x or "").strip()]
+    if len(ds_anh) > MAX_REF_IMAGES:
+        return {"ok": False, "error": localefmt.chu(f"Gửi tối đa {MAX_REF_IMAGES} ảnh mẫu một lượt (đang gửi {len(ds_anh)}).",
+                                                f"Send at most {MAX_REF_IMAGES} reference images per request (sending {len(ds_anh)}).")}
+    data_urls = []
+    for x in ds_anh:
+        r = read_reference_image(x, vault_root)
+        if not r.get("ok"):
+            return {"ok": False, "error": r.get("error") or localefmt.chu(f"Không đọc được ảnh '{x}'.", f"Could not read image '{x}'.")}
+        data_urls.append(r["data_url"])
+
+    size = resolve_size(aspect)
+    headers = _headers(creds["access_token"], creds.get("account_id") or "")
+
+    b64: Optional[str] = None
+    err: Optional[str] = None
+    da_thu: list = []
+    hang_doi = host_model_candidates()
+    da_hoi_live = False
+    while True:
+        if not hang_doi and not da_hoi_live and err and model_rejected(0, err) and not _HOST_ENV:
+            # Mọi model trong danh mục đã lưu đều bị từ chối: danh mục có thể đã cũ (gói vừa đổi).
+            # Hỏi lại danh sách LIVE của tài khoản đúng một lần rồi thử các model chưa thử.
+            da_hoi_live = True
+            live = await _live_models(creds)
+            hang_doi = [m for m in host_model_candidates(live) if m not in da_thu]
+        if not hang_doi or len(da_thu) >= MAX_HOST_TRIES + 2:
+            break
+        model = hang_doi.pop(0)
+        da_thu.append(model)
+        payload = build_payload(prompt, size, quality, data_urls, model=model)
+        b64, err, status = await _mot_luot(payload, headers, timeout_s)
+        if b64:
+            _host_ok[0] = model
+            break
+        if not (err and model_rejected(status, err)):
+            break                     # lỗi khác (mạng, token, nội dung...): đổi model cũng vô ích
+        if _host_ok[0] == model:
+            _host_ok[0] = ""
+
+    if not b64 and err and model_rejected(0, err) and len(da_thu) > 0:
+        ds = ", ".join(da_thu)
+        err = err + localefmt.chu(
+            f" (đã thử model: {ds}). Gói ChatGPT này không cho dùng các model đó để tạo ảnh. Mở trang "
+            "Models để Javis tải lại danh sách model của ChatGPT rồi thử lại.",
+            f" (models tried: {ds}). This ChatGPT plan does not allow those models for image generation. "
+            "Open the Models page so Javis reloads the ChatGPT model list, then try again.")
+
+    if err or not b64:
+        return {"ok": False, "error": err or localefmt.chu(
+            "ChatGPT không trả ảnh (gói ChatGPT có thể chưa hỗ trợ tạo ảnh qua Codex).",
+            "ChatGPT returned no image (the ChatGPT plan may not support image generation through Codex yet).")}
+
+    saved = save_png_b64(b64, vault_root, prefix="javis-img")
+    if not saved.get("ok"):
+        return saved
+    return {"ok": True, "rel_path": saved["rel_path"], "abs_path": saved["abs_path"],
+            "file": saved["file"], "size": size, "quality": quality, "aspect": aspect,
+            "provider": "openai-codex", "prompt": prompt, "refs": len(data_urls), "model": da_thu[-1]}
+
+
+async def _live_models(creds: dict) -> list:
+    """Danh sách model live của tài khoản (Codex app-server / backend). Hỏng thì []."""
+    import asyncio
+    try:
+        ids = await asyncio.to_thread(openai_oauth.list_models, creds)
+    except Exception:
+        return []
+    return _clean_models(ids)
+
+
+async def _mot_luot(payload: dict, headers: dict, timeout_s: float):
+    """Một lượt gọi tạo ảnh. Trả (b64 | None, lỗi | None, mã HTTP; 0 khi lỗi nằm trong stream)."""
+    b64: Optional[str] = None
+    err: Optional[str] = None
+    try:
+        timeout = httpx.Timeout(timeout_s, connect=20)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            async with client.stream("POST", CODEX_RESPONSES_URL, headers=headers, json=payload) as r:
+                if r.status_code != 200:
+                    body = await r.aread()
+                    return None, f"ChatGPT {r.status_code}: {body.decode('utf-8', 'replace')[:300]}", r.status_code
+                async for line in r.aiter_lines():
+                    line = (line or "").strip()
+                    if not line.startswith("data:"):
+                        continue
+                    data = line[5:].strip()
+                    if data == "[DONE]":
+                        break
+                    if not data:
+                        continue
+                    try:
+                        obj = json.loads(data)
+                    except json.JSONDecodeError:
+                        continue
+                    if not isinstance(obj, dict):
+                        continue
+                    kind = obj.get("type")
+                    if kind in ("response.failed", "error", "response.error", "response.incomplete"):
+                        e = (obj.get("response") or {}).get("error") or obj.get("error") or {}
+                        err = e.get("message") if isinstance(e, dict) else str(e)
+                        err = err or localefmt.chu(f"ChatGPT không hoàn tất tạo ảnh ({kind}).",
+                                                   f"ChatGPT did not finish creating the image ({kind}).")
+                        break
+                    # Ảnh nháp không phải kết quả cuối. Chỉ giữ result của image_generation_call.
+                    got = extract_image_b64(obj, include_partial=False)
+                    if got:
+                        b64 = got
+                    # Hoàn tất ở tầng SSE, không đợi EOF của kết nối HTTP (có thể còn mở
+                    # nhiều phút, thậm chí có heartbeat nên read timeout không bao giờ hết).
+                    if kind == "response.completed":
+                        break
+    except Exception as e:
+        return None, localefmt.chu(f"Gọi ChatGPT lỗi: {type(e).__name__}: {e}",
+                                   f"Calling ChatGPT failed: {type(e).__name__}: {e}"), -1
+    return b64, err, 0

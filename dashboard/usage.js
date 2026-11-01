@@ -1,0 +1,1127 @@
+/* usage.js - Trang "Mức dùng".
+ *
+ * Bố cục đọc từ trên xuống như một câu trả lời, không phải như một bảng số liệu:
+ *   1. Dải chế độ tiết kiệm, thu gọn một dòng (bấm mới bung ba nút ra).
+ *   2. Bộ lọc kỳ.
+ *   3. MỘT CÂU tiếng người: ai trả gì cho cái gì.
+ *   4. Ba ô HÀNH ĐỘNG ĐƯỢC: tiền mặt so ngân sách, trần gói còn bao nhiêu, tiết kiệm.
+ *   5. Các số phụ, biểu đồ có mốc sự kiện, thứ ngốn nhất kèm nút xử lý.
+ *
+ * Vì sao đảo lại so với bản trước: bản trước mở ra là ba thẻ chọn chế độ chiếm trọn màn hình
+ * đầu, rồi tới sáu ô KPI ngang hàng nhau, trong đó ô số to nhất ("chi phí quy đổi $1.700")
+ * lại KHÔNG phải tiền thật và đứng ngay cạnh số dư OpenRouter là tiền thật. Đọc lướt thì
+ * thành một hoá đơn doạ người. Còn "cache hit 80%" thì là ngôn ngữ của người viết code.
+ *
+ * Nguồn: /usage/tong-quan (khối tiền + trần + tiết kiệm), /usage/summary (số liệu theo
+ * chiều), /usage/insights, /usage (số dư OpenRouter), /runtime/muc (ba mức tiết kiệm).
+ * Vẽ SVG/div thuần, không thêm thư viện. window.JavisUsage.render(el).
+ */
+(function () {
+  "use strict";
+
+  // Locale để định dạng số/ngày. Lấy từ i18n chứ KHÔNG khoá "vi-VN": người dùng đổi
+  // ngôn ngữ giao diện thì ngày giờ phải đổi theo, nếu không thì nửa màn hình tiếng Anh
+  // mà ngày vẫn dd/mm/yyyy kiểu Việt.
+  const LOC = () => (window.JavisI18n && JavisI18n.locale()) || "vi-VN";
+  // Nhãn hiện ra màn hình phải tra từ điển LÚC VẼ chứ không lúc nạp file: từ điển về sau
+  // (fetch bất đồng bộ), nên một hằng dựng sẵn sẽ đóng băng bản tiếng Việt vĩnh viễn.
+  function PERIODS() {
+    return [
+      ["today", window.t("usage.ky.hom_nay")], ["yesterday", window.t("usage.ky.hom_qua")],
+      ["this_week", window.t("usage.ky.tuan_nay")], ["last_week", window.t("usage.ky.tuan_truoc")],
+      ["this_month", window.t("usage.ky.thang_nay")], ["last_month", window.t("usage.ky.thang_truoc")],
+      ["last_3_months", window.t("usage.ky.ba_thang")], ["this_year", window.t("usage.ky.nam_nay")],
+    ];
+  }
+  function PROVS() {
+    return [["", window.t("studio.all")], ["claude", "Claude Code"], ["codex", "ChatGPT"], ["api", "API"]];
+  }
+  var PROV_LABEL = { claude: "Claude Code", codex: "ChatGPT/Codex", api: "API (OpenRouter...)", "grok-cli": "Grok Build",
+    "antigravity-cli": "Antigravity CLI", local: "Ollama (Local)" };
+  function SRC_LABEL() { return { manual: window.t("usage.nguon.tay"), javis: window.t("usage.nguon.javis") }; }
+  function ACT_LABEL() {
+    return { chat: "Chat", background: window.t("usage.hd.nen"), subagent: "Subagent", manual: window.t("usage.hd.thu_cong") };
+  }
+  var PROV_COLOR = { claude: "var(--accent)", codex: "var(--green)", api: "var(--link-ink)" };
+  var MOC_ICO = { muc: "zap", model: "brain", ngan_sach: "shield" };
+
+  var state = {
+    period: "this_month", provider: "", el: null, busy: false,
+    muc: null, tq: null, viec: null, toast: "", nsToast: "", nsForm: null,
+    moMuc: false, moNganSach: false,
+    nho: {}, dangHien: null,   // "kỳ|nhánh" -> kết quả lần nạp trước, để mở lại trang hay đổi qua đổi lại kỳ là thấy số NGAY (0.421.0)
+  };
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function fTok(n) {
+    n = +n || 0;
+    if (n >= 1e9) return (n / 1e9).toFixed(n >= 1e10 ? 0 : 1) + "B";
+    if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + "M";
+    if (n >= 1e3) return (n / 1e3).toFixed(n >= 1e4 ? 0 : 1) + "k";
+    return "" + n;
+  }
+  // Mọi con số tiền trên trang này đều là USD. Giá của các nhà cung cấp đều niêm yết bằng
+  // USD, nên quy đổi thêm một lần nữa bằng tỉ giá gõ cứng chỉ tạo ra một chỗ để sai.
+  function fCost(c) {
+    c = +c || 0;
+    if (c > 0 && c < 0.01) return "<$0.01";     // làm tròn thành $0.00 thì đọc như bằng không
+    return "$" + (c >= 1000 ? Math.round(c).toLocaleString("en-US") : c.toFixed(2));
+  }
+  function model(m) { return String(m || "").split("/").pop().replace(/^(claude-|gpt-)/, "").slice(0, 26); }
+  function pct(x) { return Math.round((+x || 0) * 100) + "%"; }
+  // (i) button from info-tip.js: explanations sit behind it, next to the title they belong to.
+  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(window.t("info.more")) : ""; }
+  function infoBody(html) {
+    var J = typeof window !== "undefined" && window.JavisInfo;
+    return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
+  }
+  function infoPair(html) {
+    var J = typeof window !== "undefined" && window.JavisInfo;
+    return J ? J.pair(html, window.t("info.more")) : '<div class="info-body">' + html + "</div>";
+  }
+
+  var _css = false;
+  function injectCss() {
+    if (_css) return; _css = true;
+    var css = ""
+      // Không để phần nào trong trang thò ra ngoài mép (0.421.0): chỉ một nhãn số ngày dưới biểu đồ lòi ra
+      // vài px là khung cuộn của trang đã trượt ngang được, và trên iPhone cả trang lệch sang trái, hụt mép phải
+      // (ảnh chủ repo 30/10/2026). `clip` chặn mà không biến khối thành một khung cuộn nữa; `hidden` cho máy cũ.
+      + ".tk-wrap{max-width:1000px;min-width:0;overflow-x:hidden;overflow-x:clip}"
+      + ".tk-bar1{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}"
+      // Chọn kỳ là MỘT ô thả xuống (0.421.0, chủ repo: "cho gọn"). Tám nút cũ chiếm ba hàng trên điện thoại.
+      + ".tk-sel{padding:7px 32px 7px 12px;border-radius:9px;border:1px solid var(--glass-brd);background-color:var(--glass);color:var(--text);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;"
+      + "-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);"
+      + "background-position:calc(100% - 17px) 55%,calc(100% - 12px) 55%;background-size:5px 5px;background-repeat:no-repeat}"
+      + ".tk-sel:focus-visible{outline:2px solid var(--accent);outline-offset:2px}"
+      // Điện thoại: chữ 16px (dưới mức đó iOS tự phóng to trang khi chạm vào ô chọn), ô cao đủ để chạm.
+      // Hàng điều khiển trên điện thoại: ô kỳ và nút Làm mới chung một hàng, bốn nút nhánh xuống hàng dưới.
+      + "@media(max-width:640px){.tk-sel{font-size:16px;min-height:42px}.tk-seg button{font-size:15px;padding:8px 11px}.tk-refresh{font-size:15px;padding:8px 13px;order:2}.tk-seg{order:3}}"
+      + ".tk-seg{display:flex;border:1px solid var(--glass-brd);border-radius:9px;overflow:hidden}"
+      + ".tk-seg button{padding:6px 12px;background:transparent;border:0;color:var(--text2);font-size:12.5px;cursor:pointer}"
+      + ".tk-seg button.on{background:var(--glass);color:var(--text);font-weight:600}"
+      + ".tk-refresh{margin-left:auto;padding:6px 13px;border-radius:9px;border:1px solid var(--glass-brd);background:var(--glass);color:var(--text2);font-size:13px;cursor:pointer}"
+      + ".tk-refresh:hover{color:var(--text)}"
+      // --- Câu mở đầu: to hơn chữ thường, nhẹ hơn tiêu đề. Nó là phần TÓM TẮT, phải đọc
+      // được mà không cần nhìn số nào bên dưới.
+      + ".tk-hero{border:1px solid var(--glass-brd);background:var(--glass);border-radius:14px;padding:16px 18px;margin-bottom:14px}"
+      + ".tk-hero p{margin:0;font-size:15px;line-height:1.65;color:var(--text)}"
+      + ".tk-hero b{color:var(--accent)}"
+      + ".tk-hero .sub{margin-top:8px;font-size:12.5px;color:var(--text3);line-height:1.55}"
+      // --- Ba ô hành động: to hơn ô KPI thường, mỗi ô có một thanh tiến độ hoặc một nút.
+      + ".tk-act{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:18px}"
+      + ".tk-a{border:1px solid var(--glass-brd);background:var(--glass);border-radius:14px;padding:15px 17px;display:flex;flex-direction:column;gap:7px}"
+      + ".tk-a .h{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px}"
+      + ".tk-a .big{font-size:27px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.1}"
+      + ".tk-a .big.ok{color:var(--green)}.tk-a .big.warn{color:var(--accent)}.tk-a .big.bad{color:var(--red)}"
+      + ".tk-a .s{font-size:12.5px;color:var(--text2);line-height:1.5}"
+      + ".tk-a .track{height:8px;border-radius:5px;background:var(--surface-2);overflow:hidden}"
+      + ".tk-a .fill{height:100%;border-radius:5px;background:var(--accent-solid);transition:width .3s}"
+      + ".tk-a .fill.warn{background:var(--accent)}.tk-a .fill.bad{background:var(--red)}"
+      + ".tk-a .fill.ok{background:var(--green)}"
+      + ".tk-mini{align-self:flex-start;margin-top:2px;padding:5px 11px;border-radius:8px;border:1px solid var(--glass-brd);background:transparent;color:var(--text2);font-size:12px;cursor:pointer}"
+      + ".tk-mini:hover{color:var(--text);border-color:var(--accent)}"
+      // --- Form ngân sách (bung ra từ ô tiền)
+      + ".tk-ns{margin:-6px 0 18px;padding:14px 16px;border:1px solid var(--glass-brd);border-radius:12px;background:var(--glass)}"
+      + ".tk-ns .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}"
+      + ".tk-ns label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px}"
+      // Chỉ ô nhập SỐ mới giãn hết hàng. Viết trơn `.tk-ns input{width:100%}` là ô tick cũng
+      // ăn luật đó, nó phình ra chiếm nửa hàng và đẩy chữ sang tận mép phải.
+      + ".tk-ns input[type=number]{width:100%;padding:7px 10px;border-radius:8px;border:1px solid var(--glass-brd);background:var(--surface-2);color:var(--text);font-size:13px}"
+      + ".tk-ns .chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text2);margin-top:11px;cursor:pointer}"
+      + ".tk-ns .chk input{flex:0 0 auto;width:15px;height:15px;margin:0;accent-color:var(--accent-solid)}"
+      + ".tk-ns .acts{display:flex;gap:8px;margin-top:12px;align-items:center}"
+      + ".tk-ns button.save{padding:7px 15px;border-radius:9px;border:0;background:var(--accent-solid);color:var(--on-accent);font-size:13px;font-weight:600;cursor:pointer}"
+      + ".tk-ns .kw-row{display:flex;align-items:center;gap:6px;margin-top:11px}"
+      + ".tk-ns .kw-row .chk{margin-top:0}"
+      // --- Ô số phụ
+      + ".tk-cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px}"
+      + ".tk-card{flex:1 1 140px;background:var(--glass);border:1px solid var(--glass-brd);border-radius:12px;padding:13px 15px}"
+      + ".tk-card .k{font-size:11.5px;color:var(--text3);letter-spacing:.3px;text-transform:uppercase}"
+      + ".tk-card .v{font-size:22px;font-weight:700;color:var(--text);margin-top:5px;font-variant-numeric:tabular-nums}"
+      + ".tk-card .s{font-size:12px;color:var(--text2);margin-top:3px}"
+      + ".tk-card.accent .v{color:var(--accent)}"
+      + ".tk-up{color:var(--red)}.tk-down{color:var(--green)}"
+      + ".tk-sec{font-size:11.5px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:22px 0 12px;font-weight:600}"
+      // --- Biểu đồ ngày + hàng mốc sự kiện ngay dưới trục
+      // Cột GIÃN hết bề ngang (0.329.0): cột cố định 9px dồn cả tháng vào một phần ba bên trái,
+      // nhãn ngày 8px thì không đọc nổi. Nhãn chỉ hiện cách quãng khi kỳ dài (xem paint).
+      + ".tk-chart{display:flex;align-items:flex-end;gap:3px;height:160px;padding:6px 2px 0;border-bottom:1px solid var(--glass-brd)}"
+      + ".tk-col{flex:1 1 0;min-width:3px;max-width:40px;display:flex;flex-direction:column-reverse;align-items:stretch;height:100%;cursor:default}"
+      + ".tk-col:hover{background:rgba(127,127,127,.12)}"
+      + ".tk-seg2{width:100%;min-height:0}"
+      + ".tk-xrow{display:flex;gap:3px;padding-top:5px}"
+      + ".tk-x{flex:1 1 0;min-width:3px;max-width:40px;text-align:center;font-size:11px;color:var(--text3);white-space:nowrap;overflow:visible}"
+      // Nhãn đầu và cuối canh vào trong: canh giữa một cột hẹp hơn chữ là chữ lòi ra ngoài mép trang.
+      + ".tk-x:first-child{text-align:left}.tk-x:last-child{text-align:right;direction:rtl}"
+      // Kỳ dài (3 tháng, Năm nay): 90-365 cột, mỗi cột tối thiểu 3px cộng khe 3px là rộng gấp mấy màn hình.
+      // Cột co về 0 và khe hẹp lại để cả kỳ nằm gọn trong bề ngang.
+      + ".tk-dai .tk-col,.tk-dai .tk-x,.tk-dai .tk-m{min-width:0}"
+      + ".tk-mrow{display:flex;gap:3px;margin-top:2px;height:14px}"
+      + ".tk-m{flex:1 1 0;min-width:3px;max-width:40px;text-align:center;line-height:1;color:var(--accent);cursor:default}"
+      + ".tk-m svg{width:11px;height:11px;vertical-align:top}"
+      + ".tk-legend{display:flex;gap:14px;font-size:12px;color:var(--text2);margin-top:9px;flex-wrap:wrap}"
+      + ".tk-dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}"
+      + ".tk-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}"
+      + "@media(max-width:640px){.tk-grid{grid-template-columns:1fr}}"
+      + ".tk-blist .row{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:13px}"
+      + ".tk-blist .lab{width:120px;color:var(--text2);flex:0 0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}"
+      + ".tk-blist .track{flex:1;height:9px;background:var(--surface-2);border-radius:5px;overflow:hidden}"
+      + ".tk-blist .fill{height:100%;border-radius:5px}"
+      + ".tk-blist .val{width:56px;text-align:right;color:var(--text);font-variant-numeric:tabular-nums;flex:0 0 auto}"
+      + ".tk-tbl{width:100%;border-collapse:collapse;font-size:13px}"
+      + ".tk-tbl th{text-align:left;color:var(--text3);font-weight:600;font-size:11.5px;padding:5px 8px;border-bottom:1px solid var(--glass-brd)}"
+      + ".tk-tbl td{padding:7px 8px;border-bottom:1px solid var(--surface-2);font-variant-numeric:tabular-nums}"
+      + ".tk-tbl td.num{text-align:right;color:var(--link-ink)}"
+      + ".tk-tbl td.act{text-align:right;width:1%;white-space:nowrap}"
+      + ".tk-go{padding:3px 10px;border-radius:7px;border:1px solid var(--glass-brd);background:transparent;color:var(--text2);font-size:11.5px;cursor:pointer}"
+      + ".tk-go:hover{color:var(--text);border-color:var(--accent)}"
+      + ".tk-go.on{color:var(--green);border-color:var(--green)}"
+      + ".tk-ins{margin-top:8px}"
+      + ".tk-ins .item{display:flex;gap:10px;padding:11px 13px;border:1px solid var(--glass-brd);border-radius:10px;background:var(--glass);margin-bottom:9px}"
+      + ".tk-ins .item.warn{border-left:3px solid var(--red)}"
+      + ".tk-ins .item.info{border-left:3px solid var(--link-ink)}"
+      + ".tk-ins .ico{font-size:16px;flex:0 0 auto}"
+      + ".tk-ins .t{font-weight:600;color:var(--text);font-size:13.5px}"
+      + ".tk-ins .d{color:var(--text2);font-size:12.5px;margin-top:2px;line-height:1.5}"
+      // Dải chế độ tiết kiệm. Vẫn nằm ĐẦU trang (chủ repo chốt vậy), nhưng thu về MỘT DÒNG:
+      // đây là cái công tắc chỉnh vài tháng một lần, không đáng chiếm trọn màn hình đầu mỗi
+      // lần mở trang. Bấm vào mới bung ba nút với đầy đủ số liệu.
+      + ".tk-muc{margin-bottom:14px}"
+      + ".tk-muc-strip{display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:9px 14px;border-radius:11px;border:1px solid var(--glass-brd);background:var(--glass);color:var(--text2);font-size:13px;cursor:pointer}"
+      + ".tk-muc-strip:hover{border-color:var(--accent)}"
+      + ".tk-muc-strip b{color:var(--text)}"
+      + ".tk-muc-strip .pc{color:var(--accent);font-weight:700}"
+      + ".tk-muc-strip .sp{margin-left:auto;display:flex;align-items:center;gap:5px;color:var(--text3);font-size:12px}"
+      + ".tk-muc-body{margin-top:10px}"
+      + ".tk-muc-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}"
+      + ".tk-muc-b{position:relative;text-align:left;cursor:pointer;padding:13px 15px;border-radius:12px;border:1px solid var(--glass-brd);background:var(--glass);color:var(--text);transition:.12s}"
+      + ".tk-muc-b:hover:not(:disabled){border-color:var(--accent)}"
+      + ".tk-muc-b:disabled{opacity:.55;cursor:default}"
+      + ".tk-muc-b.on{border-color:var(--accent);background:var(--accent-wash-2,var(--glass))}"
+      + ".tk-muc-b b{display:block;font-size:14px}"
+      + ".tk-muc-top{display:flex;align-items:baseline;gap:8px;justify-content:space-between}"
+      + ".tk-muc-pct{font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap}"
+      + ".tk-muc-tok{display:block;font-size:11.5px;color:var(--text3);margin:2px 0 5px;font-variant-numeric:tabular-nums}"
+      + ".tk-muc-b small{display:block;font-size:12px;line-height:1.5;color:var(--text2)}"
+      + ".tk-muc-now{display:inline-block;margin-top:8px;font-size:11px;padding:1px 8px;border-radius:999px;background:var(--accent-solid);color:var(--on-accent)}"
+      + ".tk-muc-na{display:inline-block;margin-top:8px;font-size:11px;color:var(--text3)}"
+      + ".tk-muc-do{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:14px;padding:13px 15px;border:1px solid var(--glass-brd);border-radius:12px;background:var(--glass)}"
+      + ".tk-muc-do .k{font-size:12px;color:var(--text2)}"
+      + ".tk-muc-do .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:3px}"
+      + ".tk-muc-do .s{font-size:11px;color:var(--text3);margin-top:2px}"
+      + ".tk-muc-do .pct .v{color:var(--accent)}"
+      + ".tk-tien{margin-top:10px;padding:13px 15px;border:1px solid var(--glass-brd);border-radius:12px;background:var(--glass)}"
+      + ".tk-tien-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}"
+      + ".tk-tien .k{font-size:12px;color:var(--text2)}"
+      + ".tk-tien .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:3px}"
+      + ".tk-tien .s{font-size:11px;color:var(--text3);margin-top:2px}"
+      + ".tk-tien .tien .v{color:var(--accent2,var(--accent))}"
+      + ".tk-muc-toast{padding:9px 13px;border-radius:10px;font-size:13px;margin-top:10px;border:1px solid var(--glass-brd)}"
+      + ".tk-muc-toast.ok{border-color:var(--accent)}"
+      + ".tk-muc-toast.err{color:var(--red)}"
+      // --- 24 giờ qua (gioHtml)
+      + ".tg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}"
+      + "@media(max-width:760px){.tg-grid{grid-template-columns:1fr}}"
+      + ".tg-card{border:1px solid var(--glass-brd);background:var(--glass);border-radius:14px;padding:14px 16px;min-width:0}"
+      + ".tg-full{grid-column:1/-1}"
+      + ".tg-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px;font-size:14px;font-weight:600;color:var(--text)}"
+      + ".tg-h b{font-size:16px;font-variant-numeric:tabular-nums}"
+      + ".tg-now.ok{color:var(--green)}.tg-now.warn{color:var(--accent)}.tg-now.bad{color:var(--red)}"
+      + ".tg-plot{display:flex;gap:8px;height:150px}"
+      + ".tg-y{position:relative;width:38px;flex:0 0 auto;font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}"
+      + ".tg-y span{position:absolute;right:0;transform:translateY(-50%)}"
+      + ".tg-box{position:relative;flex:1;min-width:0;border-left:1px solid var(--glass-brd);border-bottom:1px solid var(--glass-brd)}"
+      + ".tg-box svg{position:absolute;inset:0;width:100%;height:100%}"
+      + ".tg-area{fill:var(--accent);opacity:.14}.tg-area.ok{fill:var(--green)}.tg-area.bad{fill:var(--red)}"
+      + ".tg-line{fill:none;stroke:var(--accent);stroke-width:2.2;vector-effect:non-scaling-stroke;stroke-linejoin:round}"
+      + ".tg-line.ok{stroke:var(--green)}.tg-line.bad{stroke:var(--red)}"
+      + ".tg-dot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--bg2)}"
+      + ".tg-dot.ok{background:var(--green)}.tg-dot.bad{background:var(--red)}"
+      + ".tg-moc{position:absolute;left:0;right:0;border-top:1.5px dashed var(--yellow,#e8b500)}"
+      + ".tg-moc span{position:absolute;right:4px;bottom:2px;font-size:11px;color:var(--yellow,#e8b500);background:var(--bg2);padding:0 4px;border-radius:4px}"
+      + ".tg-hover{position:absolute;inset:0;display:flex}"
+      + ".tg-hover div{flex:1}"
+      + ".tg-hover div:hover{background:rgba(127,127,127,.12)}"
+      + ".tg-x{display:flex;margin:5px 0 0 46px;font-size:11px;color:var(--text3)}"
+      + ".tg-card .tg-bars+.tg-x{margin-left:0}"
+      + ".tg-x span{flex:1;text-align:left;white-space:nowrap;overflow:visible}"
+      + ".tg-bars{display:flex;align-items:flex-end;gap:2px;height:150px;border-bottom:1px solid var(--glass-brd)}"
+      + ".tg-col{flex:1;display:flex;flex-direction:column-reverse;height:100%;cursor:default}"
+      + ".tg-col div{width:100%;border-radius:2px 2px 0 0}"
+      + ".tg-col:hover{background:rgba(127,127,127,.12)}"
+      + ".tg-s{margin-top:10px;font-size:13px;color:var(--text2);line-height:1.5}"
+      + ".tg-heat{display:grid;grid-template-columns:repeat(24,1fr);gap:3px}"
+      + "@media(max-width:640px){.tg-heat{grid-template-columns:repeat(12,1fr)}}"
+      + ".tg-o{height:34px;border-radius:6px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;font-size:10.5px;color:var(--text3);background:var(--surface-2);cursor:default}"
+      + ".tg-o.l1{background:rgba(253,97,0,.18)}.tg-o.l2{background:rgba(253,97,0,.38)}"
+      + ".tg-o.l3{background:rgba(253,97,0,.62);color:var(--text)}.tg-o.l4{background:rgba(253,97,0,.9);color:#fff}"
+      + ".tg-thang{display:flex;align-items:center;gap:3px;font-size:11.5px;font-weight:400;color:var(--text3)}"
+      + ".tg-thang i{display:inline-block;width:12px;height:12px;border-radius:3px}"
+      + ".tg-thang i.l1{background:rgba(253,97,0,.18)}.tg-thang i.l2{background:rgba(253,97,0,.38)}"
+      + ".tg-thang i.l3{background:rgba(253,97,0,.62)}.tg-thang i.l4{background:rgba(253,97,0,.9)}";
+    var s = document.createElement("style"); s.textContent = css; document.head.appendChild(s);
+  }
+
+  // Mở trang là VẼ NGAY bằng chỉ số đang có, rồi mới đi quét log ở nền và vẽ lại nếu có gì mới.
+  //
+  // Vì sao đổi (đo 2026-09-21, chủ repo báo "mỗi lần vào cũng rất lag"): bản cũ gọi load(true),
+  // tức `/usage/summary?refresh=1`, tức CHỜ quét xong cả `~/.claude/projects` mới vẽ dòng nào.
+  // Trên máy chủ dự án thư mục đó có 651 file và 602 MB, quét đầy đủ mất 27 GIÂY - suốt ngần ấy
+  // trang chỉ có chữ "Đang dựng chỉ số token...", nhìn y như treo. Mà số liệu cũ thì đã nằm sẵn
+  // trong chỉ số rồi, chẳng việc gì phải giấu nó đi trong lúc chờ.
+  //
+  // Quét vẫn chạy, chỉ là không đứng chắn trước mặt người dùng nữa: nó đi đường `/usage/refresh`
+  // ở nền, xong thì vẽ lại. Server chỉ vẽ lại khi lượt quét ĐỘNG tới thứ gì (`_co_thay_doi`),
+  // nên mở trang lúc không có log mới thì không có cú nháy nào.
+  function render(el) {
+    injectCss();
+    state.el = el;
+    state.dangHien = null;
+    el.innerHTML = '<div class="tk-wrap"><div class="cview-placeholder" style="min-height:220px"><div class="ph-ico">' + ic("loader", { cls: "ic-xl ic-spin" }) + '</div><div class="dim">' + window.t("usage.dang_dung") + "</div></div></div>";
+    // Quét nền đi SAU khi trang đã vẽ (0.421.0). Đo 30/10/2026: chạy song song với lượt nạp đầu, nó và sáu lượt hỏi
+    // kia tranh nhau một nhân Python, mỗi lượt từ 0,05 s thành 0,7-1,7 s, nên trang hiện chậm gấp mấy lần.
+    load(false).then(function () { quetNen(el); });
+  }
+
+  function _co_thay_doi(r) {
+    if (!r || typeof r !== "object") return false;
+    return !!(r.claude_files || r.codex_files || r.api_events || r.quet_lai);
+  }
+
+  function quetNen(el) {
+    if (state.busy) return;
+    state.busy = true;
+    fetch("/usage/refresh", { method: "POST" }).then(function (r) { return r.json(); })
+      .then(function (r) {
+        state.busy = false;
+        // Người dùng đã rời trang trong lúc quét -> đừng vẽ đè lên trang họ đang xem.
+        if (!el.isConnected || state.el !== el) return;
+        if (_co_thay_doi(r)) load(false);
+      })
+      .catch(function () { state.busy = false; });
+  }
+
+  // Mức tiết kiệm không đổi theo kỳ hay theo provider, nên chỉ gọi lại khi thật sự cần
+  // (lần đầu mở trang, và sau khi người dùng bấm đổi mức).
+  function loadMuc(force) {
+    if (state.muc && !force) return Promise.resolve(state.muc);
+    return fetch("/runtime/muc").then(function (r) { return r.json(); })
+      .then(function (d) { state.muc = d || {}; return state.muc; })
+      .catch(function () { return state.muc || null; });
+  }
+
+  // Danh sách loop của mọi brain. Chỉ nạp một lần: nó dùng cho khối "việc nền đang chạy",
+  // và người dùng bấm tắt loop thì ta tự cập nhật tại chỗ chứ không nạp lại cả trang.
+  function loadViec(force) {
+    if (state.viec && !force) return Promise.resolve(state.viec);
+    return fetch("/viec/all").then(function (r) { return r.json(); })
+      .then(function (d) { state.viec = d || {}; return state.viec; })
+      .catch(function () { return state.viec || null; });
+  }
+
+  // fetch KHÔNG reject với status 4xx/5xx, mà middleware đăng nhập của Javis lại trả 401 kèm
+  // một THÂN JSON. Nên `.then(r => r.json())` trơn sẽ resolve ngon lành với {error:...}, khối
+  // .catch không bao giờ chạy, và trang vẽ ra "0 token / $0.00 / Chưa có dữ liệu" ở mọi ô -
+  // trông y hệt một tháng chưa dùng gì. Phiên hết hạn mà báo là "bạn chưa tiêu đồng nào" là
+  // kiểu sai tệ nhất: nó không giống lỗi.
+  function jsonOk(r) {
+    if (!r.ok) {
+      var e = new Error(r.status === 401 || r.status === 403
+        ? window.t("usage.err.het_phien")
+        : window.t("usage.err.http", { ma: r.status }));
+      e.httpStatus = r.status;
+      throw e;
+    }
+    return r.json();
+  }
+
+  function loi(msg) {
+    if (!state.el) return;
+    state.dangHien = null;
+    state.el.innerHTML = '<div class="tk-wrap"><div class="cview-placeholder">'
+      + '<div class="ph-ico">' + ic("chart-column", { cls: "ic-xl ic-dim" }) + "</div>"
+      + "<div>" + esc(msg || window.t("usage.err.tai")) + "</div>"
+      + '<button class="tk-mini" data-act="thu-lai" style="margin:12px auto 0">' + window.t("common.retry") + "</button>"
+      + "</div></div>";
+    var b = state.el.querySelector('[data-act="thu-lai"]');
+    if (b) b.onclick = function () { render(state.el); };
+  }
+
+  // Mọi thao tác trên trang đều kết thúc bằng load() -> paint() -> gán đè innerHTML, nên form
+  // ngân sách bị dựng lại từ đầu và số người dùng đang gõ dở biến mất. Nhặt lại trước khi vẽ.
+  function nhoForm() {
+    var el = state.el; if (!el) return;
+    var o = el.querySelector("#tk-ns-goi");
+    if (!o) return;                       // form đang đóng, không có gì để nhớ
+    function v(id) { var e = el.querySelector("#" + id); return e ? e.value : ""; }
+    function c(id) { var e = el.querySelector("#" + id); return !!(e && e.checked); }
+    state.nsForm = { goi: v("tk-ns-goi"), tran: v("tk-ns-tran"), h5: v("tk-ns-5h"),
+                     phanh: c("tk-ns-phanh"), tuan: c("tk-ns-tuan") };
+  }
+
+  function load(doRefresh) {
+    nhoForm();
+    var q = "?period=" + encodeURIComponent(state.period)
+      + (state.provider ? "&provider=" + state.provider : "")
+      + "&refresh=" + (doRefresh ? 1 : 0);
+    // Vừa mở trang hay vừa đổi kỳ mà đã có số của đúng kỳ đó từ lần trước: vẽ ngay bằng nó, số mới về thì vẽ lại.
+    // Chỉ khi màn hình đang KHÔNG hiện kỳ này: lượt nạp sau khi bấm lưu, đổi mức... vẽ một lần bằng số mới, kẻo
+    // câu báo "Đã lưu" hiện trên bản cũ rồi bị lượt vẽ sau xoá mất.
+    var khoa = state.period + "|" + state.provider, cu = state.dangHien !== khoa && state.nho[khoa];
+    if (cu) { state.tq = cu.tq; paint(cu.s, cu.ins); state.dangHien = khoa; }
+    return Promise.all([
+      fetch("/usage/summary" + q).then(jsonOk),
+      fetch("/usage/insights?period=" + encodeURIComponent(state.period)).then(jsonOk).catch(function () { return { items: [] }; }),
+      fetch("/usage/tong-quan?period=" + encodeURIComponent(state.period)).then(jsonOk).catch(function () { return null; }),
+      loadMuc(false),
+      loadViec(false),
+      fetch("/cache-keepwarm").then(jsonOk).catch(function () { return null; }),
+      fetch("/usage/theo-gio").then(jsonOk).catch(function () { return null; }),
+    ]).then(function (res) {
+      state.kw = res[5] || null;
+      state.gio = res[6] || null;
+      state.nho[khoa] = { s: res[0] || {}, ins: (res[1] || {}).items || [], tq: res[2] || null };
+      // Người dùng đã đổi kỳ trong lúc chờ: giữ số này cho lần sau, đừng vẽ đè lên kỳ họ vừa chọn.
+      if (khoa !== state.period + "|" + state.provider) return;
+      state.tq = res[2] || null;
+      paint(res[0] || {}, (res[1] || {}).items || []);
+      state.dangHien = khoa;
+    }).catch(function (e) {
+      // Đang hiện số của lần trước thì giữ nguyên, đừng thay bằng trang lỗi.
+      if (!cu) loi(e && e.message ? e.message : "");
+    });
+  }
+
+  // ===== Mức tiết kiệm token =====
+  // Chỉ vẽ những gì người dùng cuối quyết định được: tên mức, tiết kiệm bao nhiêu, và số đo
+  // thật. Mọi thứ còn lại của trang chẩn đoán cũ (allocation tính bằng phần vạn, tên đường
+  // canary, cửa sổ token 60 giây, execution_path từng lượt) là ngôn ngữ của người vận hành
+  // máy, không phải của người đang trả tiền token.
+  //
+  // Khối `do_duoc` bên dưới là phép đo A/B: so trung bình token của lượt đi đường đầy đủ với
+  // lượt đi đường tiết kiệm trong cùng cửa sổ. Chính xác hơn phép đối chứng ở ô lớn phía
+  // trên, nhưng chỉ có số khi cả hai đường cùng chạy - tức là quanh lúc vừa đổi mức. Nên nó
+  // ở ĐÂY, trong phần bung ra, chứ không phải là chỗ duy nhất báo tiết kiệm như bản trước.
+  //
+  // Ba mức tin cậy khác nhau, và phải nói rõ cái nào là cái nào, không thì con số to nhất
+  // (tiền mỗi tháng) bị đọc như một hoá đơn:
+  //   - token tiết kiệm trong cửa sổ vừa đo: ĐO ĐƯỢC, chắc nhất
+  //   - token mỗi tháng: PHÉP CHIẾU theo đúng nhịp đó, đúng khi cách dùng không đổi
+  //   - tiền: ƯỚC LƯỢNG, phụ thuộc bảng giá tham khảo và tỉ giá
+  // Người đang dùng GÓI THUÊ BAO còn một lớp nữa: họ trả tiền gói chứ không trả theo token,
+  // nên tiền ở đây là "nếu tính theo giá API" chứ không phải tiền mặt tiết kiệm được. Nói
+  // dối chỗ này thì cả trang mất tin cậy.
+  function tienHtml(dod, d) {
+    var t = dod.tien || {};
+    if (!dod.token_tiet_kiem) return "";
+    var eng = d.engine || {};
+    var thueBao = eng.thue_bao === true || eng.loai === "Gói thuê bao";
+    var usdThang = fCost(t.usd_thang || 0);
+    var cachTinh = t.nguon_gia === "tay"
+      ? window.t("usage.gia.tay")
+      : (t.nguon_gia === "bang"
+        ? window.t("usage.gia.bang")
+        : window.t("usage.gia.pho_bien"));
+    var gioDo = dod.gio_do || 24;
+    var noteVars = {
+      do_duoc: "<b>" + window.t("usage.tien.do_duoc") + "</b>",
+      uoc_luong: "<b>" + window.t("usage.tien.uoc_luong") + "</b>",
+      gio: gioDo, cach: esc(cachTinh), gia: (t.gia_1m_usd || 0),
+    };
+    var hdVars = { a: "<code>gia_input_1m</code>", b: "<code>settings.json</code>", c: "<code>model</code>" };
+    return '<div class="tk-tien">'
+      + '<div class="tk-tien-row">'
+      + '<div><div class="k">' + window.t("usage.tk.tieu_de") + '</div><div class="v">' + fTok(dod.token_tiet_kiem)
+      + '</div><div class="s">' + window.t("usage.tien.token_trong_gio", { gio: gioDo }) + "</div></div>"
+      + '<div><div class="k">' + window.t("usage.tien.theo_nhip") + '</div><div class="v">' + fTok(dod.token_thang)
+      + '</div><div class="s">' + window.t("usage.tien.token_thang") + "</div></div>"
+      + '<div class="tien"><div class="k">' + window.t("usage.tien.quy_ra_tien") + infoBtn() + '</div><div class="v">~' + usdThang + "</div>"
+      + '<div class="s">' + window.t("usage.tien.moi_thang_gia_api") + "</div></div>"
+      + "</div>"
+      // How each number was got (measured, projected, estimated): behind the (i) on the money label.
+      + infoBody(window.t("usage.tien.note", noteVars)
+        + (thueBao ? " " + window.t("usage.tien.thue_bao", { goi: "<b>" + window.t("usage.tien.goi") + "</b>" }) : "")
+        + " " + window.t("usage.tien.hop_dong", hdVars))
+      + "</div>";
+  }
+
+  function mucHtml(d) {
+    if (!d || !(d.danh_sach || []).length) return "";
+    var uocMuc = ((d.uoc_tinh || {}).muc) || {};
+    var dod = d.do_duoc || {};
+    var dangDung = null;
+    var btns = d.danh_sach.map(function (p) {
+      var m = uocMuc[p.id] || {};
+      if (p.id === d.muc) dangDung = { nhan: p.nhan, m: m };
+      var pct = (p.id !== "off" && m.phan_tram)
+        ? '<span class="tk-muc-pct">-' + (+m.phan_tram || 0) + "% token</span>" : "";
+      var tok = m.token_moi_request != null
+        ? '<span class="tk-muc-tok">'
+          + window.t("usage.token_moi_luot", { n: (+m.token_moi_request || 0).toLocaleString(LOC()) }) + "</span>" : "";
+      // Bộ não đang chạy không ăn được mức này thì phải nói NGAY trên nút. Khoe một con số
+      // không bao giờ tới là dạy người dùng thôi tin cả trang.
+      var na = m.ap_dung === false ? '<span class="tk-muc-na">' + window.t("usage.muc.na") + "</span>" : "";
+      var now = p.id === d.muc ? '<span class="tk-muc-now">' + window.t("usage.muc.dang_dung") + "</span>" : "";
+      return '<button class="tk-muc-b' + (p.id === d.muc ? " on" : "") + '" data-muc="' + esc(p.id) + '">'
+        + '<span class="tk-muc-top"><b>' + esc(p.nhan) + "</b>" + pct + "</span>"
+        + tok + "<small>" + esc(m.ghi_chu || p.mo_ta) + "</small>" + na + now + "</button>";
+    }).join("");
+
+    var doHtml = "";
+    if (dod.du_du_lieu) {
+      var gio = dod.gio_do || 24;
+      doHtml = '<div class="tk-muc-do">'
+        + '<div><div class="k">' + window.t("usage.muc.day_du") + '</div><div class="v">' + fTok(dod.tb_cu)
+        + '</div><div class="s">' + window.t("usage.muc.do_sub", { count: (dod.so_luot_cu || 0) }) + "</div></div>"
+        + '<div><div class="k">' + window.t("usage.muc.khi_tk") + '</div><div class="v">' + fTok(dod.tb_moi)
+        + '</div><div class="s">' + window.t("usage.muc.do_sub", { count: (dod.so_luot_moi || 0) }) + "</div></div>"
+        + '<div class="pct"><div class="k">' + window.t("usage.muc.giam") + '</div><div class="v">' + (dod.phan_tram || 0)
+        + '%</div><div class="s">' + window.t("usage.muc.do_trong", { gio: gio }) + "</div></div>"
+        + "</div>";
+      doHtml += tienHtml(dod, d);
+    }
+
+    var mucVars = { tat: "<b>" + window.t("usage.muc.tat") + "</b>" };
+
+    // Dải một dòng luôn hiện; phần thân chỉ dựng khi người dùng bung ra.
+    var mm = (dangDung && dangDung.m) || {};
+    var strip = '<button class="tk-muc-strip" data-act="mo-muc">'
+      + ic("zap", { cls: "ic-sm ic-accent" })
+      + "<span>" + window.t("usage.muc.strip", { ten: "<b>" + esc((dangDung && dangDung.nhan) || d.muc || "?") + "</b>" })
+      + (mm.phan_tram ? ' <span class="pc">-' + (+mm.phan_tram || 0) + "%</span>" : "")
+      + (mm.token_moi_request != null
+        ? " · " + window.t("usage.token_moi_luot", { n: (+mm.token_moi_request || 0).toLocaleString(LOC()) }) : "")
+      + "</span>"
+      + '<span class="sp">' + (state.moMuc ? window.t("usage.muc.thu_lai") : window.t("usage.muc.doi"))
+      + ic(state.moMuc ? "chevron-up" : "chevron-down", { cls: "ic-sm" }) + "</span></button>";
+
+    var body = state.moMuc
+      ? '<div class="tk-muc-body"><div class="tk-muc-list">' + btns + "</div>"
+      + (state.toast ? state.toast : "")
+      + doHtml
+      // Takes effect at once and how to undo: behind the (i). Whether the level was ever picked is state, so it stays open.
+      + infoPair(window.t("usage.muc.note", mucVars))
+      + (d.tu_chon ? "" : '<div class="tk-muc-chua">' + esc(window.t("usage.muc.chua_chon")) + "</div>")
+      + "</div>"
+      : (state.toast || "");
+
+    return '<div class="tk-muc">' + strip + body + "</div>";
+  }
+
+  function bindMuc() {
+    var el = state.el; if (!el) return;
+    var mo = el.querySelector('[data-act="mo-muc"]');
+    if (mo) mo.onclick = function () { state.moMuc = !state.moMuc; load(false); };
+    el.querySelectorAll("[data-muc]").forEach(function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-muc");
+        el.querySelectorAll("[data-muc]").forEach(function (x) { x.disabled = true; });
+        var fd = new FormData(); fd.append("level", id);
+        fetch("/runtime/preset", { method: "POST", body: fd })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+          .then(function (res) {
+            if (!res.ok || !res.j || res.j.ok === false) {
+              state.toast = '<div class="tk-muc-toast err">' + esc((res.j && res.j.error) || window.t("usage.muc.err")) + "</div>";
+            } else {
+              var cb = (res.j.canh_bao || []).join(" ");
+              state.toast = '<div class="tk-muc-toast ok">' + window.t("usage.muc.ok", { ten: esc(res.j.nhan) })
+                + (cb ? " " + esc(cb) : "") + "</div>";
+            }
+            return loadMuc(true);
+          })
+          .catch(function (e) {
+            state.toast = '<div class="tk-muc-toast err">' + window.t("usage.muc.err2") + " "
+              + esc(e && e.message ? e.message : e) + "</div>";
+          })
+          .then(function () { load(false); });
+      };
+    });
+  }
+
+  // ===== Câu mở đầu + ba ô hành động =====
+  function heroHtml() {
+    var t = state.tq; if (!t) return "";
+    var phu = [];
+    if ((t.tiet_kiem || {}).suy_doan && (t.tiet_kiem || {}).token) {
+      phu.push(window.t("usage.hero.suy_doan"));
+    }
+    if (!((t.tien || {}).goi || {}).gia_thang_usd) {
+      phu.push(window.t("usage.hero.khai_gia_goi"));
+    }
+    return '<div class="tk-hero"><p>' + esc(t.cau || "") + "</p>"
+      + (phu.length ? '<div class="sub">' + esc(phu.join(" ")) + "</div>" : "")
+      + "</div>";
+  }
+
+  function oTien() {
+    var t = state.tq; if (!t) return "";
+    var ns = t.ngan_sach || {};
+    var that = (t.tien || {}).that || {};
+    var orb = that.openrouter;
+    var body, thanh = "";
+    if (ns.co) {
+      var cls = ns.muc_do === "het" ? "bad" : (ns.muc_do === "sap_het" ? "warn" : "ok");
+      thanh = '<div class="track"><div class="fill ' + cls + '" style="width:'
+        + Math.min(100, Math.round((ns.ty_le || 0) * 100)) + '%"></div></div>';
+      body = '<div class="big ' + cls + '">' + fCost(ns.da_tieu) + "</div>"
+        + thanh
+        + '<div class="s">' + window.t("usage.tien.tren_tran", { tran: fCost(ns.tran), con: fCost(ns.con) })
+        + (ns.du_bao_vuot ? ". " + window.t("usage.tien.se_vuot") : "") + "</div>";
+    } else {
+      // Chưa đặt trần thì ô này nói về ĐÚNG kỳ đang chọn, nên phải gọi tên kỳ ra. Đặt trần
+      // rồi thì nó chuyển sang nói về THÁNG, vì trần là trần tháng - hai nghĩa khác nhau
+      // trong cùng một ô, không nói rõ là người đọc so nhầm.
+      body = '<div class="big">' + fCost(that.usd) + "</div>"
+        + '<div class="s">' + esc((t.ten_ky || window.t("usage.tien.ky_nay")).toLowerCase())
+        + ", " + window.t("usage.tien.tien_that")
+        + (that.usd ? " " + window.t("usage.tien.nhanh_api") : ", " + window.t("usage.tien.chua_tran")) + "</div>";
+    }
+    if (orb && orb.remaining != null) {
+      body += '<div class="s">'
+        + window.t("usage.tien.or_con", { tien: '<b style="color:var(--green)">' + fCost(orb.remaining) + "</b>" })
+        + "</div>";
+    }
+    if ((ns.dang_phanh || {}).bat) {
+      body += '<div class="s" style="color:var(--accent)">' + window.t("usage.tien.dang_phanh") + "</div>";
+    }
+    return '<div class="tk-a"><div class="h">' + ic("shield", { cls: "ic-sm" }) + window.t("usage.tien.tieu_de") + "</div>"
+      + body
+      + '<button class="tk-mini" data-act="ns">'
+      + (state.moNganSach ? window.t("common.close") : window.t("usage.tien.dat_ns")) + "</button></div>";
+  }
+
+  // Gói Claude/ChatGPT tính hạn mức theo CỬA SỔ vài giờ chứ không theo ngày, nên "hôm nay
+  // dùng bao nhiêu" không trả lời được câu "tôi sắp bị chặn chưa".
+  //
+  // Hai ca hoàn toàn khác nhau, và tô cùng một màu là nói dối:
+  //   - Người dùng ĐÃ KHAI trần: phần trăm là phần trăm của một hạn mức thật. Gần 100% thì
+  //     đỏ là đúng, vì sắp bị chặn thật.
+  //   - Chưa khai: ta so với ĐỈNH của chính họ, mà đỉnh thì không bao giờ vượt được - đang
+  //     bận nhất từ trước tới nay là tự khắc 100%. Tô đỏ ở đây là doạ người vì một chuyện
+  //     không có gì nguy hiểm. Ca này để số token làm con số chính, phần trăm chỉ là ngữ cảnh.
+  function oTran() {
+    var t = state.tq; if (!t) return "";
+    var c = t.cua_so || {};
+    var eng = t.engine || {};
+    var thueBao = eng.thue_bao === true || eng.loai === "Gói thuê bao";
+    var body;
+    if (c.tran_khai) {
+      var tl = Math.min(1, c.ty_le || 0);
+      var cls = tl >= 0.9 ? "bad" : (tl >= 0.7 ? "warn" : "ok");
+      body = '<div class="big ' + cls + '">' + pct(tl) + "</div>"
+        + '<div class="track"><div class="fill ' + cls + '" style="width:' + Math.round(tl * 100) + '%"></div></div>'
+        + '<div class="s">' + fTok(c.tokens) + " "
+        + window.t("usage.tran.tren_khai", { tran: fTok(c.tran_khai) }) + "</div>";
+    } else {
+      body = '<div class="big">' + fTok(c.tokens) + "</div>";
+      if (c.dinh) {
+        var tl2 = Math.min(1, c.ty_le || 0);
+        body += '<div class="track"><div class="fill" style="width:' + Math.round(tl2 * 100) + '%"></div></div>'
+          + '<div class="s">' + window.t("usage.tran.trong_5h") + " "
+          + (tl2 >= 0.99
+            ? window.t("usage.tran.ban_nhat")
+            : window.t("usage.tran.so_dinh", { pc: pct(tl2), dinh: fTok(c.dinh) }))
+          + "</div>";
+      } else {
+        body += '<div class="s">' + window.t("usage.tran.trong_5h") + " " + window.t("usage.tran.chua_du_ls") + "</div>";
+      }
+      body += '<div class="s">' + window.t("usage.tran.khai_tran") + "</div>";
+    }
+    if (!thueBao) {
+      body += '<div class="s">' + window.t("usage.tran.api_key") + "</div>";
+    }
+    return '<div class="tk-a"><div class="h">' + ic("chart-column", { cls: "ic-sm" }) + window.t("usage.tran.tieu_de") + "</div>"
+      + body + "</div>";
+  }
+
+  function oTietKiem() {
+    var t = state.tq; if (!t) return "";
+    var k = t.tiet_kiem || {};
+    if (!k.du_du_lieu) {
+      // Hai lý do khác hẳn nhau, và gộp làm một là nói dối theo hướng làm người ta tắt chế độ
+      // tiết kiệm đi: "chưa chạy lượt nào" với "bạn đang chỉnh tay nên Javis không biết cấu
+      // hình đó tốn bao nhiêu".
+      if (k.khong_do_duoc) {
+        // The reason is state, like "chua_luot" below, so it stays open (review 0.214.0).
+        return '<div class="tk-a"><div class="h">' + ic("sparkles", { cls: "ic-sm" }) + window.t("usage.tk.tieu_de") + "</div>"
+          + '<div class="big">-</div><div class="s">' + window.t("usage.tk.chinh_tay") + "</div></div>";
+      }
+      return '<div class="tk-a"><div class="h">' + ic("sparkles", { cls: "ic-sm" }) + window.t("usage.tk.tieu_de") + "</div>"
+        + '<div class="big">-</div><div class="s">' + window.t("usage.tk.chua_luot") + "</div></div>";
+    }
+    var ti = k.tien || {};
+    return '<div class="tk-a"><div class="h">' + ic("sparkles", { cls: "ic-sm" }) + window.t("usage.tk.tieu_de") + "</div>"
+      + '<div class="big warn">' + fTok(k.token) + "</div>"
+      + '<div class="s">' + window.t("usage.tk.qua_luot", { count: (k.so_luot || 0) }) + " "
+      + window.t("usage.tk.che_do", { ten: "<b>" + esc(k.nhan_muc || "") + "</b>", pc: (k.phan_tram || 0) })
+      + "</div>"
+      + '<div class="s">' + window.t("usage.tk.quy_gia", { tien: "<b>" + fCost(ti.usd) + "</b>" }) + "</div></div>";
+  }
+
+  function nganSachHtml() {
+    if (!state.moNganSach) return "";
+    var t = state.tq || {};
+    var ns = t.ngan_sach || {};
+    var g = ((t.tien || {}).goi || {});
+    var c = t.cua_so || {};
+    // Giá trị đang gõ dở thắng giá trị đã lưu: người dùng vừa gõ 30 rồi bấm chip kỳ mà thấy ô
+    // trắng lại thì lần sau họ không tin cái form nữa.
+    var f = state.nsForm || {};
+    function val(dangGo, daLuu) { return dangGo != null && dangGo !== "" ? dangGo : (daLuu || ""); }
+    var tick = function (k, mac_dinh) { return (f[k] != null ? f[k] : mac_dinh) ? " checked" : ""; };
+    return '<div class="tk-ns"><div class="row">'
+      + "<div><label>" + window.t("usage.ns.gia_goi") + '</label><input id="tk-ns-goi" type="number" min="0" step="1" value="'
+      + esc(val(f.goi, g.gia_thang_usd)) + '" placeholder="' + window.t("usage.ns.ph_gia_goi") + '"></div>'
+      + "<div><label>" + window.t("usage.ns.tran_api") + '</label><input id="tk-ns-tran" type="number" min="0" step="1" value="'
+      + esc(val(f.tran, ns.tran)) + '" placeholder="' + window.t("usage.ns.ph_tran_api") + '"></div>'
+      + "<div><label>" + window.t("usage.ns.tran_5h") + '</label><input id="tk-ns-5h" type="number" min="0" step="1000" value="'
+      + esc(val(f.h5, c.tran_khai)) + '" placeholder="' + window.t("usage.ns.ph_tran_5h") + '"></div>'
+      + "</div>"
+      + '<label class="chk"><input id="tk-ns-phanh" type="checkbox"' + tick("phanh", ns.tu_phanh) + ">"
+      + window.t("usage.ns.tu_phanh") + "</label>"
+      + '<label class="chk"><input id="tk-ns-tuan" type="checkbox"' + tick("tuan", !!t.bao_cao_tuan) + ">"
+      + window.t("usage.ns.bao_cao_tuan") + "</label>"
+      // 0.202.0: keep a Claude Code chat's prompt cache warm across a short break (server/cache_keepwarm.py).
+      // The (i) sits beside the label, not inside it: a button inside a label is invalid markup.
+      + '<div class="kw-row"><label class="chk"><input id="tk-kw" type="checkbox"'
+      + ((state.kw || {}).enabled ? " checked" : "") + ">" + window.t("usage.kw.label") + "</label>" + infoBtn() + "</div>"
+      + infoBody(esc(window.t("usage.kw.hint")))
+      + '<div class="acts"><button class="save" data-act="ns-luu">' + window.t("common.save") + "</button>"
+      + '<button class="tk-mini" data-act="ns">' + window.t("common.cancel") + "</button>" + infoBtn() + "</div>"
+      + infoBody(window.t("usage.ns.hint", { nen: "<b>" + window.t("usage.ns.viec_nen") + "</b>" }))
+      + "</div>";
+  }
+
+  // ===== 24 giờ qua: cửa sổ 5 giờ theo thời gian, token từng giờ, giờ cao điểm 7 ngày =====
+  // Chủ repo 26/10 gửi ảnh một bảng theo dõi token tự dựng và bảo làm trang này "hữu dụng hơn".
+  // Ba thứ đáng lấy từ bảng đó, vì trang cũ KHÔNG trả lời được:
+  //   1. Cửa sổ 5 giờ đang lên hay xuống. Ô "Cửa sổ 5 giờ" chỉ là một điểm; gói thuê bao chặn
+  //      theo cửa sổ trượt, nên cần thấy cả đường và vạch mốc để biết sắp chạm trần chưa.
+  //   2. Sáng nay giờ nào đốt token. Biểu đồ theo NGÀY gộp cả ngày lại; chip "Hôm nay" chỉ ra
+  //      đúng một cột.
+  //   3. Giờ nào trong ngày AI dồn nhiều, giờ nào vắng: để dời việc nền sang giờ vắng.
+  // Những thứ KHÔNG lấy: "% hạn mức gói" chính thức (Javis không đọc token đăng nhập của gói,
+  // nên vạch mốc là trần người dùng tự khai hoặc mức cao nhất từng chạm, và nói rõ là cái nào),
+  // bảng "AI đang chạy" (gần như luôn trống, đã có dải việc nền), ô màu giờ có số trần không
+  // đơn vị (ở đây số nằm trong chú thích khi rê chuột, màu có thang chú giải).
+  function gioHtml() {
+    var g = state.gio;
+    if (!g || !g.gio_24 || !g.gio_24.length) return "";
+    var tong24 = g.gio_24.reduce(function (a, x) { return a + (x.total || 0); }, 0);
+    return '<div class="tk-sec">' + window.t("usage.gio.sec") + '</div><div class="tg-grid">'
+      + '<div class="tg-card">' + cuaSoHtml(g) + "</div>"
+      + '<div class="tg-card">' + gio24Html(g, tong24) + "</div>"
+      + '<div class="tg-card tg-full">' + nhietHtml(g.nhiet_7 || {}) + "</div></div>";
+  }
+
+  function nhanGio(h) { return h + "h"; }
+
+  function cuaSoHtml(g) {
+    var cs = g.cua_so || [];
+    var moc = (g.moc && g.moc.tokens) || 0;
+    var maxV = Math.max.apply(null, cs.map(function (x) { return x.tokens || 0; }).concat([moc, 1]));
+    var top = maxV * 1.1;
+    var W = 600, H = 160;
+    var pts = cs.map(function (x, i) {
+      return [(i / Math.max(1, cs.length - 1)) * W, H - (x.tokens || 0) / top * H];
+    });
+    var line = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" ");
+    var area = line + " L" + W + " " + H + " L0 " + H + " Z";
+    var cuoi = cs.length ? (cs[cs.length - 1].tokens || 0) : 0;
+    var tl = moc ? cuoi / moc : 0;
+    var muc = !moc ? "" : tl >= 0.9 ? "bad" : tl >= 0.7 ? "warn" : "ok";
+    var mocY = moc ? (H - moc / top * H) / H * 100 : 0;
+    var nhanMoc = g.moc && g.moc.loai === "tran" ? window.t("usage.gio.moc_tran") : window.t("usage.gio.moc_dinh");
+    var cot = cs.map(function (x) {
+      return '<div title="' + esc(nhanGio(x.gio) + ": " + fTok(x.tokens) + " " + window.t("usage.gio.trong_5h")) + '"></div>';
+    }).join("");
+    var lp = pts.length ? pts[pts.length - 1] : [W, H];
+    return '<div class="tg-h"><span>' + window.t("usage.gio.cs_tieu_de") + "</span>"
+      + '<b class="tg-now ' + muc + '">' + fTok(cuoi) + (moc ? " · " + Math.round(tl * 100) + "%" : "") + "</b></div>"
+      + '<div class="tg-plot">'
+      + '<div class="tg-y"><span style="top:0">' + fTok(top) + '</span><span style="top:50%">' + fTok(top / 2) + '</span><span style="top:100%">0</span></div>'
+      + '<div class="tg-box"><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" aria-hidden="true">'
+      + '<path class="tg-area ' + muc + '" d="' + area + '"/><path class="tg-line ' + muc + '" d="' + line + '"/></svg>'
+      + '<span class="tg-dot ' + muc + '" style="left:' + (lp[0] / W * 100) + "%;top:" + (lp[1] / H * 100) + '%"></span>'
+      + (moc ? '<div class="tg-moc" style="top:' + mocY + '%"><span>' + esc(nhanMoc) + " " + fTok(moc) + "</span></div>" : "")
+      + '<div class="tg-hover">' + cot + "</div></div></div>"
+      + '<div class="tg-x">' + cs.map(function (x, i) {
+        return "<span>" + (i % 6 === 0 || i === cs.length - 1 ? nhanGio(x.gio) : "") + "</span>";
+      }).join("") + "</div>"
+      + '<div class="tg-s">' + (moc
+        ? (tl >= 0.9 ? window.t("usage.gio.cs_sat", { pc: Math.round(tl * 100) }) : window.t("usage.gio.cs_on", { pc: Math.round(tl * 100) }))
+        : window.t("usage.gio.cs_chua_moc")) + "</div>";
+  }
+
+  function gio24Html(g, tong24) {
+    var ds = g.gio_24 || [];
+    var maxV = Math.max.apply(null, ds.map(function (x) { return x.total || 0; }).concat([1]));
+    var cols = ds.map(function (x) {
+      function k(v, col) { return v > 0 ? '<div style="height:' + (v / maxV * 100) + "%;background:" + col + '"></div>' : ""; }
+      var tip = nhanGio(x.gio) + ": " + fTok(x.total) + " token · " + window.t("usage.gio.luot", { count: x.turns || 0 });
+      return '<div class="tg-col" title="' + esc(tip) + '">' + k(x.claude, PROV_COLOR.claude) + k(x.codex, PROV_COLOR.codex) + k(x.api, PROV_COLOR.api) + "</div>";
+    }).join("");
+    var dinh = ds.reduce(function (a, x) { return (x.total || 0) > (a.total || 0) ? x : a; }, {});
+    return '<div class="tg-h"><span>' + window.t("usage.gio.g24_tieu_de") + "</span><b>" + fTok(tong24) + "</b></div>"
+      + '<div class="tg-bars">' + cols + "</div>"
+      + '<div class="tg-x">' + ds.map(function (x, i) {
+        return "<span>" + (i % 6 === 0 || i === ds.length - 1 ? nhanGio(x.gio) : "") + "</span>";
+      }).join("") + "</div>"
+      + '<div class="tg-s">' + (dinh.total ? window.t("usage.gio.g24_dinh", { gio: nhanGio(dinh.gio), tok: fTok(dinh.total) }) : window.t("usage.gio.g24_trong")) + "</div>";
+  }
+
+  /** Khung giờ liền nhau (tính vòng qua nửa đêm) có tổng lớn nhất / nhỏ nhất, dài `n` giờ. */
+  function khungGio(arr, n, lonNhat) {
+    var best = null, bi = 0;
+    for (var i = 0; i < 24; i++) {
+      var s2 = 0;
+      for (var k = 0; k < n; k++) s2 += arr[(i + k) % 24] || 0;
+      if (best === null || (lonNhat ? s2 > best : s2 < best)) { best = s2; bi = i; }
+    }
+    return { tu: bi, den: (bi + n) % 24, tong: best };
+  }
+
+  function nhietHtml(nh) {
+    var arr = nh.tb_moi_gio || [];
+    var maxV = Math.max.apply(null, arr.concat([1]));
+    var o = arr.map(function (v, h) {
+      var lv = !v ? 0 : Math.min(4, 1 + Math.floor(v / maxV * 3.999));
+      var tip = nhanGio(h) + ": " + window.t("usage.gio.nhiet_tip", { tok: fTok(v) });
+      return '<div class="tg-o l' + lv + '" title="' + esc(tip) + '"><span>' + h + "</span></div>";
+    }).join("");
+    var cau;
+    if (!nh.so_ngay) cau = window.t("usage.gio.nhiet_chua");
+    else {
+      var cao = khungGio(arr, 3, true), vang = khungGio(arr, 4, false);
+      cau = window.t("usage.gio.nhiet_cau", { cao: nhanGio(cao.tu) + "-" + nhanGio(cao.den),
+        vang: nhanGio(vang.tu) + "-" + nhanGio(vang.den), so: nh.so_ngay });
+    }
+    return '<div class="tg-h"><span>' + window.t("usage.gio.nhiet_tieu_de") + "</span>"
+      + '<span class="tg-thang">' + window.t("usage.gio.it") + ' <i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> ' + window.t("usage.gio.nhieu") + "</span></div>"
+      + '<div class="tg-heat">' + o + "</div>"
+      + '<div class="tg-s">' + esc(cau) + "</div>";
+  }
+
+  function card(k, v, sub, accent, extra) {
+    return '<div class="tk-card' + (accent ? " accent" : "") + '"><div class="k">' + esc(k) + (extra || "") + '</div><div class="v">' + v + '</div><div class="s">' + (sub || "") + "</div></div>";
+  }
+
+  function barList(items, labelMap, colorFn) {
+    if (!items || !items.length) return '<div style="color:var(--text3);font-size:13px">' + window.t("usage.chua_du_lieu") + "</div>";
+    var max = Math.max.apply(null, items.map(function (x) { return x.tokens; })) || 1;
+    return '<div class="tk-blist">' + items.map(function (x) {
+      var lab = (labelMap && labelMap[x.key]) || model(x.key) || x.key;
+      var w = Math.max(2, Math.round(x.tokens / max * 100));
+      var col = colorFn ? colorFn(x.key) : "var(--accent)";
+      return '<div class="row"><div class="lab" title="' + esc(lab) + '">' + esc(lab) + '</div>'
+        + '<div class="track"><div class="fill" style="width:' + w + "%;background:" + col + '"></div></div>'
+        + '<div class="val">' + fTok(x.tokens) + "</div></div>";
+    }).join("") + "</div>";
+  }
+
+  // Bảng "ngốn nhất" kèm NÚT XỬ LÝ. Bảng chỉ để ngắm thì người đọc biết cái gì đắt mà vẫn
+  // phải tự đi tìm chỗ chỉnh - và đa số sẽ không đi.
+  function table(items, header, actFn) {
+    if (!items || !items.length) return '<div style="color:var(--text3);font-size:13px">' + window.t("usage.chua_du_lieu") + "</div>";
+    var rows = items.slice(0, 8).map(function (x) {
+      return "<tr><td>" + esc(model(x.key) || x.key) + '</td><td class="num">' + fTok(x.tokens)
+        + '</td><td class="num">' + (x.cost > 0 ? fCost(x.cost) : "-") + "</td>"
+        + (actFn ? '<td class="act">' + actFn(x) + "</td>" : "") + "</tr>";
+    }).join("");
+    return '<table class="tk-tbl"><thead><tr><th>' + esc(header) + '</th><th style="text-align:right">Token</th>'
+      + '<th style="text-align:right">' + window.t("usage.th.quy_doi") + "</th>"
+      + (actFn ? "<th></th>" : "") + "</tr></thead><tbody>" + rows + "</tbody></table>";
+  }
+
+  function tableProj(items) {
+    if (!items || !items.length) return '<div style="color:var(--text3);font-size:13px">' + window.t("usage.chua_du_lieu") + "</div>";
+    var rows = items.slice(0, 8).map(function (x) {
+      return "<tr><td>" + esc(x.key) + '</td><td class="num">' + fTok(x.tokens) + '</td><td class="num">' + (x.sessions || 0) + "</td></tr>";
+    }).join("");
+    return '<table class="tk-tbl"><thead><tr><th>' + window.t("usage.th.brain") + "</th>"
+      + '<th style="text-align:right">Token</th>'
+      + '<th style="text-align:right">' + window.t("usage.th.phien") + "</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  }
+
+  // Loop đang bật, kèm nút tắt ngay tại chỗ. Đây là hành động DUY NHẤT trên trang này vừa
+  // đáng làm vừa làm được một cách rõ ràng: việc nền là phần tiêu token lúc không ai ngồi
+  // nhìn, và tắt một loop là quyết định đảo ngược được trong một cú bấm.
+  function loopHtml() {
+    var v = state.viec; if (!v || !(v.brains || []).length) return "";
+    var rows = [];
+    (v.brains || []).forEach(function (b) {
+      (b.loops || []).forEach(function (lp) {
+        rows.push({ brain: b.path, brainName: b.name, slug: lp.slug, name: lp.name || lp.slug,
+                    enabled: !!lp.enabled, interval: lp.interval_min || 0, mode: lp.mode || "" });
+      });
+    });
+    if (!rows.length) return "";
+    rows.sort(function (a, b) { return (b.enabled ? 1 : 0) - (a.enabled ? 1 : 0); });
+    var tr = rows.slice(0, 8).map(function (r) {
+      return "<tr><td>" + esc(r.name) + '<div style="font-size:11px;color:var(--text3)">'
+        + esc(r.brainName || "") + (r.interval ? " · " + window.t("usage.loop.moi_phut", { count: r.interval }) : "")
+        + (r.mode ? " · " + esc(r.mode) : "") + "</div></td>"
+        + '<td class="num">' + (r.enabled ? window.t("usage.loop.on") : window.t("usage.loop.off")) + "</td>"
+        + '<td class="act"><button class="tk-go' + (r.enabled ? " on" : "") + '" data-loop="'
+        + esc(r.slug) + '" data-brain="' + esc(r.brain) + '">'
+        + (r.enabled ? window.t("usage.loop.btn_tat") : window.t("usage.loop.btn_bat")) + "</button></td></tr>";
+    }).join("");
+    return '<div class="tk-sec">' + window.t("usage.sec.viec_nen") + "</div>"
+      + '<table class="tk-tbl"><thead><tr><th>Loop</th>'
+      + '<th style="text-align:right">' + window.t("usage.th.trang_thai") + "</th><th></th></tr></thead><tbody>"
+      + tr + "</tbody></table>";
+  }
+
+  // So NHỊP giữa các engine: token mỗi lượt, tách theo loại việc. Tổng token không so được
+  // vì engine chạy nhiều việc hơn thì đương nhiên tốn hơn.
+  function engineHtml() {
+    var t = state.tq; if (!t || !(t.nhip_engine || []).length) return "";
+    var rows = t.nhip_engine.slice(0, 6).map(function (x) {
+      return "<tr><td>" + esc(PROV_LABEL[x.provider] || x.provider) + "</td>"
+        + "<td>" + esc(ACT_LABEL()[x.activity] || x.activity) + "</td>"
+        + '<td class="num">' + fTok(x.moi_luot) + "</td>"
+        + '<td class="num">' + (x.turns || 0) + "</td>"
+        + '<td class="num">' + (x.cost_moi_luot > 0 ? "$" + (+x.cost_moi_luot).toFixed(3) : "-") + "</td></tr>";
+    }).join("");
+    return '<div class="tk-sec">' + window.t("usage.sec.engine") + "</div>"
+      + '<table class="tk-tbl"><thead><tr><th>' + window.t("usage.th.bo_nao") + "</th>"
+      + "<th>" + window.t("usage.th.viec") + "</th>"
+      + '<th style="text-align:right">' + window.t("usage.th.token_luot") + "</th>"
+      + '<th style="text-align:right">' + window.t("usage.th.luot") + "</th>"
+      + '<th style="text-align:right">' + window.t("usage.th.quy_doi_luot") + "</th></tr></thead><tbody>"
+      + rows + "</tbody></table>";
+  }
+
+  function paint(s, insights) {
+    var el = state.el; if (!el) return;
+    var k = s.kpi || {};
+    var t = state.tq || {};
+    var chips = '<select class="tk-sel" data-period-sel aria-label="' + esc(window.t("usage.ky.chon")) + '">' + PERIODS().map(function (p) {
+      return '<option value="' + p[0] + '"' + (p[0] === state.period ? " selected" : "") + ">" + esc(p[1]) + "</option>";
+    }).join("") + "</select>";
+    var seg = PROVS().map(function (p) {
+      return '<button class="' + (p[0] === state.provider ? "on" : "") + '" data-prov="' + p[0] + '">' + esc(p[1]) + "</button>";
+    }).join("");
+    var bar1 = '<div class="tk-bar1">' + chips
+      + '<div class="tk-seg">' + seg + '</div>'
+      + '<button class="tk-refresh" data-act="refresh">'
+      + (state.busy ? window.t("usage.dang_quet") : window.t("noti.refresh")) + "</button></div>";
+
+    var deltaHtml = "";
+    if (k.delta_pct != null) {
+      var up = k.delta_pct >= 0;
+      deltaHtml = '<span class="' + (up ? "tk-up" : "tk-down") + '">' + (up ? "▲" : "▼") + " " + Math.abs(k.delta_pct)
+        + "%</span> " + window.t("usage.vs_ky_truoc");
+    } else { deltaHtml = window.t("usage.ky_truoc_trong"); }
+
+    var act = '<div class="tk-act">' + oTien() + oTran() + oTietKiem() + "</div>"
+      + (state.nsToast || "") + nganSachHtml();
+
+    var cache = t.cache || {};
+    var db = t.du_bao || {};
+    var cards = '<div class="tk-cards">'
+      + card(window.t("usage.card.tong_token"), fTok(k.tokens), deltaHtml, true, infoBtn())
+      + card(window.t("usage.card.so_luot"), (k.turns || 0).toLocaleString(LOC()),
+        window.t("usage.token_moi_luot", { n: fTok(k.avg_per_turn) }))
+      + card(window.t("usage.card.cache"), fCost(cache.usd), window.t("usage.card.cache_sub", { pc: pct(cache.ty_le) }))
+      + card(window.t("usage.card.phien"), (k.sessions || 0), window.t("usage.card.phien_sub", { n: fTok(k.avg_per_session) }))
+      + (db.co ? card(window.t("usage.card.du_bao"), fTok(db.tokens),
+        window.t("usage.card.con_ngay", { count: (db.con_ngay || 0) })) : "")
+      + "</div>";
+
+    // Biểu đồ theo ngày + hàng MỐC ngay dưới trục. Không có mốc thì tháng sau nhìn lại chỉ
+    // thấy một cái bậc thang không ai giải thích được.
+    var ts = s.timeseries || [];
+    var mocTheoNgay = {};
+    (t.moc || []).forEach(function (m) {
+      (mocTheoNgay[m.day] = mocTheoNgay[m.day] || []).push(m);
+    });
+    var maxD = Math.max.apply(null, ts.map(function (d) { return d.total; })) || 1;
+    var cols = ts.map(function (d) {
+      function seg2(v, col) { return v > 0 ? '<div class="tk-seg2" style="height:' + (v / maxD * 100) + "%;background:" + col + '"></div>' : ""; }
+      var tip = window.t("usage.chart.tip", { ngay: d.day, tok: fTok(d.total), count: (d.turns || 0) });
+      return '<div class="tk-col" title="' + esc(tip) + '">'
+        + seg2(d.claude, PROV_COLOR.claude) + seg2(d.codex, PROV_COLOR.codex) + seg2(d.api, PROV_COLOR.api) + "</div>";
+    }).join("");
+    // Kỳ dài thì cách quãng nhãn, không thì 30 con số dính vào nhau.
+    var buocX = ts.length > 120 ? 30 : ts.length > 62 ? 14 : ts.length > 31 ? 7 : ts.length > 16 ? 3 : 1;
+    var dai = ts.length > 45 ? ' tk-dai" style="gap:' + (ts.length > 120 ? 0 : 1) + 'px' : "";
+    // Kỳ dài hơn hai tháng: số ngày (1, 31, 2, 1...) không nói gì, nên ghi tên tháng ở ngày đầu mỗi tháng (năm thì cách
+    // một tháng, kẻo mười hai nhãn dính nhau trên điện thoại).
+    var buocThang = ts.length > 200 ? 2 : 1;
+    function nhanThang(day, dau) {
+      var th = +day.slice(5, 7);
+      if (!dau && (day.slice(8) !== "01" || (th - 1) % buocThang)) return "";
+      try { return new Date(+day.slice(0, 4), th - 1, 1).toLocaleDateString(LOC(), { month: "short" }); } catch (e) { return String(th); }
+    }
+    var xs = ts.map(function (d, i) {
+      // Cột đầu luôn có nhãn tháng, để kỳ bắt đầu giữa tháng vẫn biết khúc đầu là tháng nào.
+      var nhan = ts.length > 62 ? nhanThang(d.day, i === 0 && +d.day.slice(8) < 20)
+        : (i % buocX === 0 || i === ts.length - 1 ? String(+d.day.slice(8)) : "");
+      return '<div class="tk-x">' + esc(nhan) + "</div>";
+    }).join("");
+    var ms = ts.map(function (d) {
+      var mm = mocTheoNgay[d.day];
+      if (!mm || !mm.length) return '<div class="tk-m"></div>';
+      var nhan = mm.map(function (x) { return x.nhan || x.loai; }).join(" · ");
+      return '<div class="tk-m" title="' + esc(d.day + ": " + nhan) + '">'
+        + ic(MOC_ICO[mm[0].loai] || "info", { cls: "ic-sm ic-accent" }) + "</div>";
+    }).join("");
+    var legend = '<div class="tk-legend">'
+      + '<span><span class="tk-dot" style="background:' + PROV_COLOR.claude + '"></span>Claude</span>'
+      + '<span><span class="tk-dot" style="background:' + PROV_COLOR.codex + '"></span>ChatGPT</span>'
+      + '<span><span class="tk-dot" style="background:' + PROV_COLOR.api + '"></span>API</span>'
+      + "<span>" + ic("zap", { cls: "ic-sm ic-accent" }) + " " + window.t("usage.legend.doi_muc") + " · "
+      + ic("brain", { cls: "ic-sm ic-accent" }) + " " + window.t("usage.legend.doi_nao") + "</span></div>";
+    var chart = ts.length ? ('<div class="tk-sec">' + window.t("usage.sec.theo_ngay") + '</div><div class="tk-chart' + dai + '">' + cols
+      + '</div><div class="tk-xrow' + dai + '">' + xs + '</div><div class="tk-mrow' + dai + '">' + ms + "</div>" + legend) : "";
+
+    var grid = '<div class="tk-grid">'
+      + '<div><div class="tk-sec">' + window.t("usage.sec.nguon_tieu") + "</div>"
+      + barList(s.by_source, SRC_LABEL(), function () { return "var(--accent)"; })
+      + '<div class="tk-sec">' + window.t("usage.sec.hoat_dong") + "</div>"
+      + barList(s.by_activity, ACT_LABEL(), function () { return "var(--link-ink)"; }) + "</div>"
+      + "<div><div class=\"tk-sec\">Provider</div>" + barList(s.by_provider, PROV_LABEL, function (kk) { return PROV_COLOR[kk] || "var(--accent)"; }) + "</div>"
+      + "</div>";
+
+    var tables = '<div class="tk-grid" style="margin-top:6px">'
+      + '<div><div class="tk-sec">' + window.t("usage.sec.model_ngon") + "</div>" + table(s.by_model, "Model", function () {
+        return '<button class="tk-go" data-goto="models">' + window.t("usage.btn_doi_model") + "</button>";
+      }) + "</div>"
+      + '<div><div class="tk-sec">' + window.t("usage.sec.brain_ngon") + "</div>" + tableProj(s.by_project) + "</div>"
+      + "</div>";
+
+    var insHtml = "";
+    if (insights && insights.length) {
+      insHtml = '<div class="tk-sec">' + window.t("usage.sec.de_xuat") + '</div><div class="tk-ins">' + insights.map(function (i) {
+        var ico = i.level === "warn" ? ic("triangle-alert", { cls: "ic-warn" }) : ic("lightbulb", { cls: "ic-accent" });
+        return '<div class="item ' + (i.level === "warn" ? "warn" : "info") + '"><div class="ico">' + ico + '</div>'
+          + '<div><div class="t">' + esc(i.title) + '</div><div class="d">' + esc(i.detail) + "</div></div></div>";
+      }).join("") + "</div>";
+    }
+
+    // What the totals include and the two kinds of money: opens from the (i) on the total-token card.
+    var note = infoBody(window.t("usage.note", {
+      tong: window.t("usage.card.tong_token"),
+      cache: window.t("usage.card.cache"),
+      tien_mat: "<b>" + window.t("usage.note_tien_mat") + "</b>",
+      quy_doi: "<b>" + window.t("usage.note_quy_doi") + "</b>",
+    }));
+
+    el.innerHTML = '<div class="tk-wrap">' + mucHtml(state.muc) + bar1 + heroHtml() + act + gioHtml() + cards + note + chart + grid + tables + loopHtml() + engineHtml() + insHtml + "</div>";
+    // Thông báo đã hiện xong thì thôi. Không xoá ở đây thì câu "Đã chuyển sang mức Tối ưu"
+    // bám vào trang qua mọi lần đổi chip kỳ, mọi lần Làm mới, cho tới khi người dùng F5 -
+    // và một thông báo nói về việc xảy ra mười phút trước thì chỉ gây hiểu nhầm.
+    state.toast = "";
+    state.nsToast = "";
+    bind();
+    bindMuc();
+  }
+
+  function bind() {
+    var el = state.el; if (!el) return;
+    var sel = el.querySelector("[data-period-sel]");
+    if (sel) sel.onchange = function () { state.period = sel.value; load(false); };
+    el.querySelectorAll("[data-prov]").forEach(function (b) {
+      b.onclick = function () { state.provider = b.getAttribute("data-prov"); load(false); };
+    });
+    el.querySelectorAll("[data-goto]").forEach(function (b) {
+      b.onclick = function () {
+        try { Alpine.store("nav").go(b.getAttribute("data-goto")); } catch (e) { /* trang chưa sẵn sàng */ }
+      };
+    });
+    var nsBtns = el.querySelectorAll('[data-act="ns"]');
+    nsBtns.forEach(function (b) {
+      b.onclick = function () {
+        state.moNganSach = !state.moNganSach;
+        if (!state.moNganSach) state.nsForm = null;   // đóng form là bỏ luôn số gõ dở
+        load(false);
+      };
+    });
+    var kw = el.querySelector("#tk-kw");
+    if (kw) kw.onchange = function () {
+      fetch("/cache-keepwarm", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: kw.checked }) }).then(jsonOk).then(function (r) {
+        state.kw = Object.assign({}, state.kw || {}, { enabled: !!(r && r.enabled) });
+      }).catch(function () { kw.checked = !kw.checked; });
+    };
+    var luu = el.querySelector('[data-act="ns-luu"]');
+    if (luu) luu.onclick = function () {
+      luu.disabled = true;
+      var fd = new FormData();
+      function val(id) { var e = el.querySelector("#" + id); return e ? e.value : ""; }
+      function chk(id) { var e = el.querySelector("#" + id); return e && e.checked ? "1" : "0"; }
+      // Ô để trống nghĩa là "xoá", nên gửi "0" chứ không gửi chuỗi rỗng: server hiểu rỗng là
+      // "giữ nguyên" để lưu một ô không xoá mất ba ô kia.
+      fd.append("gia_goi_thang_usd", val("tk-ns-goi") || "0");
+      fd.append("ngan_sach_thang_usd", val("tk-ns-tran") || "0");
+      fd.append("tran_5h", val("tk-ns-5h") || "0");
+      fd.append("tu_phanh", chk("tk-ns-phanh"));
+      fd.append("bao_cao_tuan", chk("tk-ns-tuan") === "1" ? "auto" : "off");
+      fetch("/usage/ngan-sach", { method: "POST", body: fd })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j || {} }; }); })
+        .then(function (res) {
+          // Đóng form lại rồi im lặng khi server từ chối là kiểu hỏng tệ nhất: người dùng
+          // tưởng đã đặt xong trần tiền, và cái trần đó không tồn tại. Phiên hết hạn trả 401
+          // kèm thân JSON nên `r.json()` vẫn resolve - phải soi `r.ok` chứ không soi mỗi body.
+          if (!res.ok || res.j.ok === false) {
+            state.nsToast = '<div class="tk-muc-toast err">' + window.t("usage.ns.err") + " "
+              + esc(res.j.error || window.t("usage.ns.err_tu_choi"))
+              + "</div>";
+            luu.disabled = false;
+            load(false);
+            return;
+          }
+          // Server trả về những thứ sẽ KHÔNG chạy được như người dùng tưởng (chưa đấu kênh
+          // báo, tự phanh đang tắt). Nuốt mất là để họ yên tâm về một cái không chạy.
+          var cb = (res.j.canh_bao || []).join(" ");
+          state.nsToast = cb ? '<div class="tk-muc-toast">' + esc(cb) + "</div>" : "";
+          state.moNganSach = false;
+          state.nsForm = null;
+          load(false);
+        })
+        .catch(function (e) {
+          state.nsToast = '<div class="tk-muc-toast err">' + window.t("usage.ns.err") + " "
+            + esc(e && e.message ? e.message : e) + "</div>";
+          luu.disabled = false;
+          load(false);
+        });
+    };
+    el.querySelectorAll("[data-loop]").forEach(function (b) {
+      b.onclick = function () {
+        b.disabled = true;
+        var fd = new FormData();
+        fd.append("slug", b.getAttribute("data-loop"));
+        fd.append("brain", b.getAttribute("data-brain"));
+        fetch("/loops/toggle", { method: "POST", body: fd })
+          .then(function (r) { return r.json(); })
+          .then(function () { return loadViec(true); })
+          .then(function () { load(false); })
+          .catch(function () { b.disabled = false; });
+      };
+    });
+    var rb = el.querySelector('[data-act="refresh"]');
+    if (rb) rb.onclick = function () {
+      if (state.busy) return; state.busy = true; rb.textContent = window.t("usage.dang_quet");
+      fetch("/usage/refresh", { method: "POST" }).then(function (r) { return r.json(); })
+        .then(function () { state.busy = false; load(false); })
+        .catch(function () { state.busy = false; load(false); });
+    };
+  }
+
+  // Đổi ngôn ngữ giao diện: cả trang này vẽ nhãn bằng window.t() lúc paint(), nên phải
+  // vẽ lại thì chữ mới đổi theo. Chỉ vẽ lại khi trang đang thật sự nằm trên màn hình
+  // (state.el còn gắn vào DOM), kẻo bắn thêm mấy lượt fetch cho một trang đã đóng.
+  window.addEventListener("javis:i18n", function () {
+    var el = state.el;
+    if (!el || !el.isConnected) return;
+    load(false);
+  });
+
+  window.JavisUsage = { render: render };
+})();

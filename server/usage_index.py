@@ -1,0 +1,1336 @@
+"""
+usage_index.py - Indexer + query cho dashboard token.
+
+Quet log THO Claude (~/.claude/projects/**/*.jsonl) + Codex (~/.codex/sessions/**/rollout-*.jsonl),
+parse TANG DAN (bo file chua doi theo size+mtime), phan loai hoat dong (chat vs nen) bang join
+conversations.db, gop vao SQLite STATE_DIR/usage_index.db.
+
+Nhanh API (openrouter/openai/anthropic) khong co log tho -> doc tu STATE_DIR/usage-events.jsonl
+ma usage_store.record() ghi them (Task 5). Query: summary()/insights() (Task 6-7).
+
+Grain luu: 1 file = 1 phien. Moi file dong gop nhieu dong file_daily theo
+(day, provider, source, activity, model, project). File doi -> XOA het dong cu cua file roi
+parse lai (idempotent, khong can offset). Rieng usage-events.jsonl la append-only nen dung offset.
+"""
+from __future__ import annotations
+
+import localefmt
+import copy
+import glob
+import hashlib
+import json
+import os
+import sqlite3
+import sys
+import threading
+import time
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+
+from config import STATE_DIR
+import session_brain   # {session_id: brain} - nhan du an dung cho phien Javis (cwd luon la goc project)
+import usage_parsers as up
+
+# Múi giờ để cắt NGÀY của thống kê. Đọc từ cấu hình qua `localefmt`, KHÔNG còn là hằng số.
+#
+# Đổi múi giờ là DỊCH RANH GIỚI NGÀY, nên phải nói rõ hợp đồng: dữ liệu đã ghi giữ nguyên
+# chuỗi ngày của nó, chỉ dữ liệu MỚI mới theo múi giờ mới. Không viết lại lịch sử - một bản
+# ghi "2026-08-14" được tạo ra dưới UTC+7 vẫn là ngày đó, kể cả sau khi người dùng chuyển
+# sang UTC+9. Đổi lại, ngay lúc chuyển sẽ có một chỗ gợn trong chuỗi ngày; đó là hệ quả không
+# tránh được của việc đổi múi giờ, và viết lại lịch sử để làm nó phẳng còn tệ hơn nhiều.
+#
+# Là HÀM chứ không phải hằng: người dùng đổi múi giờ ở trang Cài đặt là ăn ngay, không phải
+# khởi động lại server.
+def _tz():
+    return localefmt.tz()
+PERIODS = ("today", "yesterday", "this_week", "last_week",
+           "this_month", "last_month", "last_3_months", "this_year")
+
+# Nguong sinh insight (chinh duoc)
+CACHE_LOW = 0.5                 # cache hit duoi nguong = dang nap lai context nhieu
+MIN_BILLABLE_FOR_CACHE = 200_000   # chi canh bao cache khi ky du lon (tranh nhieu)
+BACKGROUND_SHARE = 0.25         # hoat dong ngam chiem qua % token
+EXPENSIVE_SHARE = 0.5           # opus chiem qua % token
+SESSION_BLOAT = 1_000_000       # 1 phien nap qua ngan nay token input
+SPIKE_RATIO = 1.5               # token/ngay ky nay gap prev qua ngan nay lan
+
+DB_PATH = STATE_DIR / "usage_index.db"
+_EVENTS_PATH = STATE_DIR / "usage-events.jsonl"
+_IMPROVEMENT_PATH = "__improvement_usage_v1__:"
+
+_DIMS = {"provider", "source", "activity", "model", "project", "day"}
+# provider API (chi nhung nay lay tu usage-events.jsonl; claude/codex lay tu log tho)
+# Provider API = nhung duong TRA TIEN THEO TOKEN. Danh sach nay phai khop PROVIDER_DEFS ben
+# main.py; thieu mot ten la moi dong cua provider do bi VUT IM LANG (chuoi if/elif ben duoi
+# khong co else), va o "tien mat thang nay" bao 0 trong khi vi van voi di. 'groq' va 'gemini'
+# tung thieu dung nhu vay.
+# 'openai-compat' and 'anthropic-compat' (custom gateways, 0.254.0) were missing the same way.
+_API_PROVIDERS = {"openrouter", "openai", "anthropic", "anthropic-api", "oauth", "ollama",
+                  "groq", "gemini", "deepseek", "openai-compat", "anthropic-compat"}
+# Ollama on the user's own machine: real tokens, but no bill. Its own column, never 'api',
+# or the "real cash this month" box would charge llama prices for a model that runs for free.
+_EVENT_LOCAL = {"ollama-local"}
+
+
+def _claude_dir() -> str:
+    return os.getenv("JAVIS_CLAUDE_PROJECTS_DIR") or os.path.expanduser("~/.claude/projects")
+
+
+def _codex_dir() -> str:
+    return os.getenv("JAVIS_CODEX_SESSIONS_DIR") or os.path.expanduser("~/.codex/sessions")
+
+
+def _conversations_db() -> Path:
+    return STATE_DIR / "conversations.db"
+
+
+def _connect() -> sqlite3.Connection:
+    # WAL + busy_timeout: KHÔNG phải để nhanh (đo được _connect chỉ tốn 1,14ms trong 65ms
+    # của summary(), tức DDL lặp lại chưa tới 1,5% - bỏ nó đi cũng chẳng đáng). Đây là chuyện
+    # ĐÚNG SAI: từ 0.9.237 summary/insights chạy trong asyncio.to_thread, nên chúng đọc SONG
+    # SONG với refresh() đang ghi. Chế độ journal mặc định cho người đọc và người ghi khoá lẫn
+    # nhau -> "database is locked" ngay giữa lúc user mở trang Mức dùng. sessions.py:100-118 và
+    # task_store.py:61-65 đều đã làm đúng, riêng kho này thì chưa.
+    conn = sqlite3.connect(str(DB_PATH), timeout=5.0)
+    try:
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=5000")
+    except sqlite3.OperationalError:
+        pass   # ổ đĩa mạng / hệ tệp không hỗ trợ WAL -> chạy chế độ mặc định, vẫn đúng
+    conn.execute("CREATE TABLE IF NOT EXISTS files_seen("
+                 "path TEXT PRIMARY KEY, size INTEGER, mtime REAL, offset INTEGER DEFAULT 0)")
+    conn.execute("CREATE TABLE IF NOT EXISTS file_daily("
+                 "path TEXT, day TEXT, provider TEXT, source TEXT, activity TEXT, model TEXT, project TEXT,"
+                 "input INTEGER, output INTEGER, cache_read INTEGER, cache_create INTEGER,"
+                 "turns INTEGER DEFAULT 0)")
+    # Grain GIO, tach bang rieng. Vi sao khong nhet 'hour' vao file_daily: _insert_events gom
+    # theo (day,provider,source,activity,model,project) nen them mot chieu nua la nhan so dong
+    # len ~24 lan cho MOI to hop - trong khi cua so truot chi can (gio, provider). Bang rieng
+    # giu file_daily nguyen kich thuoc va cau truy van cua so khong phai loc qua 6 chieu.
+    conn.execute("CREATE TABLE IF NOT EXISTS file_hourly("
+                 "path TEXT, hour TEXT, provider TEXT, tokens INTEGER, turns INTEGER)")
+    # ALTER cho DB da ton tai: CREATE TABLE IF NOT EXISTS im lang bo qua bang cu, nen khong co
+    # khoi nay thi moi INSERT co liet ke 'turns' se nem "no such column" tren may da cai lau.
+    # Xem sessions.py:262-289 cho cung mot idiom (va luu y: CREATE INDEX phai chay SAU ALTER).
+    try:
+        co = {r[1] for r in conn.execute("PRAGMA table_info(file_daily)")}
+        if "turns" not in co:
+            conn.execute("ALTER TABLE file_daily ADD COLUMN turns INTEGER DEFAULT 0")
+    except sqlite3.OperationalError:
+        pass
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_fd_day ON file_daily(day)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_fd_path ON file_daily(path)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_fh_hour ON file_hourly(hour)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_fh_path ON file_hourly(path)")
+    conn.execute("CREATE TABLE IF NOT EXISTS usage_observations("
+                 "event_key TEXT PRIMARY KEY, team_id TEXT, task_id TEXT, payload TEXT)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_team ON usage_observations(team_id,task_id)")
+    columns = {row[1] for row in conn.execute("PRAGMA table_info(usage_observations)")}
+    for column in ("experiment_id", "trial_id", "cli_session_id", "operation_id"):
+        if column not in columns:
+            try:
+                conn.execute(f"ALTER TABLE usage_observations ADD COLUMN {column} TEXT")
+            except sqlite3.OperationalError:
+                if column not in {row[1] for row in conn.execute("PRAGMA table_info(usage_observations)")}:
+                    raise
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_improvement ON usage_observations(experiment_id,trial_id)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_operation ON usage_observations(experiment_id,operation_id)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_session ON usage_observations(cli_session_id)")
+    conn.execute("CREATE TABLE IF NOT EXISTS usage_cli_requests("
+                 "request_key TEXT PRIMARY KEY, session_id TEXT, payload TEXT)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_cli_session ON usage_cli_requests(session_id)")
+    if "path" not in {row[1] for row in conn.execute("PRAGMA table_info(usage_cli_requests)")}:
+        try:
+            conn.execute("ALTER TABLE usage_cli_requests ADD COLUMN path TEXT")
+        except sqlite3.OperationalError:
+            if "path" not in {row[1] for row in conn.execute("PRAGMA table_info(usage_cli_requests)")}:
+                raise
+    conn.execute("CREATE TABLE IF NOT EXISTS usage_projection_gaps("
+                 "path TEXT, day TEXT, project TEXT, reason TEXT)")
+    conn.execute("CREATE TABLE IF NOT EXISTS usage_daily_events(event_key TEXT PRIMARY KEY, payload TEXT)")
+    return conn
+
+
+def _project_observation(conn, event) -> None:
+    """The event file owns bills; this rebuildable projection only supplies execution attribution."""
+    ex = event.get("execution") or {}
+    if "operation_id" in ex:
+        import turn_context
+        ex = turn_context.execution_metadata(ex)
+        if ex is None:
+            return
+    if not ex or not (ex.get("team_id") or (ex.get("experiment_id") and (ex.get("trial_id") or ex.get("operation_id")))) or not event.get("event_id"):
+        return
+    key = up.observation_key(event)
+    prior = conn.execute("SELECT payload FROM usage_observations WHERE event_key=?", (key,)).fetchone()
+    if prior:
+        old = json.loads(prior[0])
+        event = {**event, "ts": old.get("ts"), "day": old.get("day")}
+    conn.execute("INSERT INTO usage_observations(event_key,team_id,task_id,experiment_id,trial_id,operation_id,cli_session_id,payload) "
+                 "VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(event_key) DO UPDATE SET "
+                 "cli_session_id=excluded.cli_session_id,payload=excluded.payload",
+                 (key, ex.get("team_id"), ex.get("task_id"), ex.get("experiment_id"), ex.get("trial_id"),
+                  ex.get("operation_id"), ex.get("cli_session_id"), json.dumps(event)))
+
+
+def _ingest_team_events(conn) -> int:
+    """Independent cursor backfills execution metadata without perturbing the legacy daily projection."""
+    if not _EVENTS_PATH.exists():
+        return 0
+    marker = "__execution_events_v3__:" + str(_EVENTS_PATH)
+    row = conn.execute("SELECT offset FROM files_seen WHERE path=?", (marker,)).fetchone()
+    offset = row[0] if row else 0
+    if _EVENTS_PATH.stat().st_size < offset:
+        offset = 0
+    count = 0
+    with open(_EVENTS_PATH, "rb") as fh:
+        fh.seek(offset)
+        for raw in fh:
+            if not raw.endswith(b"\n"):
+                break
+            offset += len(raw)
+            try:
+                event = json.loads(raw)
+            except (ValueError, UnicodeError):
+                continue
+            if isinstance(event, dict):
+                _project_observation(conn, event)
+                count += 1
+    _mark(conn, marker, 0, 0, offset)
+    return count
+
+
+def execution_events(team_id, task_id=None):
+    """Read the existing usage projection; no engine or Team execution ledger is a billing source."""
+    conn = _connect()
+    try:
+        _ingest_team_events(conn)
+        conn.commit()
+        where, args = "team_id=?", [team_id]
+        if task_id is not None:
+            where += " AND task_id=?"
+            args.append(task_id)
+        events = [json.loads(r[0]) for r in conn.execute(
+            "SELECT payload FROM usage_observations WHERE " + where, args)]
+        return events, _linked_cli_details(conn, events)
+    finally:
+        conn.close()
+
+
+def improvement_events(experiment_id, trial_id=None, *, operation_id=None):
+    """Read improvement attribution from the same rebuildable observation/request tables."""
+    if operation_id is not None and (trial_id is not None or type(operation_id) is not str or not operation_id):
+        raise ValueError("invalid_improvement_usage_selection")
+    conn = _connect()
+    try:
+        _ingest_team_events(conn)
+        conn.commit()
+        where, args = "experiment_id=? AND trial_id IS NOT NULL", [experiment_id]
+        if operation_id is not None:
+            where, args = "experiment_id=? AND operation_id=? AND trial_id IS NULL", [experiment_id, operation_id]
+        elif trial_id is not None:
+            where += " AND trial_id=?"
+            args.append(trial_id)
+        events = [json.loads(row[0]) for row in conn.execute(
+            "SELECT payload FROM usage_observations WHERE " + where, args)]
+        return events, _linked_cli_details(conn, events)
+    finally:
+        conn.close()
+
+
+def _linked_cli_details(conn, events):
+    from usage_execution import _attempt_key
+    sessions = {event.get("execution", {}).get("cli_session_id") for event in events
+                if event.get("execution", {}).get("cli_session_new")}
+    details = []
+    for sid in sessions - {None, ""}:
+        owners = {_attempt_key(json.loads(row[0])) for row in conn.execute(
+            "SELECT payload FROM usage_observations WHERE cli_session_id=?", (sid,))}
+        if len(owners) != 1:
+            details.append({"session_id": sid, "ambiguous_session": True})
+        else:
+            details.extend(json.loads(row[0]) for row in conn.execute(
+                "SELECT payload FROM usage_cli_requests WHERE session_id=?", (sid,)))
+    return details
+
+
+# First words of the prompt compaction.py sends when it moves a long chat onto a fresh Claude
+# thread. A thread that opens with them IS a user chat, even when conversations.db no longer
+# names it (it only keeps the CURRENT thread of each conversation). Kept in sync with
+# compaction.py by tests/python/test_usage_index.py.
+CHAT_RESUME_MARKER = "[KHÔI PHỤC NGỮ CẢNH HỘI THOẠI]"
+
+
+def _chat_sessions() -> set:
+    """Tap cli_session_id cua cac phien do NGUOI DUNG mo (chat): mach hien tai cua moi hoi
+    thoai (sessions.cli_session_id) CONG moi mach cu da tung gan (cli_session_history, tu
+    0.107.0). Thieu bang lich su thi chi la mach hien tai nhu cu. Thieu file / loi -> set()."""
+    p = _conversations_db()
+    out = set()
+    try:
+        if p.exists():
+            c = sqlite3.connect("file:%s?mode=ro" % p, uri=True)
+            try:
+                for (sid,) in c.execute(
+                        "SELECT cli_session_id FROM sessions WHERE cli_session_id IS NOT NULL AND cli_session_id<>''"):
+                    if sid:
+                        out.add(sid)
+                try:
+                    for (sid,) in c.execute("SELECT cli_session_id FROM cli_session_history"):
+                        if sid:
+                            out.add(sid)
+                except sqlite3.OperationalError:
+                    pass   # DB older than 0.107.0: no history table yet
+            finally:
+                c.close()
+    except Exception:
+        pass
+    return out
+
+
+def _mo_dau_khoi_phuc(obj) -> bool:
+    """A user line whose prompt opens with CHAT_RESUME_MARKER (see above)."""
+    if not isinstance(obj, dict) or obj.get("type") != "user":
+        return False
+    content = (obj.get("message") or {}).get("content")
+    if isinstance(content, list):
+        content = next((x.get("text") for x in content
+                        if isinstance(x, dict) and x.get("type") == "text"), "")
+    return isinstance(content, str) and content.lstrip().startswith(CHAT_RESUME_MARKER)
+
+
+def _unchanged(conn, path, size, mtime) -> bool:
+    row = conn.execute("SELECT size, mtime FROM files_seen WHERE path=?", (path,)).fetchone()
+    return bool(row) and row[0] == size and abs((row[1] or 0) - mtime) < 1e-6
+
+
+def _da_quet(conn, path):
+    """(size, mtime, offset) da ghi cho file nay, hoac None neu chua tung quet."""
+    row = conn.execute("SELECT size, mtime, offset FROM files_seen WHERE path=?", (path,)).fetchone()
+    return (row[0] or 0, row[1] or 0, row[2] or 0) if row else None
+
+
+def _mark(conn, path, size, mtime, offset=0) -> None:
+    conn.execute("INSERT INTO files_seen(path,size,mtime,offset) VALUES(?,?,?,?) "
+                 "ON CONFLICT(path) DO UPDATE SET size=excluded.size, mtime=excluded.mtime, offset=excluded.offset",
+                 (path, size, mtime, offset))
+
+
+def _clear_file(conn, path) -> None:
+    conn.execute("DELETE FROM file_daily WHERE path=?", (path,))
+    conn.execute("DELETE FROM file_hourly WHERE path=?", (path,))
+    conn.execute("DELETE FROM usage_cli_requests WHERE path=?", (path,))
+    if path == str(_EVENTS_PATH):
+        conn.execute("DELETE FROM usage_daily_events")
+
+
+def _gio(ev) -> str:
+    """Moc gio dia phuong 'YYYY-MM-DDTHH' cua mot su kien. Khong co ts -> '' (bo qua)."""
+    ts = int(ev.get("ts") or 0)
+    if ts <= 0:
+        return ""
+    return datetime.fromtimestamp(ts, _tz()).strftime("%Y-%m-%dT%H")
+
+
+def _insert_events(conn, path, events) -> None:
+    """Gop events cua 1 file theo khoa (day,provider,source,activity,model,project) roi insert.
+
+    Gop THEM mot lan nua theo (gio, provider) vao file_hourly. Hai bang, hai grain, cung mot
+    lan doc file - cua so truot 5 gio khong the dung file_daily vi grain nho nhat cua no la
+    NGAY, ma "toi con bao nhieu trong cua so nay" thi ngay la vo nghia.
+    """
+    groups = {}
+    theo_gio = {}
+    for ev in events:
+        if ev.get("provider") == "claude" and ev.get("request_id") and ev.get("session_id"):
+            key = "claude:" + ev["session_id"] + ":" + ev["request_id"]
+            conn.execute("INSERT INTO usage_cli_requests(request_key,session_id,payload,path) VALUES(?,?,?,?) "
+                         "ON CONFLICT(request_key) DO UPDATE SET payload=excluded.payload,path=excluded.path",
+                         (key, ev["session_id"], json.dumps(ev), path))
+        k = (ev.get("day") or "", ev["provider"], ev["source"], ev["activity"], ev["model"], ev["project"])
+        g = groups.setdefault(k, [0, 0, 0, 0, 0])
+        g[0] += ev["input"]
+        g[1] += ev["output"]
+        g[2] += ev["cache_read"]
+        g[3] += ev["cache_create"]
+        g[4] += int(ev.get("turns") or 0)
+        gio = _gio(ev)
+        if gio:
+            h = theo_gio.setdefault((gio, ev["provider"]), [0, 0])
+            h[0] += ev["input"] + ev["output"] + ev["cache_read"] + ev["cache_create"]
+            h[1] += int(ev.get("turns") or 0)
+    if groups:
+        conn.executemany(
+            "INSERT INTO file_daily(path,day,provider,source,activity,model,project,input,output,cache_read,cache_create,turns)"
+            " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+            [(path,) + k + tuple(g) for k, g in groups.items()])
+    if theo_gio:
+        conn.executemany(
+            "INSERT INTO file_hourly(path,hour,provider,tokens,turns) VALUES(?,?,?,?,?)",
+            [(path,) + k + tuple(v) for k, v in theo_gio.items()])
+
+
+def _scan_claude(conn, chat, brains) -> int:
+    """Quet transcript Claude Code, DOC TIEP tu cho lan truoc dung lai.
+
+    Vi sao phai doc tiep (do 2026-09-21 tren may chu du an): ~/.claude/projects co 651 file va
+    602 MB, file to nhat 25 MB. Ban cu thay size/mtime doi la `_clear_file` roi parse LAI CA
+    FILE tu dong dau - trong khi transcript phien chi duoc GHI THEM vao cuoi. Nen mot phien
+    Claude Code dang chay, moi lan no ghi them mot dong, la ca file bi parse lai. Do duoc:
+    quet day du 651 file mat 27 GIAY, va trang Muc dung thi CHO quet xong moi ve, nen no dung
+    hinh o chu "Dang dung chi so token..." lau den muc trong nhu treo.
+
+    Doc tiep bang OFFSET BYTE (cot files_seen.offset von da co san, truoc chi dung cho
+    usage-events.jsonl). Ba luat de khong dem sai:
+      - Chi doc tiep khi file DAI RA that su (size > size cu). Size teo lai (log bi don/xoay
+        vong) hay size y nguyen ma mtime doi (ghi de tai cho) -> quet lai tron file cho chac.
+      - Doc tiep thi KHONG `_clear_file`: dong cu cua file van dung, phan moi cong them vao.
+        `_insert_events` gom theo khoa roi INSERT, va moi cau truy van deu SUM nen cong don
+        nhieu dong cung khoa ra dung ket qua.
+      - DONG CUOI KHONG KET THUC BANG \\n van duoc TINH, nhung offset KHONG nhich qua no, va
+        lan sau file do phai quet lai TRON (dieu kien `offset == size cu`). Day la cho de sai
+        nhat, va `test_usage_index` da bat duoc: khong phai file nao cung ket thuc bang xuong
+        dong. Bo qua dong cut thi mot phien ket thuc khong co \\n bi mat luot cuoi VINH VIEN;
+        con tinh no roi van doc tiep thi khi no duoc ghi not, no bi dem HAI LAN. Tinh no, ghi
+        nho rang file chua dung tren ranh gioi dong, roi quet lai tron neu file con dai ra -
+        vua khong mat vua khong trung.
+    File chua tung co offset (moi cai truoc ban nay) van di duong quet tron mot lan, sau do tu
+    co offset - khong can migration, khong ton mot lan quet lai toan bo.
+    """
+    n = 0
+    for path in glob.glob(os.path.join(_claude_dir(), "**", "*.jsonl"), recursive=True):
+        try:
+            st = os.stat(path)
+        except OSError:
+            continue
+        cu = _da_quet(conn, path)
+        if cu and cu[0] == st.st_size and abs(cu[1] - st.st_mtime) < 1e-6:
+            continue
+        # `cu[2] == cu[0]`: lan truoc file dung DUNG tren ranh gioi dong. Khac di nghia la lan
+        # truoc co mot dong cut da duoc tinh roi, doc tiep se dem lai chinh no.
+        doc_tiep = bool(cu) and cu[2] > 0 and cu[2] == cu[0] and st.st_size > cu[0]
+        if not doc_tiep:
+            _clear_file(conn, path)
+        offset = cu[2] if doc_tiep else 0
+        events = []
+        try:
+            # Mo che do NHI PHAN: che do van ban khong cho `tell()` trong luc lap, con o day
+            # thi cong don len(raw) cho ra dung vi tri byte ma khong phai hoi file lan nao.
+            with open(path, "rb") as fh:
+                if offset:
+                    fh.seek(offset)
+                for raw in fh:
+                    if raw.endswith(b"\n"):
+                        offset += len(raw)
+                    line = raw.decode("utf-8", "replace").strip()
+                    if not line:
+                        continue
+                    try:
+                        obj = json.loads(line)
+                    except Exception:
+                        continue
+                    if _mo_dau_khoi_phuc(obj) and obj.get("sessionId"):
+                        chat.add(obj["sessionId"])
+                    ev = up.parse_claude_line(obj, chat, brains)
+                    if ev:
+                        events.append(ev)
+        except OSError:
+            continue
+        _insert_events(conn, path, events)
+        _mark(conn, path, st.st_size, st.st_mtime, offset)
+        n += 1
+    return n
+
+
+def _scan_codex(conn) -> int:
+    n = 0
+    for path in glob.glob(os.path.join(_codex_dir(), "**", "rollout-*.jsonl"), recursive=True):
+        try:
+            st = os.stat(path)
+        except OSError:
+            continue
+        if _unchanged(conn, path, st.st_size, st.st_mtime):
+            continue
+        _clear_file(conn, path)
+        ev = up.parse_codex_file(path)
+        if ev:
+            _insert_events(conn, path, [ev])
+        _mark(conn, path, st.st_size, st.st_mtime)
+        n += 1
+    return n
+
+
+# Map provider trong usage-events.jsonl -> provider chuan cua index. cli = engine Claude (SDK),
+# codex/openai-oauth = engine ChatGPT. Gom ve 'claude'/'codex' de tron dung cot voi log tho.
+_EVENT_CLAUDE = {"cli", "claude", "anthropic-cli"}
+_EVENT_CODEX = {"codex", "openai-oauth", "chatgpt", "oauth"}
+# Grok Build CLI (goi SuperGrok / X Premium+). Cot rieng chu KHONG gom vao 'api': mot API key
+# xAI la duong TRA TIEN theo luot goi, con day la duong THUE BAO - hai thu khac hoan toan ve
+# hoa don du cung ten model.
+_EVENT_GROK_CLI = {"grok-cli", "grok_cli", "grok"}
+# Antigravity CLI (Google plan) has no raw log Javis reads, so these lines are its only record.
+_EVENT_ANTIGRAVITY = {"antigravity-cli", "agy"}
+
+
+def _ingest_events(conn) -> int:
+    """Nap tu usage-events.jsonl (append-only, doc theo offset trong files_seen.offset).
+
+    - Provider API (openrouter/openai/anthropic...) -> provider='api': day la NGUON DUY NHAT
+      cho chung (khong co log tho).
+    - cli/codex CUNG nap vao day (provider 'claude'/'codex') lam NGUON DU PHONG: engine ghi so
+      token that vao usage-events moi luot, nen khi log tho KHONG co / khong doc duoc (ban Docker/
+      VPS, doi HOME, volume moi...) thi bao cao van co so thay vi 0. Chong dem trung: sau moi
+      refresh, _dedup_events_vs_raw() xoa dong-tu-event o NGAY da co log tho phu -> log tho luon
+      thang, event chi lap cho phan log tho thieu.
+
+    Tra so event moi nap lan nay."""
+    path = str(_EVENTS_PATH)
+    if not _EVENTS_PATH.exists():
+        return 0
+    try:
+        raw = _EVENTS_PATH.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return 0
+    lines = raw.splitlines()
+    complete = len(lines)
+    if raw and not raw.endswith("\n"):
+        complete -= 1                       # dong cuoi con dang ghi do -> de lan sau
+
+    row = conn.execute("SELECT offset FROM files_seen WHERE path=?", (path,)).fetchone()
+    start = row[0] if row else 0
+    if start > complete:                    # file bi cat/xoay -> nap lai tu dau
+        # Phai don CA HAI bang. Don moi file_daily roi doc lai tu dong 0 thi file_hourly giu
+        # nguyen dong cu VA nhan them dong moi -> cua so 5 gio va dinh phong len vinh vien,
+        # khong co gi xoa chung nua.
+        _clear_file(conn, path)
+        start = 0
+
+    events = []
+    unknown = set()
+    for ln in lines[start:complete]:
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            e = json.loads(ln)
+        except Exception:
+            continue
+        prov = (e.get("provider") or "").lower()
+        if (e.get("execution") or {}).get("experiment_id") and prov in _EVENT_CLAUDE:
+            continue  # Rebuilt by request/session identity, outside legacy provider/day dedup.
+        tin = int(e.get("in") or 0)
+        tout = int(e.get("out") or 0)
+        if tin + tout <= 0:
+            continue
+        day, model = e.get("day") or "", e.get("model") or "?"
+        # Moi dong = mot lan usage_store.record() = mot lan goi model, va no mang theo ts thuc.
+        # Do la thu log tho khong cho voi nhanh API, nen cung la nguon duy nhat dung duoc cho
+        # "so luot" va "cua so truot" cua nhung nhanh do.
+        chung = {"day": day, "ts": int(e.get("ts") or 0), "model": model,
+                 "input": tin, "output": tout, "cache_read": 0, "cache_create": 0, "turns": 1}
+        if e.get("execution") and e.get("event_id"):
+            if e.get("event_kind") in ("execution", "cli_detail"):
+                continue
+            event_key = up.observation_key(e)
+            prior = conn.execute("SELECT payload FROM usage_daily_events WHERE event_key=?", (event_key,)).fetchone()
+            if prior:
+                old = json.loads(prior[0])
+                if (old.get("in"), old.get("out"), old.get("model"), old.get("provider")) == (tin, tout, model, prov):
+                    continue
+                # All updates of one request retain their original dimensions/timestamp.
+                chung["day"], chung["ts"] = old.get("day") or day, int(old.get("ts") or 0)
+                chung["input"] -= int(old.get("in") or 0)
+                chung["output"] -= int(old.get("out") or 0)
+                chung["turns"] = 0
+            conn.execute("INSERT INTO usage_daily_events(event_key,payload) VALUES(?,?) "
+                         "ON CONFLICT(event_key) DO UPDATE SET payload=excluded.payload", (event_key, json.dumps(e)))
+        if prov in _API_PROVIDERS:
+            events.append({**chung, "provider": "api", "source": "javis", "activity": "chat",
+                           "project": "(api)"})
+        elif prov in _EVENT_CLAUDE:
+            events.append({**chung, "provider": "claude", "source": "javis", "activity": "chat",
+                           "project": "(events)"})
+        elif prov in _EVENT_CODEX:
+            events.append({**chung, "provider": "codex", "source": "javis", "activity": "chat",
+                           "project": "(events)"})
+        elif prov in _EVENT_GROK_CLI:
+            events.append({**chung, "provider": "grok-cli", "source": "javis",
+                           "activity": "chat", "project": "(events)"})
+        elif prov in _EVENT_ANTIGRAVITY:
+            events.append({**chung, "provider": "antigravity-cli", "source": "javis",
+                           "activity": "chat", "project": "(events)"})
+        elif prov in _EVENT_LOCAL:
+            events.append({**chung, "provider": "local", "source": "javis",
+                           "activity": "chat", "project": "(local)"})
+        elif prov:
+            # Never drop a line silently: a provider added later without a mapping here used
+            # to vanish from every report. Logged once per refresh so it gets noticed.
+            unknown.add(prov)
+    if unknown:
+        print(f"[usage index] usage-events provider not mapped, skipped: {sorted(unknown)}",
+              file=sys.stderr)
+    if events:
+        _insert_events(conn, path, events)
+    conn.execute("INSERT INTO files_seen(path,size,mtime,offset) VALUES(?,?,?,?) "
+                 "ON CONFLICT(path) DO UPDATE SET offset=excluded.offset",
+                 (path, 0, 0, complete))
+    return len(events)
+
+
+def _dedup_events_vs_raw(conn) -> None:
+    """Log tho LUON thang: xoa cac dong nguon-event (path=usage-events.jsonl) cua claude/codex o
+    nhung NGAY da co log tho phu (dong provider do nhung path KHAC file event). Chay moi refresh
+    nen tu lanh du event den truoc hay log tho den truoc. Neu bao cao dang 0 vi log tho khong dong
+    gop dong nao -> khong co gi bi xoa -> event duoc giu, dung y do du phong.
+
+    PHAI don CA HAI bang. file_hourly la nguon cua cua so truot, va mot luot Claude Code duoc ghi
+    HAI LAN: mot lan trong log tho (~/.claude/projects), mot lan trong usage-events.jsonl do
+    usage_store.record() ghi. Chi don file_daily thi bang ngay dung con cua so 5 gio bao GAP DOI -
+    va do la con so dung de doan xem sap cham tran gia chua, tuc la sai ve dung huong nguy hiem
+    nhat. Do duoc bang kich ban: 1 luot 1000 token -> file_daily 1000, file_hourly 2000.
+
+    Doi chieu theo NGAY (substr(hour,1,10)) chu khong theo gio: log tho va event ghi cung mot luot
+    o hai moc thoi gian hoi lech nhau (mot cai la timestamp cua dong assistant, mot cai la luc
+    record() chay), nen doi chieu theo gio se truot o cac luot vat qua ranh gioi gio.
+    """
+    ev = str(_EVENTS_PATH)
+    for prov in ("claude", "codex"):
+        conn.execute(
+            "DELETE FROM file_daily WHERE path=? AND provider=? AND day IN "
+            "(SELECT DISTINCT day FROM file_daily WHERE provider=? AND path<>? AND substr(path,1,?)<>?)",
+            (ev, prov, prov, ev, len(_IMPROVEMENT_PATH), _IMPROVEMENT_PATH))
+        conn.execute(
+            "DELETE FROM file_hourly WHERE path=? AND provider=? AND substr(hour,1,10) IN "
+            "(SELECT DISTINCT day FROM file_daily WHERE provider=? AND path<>? AND substr(path,1,?)<>?)",
+            (ev, prov, prov, ev, len(_IMPROVEMENT_PATH), _IMPROVEMENT_PATH))
+
+
+def _usage_vector(event):
+    """A missing cache component cannot be silently reclassified as uncached input."""
+    values = [event.get(name) for name in ("in", "out", "cache_read", "cache_create")]
+    if not event.get("tokens_known") or any(type(value) is not int or value < 0 for value in values):
+        return None
+    tin, tout, read, create = values
+    return (tin - read - create, tout, read, create) if tin >= read + create else None
+
+
+def _project_improvement_usage(conn):
+    """Rebuild trial contributions in this index; usage-events remains the billing source.
+
+    Raw requests already contribute globally. A summary contributes only its component-wise
+    residual against the exact fresh session. Unrelated chat never removes trial usage.
+    """
+    from usage_execution import _attempts
+    _ingest_team_events(conn)
+    events = [json.loads(row[0]) for row in conn.execute(
+        "SELECT payload FROM usage_observations ORDER BY rowid")]
+    details = [json.loads(row[0]) for row in conn.execute(
+        "SELECT r.payload FROM usage_cli_requests r WHERE r.path IS NOT NULL "
+        "AND EXISTS(SELECT 1 FROM file_daily d WHERE d.path=r.path)")]
+    for table in ("file_daily", "file_hourly", "usage_projection_gaps"):
+        conn.execute(f"DELETE FROM {table} WHERE substr(path,1,?)=?", (len(_IMPROVEMENT_PATH), _IMPROVEMENT_PATH))
+    count = 0
+    for attempt in _attempts(events, details):
+        group = attempt["group"]
+        anchor = group[-1]
+        ex = anchor.get("execution") or {}
+        if not ex.get("experiment_id") or anchor.get("provider") not in _EVENT_CLAUDE:
+            continue
+        path = _IMPROVEMENT_PATH + hashlib.sha256(json.dumps(attempt["key"]).encode()).hexdigest()
+        project = "(improvement)"
+        if any(event.get("telemetry_errors") or event.get("usage_complete") is False for event in group):
+            conn.execute("INSERT INTO usage_projection_gaps VALUES(?,?,?,?)",
+                         (path, anchor.get("day") or "", project, "incomplete_telemetry"))
+        if attempt["ambiguous_session"]:
+            conn.execute("INSERT INTO usage_projection_gaps VALUES(?,?,?,?)",
+                         (path, anchor.get("day") or "", project, "ambiguous_session"))
+            continue
+        fallback = attempt["fallback"][-1:]
+        use_summary = bool(fallback and _usage_vector(fallback[0]) is not None)
+        selected = fallback if use_summary else [r for r in attempt["requests"] if not r.get("raw_observation")]
+        if fallback and not use_summary:
+            conn.execute("INSERT INTO usage_projection_gaps VALUES(?,?,?,?)",
+                         (path, fallback[0].get("day") or "", project, "unknown_summary_components"))
+        if not selected:
+            if not attempt["requests"]:
+                conn.execute("INSERT INTO usage_projection_gaps VALUES(?,?,?,?)",
+                             (path, anchor.get("day") or "", project, "missing_usage"))
+            continue
+        rows = []
+        for event in selected:
+            vector = _usage_vector(event)
+            reason = "unknown_components"
+            if vector is not None and use_summary:
+                raw = attempt["raw"]
+                vector = tuple(value - sum(d[field] for d in raw) for value, field in
+                               zip(vector, ("input", "output", "cache_read", "cache_create")))
+                reason = "summary_request_conflict"
+                if any(value < 0 for value in vector):
+                    vector = None
+            if vector is None:
+                conn.execute("INSERT INTO usage_projection_gaps VALUES(?,?,?,?)",
+                             (path, event.get("day") or "", project, reason))
+                continue
+            inp, out, read, create = vector
+            rows.append({"day": event.get("day") or "", "ts": event.get("ts") or 0,
+                "model": event.get("model") or "?", "provider": "claude", "source": "javis",
+                "activity": "background", "project": project, "input": inp, "output": out,
+                "cache_read": read, "cache_create": create,
+                "turns": int(bool(sum(vector))) if use_summary else 1})
+        _insert_events(conn, path, rows)
+        count += len(rows)
+    return count
+
+
+# Marker migration: ban cu chi nap provider API tu usage-events.jsonl (bo cli/codex) va da day
+# offset qua het cac dong cli cu. Sau khi len ban moi, doc lai events tu DAU MOT LAN de backfill
+# lich su cli/codex; xoa row+offset cu cua events truoc nen API khong bi dem trung.
+_EVENTS_MIGRATE_MARK = "__events_migrate_v2__"
+
+
+def _migrate_events_once(conn) -> None:
+    row = conn.execute("SELECT offset FROM files_seen WHERE path=?", (_EVENTS_MIGRATE_MARK,)).fetchone()
+    if row:
+        return
+    ep = str(_EVENTS_PATH)
+    conn.execute("DELETE FROM file_daily WHERE path=?", (ep,))
+    conn.execute("DELETE FROM usage_daily_events")
+    conn.execute("DELETE FROM files_seen WHERE path=?", (ep,))
+    conn.execute("INSERT INTO files_seen(path,size,mtime,offset) VALUES(?,0,0,1) "
+                 "ON CONFLICT(path) DO NOTHING", (_EVENTS_MIGRATE_MARK,))
+
+
+# Ban truoc khong co cot `turns` va khong co bang theo gio. Cot moi mac dinh 0, va _unchanged()
+# bo qua moi file da quet - nghia la neu chi them cot roi thoi thi so luot se dung 0 mai mai
+# cho toan bo lich su, va trang bao "0 luot" trong khi 560 trieu token nam so so ra do. Nen
+# doi schema thi phai QUET LAI: xoa sach dau vet da-quet mot lan duy nhat, refresh ke tiep tu
+# dung lai het. Ton mot lan (vai giay toi vai chuc giay tuy so file), sau do lai tang dan.
+# v4 (0.107.0): rotated chat threads were counted as background. Rescan once so the history the
+# disk still holds is reclassified (see _chat_sessions and CHAT_RESUME_MARKER).
+_SCHEMA_MARK = "__schema_v6_improvement_projection__"
+
+
+def _migrate_schema_once(conn) -> bool:
+    """Doi grain -> quet lai toan bo mot lan. Tra True neu vua don dep (de log biet)."""
+    row = conn.execute("SELECT offset FROM files_seen WHERE path=?", (_SCHEMA_MARK,)).fetchone()
+    if row:
+        return False
+    # KHONG xoa file_daily. Claude Code tu don transcript trong ~/.claude/projects sau
+    # `cleanupPeriodDays` (mac dinh 30 ngay), nen dong nao co file goc da bi don thi xoa di la
+    # MAT VINH VIEN - quet lai khong dung lai duoc. Chi xoa dau vet DA-QUET (files_seen) de
+    # moi file CON TREN DIA duoc parse lai; luc parse lai, _clear_file tu xoa dong cu cua
+    # chinh file do nen khong dem trung. Dong mo coi (file goc khong con) o lai voi turns=0:
+    # thieu so luot cua ky cu con hon mat sach token cua ky cu.
+    ev = str(_EVENTS_PATH)
+    conn.execute("DELETE FROM file_daily WHERE path=?", (ev,))
+    conn.execute("DELETE FROM file_hourly WHERE path=?", (ev,))
+    conn.execute("DELETE FROM usage_daily_events")
+    conn.execute("DELETE FROM files_seen")
+    conn.execute("INSERT INTO files_seen(path,size,mtime,offset) VALUES(?,0,0,1)", (_SCHEMA_MARK,))
+    # Xoa sach files_seen cung xoa luon dau migrate v2 o tren; ghi lai ngay de lan refresh sau
+    # no khong nap lai usage-events.jsonl tu dau lan nua (se dem trung voi lan quet nay).
+    # Rieng file event thi offset da ve 0 va dong cu cua no vua bi xoa o tren, nen no duoc nap
+    # lai tron ven mot lan - dung y do, vi day la nguon DUY NHAT cua nhanh API.
+    conn.execute("INSERT INTO files_seen(path,size,mtime,offset) VALUES(?,0,0,1) "
+                 "ON CONFLICT(path) DO NOTHING", (_EVENTS_MIGRATE_MARK,))
+    return True
+
+
+def _stage(name, conn, fn, *args):
+    """Run one refresh source; on error log it, keep what earlier sources wrote, return 0."""
+    try:
+        out = fn(*args)
+        conn.commit()
+        return out or 0
+    except Exception as e:  # noqa: BLE001
+        try:
+            conn.rollback()   # drop this source's half-written rows only; earlier ones are committed
+        except Exception:  # noqa: BLE001
+            pass
+        print(f"[usage index] {name} scan failed: {type(e).__name__}: {e}", file=sys.stderr)
+        return 0
+
+
+def refresh() -> dict:
+    """Quet tang dan ca 3 nguon. Tra so file/event thuc su xu ly lan nay."""
+    res = {"claude_files": 0, "codex_files": 0, "api_events": 0, "quet_lai": False}
+    conn = _connect()
+    try:
+        res["quet_lai"] = _migrate_schema_once(conn)   # 1 lan khi doi schema: quet lai tat ca
+        _migrate_events_once(conn)                  # 1 lan: backfill cli/codex tu events cu
+        conn.commit()                               # a failing source below must not undo these
+        chat = _chat_sessions()
+        brains = session_brain.mapping()   # phien nao thuoc brain nao -> nhan du an dung
+        # Each source in its own guard. Before, one bad transcript line in ~/.claude/projects (or a
+        # Codex rollout) raised out of refresh() before usage-events.jsonl was read and before the
+        # commit, so the API branch (whose ONLY source is that file) stayed at 0 tokens for good,
+        # and /usage/refresh swallowed the error. A broken source now costs only its own numbers.
+        res["claude_files"] = _stage("claude", conn, _scan_claude, conn, chat, brains)
+        res["codex_files"] = _stage("codex", conn, _scan_codex, conn)
+        res["api_events"] = _stage("events", conn, _ingest_events, conn)   # API + du phong cli/codex
+        _stage("dedup", conn, _dedup_events_vs_raw, conn)  # log tho phu ngay nao thi xoa event ngay do
+        res["improvement_events"] = _stage("improvement", conn, _project_improvement_usage, conn)
+        conn.commit()
+    finally:
+        conn.close()
+    return res
+
+
+# ============================================================
+# Truy van: giai ky + so sanh + summary (Task 6)
+# ============================================================
+def _today_local() -> date:
+    return datetime.now(_tz()).date()
+
+
+def _month_first(d: date) -> date:
+    return d.replace(day=1)
+
+
+def _month_last(d: date) -> date:
+    nxt = (d.replace(day=28) + timedelta(days=4)).replace(day=1)
+    return nxt - timedelta(days=1)
+
+
+def _prev_month_first(d: date) -> date:
+    return (d.replace(day=1) - timedelta(days=1)).replace(day=1)
+
+
+def resolve_period(period: str, today: date = None):
+    """Tra ((cur_start, cur_end), (prev_start, prev_end)) - cac object date, theo gio dia phuong.
+    prev = ky tuong duong lien truoc de so sanh."""
+    d = today or _today_local()
+    if period == "today":
+        return (d, d), (d - timedelta(days=1), d - timedelta(days=1))
+    if period == "yesterday":
+        y = d - timedelta(days=1)
+        return (y, y), (y - timedelta(days=1), y - timedelta(days=1))
+    if period == "this_week":
+        mon = d - timedelta(days=d.weekday())
+        return (mon, d), (mon - timedelta(days=7), d - timedelta(days=7))
+    if period == "last_week":
+        mon = d - timedelta(days=d.weekday())
+        ls, le = mon - timedelta(days=7), mon - timedelta(days=1)
+        return (ls, le), (ls - timedelta(days=7), le - timedelta(days=7))
+    if period == "this_month":
+        f = _month_first(d)
+        off = (d - f).days
+        pf = _prev_month_first(d)
+        pe = min(pf + timedelta(days=off), _month_last(pf))
+        return (f, d), (pf, pe)
+    if period == "last_month":
+        pf = _prev_month_first(d)
+        pl = _month_last(pf)
+        ppf = _prev_month_first(pf)
+        return (pf, pl), (ppf, _month_last(ppf))
+    if period == "last_3_months":
+        s = d - timedelta(days=89)
+        return (s, d), (s - timedelta(days=90), s - timedelta(days=1))
+    if period == "this_year":
+        jan = date(d.year, 1, 1)
+        try:
+            pd = d.replace(year=d.year - 1)
+        except ValueError:
+            pd = d.replace(year=d.year - 1, day=28)
+        return (jan, d), (date(d.year - 1, 1, 1), pd)
+    raise ValueError("period khong hop le: %s" % period)
+
+
+# Cot moi NOI VAO CUOI, sau 'path'. _tot() va _group() doc bang chi so vi tri (r[6]..r[10]),
+# nen chen vao giua la lam lech im lang moi con so cua trang.
+_ROW_COLS = "day,provider,source,activity,model,project,input,output,cache_read,cache_create,path,turns"
+_DIM_IDX = {"day": 0, "provider": 1, "source": 2, "activity": 3, "model": 4, "project": 5}
+_I_TURNS = 11
+
+
+def _tot(r) -> int:
+    return (r[6] or 0) + (r[7] or 0) + (r[8] or 0) + (r[9] or 0)
+
+
+def _fetch_rows(conn, start, end, provider=None, project=None):
+    where = ["day BETWEEN ? AND ?"]
+    args = [start, end]
+    if provider:
+        where.append("provider=?")
+        args.append(provider)
+    if project:
+        where.append("project=?")
+        args.append(project)
+    return conn.execute("SELECT %s FROM file_daily WHERE %s" % (_ROW_COLS, " AND ".join(where)), args).fetchall()
+
+
+def _sum_tokens(conn, start, end, provider=None, project=None) -> int:
+    where = ["day BETWEEN ? AND ?"]
+    args = [start, end]
+    if provider:
+        where.append("provider=?")
+        args.append(provider)
+    if project:
+        where.append("project=?")
+        args.append(project)
+    q = "SELECT COALESCE(SUM(input+output+cache_read+cache_create),0) FROM file_daily WHERE " + " AND ".join(where)
+    return conn.execute(q, args).fetchone()[0] or 0
+
+
+def _group(rows, dim, prices):
+    """Gop rows theo mot chieu -> list {key,tokens,input,output,cache_read,cache_create,sessions,cost} desc."""
+    idx = _DIM_IDX[dim]
+    agg = {}
+    for r in rows:
+        key = r[idx] or "(?)"
+        e = agg.setdefault(key, {"key": key, "tokens": 0, "input": 0, "output": 0,
+                                 "cache_read": 0, "cache_create": 0, "cost": 0.0,
+                                 "turns": 0, "_paths": set()})
+        e["tokens"] += _tot(r)
+        e["input"] += r[6] or 0
+        e["output"] += r[7] or 0
+        e["cache_read"] += r[8] or 0
+        e["cache_create"] += r[9] or 0
+        e["turns"] += r[_I_TURNS] or 0
+        e["cost"] += up.estimate_cost({"model": r[4], "input": r[6] or 0, "output": r[7] or 0,
+                                        "cache_read": r[8] or 0, "cache_create": r[9] or 0}, prices)
+        e["_paths"].add(r[10])
+    out = []
+    for e in agg.values():
+        e["sessions"] = len(e.pop("_paths"))
+        e["cost"] = round(e["cost"], 4)
+        out.append(e)
+    out.sort(key=lambda x: -x["tokens"])
+    return out
+
+
+# Nho dem summary() (0.421.0). Mot lan mo trang Muc dung tinh CUNG MOT summary(this_month) ba lan:
+# /usage/summary, /usage/insights (goi summary ben trong) va /usage/tong-quan, ba luong song song
+# tranh nhau mot nhan Python. Do 30/10/2026 tren 15 nghin dong: moi lan 0,05 s khi chay rieng, ca
+# trang 0,7-1,7 s khi chay chung. summary() la ham THUAN cua file chi so + bang gia + ky, nen
+# khoa nho gom ky da giai (doi ngay la doi khoa) va dau van tay cua file .db, file -wal va bang
+# gia: co dong nao duoc ghi (refresh, test chen tay, tien trinh khac) la van tay doi, tinh lai.
+# Song them 30 giay de he tep co dong ho tho (mtime theo giay) cung khong giu so cu lau hon the.
+# Luong den sau cho luong dang tinh cung khoa thay vi tinh lai lan nua.
+_NHO_SUMMARY: dict = {}
+_NHO_KHOA = threading.Lock()
+_NHO_DANG: dict = {}
+_NHO_SONG = 30.0
+_NHO_TOI_DA = 32
+
+
+def _van_tay():
+    out = []
+    for f in (str(DB_PATH), str(DB_PATH) + "-wal", str(getattr(up, "_PRICING_PATH", ""))):
+        try:
+            st = os.stat(f)
+            # File -wal RỖNG coi như không có: SQLite tạo nó lúc mở kết nối và xoá lúc kết nối cuối đóng, nên chỉ một
+            # luồng đang đọc song song cũng đủ đổi vân tay, mà dữ liệu chẳng đổi gì.
+            out.append((st.st_mtime_ns, st.st_size) if st.st_size else None)
+        except OSError:
+            out.append(None)
+    return tuple(out)
+
+
+def summary(period: str = "this_month", provider: str = None, project: str = None, today: date = None) -> dict:
+    """Bao cao token cho mot ky (xem _summary_that), nho dem theo van tay chi so."""
+    khoa = (resolve_period(period, today), provider or None, project or None, _van_tay())
+    bay = time.monotonic()
+    with _NHO_KHOA:
+        o = _NHO_SUMMARY.get(khoa)
+        if o and bay - o[0] < _NHO_SONG:
+            return copy.deepcopy(o[1])
+        cho = _NHO_DANG.get(khoa)
+        if cho is None:
+            cho = _NHO_DANG[khoa] = threading.Lock()
+    with cho:
+        with _NHO_KHOA:
+            o = _NHO_SUMMARY.get(khoa)
+            if o and time.monotonic() - o[0] < _NHO_SONG:
+                return copy.deepcopy(o[1])
+        kq = None
+        try:
+            kq = _summary_that(period, provider, project, today)
+        finally:
+            # Cất kết quả và gỡ dấu "đang tính" trong CÙNG một lần khoá: gỡ trước cất sau là có khe cho luồng đến
+            # đúng lúc đó thấy không có gì, rồi tự tính lại một lần nữa.
+            with _NHO_KHOA:
+                if kq is not None:
+                    if len(_NHO_SUMMARY) >= _NHO_TOI_DA:
+                        _NHO_SUMMARY.clear()
+                    _NHO_SUMMARY[khoa] = (time.monotonic(), kq)
+                _NHO_DANG.pop(khoa, None)
+        return copy.deepcopy(kq)
+
+
+def _summary_that(period: str = "this_month", provider: str = None, project: str = None, today: date = None) -> dict:
+    """Bao cao token cho mot ky: KPI + breakdowns + timeseries, kem so sanh ky truoc."""
+    (cs, ce), (ps, pe) = resolve_period(period, today)
+    cs_s, ce_s, ps_s, pe_s = cs.isoformat(), ce.isoformat(), ps.isoformat(), pe.isoformat()
+    prices = up.load_prices()
+    conn = _connect()
+    try:
+        rows = _fetch_rows(conn, cs_s, ce_s, provider, project)
+        tokens_prev = _sum_tokens(conn, ps_s, pe_s, provider, project)
+        gaps = 0
+        if provider in (None, "", "all", "claude"):
+            where, args = "day BETWEEN ? AND ?", [cs_s, ce_s]
+            if project:
+                where += " AND project=?"
+                args.append(project)
+            gaps = conn.execute("SELECT COUNT(*) FROM usage_projection_gaps WHERE " + where, args).fetchone()[0]
+    finally:
+        conn.close()
+
+    tokens = sum(_tot(r) for r in rows)
+    inp = sum(r[6] or 0 for r in rows)
+    out = sum(r[7] or 0 for r in rows)
+    cread = sum(r[8] or 0 for r in rows)
+    ccreate = sum(r[9] or 0 for r in rows)
+    billable_in = inp + cread + ccreate
+    turns = sum(r[_I_TURNS] or 0 for r in rows)
+    sessions = len({r[10] for r in rows})
+    cost = round(sum(up.estimate_cost({"model": r[4], "input": r[6] or 0, "output": r[7] or 0,
+                                       "cache_read": r[8] or 0, "cache_create": r[9] or 0}, prices) for r in rows), 4)
+    n_days = (ce - cs).days + 1
+    delta = None
+    if tokens_prev > 0:
+        delta = round((tokens - tokens_prev) * 100.0 / tokens_prev, 1)
+
+    # timeseries: lap day tu cs -> ce, tach theo provider
+    series = {}
+    dd = cs
+    while dd <= ce:
+        series[dd.isoformat()] = {"day": dd.isoformat(), "claude": 0, "codex": 0, "api": 0,
+                                  "total": 0, "turns": 0}
+        dd += timedelta(days=1)
+    for r in rows:
+        cell = series.get(r[0])
+        if cell is None:
+            continue
+        prov = r[1] if r[1] in ("claude", "codex", "api") else "api"
+        cell[prov] += _tot(r)
+        cell["total"] += _tot(r)
+        cell["turns"] += r[_I_TURNS] or 0
+
+    return {
+        "period": period, "range": [cs_s, ce_s], "range_prev": [ps_s, pe_s],
+        "filter": {"provider": provider, "project": project},
+        "coverage": {"improvement": {"status": "partial" if gaps else "no_known_gaps",
+            "unresolved_observations": gaps, "totals": "known_lower_bound" if gaps else "observed",
+            "scope": "improvement_projection"}},
+        "kpi": {
+            "tokens": tokens, "tokens_prev": tokens_prev, "delta_pct": delta,
+            "per_day_avg": round(tokens / n_days, 1) if n_days else 0,
+            "sessions": sessions,
+            # So LUOT goi model trong ky, va token trung binh moi luot. Day la mau so cua moi
+            # phep tinh tiet kiem: phan ngu canh tiet kiem duoc la thu tra theo TUNG LUOT.
+            "turns": turns,
+            "avg_per_turn": round(tokens / turns) if turns else 0,
+            "avg_per_session": round(tokens / sessions) if sessions else 0,
+            "cache_hit": round(cread / billable_in, 4) if billable_in else 0,
+            "out_in_ratio": round(out / inp, 3) if inp else None,
+            "cost_est": cost,
+            "input": inp, "output": out, "cache_read": cread, "cache_create": ccreate,
+        },
+        "by_provider": _group(rows, "provider", prices),
+        "by_source": _group(rows, "source", prices),
+        "by_activity": _group(rows, "activity", prices),
+        "by_model": _group(rows, "model", prices),
+        "by_project": _group(rows, "project", prices),
+        "timeseries": [series[k] for k in sorted(series)],
+    }
+
+
+def _fmt_tok(n: int) -> str:
+    n = int(n or 0)
+    if n >= 1_000_000:
+        return "%.1fM" % (n / 1_000_000)
+    if n >= 1_000:
+        return "%.0fk" % (n / 1_000)
+    return str(n)
+
+
+def insights(period: str = "this_month", today: date = None) -> list:
+    """Sinh danh sach de xuat hanh dong tu du lieu ky. Moi item {code, level, title, detail}.
+    warn (can lam) xep truoc info (goi y)."""
+    s = summary(period, today=today)
+    k = s["kpi"]
+    total = k["tokens"]
+    billable = k["input"] + k["cache_read"] + k["cache_create"]
+    out = []
+
+    if billable >= MIN_BILLABLE_FOR_CACHE and k["cache_hit"] < CACHE_LOW:
+        out.append({"code": "cache_low", "level": "warn",
+                    "title": localefmt.chu("Cache hit thấp (%.0f%%)", "Low cache hit (%.0f%%)") % (k["cache_hit"] * 100),
+                    "detail": localefmt.chu("Đang nạp lại ngữ cảnh nhiều, tốn token. Cân nhắc /compact hoặc chia phiên để tận dụng cache.",
+                                            "Context is being reloaded a lot, which costs tokens. Consider /compact or splitting the session to make use of the cache.")})
+
+    bg = next((x["tokens"] for x in s["by_activity"] if x["key"] == "background"), 0)
+    if total > 0 and bg / total >= BACKGROUND_SHARE:
+        out.append({"code": "background_heavy", "level": "warn",
+                    "title": localefmt.chu("Hoạt động ngầm chiếm %.0f%% token", "Background activity uses %.0f%% of tokens") % (bg / total * 100),
+                    "detail": localefmt.chu("Loop/lịch chạy nền đang ngốn nhiều (%s). Xem lại tần suất các loop hoặc tắt bớt.",
+                                            "Background loops/schedules are using a lot (%s). Review how often the loops run or turn some off.") % _fmt_tok(bg)})
+
+    opus = sum(x["tokens"] for x in s["by_model"] if str(x["key"]).startswith("claude-opus"))
+    if total > 0 and opus / total >= EXPENSIVE_SHARE:
+        out.append({"code": "expensive_model", "level": "info",
+                    "title": localefmt.chu("Opus chiếm %.0f%% token", "Opus uses %.0f%% of tokens") % (opus / total * 100),
+                    "detail": localefmt.chu("Opus đắt gấp nhiều lần sonnet/haiku. Việc nhẹ cân nhắc hạ model ở trang Model.",
+                                            "Opus costs many times more than sonnet/haiku. For light work, consider a smaller model on the Models page.")})
+
+    cs, ce = s["range"]
+    conn = _connect()
+    try:
+        row = conn.execute("SELECT path, SUM(input+cache_read+cache_create) t FROM file_daily "
+                           "WHERE day BETWEEN ? AND ? GROUP BY path ORDER BY t DESC LIMIT 1", (cs, ce)).fetchone()
+    finally:
+        conn.close()
+    if row and (row[1] or 0) >= SESSION_BLOAT:
+        out.append({"code": "session_bloat", "level": "warn",
+                    "title": localefmt.chu("Có phiên phình to (%s token vào)", "A session has grown large (%s input tokens)") % _fmt_tok(row[1]),
+                    "detail": localefmt.chu("Một phiên nạp %s token đầu vào. Cân nhắc tách phiên để giảm chi phí ngữ cảnh.",
+                                            "One session loaded %s input tokens. Consider splitting the session to cut context cost.") % _fmt_tok(row[1])})
+
+    prev = k["tokens_prev"]
+    if prev > 0 and total > 0:
+        cs_d, ce_d = date.fromisoformat(s["range"][0]), date.fromisoformat(s["range"][1])
+        ps_d, pe_d = date.fromisoformat(s["range_prev"][0]), date.fromisoformat(s["range_prev"][1])
+        cur_pd = total / max(1, (ce_d - cs_d).days + 1)
+        prev_pd = prev / max(1, (pe_d - ps_d).days + 1)
+        if prev_pd > 0 and cur_pd / prev_pd >= SPIKE_RATIO:
+            out.append({"code": "spike", "level": "warn",
+                        "title": localefmt.chu("Token/ngày tăng %.0f%% so kỳ trước", "Tokens/day up %.0f%% on the previous period") % ((cur_pd / prev_pd - 1) * 100),
+                        "detail": localefmt.chu("Mức tiêu thụ tăng đột biến. Kiểm tra nguồn tăng chính ở phần breakdown.",
+                                                "Usage spiked. Check the main source of the increase in the breakdown.")})
+
+    out.sort(key=lambda x: 0 if x["level"] == "warn" else 1)
+    return out
+
+
+def nhip_engine(period: str = "this_month", today: date = None) -> list:
+    """Token MOI LUOT cua tung provider, tach theo loai hoat dong. Sap xep dat -> re.
+
+    Cau hoi no tra loi: "cung mot loai viec, bo nao nao dat hon?". Tong token khong tra loi
+    duoc vi bo nao chay nhieu viec hon thi dĩ nhien ton nhieu hon; phai chia cho SO LUOT moi
+    so sanh duoc. Va phai tach theo hoat dong vi mot luot chat va mot luot chay nen la hai
+    thu khac han ve co ngu canh.
+    """
+    (cs, ce), _prev = resolve_period(period, today)
+    prices = up.load_prices()
+    conn = _connect()
+    try:
+        rows = _fetch_rows(conn, cs.isoformat(), ce.isoformat())
+    finally:
+        conn.close()
+    agg = {}
+    for r in rows:
+        k = (r[1] or "?", r[3] or "?")          # (provider, activity)
+        e = agg.setdefault(k, {"provider": k[0], "activity": k[1], "tokens": 0,
+                               "turns": 0, "cost": 0.0})
+        e["tokens"] += _tot(r)
+        e["turns"] += r[_I_TURNS] or 0
+        e["cost"] += up.estimate_cost({"model": r[4], "input": r[6] or 0, "output": r[7] or 0,
+                                       "cache_read": r[8] or 0, "cache_create": r[9] or 0}, prices)
+    out = []
+    for e in agg.values():
+        if e["turns"] <= 0:
+            continue                            # khong co mau so thi khong so sanh duoc
+        e["moi_luot"] = round(e["tokens"] / e["turns"])
+        e["cost_moi_luot"] = round(e["cost"] / e["turns"], 6)
+        e["cost"] = round(e["cost"], 4)
+        out.append(e)
+    out.sort(key=lambda x: -x["moi_luot"])
+    return out
+
+
+def cua_so(gio: float = 5.0, provider: str = None, now: datetime = None) -> dict:
+    """Muc dung trong CUA SO TRUOT `gio` gio gan nhat: {tokens, turns, gio, tu, den}.
+
+    Vi sao khong dung file_daily: hoi "toi con bao nhieu trong cua so nay" ma tra loi theo
+    NGAY thi 8 gio sang mung 1 se bao gan bang 0 du 5 gio truoc do vua dot het han muc. Gia
+    goi Claude/ChatGPT deu tinh theo cua so truot vai gio, nen day moi la don vi dung.
+
+    Grain la GIO nen bien cua so lam tron len dau gio - tuc con so nay hoi ROI RONG hon thuc
+    te (om them phan dau gio cu). Tha bao dang dung nhieu hon thuc te con hon nguoc lai.
+    """
+    gio = max(1.0, min(float(gio or 5.0), 24 * 7.0))
+    now = now or datetime.now(_tz())
+    # Dem dung `n` MOC GIO, khop y het `dinh_cua_so`. Truoc day ham nay lay now-5h roi BETWEEN
+    # tron ca hai dau -> 6 moc, trong khi dinh truot dung 5 moc. Chia hai so do cho nhau (main
+    # lam dung vay de ra ty_le) thi ty le luon phong ~20%, va tren mot nhip dung deu no bao
+    # "120% muc cao nhat" - mot con so khong the dung.
+    n = max(1, int(round(gio)))
+    tu = now - timedelta(hours=n - 1)
+    h_tu, h_den = tu.strftime("%Y-%m-%dT%H"), now.strftime("%Y-%m-%dT%H")
+    where, args = ["hour BETWEEN ? AND ?"], [h_tu, h_den]
+    if provider:
+        where.append("provider=?")
+        args.append(provider)
+    conn = _connect()
+    try:
+        row = conn.execute(
+            "SELECT COALESCE(SUM(tokens),0), COALESCE(SUM(turns),0) FROM file_hourly WHERE "
+            + " AND ".join(where), args).fetchone()
+    finally:
+        conn.close()
+    return {"tokens": row[0] or 0, "turns": row[1] or 0, "gio": gio,
+            "tu": h_tu, "den": h_den, "moc_reset": (tu + timedelta(hours=n)).isoformat()}
+
+
+def luot_theo_ngay(period: str = "this_month", nguon: tuple = ("javis",),
+                   bo_subagent: bool = True, today: date = None) -> list:
+    """[{day, turns}] cua rieng nhung luot DO JAVIS chay. Dung lam mau so tinh tiet kiem.
+
+    Vi sao khong dung thang `summary()["timeseries"]["turns"]`: no cong turns cua MOI dong,
+    trong do co source='manual' - la nhung phien nguoi dung tu mo `claude` trong terminal o
+    bat ky repo nao tren cung may. Nhung luot do KHONG di qua prompt cua Javis, nen che do
+    tiet kiem cua Javis khong he lam chung re di. Nhan chung vao la thoi phong con so tiet
+    kiem len nhieu lan, va tren mot may vua dung Javis vua dung Claude Code tay thi phan thoi
+    phong con lon hon phan that.
+
+    Bo luon 'subagent': agent con do engine tu de ra mang prompt rieng cua no, khong phai goi
+    ngu canh ma muc tiet kiem cua Javis cat. Tha dem thieu con hon khoe thua.
+    """
+    (cs, ce), _prev = resolve_period(period, today)
+    where = ["day BETWEEN ? AND ?"]
+    args = [cs.isoformat(), ce.isoformat()]
+    if nguon:
+        where.append("source IN (%s)" % ",".join("?" for _ in nguon))
+        args.extend(list(nguon))
+    if bo_subagent:
+        where.append("activity<>'subagent'")
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            "SELECT day, COALESCE(SUM(turns),0) FROM file_daily WHERE %s GROUP BY day ORDER BY day"
+            % " AND ".join(where), args).fetchall()
+    finally:
+        conn.close()
+    return [{"day": r[0], "turns": r[1] or 0} for r in rows]
+
+
+def dinh_cua_so(gio: float = 5.0, ngay_gan_day: int = 60, now: datetime = None) -> dict:
+    """Cua so `gio` gio NANG NHAT tung do duoc trong `ngay_gan_day` ngay. Tra {tokens, hour}.
+
+    Day la cach duy nhat noi duoc "ban dang o dau so voi chinh minh" khi nha cung cap KHONG
+    cong bo han muc bang so. Muc cao nhat tung cham ma chua bi chan la mot can duoi that -
+    kem chinh xac hon mot con so chinh thuc, nhung that va rieng cua tung nguoi.
+    """
+    gio = max(1.0, min(float(gio or 5.0), 24 * 7.0))
+    now = now or datetime.now(_tz())
+    tu = (now - timedelta(days=max(1, int(ngay_gan_day)))).strftime("%Y-%m-%dT%H")
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            "SELECT hour, SUM(tokens) FROM file_hourly WHERE hour>=? GROUP BY hour ORDER BY hour",
+            (tu,)).fetchall()
+    finally:
+        conn.close()
+    if not rows:
+        return {"tokens": 0, "hour": "", "gio": gio}
+    # Cua so truot tren chuoi gio LIEN TUC: chuoi tu DB co lo hong (gio khong dung thi khong
+    # co dong), nen phai lap day truoc, khong thi "5 gio" thanh 5 gio-co-hoat-dong rai rac
+    # ca tuan va con dinh do bi thoi len vo ly.
+    theo_gio = {r[0]: (r[1] or 0) for r in rows}
+    moc = datetime.strptime(rows[0][0], "%Y-%m-%dT%H").replace(tzinfo=_tz())
+    het = datetime.strptime(rows[-1][0], "%Y-%m-%dT%H").replace(tzinfo=_tz())
+    day, nhan = [], []
+    while moc <= het:
+        k = moc.strftime("%Y-%m-%dT%H")
+        day.append(theo_gio.get(k, 0))
+        nhan.append(k)
+        moc += timedelta(hours=1)
+    n = max(1, int(round(gio)))
+    tong, dinh, dinh_moc = 0, 0, ""
+    for i, v in enumerate(day):
+        tong += v
+        if i >= n:
+            tong -= day[i - n]
+        if tong > dinh:
+            dinh, dinh_moc = tong, nhan[i]
+    return {"tokens": dinh, "hour": dinh_moc, "gio": gio}
+
+
+def theo_gio(gio_cua_so: float = 5.0, now: datetime = None) -> dict:
+    """Ba goc nhin THEO GIO cho trang Muc dung (0.329.0, chu repo 26/10: "lam phan muc dung
+    huu dung hon", kem anh mot bang theo doi token theo gio).
+
+    - `gio_24`: 24 gio gan nhat, token tung gio tach theo provider. Bieu do theo NGAY khong
+      tra loi duoc "sang nay cai gi dot token", con chip "Hom nay" thi chi ra dung mot cot.
+    - `cua_so`: tong cua so truot `gio_cua_so` gio tai MOI gio trong 24 gio do. Con so cua so
+      hien tai chi la mot diem; duong nay cho thay no dang len hay xuong, va lan gan nhat cham
+      dinh la luc nao.
+    - `nhiet_7`: trung binh token moi ngay o tung GIO TRONG NGAY (0..23) qua 7 ngay tron gan
+      nhat, de biet gio nao AI don nhieu va gio nao vang (hop de dat viec nen).
+
+    Grain la gio dia phuong cua bang file_hourly, cung nguon voi `cua_so` va `dinh_cua_so`.
+    """
+    now = now or datetime.now(_tz())
+    n = max(1, int(round(float(gio_cua_so or 5.0))))
+    dau = now.replace(minute=0, second=0, microsecond=0)
+    moc_24 = [dau - timedelta(hours=23 - i) for i in range(24)]
+    tu_cs = moc_24[0] - timedelta(hours=n - 1)
+    ngay_nay = dau.replace(hour=0)
+    tu_7 = ngay_nay - timedelta(days=7)
+    tu = min(tu_cs, tu_7).strftime("%Y-%m-%dT%H")
+    conn = _connect()
+    try:
+        rows = conn.execute(
+            "SELECT hour, provider, COALESCE(SUM(tokens),0), COALESCE(SUM(turns),0) FROM file_hourly "
+            "WHERE hour>=? GROUP BY hour, provider", (tu,)).fetchall()
+    finally:
+        conn.close()
+    theo = {}
+    for h, prov, tok, turns in rows:
+        o = theo.setdefault(h, {"claude": 0, "codex": 0, "api": 0, "total": 0, "turns": 0})
+        p = prov if prov in ("claude", "codex", "api") else "api"
+        o[p] += tok or 0
+        o["total"] += tok or 0
+        o["turns"] += turns or 0
+
+    def tong(h):
+        return (theo.get(h.strftime("%Y-%m-%dT%H")) or {}).get("total", 0)
+
+    gio_24 = []
+    for h in moc_24:
+        o = theo.get(h.strftime("%Y-%m-%dT%H")) or {}
+        gio_24.append({"hour": h.strftime("%Y-%m-%dT%H"), "gio": h.hour,
+                       "claude": o.get("claude", 0), "codex": o.get("codex", 0), "api": o.get("api", 0),
+                       "total": o.get("total", 0), "turns": o.get("turns", 0)})
+    cua = []
+    for h in moc_24:
+        cua.append({"hour": h.strftime("%Y-%m-%dT%H"), "gio": h.hour,
+                    "tokens": sum(tong(h - timedelta(hours=k)) for k in range(n))})
+
+    # 7 ngay TRON (khong tinh hom nay dang do dang, khong thi gio sang nay keo trung binh xuong).
+    cong = [0] * 24
+    ngay_co = set()
+    for k, o in theo.items():
+        try:
+            t = datetime.strptime(k, "%Y-%m-%dT%H").replace(tzinfo=_tz())
+        except ValueError:
+            continue
+        if tu_7 <= t < ngay_nay:
+            cong[t.hour] += o["total"]
+            if o["total"]:
+                ngay_co.add(t.date())
+    so_ngay = len(ngay_co)
+    nhiet = [round(c / so_ngay) if so_ngay else 0 for c in cong]
+    return {"gio_cua_so": n, "gio_24": gio_24, "cua_so": cua,
+            "nhiet_7": {"tb_moi_gio": nhiet, "so_ngay": so_ngay}}
+
+
+def totals_by(dim: str, provider: str = None) -> dict:
+    """Tong token theo mot chieu (khong loc ky), dung cho kiem thu + breakdown tho.
+    Tra {gia_tri: {input,output,cache_read,cache_create,sessions}}."""
+    if dim not in _DIMS:
+        raise ValueError("dim khong hop le: %s" % dim)
+    conn = _connect()
+    try:
+        where, args = "", []
+        if provider:
+            where, args = "WHERE provider=?", [provider]
+        rows = conn.execute(
+            "SELECT %s, SUM(input), SUM(output), SUM(cache_read), SUM(cache_create), COUNT(DISTINCT path) "
+            "FROM file_daily %s GROUP BY %s" % (dim, where, dim), args).fetchall()
+    finally:
+        conn.close()
+    return {r[0]: {"input": r[1] or 0, "output": r[2] or 0, "cache_read": r[3] or 0,
+                   "cache_create": r[4] or 0, "sessions": r[5] or 0} for r in rows}

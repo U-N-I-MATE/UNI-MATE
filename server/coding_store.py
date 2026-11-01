@@ -1,0 +1,702 @@
+"""Sổ THƯ MỤC và ràng buộc phiên cho trang Coding (0.63.1).
+
+Vì sao có file này
+------------------
+Trước 0.63.0, sai Javis sửa một dự án phải nói trong khung chat chung, và engine chạy với
+`cwd = <brain>`. Hậu quả: model đọc nhầm cây thư mục, không chỗ nào ghi "đang làm ở đâu", và
+mở hai việc song song trên cùng một dự án là giẫm chân nhau.
+
+Kho này giữ đúng ba thứ mà khung chat sẵn có KHÔNG biết:
+
+  1. **Sổ thư mục** của từng brain: thư mục nào đã khai, nằm ở đâu.
+  2. **Ràng buộc của một phiên**: phiên này làm ở thư mục nào, nhánh nào, worktree nào, mức
+     quyền nào. Khoá theo `session_id` của kho phiên (`sessions.py`).
+  3. **Điểm hồi**: tag git để `git reset --hard` kéo về được khi model sửa hỏng.
+
+THƯ MỤC chứ không phải REPO (đổi ở 0.63.1)
+------------------------------------------
+Bản 0.63.0 bắt thư mục phải là repo git, không có `.git` thì TỪ CHỐI kèm câu "chạy git init
+trước đi". Chủ dự án chỉ ra đó là bắt người dùng làm việc vặt cho vừa mô hình dữ liệu của
+Javis: một thư mục script, một thư mục tài liệu, một dự án mới tinh chưa init đều là chỗ làm
+việc hợp lệ.
+
+Nay git là một THUỘC TÍNH ĐỌC ĐƯỢC của thư mục, không phải điều kiện để vào cửa. Không có
+git thì ba thứ phụ thuộc git (nhánh, worktree, điểm hồi) tự vắng mặt trên giao diện, phần còn
+lại chạy bình thường. Muốn có chúng thì bảo Javis `git init` ngay trong lượt chat, vì nó đang
+đứng sẵn trong thư mục đó.
+
+Ba ranh giới có chủ ý
+---------------------
+- **Xoá thư mục khỏi sổ KHÔNG đụng đĩa.** Người dùng bấm xoá là muốn Javis quên nó đi, không
+  phải muốn mất mã nguồn. Nhầm hai thứ này một lần là mất việc thật.
+- **Worktree luôn mở NHÁNH MỚI** `javis/<phiên>` tách từ nhánh gốc, chứ không checkout thẳng
+  nhánh gốc. Git từ chối checkout cùng một nhánh ở hai worktree, mà nhánh gốc thì gần như
+  luôn đang được checkout ở cây chính, nên cách kia hỏng ngay lần đầu dùng.
+- **Không tự tạo commit.** Điểm hồi là TAG trên HEAD hiện tại. Tự commit hộ là ghi vào lịch sử
+  của người khác; tag thì thêm được, gỡ được, và không đổi thứ gì đang có.
+
+Stdlib-only, không import main, không import FastAPI: test được bằng một thư mục tạm.
+"""
+from __future__ import annotations
+
+import json
+import re
+import subprocess
+import threading
+import time
+import uuid
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import winproc            # lệnh con chạy câm trên Windows (không nháy cửa sổ console đen)
+from config import STATE_DIR
+import localefmt
+
+STORE_PATH = STATE_DIR / "coding.json"
+_lock = threading.RLock()
+
+# Kênh của MỌI phiên trang Coding. Một hằng, KHÔNG nhét id thư mục vào.
+#
+# Bản 0.63.0 dùng `coding:<id thư mục>` và điều đó sai về bản chất: thư mục là thứ phiên đang
+# LÀM VIỆC TRONG, có thể đổi giữa chừng, không phải danh tính của phiên. Nhét vào kênh thì đổi
+# thư mục là phiên vẫn nằm dưới thư mục cũ trong danh sách, và một phiên CHƯA chọn thư mục thì
+# không có kênh nào để mở. Nay thư mục chỉ là một ràng buộc đọc từ kho này.
+KENH = "coding:phien"
+
+# Nơi đặt worktree của các phiên. Ngoài cây thư mục gốc, cố ý: worktree nằm TRONG nó thì mọi
+# lệnh quét file của chính dự án đó (test, lint, build) lại thấy một bản sao của chính mình.
+WORKTREE_DIR = STATE_DIR / "worktrees"
+
+MUC_QUYEN = ("suggest", "auto", "full")
+# Ba mức trên là TÊN TRONG MÁY, giữ nguyên từ 0.63.0 để không phải di trú sổ. Trên màn hình
+# chúng đọc là Plan / Tự động / Toàn quyền (0.63.2), theo đúng cách Claude Code gọi - chủ dự
+# án yêu cầu có Plan, và "chỉ đọc" thì nói được mức quyền nhưng không nói được VIỆC phải làm.
+#
+# `suggest` khác "read only" ở đúng chỗ đó: hub vẫn chặn ghi file, nhưng khối prompt dưới đây
+# bảo engine lập kế hoạch rồi dừng. Thiếu nó thì model đọc xong tự ý kể lể lan man, mà người
+# dùng bật Plan là muốn một kế hoạch để duyệt.
+# Mặc định `auto` chứ không `full`: phiên mới mở đọc được, sửa file được, chạy test được,
+# nhưng chưa tự đẩy ra ngoài. Ai cần toàn quyền thì bật một cú bấm ở chip, và lúc đó việc bật
+# là một hành động có chủ ý chứ không phải thứ họ được thừa kế mà không biết.
+MUC_QUYEN_MAC_DINH = "auto"
+
+TEN_MAX = 60
+GIT_TIMEOUT = 30
+
+LOI_CAN_GIT = ("Thư mục này chưa phải repo git nên chưa có {viec}. "
+               "Nhắn Javis `git init` giúp một câu là xong, rồi thử lại.")
+LOI_CAN_GIT_EN = ("This folder is not a git repo yet, so it has no {viec}. "
+                  "Ask Javis to run `git init` once, then try again.")
+# Tên việc (đối số `viec` của `_can_git`) bằng tiếng Anh, cho LOI_CAN_GIT_EN.
+_VIEC_EN = {"điểm hồi": "restore points", "worktree": "worktrees"}
+
+
+def _loi_can_git(viec: str) -> str:
+    return localefmt.chu(LOI_CAN_GIT.format(viec=viec),
+                         LOI_CAN_GIT_EN.format(viec=_VIEC_EN.get(viec, viec)))
+
+
+class LoiCoding(Exception):
+    """Lỗi NÓI ĐƯỢC cho người dùng. Route bắt cái này và trả 400 kèm nguyên văn."""
+
+
+def _now() -> float:
+    return time.time()
+
+
+def _sid_ngan(sid: str) -> str:
+    """Tám ký tự đầu của session id, dùng đặt tên nhánh/worktree/tag.
+
+    Đủ để không trùng trong một brain, và ngắn để tên nhánh còn đọc được bằng mắt trên màn
+    hình điện thoại. Lọc ký tự lạ vì chuỗi này đi thẳng vào tên nhánh git.
+    """
+    s = re.sub(r"[^0-9a-zA-Z]", "", str(sid or ""))[:8]
+    return s or "phien"
+
+
+# ============================================================
+# Kho JSON
+# ============================================================
+def _rong() -> dict:
+    return {"version": 2, "thu_muc": [], "phien": {}}
+
+
+def _di_tru(d: dict) -> dict:
+    """Sổ 0.63.0 dùng khoá `repos` và ràng buộc `repo`. Đổi tên tại chỗ lúc đọc.
+
+    Làm ở đây chứ không bằng script: sổ này nhỏ, và bắt người vận hành chạy một lệnh sau khi
+    cập nhật là cách chắc chắn nhất để có người không chạy rồi mất sổ.
+    """
+    if isinstance(d.get("repos"), list) and not d.get("thu_muc"):
+        d["thu_muc"] = d.pop("repos")
+    d.pop("repos", None)
+    for rec in (d.get("phien") or {}).values():
+        if isinstance(rec, dict) and "repo" in rec and "thu_muc" not in rec:
+            rec["thu_muc"] = rec.pop("repo")
+        # 0.63.8: một phiên gắn được NHIỀU thư mục. Giữ luôn `thu_muc` làm thư mục CHÍNH
+        # (nơi engine đứng, và nơi mọi thao tác git chạy) để phiên cũ không mất gì.
+        if isinstance(rec, dict) and not isinstance(rec.get("thu_mucs"), list):
+            mot = (rec.get("thu_muc") or "").strip()
+            rec["thu_mucs"] = [mot] if mot else []
+        if isinstance(rec, dict):
+            rec.pop("repo", None)
+    d["version"] = 2
+    return d
+
+
+def _load() -> dict:
+    try:
+        d = json.loads(STORE_PATH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return _rong()
+    except Exception:
+        # File hỏng (đĩa đầy giữa lúc ghi, sửa tay sai cú pháp): đổi tên rồi bắt đầu lại. Ném
+        # lỗi ở đây là cả trang Coding không mở được, mà thứ mất đi chỉ là một sổ khai báo
+        # dựng lại trong ba mươi giây.
+        try:
+            STORE_PATH.rename(STORE_PATH.with_suffix(".json.hong"))
+        except Exception:
+            pass
+        return _rong()
+    if not isinstance(d, dict):
+        return _rong()
+    if not isinstance(d.get("thu_muc"), list):
+        d["thu_muc"] = []
+    if not isinstance(d.get("phien"), dict):
+        d["phien"] = {}
+    return _di_tru(d)
+
+
+def _save(d: dict) -> None:
+    STORE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    tmp = STORE_PATH.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+    tmp.replace(STORE_PATH)
+
+
+# ============================================================
+# Git - thuộc tính của thư mục, KHÔNG phải điều kiện vào cửa
+# ============================================================
+def _git(args: List[str], cwd: str) -> str:
+    """Chạy một lệnh git, trả stdout đã strip. Lỗi thì ném LoiCoding kèm stderr của git.
+
+    Nguyên văn stderr của git đi thẳng ra giao diện là CỐ Ý: "fatal: 'x' is already checked
+    out at '/y'" nói đúng vấn đề hơn mọi câu tóm tắt mà file này nghĩ ra được.
+    """
+    try:
+        p = subprocess.run(["git"] + args, cwd=cwd, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=GIT_TIMEOUT,
+                           creationflags=winproc.no_window())
+    except FileNotFoundError:
+        raise LoiCoding(localefmt.chu("Máy này chưa cài git.", "git is not installed on this machine."))
+    except subprocess.TimeoutExpired:
+        raise LoiCoding(localefmt.chu(f"Lệnh git chạy quá {GIT_TIMEOUT} giây, đã dừng: git {' '.join(args)}",
+                                      f"The git command ran over {GIT_TIMEOUT} seconds and was stopped: git {' '.join(args)}"))
+    if p.returncode != 0:
+        loi = (p.stderr or p.stdout or "").strip().splitlines()
+        raise LoiCoding(localefmt.chu(f"git {args[0]} hỏng: {loi[-1] if loi else 'không rõ lý do'}",
+                                      f"git {args[0]} failed: {loi[-1] if loi else 'unknown reason'}"))
+    return (p.stdout or "").strip()
+
+
+def la_git(duong_dan: str) -> bool:
+    """Thư mục này có phải gốc một repo git không. Chỉ để BIẾT, không để chặn.
+
+    Kiểm `.git` TỒN TẠI chứ không kiểm nó là thư mục: trong một worktree hay một submodule,
+    `.git` là một FILE trỏ sang chỗ khác. Đòi thư mục là từ chối nhầm đúng những cây mà chính
+    trang này sinh ra.
+    """
+    try:
+        return (Path(duong_dan).expanduser().resolve() / ".git").exists()
+    except Exception:
+        return False
+
+
+def nhanh_hien_tai(duong_dan: str) -> str:
+    """Tên nhánh đang checkout, hoặc "" khi không phải repo git / HEAD rời / đọc không được."""
+    if not la_git(duong_dan):
+        return ""
+    try:
+        ten = _git(["rev-parse", "--abbrev-ref", "HEAD"], duong_dan)
+        return "" if ten == "HEAD" else ten
+    except Exception:
+        return ""
+
+
+def danh_sach_nhanh(duong_dan: str) -> List[str]:
+    if not la_git(duong_dan):
+        return []
+    try:
+        ra = _git(["for-each-ref", "--format=%(refname:short)", "refs/heads"], duong_dan)
+    except Exception:
+        return []
+    return [x.strip() for x in ra.splitlines() if x.strip()]
+
+
+def cay_sach(duong_dan: str) -> bool:
+    """Working tree không có sửa đổi chưa commit. Không phải git hoặc đọc hỏng thì trả False.
+
+    Nghiêng về "bẩn" là cố ý: nhầm theo hướng này chỉ làm người dùng thấy thêm một lời nhắc,
+    nhầm theo hướng kia làm họ tưởng không có gì để mất rồi bấm rollback.
+    """
+    if not la_git(duong_dan):
+        return False
+    try:
+        return _git(["status", "--porcelain"], duong_dan) == ""
+    except Exception:
+        return False
+
+
+# ============================================================
+# Sổ thư mục
+# ============================================================
+def danh_sach_thu_muc(brain: str = "") -> List[Dict[str, Any]]:
+    d = _load()
+    ds = [r for r in d["thu_muc"] if not brain or (r.get("brain") or "") == brain]
+    return [dict(r) for r in ds]
+
+
+def thu_muc(tid: str) -> Optional[Dict[str, Any]]:
+    for r in _load()["thu_muc"]:
+        if r.get("id") == tid:
+            return dict(r)
+    return None
+
+
+def them_thu_muc(duong_dan: str, brain: str = "", ten: str = "", nguon: str = "",
+                 repo: str = "") -> Dict[str, Any]:
+    """Khai một thư mục làm chỗ làm việc. KHÔNG đòi nó là repo git.
+
+    Chỉ từ chối ba thứ không thể làm việc được: chuỗi rỗng, đường dẫn đọc không ra, và thứ
+    không phải thư mục. Còn lại nhận hết - có git hay không là chuyện đọc ra sau.
+
+    `nguon="github"` and `repo="owner/name"` (0.362.0) mark a clone that github_repos made. Such a folder keeps its
+    registry entry when a chat unpins it, and only github_repos deletes it from disk (spec section 5.3).
+    """
+    raw = str(duong_dan or "").strip()
+    if not raw:
+        raise LoiCoding(localefmt.chu("Chưa nhập đường dẫn thư mục.", "No folder path entered."))
+    p = Path(raw).expanduser()
+    try:
+        p = p.resolve()
+    except Exception:
+        raise LoiCoding(localefmt.chu(f"Đường dẫn không đọc được: {raw}", f"Cannot read path: {raw}"))
+    if not p.is_dir():
+        raise LoiCoding(localefmt.chu(f"Không có thư mục {p}", f"Folder does not exist: {p}"))
+    with _lock:
+        d = _load()
+        for r in d["thu_muc"]:
+            if r.get("duong_dan") == str(p) and (r.get("brain") or "") == (brain or ""):
+                if nguon and (r.get("nguon") != nguon or r.get("repo") != repo):
+                    r["nguon"], r["repo"] = nguon, repo
+                    _save(d)
+                return dict(r)
+        rec = {
+            "id": uuid.uuid4().hex[:12],
+            "ten": (str(ten).strip() or p.name)[:TEN_MAX],
+            "duong_dan": str(p),
+            "brain": brain or "",
+            "them_luc": _now(),
+        }
+        if nguon:
+            rec["nguon"], rec["repo"] = nguon, repo
+        d["thu_muc"].append(rec)
+        _save(d)
+        return dict(rec)
+
+
+def bo_thu_muc(tid: str) -> bool:
+    """Bỏ khỏi SỔ. Không đụng một byte nào trên đĩa - xem docstring đầu file."""
+    with _lock:
+        d = _load()
+        truoc = len(d["thu_muc"])
+        d["thu_muc"] = [r for r in d["thu_muc"] if r.get("id") != tid]
+        if len(d["thu_muc"]) == truoc:
+            return False
+        _save(d)
+        return True
+
+
+# ============================================================
+# Ràng buộc của một phiên
+# ============================================================
+def rang_buoc(sid: str) -> Dict[str, Any]:
+    return dict(_load()["phien"].get(str(sid or ""), {}))
+
+
+def dat_rang_buoc(sid: str, *, thu_muc_id: Optional[str] = None, nhanh: Optional[str] = None,
+                  muc_quyen: Optional[str] = None, worktree: Optional[str] = None,
+                  thu_muc_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+    """Ghi đè từng trường một. Trường nào truyền None thì giữ nguyên giá trị cũ.
+
+    `thu_muc_id=""` là hợp lệ và có nghĩa: GỠ thư mục khỏi phiên, quay về chat trong brain.
+
+    `thu_muc_ids` đặt CẢ DANH SÁCH cùng lúc (0.63.8, gắn nhiều thư mục vào một phiên). Cái
+    đầu danh sách là thư mục CHÍNH: engine đứng ở đó, và mọi thao tác git chạy ở đó. Truyền
+    danh sách rỗng là gỡ hết.
+    """
+    sid = str(sid or "").strip()
+    if not sid:
+        raise LoiCoding(localefmt.chu("Thiếu session id.", "Missing session id."))
+    if muc_quyen is not None and muc_quyen not in MUC_QUYEN:
+        raise LoiCoding(localefmt.chu(f"Mức quyền phải là một trong {', '.join(MUC_QUYEN)}.",
+                                      f"Permission level must be one of {', '.join(MUC_QUYEN)}."))
+    if thu_muc_id is not None and thu_muc_id and not thu_muc(thu_muc_id):
+        raise LoiCoding(localefmt.chu("Thư mục không có trong sổ.", "That folder is not registered."))
+    if thu_muc_ids is not None:
+        # Bỏ trùng mà GIỮ thứ tự: thứ tự quyết định cái nào là thư mục chính.
+        sach, thay = [], set()
+        for tid in thu_muc_ids:
+            tid = str(tid or "").strip()
+            if not tid or tid in thay:
+                continue
+            if not thu_muc(tid):
+                raise LoiCoding(localefmt.chu("Thư mục không có trong sổ.", "That folder is not registered."))
+            thay.add(tid)
+            sach.append(tid)
+        thu_muc_ids = sach
+    with _lock:
+        d = _load()
+        cu = dict(d["phien"].get(sid, {}))
+        if thu_muc_ids is not None:
+            chinh_cu = (cu.get("thu_muc") or "").strip()
+            cu["thu_mucs"] = list(thu_muc_ids)
+            cu["thu_muc"] = thu_muc_ids[0] if thu_muc_ids else ""
+            # Nhánh và worktree bám vào thư mục CHÍNH. Chỉ dọn khi chính nó đổi: thêm bớt một
+            # thư mục phụ mà xoá mất worktree đang dùng thì người dùng mất việc đang làm dở.
+            if cu["thu_muc"] != chinh_cu:
+                cu["worktree"] = ""
+                cu["nhanh"] = ""
+        elif thu_muc_id is not None:
+            cu["thu_muc"] = thu_muc_id
+            cu["thu_mucs"] = [thu_muc_id] if thu_muc_id else []
+            # Đổi thư mục thì worktree và nhánh của thư mục CŨ không còn nghĩa gì. Giữ lại là
+            # để một đường dẫn chết nằm trong ràng buộc rồi lượt sau chạy nhầm chỗ.
+            cu["worktree"] = ""
+            cu["nhanh"] = ""
+        if nhanh is not None:
+            cu["nhanh"] = nhanh
+        if muc_quyen is not None:
+            cu["muc_quyen"] = muc_quyen
+        if worktree is not None:
+            cu["worktree"] = worktree
+        cu.setdefault("muc_quyen", MUC_QUYEN_MAC_DINH)
+        cu["sua_luc"] = _now()
+        d["phien"][sid] = cu
+        _save(d)
+        return dict(cu)
+
+
+def sessions_using(tid: str) -> List[str]:
+    """Session ids whose binding still lists folder `tid` (main or extra), 0.159.0."""
+    out = []
+    for sid, rb in _load()["phien"].items():
+        ids = rb.get("thu_mucs") if isinstance(rb.get("thu_mucs"), list) else [rb.get("thu_muc") or ""]
+        if tid and (tid in ids or rb.get("thu_muc") == tid):
+            out.append(sid)
+    return out
+
+
+def xoa_rang_buoc(sid: str) -> None:
+    with _lock:
+        d = _load()
+        if d["phien"].pop(str(sid or ""), None) is not None:
+            _save(d)
+
+
+def worktree_thu_muc(sid: str, tid: str) -> str:
+    """This session's worktree of folder `tid` (0.362.0, one per GitHub repo), or ""."""
+    wts = rang_buoc(sid).get("worktrees")
+    return str((wts or {}).get(str(tid or ""), "") or "") if isinstance(wts, dict) else ""
+
+
+def dat_worktree_thu_muc(sid: str, tid: str, path: str) -> None:
+    """Set (or clear with "") the session's worktree of one folder. Only github_repos calls this."""
+    sid, tid = str(sid or "").strip(), str(tid or "").strip()
+    if not sid or not tid:
+        return
+    with _lock:
+        d = _load()
+        cu = dict(d["phien"].get(sid, {}))
+        wts = dict(cu.get("worktrees") or {})
+        if path:
+            wts[tid] = str(path)
+        else:
+            wts.pop(tid, None)
+        cu["worktrees"] = wts
+        cu.setdefault("muc_quyen", MUC_QUYEN_MAC_DINH)
+        cu["sua_luc"] = _now()
+        d["phien"][sid] = cu
+        _save(d)
+
+
+def muc_quyen_cua_phien(sid: str) -> str:
+    return rang_buoc(sid).get("muc_quyen") or MUC_QUYEN_MAC_DINH
+
+
+def thu_muc_cua_phien(sid: str) -> List[Dict[str, Any]]:
+    """Mọi thư mục phiên đang gắn, theo đúng thứ tự. Cái ĐẦU TIÊN là thư mục chính.
+
+    Chỉ trả về thư mục còn trong sổ: gỡ một thư mục khỏi Javis mà vẫn để lại id chết trong
+    ràng buộc thì lượt chat sau nói với engine về một đường dẫn không tồn tại.
+
+    Each record carries `lam_viec` (0.362.0): where this session actually works in that folder, its own worktree when
+    it has one (GitHub repos), else the folder itself. Prompts and tool roots must use it, not `duong_dan`.
+    """
+    rb = rang_buoc(sid)
+    wts = rb.get("worktrees") if isinstance(rb.get("worktrees"), dict) else {}
+    ids = rb.get("thu_mucs")
+    if not isinstance(ids, list):
+        mot = (rb.get("thu_muc") or "").strip()
+        ids = [mot] if mot else []
+    ra = []
+    for tid in ids:
+        r = thu_muc(tid)
+        if r:
+            wt = str(wts.get(tid) or "")
+            r["lam_viec"] = wt if wt and Path(wt).is_dir() else r["duong_dan"]
+            ra.append(r)
+    return ra
+
+
+def cwd_cua_phien(sid: str) -> str:
+    """Thư mục engine phải chạy trong đó, hoặc "" khi phiên chưa gắn thư mục nào.
+
+    Đây là hàm DUY NHẤT main.py cần gọi ở đường chat. Trả "" thì nơi gọi giữ nguyên hành vi cũ
+    (cwd = brain), nên một phiên chat thường không đổi gì - và một phiên Coding CHƯA chọn thư
+    mục cũng chat được ngay, chỉ là đang đứng trong bộ não.
+
+    Worktree đã bị xoá tay ngoài giao diện thì suy biến về chính thư mục gốc thay vì ném lỗi:
+    mất một thư mục tạm không đáng để cả phiên không nhắn được.
+    """
+    rb = rang_buoc(sid)
+    # A GitHub repo as main folder works in this session's own worktree of it (0.362.0).
+    wts = rb.get("worktrees") if isinstance(rb.get("worktrees"), dict) else {}
+    wt_main = str(wts.get(rb.get("thu_muc") or "") or "")
+    if wt_main and Path(wt_main).is_dir():
+        return wt_main
+    wt = (rb.get("worktree") or "").strip()
+    if wt and Path(wt).is_dir():
+        return wt
+    r = thu_muc(rb.get("thu_muc") or "")
+    if r and Path(r["duong_dan"]).is_dir():
+        return r["duong_dan"]
+    return ""
+
+
+def _can_git(sid: str, viec: str) -> str:
+    """cwd của phiên, sau khi chắc chắn nó là repo git. Không phải thì nói rõ cách có được."""
+    cwd = cwd_cua_phien(sid)
+    if not cwd:
+        raise LoiCoding(localefmt.chu("Phiên này chưa gắn thư mục nào.", "This session has no folder attached."))
+    if not la_git(cwd):
+        raise LoiCoding(_loi_can_git(viec))
+    return cwd
+
+
+# ============================================================
+# Worktree
+# ============================================================
+def tao_worktree(sid: str) -> Dict[str, Any]:
+    """Mở một worktree riêng cho phiên, trên nhánh mới `javis/<phiên>` tách từ nhánh đã chọn.
+
+    Nhánh MỚI chứ không phải nhánh gốc: git từ chối checkout một nhánh ở hai worktree cùng
+    lúc, mà nhánh gốc thì gần như luôn đang được checkout ở cây chính.
+    """
+    rb = rang_buoc(sid)
+    r = thu_muc(rb.get("thu_muc") or "")
+    if not r:
+        raise LoiCoding(localefmt.chu("Phiên này chưa gắn thư mục nào.", "This session has no folder attached."))
+    cu = (rb.get("worktree") or "").strip()
+    if cu and Path(cu).is_dir():
+        return {"worktree": cu, "nhanh": rb.get("nhanh") or "", "da_co": True}
+    if not la_git(r["duong_dan"]):
+        raise LoiCoding(_loi_can_git("worktree"))
+    goc = (rb.get("nhanh") or nhanh_hien_tai(r["duong_dan"]) or "HEAD")
+    ten_nhanh = f"javis/{_sid_ngan(sid)}"
+    dich = WORKTREE_DIR / f"{r['id']}-{_sid_ngan(sid)}"
+    WORKTREE_DIR.mkdir(parents=True, exist_ok=True)
+    # Nhánh của phiên có thể ĐÃ TỒN TẠI: gỡ worktree không xoá nhánh, nên bật lại lần hai là
+    # `-b` nổ "a branch named ... already exists" và người dùng thấy một lỗi git thô cho một
+    # việc họ vừa làm được cách đó một phút. Có rồi thì checkout lại chính nó, và đó cũng là
+    # hành vi đúng: công việc dở dang của phiên nằm trên nhánh ấy.
+    da_co_nhanh = ten_nhanh in danh_sach_nhanh(r["duong_dan"])
+    them = ["worktree", "add"] + ([str(dich), ten_nhanh] if da_co_nhanh
+                                  else ["-b", ten_nhanh, str(dich), goc])
+    _git(them, r["duong_dan"])
+    dat_rang_buoc(sid, worktree=str(dich), nhanh=ten_nhanh)
+    return {"worktree": str(dich), "nhanh": ten_nhanh, "da_co": False}
+
+
+def go_worktree(sid: str, ep: bool = False) -> Dict[str, Any]:
+    """Gỡ worktree của phiên.
+
+    Còn sửa đổi chưa commit mà không `ep` thì TỪ CHỐI và nói rõ đang giữ ở đâu. Gỡ im lặng một
+    thư mục có việc dở là kiểu mất mát người dùng không bao giờ ngờ tới.
+    """
+    rb = rang_buoc(sid)
+    wt = (rb.get("worktree") or "").strip()
+    if not wt:
+        return {"da_go": False, "ly_do": localefmt.chu("Phiên này không có worktree.",
+                                                       "This session has no worktree.")}
+    r = thu_muc(rb.get("thu_muc") or "")
+    if not r:
+        raise LoiCoding(localefmt.chu("Phiên này chưa gắn thư mục nào.", "This session has no folder attached."))
+    if Path(wt).is_dir() and not ep and not cay_sach(wt):
+        return {"da_go": False, "giu_tai": wt,
+                "ly_do": localefmt.chu(f"Worktree còn sửa đổi chưa commit, đang giữ tại {wt}",
+                                       f"The worktree has uncommitted changes, kept at {wt}")}
+    _git(["worktree", "remove", "--force", wt], r["duong_dan"])
+    dat_rang_buoc(sid, worktree="")
+    return {"da_go": True}
+
+
+# ============================================================
+# Điểm hồi
+# ============================================================
+def _tag_moi(sid: str, cwd: str) -> str:
+    tien_to = f"javis/{_sid_ngan(sid)}/"
+    try:
+        da_co = _git(["tag", "--list", tien_to + "*"], cwd).splitlines()
+    except Exception:
+        da_co = []
+    so = 0
+    for t in da_co:
+        duoi = t.strip().rsplit("/", 1)[-1]
+        if duoi.isdigit():
+            so = max(so, int(duoi))
+    return f"{tien_to}{so + 1}"
+
+
+def tao_diem_hoi(sid: str) -> Dict[str, Any]:
+    """Đặt một tag lên HEAD hiện tại để rollback được. KHÔNG commit hộ.
+
+    Repo chưa có commit nào thì không có HEAD để gắn tag: nói thẳng chứ không ném lỗi git thô,
+    vì đây là cảnh có thật ở một thư mục vừa `git init`.
+    """
+    cwd = _can_git(sid, "điểm hồi")
+    try:
+        head = _git(["rev-parse", "HEAD"], cwd)
+    except LoiCoding:
+        raise LoiCoding(localefmt.chu("Repo chưa có commit nào nên chưa đặt được điểm hồi. "
+                                      "Commit lần đầu rồi thử lại.",
+                                      "The repo has no commits yet, so a restore point cannot be set. "
+                                      "Make the first commit and try again."))
+    tag = _tag_moi(sid, cwd)
+    _git(["tag", tag, head], cwd)
+    with _lock:
+        d = _load()
+        rec = dict(d["phien"].get(str(sid), {}))
+        ds = list(rec.get("diem_hoi") or [])
+        ds.append({"tag": tag, "commit": head, "luc": _now()})
+        rec["diem_hoi"] = ds[-20:]     # giữ 20 mốc gần nhất, đủ để lùi lại mà sổ không phình
+        rec.setdefault("muc_quyen", MUC_QUYEN_MAC_DINH)
+        d["phien"][str(sid)] = rec
+        _save(d)
+    return {"tag": tag, "commit": head, "cwd": cwd}
+
+
+def danh_sach_diem_hoi(sid: str) -> List[Dict[str, Any]]:
+    return list(rang_buoc(sid).get("diem_hoi") or [])
+
+
+def rollback(sid: str, tag: str) -> Dict[str, Any]:
+    """`git reset --hard <tag>`. Chỉ nhận tag CỦA CHÍNH phiên này.
+
+    Giới hạn đó không phải hình thức: nhận tag bất kỳ thì một cú bấm nhầm kéo cả cây về một
+    mốc của phiên khác, và `--hard` thì không hỏi lại.
+    """
+    tag = str(tag or "").strip()
+    cwd = _can_git(sid, "điểm hồi")
+    if tag not in {x.get("tag") for x in danh_sach_diem_hoi(sid)}:
+        raise LoiCoding(localefmt.chu("Điểm hồi đó không phải của phiên này.",
+                                      "That restore point does not belong to this session."))
+    _git(["reset", "--hard", tag], cwd)
+    return {"ok": True, "tag": tag, "cwd": cwd}
+
+
+# ============================================================
+# Khối prompt gắn vào lượt chat
+# ============================================================
+KHOI_PLAN = (
+    "Chế độ PLAN đang bật. Đọc mã nguồn, tìm hiểu, rồi TRẢ VỀ MỘT KẾ HOẠCH: sửa file nào, "
+    "vì sao, rủi ro gì, thứ tự làm. KHÔNG sửa file, không chạy lệnh thay đổi trạng thái. "
+    "Chờ người dùng duyệt rồi họ sẽ đổi sang Tự động."
+)
+
+
+def khoi_prompt(sid: str) -> str:
+    """Khối nói cho engine biết nó đang đứng ở đâu và được làm tới đâu. "" nếu không phải
+    phiên coding đã gắn thư mục.
+
+    Vì sao cần nói bằng lời chứ không chỉ đặt `cwd`: `cwd` quyết định nơi lệnh chạy, nhưng
+    model vẫn hay đoán đường dẫn từ những gì nó nhớ. Một dòng ghi rõ thư mục làm việc rẻ hơn
+    nhiều so với một lượt sửa nhầm file ở brain.
+    """
+    rb = rang_buoc(sid)
+    cwd = cwd_cua_phien(sid)
+    if not cwd:
+        return ""
+    mq = rb.get("muc_quyen") or MUC_QUYEN_MAC_DINH
+    dong = [
+        "",
+        "# === PHIÊN CODING ===",
+        f"Thư mục làm việc: {cwd}",
+    ]
+    # Thư mục PHỤ (0.63.8). Engine chỉ đứng được ở MỘT chỗ, nên các thư mục còn lại đi vào
+    # prompt bằng đường dẫn tuyệt đối. Đường chat chạy ở mức bỏ qua hỏi quyền nên engine có
+    # shell đọc ghi được chúng bình thường; engine chỉ có API thì không, xem ghi chú ở dưới.
+    phu = [r["lam_viec"] for r in thu_muc_cua_phien(sid)
+           if r["lam_viec"] != cwd and Path(r["lam_viec"]).is_dir()]
+    if phu:
+        dong.append("Thư mục khác cũng thuộc việc này, dùng ĐƯỜNG DẪN TUYỆT ĐỐI để đọc và sửa:")
+        dong += [f"  - {p}" for p in phu]
+        dong.append("Khi việc đụng tới nhiều thư mục, nói rõ mình đang sửa file ở thư mục nào.")
+    if la_git(cwd):
+        nh = nhanh_hien_tai(cwd)
+        if nh:
+            dong.append(f"Nhánh git: {nh}")
+        if phu:
+            dong.append("Thao tác git (nhánh, worktree, điểm hồi) chỉ chạy ở thư mục làm việc.")
+    if mq == "suggest":
+        dong.append(KHOI_PLAN)
+    elif mq == "auto":
+        dong.append("Mức Tự động: sửa file và chạy test trong thư mục này được. "
+                    "KHÔNG commit, không push, không deploy.")
+    else:
+        dong.append("Mức Toàn quyền: được commit, push và deploy khi việc yêu cầu.")
+    return "\n".join(dong) + "\n"
+
+
+def pinned_folder_prompt(sid: str, brain_root: str) -> str:
+    """Prompt block for a NORMAL chat that has a pinned working folder (0.158.0).
+
+    Unlike `khoi_prompt` it never states a permission level: a normal chat keeps running at
+    `full`, and a line about Plan or Auto would contradict what the hub actually allows. The
+    brain-relative path matters for API brains, whose file tools are rooted at the brain.
+    Returns "" when the session has no folder or the folder no longer exists on disk.
+    The text stays Vietnamese like `khoi_prompt`: it is prompt content, not code.
+    """
+    cwd = cwd_cua_phien(sid)
+    if not cwd:
+        return ""
+    lines = ["", "# === THƯ MỤC LÀM VIỆC ===", f"Thư mục làm việc: {cwd}"]
+    rel = ""
+    if brain_root:
+        try:
+            rel = Path(cwd).resolve().relative_to(Path(brain_root).resolve()).as_posix()
+        except (ValueError, OSError):
+            rel = ""
+    if rel and rel != ".":
+        lines.append(f"Thư mục này nằm trong brain: {rel} (công cụ file của brain dùng đường dẫn này).")
+    extra = [r["lam_viec"] for r in thu_muc_cua_phien(sid)
+             if r["lam_viec"] != cwd and Path(r["lam_viec"]).is_dir()]
+    if extra:
+        lines.append("Thư mục khác cũng thuộc việc này, dùng ĐƯỜNG DẪN TUYỆT ĐỐI:")
+        lines += [f"  - {p}" for p in extra]
+    if la_git(cwd):
+        branch = nhanh_hien_tai(cwd)
+        if branch:
+            lines.append(f"Nhánh git: {branch}")
+    lines.append("Đọc, sửa và tạo file trong thư mục này trừ khi người dùng nói khác.")
+    return "\n".join(lines) + "\n"

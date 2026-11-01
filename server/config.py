@@ -1,0 +1,1667 @@
+"""
+Cấu hình tập trung của Javis OS - đọc/ghi server/settings.json (gitignored, chứa secret).
+Gồm: workspace, tài khoản admin (mật khẩu hash), model engine, telegram.
+Auth CHỈ bật khi đã đặt mật khẩu → bản local chưa đặt vẫn chạy như cũ.
+"""
+import json
+import os
+import threading
+import time
+import hashlib
+import secrets
+from pathlib import Path
+
+# Mọi state Javis tự ghi (settings, auth sessions, loop config) nằm ở JAVIS_STATE_DIR.
+# Mặc định = server/ (không đổi trên máy cũ). Docker/VPS đặt = /data/state (volume ghi được,
+# vì code tree /app là read-only trong container).
+STATE_DIR = Path(os.getenv("JAVIS_STATE_DIR", str(Path(__file__).parent)))
+try:
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass
+
+SETTINGS_PATH = STATE_DIR / "settings.json"
+# Logo/avatar tùy chỉnh (đổi qua UI) lưu ở đây - ghi được + giữ qua update (Docker volume),
+# vì code tree dashboard/ là read-only trong container.
+BRANDING_DIR = STATE_DIR / "branding"
+
+_DEFAULT = {
+    "workspace_name": "Javis OS",
+    "setup_done": False,                       # đã qua bộ cài đặt lần đầu chưa
+    # totp = xác thực 2 lớp. secret rỗng / enabled=false → cổng đăng nhập giữ nguyên như cũ.
+    # `recovery` giữ BẢN BĂM của mã khôi phục (cùng cách băm mật khẩu), nên không có đường nào
+    # đọc lại mã thô - chúng chỉ hiện đúng một lần lúc sinh ra.
+    # `last_step` là bước thời gian TOTP đã dùng lần gần nhất: chống dùng lại một mã còn hạn.
+    "auth": {"username": "", "password_hash": "", "salt": "",
+             "totp": {"enabled": False, "secret": "", "recovery": [], "last_step": 0}},
+    # Logo/avatar hiển thị (góc trên, thanh bên, màn đăng nhập). logo_ext rỗng = dùng ảnh mặc định.
+    "branding": {"logo_ext": "", "logo_v": 0},
+    # Tên miền riêng cho HTTPS tự động (Caddy On-Demand TLS hỏi /tls-check trước khi xin cert).
+    "domain": {"custom": ""},
+    # Ngôn ngữ và locale. TÁCH BA BIẾN có chủ ý (spec đa ngôn ngữ mục 4.1):
+    #   ui_lang     chữ trên màn hình      - "" = chưa ai chọn: dashboard đoán theo trình duyệt
+    #               rồi ghi lại đây (0.66.0). Bản cài cũ đã lưu "vi" nên không bị đổi.
+    #   reply_lang  Javis trả lời          - "auto" = bám theo ngôn ngữ người dùng đang viết
+    #   tz/currency locale, KHÁC ngôn ngữ  - người dùng tiếng Anh ở VN vẫn xài UTC+7 và VND
+    # Gộp ba cái làm một là chặn đứng ca dùng đáng tiền nhất: chủ Việt, giao diện Việt, brain
+    # Việt, nhưng chatbot đối ngoại trả lời tiếng Nhật.
+    "locale": {
+        "ui_lang": "",
+        "reply_lang": "auto",              # auto | vi | en
+        "tz": "Asia/Ho_Chi_Minh",
+        "currency": "VND",
+    },
+    # Nhà cung cấp giọng đọc (TTS). edge = Edge TTS miễn phí (mặc định, dự phòng).
+    # openai = OpenAI TTS (dùng model.openai_api_key). elevenlabs = ElevenLabs (key riêng).
+    "voice": {
+        "tts_provider": "edge",                       # edge | openai | elevenlabs
+        "openai_tts_voice": "alloy",                  # alloy|echo|fable|onyx|nova|shimmer|ash|sage|coral
+        "openai_tts_model": "gpt-4o-mini-tts",        # hoặc tts-1 / tts-1-hd
+        "elevenlabs_key": "",
+        "elevenlabs_voice": "21m00Tcm4TlvDq8ikWAM",   # Rachel (premade, đa ngôn ngữ) - đổi được
+        "elevenlabs_model": "eleven_flash_v2_5",      # speaks Vietnamese (multilingual_v2 does not), tts_eleven.py
+        # --- Voice V2 (docs/dev/2026-10-voice-call-spec.md mục 3.1 và 5) ---
+        # standard | fast | live. Mặc định Làn nhanh (chủ dự án chốt 17/09). Chưa chọn bộ não
+        # giọng thì tin từ mic vẫn đi bộ não chính y như chế độ chuẩn (xem _bao_lan_nhanh_bo_qua
+        # trong main.py), nên cài đặt cũ thiếu khoá này không đổi hành vi.
+        "mode": "fast",
+        "brain_provider": "",          # "" = bộ não chính | antigravity | groq | gemini | openai | openrouter
+        "brain_model": "",             # rỗng = mặc định của provider (antigravity: gemini flash low)
+        # Khoá CŨ, thay bằng `voice.ear` (auto | groq | off) từ 0.65.15. CỐ Ý không đặt mặc định
+        # cho `ear` ở đây: khoá thiếu nghĩa là "auto", còn stt_provider = "groq" người dùng đã
+        # lưu thì voice_ear.setting vẫn coi là đã chọn Groq. Có mặc định thì mất phân biệt đó.
+        "stt_provider": "browser",     # browser (Web Speech) | groq (Whisper, key model.groq_api_key)
+        "stt_model": "",               # rỗng = whisper-large-v3 (stt.STT_MODEL_MAC_DINH)
+        "live_provider": "gemini",     # gemini | openai (đều cần API key ở trang Models)
+        "live_model": "",              # rỗng = gợi ý trong voice_live.PROVIDERS
+        "live_voice": "",
+        "live_proactive": True,        # Live qua API: bỏ qua tiếng không nói với Javis (TV, người bên cạnh)
+        "live_turn": "normal",         # fast | normal | slow: nhịp trả lời của Live qua API
+    },
+    "model": {
+        # --- Mô hình MAIN MODEL theo provider (mới) ---
+        # Rỗng = suy ra từ legacy engine (config cũ không vỡ); UI set vào đây khi user đổi model.
+        "main": {"provider": "", "model": ""},
+        # Model phụ cho việc NỀN (loop/metrics/ingest) - alias Claude qua CLI. "" = dùng mặc định
+        # (không đổi). Đặt model rẻ (vd haiku) để tiết kiệm khi chạy nền nhiều.
+        "auxiliary": {"model": ""},
+        # Model RIÊNG cho kênh Telegram. provider rỗng = THEO model chính (mặc định, không đổi
+        # gì cho người đang dùng). Đặt provider = GHIM: đổi model trên web không kéo Telegram
+        # theo nữa, và /model trên Telegram sửa ô này chứ không sửa model chính. Ra đời 02/09:
+        # chủ repo đổi model liên tục trên web để thử (cả model local chạy 2-8 chữ/giây), mỗi
+        # lần thử là điện thoại của cả nhà bị kéo theo.
+        "telegram": {"provider": "", "model": ""},
+        # --- Tiền bạc: những gì Javis KHÔNG tự biết được và phải hỏi người dùng ---
+        # Nhà cung cấp không cho lấy giá gói hay hạn mức gói qua API, nên bốn số này là do
+        # người dùng khai. Để 0 = chưa khai, và trang Mức dùng phải nói "chưa khai" chứ đừng
+        # đoán bừa rồi hiện một con số trông như thật.
+        #   gia_goi_thang_usd: tiền gói thuê bao trả mỗi tháng (Claude Max, ChatGPT Plus...).
+        #                      Có nó mới tính được gói đang lời hay lỗ so với giá API.
+        #   ngan_sach_thang_usd: trần TIỀN MẶT mỗi tháng cho các nhánh dùng API key.
+        #   tu_phanh: chạm trần thì tự đẩy VIỆC NỀN sang đường không tốn tiền (xem aux_engine).
+        #             Mặc định tắt - tự đổi model sau lưng người dùng là việc phải xin phép.
+        #   tran_5h: hạn mức token của một cửa sổ 5 giờ, nếu người dùng biết số của gói mình.
+        "gia_goi_thang_usd": 0,
+        "ngan_sach_thang_usd": 0,
+        "tu_phanh": False,
+        "tran_5h": 0,
+        # Báo cáo token hàng tuần tự đẩy về chat (thứ Hai 8h sáng). "" = tắt; "auto" = gửi về
+        # kênh mặc định; hoặc ghi thẳng nơi nhận ("web:<sid>", chat_id Telegram, "zalo:<id>").
+        "bao_cao_tuan": "",
+        # Độ sâu suy nghĩ (reasoning/thinking) khi trả lời chat: off | low | medium | high.
+        # Anthropic API/OpenRouter → adaptive thinking + effort; OpenAI → reasoning_effort (chỉ o-series);
+        # Claude Code CLI → chèn từ khoá think/ultrathink vào prompt. off = trả lời nhanh như cũ.
+        "reasoning": "off",
+        "fast": False,   # Fast mode (composer bolt, 0.153.0): faster, costs more
+        # --- Credentials theo provider ---
+        # Gói Claude Code (provider 'anthropic-cli') xác thực bằng CÁI GÌ:
+        #   "subscription" (mặc định) - phiên đăng nhập của chính Claude Code, tức gói Pro/Max
+        #       người dùng đang trả. Javis KHÔNG đọc token đó nữa; nó chỉ chạy binary `claude`
+        #       và để chính sản phẩm của Anthropic lo đăng nhập.
+        #   "api_key" - truyền `anthropic_api_key` xuống cho binary `claude` qua biến môi
+        #       trường, tức trả tiền theo lượt dùng qua Claude Console. Đây là đường Anthropic
+        #       chỉ định cho sản phẩm bên thứ ba (xem claude_auth.CANH_BAO_SUBSCRIPTION).
+        # Đổi ở trang Models. Cả hai đều giữ NGUYÊN năng lực: Bash, WebFetch, MCP, nối phiên cũ.
+        "claude_auth": "subscription",
+        # Daily `claude update` (claude_update.py). The switch sits on the Claude Code card of the
+        # Models page; env JAVIS_CLAUDE_AUTO_UPDATE=0 still forces it off over this value.
+        "claude_auto_update": True,
+        "openrouter_key": "",
+        "anthropic_api_key": "",               # provider Anthropic API (P2)
+        "openai_api_key": "",                  # provider OpenAI (ChatGPT API)
+        "gemini_api_key": "",                  # provider Google Gemini (endpoint OpenAI-compat)
+        "groq_api_key": "",                    # provider Groq (endpoint OpenAI-compat, suy luận rất nhanh)
+        "deepseek_api_key": "",                # provider DeepSeek (endpoint OpenAI-compat)
+        # Provider 'ollama' = Ollama Cloud (ollama.com). Bản chạy trên máy nhà KHÔNG được đấu,
+        # cố ý: nó đòi thêm một ô địa chỉ - ca đặc biệt duy nhất của cả lớp nhà cung cấp -
+        # trong khi phần đông người dùng Javis chạy nó trên VPS, nơi "localhost" là chính cái
+        # container chứ không phải máy họ.
+        "ollama_key": "",
+        # Provider 'openai-compat': MỘT endpoint bất kỳ nói chuẩn OpenAI Chat Completions
+        # (LiteLLM, vLLM, proxy tự dựng...). Base URL tính tới /v1, Javis tự nối /chat/completions
+        # và /models. Key có thể rỗng nếu endpoint không đòi xác thực.
+        "openai_compat_base": "",
+        "openai_compat_key": "",
+        # Provider 'anthropic-compat' (0.254.0): ONE gateway speaking the Anthropic Messages API
+        # (resellers of Claude, DeepSeek/Kimi/MiniMax "anthropic" endpoints...). The base URL has
+        # the shape of Claude Code's ANTHROPIC_BASE_URL (no /v1); Javis appends /v1/messages.
+        "anthropic_compat_base": "",
+        "anthropic_compat_key": "",
+        # --- Ollama chạy trên MÁY NHÀ (provider 'ollama-local') ---
+        # Ca đặc biệt mà khối chú thích ngay trên vừa từ chối, nay mở ra nhưng KHÔNG bằng cách
+        # giả định "localhost là máy người dùng". Cái Javis lưu là một ĐỊA CHỈ người dùng tự
+        # khai: có thể là máy đang chạy Javis (bản native), có thể là một máy khác trong nhà.
+        # Nhờ vậy bản Docker/VPS cũng dùng được - trỏ sang máy để bàn ở nhà là xong.
+        "ollama_local_endpoint": "",           # vd http://127.0.0.1:11434 hoặc http://192.168.1.20:11434
+        "ollama_local_key": "",                # chỉ cần khi Ollama nấp sau reverse proxy có auth
+        # Cấu hình máy CHẠY OLLAMA, để gợi ý model vừa sức. `source`:
+        #   auto    - Javis tự đọc được (chỉ khi endpoint là localhost VÀ Javis chạy native)
+        #   manual  - người dùng tự khai (mọi trường hợp còn lại)
+        #   unknown - chưa biết, gợi ý ở mức an toàn
+        "ollama_local_specs": {"source": "unknown", "ram_gb": 0, "has_gpu": False, "vram_gb": 0},
+        # Provider 'openai-oauth' - đăng nhập ChatGPT Plus/Pro qua device-code (xem openai_oauth.py).
+        "openai_oauth": {"access_token": "", "refresh_token": "", "id_token": "", "account_id": "", "plan": "", "expires_at": 0},
+        # --- Legacy: giữ đồng bộ với main để engine cũ không vỡ (engine/claude_model/openrouter_model) ---
+        "engine": "cli",                       # cli (Claude Code, đủ MCP) | openrouter | anthropic-api
+        "claude_model": "",                    # "" = mặc định CLI; hoặc opus/sonnet/haiku/fable
+        "openrouter_model": "openai/gpt-4o-mini",
+        # Catalog model theo provider (Telegram /model dùng key 'claude'+'openrouter'; picker dùng cả 3).
+        "catalog": {
+            # anthropic-cli: danh sách nền, LUÔN dùng được kể cả khi máy không có API key.
+            # /provider/models lấy danh sách THẬT theo hai đường (API key nếu có, không thì đọc
+            # danh mục model nhúng trong chính binary `claude`) rồi ghi lại vào đây. Danh sách
+            # nhớ được KHÔNG đè danh sách này nữa mà HỢP với nó (xem `provider_models_index`),
+            # vì lần ghi đầu tiên từng khoá vĩnh viễn người dùng vào dàn model của ngày hôm đó.
+            # Alias đứng trước vì alias luôn trỏ bản mới nhất của dòng; id đầy đủ đứng sau để
+            # `_claude_api_model` dịch được alias sang tên thật.
+            "claude": ["fable", "opus", "sonnet", "haiku",
+                       "claude-opus-5-5", "claude-sonnet-5-5", "claude-fable-5-1",
+                       "claude-opus-5", "claude-sonnet-5",
+                       "claude-opus-4-8", "claude-sonnet-4-6", "claude-haiku-4-5"],
+            "anthropic-api": ["claude-opus-5-5", "claude-sonnet-5-5", "claude-fable-5-1",
+                              "claude-opus-5", "claude-sonnet-5",
+                              "claude-opus-4-8", "claude-sonnet-4-6", "claude-haiku-4-5"],
+            "openai": ["gpt-4o", "gpt-4o-mini", "o3-mini"],                        # OpenAI API
+            "gemini": ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"],  # Google Gemini API (picker load động)
+            "groq": ["llama-3.3-70b-versatile", "qwen3-32b", "openai/gpt-oss-120b"],  # Groq (picker load động)
+            "deepseek": ["deepseek-flash", "deepseek-v4-pro"],                     # DeepSeek (picker load động)
+            # Không ghim model Codex: /provider/models lấy catalog LIVE bằng
+            # codex app-server model/list và nhớ lại lần thành công gần nhất.
+            "openai-oauth": [],
+            # Antigravity CLI: model hoi thang `agy models`, KHONG chep tay bang nao o day.
+            "antigravity-cli": [],
+            # Grok Build CLI: cung ly do, /provider/models hoi CLI roi nho lai.
+            "grok-cli": [],
+            "openrouter": ["openai/gpt-4o-mini", "anthropic/claude-3.5-sonnet", "google/gemini-2.0-flash-001", "deepseek/deepseek-chat"],
+        },
+    },
+    # Ảnh sinh bằng javis_generate_image.
+    # strip_c2pa: gỡ Content Credentials (C2PA) - dấu nguồn gốc do nhà cung cấp ảnh nhúng sẵn
+    # để nói "ảnh này do AI tạo". MẶC ĐỊNH TẮT: giữ nguyên dấu là hành vi an toàn, và bản fork
+    # nào cũng bắt đầu ở trạng thái này. Bật lên là quyết định CÓ Ý THỨC của chủ workspace,
+    # kèm trách nhiệm tự công bố nội dung AI theo luật/điều khoản nền tảng nơi họ đăng.
+    "image": {"strip_c2pa": False},
+    # Vùng cache media của brain: attachments/ + inbox/. Ảnh là NGUYÊN LIỆU đi qua, không
+    # phải tri thức - đọc xong rút thành .md là đủ dùng, nên chúng tự hết hạn thay vì nằm
+    # mãi làm phình đĩa VPS. Muốn giữ ảnh lâu dài thì đấu kho ngoài (Drive), đừng để Javis ôm.
+    # max_age_days / max_mb <= 0 = tắt luật tương ứng. enabled=False = không dọn gì cả.
+    # staging_days: hạn RIÊNG cho STATE_DIR/.staging - nơi file dán vào khung chat rơi xuống.
+    # Ngắn hơn hẳn vì đó là chỗ trung chuyển một lượt chat, không ai mở lại bao giờ.
+    # Kho gói: một tệp JSON công khai. Đổi được sang kho khác; rỗng thì dùng kho
+    # mặc định của Javis. Xem docs/dev/pack-store-index.md.
+    "packs": {"store_url": "", "tokens": {}},
+    "media": {"enabled": True, "max_age_days": 30, "max_mb": 300, "staging_days": 3},
+    "telegram": {"enabled": False, "token": "", "chat_id": ""},
+    # Kênh Zalo Bot của CHỦ (API chính thức bot.zaloplatforms.com). Cùng hình dạng với telegram
+    # để trang Kênh và mọi chỗ định tuyến thông báo chỉ phải học một khuôn.
+    #
+    # `chat_id` là whitelist, và trên Zalo nó là chuỗi HEX chứ không phải số. Zalo KHÔNG có
+    # công cụ kiểu @userinfobot để tự tra id của mình, nên đừng bắt user đi tìm: người lạ nhắn
+    # cho bot thì Javis đưa họ vào hàng chờ kèm mã ghép nối, chủ bấm một nút là xong.
+    # Xem `_ZALO_CHO` trong main.py.
+    "zalo_bot": {"enabled": False, "token": "", "chat_id": ""},
+    # Owner's control channels on Slack (Socket Mode) and WhatsApp (Cloud API), 0.71.0. `allow`
+    # is the allow-list: Slack user ids (U...) / phone numbers. Empty = nobody (fail-closed,
+    # strangers get a pairing code, see server/owner_channels.py). `verify_token` is the
+    # handshake string Meta sends when the webhook is set up; it is generated, not secret.
+    "slack": {"enabled": False, "bot_token": "", "app_token": "", "allow": ""},
+    "whatsapp": {"enabled": False, "phone_number_id": "", "access_token": "", "app_secret": "",
+                 "allow": "", "verify_token": ""},
+    # Discord (Gateway, bot token) and Lark/Feishu (long connection, app id + secret), 0.85.0.
+    # Same rules as Slack: `allow` holds people (Discord user ids / Lark open_ids), empty = nobody.
+    # `domain` picks the Lark cloud: "lark" (open.larksuite.com) or "feishu" (open.feishu.cn).
+    # Messenger (0.134.0): customer bots only, credentials live in the channel-account store.
+    # This holds just the handshake string Meta echoes when the webhook is set up (generated).
+    "messenger": {"verify_token": ""},
+    # Zalo OA (0.412.0): customer bots only, credentials live in the channel-account store. This
+    # holds the domain verification codes Zalo gives (served as /zalo_verifier<code>.html).
+    "zalo_oa": {"site_codes": []},
+    "discord": {"enabled": False, "bot_token": "", "allow": ""},
+    "lark": {"enabled": False, "app_id": "", "app_secret": "", "domain": "lark", "allow": ""},
+    # Backup brain lên GitHub (repo RIÊNG TƯ). token = GitHub PAT (fine-grained, quyền Contents).
+    # Lưu trong settings.json (đã gitignored) - KHÔNG bao giờ đẩy lên brain repo.
+    # sync_images: đồng bộ CẢ ẢNH (jpg/png/gif/webp, mỗi ảnh <= trần ~10MB) lên repo backup.
+    # MẶC ĐỊNH TẮT vì git nhớ mãi mãi - bật là ảnh nằm vĩnh viễn trong lịch sử repo, tắt sau
+    # không đòi lại dung lượng. Dùng nhiều máy chung repo thì bật trên MỌI máy (dù đã có rào
+    # chống máy tắt xoá chéo ảnh của máy bật - xem git_brain._sync_mirror). Khi bật, máy dọn
+    # media tự BỎ QUA attachments/ để ảnh vừa backup không bị dọn rồi lệnh xoá lan đi các máy.
+    "backup": {"enabled": False, "repo_url": "", "token": "", "branch": "main",
+               "interval_hours": 6, "sync_images": False,
+               "last_backup": 0.0, "last_status": ""},
+    "dashboard": {
+        # graph_enabled=False → vào thẳng Console, KHÔNG dựng đồ thị (nhẹ cho VPS/điện thoại).
+        # Frontend cũng tự ép lite-mode khi màn hình hẹp dù cờ này bật.
+        "graph_enabled": True,
+        # Vấp "hết lượt gói thuê bao" thì tự chạy lại câu hỏi khi hạn mức mở. Ô trên thẻ hết
+        # lượt trong khung chat đổi giá trị này.
+        "auto_resume": True,
+    },
+    # MCP do Javis quản lý (registry connection ở mcp_servers.json). strict=True → CHỈ dùng
+    # kết nối của Javis (--strict-mcp-config), bỏ qua config MCP sẵn có của máy.
+    # hub=True (mặc định): mọi engine đấu qua MCP HUB (1 entry "javis" - đa tài khoản, quyền,
+    # audit tại hub). Đặt false để về chế độ cũ (per-server) nếu gặp sự cố.
+    # lazy_tools: chống phình context khi đấu nhiều connector. "auto" = tự bật khi số tool
+    # MCP vượt lazy_threshold (mặc định); True/False = ép bật/tắt. Khi bật, hub chỉ phơi
+    # 2 meta-tool javis_search_tools/javis_run_tool thay cho hàng trăm schema -> model tự
+    # tìm tool theo NGỮ CẢNH rồi mới nạp. lazy_top_k = số tool search trả về mỗi lần.
+    # ambient_hint: kèm connector đấu vào TÀI KHOẢN Claude (Drive/Gmail...) vào javis_connections
+    # + lazy search cho engine Claude, để model biết chúng tồn tại (gọi qua tool native mcp__*).
+    # lazy_char_budget: trần KÝ TỰ schema tool được phơi thẳng trước khi ép bật lazy. Đếm số
+    # tool không nói lên chi phí (một javis_use_skill nhúng cả danh sách skill có thể nặng hơn
+    # mười tool gọn), nên 'auto' xét cả hai: đông tool HOẶC schema nặng.
+    "mcp": {"strict": False, "hub": True, "lazy_tools": "auto", "lazy_threshold": 40,
+            "lazy_top_k": 8, "lazy_char_budget": 6000, "ambient_hint": True},
+    # Adaptive Context Runtime Phase 0-8. Mọi canary rollout mặc định bằng 0 và mode
+    # vẫn shadow, nên production chưa đổi dispatch. Muốn canary phải đồng thời đổi mode=canary,
+    # allocation_basis_points > 0 và khai hard quota trong quota_profiles.
+    "context_runtime": {
+        "mode": "shadow",
+        "retention_days": 14,
+        "export_enabled": False,
+        "estimate_chars_per_token": 3.0,   # heuristic observe-only, reconcile bằng usage thật
+        # CHỮ KÝ lựa chọn mức tiết kiệm của người dùng. Rỗng = chưa ai chọn, mức đang chạy
+        # chỉ là mặc định của bản đã cài. Xem `_ap_muc_mac_dinh` để biết vì sao thiếu trường
+        # này thì mọi lần đổi mặc định về sau đều không tới được máy đã cài.
+        # source: "user" (người dùng tự bấm/tự đổi) | "" (chưa chọn bao giờ).
+        "preset_choice": {"level": "", "source": "", "at": ""},
+        "canary": {
+            "policy_version": "fast-path-canary-v1",
+            "allocation_basis_points": 0,  # 100 = 1%; hash ổn định theo session
+            "salt": "fast-path-canary-v1",
+            # Telegram và CLI cũng đi được đường tắt. Tới 0.23.1 danh sách này chỉ có
+            # "dashboard", nên người dùng bấm mức Siêu tiết kiệm rồi nhắn qua Telegram
+            # vẫn gửi nguyên CLAUDE.md mỗi lượt - trang Cài đặt báo đã bật, mà kênh họ
+            # dùng nhiều nhất thì không đi qua dòng code nào của nó.
+            "channels": ["dashboard", "telegram", "cli"],
+            # Cả ba loại bộ não. "oauth" (gói ChatGPT) gọi thẳng qua Codex Responses, "cli"
+            # (gói Claude Code) gọi thẳng qua Messages API bằng chính access token OAuth mà
+            # CLI đã lưu. Bản trước để "cli" ngoài danh sách vì chưa có đường gọi thẳng nào
+            # không cần API key; nay có rồi, và nếu token hỏng thì lượt đó tự lui về đường
+            # thường chứ không ném lỗi ra cho người dùng.
+            "provider_kinds": ["api", "oauth", "cli"],
+            "registry_max_age_seconds": 900,
+            "estimator_safety_factor": 1.35,
+            "max_objective_chars": 12000,
+            # Điểm khớp tối thiểu để coi là "câu này có thể cần tool" và nhường đường thường.
+            # Xét ĐIỂM chứ không xét số ứng viên dò trúng chữ: máy đấu vài trăm tool MCP thì
+            # câu nào cũng dò trúng vài cái qua một từ chung, và đường tắt sẽ không bao giờ
+            # chạy. Hạ số này = đi tắt nhiều hơn nhưng dễ trả lời hụt; nâng lên = an toàn hơn
+            # nhưng tiết kiệm ít đi. Cùng thang điểm với readonly_canary.min_resolver_score.
+            "min_resolver_score": 0.45,
+            # Không hardcode quota thương mại. Operator thêm rule versioned theo tài khoản thật:
+            # {"id":"groq-free", "provider":"groq", "model_pattern":"llama-*",
+            #  "rolling_tpm":12000, "context_window":131072,
+            #  "reserved_output_tokens":1200, "window_seconds":60}
+            "quota_profiles": [],
+        },
+        # Phase 6: đúng một capability read-only, một vòng lập arguments và một vòng tổng hợp.
+        # Chỉ capability khớp capability_profiles mới được chạy. Danh sách rỗng là fail-closed.
+        "readonly_canary": {
+            "policy_version": "readonly-single-step-v1",
+            "allocation_basis_points": 0,
+            "salt": "readonly-single-step-v1",
+            "channels": ["dashboard"],
+            "provider_kinds": ["api"],
+            "registry_max_age_seconds": 900,
+            "min_resolver_score": 0.45,
+            "estimator_safety_factor": 1.35,
+            # Nếu để trống, quota dùng các rule Phase 5 ở trên.
+            "quota_profiles": [],
+            # Ví dụ allowlist: id, source_type, name_pattern, timeout_seconds,
+            # excerpt_chars, lease_ttl_seconds, max_artifact_bytes, retention_seconds.
+            "capability_profiles": [],
+        },
+        # Phase 7: planner manifest nhỏ -> exact schema theo step -> evidence bundle.
+        # Canary và allowlist riêng Phase 6. quota profile phải có giá input/output thật để
+        # monetary budget fail-closed; repository không đoán giá hay quota theo tên provider.
+        "orchestrator_canary": {
+            "policy_version": "readonly-orchestrator-v1",
+            "allocation_basis_points": 0,
+            "salt": "readonly-orchestrator-v1",
+            "channels": ["dashboard"],
+            "provider_kinds": ["api"],
+            "registry_max_age_seconds": 900,
+            "min_resolver_score": 0.32,
+            "estimator_safety_factor": 1.35,
+            "max_candidate_manifests": 8,
+            "max_cycles": 2,
+            "max_total_steps": 6,
+            "max_parallel": 3,
+            "max_model_rounds": 10,
+            "max_evidence": 8,
+            "max_task_input_tokens": 20000,
+            "max_task_output_tokens": 6000,
+            "max_cost_usd": 0.05,
+            "deadline_seconds": 90,
+            # Resume sau restart cần cửa sổ deadline mới, nếu không task chết lâu hơn
+            # deadline là không bao giờ resume được. Có trần để một task hỏng không
+            # được hồi sinh mãi.
+            "max_deadline_extensions": 2,
+            "planner_output_tokens": 600,
+            "argument_output_tokens": 500,
+            "min_information_gain": 0.20,
+            "per_evidence_excerpt_chars": 2500,
+            "failure_repeat_limit": 2,
+            # Có thể dùng quota Phase 5, nhưng rule Phase 7 chỉ hợp lệ nếu thêm:
+            # input_cost_per_million và output_cost_per_million.
+            "quota_profiles": [],
+            # Danh sách rỗng luôn fail-closed. Mỗi group có thể giới hạn args/TTL/timeout riêng.
+            "capability_profiles": [],
+        },
+        # Phase 10: workflow chạy qua đồ thị có checkpoint thay vì vòng lặp không trạng thái.
+        # Danh sách slug rỗng = fail-closed. Node ghi LUÔN dừng hỏi người dùng, cờ dưới
+        # chỉ quyết định workflow CÓ node ghi được chạy tới chỗ hỏi hay bị chặn từ đầu.
+        "workflow_canary": {
+            "policy_version": "workflow-graph-canary-v1",
+            "allocation_basis_points": 0,
+            "salt": "workflow-graph-canary-v1",
+            "allowed_slugs": [],
+            "max_nodes": 24,
+            "max_parallel": 3,
+            "node_timeout_seconds": 300,
+            "max_nesting_depth": 1,
+            "allow_write_nodes": False,
+        },
+        # Phase 11: agent = workflow có quyền tự lập lại kế hoạch. Tập quyền được ghim
+        # từ đồ thị gốc và KHÔNG BAO GIỜ nới ra khi replan. Danh sách rỗng = fail-closed.
+        "agent_canary": {
+            "policy_version": "agent-replan-canary-v1",
+            "allocation_basis_points": 0,
+            "salt": "agent-replan-canary-v1",
+            "allowed_slugs": [],
+            "max_replan_rounds": 2,
+            "max_total_nodes": 24,
+            "max_nodes_per_replan": 3,
+            "failure_repeat_limit": 2,
+        },
+        # Phase 12: chọn model theo từng bước. Lọc năng lực TRƯỚC, xếp hạng giá SAU -
+        # rẻ hơn không bao giờ thắng nếu thiếu năng lực bắt buộc (spec mục 9.3).
+        # Không đoán năng lực theo tên model: rule nào không khai `supports` thì coi
+        # như không có năng lực đó. Danh sách rỗng = giữ nguyên model người dùng chọn.
+        "model_router_canary": {
+            "policy_version": "model-router-canary-v1",
+            "allocation_basis_points": 0,
+            "salt": "model-router-canary-v1",
+            "step_kinds": ["model_step"],
+            "allow_downgrade_on_risk": False,
+            # Ví dụ một rule: {"id":"...", "provider":"groq", "model":"llama-3.3",
+            #  "supports":["tools"], "context_window":131072,
+            #  "input_cost_per_million":0.59, "output_cost_per_million":0.79,
+            #  "latency_hint_ms":1200, "reliability":0.99, "data_classes":[]}
+            "models": [],
+        },
+        # Phase 8 dùng hard quota operator khai báo; không đoán TPM/context theo tên model.
+        # Có thể để trống để dùng quota_profiles của Fast Path ở trên.
+        "context_sources": {"quota_profiles": []},
+        # NGÂN SÁCH NGỮ CẢNH cho engine chạy bằng GÓI THUÊ BAO (Claude Code, ChatGPT/Codex).
+        #
+        # Vì sao phải có mục riêng: quota_profiles ở trên khai hạn mức THƯƠNG MẠI (token mỗi
+        # phút, giá tiền) - thứ chỉ tài khoản API mới có và mới tra được. Gói thuê bao không
+        # công bố con số nào tương đương, nên đòi khai nó là ép người vận hành bịa số, và
+        # fail-closed sẽ cho mọi lượt Claude Code rơi về đường cũ mãi mãi.
+        #
+        # Ở đây chỉ khai TRẦN NGỮ CẢNH - thứ có thật, tra được, và không dính gì tới tiền.
+        # Nó cho Context Compiler một ngân sách để CHỌN LỌC nguồn, chứ không dùng để chặn
+        # lượt chat: xem AdaptiveContextCanary._quota và nhánh subscription_soft.
+        # 180k là mức thận trọng dưới cửa sổ 200k của các model Claude đang bán.
+        "subscription_context": {
+            "context_window": 180000,
+            "reserved_output_tokens": 8000,
+        },
+        # TRẦN NGỮ CẢNH MẶC ĐỊNH cho engine dùng API KEY, khi chưa biết gì khác.
+        #
+        # Vì sao phải có: cùng một lỗ hổng như trần thuê bao ở trên, nhưng ở phía API key và
+        # rộng hơn nhiều. `_quota` chỉ nhận hạn mức người vận hành khai tay, mà bảng gợi ý
+        # `model_limits.KNOWN_LIMITS` hiện CHỈ có Groq. Nên người dùng OpenRouter, OpenAI,
+        # Gemini hay Anthropic API bấm mức Tối ưu là bật một đường fail-closed: trang báo
+        # "đã bật, giảm 89%", còn mọi lượt vẫn lặng lẽ gửi nguyên CLAUDE.md. Bốn trên năm
+        # engine API key rơi vào ca này.
+        #
+        # Đây KHÔNG phải suy đoán hạn mức thương mại - thứ module model_limits cố ý từ chối
+        # làm. Con số này chỉ là NGÂN SÁCH ĐỂ BIÊN SOẠN: cho Context Compiler biết gói tối đa
+        # bao nhiêu, không dùng để chặn lượt chat (soft, vượt thì về đường cũ chứ không
+        # reject) và không tự nhận là biết TPM của ai. Nhà cung cấp vẫn là bên duy nhất có
+        # quyền nói không, và lần nó nói thì limit_learner ghi lại con số THẬT, con số đó
+        # xét trước cái trần này ngay từ lượt sau.
+        #
+        # 32k là mức thận trọng: nằm dưới cửa sổ của gần như mọi model API đang bán, mà vẫn
+        # rộng gấp nhiều lần một capsule Javis điển hình (khoảng 1.000 token).
+        "api_context": {
+            "context_window": 32000,
+            "reserved_output_tokens": 4000,
+        },
+        # NGÂN SÁCH TỪ HẠN MỨC JAVIS TỰ HỌC ĐƯỢC (limit_learner).
+        #
+        # Vì sao cần: fail-closed bắt phải khai quota_profiles trước, nên tới khi có người
+        # ngồi khai thì mọi lượt đã rơi về đường cũ - đúng lúc bị siết lại là đúng lúc phần
+        # tiết kiệm không chạy. Nhưng chính câu báo lỗi của nhà cung cấp ĐÃ nói ra hạn mức
+        # thật của tài khoản này, đáng tin hơn mọi con số tra tài liệu. Sau lần bị từ chối
+        # đầu tiên, dùng luôn con số đó làm ngân sách thay vì đợi khai tay.
+        #
+        # safety_factor: chừa biên vì hạn mức mỗi phút là cửa sổ TRƯỢT (phần vừa gửi hỏng vẫn
+        # còn nằm trong cửa sổ) và bộ đếm token của Javis chỉ là ước lượng.
+        "learned_quota": {
+            "enabled": True,
+            "reserved_output_tokens": 1200,
+            "safety_factor": 0.85,
+        },
+        # Ba rollout độc lập. Nguồn nào lỗi/thiếu tự tin chỉ nguồn đó quay về cơ chế cũ.
+        #
+        # conversation_state CHỈ chạy trên engine API, cố ý. Claude Code và Codex tự nối lại
+        # mạch hội thoại bằng session/thread của chính chúng (--resume, codex exec resume),
+        # nên nhét thêm một cửa sổ transcript vào system prompt là gửi lịch sử HAI LẦN - vừa
+        # tốn token vừa dễ làm model lẫn thứ tự. Hai nguồn kia không có vấn đề đó.
+        "conversation_state_canary": {
+            "policy_version": "conversation-state-v1",
+            "allocation_basis_points": 0,
+            "salt": "conversation-state-v1",
+            "channels": ["dashboard"], "provider_kinds": ["api"],
+            "recent_messages": 6,
+        },
+        "memory_canary": {
+            "policy_version": "sourced-memory-v1",
+            "allocation_basis_points": 0,
+            "salt": "sourced-memory-v1",
+            "channels": ["dashboard", "telegram", "cli"], "provider_kinds": ["api", "cli", "oauth"],
+            "max_items": 6, "min_confidence": 0.38,
+        },
+        "lazy_skill_canary": {
+            "policy_version": "lazy-skill-v1",
+            "allocation_basis_points": 0,
+            "salt": "lazy-skill-v1",
+            "channels": ["dashboard", "telegram", "cli"], "provider_kinds": ["api", "cli", "oauth"],
+            "max_body_chars": 12000,
+        },
+        # Phase 9: tool WRITE, bật theo TỪNG capability group, không có cờ chung.
+        # Ba tầng fail-closed: allocation 0, capability_profiles rỗng, và mọi write
+        # đều phải được người dùng gõ lại mã xác nhận mới chạy.
+        # Mẫu một group (KHÔNG phải giá trị mặc định):
+        #   {"id": "calendar-create", "source_type": "mcp",
+        #    "source_id_pattern": "google-calendar", "name_pattern": "*create_event*",
+        #    "timeout_seconds": 30, "lease_ttl_seconds": 300,
+        #    "resource_lock_fields": ["calendar_id", "start"],
+        #    "reconcile_capability_id": "<id capability read để kiểm chứng>",
+        #    "reconcile_arguments": {...}, "reconcile_success_marker": "<chuỗi nhận biết>"}
+        # Group không khai được đường reconcile thì mặc định về legacy, trừ khi
+        # operator chấp nhận rủi ro bằng "allow_unreconcilable": true.
+        "write_canary": {
+            "policy_version": "write-single-step-v1",
+            "allocation_basis_points": 0,
+            "salt": "write-single-step-v1",
+            "channels": ["dashboard"], "provider_kinds": ["api"],
+            "registry_max_age_seconds": 900,
+            "min_resolver_score": 0.55,
+            "estimator_safety_factor": 1.35,
+            "confirmation_ttl_seconds": 900,
+            "quota_profiles": [],
+            "capability_profiles": [],
+        },
+    },
+}
+
+
+# Các trường SECRET trong settings.json → mã hoá at rest (Fernet, qua secrets_store) như MCP secret.
+# Backward-compat: giá trị plaintext cũ đọc vẫn ra nguyên văn; lần ghi kế tiếp tự bọc "enc:".
+# Mất file .secret_key → decrypt trả "" (nhập lại key) - đánh đổi giống MCP secret, an toàn hơn lộ key.
+_SECRET_PATHS = (
+    # Token truy cập kho hoặc repo RIÊNG, một khoá cho mỗi tên máy. Dấu * cuối nghĩa là
+    # "mọi khoá của dict này" - cần vì tên máy do người dùng nhập nên không liệt kê trước
+    # được. Xem `_secret_keys`.
+    "packs.tokens.*",
+    "model.openrouter_key", "model.anthropic_api_key", "model.openai_api_key", "model.gemini_api_key",
+    "model.groq_api_key", "model.deepseek_api_key", "model.ollama_key", "model.ollama_local_key", "model.openai_compat_key",
+    "model.anthropic_compat_key",
+    # 0.350.0: keys of every account in a provider card (model_routing). Account ids are generated,
+    # so the whole dict is secret.
+    "model.account_keys.*",
+    "model.openai_oauth.access_token", "model.openai_oauth.refresh_token", "model.openai_oauth.id_token",
+    # Gemini CLI (đăng nhập Google ngay trên dashboard). Refresh token ở đây mở được cả gói
+    # Code Assist của tài khoản Google, nên nó ngang hàng mọi secret khác trong danh sách.
+    "telegram.token", "zalo_bot.token", "backup.token", "voice.elevenlabs_key",
+    "slack.bot_token", "slack.app_token", "whatsapp.access_token", "whatsapp.app_secret",
+    "discord.bot_token", "lark.app_secret",
+    # Secret TOTP là thứ SINH RA mã đăng nhập, nên nó ngang hàng mật khẩu chứ không phải một
+    # tuỳ chọn. Ai đọc được nó thì tự sinh mã 2FA mãi mãi, và chủ máy không hề hay biết.
+    "auth.totp.secret",
+    # Cloudflare Tunnel token (remote_tunnel.py): whoever holds it can serve any site on the owner's tunnel hostname.
+    "remote_tunnel.token",
+    # GitHub inside chat (0.362.0, github_repos.py): pushes code and merges PRs on the owner's repos.
+    "github.token",
+)
+
+
+def _secret_keys(cfg, path):
+    """(dict cha, tên khoá) cho một đường trong _SECRET_PATHS. Có thể trả nhiều cặp.
+
+    Dấu `*` ở cuối nghĩa là MỌI KHOÁ của dict đó. Cần vì có kho secret mà tên khoá do người
+    dùng đặt nên không liệt kê trước được - `packs.tokens.<host>` là ca đầu tiên."""
+    parts = path.split(".")
+    parent = cfg
+    for p in parts[:-1]:
+        if isinstance(parent, dict) and isinstance(parent.get(p), dict):
+            parent = parent[p]
+        else:
+            return []
+    key = parts[-1]
+    if key == "*":
+        return [(parent, k) for k in list(parent)] if isinstance(parent, dict) else []
+    return [(parent, key)] if isinstance(parent, dict) else []
+
+
+def _transform_secret_fields(cfg, fn):
+    """Áp fn (encrypt|decrypt) lên các trường secret theo _SECRET_PATHS, tại chỗ. Bỏ qua nếu thiếu."""
+    for path in _SECRET_PATHS:
+        for parent, key in _secret_keys(cfg, path):
+            if isinstance(parent.get(key), str) and parent.get(key):
+                parent[key] = fn(parent[key])
+    return cfg
+
+
+# Cache read_settings theo (mtime_ns, size) của settings.json: middleware auth/CSRF gọi
+# gate_active() -> read_settings() TRÊN MỌI REQUEST, mỗi lần đọc file + giải mã Fernet ~5-8ms
+# (x2 middleware = 10-16ms/request chỉ để check đăng nhập). File đổi (kể cả write_settings
+# ghi đè) thì mtime/size đổi -> tự đọc lại. Trả deep copy để caller sửa thoải mái không bẩn cache.
+_SETTINGS_CACHE = {"sig": None, "cfg": None}
+
+# Một khoá cho mọi lần đọc-sửa-ghi settings.json (update_settings, write_settings). RLock vì
+# update_settings gọi write_settings bên trong. Chặn hai luồng (endpoint chạy trong threadpool,
+# asyncio.to_thread) cùng đọc bản cũ rồi ghi đè lên thay đổi của nhau.
+_SETTINGS_LOCK = threading.RLock()
+
+
+def _bak_path() -> Path:
+    """Bản tốt gần nhất trước lần ghi cuối. Tính lại mỗi lần gọi vì test đổi SETTINGS_PATH."""
+    return SETTINGS_PATH.with_name(SETTINGS_PATH.name + ".bak")
+
+
+class SettingsUnreadable(RuntimeError):
+    """settings.json có trên đĩa mà không đọc được (cả bản dự phòng `.bak`). Ném ra thay vì trả cấu
+    hình mặc định: mặc định là "máy mới cài", và lần ghi kế tiếp sẽ lấy nó đè lên file thật."""
+
+
+# Đọc lại mấy lần trước khi coi file là hỏng. Lỗi đọc THOÁNG QUA là chuyện thường trên Windows: phần
+# mềm diệt virus hay trình đồng bộ khoá file vừa được ghi trong vài chục mili giây, và
+# `os.replace` của chính Javis cũng khoá đích trong tích tắc. Đọc đúng lúc đó là PermissionError.
+_READ_TRIES = 6
+
+
+def _doc_file_settings() -> dict:
+    """Nội dung settings.json trên đĩa (CHƯA trộn mặc định, chưa giải mã). {} khi chưa có file.
+
+    File có mà đọc hỏng (JSON cụt, byte rác) thì KHÔNG coi như rỗng. Trước 0.86.2 nhánh này nuốt
+    lỗi rồi trả mặc định, và lần ghi kế tiếp lấy chính bản mặc định đó đè lên file: mất sạch tên
+    miền, mật khẩu, khoá API (báo lỗi của khách 08/10). Giờ: giữ lại bản hỏng để cứu tay, đọc bản
+    dự phòng `.bak` (bản tốt trước lần ghi cuối), và báo to trong log.
+
+    0.166.4: đọc lại vài lần trước khi kết luận hỏng, và file CÓ mà cả nó lẫn `.bak` đều không đọc
+    được thì ném `SettingsUnreadable` thay vì trả {}. Trả {} ở đây chính là trả "máy mới cài": giao
+    diện hiện lại trình cài đặt và lần lưu kế tiếp (chủ repo 15/10/2026: lưu kênh Lark) ghi cấu hình
+    trống đè lên tài khoản, model và kênh admin thật."""
+    if not SETTINGS_PATH.exists():
+        return {}
+    e = None
+    for lan in range(_READ_TRIES):
+        try:
+            data = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                return data
+            raise ValueError(f"settings.json không phải object JSON ({type(data).__name__})")
+        except FileNotFoundError:
+            return {}
+        except Exception as loi:      # noqa: BLE001 - phân loại ngay dưới
+            e = loi
+            time.sleep(0.03 * (lan + 1))
+    if e is not None:
+        hong = SETTINGS_PATH.with_name(SETTINGS_PATH.name + ".bad")
+        try:
+            if isinstance(e, OSError):
+                raise e      # file bị khoá chứ nội dung không hỏng: không có bản hỏng nào để giữ
+            raw = SETTINGS_PATH.read_bytes()
+            hong = SETTINGS_PATH.with_name(f"{SETTINGS_PATH.name}.bad-{hashlib.sha1(raw).hexdigest()[:8]}")
+            if not hong.exists():   # cùng một bản hỏng thì chỉ giữ một lần
+                hong.write_bytes(raw)
+        except Exception:
+            pass
+        print(f"[config] settings.json ĐỌC HỎNG ({type(e).__name__}: {e}). Đã giữ bản hỏng ở {hong.name}; "
+              f"đang dùng bản dự phòng {_bak_path().name} nếu có.", file=__import__("sys").stderr)
+        for lan in range(_READ_TRIES):
+            try:
+                data = json.loads(_bak_path().read_text(encoding="utf-8"))
+                if isinstance(data, dict):
+                    _DOC_TU_BAK[0] = True
+                    return data
+                break
+            except FileNotFoundError:
+                break
+            except Exception:      # noqa: BLE001
+                time.sleep(0.03 * (lan + 1))
+        if isinstance(e, OSError):
+            # Không mở được file (khoá, quyền), chứ không phải nội dung hỏng: file thật vẫn còn nguyên
+            # đó. Coi là máy mới thì lần ghi kế tiếp xoá nó.
+            raise SettingsUnreadable(f"settings.json không đọc được ({type(e).__name__}: {e}) và không có bản "
+                                     f"dự phòng dùng được. Javis KHÔNG coi đây là máy mới để khỏi ghi đè cấu hình thật.")
+        # Nội dung hỏng THẬT (JSON vỡ qua mọi lần đọc lại) và không có .bak: bản hỏng đã được giữ ở
+        # `.bad-*` bên trên, nên vẫn như trước: chạy bằng mặc định để chủ cài lại được.
+    return {}
+
+
+# Lần đọc gần nhất phải dùng `.bak`: read_settings không lưu kết quả đó vào bộ nhớ đệm, để lần đọc sau
+# thử lại file thật thay vì giữ bản cũ mãi.
+_DOC_TU_BAK = [False]
+
+
+def _ghi_nguyen_tu(text: str) -> None:
+    """Ghi settings.json NGUYÊN TỬ: ghi file tạm cạnh nó, fsync, rồi os.replace.
+
+    Ghi thẳng (write_text) mà tiến trình chết giữa chừng (container bị dừng lúc cập nhật, máy mất
+    điện) là để lại file JSON cụt, và đọc cụt thì trước đây ra cấu hình mặc định. Trước khi thay,
+    chép bản đang tốt sang `.bak` để còn đường lùi nếu bản mới có vấn đề."""
+    tmp = SETTINGS_PATH.with_name(f".{SETTINGS_PATH.name}.{os.getpid()}.{threading.get_ident()}.tmp")
+    try:
+        with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
+            f.flush()
+            try:
+                os.fsync(f.fileno())
+            except OSError:
+                pass
+        if SETTINGS_PATH.exists():
+            try:
+                cu = SETTINGS_PATH.read_bytes()
+                if isinstance(json.loads(cu.decode("utf-8")), dict):   # chỉ lưu bản TỐT làm dự phòng
+                    # Ghi .bak cũng NGUYÊN TỬ: nó là đường lùi khi settings.json đọc hỏng, mà ghi thẳng
+                    # thì người đọc đúng lúc này thấy một .bak cụt, đúng lúc nó cần .bak nhất.
+                    bak_tmp = _bak_path().with_name(f".{_bak_path().name}.{os.getpid()}.{threading.get_ident()}.tmp")
+                    bak_tmp.write_bytes(cu)
+                    try:
+                        os.replace(bak_tmp, _bak_path())
+                    except OSError:
+                        try:
+                            bak_tmp.unlink()
+                        except OSError:
+                            pass
+                os.chmod(tmp, SETTINGS_PATH.stat().st_mode & 0o777)
+            except Exception:
+                pass
+        # Windows: file đang bị một tiến trình khác mở đọc thì replace có thể bị từ chối thoáng qua.
+        for lan in range(5):
+            try:
+                os.replace(tmp, SETTINGS_PATH)
+                break
+            except PermissionError:
+                if lan == 4:
+                    raise
+                time.sleep(0.05 * (lan + 1))
+    finally:
+        try:
+            if tmp.exists():
+                tmp.unlink()
+        except Exception:
+            pass
+
+
+def _deep_merge(base: dict, patch: dict) -> dict:
+    """Gộp `patch` lên `base` ĐỆ QUY, sửa tại chỗ, trả lại `base`.
+
+    Vì sao phải đệ quy chứ không phải `.update()` một tầng như trước: các cấu hình quan
+    trọng nằm sâu từ HAI tầng trở lên, ví dụ
+    `context_runtime.canary.allocation_basis_points`. Với merge một tầng, ghi vào
+    settings.json đúng một trường
+
+        {"context_runtime": {"canary": {"allocation_basis_points": 100}}}
+
+    sẽ THAY THẾ trọn sub-dict `canary`, làm `quota_profiles` và `capability_profiles` biến
+    mất. Mà thiết kế fail-closed nói thiếu quota profile thì rơi về legacy. Kết quả: người
+    vận hành bật canary lên 1 phần trăm, tưởng đã bật, và KHÔNG CÓ GÌ xảy ra cả - im lặng,
+    không lỗi, không cảnh báo. Đây là kiểu hỏng tệ nhất vì knob xoay được mà đèn không sáng.
+
+    List cố ý THAY THẾ chứ không nối: `quota_profiles` là danh sách luật, nối thêm vào danh
+    sách luật gần như luôn là ý sai (sinh luật trùng, luật cũ không xoá được).
+    """
+    for k, v in (patch or {}).items():
+        if isinstance(v, dict) and isinstance(base.get(k), dict):
+            _deep_merge(base[k], v)
+        else:
+            base[k] = v
+    return base
+
+
+RUNTIME_MODES = ("off", "observe", "shadow", "canary", "on")
+
+# MỖI MỨC TIẾT KIỆM BẬT NHỮNG ĐƯỜNG NÀO. Bảng này là nguồn sự thật; `main.RUNTIME_PRESETS`
+# chỉ khoác thêm nhãn và mô tả cho người đọc. Để ở config vì `_ap_muc_mac_dinh` bên dưới cần
+# nó, mà config thì không import được main (vòng lặp import).
+PRESET_DUONG = {
+    "off": {"mode": "shadow", "duong": {}},
+    "saving": {"mode": "canary", "duong": {
+        "conversation_state_canary": 10000,
+        "memory_canary": 10000,
+        "lazy_skill_canary": 10000,
+    }},
+    "max": {"mode": "canary", "duong": {
+        "conversation_state_canary": 10000,
+        "memory_canary": 10000,
+        "lazy_skill_canary": 10000,
+        "canary": 10000,
+    }},
+}
+
+# MỨC XUẤT XƯỞNG CỦA BẢN NÀY. Đổi đúng dòng này là đổi mặc định cho MỌI máy chưa từng tự
+# chọn mức, kể cả máy đã cài từ lâu. Đừng sửa `_DEFAULT` ở trên để đổi mặc định: xem
+# `_ap_muc_mac_dinh` để biết vì sao sửa ở đó không tới được máy nào.
+#
+# Từ 0.24.7 là "max" (Siêu tiết kiệm). Trước đó là "off", tức mặc định gửi trọn CLAUDE.md +
+# MEMORY.md + đặc tả tool mỗi lượt, và người dùng phải tự tìm ra trang tiết kiệm rồi tự bật.
+# Gần như không ai bật, nên mặc định ấy là con số thật mà đa số đang trả. Đo trên một brain
+# mẫu: mức Tắt ~8.900 token cố định mỗi lượt, mức Siêu tiết kiệm ~460.
+#
+# Đây là mặc định AN TOÀN được, không phải liều: mọi đường trong mức này đều fail-closed -
+# thiếu điều kiện thì lượt đó tự rơi về chế độ Đầy đủ chứ không trả lời sai. Và người đã tự
+# chọn mức thì hàm trên không đụng tới, kể cả người cố ý chọn Tắt.
+PRESET_MAC_DINH = "max"
+
+
+def _ap_muc_mac_dinh(cfg: dict) -> bool:
+    """Nâng mức tiết kiệm lên ÍT NHẤT mức xuất xưởng, nếu người dùng CHƯA TỪNG tự chọn mức.
+
+    Vì sao phải có, và vì sao sửa `_DEFAULT` là không đủ. `write_settings` ghi lại TOÀN BỘ
+    config đã trộn, nên ngay lần đầu người dùng bấm bất cứ nút nào ở trang Cài đặt, giá trị
+    mặc định của NGÀY HÔM ĐÓ bị đóng băng vào settings.json. `read_settings` lại trộn file ĐÈ
+    LÊN mặc định. Hệ quả: về sau ta có nâng mặc định lên mức Tối ưu hay Siêu tiết kiệm thì
+    máy đã cài rồi KHÔNG BAO GIỜ thấy - mặc định mới chỉ tới được máy cài mới tinh. Đúng con
+    bệnh đã cắn `provider_kinds` hồi 0.12.4 (xem `_no_rong_pham_vi_bo_nao`), lần này rơi vào
+    thứ quyết định mỗi lượt chat tốn bao nhiêu token.
+
+    Cái khó riêng của mức tiết kiệm: số 0 nằm trong file có HAI nghĩa hoàn toàn khác nhau -
+    "người dùng đã cân nhắc và cố ý chọn Tắt", hoặc "chưa ai chọn gì, đây là mặc định cũ
+    đóng băng lại". Không phân biệt được hai cái đó thì hoặc là ta giẫm lên quyết định của
+    người dùng, hoặc là mặc định mới không bao giờ tới nơi. Nên từ bản này, mọi lần người
+    dùng tự đổi mức đều để lại chữ ký `preset_choice.source == "user"`, và có chữ ký thì hàm
+    này không đụng vào gì hết.
+
+    CHỈ NÂNG, KHÔNG BAO GIỜ HẠ. Máy đang chạy mức cao hơn mặc định (kể cả do sửa tay
+    settings.json, thứ không để lại chữ ký nào) vẫn giữ nguyên mức của nó. Nhờ vậy trường
+    hợp mơ hồ duy nhất còn lại là máy cũ từng cố ý chọn Tắt TRƯỚC khi có chữ ký: máy đó sẽ
+    được nâng theo mặc định mới. Đổi lại, không có gì người dùng đã bật bị tắt đi, và bấm
+    "Tắt" một lần sau khi cập nhật là ghim vĩnh viễn.
+
+    Trả về True nếu có sửa gì, để chỗ gọi biết mà ghi file lại nếu muốn.
+    """
+    rt = cfg.get("context_runtime")
+    if not isinstance(rt, dict):
+        return False
+    chon = rt.get("preset_choice")
+    if isinstance(chon, dict) and str(chon.get("source") or "") == "user":
+        return False
+    muc = PRESET_DUONG.get(PRESET_MAC_DINH) or {}
+    doi = False
+    for ten, bp in (muc.get("duong") or {}).items():
+        entry = rt.get(ten)
+        if not isinstance(entry, dict):
+            continue
+        if int(entry.get("allocation_basis_points") or 0) < int(bp):
+            entry["allocation_basis_points"] = int(bp)
+            doi = True
+    # `mode` là công tắc TRÙM: nâng allocation mà quên nâng mode là bật đúng cái kiểu hỏng
+    # "knob xoay được mà đèn không sáng". Các phase khác (readonly/orchestrator/write) không
+    # bị mode này bật lây vì allowlist capability của chúng mặc định rỗng, và riêng write
+    # còn đòi người dùng gõ lại mã xác nhận.
+    #
+    # Mức xuất xưởng KHÔNG bật đường nào (hôm nay là mức Tắt) thì đừng đụng vào mode: chẳng
+    # có gì để bật, mà mode lại là công tắc dùng chung với các phase khác. Đi sửa một thứ
+    # không cần sửa là cách rẻ nhất để tạo ra một lỗi không ai ngờ tới.
+    can = str(muc.get("mode") or "")
+    if muc.get("duong") and can in RUNTIME_MODES:
+        dang = str(rt.get("mode") or "")
+        i_dang = RUNTIME_MODES.index(dang) if dang in RUNTIME_MODES else -1
+        if i_dang < RUNTIME_MODES.index(can):
+            rt["mode"] = can
+            doi = True
+    return doi
+
+
+# Provider đã GỠ khỏi app. Cấu hình của người dùng vẫn trỏ vào đây sau khi cập nhật, nên phải
+# NẮN LẠI lúc đọc - không nắn thì hỏng theo kiểu khó lần nhất: `_provider_def()` trả None, thẻ
+# Models không cái nào mang nhãn MAIN, và lượt chat rơi vào nhánh mặc định `kind="cli"` rồi
+# đưa một tên model của nhà khác cho Claude Code. Không có câu lỗi nào, chỉ có câu trả lời lạ.
+#
+# Nắn ở ĐÂY chứ không ở main.py vì `aux_engine` đọc thẳng settings, không đi qua main.
+_PROVIDER_DA_GO = {
+    # 0.50.0: Google ngắt Gemini CLI với MỌI tài khoản cá nhân từ 18/06/2026.
+    "gemini-cli": "Gemini CLI (Google đã ngắt tài khoản cá nhân)",
+}
+_DA_BAO_GO = set()      # chỉ in cảnh báo MỘT lần mỗi tiến trình: read_settings gọi liên tục
+
+
+def _nan_provider_da_go(cfg: dict) -> None:
+    """Đưa mọi tham chiếu tới provider đã gỡ về mặc định của app, và NÓI RA.
+
+    Về mặc định `anthropic-cli` chứ không về provider thay thế (Grok Build): thay thế thì cần
+    cài binary và đăng nhập, mà người dùng chưa làm - đẩy họ sang một thẻ chưa sẵn sàng chỉ đổi
+    một kiểu hỏng lấy một kiểu hỏng khác. Về mặc định thì chat chạy được ngay, rồi họ tự chọn
+    lại trên trang Models.
+    """
+    m = cfg.get("model") or {}
+    main = m.get("main") or {}
+    da_nan = []
+    if main.get("provider") in _PROVIDER_DA_GO:
+        da_nan.append(("model chính", main["provider"]))
+        m["main"] = {"provider": "", "model": ""}
+    aux = m.get("auxiliary") or {}
+    if aux.get("provider") in _PROVIDER_DA_GO:
+        da_nan.append(("model việc nền", aux["provider"]))
+        m["auxiliary"] = {**aux, "provider": "", "model": ""}
+    tg = m.get("telegram") or {}
+    if tg.get("provider") in _PROVIDER_DA_GO:
+        da_nan.append(("model Telegram", tg["provider"]))
+        m["telegram"] = {"provider": "", "model": ""}   # về "theo model chính", không chết kênh
+    # Trường legacy `engine`: bỏ sót nó là `_effective_main` suy ngược ra provider vừa gỡ.
+    if m.get("engine") in _PROVIDER_DA_GO:
+        da_nan.append(("engine (legacy)", m["engine"]))
+        m["engine"] = "cli"
+    for cho, prov in da_nan:
+        khoa = (cho, prov)
+        if khoa in _DA_BAO_GO:
+            continue
+        _DA_BAO_GO.add(khoa)
+        print(f"[config] {cho} đang trỏ vào provider đã gỡ '{prov}' "
+              f"({_PROVIDER_DA_GO[prov]}) - đã đưa về mặc định. Chọn lại ở trang Models.",
+              file=__import__("sys").stderr)
+
+
+def _no_rong_pham_vi_bo_nao(cfg: dict) -> bool:
+    """Nới `provider_kinds` của các mảng tiết kiệm về ÍT NHẤT bằng mặc định hiện tại.
+
+    Vì sao phải có. `write_settings` ghi lại TOÀN BỘ config đã trộn, nên giá trị mặc định
+    của ngày hôm đó bị đóng băng vào settings.json ngay lần đầu người dùng bấm bất cứ thứ gì.
+    `read_settings` lại trộn file ĐÈ LÊN mặc định, nên về sau ta có sửa mặc định cho rộng ra
+    thì máy đã cài rồi KHÔNG BAO GIỜ thấy. Mặc định mới chỉ tới được máy cài mới.
+
+    Nó cắn đúng chỗ đau nhất: trước 0.12.4, `memory_canary` và `lazy_skill_canary` chỉ cho
+    "api". Mọi máy chạy Javis từ trước mốc đó có file settings.json ghim cứng `["api"]`. Chủ
+    máy nâng cấp lên, bấm mức Tối ưu, thấy trang báo xanh "đã bật, có hiệu lực ngay" - rồi
+    mọi lượt chat trên gói ChatGPT hay gói Claude vẫn gửi nguyên CLAUDE.md, vì cả ba nguồn
+    đều bị loại với lý do `provider_kind_not_allowed`. Không lỗi, không cảnh báo, chỉ có dòng
+    "Đầy đủ" dưới mỗi câu trả lời và hoá đơn token không giảm.
+
+    Chỉ NỚI RỘNG, không bao giờ thu hẹp: hợp giá trị đang có với mặc định. Nên mảng nào cố ý
+    chỉ chạy trên engine API (conversation_state_canary - Claude Code và Codex tự nhớ mạch
+    hội thoại của chúng, gửi thêm là gửi hai lần) vẫn giữ nguyên đúng phạm vi của nó.
+
+    Trả về True nếu có sửa gì, để chỗ gọi biết mà ghi file lại nếu muốn.
+    """
+    rt = cfg.get("context_runtime")
+    goc = _DEFAULT.get("context_runtime") or {}
+    if not isinstance(rt, dict):
+        return False
+    doi = False
+    for ten, mac_dinh in goc.items():
+        if not isinstance(mac_dinh, dict) or "provider_kinds" not in mac_dinh:
+            continue
+        muc = rt.get(ten)
+        if not isinstance(muc, dict):
+            continue
+        for truong in ("provider_kinds", "channels"):
+            can = [str(x) for x in (mac_dinh.get(truong) or [])]
+            if not can:
+                continue
+            dang_co = [str(x) for x in (muc.get(truong) or [])]
+            thieu = [x for x in can if x not in dang_co]
+            if thieu:
+                muc[truong] = dang_co + thieu
+                doi = True
+    return doi
+
+
+def _ui_lang_ban_cu(cfg: dict, data: dict) -> None:
+    """Máy đã có settings.json mà file chưa từng ghi `locale.ui_lang` thì coi là "vi".
+
+    Từ 0.66.0 mặc định `ui_lang` là "" (chưa chọn: dashboard đoán theo trình duyệt). Máy cài
+    trước khi có khối locale thì file của nó không có khoá này, và đọc ra "" sẽ làm người dùng
+    Việt có trình duyệt để tiếng Anh bị đổi giao diện trong im lặng. Hồi đó Javis chỉ có tiếng
+    Việt, nên "vi" là đúng sự thật chứ không phải đoán. Chỉ chạm vào bộ nhớ, không ghi file.
+    """
+    if data and "ui_lang" not in (data.get("locale") or {}):
+        cfg.setdefault("locale", {})["ui_lang"] = "vi"
+
+
+def read_settings():
+    try:
+        st = SETTINGS_PATH.stat()
+        sig = (st.st_mtime_ns, st.st_size)
+    except OSError:
+        sig = None
+    if sig is not None and sig == _SETTINGS_CACHE["sig"] and _SETTINGS_CACHE["cfg"] is not None:
+        return json.loads(_SETTINGS_CACHE["cfg"])
+    cfg = json.loads(json.dumps(_DEFAULT))   # deep copy
+    _DOC_TU_BAK[0] = False
+    data = _doc_file_settings()
+    tu_bak = _DOC_TU_BAK[0]
+    _deep_merge(cfg, data)
+    _ui_lang_ban_cu(cfg, data)
+    _nan_provider_da_go(cfg)
+    _no_rong_pham_vi_bo_nao(cfg)
+    _ap_muc_mac_dinh(cfg)
+    try:
+        import secrets_store   # lazy: secrets_store import config → tránh vòng lặp import
+        _transform_secret_fields(cfg, secrets_store.decrypt)
+    except Exception as e:
+        print(f"[config] giải mã secret lỗi: {e}", file=__import__('sys').stderr)
+    if sig is not None and not tu_bak:
+        _SETTINGS_CACHE["sig"] = sig
+        _SETTINGS_CACHE["cfg"] = json.dumps(cfg, ensure_ascii=False)
+    return cfg
+
+
+def update_settings(patch: dict) -> dict:
+    """Cập nhật TỪNG PHẦN: gộp `patch` (đệ quy) lên cấu hình hiện tại rồi ghi, trong một khoá.
+
+    Dùng cho mọi chỗ chỉ muốn đổi vài trường (`{"whatsapp": {"verify_token": ...}}`). Đừng đưa
+    mảnh như thế vào `write_settings`: hàm đó THAY TOÀN BỘ file bằng thứ được đưa vào. Trả về cấu
+    hình đầy đủ sau khi ghi."""
+    with _SETTINGS_LOCK:
+        cfg = read_settings()
+        _deep_merge(cfg, json.loads(json.dumps(patch)))
+        write_settings(cfg)
+        return cfg
+
+
+def write_settings(cfg):
+    """THAY TOÀN BỘ settings.json bằng `cfg` - một cấu hình ĐẦY ĐỦ lấy từ read_settings() rồi sửa.
+
+    Lưới an toàn (0.86.2): `cfg` thiếu khoá gốc mà mọi cấu hình đầy đủ đều có (read_settings luôn
+    trộn đủ mặc định) thì chắc chắn là một MẢNH truyền nhầm. Ba chỗ từng làm vậy từ 0.71.0
+    (`{"whatsapp": {"verify_token": ...}}` ngay trong GET /whatsapp/status, cho phép chat Zalo,
+    cho phép người dùng Slack/WhatsApp) và mỗi lần chạy là xoá sạch tên miền, mật khẩu, khoá API
+    (khách báo 08/10). Mảnh như thế giờ được gộp như update_settings, kèm một dòng log chỉ chỗ gọi."""
+    if not isinstance(cfg, dict):
+        raise TypeError("write_settings cần một dict cấu hình đầy đủ")
+    with _SETTINGS_LOCK:
+        # MẢNH = thiếu quá nửa khoá gốc. Mảnh thật chỉ có một, hai khoá; còn cấu hình đầy đủ mà bỏ
+        # hẳn một mục có chủ đích (đặt lại tài khoản: `pop("auth")` rồi ghi) vẫn phải xoá được.
+        thieu = [k for k in _DEFAULT if k not in cfg]
+        if len(thieu) * 2 > len(_DEFAULT):
+            import traceback
+            noi = "".join(traceback.format_stack(limit=3)[:-1]).strip().replace("\n", " | ")
+            print(f"[config] write_settings nhận một MẢNH (thiếu {', '.join(thieu[:4])}...) - gộp thay vì "
+                  f"ghi đè cả file. Hãy dùng update_settings. Gọi từ: {noi[-300:]}",
+                  file=__import__("sys").stderr)
+            day_du = read_settings()
+            _deep_merge(day_du, json.loads(json.dumps(cfg)))
+            cfg = day_du
+        _chan_ghi_trang(cfg)
+        _write_settings_full(cfg)
+
+
+def _da_cai_dat(d) -> bool:
+    """Cấu hình này là của một máy ĐÃ cài đặt: qua trình cài đặt, hoặc đã có mật khẩu admin."""
+    d = d if isinstance(d, dict) else {}
+    return bool(d.get("setup_done")) or bool(str(((d.get("auth") or {}).get("password_hash")) or ""))
+
+
+def _chan_ghi_trang(cfg) -> None:
+    """Lưới cuối (0.166.4): không ghi một cấu hình TRỐNG đè lên máy đã cài đặt.
+
+    Cấu hình trống = mất tài khoản (không mật khẩu, setup_done False) VÀ đưa những mục khác mà file trên
+    đĩa đã tuỳ chỉnh (model, kênh, tên workspace...) về đúng giá trị mặc định. Đó là dấu vân tay của một
+    lần đọc hỏng trả về mặc định: ghi nó xuống là xoá tài khoản, model, khoá API và mọi kênh (chủ repo
+    15/10/2026, lúc lưu kênh Lark). Chặn và báo to thay vì ghi.
+
+    Đặt lại tài khoản có chủ đích (lấy cấu hình đầy đủ, `pop("auth")` rồi ghi) vẫn đi qua: các mục khác
+    vẫn giữ giá trị trên đĩa, không mục nào bị kéo về mặc định."""
+    if _da_cai_dat(cfg) or not SETTINGS_PATH.exists():
+        return
+    try:
+        tren_dia = _doc_file_settings()
+    except SettingsUnreadable:
+        tren_dia = None                     # không đọc được bản thật thì càng không được đè lên nó
+    if tren_dia is not None:
+        if not _da_cai_dat(tren_dia):
+            return
+        mat = [k for k, v in tren_dia.items()
+               if k not in ("auth", "setup_done") and k in _DEFAULT
+               and v != _DEFAULT[k] and cfg.get(k) == _DEFAULT[k]]
+        if not mat:
+            return
+    else:
+        mat = ["(không đọc được file trên đĩa)"]
+    import traceback
+    noi = "".join(traceback.format_stack(limit=4)[:-1]).strip().replace("\n", " | ")
+    print(f"[config] CHẶN ghi settings.json: cấu hình mới mất tài khoản và đưa {', '.join(mat[:5])} về mặc "
+          f"định trong khi file trên đĩa đã cài đặt. Gọi từ: {noi[-400:]}", file=__import__("sys").stderr)
+    raise SettingsUnreadable("Từ chối ghi một cấu hình trống đè lên máy đã cài đặt")
+
+
+def _write_settings_full(cfg):
+    # Deep-copy rồi mã hoá BẢN SAO: caller vẫn giữ cfg plaintext để dùng tiếp (không bị hỏng).
+    out = json.loads(json.dumps(cfg))
+    try:
+        import secrets_store
+        _transform_secret_fields(out, secrets_store.encrypt)   # encrypt idempotent (bỏ qua enc:/plain:)
+    except Exception as e:
+        print(f"[config] mã hoá secret lỗi: {e}", file=__import__('sys').stderr)
+    # KHÔNG PHÁ blob 2FA khi khoá đang lỗi: mất .secret_key thì read_settings giải mã
+    # secret ra "", và nếu ghi thẳng "" xuống là blob mã hoá BAY MÀU vĩnh viễn - sau đó
+    # có khôi phục lại đúng key cũ cũng không cứu được nữa. enabled=true + secret rỗng
+    # + file cũ CÓ secret → giữ nguyên giá trị cũ. Tắt 2FA thật (totp_tat) đặt
+    # enabled=false nên không rơi vào nhánh này, vẫn xoá được như thường.
+    try:
+        t = (out.get("auth") or {}).get("totp")
+        if isinstance(t, dict) and t.get("enabled") and not str(t.get("secret") or ""):
+            raw_cu = _doc_file_settings()
+            cu = str((((raw_cu.get("auth") or {}).get("totp") or {}).get("secret")) or "")
+            if cu:
+                t["secret"] = cu
+    except Exception:
+        pass
+    try:
+        _giu_secret_khong_giai_duoc(out)
+    except Exception as e:      # noqa: BLE001 - tấm che hỏng thì vẫn ghi như cũ, không chặn việc lưu
+        print(f"[config] giữ secret khi khoá lệch lỗi: {e}", file=__import__('sys').stderr)
+    _ghi_nguyen_tu(json.dumps(out, ensure_ascii=False, indent=2))
+
+
+def _giu_secret_khong_giai_duoc(out):
+    """KHÔNG ghi rỗng đè lên một secret mà máy này không giải mã được (0.81.1).
+
+    Khoá `.secret_key` lệch (volume dựng lại, file khoá mất hay chép từ máy khác) thì read_settings giải mã mọi secret ra
+    "". Ghi lại dict đó là ghi "" đè lên bản mã hoá, và trả đúng khoá về cũng không cứu được nữa: mọi kết nối phải nhập
+    lại. Trước 0.77.1 lúc khởi động không ai ghi settings nên trả khoá là đủ; từ 0.77.1 việc áp mật khẩu admin từ env ghi
+    lại settings một lần lúc boot trên hầu hết máy Hostinger, biến một lỗi tạm thành mất vĩnh viễn.
+
+    Luật: bản CŨ trong file là "enc:..." mà máy này KHÔNG giải được, và bản MỚI rỗng hoặc thiếu -> giữ bản cũ. Khoá đúng
+    thì không đụng gì: chủ xoá key là xoá được. Giá trị mới chủ vừa gõ (khác rỗng) luôn thắng."""
+    if not SETTINGS_PATH.exists():
+        return
+    import secrets_store
+    raw_cu = _doc_file_settings()
+    for path in _SECRET_PATHS:
+        if path == "auth.totp.secret":
+            # 2FA có tấm che RIÊNG ngay trên (giữ khi còn bật): tắt 2FA lúc khoá lệch (đăng nhập bằng mã khôi phục rồi
+            # tắt) phải xoá được secret, không được hồi sinh nó ở đây.
+            continue
+        parts = path.split(".")
+        for cha_cu, key in _secret_keys(raw_cu, path):
+            cu = cha_cu.get(key)
+            if not (isinstance(cu, str) and cu.startswith("enc:")) or secrets_store.decrypt(cu):
+                continue
+            cha_moi = out
+            for p in parts[:-1]:
+                if not isinstance(cha_moi.get(p), dict):
+                    cha_moi[p] = {}
+                cha_moi = cha_moi[p]
+            if not cha_moi.get(key):
+                cha_moi[key] = cu
+
+
+_TOOL_ENV_OWNED = False   # ELEVENLABS_API_KEY trong env hiện do apply_tool_env đặt → được phép gỡ khi user xoá key
+
+
+def apply_tool_env(cfg=None):
+    """Bơm secret dùng chung từ Cài đặt vào os.environ để TOOL NGOÀI thừa kế khi engine CLI
+    (Claude Code/Codex) spawn tiến trình con (Bash -> python/node). Hiện có: key ElevenLabs
+    (Cài đặt > Giọng đọc) -> ELEVENLABS_API_KEY cho video-use phiên âm khi cắt sửa video.
+    Lưu ý phạm vi: đặt vào env của CẢ server nên mọi tiến trình con (MCP stdio, script vault...)
+    đều thừa kế - chấp nhận vì mục đích chính là đến được Bash con của engine, và cùng user
+    thì con nào cũng đọc được settings.json + .secret_key; blast radius chỉ là key TTS.
+    Chỉ ghi đè khi settings có giá trị; user xoá key trong settings thì gỡ khỏi env (nhưng
+    không đụng biến user tự đặt ngoài shell). Gọi lúc startup + sau khi lưu Cài đặt giọng đọc."""
+    global _TOOL_ENV_OWNED
+    try:
+        if cfg is None:
+            cfg = read_settings()
+        k = ((cfg.get("voice") or {}).get("elevenlabs_key") or "").strip()
+        if k and not k.startswith("••••"):   # bỏ qua giá trị che mà client lỡ gửi lại
+            os.environ["ELEVENLABS_API_KEY"] = k
+            _TOOL_ENV_OWNED = True
+        elif not k and _TOOL_ENV_OWNED:
+            os.environ.pop("ELEVENLABS_API_KEY", None)
+            _TOOL_ENV_OWNED = False
+    except Exception as e:
+        print(f"[config] apply_tool_env lỗi: {e}", file=__import__('sys').stderr)
+    # Windows: helper Python con (vd video-use) in Unicode ra console cp1252 sẽ crash
+    # (UnicodeEncodeError) -> ép UTF-8 cho mọi tiến trình con. Tôn trọng giá trị user tự đặt.
+    child_utf8_env()
+
+
+def child_utf8_env(env=None, os_name=None) -> dict:
+    """Windows: every child process Javis starts (engine CLIs, and through them the shell commands and Python scripts a
+    Team member or a chat turn runs) prints UTF-8. Without it a Python child writing Vietnamese to a pipe uses the ANSI
+    code page (cp1252) and dies with UnicodeEncodeError (customer report 0.270, codes 5 and 22). PYTHONUTF8 turns on UTF-8
+    mode (3.7+); PYTHONIOENCODING also covers older or embedded interpreters. A value the user set is kept. Applied when
+    this module is imported, so it holds before any engine starts, and again from apply_tool_env. No-op elsewhere."""
+    env = os.environ if env is None else env
+    if (os_name or os.name) == "nt":
+        if not env.get("PYTHONUTF8"):
+            env["PYTHONUTF8"] = "1"
+        if not env.get("PYTHONIOENCODING"):
+            env["PYTHONIOENCODING"] = "utf-8"
+    return env
+
+
+child_utf8_env()
+
+
+# ---- Mật khẩu ----
+def hash_password(password, salt=None):
+    salt = salt or secrets.token_hex(16)
+    h = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 120_000).hex()
+    return h, salt
+
+
+def auth_enabled(cfg=None):
+    cfg = cfg or read_settings()
+    return bool(cfg.get("auth", {}).get("password_hash"))
+
+
+def require_login():
+    """Có BẮT BUỘC đăng nhập để dùng Javis không (kể cả khi CHƯA đặt mật khẩu → ép setup).
+    - JAVIS_REQUIRE_LOGIN=1/0 ép bật/tắt tường minh.
+    - Built-in remote access (Cloudflare Tunnel, remote_tunnel.py) is on → True.
+    - Mặc định: BẬT khi server nghe public (JAVIS_HOST=0.0.0.0, vd Docker/Hostinger/VPS) -
+      vì Claude chạy full quyền, không được để hở ai cũng vào được."""
+    # The built-in Cloudflare Tunnel (remote_tunnel.py) puts a localhost-only Javis on the Internet, which the bind
+    # address below cannot see. It wins over an explicit JAVIS_REQUIRE_LOGIN=0 for the same reason.
+    try:
+        if (read_settings().get("remote_tunnel") or {}).get("enabled"):
+            return True
+    except Exception:
+        pass
+    v = os.getenv("JAVIS_REQUIRE_LOGIN", "").strip().lower()
+    if v in ("1", "true", "yes", "on"):
+        return True
+    if v in ("0", "false", "no", "off"):
+        return False
+    # FAIL-CLOSED: bind KHÔNG phải loopback (0.0.0.0, ::, IP LAN…) → coi là public → bắt buộc login.
+    # Chỉ tắt khi nghe thuần localhost. (Localhost + tunnel: đặt JAVIS_REQUIRE_LOGIN=1.)
+    host = os.getenv("JAVIS_HOST", "127.0.0.1").strip().lower()
+    return host not in ("127.0.0.1", "localhost", "::1")
+
+
+def gate_active():
+    """Có cần kiểm tra session trước khi cho truy cập không (đã đặt mật khẩu HOẶC bắt buộc login)."""
+    return auth_enabled() or require_login()
+
+
+def clean_password(password) -> str:
+    """The password as it should be STORED: without surrounding whitespace.
+
+    Phone keyboards add a trailing space after an autocompleted word, and a value pasted into
+    the Hostinger Environment box can carry one too. The owner never sees that space, so it
+    must not decide whether they can sign in (customer report 2026-10-11). Every place that
+    stores a password goes through here; `verify_password` accepts both forms when reading.
+    """
+    return str(password or "").strip()
+
+
+def verify_password(password, cfg=None):
+    """Exact match first (an older hash may have been stored WITH a space), then the cleaned
+    form, so a space the keyboard slipped in never locks the owner out. A password that is
+    only whitespace never matches."""
+    cfg = cfg or read_settings()
+    a = cfg.get("auth", {})
+    if not a.get("password_hash") or not clean_password(password):
+        return False
+    for cand in dict.fromkeys((str(password), clean_password(password))):
+        h, _ = hash_password(cand, a.get("salt"))
+        if secrets.compare_digest(h, a["password_hash"]):
+            return True
+    return False
+
+
+def username_matches(typed, cfg=None) -> bool:
+    """Usernames are not secrets: ignore case and surrounding spaces. A phone capitalises the
+    first letter on its own, and "Phong" vs "phong" must not read as "wrong password"."""
+    cfg = cfg or read_settings()
+    want = str((cfg.get("auth", {}) or {}).get("username") or "").strip().casefold()
+    return bool(want) and str(typed or "").strip().casefold() == want
+
+
+# ---- Xác thực 2 lớp (TOTP). Toán nằm ở totp.py, đây chỉ là chỗ CẤT ----
+def _totp_conf(cfg=None):
+    a = (cfg or read_settings()).get("auth", {}) or {}
+    t = a.get("totp") or {}
+    return t if isinstance(t, dict) else {}
+
+
+def totp_enabled(cfg=None):
+    """2FA đã BẬT THẬT chưa. Có secret mà chưa xác nhận bằng một mã đúng thì vẫn là CHƯA -
+    bật trước khi người dùng chứng minh app của họ sinh đúng mã là tự khoá mình ra ngoài."""
+    t = _totp_conf(cfg)
+    return bool(t.get("enabled")) and bool(t.get("secret"))
+
+
+def kept_totp(cfg=None) -> dict:
+    """`{"totp": ...}` to carry into a NEW `auth` object, or `{}` when there is nothing to keep.
+
+    Turning off login (0.224.0) keeps the 2FA block, so whoever creates the account again (setup
+    page, JAVIS_ADMIN_PASSWORD at boot) must not replace `auth` wholesale and drop it."""
+    t = ((cfg or read_settings()).get("auth") or {}).get("totp")
+    return {"totp": t} if isinstance(t, dict) and t.get("enabled") else {}
+
+
+def totp_secret(cfg=None):
+    return str(_totp_conf(cfg).get("secret") or "")
+
+
+def totp_hong(cfg=None):
+    """2FA đang BẬT trong file nhưng secret KHÔNG GIẢI MÃ ĐƯỢC - thường do file
+    .secret_key trong STATE_DIR bị mất/đổi (đổi volume, chép state thiếu file ẩn),
+    hoặc máy thiếu lib cryptography.
+
+    Vụ 16/08: chủ bật 2FA, cập nhật xong UI báo "Chưa bật" trong khi settings.json vẫn
+    ghi enabled=true. Trước đây trạng thái này ÂM THẦM thành fail-open: totp_enabled
+    trả False nên cổng đăng nhập thôi hỏi mã luôn - ai có mật khẩu là vào thẳng, đúng
+    thứ 2FA phải chặn. Nó phải LỘ RA (UI + log) và cổng phải fail-closed (nhận mã
+    khôi phục - mã đó BĂM chứ không mã hoá nên sống sót qua mất key)."""
+    try:
+        raw = json.loads(SETTINGS_PATH.read_text(encoding="utf-8")) if SETTINGS_PATH.exists() else {}
+    except Exception:
+        return False
+    t = (raw.get("auth") or {}).get("totp") or {}
+    if not (isinstance(t, dict) and t.get("enabled") and str(t.get("secret") or "").strip()):
+        return False
+    return not totp_secret(cfg)   # file CÓ secret mà đọc ra rỗng → giải mã hỏng
+
+
+def secret_paths_hong():
+    """Các trường trong _SECRET_PATHS đang mã hoá trong file mà giải mã ra RỖNG (mất
+    key). Cho dòng log to lúc khởi động - lỗi này trước giờ chỉ hiện một dòng stderr
+    chung chung của secrets_store rồi chìm."""
+    try:
+        raw = json.loads(SETTINGS_PATH.read_text(encoding="utf-8")) if SETTINGS_PATH.exists() else {}
+    except Exception:
+        return []
+    cfg = read_settings()
+    hong = []
+    for path in _SECRET_PATHS:
+        # Bung dấu * ra thành từng khoá thật TRƯỚC khi so, nếu không thì mọi khoá dạng
+        # `packs.tokens.<host>` lặng lẽ rơi khỏi phần báo secret hỏng.
+        for _parent, _k in _secret_keys(cfg, path):
+            duong = path[:-1] + _k if path.endswith("*") else path
+            parts = duong.split(".")
+            r, c = raw, cfg
+            for p in parts:
+                r = r.get(p) if isinstance(r, dict) else None
+                c = c.get(p) if isinstance(c, dict) else None
+            if isinstance(r, str) and r.startswith("enc:") and not (c or ""):
+                hong.append(duong)
+    return hong
+
+
+def totp_last_step(cfg=None):
+    try:
+        return int(_totp_conf(cfg).get("last_step") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def totp_recovery_left(cfg=None):
+    r = _totp_conf(cfg).get("recovery")
+    return len(r) if isinstance(r, list) else 0
+
+
+def totp_set(secret="", enabled=None, recovery=None, last_step=None):
+    """Ghi cấu hình 2FA. Tham số nào để None thì giữ nguyên giá trị cũ."""
+    cfg = read_settings()
+    a = cfg.setdefault("auth", {})
+    t = a.get("totp")
+    if not isinstance(t, dict):
+        t = {"enabled": False, "secret": "", "recovery": [], "last_step": 0}
+    if secret is not None:
+        t["secret"] = secret
+    if enabled is not None:
+        t["enabled"] = bool(enabled)
+    if recovery is not None:
+        # Băm bằng chính hàm băm mật khẩu: mã khôi phục là credential, không phải mã dùng-rồi-thôi.
+        t["recovery"] = [dict(zip(("hash", "salt"), hash_password(m))) for m in recovery]
+    if last_step is not None:
+        t["last_step"] = int(last_step)
+    a["totp"] = t
+    write_settings(cfg)
+    return t
+
+
+def totp_tat():
+    """Tắt hẳn 2FA: xoá secret, xoá mã khôi phục, xoá dấu bước đã dùng."""
+    cfg = read_settings()
+    cfg.setdefault("auth", {})["totp"] = {"enabled": False, "secret": "", "recovery": [],
+                                          "last_step": 0}
+    write_settings(cfg)
+
+
+def totp_ghi_buoc(buoc):
+    """Ghi lại bước TOTP vừa dùng → mã đó không xài lại được nữa dù còn trong 30 giây."""
+    totp_set(secret=None, last_step=int(buoc))
+
+
+def totp_dung_ma_khoi_phuc(ma):
+    """Tiêu một mã khôi phục. True nếu khớp (và mã đó bị XOÁ khỏi danh sách).
+
+    Xoá ngay khi dùng là điều kiện để "mã dùng một lần" đúng nghĩa: giữ lại thì một tờ giấy
+    chụp lén còn mở được cửa mãi mãi.
+    """
+    import totp as _t
+    can = _t.chuan_hoa_ma_khoi_phuc(ma)
+    if not can:
+        return False
+    cfg = read_settings()
+    t = (cfg.get("auth", {}) or {}).get("totp") or {}
+    ds = t.get("recovery")
+    if not isinstance(ds, list):
+        return False
+    for i, m in enumerate(ds):
+        if not isinstance(m, dict):
+            continue
+        h, _ = hash_password(can, m.get("salt"))
+        if secrets.compare_digest(h, str(m.get("hash") or "")):
+            ds.pop(i)
+            t["recovery"] = ds
+            cfg["auth"]["totp"] = t
+            write_settings(cfg)
+            return True
+    return False
+
+
+# ---- Session (lưu ra file → restart KHÔNG bị đăng xuất) ----
+# Lưu {token: created_ts} để session CÓ HẠN (chống token bất tử nếu lỡ rò).
+import time as _time
+_SESS_PATH = STATE_DIR / ".sessions.json"
+_SESSION_TTL = 30 * 86400   # 30 ngày
+
+
+def _load_sessions():
+    try:
+        if _SESS_PATH.exists():
+            data = json.loads(_SESS_PATH.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                return {k: float(v) for k, v in data.items()}
+            if isinstance(data, list):   # tương thích định dạng cũ → coi như vừa tạo
+                return {k: _time.time() for k in data}
+    except Exception:
+        pass
+    return {}
+
+
+SESSIONS = _load_sessions()
+
+
+def _save_sessions():
+    try:
+        _SESS_PATH.write_text(json.dumps(SESSIONS), encoding="utf-8")
+    except Exception:
+        return
+    try:
+        # Raw login session tokens: owner-only, like .secret_key and .hub_token (no-op on Windows).
+        os.chmod(_SESS_PATH, 0o600)
+    except Exception:
+        pass
+
+
+def new_session():
+    t = secrets.token_urlsafe(32)
+    SESSIONS[t] = _time.time()
+    _save_sessions()
+    return t
+
+
+def valid_session(token):
+    if not token or token not in SESSIONS:
+        return False
+    if _time.time() - SESSIONS.get(token, 0) > _SESSION_TTL:
+        SESSIONS.pop(token, None)
+        _save_sessions()
+        return False
+    return True
+
+
+def drop_session(token):
+    SESSIONS.pop(token, None)
+    _save_sessions()
+
+
+def clear_sessions():
+    SESSIONS.clear()
+    _save_sessions()
+
+
+
+# ---- TOKEN API cho client ngoài trình duyệt (CLI, script, cron) ----
+# Vì sao không dùng lại session: session sinh ra cho trình duyệt - lưu {token: created_ts},
+# TTL 30 ngày, không có tên, không thu hồi riêng lẻ được. Một credential dán sang máy khác thì
+# cần đủ ba thứ: có TÊN để biết nó của máy nào, THU HỒI được từng cái, và KHÔNG BAO GIỜ nằm ở
+# dạng đọc lại được trên đĩa.
+#
+# Mức quyền: `full` ngang phiên đăng nhập dashboard, `chat` chỉ chạm được đường hội thoại.
+# Nói thẳng chứ không giả vờ có phân quyền tinh vi - `full` không phải quyền MỚI, nó đúng bằng
+# cái quyền chủ máy đã có khi mở dashboard; chỉ là một loại credential khác.
+_TOKENS_PATH = STATE_DIR / ".api_tokens.json"
+TOKEN_PREFIX = "jvs_"
+# Đường mà token scope `chat` được đi. Danh sách TRẮNG, khớp theo tiền tố: thiếu tên nào thì
+# token đó bị từ chối chứ không lọt - fail-closed, đúng nếp của mọi hàng rào khác trong Javis.
+TOKEN_SCOPE_CHAT = ("/chat", "/version", "/health", "/sessions")
+
+
+def _load_tokens():
+    try:
+        if _TOKENS_PATH.exists():
+            data = json.loads(_TOKENS_PATH.read_text(encoding="utf-8"))
+            if isinstance(data, list):
+                return [x for x in data if isinstance(x, dict)]
+    except Exception:
+        pass
+    return []
+
+
+def _save_tokens(items):
+    try:
+        _TOKENS_PATH.write_text(json.dumps(items, ensure_ascii=False, indent=2), encoding="utf-8")
+        try:
+            os.chmod(_TOKENS_PATH, 0o600)
+        except Exception:
+            pass
+    except Exception as e:
+        print(f"[auth] không ghi được token: {e}", file=__import__('sys').stderr)
+
+
+def _token_hash(token: str) -> str:
+    return hashlib.sha256(str(token or "").encode("utf-8")).hexdigest()
+
+
+def create_api_token(name: str, scope: str = "full") -> dict:
+    """Sinh token mới. Trả BẢN THÔ đúng một lần - về sau trên đĩa chỉ còn bản băm."""
+    raw = TOKEN_PREFIX + secrets.token_urlsafe(32)
+    item = {
+        "id": "tok_" + secrets.token_hex(6),
+        "name": (str(name or "").strip() or "không tên")[:60],
+        "scope": "chat" if str(scope) == "chat" else "full",
+        "hash": _token_hash(raw),
+        "prefix": raw[:12],
+        "created_at": _time.time(),
+        "last_used_at": 0.0,
+    }
+    items = _load_tokens()
+    items.append(item)
+    _save_tokens(items)
+    ra = {k: v for k, v in item.items() if k != "hash"}
+    ra["token"] = raw
+    return ra
+
+
+def list_api_tokens():
+    """Danh sách token, KHÔNG kèm bản băm - không có lý do nào để nó ra khỏi đĩa."""
+    return [{k: v for k, v in x.items() if k != "hash"} for x in _load_tokens()]
+
+
+def revoke_api_token(token_id: str) -> bool:
+    items = _load_tokens()
+    con = [x for x in items if x.get("id") != str(token_id or "")]
+    if len(con) == len(items):
+        return False
+    _save_tokens(con)
+    return True
+
+
+def verify_api_token(raw: str, path: str = ""):
+    """Token có hợp lệ cho `path` này không. Trả mục token (đã bỏ hash) hoặc None.
+
+    So bằng `compare_digest` trên bản băm chứ không so chuỗi thô: so chuỗi thường thoát sớm ở
+    ký tự đầu khác nhau, và thời gian chênh đó đủ để dò token theo từng ký tự.
+    """
+    raw = str(raw or "").strip()
+    if not raw or not raw.startswith(TOKEN_PREFIX):
+        return None
+    h = _token_hash(raw)
+    for x in _load_tokens():
+        if secrets.compare_digest(str(x.get("hash") or ""), h):
+            if str(x.get("scope")) == "chat" and path:
+                if not any(str(path).startswith(p) for p in TOKEN_SCOPE_CHAT):
+                    return None
+            x["last_used_at"] = _time.time()
+            _save_tokens(_load_tokens_touch(x))
+            return {k: v for k, v in x.items() if k != "hash"}
+    return None
+
+
+def _load_tokens_touch(moi_nhat):
+    """Ghi lại last_used_at của đúng một token, giữ nguyên phần còn lại."""
+    items = _load_tokens()
+    for x in items:
+        if x.get("id") == moi_nhat.get("id"):
+            x["last_used_at"] = moi_nhat.get("last_used_at") or _time.time()
+    return items
+
+
+# ---- Chặn dò token ----
+# Token là chuỗi 43 ký tự ngẫu nhiên nên dò mù gần như bất khả, nhưng đếm và chặn vẫn đáng làm:
+# nó biến một cuộc dò thành thứ NHÌN THẤY ĐƯỢC trong nhật ký thay vì im lặng chạy hàng tháng.
+_AUTH_FAIL = {}          # ip -> [mốc thời gian thất bại]
+_AUTH_AUDIT = STATE_DIR / "auth_audit.jsonl"
+_FAIL_MAX, _FAIL_WINDOW, _BAN_SECONDS = 10, 300, 900
+
+
+def token_ip_banned(ip: str) -> bool:
+    hs = _AUTH_FAIL.get(str(ip or ""), [])
+    if len(hs) < _FAIL_MAX:
+        return False
+    return (_time.time() - hs[-1]) < _BAN_SECONDS
+
+
+def note_token_failure(ip: str, thu: str = ""):
+    ip = str(ip or "")
+    now = _time.time()
+    hs = [t for t in _AUTH_FAIL.get(ip, []) if now - t < _FAIL_WINDOW]
+    hs.append(now)
+    _AUTH_FAIL[ip] = hs[-50:]
+    try:
+        with open(_AUTH_AUDIT, "a", encoding="utf-8") as f:
+            # Ghi TIỀN TỐ thôi, không ghi token thô: nhật ký là thứ hay bị gửi đi kèm báo lỗi.
+            f.write(json.dumps({"ts": now, "ip": ip, "prefix": str(thu or "")[:12],
+                                "fails": len(hs)}, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+# ---- Mã thiết lập (ĐÃ BỎ từ 0.64.47) ----
+# Trước đây chạy public mà chưa có admin thì /auth/setup đòi một mã chỉ in ra log server. Chủ
+# dự án chốt 24/09 bỏ đi: lần đầu chỉ cần tên + mật khẩu, bảo vệ tài khoản giao cho 2FA, và máy
+# cài bằng install.sh đã có admin sẵn từ .env. Chỉ còn lại hàm dọn file mã cũ lúc khởi động.
+_SETUP_TOKEN_PATH = STATE_DIR / ".setup_token"
+
+
+def clear_setup_token():
+    try:
+        _SETUP_TOKEN_PATH.unlink()
+    except Exception:
+        pass
+
+
+def provision_admin_from_env():
+    """Apply JAVIS_ADMIN_PASSWORD (+ optional JAVIS_ADMIN_USER) at boot.
+
+    - No admin yet: create it, which also closes /auth/setup (safest for a public deploy).
+    - Admin exists and the env value CHANGED since it was last applied: reset to it, keep 2FA,
+      drop other sessions. Before 0.77.1 this case was silently ignored, so a customer who
+      changed the password on Hostinger and redeployed got "Wrong username or password"
+      forever, and a VPS owner had no reset path short of editing settings.json over SSH.
+    - Env unchanged: do nothing, so a password changed later in the dashboard survives reboots.
+
+    `auth.env_applied` keeps only a salted hash of the last applied env value, never the value.
+    Returns "created", "reset" or "" (nothing done).
+
+    The marker is compared with the env value as typed AND as cleaned (0.96.1). From 0.92.1 the
+    value is cleaned of surrounding whitespace before use, but a marker written by an older
+    version holds the hash of the value WITH its whitespace. Comparing only the cleaned value
+    read that as "the env changed" and reset the account on the first boot after the update:
+    an owner who had set their own password in the dashboard was locked out with "Wrong username
+    or password" and their username turned into "admin" (many reports 2026-10-11).
+    """
+    raw = os.getenv("JAVIS_ADMIN_PASSWORD", "")
+    pw = clean_password(raw)
+    if not pw:
+        return ""
+    user = (os.getenv("JAVIS_ADMIN_USER", "admin").strip() or "admin")
+    cfg = read_settings()
+    a = dict(cfg.get("auth") or {})
+    m_salt = secrets.token_hex(16)
+    marker = {"username": user, "hash": hash_password(pw, m_salt)[0], "salt": m_salt}
+    if not a.get("password_hash"):
+        h, salt = hash_password(pw)
+        cfg["auth"] = {**kept_totp(cfg), "username": user, "password_hash": h, "salt": salt,
+                       "env_applied": marker}
+        write_settings(cfg)
+        return "created"
+    applied = a.get("env_applied") if isinstance(a.get("env_applied"), dict) else {}
+    if applied.get("hash"):
+        def _applied(value):
+            return secrets.compare_digest(hash_password(value, str(applied.get("salt") or ""))[0],
+                                          str(applied["hash"]))
+        if applied.get("username") == user and _applied(pw):
+            return ""
+        if applied.get("username") == user and raw != pw and _applied(raw):
+            # Same env value, applied with its whitespace by a version before 0.92.1: NOT a change
+            # by the owner, so never a reset. If the account still has exactly that password, store
+            # it clean so the owner can sign in without the invisible space (the typed form keeps
+            # working through `verify_password`). A password set in the dashboard since is kept.
+            # Username, 2FA and sessions are untouched either way.
+            if secrets.compare_digest(hash_password(raw, str(a.get("salt") or ""))[0],
+                                      str(a.get("password_hash") or "")):
+                a["password_hash"], a["salt"] = hash_password(pw)
+            a["env_applied"] = marker
+            cfg["auth"] = a
+            write_settings(cfg)
+            return ""
+    elif a.get("username") == user and verify_password(pw, cfg):
+        # Upgrade from a version without the marker, and the env already matches the account:
+        # just remember it, so a later dashboard change is not reverted on the next boot.
+        a["env_applied"] = marker
+        cfg["auth"] = a
+        write_settings(cfg)
+        return ""
+    # Overwrite key by key: `auth` also holds the 2FA config, replacing it whole would turn 2FA off.
+    a["username"] = user
+    a["password_hash"], a["salt"] = hash_password(pw)
+    a["env_applied"] = marker
+    cfg["auth"] = a
+    write_settings(cfg)
+    clear_sessions()
+    return "reset"
