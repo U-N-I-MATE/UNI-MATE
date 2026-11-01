@@ -10,7 +10,7 @@
 Ejecútalo en tu portátil o en un VPS pequeño. Háblale con la voz. Conecta Claude, ChatGPT, Grok, Gemini o cualquiera de 12 proveedores, conserva todas las herramientas cuando cambies de uno a otro y deja que trabaje en segundo plano mientras duermes.
 
 [![GitHub stars](https://img.shields.io/github/stars/U-N-I-MATE/UNI-MATE?style=flat&logo=github&label=stars)](https://github.com/U-N-I-MATE/UNI-MATE/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](../../../LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-22c55e)](../../../LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/U-N-I-MATE/UNI-MATE?color=f97316)](https://github.com/U-N-I-MATE/UNI-MATE/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
@@ -491,7 +491,7 @@ Si UNI MATE te resulta útil, una ⭐ en el repositorio ayuda a que otras person
 
 ## 📄 Licencia
 
-Código abierto bajo la **licencia MIT**: úsalo, modifícalo y distribúyelo libremente, solo conserva el aviso de copyright. Consulta [LICENSE](../../../LICENSE).
+Código abierto bajo la **GNU AGPL-3.0**: úsalo, modifícalo y compártelo libremente; si ofreces una versión modificada a otros a través de una red, ofréceles también su código fuente. U.N.I SERVICE AND TRADING CO., LTD. ofrece además una licencia comercial sin las obligaciones de la AGPL. Consulta [LICENSE](../../../LICENSE) y [NOTICE.md](../../../NOTICE.md).
 
 ---
 

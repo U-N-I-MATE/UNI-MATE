@@ -26359,7 +26359,7 @@ TEAM_WORK_MODE = "full"
 
 
 def _codex_user_mcp_servers():
-    """MCP servers in the user's own Codex config besides UNI MATE' hub: Codex would call them without the gate."""
+    """MCP servers in the user's own Codex config besides UNI MATE's hub: Codex would call them without the gate."""
     try:
         import tomllib
         p = claude_cli._codex_home() / "config.toml"

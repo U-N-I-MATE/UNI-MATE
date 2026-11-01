@@ -10,7 +10,7 @@
 노트북이나 작은 VPS에서 실행합니다. 음성으로 대화합니다. Claude, ChatGPT, Grok, Gemini 등 12개 제공자 중 무엇이든 연결하고, 바꿔도 모든 도구는 그대로 유지되며, 잠자는 동안에도 백그라운드에서 일하게 할 수 있습니다.
 
 [![GitHub stars](https://img.shields.io/github/stars/U-N-I-MATE/UNI-MATE?style=flat&logo=github&label=stars)](https://github.com/U-N-I-MATE/UNI-MATE/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](../../../LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-22c55e)](../../../LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/U-N-I-MATE/UNI-MATE?color=f97316)](https://github.com/U-N-I-MATE/UNI-MATE/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
@@ -491,7 +491,7 @@ UNI MATE가 유용하다면 저장소에 ⭐ 를 눌러 주세요. 다른 사람
 
 ## 📄 라이선스
 
-**MIT License** 로 공개된 오픈 소스입니다. 저작권 표시만 유지하면 자유롭게 사용, 수정, 배포할 수 있습니다. [LICENSE](../../../LICENSE) 를 참고하세요.
+**GNU AGPL-3.0** 으로 공개된 오픈 소스입니다. 자유롭게 사용, 수정, 공유할 수 있으며, 수정한 버전을 네트워크로 다른 사람에게 제공한다면 그 소스 코드도 함께 제공해야 합니다. AGPL 의무 없이 쓰려면 U.N.I SERVICE AND TRADING CO., LTD. 의 상용 라이선스를 이용할 수 있습니다. [LICENSE](../../../LICENSE) 와 [NOTICE.md](../../../NOTICE.md) 를 참고하세요.
 
 ---
 

@@ -10,7 +10,7 @@
 Jalankan di laptop atau VPS kecil. Ajak bicara dengan suara. Pasang Claude, ChatGPT, Grok, Gemini atau salah satu dari 12 provider, semua tool tetap ada saat Anda berganti, dan biarkan ia bekerja di background selagi Anda tidur.
 
 [![GitHub stars](https://img.shields.io/github/stars/U-N-I-MATE/UNI-MATE?style=flat&logo=github&label=stars)](https://github.com/U-N-I-MATE/UNI-MATE/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](../../../LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-22c55e)](../../../LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/U-N-I-MATE/UNI-MATE?color=f97316)](https://github.com/U-N-I-MATE/UNI-MATE/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
@@ -491,7 +491,7 @@ Jika UNI MATE bermanfaat bagi Anda, satu ⭐ di repo ini membantu orang lain men
 
 ## 📄 Lisensi
 
-Open source di bawah **MIT License**: bebas digunakan, dimodifikasi, dan didistribusikan, cukup pertahankan pemberitahuan hak cipta. Lihat [LICENSE](../../../LICENSE).
+Open source di bawah **GNU AGPL-3.0**: bebas digunakan, diubah, dan dibagikan; jika Anda menjalankan versi yang diubah untuk orang lain melalui jaringan, berikan juga kode sumbernya. U.N.I SERVICE AND TRADING CO., LTD. juga menyediakan lisensi komersial tanpa kewajiban AGPL. Lihat [LICENSE](../../../LICENSE) dan [NOTICE.md](../../../NOTICE.md).
 
 ---
 

@@ -7,7 +7,7 @@ những gì đã tra được, cái gì đã chốt và cái gì còn phải th�
 
 - **ardennguyen/zalo-agent-cli** (npm, có `mcp-server.js` chạy stdio): bọc OA Open API v3 và cả tài
   khoản cá nhân (API không chính thức). Giấy phép **CC BY-NC-SA 4.0**, cấm dùng thương mại, nên
-  KHÔNG đóng gói vào UNI MATE (MIT) và không chép mã. Chủ OA dùng cho việc riêng thì tự cài như mọi
+  KHÔNG đóng gói vào UNI MATE (AGPL-3.0) và không chép mã. Chủ OA dùng cho việc riêng thì tự cài như mọi
   MCP ngoài ở trang Kết nối.
 - Các wrapper khác trên GitHub (zalo-node-oa, zalo-oa-api-wrapper, zalo-api Ruby) là thư viện gọi
   API, không phải MCP.

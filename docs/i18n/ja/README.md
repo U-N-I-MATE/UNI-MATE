@@ -10,7 +10,7 @@
 ノート PC でも小さな VPS でも動きます。声で話しかけられます。Claude、ChatGPT、Grok、Gemini など 12 のプロバイダーから好きなものをつなぎ、切り替えてもツールはすべてそのまま。あなたが寝ている間もバックグラウンドで働き続けます。
 
 [![GitHub stars](https://img.shields.io/github/stars/U-N-I-MATE/UNI-MATE?style=flat&logo=github&label=stars)](https://github.com/U-N-I-MATE/UNI-MATE/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](../../../LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-22c55e)](../../../LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/U-N-I-MATE/UNI-MATE?color=f97316)](https://github.com/U-N-I-MATE/UNI-MATE/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
@@ -491,7 +491,7 @@ UNI MATE が役に立ったら、リポジトリに ⭐ を付けていただけ
 
 ## 📄 ライセンス
 
-**MIT License** のオープンソースです。著作権表示を残すだけで、自由に使用、改変、再配布できます。[LICENSE](../../../LICENSE) を参照してください。
+**GNU AGPL-3.0** のオープンソースです。自由に使用、改変、共有できます。改変版をネットワーク越しに他の人へ提供する場合は、そのソースコードも提供してください。AGPL の義務なしで使いたい場合は U.N.I SERVICE AND TRADING CO., LTD. の商用ライセンスもあります。[LICENSE](../../../LICENSE) と [NOTICE.md](../../../NOTICE.md) を参照してください。
 
 ---
 

@@ -10,7 +10,7 @@
 在你的笔记本或一台小型 VPS 上运行。用语音和它对话。接入 Claude、ChatGPT、Grok、Gemini 或 12 家提供商中的任意一家，切换模型时所有工具都保留，还能在你睡觉时于后台继续工作。
 
 [![GitHub stars](https://img.shields.io/github/stars/U-N-I-MATE/UNI-MATE?style=flat&logo=github&label=stars)](https://github.com/U-N-I-MATE/UNI-MATE/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](../../../LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-22c55e)](../../../LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/U-N-I-MATE/UNI-MATE?color=f97316)](https://github.com/U-N-I-MATE/UNI-MATE/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
@@ -491,7 +491,7 @@ UNI-MATE/
 
 ## 📄 许可证
 
-基于 **MIT License** 开源：可自由使用、修改和分发，只需保留版权声明。参见 [LICENSE](../../../LICENSE)。
+基于 **GNU AGPL-3.0** 开源：可自由使用、修改和分享；如果你通过网络向他人提供修改后的版本，也需要向他们提供源代码。U.N.I SERVICE AND TRADING CO., LTD. 另提供不受 AGPL 义务约束的商业许可。参见 [LICENSE](../../../LICENSE) 和 [NOTICE.md](../../../NOTICE.md)。
 
 ---
 

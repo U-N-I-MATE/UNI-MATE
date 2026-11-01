@@ -294,7 +294,7 @@ The bot is told: when a question needs specific information the pre-search did n
 **Why this level asks for no consent tick:** it takes nothing the pre-search did not already expose.
 
 - No write tool, no data source, no plugin, even if you connected many sources. UNI MATE enforces this where tools are called, not with instructions.
-- The bot opens only files the pre-search already reads: not `memory/`, `inbox/` (customer uploads), skills, plugins or UNI MATE' convention files, and also not `agents/` or `workflows/` (your internal instructions). The path a customer types is only compared against that list, so `../`, absolute paths and links pointing out of the brain open nothing.
+- The bot opens only files the pre-search already reads: not `memory/`, `inbox/` (customer uploads), skills, plugins or UNI MATE's convention files, and also not `agents/` or `workflows/` (your internal instructions). The path a customer types is only compared against that list, so `../`, absolute paths and links pointing out of the brain open nothing.
 - Only the bot's own brain. Without it the bot gets no tools at all, rather than the brain you have open.
 
 The **Try** button runs this level as is (it only reads), so you can test it right away. It costs a few extra model calls when the bot searches, and depends on the engine like the two levels above (see [Which engines can run the raised levels](#which-engines-can-run-the-raised-levels)).

@@ -14,7 +14,7 @@ How, and why this way rather than through an MCP connector:
    cannot steer the request anywhere else. This needs the document shared as "Anyone with the link can
    view"; a private one comes back as a Google sign-in page, which is reported to the owner as exactly
    that, so the fix is one click in Google, not a guess.
-3. **No connector, no extra permission level.** Fetching happens in UNI MATE' own code before the turn,
+3. **No connector, no extra permission level.** Fetching happens in UNI MATE's own code before the turn,
    like the keyword search, so it works at every bot level including the default read-only one, on
    every engine, on every fork. Going through a hub connector would hand a stranger-steered turn a
    live data source, which is what the "read_docs" level was built to avoid.

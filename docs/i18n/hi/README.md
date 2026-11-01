@@ -10,7 +10,7 @@
 इसे अपने laptop या किसी छोटे VPS पर चलाइए। इससे आवाज़ में बात कीजिए। Claude, ChatGPT, Grok, Gemini या 12 providers में से किसी को भी जोड़िए, provider बदलने पर भी हर tool वैसा ही बना रहता है, और जब आप सो रहे हों तब इसे background में काम करने दीजिए।
 
 [![GitHub stars](https://img.shields.io/github/stars/U-N-I-MATE/UNI-MATE?style=flat&logo=github&label=stars)](https://github.com/U-N-I-MATE/UNI-MATE/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](../../../LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-22c55e)](../../../LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/U-N-I-MATE/UNI-MATE?color=f97316)](https://github.com/U-N-I-MATE/UNI-MATE/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
@@ -491,7 +491,7 @@ Bug reports, ideas, अनुवाद और pull requests, सबका स्
 
 ## 📄 License
 
-**MIT License** के तहत open source: बिना रोक-टोक इस्तेमाल, बदलाव और वितरण कीजिए, बस copyright notice बनाए रखिए। देखें [LICENSE](../../../LICENSE)।
+**GNU AGPL-3.0** के तहत open source: इस्तेमाल, बदलाव और साझा करना मुफ़्त है; अगर आप बदला हुआ संस्करण network पर दूसरों के लिए चलाते हैं, तो उन्हें उसका source code भी दें। AGPL की शर्तों के बिना इस्तेमाल के लिए U.N.I SERVICE AND TRADING CO., LTD. से commercial license भी मिलता है। देखें [LICENSE](../../../LICENSE) और [NOTICE.md](../../../NOTICE.md)।
 
 ---
 

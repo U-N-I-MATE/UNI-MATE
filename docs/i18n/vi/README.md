@@ -444,7 +444,7 @@ Người đóng góp quốc tế có [ARCHITECTURE.md](../../../ARCHITECTURE.md)
 
 ## 📄 Giấy phép
 
-Mã nguồn mở theo giấy phép **MIT** - dùng, sửa, phân phối tự do, chỉ cần giữ dòng ghi công. Xem [LICENSE](../../../LICENSE).
+Mã nguồn mở theo giấy phép **GNU AGPL-3.0**: dùng, sửa, chia sẻ tự do; nếu chạy bản đã sửa cho người khác dùng qua mạng thì phải cung cấp mã nguồn của bản đó. Ai muốn dùng UNI MATE mà không theo nghĩa vụ AGPL thì mua giấy phép thương mại của Công ty TNHH Dịch vụ và Thương mại U.N.I (U.N.I SERVICE AND TRADING CO., LTD.). Xem [LICENSE](../../../LICENSE) và [NOTICE.md](../../../NOTICE.md).
 
 ---
 

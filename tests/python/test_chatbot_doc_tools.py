@@ -9,7 +9,7 @@ a single careless edit away from breaking, so each is pinned here:
 1. **Read-only by construction.** The hub returns exactly three document tools for this mode: no
    write tool, no connected source, no plugin, no lazy `unimate_run_tool`, whatever else is installed.
 2. **Same documents as the pre-turn search, never more.** `memory/`, `inbox/` (customer uploads),
-   `agents/`, UNI MATE' convention files, images, `../` and absolute paths, and symlinks out of the
+   `agents/`, UNI MATE's convention files, images, `../` and absolute paths, and symlinks out of the
    brain all stay closed, because the path a customer types is matched against a list, never opened.
 3. **One brain only.** Without the bot's own X-UniMate-Vault header the hub hands out NO tools, rather
    than falling back to the brain the owner has open.

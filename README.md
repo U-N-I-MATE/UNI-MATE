@@ -9,7 +9,7 @@
 Run it on your laptop or a small VPS. Talk to it by voice. Plug in Claude, ChatGPT, Grok, Gemini or any of 14 providers, keep every tool when you switch, and let it work in the background while you sleep.
 
 [![GitHub stars](https://img.shields.io/github/stars/U-N-I-MATE/UNI-MATE?style=flat&logo=github&label=stars)](https://github.com/U-N-I-MATE/UNI-MATE/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-22c55e)](LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/U-N-I-MATE/UNI-MATE?color=f97316)](https://github.com/U-N-I-MATE/UNI-MATE/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
@@ -487,7 +487,7 @@ If UNI MATE is useful to you, a ⭐ on the repo helps other people find it.
 
 ## 📄 License
 
-Open source under the **MIT License**: use, modify and distribute freely, just keep the copyright notice. See [LICENSE](LICENSE).
+Open source under the **GNU AGPL-3.0**: use, modify and share it freely; if you run a modified version for others over a network, offer them its source code too. A commercial licence is also available from U.N.I SERVICE AND TRADING CO., LTD. for anyone who wants to use UNI MATE without the AGPL obligations. See [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
 
 ---
 
