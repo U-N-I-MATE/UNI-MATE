@@ -57,14 +57,42 @@ Line " =========================================="
 
 # ---------------------------------------------------------------- [1] Python
 Step 1 "Kiem tra Python"
-if (-not (Have "python")) {
+# "python" co the chi la LOI TAT cua Microsoft Store (WindowsApps\python.exe): Get-Command thay no,
+# nhung chay thi in "Python was not found..." va tao .venv that bai (chu repo gap 01/11/2026 tren may
+# cai Python 3.14 bang Python install manager, khong them vao PATH). Vi vay phai CHAY thu de biet that,
+# roi tim tiep qua lenh py va cac thu muc cai Python quen thuoc; thay thi them vao PATH cua phien nay.
+function Test-Py($exe) {
+  try { $v = (& $exe --version 2>&1 | Out-String).Trim() } catch { return $false }
+  return ($v -match '^Python 3\.\d+')
+}
+function Find-Python {
+  if ((Have "python") -and (Test-Py "python")) { return $true }
+  $cands = @()
+  if (Have "py") {
+    try { $e = (& py -3 -c "import sys; print(sys.executable)" 2>$null | Out-String).Trim(); if ($e) { $cands += $e } } catch {}
+  }
+  foreach ($g in @("$env:LOCALAPPDATA\Python\pythoncore-3*\python.exe", "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe",
+                   "$env:ProgramFiles\Python3*\python.exe")) {
+    $cands += @(Get-ChildItem -Path $g -ErrorAction SilentlyContinue | Sort-Object FullName -Descending | ForEach-Object { $_.FullName })
+  }
+  foreach ($c in $cands) {
+    if ($c -and (Test-Path $c) -and (Test-Py $c)) {
+      $d = Split-Path -Parent $c
+      $env:PATH = "$d;$d\Scripts;$env:PATH"
+      Ok "Dung Python tai $d"
+      return $true
+    }
+  }
+  return $false
+}
+if (-not (Find-Python)) {
   if (Have "winget") {
     Line "    Chua co Python, dang cai bang winget..."
     winget install -e --id Python.Python.3.12 --accept-source-agreements --accept-package-agreements | Out-Null
     Refresh-Path
   }
 }
-if (-not (Have "python")) {
+if (-not (Find-Python)) {
   Err "Chua co Python. Tai Python 3.12 o python.org, tick 'Add python.exe to PATH', roi chay lai file nay."
   exit 1
 }
