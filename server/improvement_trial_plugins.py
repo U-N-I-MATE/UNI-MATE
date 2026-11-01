@@ -38,7 +38,7 @@ _RESERVED = {"unimate_connections", "unimate_read_file", "unimate_list_dir", "un
 _GOAL_FILE = Path(__file__).resolve().parent.parent / "system" / "plugins" / "unimate-goal" / "plugin.py"
 # Pin the audited data-only branch; a coherent edited source+cache is still not
 # authority to reinterpret an arbitrary predicate as the ordinary-owner result.
-_GOAL_SOURCE_HASH = "4f68b2d4229506ae74598d8bb73db801ed0e465d8dd15605ab248586bbdf760d"
+_GOAL_SOURCE_HASH = "d74f9ba4a42509f8ab14be7e0642bb83a0f5d76bcafd8796b17c343eea8864c7"  # UNI MATE 01: ghim lại sau đổi tên (chỉ đổi chữ javis -> unimate, _visible giữ nguyên)
 
 
 def _plain(value):
