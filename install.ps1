@@ -25,7 +25,8 @@
 param(
   [switch]$NoStart,      # cai xong khong tu bat server
   [switch]$NoAutostart,  # khong bat tu khoi dong cung Windows (mac dinh BAT tu 0.306.0)
-  [switch]$SkipCli       # bo qua buoc cai 4 CLI (chi cai Python deps)
+  [switch]$SkipCli,      # bo qua buoc cai 4 CLI (chi cai Python deps)
+  [int]$Port = 0         # cong chay UNI MATE (ghi vao .env); bo trong = giu .env, mac dinh 7777
 )
 
 $ErrorActionPreference = "Continue"
@@ -143,16 +144,39 @@ if ((-not (Test-Path ".env")) -and (Test-Path "env.example")) {
   Ok ".env da co"
 }
 
-# ---------------------------------------------------------------- [5] port 7777
-Step 5 "Giai phong port 7777"
-$conns = Get-NetTCPConnection -LocalPort 7777 -State Listen -ErrorAction SilentlyContinue
+# CONG CHAY: mac dinh 7777. Doi cong (vi du chay song song voi mot ban khac dang giu 7777) bang dong
+# UNIMATE_PORT=... trong .env; bien moi truong UNIMATE_PORT neu co thi thang (giong server: load_dotenv
+# khong ghi de bien da co). Moi buoc ben duoi chi dung $Port, khong viet cung 7777.
+function Get-UniPort($root) {
+  if ($env:UNIMATE_PORT -match '^\d+$') { return [int]$env:UNIMATE_PORT }
+  $f = Join-Path $root ".env"
+  if (Test-Path $f) {
+    $m = Select-String -Path $f -Pattern '^\s*UNIMATE_PORT\s*=\s*(\d+)' | Select-Object -First 1
+    if ($m) { return [int]$m.Matches[0].Groups[1].Value }
+  }
+  return 7777
+}
+if ($Port -gt 0) {
+  $envf = Join-Path $Root ".env"
+  # Doc/ghi bang UTF-8 khong BOM: .env co the co chu tieng Viet, Get-Content/Set-Content cua
+  # PowerShell 5 doc ANSI va ghi kem BOM se lam hong no.
+  $dong = @()
+  if (Test-Path $envf) { $dong = @([IO.File]::ReadAllLines($envf) | Where-Object { $_ -notmatch '^\s*UNIMATE_PORT\s*=' }) }
+  [IO.File]::WriteAllLines($envf, [string[]]($dong + "UNIMATE_PORT=$Port"), (New-Object Text.UTF8Encoding $false))
+  Ok "Ghi UNIMATE_PORT=$Port vao .env"
+}
+$Port = Get-UniPort $Root
+
+# ---------------------------------------------------------------- [5] port
+Step 5 "Giai phong port $Port"
+$conns = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
 if ($conns) {
   foreach ($c in $conns) {
     try { Stop-Process -Id $c.OwningProcess -Force -ErrorAction Stop; Ok "Da tat tien trinh cu PID $($c.OwningProcess)" }
     catch { Warn "Khong tat duoc PID $($c.OwningProcess) - dong tay roi chay lai." }
   }
 } else {
-  Ok "Port 7777 dang trong"
+  Ok "Port $Port dang trong"
 }
 
 # ---------------------------------------------------------------- tong ket
@@ -209,5 +233,5 @@ if (Test-Path $vbs) {
   Ok "Server dang chay"
 }
 Line ""
-Line "  Mo: http://localhost:7777"
+Line "  Mo: http://localhost:$Port"
 Line ""

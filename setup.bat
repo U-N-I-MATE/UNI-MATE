@@ -70,16 +70,19 @@ if not "%UNIMATE_NO_AUTOSTART%"=="1" (
   if not errorlevel 1 echo     OK  Tu khoi dong cung Windows: BAT
 )
 
-REM Giai phong port 7777 neu dang bi chiem
-echo [4/4] Giai phong port 7777...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":7777" ^| findstr "LISTENING"') do (
+REM Cong chay: bien UNIMATE_PORT neu co, khong thi dong UNIMATE_PORT=... trong .env, khong thi 7777.
+if "%UNIMATE_PORT%"=="" for /f "tokens=1,* delims==" %%a in ('findstr /r /b /c:"UNIMATE_PORT=[0-9]" ".env" 2^>nul') do set "UNIMATE_PORT=%%b"
+if "%UNIMATE_PORT%"=="" set UNIMATE_PORT=7777
+REM Giai phong cong chay neu dang bi chiem
+echo [4/4] Giai phong port %UNIMATE_PORT%...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%UNIMATE_PORT% " ^| findstr "LISTENING"') do (
   echo     Dang tat tien trinh cu PID %%a
   taskkill /F /PID %%a >nul 2>&1
 )
 
 echo.
 echo  ==========================================
-echo   UNI MATE dang chay tai: http://localhost:7777
+echo   UNI MATE dang chay tai: http://localhost:%UNIMATE_PORT%
 echo   (Chon bo nao o trang Models - khong bat buoc mua API key)
 echo   Nhan Ctrl+C de dung.
 echo  ==========================================

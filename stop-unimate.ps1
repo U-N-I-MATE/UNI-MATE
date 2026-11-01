@@ -1,19 +1,37 @@
 # Dung UNI MATE - giet theo DUNG python cua venv nay (moi tien trinh cha/con), khong dua vao port/tieu de.
+$Root = Split-Path -Parent $MyInvocation.MyCommand.Path
+# CONG CHAY: mac dinh 7777. Doi cong (vi du chay song song voi mot ban khac dang giu 7777) bang dong
+# UNIMATE_PORT=... trong .env; bien moi truong UNIMATE_PORT neu co thi thang (giong server: load_dotenv
+# khong ghi de bien da co). Moi buoc ben duoi chi dung $Port, khong viet cung 7777.
+function Get-UniPort($root) {
+  if ($env:UNIMATE_PORT -match '^\d+$') { return [int]$env:UNIMATE_PORT }
+  $f = Join-Path $root ".env"
+  if (Test-Path $f) {
+    $m = Select-String -Path $f -Pattern '^\s*UNIMATE_PORT\s*=\s*(\d+)' | Select-Object -First 1
+    if ($m) { return [int]$m.Matches[0].Groups[1].Value }
+  }
+  return 7777
+}
+$Port = Get-UniPort $Root
 $killed = $false
 # LUU Y: python cua venv chi la LAUNCHER - no re-exec Python goc lam tien trinh CON
-# (con nay moi giu port). Vi vay chi loc theo COMMANDLINE, KHONG loc theo duong dan exe
-# (se bo sot thang con vi exe cua no la Python goc, khong phai venv).
-Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue | Where-Object {
+# (con nay moi giu port). Vi vay loc theo COMMANDLINE chu khong theo duong dan exe.
+# CHI GIET CUA BAN NAY: may co the chay mot ban UNI MATE (hoac JAVIS) khac cung goi "server\main.py".
+# Launcher cua ban nay co exe nam trong $Root\.venv; tien trinh con nhan ra qua ParentProcessId.
+$tatCa = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue | Where-Object {
   $_.CommandLine -like '*server\main.py*'
-} | ForEach-Object {
+})
+$venv = (Join-Path $Root ".venv").ToLower()
+$cha = @($tatCa | Where-Object { $_.ExecutablePath -and $_.ExecutablePath.ToLower().StartsWith($venv) } | ForEach-Object { $_.ProcessId })
+$tatCa | Where-Object { ($cha -contains $_.ProcessId) -or ($cha -contains $_.ParentProcessId) } | ForEach-Object {
   Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
   Write-Host "  - Da tat python PID $($_.ProcessId)"
   $killed = $true
 }
-# Phong ho: ai dang giu port 7777 (truong hop chay bang python khac / cai dat khac)
-Get-NetTCPConnection -LocalPort 7777 -State Listen -ErrorAction SilentlyContinue | ForEach-Object {
+# Phong ho: ai dang giu cong cua ban nay (truong hop chay bang python khac / cai dat khac)
+Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | ForEach-Object {
   Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue
-  Write-Host "  - Da tat PID $($_.OwningProcess) (chu port 7777)"
+  Write-Host "  - Da tat PID $($_.OwningProcess) (chu port $Port)"
   $killed = $true
 }
 if (-not $killed) { Write-Host '  (Khong thay server nao dang chay)' }

@@ -27,10 +27,30 @@ If WScript.Arguments.Count > 0 Then
   If LCase(WScript.Arguments(0)) = "/open" Then MoDashboard
 End If
 
+' Cong trong .env (dong UNIMATE_PORT=...), khong co thi 7777 - giong server (load_dotenv).
+Function PortTuEnv()
+  Dim f, ts, dong, re, m
+  PortTuEnv = "7777"
+  f = root & "\.env"
+  If Not fso.FileExists(f) Then Exit Function
+  Set re = New RegExp
+  re.Pattern = "^\s*UNIMATE_PORT\s*=\s*(\d+)"
+  Set ts = fso.OpenTextFile(f, 1)
+  Do While Not ts.AtEndOfStream
+    dong = ts.ReadLine
+    If re.Test(dong) Then
+      Set m = re.Execute(dong)
+      PortTuEnv = m(0).SubMatches(0)
+      Exit Do
+    End If
+  Loop
+  ts.Close
+End Function
+
 Sub MoDashboard()
   Dim port, url, i, http, ok, cands, c
   port = sh.ExpandEnvironmentStrings("%UNIMATE_PORT%")
-  If port = "%UNIMATE_PORT%" Or port = "" Then port = "7777"
+  If port = "%UNIMATE_PORT%" Or port = "" Then port = PortTuEnv()
   url = "http://127.0.0.1:" & port
   ok = False
   For i = 1 To 60
