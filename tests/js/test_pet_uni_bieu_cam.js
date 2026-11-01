@@ -134,6 +134,11 @@ const css = fs.readFileSync(path.join(ROOT, "dashboard", "style.css"), "utf8");
 check("CSS dời chấm vàng lên / xuống", /\.pet\[data-cham="len"\] \.pet-cham \{ transform: translateY\(-70px\)/.test(css) && /\.pet\[data-cham="xuong"\] \.pet-cham/.test(css));
 check("người tắt chuyển động: miệng đứng yên", /prefers-reduced-motion: reduce\) \{ \.pet-cham \{ transition: none; \} \.pet-mieng-noi \{ animation: none/.test(css));
 
+// ---- 6b. Lỗi: mắt buồn đuôi cụp, không trông như mắt cười ----
+P.setState("error"); hetChop();
+check("lỗi: mắt buồn đuôi cụp (hai mắt đối xứng, không phải ^^)",
+  /M-12\.5 4\.5 Q1 0\.5 12\.5 -3\.5/.test(mat()) && /M-12\.5 -3\.5 Q-1 0\.5 12\.5 4\.5/.test(mat()) && !coMieng(), mat());
+
 // ---- 7. Chân dung tĩnh (avatar, dấu ấn thanh bên) không có miệng ----
 const cd = P.previewSvg("uni", "uni", {});
 check("chân dung tĩnh: thân, chấm vàng, má hồng, mắt tròng trắng, KHÔNG miệng",

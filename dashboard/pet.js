@@ -63,6 +63,9 @@
     happy:  '<path class="pet-line" d="M-12.5 6.2 Q0 -10.9 12.5 6.2"/>',
     ratvui: '<path class="pet-line" d="M-12.5 6.2 Q0 -10.9 12.5 6.2"/>',
     sleepy: '<path class="pet-line" d="M-12.5 -1.6 Q0 10.9 12.5 -1.6"/>',
+    // Buồn (lỗi): đuôi mắt cụp xuống, đầu mắt phía trong nhếch lên. Dáng cung "sad" của bảng
+    // chung vẽ bằng nét trắng trên thân tím thì trông y như mắt cười ^^.
+    sad:    ['<path class="pet-line" d="M-12.5 4.5 Q1 0.5 12.5 -3.5"/>', '<path class="pet-line" d="M-12.5 -3.5 Q-1 0.5 12.5 4.5"/>'],
     cuoi:   '<ellipse rx="7.2" ry="17.5"/>',
   };
   // MIỆNG: mặc định KHÔNG có, chỉ hiện ở 04 lúc. Màu trắng như nét mắt nhắm (miệng tối chìm vào
