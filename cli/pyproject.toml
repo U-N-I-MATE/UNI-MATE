@@ -18,7 +18,8 @@ keywords = ["unimate", "cli", "ai", "agent", "second-brain"]
 dependencies = ["httpx>=0.24"]
 
 [project.urls]
-Homepage = "https://github.com/U-N-I-MATE/UNI-MATE"
+Homepage = "https://tech.unihq.vn/unimate/"
+Source = "https://github.com/U-N-I-MATE/UNI-MATE"
 Documentation = "https://github.com/U-N-I-MATE/UNI-MATE/blob/main/docs/dev/2026-08-cli-spec.md"
 
 [project.scripts]

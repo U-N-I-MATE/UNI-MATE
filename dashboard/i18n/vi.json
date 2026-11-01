@@ -474,7 +474,7 @@
   "settings.c2pa": "Dấu nguồn gốc ảnh AI",
   "settings.c2pa_stripping": "Đang gỡ",
   "settings.c2pa_keeping": "Đang giữ",
-  "settings.c2pa_desc": "Ảnh UNI MATE tạo ra mang sẵn dấu nguồn gốc (Content Credentials) ghi rằng ảnh do AI sinh ra. Facebook đọc dấu này để gắn nhãn \"Nội dung do AI tạo\" lên bài. Gỡ dấu đi thì nhãn thường không hiện nữa, nhưng bạn vẫn phải tự chịu trách nhiệm công bố nội dung AI theo luật và điều khoản của nền tảng nơi bạn đăng. Nhãn tác giả github.com/U-N-I-MATE luôn được giữ dù bật hay tắt.",
+  "settings.c2pa_desc": "Ảnh UNI MATE tạo ra mang sẵn dấu nguồn gốc (Content Credentials) ghi rằng ảnh do AI sinh ra. Facebook đọc dấu này để gắn nhãn \"Nội dung do AI tạo\" lên bài. Gỡ dấu đi thì nhãn thường không hiện nữa, nhưng bạn vẫn phải tự chịu trách nhiệm công bố nội dung AI theo luật và điều khoản của nền tảng nơi bạn đăng. Nhãn tác giả tech.unihq.vn/unimate luôn được giữ dù bật hay tắt.",
   "settings.c2pa_keep": "Giữ dấu",
   "settings.c2pa_strip": "Gỡ dấu",
   "settings.c2pa_meta_strip": "Đang GỠ dấu nguồn gốc khỏi ảnh mới tạo. Ảnh đã tạo trước đó không đổi.",

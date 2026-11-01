@@ -4,6 +4,8 @@
 
 **AI agentic đổi được bộ não + Second Brain - chạy trên model nào bạn muốn (Claude Code, ChatGPT/Codex, Antigravity CLI, OpenRouter, OpenAI, Gemini, Anthropic API, Groq, Ollama), có giọng nói, đồ thị tri thức, và tự thông minh dần lên.**
 
+[![Website](https://img.shields.io/badge/website-tech.unihq.vn-5B2DA0)](https://tech.unihq.vn/unimate/)
+
 <!-- flags:start -->
 <p align="center">
 <b>🌐 Có 12 thứ tiếng</b><br><br>
@@ -450,6 +452,6 @@ Mã nguồn mở theo giấy phép **GNU AGPL-3.0**: dùng, sửa, chia sẻ t�
 
 <div align="center">
 
-Sản phẩm của <b>UNI TECH</b> · Công ty TNHH Dịch vụ và Thương mại U.N.I
+Sản phẩm của <a href="https://tech.unihq.vn"><b>UNI TECH</b></a> · Công ty TNHH Dịch vụ và Thương mại U.N.I
 
 </div>

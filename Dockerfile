@@ -21,7 +21,7 @@ FROM python:3.12-slim
 # (Documentation / Quick start / Source). Trỏ về docs trên GitHub.
 LABEL org.opencontainers.image.title="UNI MATE" \
       org.opencontainers.image.description="AI operating layer: chat + voice + second brain + tự động hoá, xây trên CLI của nhà cung cấp AI (Claude Code, ChatGPT/Codex)." \
-      org.opencontainers.image.url="https://github.com/U-N-I-MATE/UNI-MATE" \
+      org.opencontainers.image.url="https://tech.unihq.vn/unimate/" \
       org.opencontainers.image.source="https://github.com/U-N-I-MATE/UNI-MATE" \
       org.opencontainers.image.documentation="https://github.com/U-N-I-MATE/UNI-MATE/blob/main/docs/README.md" \
       org.opencontainers.image.licenses="MIT" \

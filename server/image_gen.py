@@ -236,7 +236,7 @@ def _attachments_dir(vault: Path) -> Path:
 
 
 BRAND_SOFTWARE = "UNI MATE"
-BRAND_SOURCE = "https://github.com/U-N-I-MATE"
+BRAND_SOURCE = "https://tech.unihq.vn/unimate"
 
 
 def _strip_c2pa_on() -> bool:

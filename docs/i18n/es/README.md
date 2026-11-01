@@ -15,6 +15,7 @@ Ejecútalo en tu portátil o en un VPS pequeño. Háblale con la voz. Conecta Cl
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
 [![MCP](https://img.shields.io/badge/tools-Model%20Context%20Protocol-8b5cf6)](https://modelcontextprotocol.io)
+[![Website](https://img.shields.io/badge/website-tech.unihq.vn-5B2DA0)](https://tech.unihq.vn/unimate/)
 
 <!-- flags:start -->
 <p align="center">
@@ -497,6 +498,6 @@ Código abierto bajo la **GNU AGPL-3.0**: úsalo, modifícalo y compártelo libr
 
 <div align="center">
 
-Un producto de <b>UNI TECH</b> · U.N.I SERVICE AND TRADING CO., LTD.
+Un producto de <a href="https://tech.unihq.vn"><b>UNI TECH</b></a> · U.N.I SERVICE AND TRADING CO., LTD.
 
 </div>

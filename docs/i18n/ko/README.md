@@ -15,6 +15,7 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](../../../requirements.txt)
 [![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
 [![MCP](https://img.shields.io/badge/tools-Model%20Context%20Protocol-8b5cf6)](https://modelcontextprotocol.io)
+[![Website](https://img.shields.io/badge/website-tech.unihq.vn-5B2DA0)](https://tech.unihq.vn/unimate/)
 
 <!-- flags:start -->
 <p align="center">
@@ -497,6 +498,6 @@ UNI MATE가 유용하다면 저장소에 ⭐ 를 눌러 주세요. 다른 사람
 
 <div align="center">
 
-<b>UNI TECH</b> 의 제품 · U.N.I SERVICE AND TRADING CO., LTD.
+<a href="https://tech.unihq.vn"><b>UNI TECH</b></a> 의 제품 · U.N.I SERVICE AND TRADING CO., LTD.
 
 </div>

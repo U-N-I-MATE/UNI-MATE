@@ -4,7 +4,9 @@ UNI MATE
 Copyright (c) 2026 U.N.I SERVICE AND TRADING CO., LTD.
 
 UNI MATE is a product of UNI TECH, a brand of U.N.I SERVICE AND TRADING CO., LTD.
+Website: https://tech.unihq.vn/unimate/
 Source code: https://github.com/U-N-I-MATE/UNI-MATE
+U.N.I: https://unihq.vn
 
 ## Licence
 
@@ -14,7 +16,7 @@ UNI MATE is dual-licensed:
    Anyone may use, modify and redistribute UNI MATE under the AGPL. If you run a modified version
    for users over a network, you must offer those users the source code of your version.
 2. **A commercial licence** from U.N.I SERVICE AND TRADING CO., LTD., for anyone who wants to use
-   UNI MATE without the AGPL obligations. Contact U.N.I through https://github.com/U-N-I-MATE.
+   UNI MATE without the AGPL obligations. Contact U.N.I through https://unihq.vn.
 
 ## Third-party components
 
