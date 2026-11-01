@@ -4,7 +4,7 @@
 #   ./bin/unimate-autostart.sh install     # start at login (default)
 #   ./bin/unimate-autostart.sh uninstall    # remove
 #
-# Generates ~/Library/LaunchAgents/vn.minhquy.UNI-MATE.plist with paths
+# Generates ~/Library/LaunchAgents/com.unimate.os.plist with paths
 # computed for THIS machine (nothing hardcoded in the repo).
 # ============================================================
 set -u

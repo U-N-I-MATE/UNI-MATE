@@ -7,7 +7,7 @@
     <key>CFBundleDisplayName</key>
     <string>UNI MATE</string>
     <key>CFBundleIdentifier</key>
-    <string>vn.minhquy.UNI-MATE</string>
+    <string>io.github.u-n-i-mate.UNI-MATE</string>
     <key>CFBundleVersion</key>
     <string>1.0</string>
     <key>CFBundleShortVersionString</key>

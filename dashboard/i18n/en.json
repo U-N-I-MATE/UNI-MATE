@@ -473,7 +473,7 @@
   "settings.c2pa": "AI image provenance",
   "settings.c2pa_stripping": "Stripping",
   "settings.c2pa_keeping": "Keeping",
-  "settings.c2pa_desc": "Images UNI MATE creates carry a provenance mark (Content Credentials) saying they were AI-generated. Facebook reads it to put an \"AI-generated\" label on posts. Strip the mark and the label usually stops showing, but you remain responsible for disclosing AI content under the law and the platform's terms wherever you post. The javisos.com author label is always kept either way.",
+  "settings.c2pa_desc": "Images UNI MATE creates carry a provenance mark (Content Credentials) saying they were AI-generated. Facebook reads it to put an \"AI-generated\" label on posts. Strip the mark and the label usually stops showing, but you remain responsible for disclosing AI content under the law and the platform's terms wherever you post. The github.com/U-N-I-MATE author label is always kept either way.",
   "settings.c2pa_keep": "Keep mark",
   "settings.c2pa_strip": "Strip mark",
   "settings.c2pa_meta_strip": "Provenance is being STRIPPED from newly created images. Images created earlier are unchanged.",

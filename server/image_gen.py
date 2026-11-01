@@ -236,7 +236,7 @@ def _attachments_dir(vault: Path) -> Path:
 
 
 BRAND_SOFTWARE = "UNI MATE"
-BRAND_SOURCE = "https://javisos.com"
+BRAND_SOURCE = "https://github.com/U-N-I-MATE"
 
 
 def _strip_c2pa_on() -> bool:
@@ -299,7 +299,7 @@ def strip_c2pa_png(raw: bytes) -> bytes:
 
 
 def brand_png(raw: bytes) -> bytes:
-    """Gắn thông tin tác giả (UNI MATE / javisos.com) vào PNG, chèn ngay sau IHDR.
+    """Gắn thông tin tác giả (UNI MATE / github.com/U-N-I-MATE) vào PNG, chèn ngay sau IHDR.
 
     CHỈ THÊM, không gỡ chunk nào - phần Content Credentials (C2PA) mà nhà cung cấp
     ảnh nhúng sẵn vẫn nằm nguyên trong file. Lưu ý: vì thêm chunk làm đổi byte của

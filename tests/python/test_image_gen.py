@@ -71,7 +71,7 @@ _raw_goc = base64.b64decode(_PNG_B64)
 _raw_luu = open(saved["abs_path"], "rb").read()
 _IHDR_END = 8 + 12 + int.from_bytes(_raw_goc[8:12], "big")   # hết chunk IHDR
 
-check("ảnh lưu ra có gắn nhãn javisos.com", b"javisos.com" in _raw_luu and b"UNI MATE" in _raw_luu)
+check("ảnh lưu ra có gắn nhãn github.com/U-N-I-MATE", b"github.com/U-N-I-MATE" in _raw_luu and b"UNI MATE" in _raw_luu)
 # Gắn nhãn = CHỈ CHÈN chunk giữa IHDR và phần còn lại. Đầu và đuôi file phải y nguyên,
 # tức pixel không bị đụng vào và không chunk nào bị gỡ.
 check("phần đầu (chữ ký PNG + IHDR) y nguyên", _raw_luu[:_IHDR_END] == _raw_goc[:_IHDR_END])
@@ -89,7 +89,7 @@ _co_c2pa = _raw_goc[:_IHDR_END] + _gia_c2pa + _raw_goc[_IHDR_END:]
 _sau = image_gen.brand_png(_co_c2pa)
 check("brand_png KHÔNG gỡ chunk Content Credentials (caBX) có sẵn",
       b"caBX" in _sau and b"FAKE" in _sau)
-check("brand_png vẫn gắn được nhãn khi ảnh đã có caBX", b"javisos.com" in _sau)
+check("brand_png vẫn gắn được nhãn khi ảnh đã có caBX", b"github.com/U-N-I-MATE" in _sau)
 check("brand_png: không phải PNG → trả nguyên xi", image_gen.brand_png(b"khong-phai-png") == b"khong-phai-png")
 check("brand_png: rỗng → không nổ", image_gen.brand_png(b"") == b"")
 
@@ -118,8 +118,8 @@ try:
     _go = image_gen.save_png_b64(base64.b64encode(_co_c2pa).decode(), vault)
     _byte_go = open(_go["abs_path"], "rb").read()
     check("bật: dấu nguồn gốc caBX bị gỡ khỏi ảnh", b"caBX" not in _byte_go)
-    check("bật: nhãn tác giả javisos.com VẪN còn (không đánh tráo danh nghĩa)",
-          b"javisos.com" in _byte_go)
+    check("bật: nhãn tác giả github.com/U-N-I-MATE VẪN còn (không đánh tráo danh nghĩa)",
+          b"github.com/U-N-I-MATE" in _byte_go)
 finally:
     image_gen._strip_c2pa_on = _goc_strip_on
 

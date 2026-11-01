@@ -324,7 +324,7 @@ _ann_raw = json.dumps({
             "summary": "Nội dung",
             "published_at": "2099-01-01",
             "priority": "high",
-            "cta": {"label": "Xem", "url": "https://javisos.com"},
+            "cta": {"label": "Xem", "url": "https://github.com/U-N-I-MATE"},
         },
         {
             "id": "tin-het-han",

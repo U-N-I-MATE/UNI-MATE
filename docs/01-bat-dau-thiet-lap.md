@@ -134,7 +134,7 @@ Thao tác này an toàn: chỉ di chuyển khi thư mục đích chưa có, khô
 
 - Mặc định là **Giữ dấu**: ảnh mang sẵn dấu ghi rằng ảnh do AI sinh ra. Facebook đọc dấu này để gắn nhãn "Nội dung do AI tạo" lên bài.
 - Bấm **Gỡ dấu** thì ảnh mới tạo không còn dấu, nhãn trên nền tảng thường không hiện nữa. Ảnh đã tạo trước đó không đổi.
-- Dù bật hay tắt, nhãn tác giả `javisos.com` vẫn được giữ, và bạn vẫn phải tự chịu trách nhiệm công bố nội dung AI theo luật và điều khoản của nền tảng nơi bạn đăng.
+- Dù bật hay tắt, nhãn tác giả `github.com/U-N-I-MATE` vẫn được giữ, và bạn vẫn phải tự chịu trách nhiệm công bố nội dung AI theo luật và điều khoản của nền tảng nơi bạn đăng.
 
 ### Tab Giọng nói và phần thương hiệu trong tab Chung
 
