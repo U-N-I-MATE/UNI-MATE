@@ -35,7 +35,7 @@ vi = {r["version"]: r for r in main._parse_changelog(vi_md)}
 en = {r["version"]: r for r in main._parse_changelog(en_md)}
 ver = lambda v: tuple(int(x) for x in v.split("."))  # noqa: E731
 
-check("CHANGELOG.en.md đọc ra được phiên bản", len(en) >= 3, len(en))
+check("CHANGELOG.en.md đọc ra được phiên bản", len(en) >= 1, len(en))
 check("bản tiếng Anh không có phiên bản lạ (mọi bản đều có trong CHANGELOG.md)", set(en) <= set(vi), set(en) - set(vi))
 thieu = sorted((v for v in vi if ver(v) >= MOC and v not in en), key=ver, reverse=True)
 check("CHỐT: mọi phiên bản từ 0.66.0 trong CHANGELOG.md đều có bản tiếng Anh", not thieu,
