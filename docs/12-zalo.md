@@ -225,11 +225,11 @@ Zalo, vì kết nối mới sẽ đá MCP ra.
 | `zalo_create_reminder` | Nhắc hẹn hiện trong Zalo, chọn giờ và lặp (hằng ngày, tuần, tháng) | Nguy hiểm (mức Toàn quyền) |
 | `zalo_create_poll` | Poll cho nhóm: chọn nhiều đáp án, ẩn danh, hạn đóng | Nguy hiểm (mức Toàn quyền) |
 
-Nói trong chat như bình thường, ví dụ “nhắn nhóm Kinh doanh tag @minhquy họp lúc 9h nhé” hoặc “tạo poll trưa nay ăn gì trong nhóm Lớp UNI MATE”.
+Nói trong chat như bình thường, ví dụ “nhắn nhóm Kinh doanh tag @ngoclan họp lúc 9h nhé” hoặc “tạo poll trưa nay ăn gì trong nhóm Lớp UNI MATE”.
 
 Bốn điều nên biết:
 
-- **Tag chỉ cần nói tên.** “@minhquy” hay “Minh Quý” đều được, không phân biệt hoa thường hay dấu. UNI MATE tìm ID Zalo thật trong
+- **Tag chỉ cần nói tên.** “@ngoclan” hay “Ngọc Lan” đều được, không phân biệt hoa thường hay dấu. UNI MATE tìm ID Zalo thật trong
   những người đã nhắn ở nhóm đó trước, rồi tới danh sách thành viên của Zalo. **Trùng tên hoặc không thấy thì UNI MATE hỏi lại kèm
   danh sách ứng viên**, không đoán, vì tag nhầm người thì không rút lại được. Tag cả nhóm (`@All`) chỉ khi bạn yêu cầu rõ.
 - **Nhắc hẹn này khác nhắc hẹn riêng của UNI MATE** (`unimate_schedule`): nó hiện trong Zalo nên cả nhóm cùng thấy. Giờ tính theo múi giờ của UNI MATE.

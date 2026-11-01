@@ -231,11 +231,11 @@ MCP, since the new connection evicts it.
 | `zalo_create_reminder` | A reminder shown inside Zalo, with a time and repeat (daily, weekly, monthly) | Dangerous (Full power level) |
 | `zalo_create_poll` | A poll for the group: multiple answers, anonymous, closing time | Dangerous (Full power level) |
 
-Just say it in chat, for example "message the Sales group and tag @minhquy: meeting at 9am" or "create a poll in the UNI MATE class group: what for lunch".
+Just say it in chat, for example "message the Sales group and tag @ngoclan: meeting at 9am" or "create a poll in the UNI MATE class group: what for lunch".
 
 Four things worth knowing:
 
-- **You only need to say a name to tag.** "@minhquy" or "Minh Quý" both work, ignoring case and accents. UNI MATE looks up the real Zalo
+- **You only need to say a name to tag.** "@ngoclan" or "Ngọc Lan" both work, ignoring case and accents. UNI MATE looks up the real Zalo
   id among the people who already spoke in that group first, then in Zalo's member list. **If a name is ambiguous or not found, UNI MATE
   asks back with the candidates** instead of guessing, because a wrong tag cannot be undone. `@All` only when you ask for it explicitly.
 - **This reminder is not UNI MATE's own reminder** (`unimate_schedule`): it shows up inside Zalo, so the whole group sees it. Times use UNI MATE's timezone.

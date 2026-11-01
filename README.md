@@ -35,7 +35,7 @@ Run it on your laptop or a small VPS. Talk to it by voice. Plug in Claude, ChatG
 
 🇬🇧 **English** · [🇻🇳 Tiếng Việt](docs/i18n/vi/README.md) · [🇨🇳 简体中文](docs/i18n/zh/README.md) · [🇪🇸 Español](docs/i18n/es/README.md) · [🇯🇵 日本語](docs/i18n/ja/README.md) · [🇮🇳 हिन्दी](docs/i18n/hi/README.md) · [🇧🇷 Português](docs/i18n/pt-BR/README.md) · [🇰🇷 한국어](docs/i18n/ko/README.md) · [🇷🇺 Русский](docs/i18n/ru/README.md) · [🇩🇪 Deutsch](docs/i18n/de/README.md) · [🇫🇷 Français](docs/i18n/fr/README.md) · [🇮🇩 Bahasa Indonesia](docs/i18n/id/README.md) · [🌍 Help translate](CONTRIBUTING.md#translations)
 
-[Quick start](#-quick-start) · [Why UNI MATE](#-why-uni-mate) · [Brains](#-14-brains-one-toolkit) · [Features](#-features) · [Install](#-installation) · [Docs](docs/en/README.md) · [Support](#-support-uni-mate)
+[Quick start](#-quick-start) · [Why UNI MATE](#-why-uni-mate) · [Brains](#-14-brains-one-toolkit) · [Features](#-features) · [Install](#-installation) · [Docs](docs/en/README.md)
 
 <br>
 
@@ -491,17 +491,8 @@ Open source under the **GNU AGPL-3.0**: use, modify and share it freely; if you 
 
 ---
 
-## ☕ Support UNI MATE
-
-UNI MATE is free and open source, and it is still one person writing the code and paying for the test servers. If UNI MATE helps your work or your life, a small donation buys more time for bug fixes and new features.
-
-- 🌍 **PayPal**: [paypal.me/quy01](https://paypal.me/quy01)
-- 🏦 **MB Bank** (Vietnam): `6636966369`
-- 📱 **MoMo wallet** (Vietnam): `0372752740`
-
-Can't donate? Using UNI MATE, sending feedback or opening a pull request counts as support too.
-
 <div align="center">
-<br>
-Made with ☕ in Vietnam by <b><a href="https://minhquy.vn">Minh Quý</a></b>
+
+A product of <b>UNI TECH</b> · U.N.I SERVICE AND TRADING CO., LTD.
+
 </div>

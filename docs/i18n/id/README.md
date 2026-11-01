@@ -36,7 +36,7 @@ Jalankan di laptop atau VPS kecil. Ajak bicara dengan suara. Pasang Claude, Chat
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · [🇨🇳 简体中文](../zh/README.md) · [🇪🇸 Español](../es/README.md) · [🇯🇵 日本語](../ja/README.md) · [🇮🇳 हिन्दी](../hi/README.md) · [🇧🇷 Português](../pt-BR/README.md) · [🇰🇷 한국어](../ko/README.md) · [🇷🇺 Русский](../ru/README.md) · [🇩🇪 Deutsch](../de/README.md) · [🇫🇷 Français](../fr/README.md) · 🇮🇩 **Bahasa Indonesia** · [🌍 Bantu menerjemahkan](../../../CONTRIBUTING.md#translations)
 
-[Mulai cepat](#-mulai-cepat) · [Mengapa UNI MATE](#-mengapa-uni-mate) · [Otak](#-12-otak-satu-toolkit) · [Fitur](#-fitur) · [Instalasi](#-instalasi) · [Dokumentasi](../../../docs/en/README.md) · [Dukungan](#-dukung-uni-mate)
+[Mulai cepat](#-mulai-cepat) · [Mengapa UNI MATE](#-mengapa-uni-mate) · [Otak](#-12-otak-satu-toolkit) · [Fitur](#-fitur) · [Instalasi](#-instalasi) · [Dokumentasi](../../../docs/en/README.md)
 
 <br>
 
@@ -495,17 +495,8 @@ Open source di bawah **GNU AGPL-3.0**: bebas digunakan, diubah, dan dibagikan; j
 
 ---
 
-## ☕ Dukung UNI MATE
-
-UNI MATE gratis dan open source, dan masih satu orang yang menulis kodenya sekaligus membayar server uji coba. Jika UNI MATE membantu pekerjaan atau hidup Anda, donasi kecil memberi lebih banyak waktu untuk perbaikan bug dan fitur baru.
-
-- 🌍 **PayPal**: [paypal.me/quy01](https://paypal.me/quy01)
-- 🏦 **MB Bank** (Vietnam): `6636966369`
-- 📱 **Dompet MoMo** (Vietnam): `0372752740`
-
-Tidak bisa berdonasi? Menggunakan UNI MATE, mengirim masukan, atau membuka pull request juga termasuk dukungan.
-
 <div align="center">
-<br>
-Dibuat dengan ☕ di Vietnam oleh <b><a href="https://minhquy.vn">Minh Quý</a></b>
+
+Produk dari <b>UNI TECH</b> · U.N.I SERVICE AND TRADING CO., LTD.
+
 </div>

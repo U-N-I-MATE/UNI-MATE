@@ -98,12 +98,12 @@
       + (laDienThoai() ? '<span class="sn-gh-cham" aria-hidden="true"></span>' : CON_TRO) + "</span>";
     if (laDienThoai()) {
       return '<div class="sn-gh sn-gh-dt" aria-hidden="true">'
-        + '<div class="sn-gh-ten"><span class="sn-gh-ava"></span>blogminhquy / <b>UNI-MATE</b></div>'
+        + '<div class="sn-gh-ten"><span class="sn-gh-ava"></span>U-N-I-MATE / <b>UNI-MATE</b></div>'
         + '<div class="sn-gh-mota">UNI MATE</div>'
         + '<div class="sn-gh-hang">' + nutStar + '<span class="sn-gh-nut">' + ic("git-branch") + " Fork</span></div></div>";
     }
     return '<div class="sn-gh" aria-hidden="true">'
-      + '<div class="sn-gh-ten"><span class="sn-gh-ava"></span>blogminhquy / <b>UNI-MATE</b> <span class="sn-gh-pub">Public</span></div>'
+      + '<div class="sn-gh-ten"><span class="sn-gh-ava"></span>U-N-I-MATE / <b>UNI-MATE</b> <span class="sn-gh-pub">Public</span></div>'
       + '<div class="sn-gh-hang"><span class="sn-gh-nut">' + ic("eye") + ' Watch</span><span class="sn-gh-nut">' + ic("git-branch")
       + " Fork</span>" + nutStar + "</div></div>";
   }

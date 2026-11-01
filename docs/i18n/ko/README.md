@@ -36,7 +36,7 @@
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · [🇨🇳 简体中文](../zh/README.md) · [🇪🇸 Español](../es/README.md) · [🇯🇵 日本語](../ja/README.md) · [🇮🇳 हिन्दी](../hi/README.md) · [🇧🇷 Português](../pt-BR/README.md) · 🇰🇷 **한국어** · [🇷🇺 Русский](../ru/README.md) · [🇩🇪 Deutsch](../de/README.md) · [🇫🇷 Français](../fr/README.md) · [🇮🇩 Bahasa Indonesia](../id/README.md) · [🌍 번역 돕기](../../../CONTRIBUTING.md#translations)
 
-[빠른 시작](#-빠른-시작) · [왜 UNI MATE인가](#-왜-uni-mate인가요) · [브레인](#-12개의-브레인-하나의-툴킷) · [기능](#-기능) · [설치](#-설치) · [문서](../../../docs/en/README.md) · [후원](#-uni-mate-후원하기)
+[빠른 시작](#-빠른-시작) · [왜 UNI MATE인가](#-왜-uni-mate인가요) · [브레인](#-12개의-브레인-하나의-툴킷) · [기능](#-기능) · [설치](#-설치) · [문서](../../../docs/en/README.md)
 
 <br>
 
@@ -495,17 +495,8 @@ UNI MATE가 유용하다면 저장소에 ⭐ 를 눌러 주세요. 다른 사람
 
 ---
 
-## ☕ UNI MATE 후원하기
-
-UNI MATE는 무료 오픈 소스이며, 아직 한 사람이 코드를 쓰고 테스트 서버 비용을 내고 있습니다. UNI MATE가 일이나 생활에 도움이 된다면, 작은 후원이 버그 수정과 새 기능에 쓸 시간을 더 만들어 줍니다.
-
-- 🌍 **PayPal**: [paypal.me/quy01](https://paypal.me/quy01)
-- 🏦 **MB Bank** (베트남): `6636966369`
-- 📱 **MoMo 지갑** (베트남): `0372752740`
-
-후원이 어렵다면 UNI MATE를 쓰고, 피드백을 보내고, 풀 리퀘스트를 여는 것도 모두 큰 후원입니다.
-
 <div align="center">
-<br>
-베트남에서 ☕ 와 함께 <b><a href="https://minhquy.vn">Minh Quý</a></b> 가 만들었습니다
+
+<b>UNI TECH</b> 의 제품 · U.N.I SERVICE AND TRADING CO., LTD.
+
 </div>

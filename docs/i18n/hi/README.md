@@ -36,7 +36,7 @@
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · [🇨🇳 简体中文](../zh/README.md) · [🇪🇸 Español](../es/README.md) · [🇯🇵 日本語](../ja/README.md) · 🇮🇳 **हिन्दी** · [🇧🇷 Português](../pt-BR/README.md) · [🇰🇷 한국어](../ko/README.md) · [🇷🇺 Русский](../ru/README.md) · [🇩🇪 Deutsch](../de/README.md) · [🇫🇷 Français](../fr/README.md) · [🇮🇩 Bahasa Indonesia](../id/README.md) · [🌍 अनुवाद में मदद करें](../../../CONTRIBUTING.md#translations)
 
-[क्विक स्टार्ट](#-क्विक-स्टार्ट) · [UNI MATE क्यों](#-uni-mate-क्यों) · [ब्रेन](#-12-ब्रेन-एक-toolkit) · [फ़ीचर्स](#-फ़ीचर्स) · [इंस्टॉल](#-इंस्टॉलेशन) · [Docs](../../../docs/en/README.md) · [सपोर्ट](#-uni-mate-को-सपोर्ट-करें)
+[क्विक स्टार्ट](#-क्विक-स्टार्ट) · [UNI MATE क्यों](#-uni-mate-क्यों) · [ब्रेन](#-12-ब्रेन-एक-toolkit) · [फ़ीचर्स](#-फ़ीचर्स) · [इंस्टॉल](#-इंस्टॉलेशन) · [Docs](../../../docs/en/README.md)
 
 <br>
 
@@ -495,17 +495,8 @@ Bug reports, ideas, अनुवाद और pull requests, सबका स्
 
 ---
 
-## ☕ UNI MATE को सपोर्ट करें
-
-UNI MATE मुफ़्त और open source है, और इसका code अब भी एक ही व्यक्ति लिखता है और test servers का खर्च भी वही उठाता है। अगर UNI MATE आपके काम या ज़िंदगी में मदद करता है, तो एक छोटा-सा दान bug fixes और नए फ़ीचर्स के लिए और समय देता है।
-
-- 🌍 **PayPal**: [paypal.me/quy01](https://paypal.me/quy01)
-- 🏦 **MB Bank** (वियतनाम): `6636966369`
-- 📱 **MoMo wallet** (वियतनाम): `0372752740`
-
-दान नहीं कर सकते? UNI MATE का इस्तेमाल करना, feedback भेजना या pull request खोलना भी सपोर्ट ही है।
-
 <div align="center">
-<br>
-<b><a href="https://minhquy.vn">Minh Quý</a></b> ने वियतनाम में ☕ के साथ बनाया
+
+<b>UNI TECH</b> का एक उत्पाद · U.N.I SERVICE AND TRADING CO., LTD.
+
 </div>

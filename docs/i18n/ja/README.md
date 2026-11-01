@@ -36,7 +36,7 @@
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · [🇨🇳 简体中文](../zh/README.md) · [🇪🇸 Español](../es/README.md) · 🇯🇵 **日本語** · [🇮🇳 हिन्दी](../hi/README.md) · [🇧🇷 Português](../pt-BR/README.md) · [🇰🇷 한국어](../ko/README.md) · [🇷🇺 Русский](../ru/README.md) · [🇩🇪 Deutsch](../de/README.md) · [🇫🇷 Français](../fr/README.md) · [🇮🇩 Bahasa Indonesia](../id/README.md) · [🌍 翻訳に協力する](../../../CONTRIBUTING.md#translations)
 
-[クイックスタート](#-クイックスタート) · [UNI MATE を選ぶ理由](#-uni-mate-を選ぶ理由) · [頭脳](#-12-の頭脳ひとつのツールキット) · [機能](#-機能) · [インストール](#-インストール) · [ドキュメント](../../../docs/en/README.md) · [支援](#-uni-mate-を支援する)
+[クイックスタート](#-クイックスタート) · [UNI MATE を選ぶ理由](#-uni-mate-を選ぶ理由) · [頭脳](#-12-の頭脳ひとつのツールキット) · [機能](#-機能) · [インストール](#-インストール) · [ドキュメント](../../../docs/en/README.md)
 
 <br>
 
@@ -495,17 +495,8 @@ UNI MATE が役に立ったら、リポジトリに ⭐ を付けていただけ
 
 ---
 
-## ☕ UNI MATE を支援する
-
-UNI MATE は無料のオープンソースですが、いまもコードを書き、テストサーバーの費用を払っているのは一人の開発者です。UNI MATE があなたの仕事や生活の役に立っているなら、少額の寄付がバグ修正や新機能のための時間につながります。
-
-- 🌍 **PayPal**：[paypal.me/quy01](https://paypal.me/quy01)
-- 🏦 **MB Bank**（ベトナム）：`6636966369`
-- 📱 **MoMo ウォレット**（ベトナム）：`0372752740`
-
-寄付が難しくても、UNI MATE を使うこと、フィードバックを送ること、プルリクエストを送ることも立派な支援です。
-
 <div align="center">
-<br>
-<b><a href="https://minhquy.vn">Minh Quý</a></b> がベトナムで ☕ とともに制作
+
+<b>UNI TECH</b> の製品 · U.N.I SERVICE AND TRADING CO., LTD.
+
 </div>

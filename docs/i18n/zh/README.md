@@ -36,7 +36,7 @@
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · 🇨🇳 **简体中文** · [🇪🇸 Español](../es/README.md) · [🇯🇵 日本語](../ja/README.md) · [🇮🇳 हिन्दी](../hi/README.md) · [🇧🇷 Português](../pt-BR/README.md) · [🇰🇷 한국어](../ko/README.md) · [🇷🇺 Русский](../ru/README.md) · [🇩🇪 Deutsch](../de/README.md) · [🇫🇷 Français](../fr/README.md) · [🇮🇩 Bahasa Indonesia](../id/README.md) · [🌍 帮助翻译](../../../CONTRIBUTING.md#translations)
 
-[快速开始](#-快速开始) · [为什么选择 UNI MATE](#-为什么选择-uni-mate) · [大脑](#-12-种大脑一套工具) · [功能](#-功能特性) · [安装](#-安装) · [文档](../../../docs/en/README.md) · [支持](#-支持-uni-mate)
+[快速开始](#-快速开始) · [为什么选择 UNI MATE](#-为什么选择-uni-mate) · [大脑](#-12-种大脑一套工具) · [功能](#-功能特性) · [安装](#-安装) · [文档](../../../docs/en/README.md)
 
 <br>
 
@@ -495,17 +495,8 @@ UNI-MATE/
 
 ---
 
-## ☕ 支持 UNI MATE
-
-UNI MATE 免费且开源，目前仍是一个人在写代码、支付测试服务器的费用。如果 UNI MATE 对你的工作或生活有帮助，一笔小小的捐助就能换来更多修复 bug 和开发新功能的时间。
-
-- 🌍 **PayPal**：[paypal.me/quy01](https://paypal.me/quy01)
-- 🏦 **MB Bank**（越南）：`6636966369`
-- 📱 **MoMo 钱包**（越南）：`0372752740`
-
-无法捐助？使用 UNI MATE、发送反馈或提交 pull request，同样是对它的支持。
-
 <div align="center">
-<br>
-由 <b><a href="https://minhquy.vn">Minh Quý</a></b> 在越南用 ☕ 制作
+
+<b>UNI TECH</b> 出品 · U.N.I SERVICE AND TRADING CO., LTD.
+
 </div>

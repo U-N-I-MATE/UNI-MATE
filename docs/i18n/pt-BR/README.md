@@ -36,7 +36,7 @@ Rode no seu notebook ou em uma VPS pequena. Converse com ele por voz. Conecte Cl
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · [🇨🇳 简体中文](../zh/README.md) · [🇪🇸 Español](../es/README.md) · [🇯🇵 日本語](../ja/README.md) · [🇮🇳 हिन्दी](../hi/README.md) · 🇧🇷 **Português** · [🇰🇷 한국어](../ko/README.md) · [🇷🇺 Русский](../ru/README.md) · [🇩🇪 Deutsch](../de/README.md) · [🇫🇷 Français](../fr/README.md) · [🇮🇩 Bahasa Indonesia](../id/README.md) · [🌍 Ajude a traduzir](../../../CONTRIBUTING.md#translations)
 
-[Início rápido](#-início-rápido) · [Por que o UNI MATE](#-por-que-o-uni-mate) · [Cérebros](#-12-cérebros-um-só-kit-de-ferramentas) · [Recursos](#-recursos) · [Instalação](#-instalação) · [Documentação](../../../docs/en/README.md) · [Apoio](#-apoie-o-uni-mate)
+[Início rápido](#-início-rápido) · [Por que o UNI MATE](#-por-que-o-uni-mate) · [Cérebros](#-12-cérebros-um-só-kit-de-ferramentas) · [Recursos](#-recursos) · [Instalação](#-instalação) · [Documentação](../../../docs/en/README.md)
 
 <br>
 
@@ -495,17 +495,8 @@ Código aberto sob a **GNU AGPL-3.0**: use, modifique e compartilhe à vontade; 
 
 ---
 
-## ☕ Apoie o UNI MATE
-
-O UNI MATE é gratuito e de código aberto, e ainda é uma única pessoa escrevendo o código e pagando os servidores de teste. Se o UNI MATE ajuda no seu trabalho ou na sua vida, uma pequena doação compra mais tempo para correções de bugs e novos recursos.
-
-- 🌍 **PayPal**: [paypal.me/quy01](https://paypal.me/quy01)
-- 🏦 **MB Bank** (Vietnã): `6636966369`
-- 📱 **Carteira MoMo** (Vietnã): `0372752740`
-
-Não pode doar? Usar o UNI MATE, mandar feedback ou abrir um pull request também conta como apoio.
-
 <div align="center">
-<br>
-Feito com ☕ no Vietnã por <b><a href="https://minhquy.vn">Minh Quý</a></b>
+
+Um produto da <b>UNI TECH</b> · U.N.I SERVICE AND TRADING CO., LTD.
+
 </div>

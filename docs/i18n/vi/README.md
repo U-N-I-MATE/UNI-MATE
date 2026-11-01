@@ -448,22 +448,8 @@ Mã nguồn mở theo giấy phép **GNU AGPL-3.0**: dùng, sửa, chia sẻ t�
 
 ---
 
-## ☕ Ủng hộ UNI MATE
-
-UNI MATE mã nguồn mở, dùng miễn phí, và mình vẫn đang một mình vừa code vừa gánh chi phí server chạy thử mỗi ngày. Nếu UNI MATE đang giúp được gì cho công việc hay cuộc sống của bạn, một chút ủng hộ sẽ giúp mình có thêm thời gian ngồi sửa bug, viết tính năng mới, thay vì lo tiền server.
-
-Không bắt buộc, không đổi lấy quyền lợi gì cả - đơn giản là một lời cảm ơn gửi bằng tiền cho người đang âm thầm code buổi tối.
-
-- 🏦 **MB Bank**: `6636966369`
-- 📱 **Ví MoMo**: `0372752740`
-- 🌍 **PayPal**: [paypal.me/quy01](https://paypal.me/quy01)
-
-Không tiện donate cũng không sao - dùng UNI MATE, góp ý, hay gửi một Pull Request cũng đã là ủng hộ rồi.
-
----
-
 <div align="center">
 
-Made with ☕ by **[Minh Quý](https://minhquy.vn)** · Repo: `github.com/U-N-I-MATE/UNI-MATE`
+Sản phẩm của <b>UNI TECH</b> · Công ty TNHH Dịch vụ và Thương mại U.N.I
 
 </div>
