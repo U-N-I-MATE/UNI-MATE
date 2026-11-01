@@ -26,7 +26,7 @@
     "canonical_unchanged": true,
     "top_cumulative": [
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_views.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_views.py",
         "line": 151,
         "name": "load_current",
         "calls": 1,
@@ -35,7 +35,7 @@
         "cumulative_seconds": 10.276797700000001
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_views.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_views.py",
         "line": 182,
         "name": "_load_current",
         "calls": 1,
@@ -44,7 +44,7 @@
         "cumulative_seconds": 10.276765300000001
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_view_sources.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_view_sources.py",
         "line": 107,
         "name": "capture_sources",
         "calls": 4,
@@ -53,7 +53,7 @@
         "cumulative_seconds": 10.2577966
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_host.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_host.py",
         "line": 301,
         "name": "_snapshot_observe",
         "calls": 6,
@@ -62,7 +62,7 @@
         "cumulative_seconds": 9.838547400000001
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_host.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_host.py",
         "line": 105,
         "name": "_observe",
         "calls": 6,
@@ -71,7 +71,7 @@
         "cumulative_seconds": 9.8384122
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-agent-skill-improvement-m2d1-artifact-format\\profile_current_view.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-agent-skill-improvement-m2d1-artifact-format\\profile_current_view.py",
         "line": 48,
         "name": "<lambda>",
         "calls": 12,
@@ -80,7 +80,7 @@
         "cumulative_seconds": 9.2455534
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_selection.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_selection.py",
         "line": 293,
         "name": "create_pin",
         "calls": 12,
@@ -89,7 +89,7 @@
         "cumulative_seconds": 9.2455011
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_selection.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_selection.py",
         "line": 181,
         "name": "_read_stable",
         "calls": 108,
@@ -107,7 +107,7 @@
         "cumulative_seconds": 7.1887233
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_semantic_review.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_semantic_review.py",
         "line": 233,
         "name": "current_evidence",
         "calls": 2,
@@ -116,7 +116,7 @@
         "cumulative_seconds": 6.8349428
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_semantic_review.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_semantic_review.py",
         "line": 42,
         "name": "_snapshot",
         "calls": 4,
@@ -134,7 +134,7 @@
         "cumulative_seconds": 1.5444505000000002
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_file_sources.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_file_sources.py",
         "line": 178,
         "name": "__call__",
         "calls": 12,
@@ -143,7 +143,7 @@
         "cumulative_seconds": 0.34618920000000003
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_claude.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_claude.py",
         "line": 66,
         "name": "profile_hash",
         "calls": 24,
@@ -152,7 +152,7 @@
         "cumulative_seconds": 0.33800460000000004
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_file_sources.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_file_sources.py",
         "line": 149,
         "name": "_capture",
         "calls": 72,
@@ -224,7 +224,7 @@
         "cumulative_seconds": 0.15079820000000002
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_blobs.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_blobs.py",
         "line": 28,
         "name": "check_ancestry",
         "calls": 253,
@@ -233,7 +233,7 @@
         "cumulative_seconds": 0.139516
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-agent-skill-improvement-m2d1-artifact-format\\profile_current_view.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-agent-skill-improvement-m2d1-artifact-format\\profile_current_view.py",
         "line": 40,
         "name": "observe_targets",
         "calls": 12,
@@ -242,7 +242,7 @@
         "cumulative_seconds": 0.13398770000000002
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_file_sources.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_file_sources.py",
         "line": 118,
         "name": "_authority",
         "calls": 176,
@@ -251,7 +251,7 @@
         "cumulative_seconds": 0.12477540000000001
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_skill_candidates.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_skill_candidates.py",
         "line": 77,
         "name": "observe",
         "calls": 16,
@@ -260,7 +260,7 @@
         "cumulative_seconds": 0.1173026
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_sources.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_sources.py",
         "line": 25,
         "name": "validate_inventory",
         "calls": 198,
@@ -269,7 +269,7 @@
         "cumulative_seconds": 0.0947096
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_store.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_store.py",
         "line": 245,
         "name": "targets",
         "calls": 12,
@@ -278,7 +278,7 @@
         "cumulative_seconds": 0.09370740000000001
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_blobs.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_blobs.py",
         "line": 93,
         "name": "read",
         "calls": 85,
@@ -287,7 +287,7 @@
         "cumulative_seconds": 0.09163800000000001
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_assets.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_assets.py",
         "line": 55,
         "name": "capture_source",
         "calls": 28,
@@ -296,7 +296,7 @@
         "cumulative_seconds": 0.0891099
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_file_sources.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_file_sources.py",
         "line": 68,
         "name": "_acl_hash",
         "calls": 560,
@@ -305,7 +305,7 @@
         "cumulative_seconds": 0.08881420000000001
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_context.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_context.py",
         "line": 117,
         "name": "capture_context",
         "calls": 12,
@@ -323,7 +323,7 @@
         "cumulative_seconds": 0.0868974
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\evidence_store.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\evidence_store.py",
         "line": 71,
         "name": "redact",
         "calls": 5708,
@@ -379,7 +379,7 @@
         "cumulative_seconds": 0.2211442
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_selection.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_selection.py",
         "line": 181,
         "name": "_read_stable",
         "calls": 108,
@@ -406,7 +406,7 @@
         "cumulative_seconds": 0.0622853
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\improvement_trial_file_sources.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\improvement_trial_file_sources.py",
         "line": 68,
         "name": "_acl_hash",
         "calls": 560,
@@ -469,7 +469,7 @@
         "cumulative_seconds": 0.0287149
       },
       {
-        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\server\\evidence_store.py",
+        "file": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\server\\evidence_store.py",
         "line": 43,
         "name": "<genexpr>",
         "calls": 29772,

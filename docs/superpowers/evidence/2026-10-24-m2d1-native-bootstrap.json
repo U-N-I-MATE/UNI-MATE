@@ -10,7 +10,7 @@
   },
   "guard_dependency_sha256": "4fc9654ac7ad255fcf65f37823380d64c4199b567189453f30b95333d4d0640f",
   "qualified83_profile_unchanged": "04c8c77baec04d04019752bc8abc2f9a5906e094ededfbdd56cfc3c712aef126",
-  "test_command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe tests/python/test_improvement_native_bootstrap.py -v",
+  "test_command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe tests/python/test_improvement_native_bootstrap.py -v",
   "command_sha256": "54cf581e868e60501c2409439ef29ae91aebb28cd49444f0602b794463618b33",
   "author_red": {
     "collected": 13,

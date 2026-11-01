@@ -13,7 +13,7 @@
   },
   "parent_tests": {
     "command": [
-      "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+      "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
       "tests/python/test_improvement_native_image.py",
       "-v"
     ],

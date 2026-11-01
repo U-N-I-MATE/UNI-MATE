@@ -48,10 +48,10 @@
       "end_utc": "2026-10-24T07:45:23.7241331+00:00",
       "exit_code": 1,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_view_schema.py RecipeViewSchemaTests.test_populated_nine_trigger_only_migration_preserves_history_ciphertext_and_backup"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_view_schema.py RecipeViewSchemaTests.test_populated_nine_trigger_only_migration_preserves_history_ciphertext_and_backup"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -82,10 +82,10 @@
       "end_utc": "2026-10-24T07:48:03.0710161+00:00",
       "exit_code": 1,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_archive.py RecipeViewReferenceTests.test_current_ten_archives_all_actual_view_before_after_refs_without_promoting_grade"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_archive.py RecipeViewReferenceTests.test_current_ten_archives_all_actual_view_before_after_refs_without_promoting_grade"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -116,10 +116,10 @@
       "end_utc": "2026-10-24T07:48:58.8135632+00:00",
       "exit_code": 1,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_view_schema.py"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_view_schema.py"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -150,10 +150,10 @@
       "end_utc": "2026-10-24T07:51:06.3984398+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_view_schema.py"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_view_schema.py"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -184,10 +184,10 @@
       "end_utc": "2026-10-24T08:02:19.2491464+00:00",
       "exit_code": 1,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_archive.py RecipeViewReferenceTests RecipeComposedTests.test_typed_three_actual_independent_semantic_view_pair_archives_own_v4_refs"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_archive.py RecipeViewReferenceTests RecipeComposedTests.test_typed_three_actual_independent_semantic_view_pair_archives_own_v4_refs"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -218,10 +218,10 @@
       "end_utc": "2026-10-24T08:09:29.8538879+00:00",
       "exit_code": 1,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_archive.py RecipeViewReferenceTests.test_current_ten_archives_all_actual_view_before_after_refs_without_promoting_grade RecipeViewReferenceTests.test_last_source_callback_cannot_change_authenticated_view_asset_sql_before_publication"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_archive.py RecipeViewReferenceTests.test_current_ten_archives_all_actual_view_before_after_refs_without_promoting_grade RecipeViewReferenceTests.test_last_source_callback_cannot_change_authenticated_view_asset_sql_before_publication"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -252,10 +252,10 @@
       "end_utc": "2026-10-24T08:11:57.5990018+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_view_schema.py"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_view_schema.py"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -286,10 +286,10 @@
       "end_utc": "2026-10-24T08:13:29.0044849+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_schema.py"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_schema.py"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -320,10 +320,10 @@
       "end_utc": "2026-10-24T08:14:03.2973887+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_records.py"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_records.py"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -354,10 +354,10 @@
       "end_utc": "2026-10-24T08:14:25.0452295+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_compose_schema.py"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_compose_schema.py"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -388,10 +388,10 @@
       "end_utc": "2026-10-24T08:32:40.2049558+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_archive.py RecipeViewReferenceTests RecipeComposedTests.test_typed_three_actual_independent_semantic_view_pair_archives_own_v4_refs RecipeComposedTests.test_typed_three_keeps_actual_composed_provenance_and_own_tuning_refs RecipeComposedTests.test_changed_composed_basis_report_publication_and_late_parent_trace_refuse RecipeArchiveTests.test_actual_encrypted_manifest_uses_original_source_pins_and_unverified_grade RecipeArchiveTests.test_source_drift_during_last_blob_write_refuses_all_rows_and_event RecipeArchiveTests.test_no_entry_final_observation_cannot_publish_stale_decision RecipeArchiveTests.test_old_source_expiry_cannot_restart_at_copy_time RecipeArchiveTests.test_generation_and_context_generation_cannot_be_caller_authority RecipePreparationTests.test_shared_history_keeps_original_sealed_proposer_bytes_and_recipes_empty"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_recipe_archive.py RecipeViewReferenceTests RecipeComposedTests.test_typed_three_actual_independent_semantic_view_pair_archives_own_v4_refs RecipeComposedTests.test_typed_three_keeps_actual_composed_provenance_and_own_tuning_refs RecipeComposedTests.test_changed_composed_basis_report_publication_and_late_parent_trace_refuse RecipeArchiveTests.test_actual_encrypted_manifest_uses_original_source_pins_and_unverified_grade RecipeArchiveTests.test_source_drift_during_last_blob_write_refuses_all_rows_and_event RecipeArchiveTests.test_no_entry_final_observation_cannot_publish_stale_decision RecipeArchiveTests.test_old_source_expiry_cannot_restart_at_copy_time RecipeArchiveTests.test_generation_and_context_generation_cannot_be_caller_authority RecipePreparationTests.test_shared_history_keeps_original_sealed_proposer_bytes_and_recipes_empty"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -422,10 +422,10 @@
       "end_utc": "2026-10-24T08:32:54.7619164+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_compose_permissions.py ComposePermissionTests.test_explicit_owner_permission_persists_exact_immutable_links_and_small_encrypted_guard_without_dispatch ComposePermissionTests.test_cold_listing_get_revocation_and_authorize_replay_after_off_never_decrypt_refresh_or_revive"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_compose_permissions.py ComposePermissionTests.test_explicit_owner_permission_persists_exact_immutable_links_and_small_encrypted_guard_without_dispatch ComposePermissionTests.test_cold_listing_get_revocation_and_authorize_replay_after_off_never_decrypt_refresh_or_revive"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -456,10 +456,10 @@
       "end_utc": "2026-10-24T08:33:33.1537026+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_proposals.py ProposalTests.test_actual_native_result_stages_bound_unreviewed_draft_and_replay_never_queries ProposalTests.test_malformed_batch_gets_one_actual_repair_with_same_input_and_allowance ProposalTests.test_unqualified_preflight_creates_no_role_operation_or_call"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_proposals.py ProposalTests.test_actual_native_result_stages_bound_unreviewed_draft_and_replay_never_queries ProposalTests.test_malformed_batch_gets_one_actual_repair_with_same_input_and_allowance ProposalTests.test_unqualified_preflight_creates_no_role_operation_or_call"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -490,10 +490,10 @@
       "end_utc": "2026-10-24T08:33:42.2206393+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_improver_inputs.py ImproverInputTests.test_real_completed_tuning_input_never_reads_private_answers_or_other_splits"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_improver_inputs.py ImproverInputTests.test_real_completed_tuning_input_never_reads_private_answers_or_other_splits"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -524,10 +524,10 @@
       "end_utc": "2026-10-24T08:33:47.1130541+00:00",
       "exit_code": 0,
       "commands": [
-        "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_operation_execution.py OperationExecutionTests.test_real_lease_materialization_and_engine_marker_share_the_actual_call"
+        "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-recipe-archive-authority/root-check.py test_improvement_operation_execution.py OperationExecutionTests.test_real_lease_materialization_and_engine_marker_share_the_actual_call"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [
         {
@@ -558,10 +558,10 @@
       "end_utc": "2026-10-24T08:16:23.6584920+00:00",
       "exit_code": 0,
       "commands": [
-        "inline source below piped to D:/Project/UNI-MATE/.venv/Scripts/python.exe -B -"
+        "inline source below piped to D:/Project/Javis-OS/.venv/Scripts/python.exe -B -"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [],
       "module_summaries": [],
@@ -581,10 +581,10 @@
       "end_utc": "2026-10-24T08:34:22.2438318+00:00",
       "exit_code": 0,
       "commands": [
-        "inline source below piped to D:/Project/UNI-MATE/.venv/Scripts/python.exe -B -"
+        "inline source below piped to D:/Project/Javis-OS/.venv/Scripts/python.exe -B -"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [],
       "module_summaries": [],
@@ -607,7 +607,7 @@
         "git commit -m 'Support view-backed recipe evidence with schema 10'"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [],
       "module_summaries": [],
@@ -627,10 +627,10 @@
       "end_utc": "2026-10-24T08:34:49.8693378+00:00",
       "exit_code": 0,
       "commands": [
-        "inline source below piped to D:/Project/UNI-MATE/.venv/Scripts/python.exe -B -"
+        "inline source below piped to D:/Project/Javis-OS/.venv/Scripts/python.exe -B -"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [],
       "module_summaries": [],
@@ -653,7 +653,7 @@
         "Get-CimInstance Win32_Process | Where-Object { Name matches ^python(w)?\\.exe$ and CommandLine matches root-check\\.py|tests[\\\\/]python[\\\\/]test_improvement_(recipe|compose|proposals|improver_inputs|operation_execution) } | Select ProcessId,ParentProcessId,Name,CommandLine"
       ],
       "cwd": [
-        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE"
+        "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS"
       ],
       "unittest_summaries": [],
       "module_summaries": [],
@@ -762,7 +762,7 @@
       "workflow_sha256": "4891fc582482895fa5eeaee249bd1ec3e81709b670806ac3419dd33b5fc66be6",
       "boundary": "engineering-only; not task-branch CI, native qualification, model or business proof"
     },
-    "url": "https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40078670232"
+    "url": "https://github.com/blogminhquy/javis-os/actions/runs/40078670232"
   },
   "prior_immutable_authoring_proof_sha256": "b19e63eb1f6a5401c7386ad265c89744ad64d7ae80bc4023d70b2f4dd0fa0745",
   "protected_test_sha256": "0577b5181fb090ba897ec8c3d0fce10fe88d2d09d03839497150cdacf6e793e0",

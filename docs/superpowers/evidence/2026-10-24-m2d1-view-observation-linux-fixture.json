@@ -26,7 +26,7 @@
   "regression": [
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_observation.py",
         "-v"
       ],
@@ -38,7 +38,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_binary_observation.py",
         "-v"
       ],

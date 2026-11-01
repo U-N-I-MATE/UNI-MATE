@@ -21,7 +21,7 @@
   "affected_regression": [
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_trial_runner.py",
         "-v"
       ],
@@ -33,7 +33,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_execution.py",
         "-v"
       ],
@@ -45,7 +45,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_trial_owner_service.py",
         "-v"
       ],

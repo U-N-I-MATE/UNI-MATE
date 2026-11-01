@@ -49,9 +49,9 @@
       {
         "name": "comparison-reports",
         "command": [
-          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\tests\\python\\test_improvement_comparison_reports.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\tests\\python\\test_improvement_comparison_reports.py",
           "-v"
         ],
         "seconds": 72.996,
@@ -60,9 +60,9 @@
       {
         "name": "selection",
         "command": [
-          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\tests\\python\\test_improvement_experiment_selection.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\tests\\python\\test_improvement_experiment_selection.py",
           "-v"
         ],
         "seconds": 52.668,
@@ -71,9 +71,9 @@
       {
         "name": "proposal-affected",
         "command": [
-          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\tests\\python\\test_improvement_proposals.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\tests\\python\\test_improvement_proposals.py",
           "ProposalTests.test_actual_native_result_stages_bound_unreviewed_draft_and_replay_never_queries",
           "ProposalTests.test_malformed_batch_gets_one_actual_repair_with_same_input_and_allowance",
           "ProposalTests.test_cancel_of_completed_native_role_fences_a_pending_publication",
@@ -85,9 +85,9 @@
       {
         "name": "semantic-affected",
         "command": [
-          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\tests\\python\\test_improvement_semantic_review.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\tests\\python\\test_improvement_semantic_review.py",
           "SemanticReviewTests.test_actual_review_receipt_keeps_model_pass_and_native_unknown_distinct",
           "SemanticReviewTests.test_revoke_preserves_cold_history_but_never_current_semantic_authority",
           "SemanticReviewTests.test_repeated_http_cancel_and_shutdown_drain_marked_reviewer_without_receipt",

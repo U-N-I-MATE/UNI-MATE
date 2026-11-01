@@ -55,7 +55,7 @@
             "C:\\Program Files\\nodejs\\node.exe",
             "tests/js/test_improvement_experiments.mjs"
           ],
-          "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+          "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
           "exit": 1,
           "seconds": 0.17,
           "log": "fix-1-red-controller.txt",
@@ -69,7 +69,7 @@
             "C:\\Program Files\\nodejs\\node.exe",
             "tests/js/test_improvement_experiments.mjs"
           ],
-          "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+          "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
           "exit": 0,
           "seconds": 0.187,
           "log": "fix-1-final-controller.txt",
@@ -81,7 +81,7 @@
             "C:\\Program Files\\nodejs\\node.exe",
             "tests/js/test_improvement_candidates.mjs"
           ],
-          "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+          "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
           "exit": 0,
           "seconds": 0.157,
           "log": "fix-1-final-candidate-integration.txt",
@@ -94,7 +94,7 @@
             "--check",
             "dashboard/improvement-experiments.js"
           ],
-          "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+          "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
           "exit": 0,
           "seconds": 0.051,
           "log": "fix-1-final-syntax.txt",
@@ -112,12 +112,12 @@
       {
         "name": "test_improvement_compose_outcomes.py",
         "command": [
-          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
           "-B",
           ".superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py",
           "test_improvement_compose_outcomes.py"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 88.548,
         "log": "final-test_improvement_compose_outcomes.txt",
@@ -126,12 +126,12 @@
       {
         "name": "test_improvement_compose_api.py",
         "command": [
-          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
           "-B",
           ".superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py",
           "test_improvement_compose_api.py"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 75.725,
         "log": "final-test_improvement_compose_api.txt",
@@ -140,12 +140,12 @@
       {
         "name": "test_improvement_experiment_main.py",
         "command": [
-          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
           "-B",
           ".superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py",
           "test_improvement_experiment_main.py"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 12.73,
         "log": "final-test_improvement_experiment_main.txt",
@@ -154,12 +154,12 @@
       {
         "name": "test_info_tip_rule.py",
         "command": [
-          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
           "-B",
           ".superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py",
           "test_info_tip_rule.py"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 2.873,
         "log": "final-test_info_tip_rule.txt",
@@ -171,7 +171,7 @@
           "C:\\Program Files\\nodejs\\node.exe",
           "tests/js/test_improvement_experiments.mjs"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 0.156,
         "log": "final-test_improvement_experiments.txt",
@@ -183,7 +183,7 @@
           "C:\\Program Files\\nodejs\\node.exe",
           "tests/js/test_improvement_candidates.mjs"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 0.171,
         "log": "final-test_improvement_candidates.txt",
@@ -195,7 +195,7 @@
           "C:\\Program Files\\nodejs\\node.exe",
           "tests/js/test_i18n.mjs"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 0.228,
         "log": "final-test_i18n.txt",
@@ -208,7 +208,7 @@
           "--check",
           "dashboard/improvement-candidates.js"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 0.057,
         "log": "final-syntax-improvement-candidates.txt",
@@ -221,7 +221,7 @@
           "--check",
           "dashboard/improvement-experiments.js"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 0.055,
         "log": "final-syntax-improvement-experiments.txt",
@@ -235,7 +235,7 @@
           "C:\\Program Files\\nodejs\\node.exe",
           "tests/js/test_improvement_experiments.mjs"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 0.187,
         "log": "fix-1-final-controller.txt",
@@ -247,7 +247,7 @@
           "C:\\Program Files\\nodejs\\node.exe",
           "tests/js/test_improvement_candidates.mjs"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 0.157,
         "log": "fix-1-final-candidate-integration.txt",
@@ -260,7 +260,7 @@
           "--check",
           "dashboard/improvement-experiments.js"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
         "exit": 0,
         "seconds": 0.051,
         "log": "fix-1-final-syntax.txt",
@@ -288,7 +288,7 @@
   "early_linux": {
     "run_id": 40068923965,
     "job_id": 120797950847,
-    "url": "https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40068923965",
+    "url": "https://github.com/blogminhquy/javis-os/actions/runs/40068923965",
     "snapshot": "d11365108d7a3fbc1fd8f644880584247ab2919e",
     "parent": "95790edbbb240bc794b7a48f44a0db6001ff8e9d",
     "exact_raw_pins": 12,

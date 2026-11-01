@@ -13,7 +13,7 @@
     "tests/python/test_improvement_query_dispatch.py": "f53eb9fd35cb6b1dfd518aa7b3804440a4f49156a93c0cae29a78d06b603f0bc"
   },
   "qualified83_profile_unchanged": "04c8c77baec04d04019752bc8abc2f9a5906e094ededfbdd56cfc3c712aef126",
-  "test_command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe tests/python/test_improvement_query_dispatch.py -v",
+  "test_command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe tests/python/test_improvement_query_dispatch.py -v",
   "runtime": {"platform": "Windows", "python": "3.12.10", "sdk": "0.2.116"},
   "author_red": {
     "tests": 16,

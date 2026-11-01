@@ -79,12 +79,12 @@
   "local_final": [
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "-B",
         ".superpowers/sdd/2026-10-24-recipe-destination-authority/root-check.py",
         "test_improvement_recipe_sources.py"
       ],
-      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
       "start_utc": "2026-10-24T09:15:05.767062+00:00",
       "logger_pid": 7676,
       "pid": 26408,
@@ -109,14 +109,14 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "-B",
         ".superpowers/sdd/2026-10-24-recipe-destination-authority/root-check.py",
         "test_improvement_trial_dashboard.py",
         "DashboardTests.test_revalidate_freezes_only_clock_and_usage",
         "DashboardTests.test_sql_permissions_membership_and_target_changes_reject_revalidation"
       ],
-      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
       "start_utc": "2026-10-24T09:17:55.310187+00:00",
       "logger_pid": 9540,
       "pid": 3096,
@@ -141,7 +141,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "-B",
         ".superpowers/sdd/2026-10-24-recipe-destination-authority/root-check.py",
         "test_improvement_trial_service.py",
@@ -149,7 +149,7 @@
         "DashboardServiceTests.test_source_replacement_during_observation_rejects_result",
         "DashboardServiceTests.test_changed_native_source_members_or_modules_fail_before_capture"
       ],
-      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
       "start_utc": "2026-10-24T09:18:30.342886+00:00",
       "logger_pid": 16100,
       "pid": 4644,
@@ -174,13 +174,13 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "-B",
         ".superpowers/sdd/2026-10-24-recipe-destination-authority/root-check.py",
         "test_improvement_recipe_archive.py",
         "RecipeArchiveTests.test_actual_encrypted_manifest_uses_original_source_pins_and_unverified_grade"
       ],
-      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
       "start_utc": "2026-10-24T09:19:10.579828+00:00",
       "logger_pid": 2112,
       "pid": 9904,
@@ -225,7 +225,7 @@
     "run_id": 40081705134,
     "job_id": 120836433669,
     "conclusion": "success",
-    "url": "https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40081705134",
+    "url": "https://github.com/blogminhquy/javis-os/actions/runs/40081705134",
     "source_head": "429d9334afa792116ad80e02f0f3bf2fd11e46af",
     "sha256": {
       "server/improvement_recipe_sources.py": "fea6886fc6fbcfa56f50f79aefb90c07d4222d1c7b3cc82e589d680a51f0d986",

@@ -13,7 +13,7 @@
     "server/improvement_native_image.py": "4fc9654ac7ad255fcf65f37823380d64c4199b567189453f30b95333d4d0640f",
     "server/improvement_native_capture_win32.py": "54dd2ed75e6406c93d2765ff1f72716194382199863e71dbbdc183319984f793"
   },
-  "test_command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe tests/python/test_improvement_fixed_worker_launch.py -v",
+  "test_command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe tests/python/test_improvement_fixed_worker_launch.py -v",
   "test_command_sha256": "00b65f18b272cb4ae54ad9b32160127e69fe948f121e6df64e22d161c8c007ff",
   "environment": "Windows x64 / repository Python312 venv; fixed plain-base Python stub, private pipes and empty scratch environment",
   "author_runs": [

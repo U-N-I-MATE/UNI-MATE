@@ -46,7 +46,7 @@
     "errors": 2,
     "exit_code": 1,
     "seconds": 0.193,
-    "reason": "Deep chosen UNIMATE_TEST_TMP produced a 269-character fixture lock path over Windows MAX_PATH. Unchanged source/assertions passed with a short private invocation temp.",
+    "reason": "Deep chosen JAVIS_TEST_TMP produced a 269-character fixture lock path over Windows MAX_PATH. Unchanged source/assertions passed with a short private invocation temp.",
     "log_sha256": "b8724aef2a52b271ca20ab9a2eb8aba7184779738f2eba6349e4efaa6f0ba1be"
   },
   "independent_review": {
@@ -74,12 +74,12 @@
     "Actual shared unbound operation options and SDK116 command builder at two efforts; no operation construction/authorization.",
     "Duplicate/external/extra MCP, changed prompt/model/effort/settings and override flags refuse; defensive sanitized outputs preserve unknown coverage."
   ],
-  "scheduling": "Pure8 used separate -B Python, private precreated UNIMATE_TEST_TMP and in-memory vectors only; isolation from the capture process was established. SDK17 ran after capture slot release; independent17+8 ran sequentially. No shared HOME/config/DB/port/source writes in tests.",
+  "scheduling": "Pure8 used separate -B Python, private precreated JAVIS_TEST_TMP and in-memory vectors only; isolation from the capture process was established. SDK17 ran after capture slot release; independent17+8 ran sequentially. No shared HOME/config/DB/port/source writes in tests.",
   "test_commands": [
     "python -B tests/python/test_improvement_query_dispatch_policies.py -v",
     "python -B tests/python/test_improvement_query_dispatch.py -v"
   ],
-  "python_executable": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+  "python_executable": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
   "raw_evidence_directory": ".superpowers/sdd/2026-10-24-agent-skill-improvement-query-dispatch",
   "limits": [
     "No runtime caller or PROFILE_SOURCES change; existing operation roles retain fixture-only behavior.",

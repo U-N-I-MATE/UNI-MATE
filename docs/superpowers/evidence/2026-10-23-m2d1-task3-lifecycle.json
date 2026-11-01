@@ -16,7 +16,7 @@
   "results": [
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_lifecycle.py",
         "-v"
       ],
@@ -28,7 +28,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_service.py",
         "-v"
       ],
@@ -40,7 +40,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_recovery.py",
         "-v"
       ],
@@ -52,7 +52,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_c_stop.py",
         "-v"
       ],

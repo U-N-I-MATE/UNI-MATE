@@ -18,7 +18,7 @@
   "results": [
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_lifetime.py",
         "-v"
       ],
@@ -32,7 +32,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_lifetime.py",
         "ViewLifetimeTests.test_missing_pending_cancelled_or_failed_owner_close_never_allows_rebinding",
         "-v"
@@ -46,7 +46,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_next.py",
         "-v"
       ],
@@ -59,7 +59,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_workflow_api.py",
         "-v"
       ],
@@ -72,7 +72,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_lifetime.py",
         "-v"
       ],
@@ -85,7 +85,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_operation_worker.py",
         "-v"
       ],
@@ -98,7 +98,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_reservations.py",
         "NativeFootprintTests",
         "-v"
@@ -112,7 +112,7 @@
     },
     {
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_lifecycle.py",
         "ViewLifecycleTests.test_stop_cancels_and_refunds_actual_view_trial_before_finishing_experiment",
         "-v"

@@ -5,7 +5,7 @@
   "test_author": "m2d1_whole_review",
   "independent_reviewer_executor": "root",
   "verdict": "approved_scoped_actual_operation_records_proof",
-  "command": "D:/Project/UNI-MATE/.venv/Scripts/python.exe tests/python/test_improvement_qualification_operation_binding.py -v",
+  "command": "D:/Project/Javis-OS/.venv/Scripts/python.exe tests/python/test_improvement_qualification_operation_binding.py -v",
   "tests": 3,
   "seconds": 9.359,
   "exit": 0,

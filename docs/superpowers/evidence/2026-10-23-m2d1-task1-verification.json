@@ -33,7 +33,7 @@
     {
       "script": "test_improvement_views.py",
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_views.py",
         "-v"
       ],
@@ -46,7 +46,7 @@
     {
       "script": "test_improvement_view_schema.py",
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_schema.py",
         "-v"
       ],
@@ -59,7 +59,7 @@
     {
       "script": "test_improvement_store.py",
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_store.py",
         "-v"
       ],
@@ -72,7 +72,7 @@
     {
       "script": "test_improvement_operations.py",
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_operations.py",
         "-v"
       ],
@@ -85,7 +85,7 @@
     {
       "script": "test_improvement_experiments.py",
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiments.py",
         "-v"
       ],
@@ -98,7 +98,7 @@
     {
       "script": "test_improvement_operation_execution.py",
       "command": [
-        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_operation_execution.py",
         "-v"
       ],

@@ -10,7 +10,7 @@
     "tests/python/test_improvement_native_capture.py": "f712dd9e63b3a284637bbfc22c5da84bdf6e49fbe797d30ff616622adafbdfdb"
   },
   "qualified83_profile_unchanged": "04c8c77baec04d04019752bc8abc2f9a5906e094ededfbdd56cfc3c712aef126",
-  "test_command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -I -B <raw_evidence_directory>/run_canonical_capture_tests_v1.py",
+  "test_command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -I -B <raw_evidence_directory>/run_canonical_capture_tests_v1.py",
   "driver_sha256": "64fcf3f8a9ac93032281e650a954487c01595f1699cc6b950bcec721e22e035e",
   "runtime": {
     "platform": "Windows x64",

@@ -12,7 +12,7 @@
     "verified": "Original raw Git blob/full SHA; exact original vs vendor source segment and AST for each definition; recorded upstream line bounds/source/AST hashes; original Apache2 license Git blob",
     "manifest": "third_party/harness2/COMPOSE-PROVENANCE.json"
   },
-  "implementation": "Actual unchanged compose_round(_tidy/_work/_lens/_st/_SurfaceText/boundaries) runs once at t=k=1; static UNI MATE body surface and closed JSON adapter validate two original patch projections and new combined bytes through existing validate_body_patch.",
+  "implementation": "Actual unchanged compose_round(_tidy/_work/_lens/_st/_SurfaceText/boundaries) runs once at t=k=1; static Javis body surface and closed JSON adapter validate two original patch projections and new combined bytes through existing validate_body_patch.",
   "source_and_test_sha256": {
     "server/improvement_harness2_compose.py": "a8192f15f226348f3485883a80b7ebe3cb215caa2d3084845f4a050b0def71b9",
     "third_party/harness2/COMPOSE-PROVENANCE.json": "ce7839f1a378502caeb5c06af54a66727761f0223bdc336f549cbf0b003fb11c",

@@ -4,7 +4,7 @@
  "label": "real-model pilot / synthetic business fixtures",
  "owner_permission": "chat 26/10/2026: 'anh cho phép làm cả 3 phần để test hiệu quả luôn nhé'",
  "task": "reconcile a shop's orders with bank transfers under shop conventions (tools/self_learning_pilot.py)",
- "loop": "server/improvement_loop.py: Harness² sequential recursion (INV, DOM, compose) with the UNI MATE baseline rule",
+ "loop": "server/improvement_loop.py: Harness² sequential recursion (INV, DOM, compose) with the Javis baseline rule",
  "decision_rule": "sign test over sealed cases, p < 0.05, baseline wins ties; regression on any case the baseline fully passed refuses 'helped' (added after pilot 2, applied to pilots 1-2 below by recomputation)",
  "scope_of_claim": "Measured on synthetic fixtures with answers by construction, one task, one engine (claude-opus-5-5, effort medium). Not a production business pilot and not proof for other skills.",
  "pilots": [

@@ -210,7 +210,7 @@ import tempfile as _tf  # noqa: E402
 _brain = _tf.mkdtemp(prefix="unimate-rp-brain-")
 main._reply_policy_write_feedback({"id": "x", "name": "Bot Thử", "brain": _brain}, "luật A chặn tin B")
 main._reply_policy_write_feedback({"id": "x", "name": "Bot Thử", "brain": _brain}, "luật C chặn tin D")
-_gy = os.path.join(_brain, "UNI MATE", "gop-y-bo-phan-xu.md")
+_gy = os.path.join(_brain, "UniMate", "gop-y-bo-phan-xu.md")
 _txt = open(_gy, encoding="utf-8").read() if os.path.exists(_gy) else ""
 check("góp ý ghi vào brain của bot, nối thêm chứ không ghi đè",
       "luật A" in _txt and "luật C" in _txt and _txt.count("# Góp ý") == 1 and "Bot Thử" in _txt, _txt[:200])

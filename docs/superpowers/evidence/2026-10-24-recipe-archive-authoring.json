@@ -40,7 +40,7 @@
       "asyncio_slow_task_diagnostics": 4,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeArchiveTests.test_late_holdout_alias_cannot_relabel_tuning_source RecipeComposedTests",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeArchiveTests.test_late_holdout_alias_cannot_relabel_tuning_source RecipeComposedTests",
       "ended_utc_from_log_mtime": 1792825350.830925
     },
     {
@@ -57,7 +57,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py",
       "ended_utc_from_log_mtime": 1792825085.828946
     },
     {
@@ -74,7 +74,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComparisonTests",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComparisonTests",
       "ended_utc_from_log_mtime": 1792825263.5849144
     },
     {
@@ -91,7 +91,7 @@
       "asyncio_slow_task_diagnostics": 5,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComposedTests.test_changed_composed_basis_report_publication_and_late_parent_trace_refuse RecipePreparationTests.test_shared_history_keeps_original_sealed_proposer_bytes_and_recipes_empty",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComposedTests.test_changed_composed_basis_report_publication_and_late_parent_trace_refuse RecipePreparationTests.test_shared_history_keeps_original_sealed_proposer_bytes_and_recipes_empty",
       "ended_utc_from_log_mtime": 1792825872.1091528
     },
     {
@@ -108,7 +108,7 @@
       "asyncio_slow_task_diagnostics": 9,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComposedTests.test_changed_composed_basis_report_publication_and_late_parent_trace_refuse RecipeViewReferenceTests",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComposedTests.test_changed_composed_basis_report_publication_and_late_parent_trace_refuse RecipeViewReferenceTests",
       "ended_utc_from_log_mtime": 1792825782.013498
     },
     {
@@ -125,7 +125,7 @@
       "asyncio_slow_task_diagnostics": 4,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipePreparationTests RecipeComparisonTests",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipePreparationTests RecipeComparisonTests",
       "ended_utc_from_log_mtime": 1792825216.1493664
     },
     {
@@ -142,7 +142,7 @@
       "asyncio_slow_task_diagnostics": 6,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipePreparationTests",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipePreparationTests",
       "started_utc": "2026-10-24T07:21:24.8701554Z",
       "ended_utc": "2026-10-24T07:22:13.7285420Z",
       "exit": 0
@@ -161,7 +161,7 @@
       "asyncio_slow_task_diagnostics": 18,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py",
       "started_utc": "2026-10-24T07:11:34.4166870Z",
       "ended_utc": "2026-10-24T07:17:18.6184877Z",
       "exit": 0
@@ -180,7 +180,7 @@
       "asyncio_slow_task_diagnostics": 7,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_improver_inputs.py",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_improver_inputs.py",
       "started_utc": "2026-10-24T07:24:07.2792501Z",
       "ended_utc": "2026-10-24T07:25:12.7077652Z",
       "exit": 0
@@ -199,7 +199,7 @@
       "asyncio_slow_task_diagnostics": 1,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_preparation_execution.py PreparationExecutionTests.test_real_preparation_result_keeps_exact_lineage_unknowns_and_cold_history",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_preparation_execution.py PreparationExecutionTests.test_real_preparation_result_keeps_exact_lineage_unknowns_and_cold_history",
       "started_utc": "2026-10-24T07:26:38.8655345Z",
       "ended_utc": "2026-10-24T07:26:48.1336026Z",
       "exit": 0
@@ -218,7 +218,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_preparation.py PreparationTests.test_unfinished_baseline_cannot_be_sealed_as_proposer_input",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_preparation.py PreparationTests.test_unfinished_baseline_cannot_be_sealed_as_proposer_input",
       "started_utc": "2026-10-24T07:26:28.4032697Z",
       "ended_utc": "2026-10-24T07:26:32.5100487Z",
       "exit": 0
@@ -237,7 +237,7 @@
       "asyncio_slow_task_diagnostics": 1,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_proposals.py ProposalTests.test_actual_native_result_stages_bound_unreviewed_draft_and_replay_never_queries ProposalTests.test_malformed_batch_gets_one_actual_repair_with_same_input_and_allowance",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_proposals.py ProposalTests.test_actual_native_result_stages_bound_unreviewed_draft_and_replay_never_queries ProposalTests.test_malformed_batch_gets_one_actual_repair_with_same_input_and_allowance",
       "started_utc": "2026-10-24T07:25:42.1703583Z",
       "ended_utc": "2026-10-24T07:26:15.4451645Z",
       "exit": 0
@@ -256,7 +256,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py",
       "started_utc": "2026-10-24T07:23:25.2882902Z",
       "ended_utc": "2026-10-24T07:24:01.4756370Z",
       "exit": 0
@@ -275,7 +275,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py",
       "started_utc": "2026-10-24T07:17:59.1089003Z",
       "ended_utc": "2026-10-24T07:18:29.1329784Z",
       "exit": 0
@@ -294,7 +294,7 @@
       "asyncio_slow_task_diagnostics": 7,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py ../../.superpowers/sdd/2026-10-24-recipe-archive-authority/task-1-logs/lifecycle-run.py RecipeComparisonTests RecipeComposedTests",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py ../../.superpowers/sdd/2026-10-24-recipe-archive-authority/task-1-logs/lifecycle-run.py RecipeComparisonTests RecipeComposedTests",
       "started_utc": "2026-10-24T07:19:23.1714947Z",
       "ended_utc": "2026-10-24T07:20:53.6942695Z",
       "exit": 0
@@ -313,7 +313,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py",
       "ended_utc_from_log_mtime": 1792825394.1686125
     },
     {
@@ -330,7 +330,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py",
       "ended_utc_from_log_mtime": 1792825118.0537436
     },
     {
@@ -347,7 +347,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeArchiveTests.test_actual_encrypted_manifest_uses_original_source_pins_and_unverified_grade",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeArchiveTests.test_actual_encrypted_manifest_uses_original_source_pins_and_unverified_grade",
       "ended_utc_from_log_mtime": 1792824945.9429781
     },
     {
@@ -364,7 +364,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py RecipeRecordTests.test_missing_source_grant_does_not_block_actual_owner_state_revocation",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py RecipeRecordTests.test_missing_source_grant_does_not_block_actual_owner_state_revocation",
       "started_utc": "2026-10-24T07:23:00.9528920Z",
       "ended_utc": "2026-10-24T07:23:06.2152017Z",
       "exit": 1
@@ -383,7 +383,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeArchiveTests.test_late_holdout_alias_cannot_relabel_tuning_source",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeArchiveTests.test_late_holdout_alias_cannot_relabel_tuning_source",
       "ended_utc_from_log_mtime": 1792825308.3859181
     },
     {
@@ -400,7 +400,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py RecipeRecordTests.test_missing_source_grant_never_reports_active_even_without_sweep",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py RecipeRecordTests.test_missing_source_grant_never_reports_active_even_without_sweep",
       "ended_utc_from_log_mtime": 1792825809.1603515
     },
     {
@@ -417,7 +417,7 @@
       "asyncio_slow_task_diagnostics": 0,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py RecipeRecordTests.test_read_existing_metadata_off_without_migrate_host_body_or_native",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_records.py RecipeRecordTests.test_read_existing_metadata_off_without_migrate_host_body_or_native",
       "ended_utc_from_log_mtime": 1792824981.7620027
     },
     {
@@ -434,7 +434,7 @@
       "asyncio_slow_task_diagnostics": 4,
       "pending_task_destruction": false,
       "unawaited_coroutine": false,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComposedTests",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComposedTests",
       "ended_utc_from_log_mtime": 1792825494.5462778
     }
   ],
@@ -442,7 +442,7 @@
     "command": {
       "ended_utc": "2026-10-24T07:38:25.7297495Z",
       "exit": 0,
-      "command": "& D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComposedTests.test_conflicting_required_parent_result_pins_refuse_all_recipe_publication RecipePreparationTests.test_original_candidate_evidence_deduplicates_only_exact_sealed_pins RecipeComposedTests.test_typed_three_keeps_actual_composed_provenance_and_own_tuning_refs",
+      "command": "& D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-agent-skill-improvement-compose-inputs/root-check.py test_improvement_recipe_archive.py RecipeComposedTests.test_conflicting_required_parent_result_pins_refuse_all_recipe_publication RecipePreparationTests.test_original_candidate_evidence_deduplicates_only_exact_sealed_pins RecipeComposedTests.test_typed_three_keeps_actual_composed_provenance_and_own_tuning_refs",
       "started_utc": "2026-10-24T07:37:16.0307041Z"
     },
     "commit": "aa1e0732e2cf99fe297b0d30346c29acfe6c6310",
@@ -540,7 +540,7 @@
         "workflow_sha256": "eb715c236ead625a2ec600fe0991d1bcc40ad3a6218e4e1992394e15a41aca93",
         "boundary": "engineering-only; not task-branch CI, native qualification, model or business proof"
       },
-      "url": "https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40074394806"
+      "url": "https://github.com/blogminhquy/javis-os/actions/runs/40074394806"
     },
     {
       "run_id": 40075062683,
@@ -579,7 +579,7 @@
         "workflow_sha256": "2968522fbda12d81899cfa9619cf29b28a70607e02d7f63810230c2135f062f7",
         "boundary": "engineering-only; not task-branch CI, native qualification, model or business proof"
       },
-      "url": "https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40075062683"
+      "url": "https://github.com/blogminhquy/javis-os/actions/runs/40075062683"
     }
   ],
   "protected_test_sha256": "0577b5181fb090ba897ec8c3d0fce10fe88d2d09d03839497150cdacf6e793e0",

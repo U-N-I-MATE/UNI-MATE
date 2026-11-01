@@ -21,14 +21,14 @@
   ],
   "runs": [
     {
-      "command": "D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-m2-future-schema-controls/root-check.py test_improvement_operation_execution.py OperationExecutionTests.test_unknown_future_schema_never_becomes_native_authority_even_if_old_guards_exist",
-      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+      "command": "D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-m2-future-schema-controls/root-check.py test_improvement_operation_execution.py OperationExecutionTests.test_unknown_future_schema_never_becomes_native_authority_even_if_old_guards_exist",
+      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
       "start_utc": "2026-10-24T09:30:46.0167800Z",
       "end_utc": "2026-10-24T09:30:50.8859379Z",
       "pid": "5156",
       "exit": "0",
-      "stdout": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\GREEN-execution-20261024T093046Z.stdout.log",
-      "stderr": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\GREEN-execution-20261024T093046Z.stderr.log",
+      "stdout": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\GREEN-execution-20261024T093046Z.stdout.log",
+      "stderr": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\GREEN-execution-20261024T093046Z.stderr.log",
       "metadata": {
         "path": ".superpowers/sdd/2026-10-24-m2-future-schema-controls/task-1-logs/GREEN-execution-20261024T093046Z.meta.txt",
         "bytes": 816,
@@ -47,14 +47,14 @@
       "interpretation": "one isolated test passed"
     },
     {
-      "command": "D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-m2-future-schema-controls/root-check.py test_improvement_operations.py OperationMigrationTests.test_unknown_future_version_rejects_without_backup_or_mutation",
-      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+      "command": "D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-m2-future-schema-controls/root-check.py test_improvement_operations.py OperationMigrationTests.test_unknown_future_version_rejects_without_backup_or_mutation",
+      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
       "start_utc": "2026-10-24T09:30:41.9777077Z",
       "end_utc": "2026-10-24T09:30:45.9852075Z",
       "pid": "18052",
       "exit": "0",
-      "stdout": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\GREEN-migration-20261024T093041Z.stdout.log",
-      "stderr": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\GREEN-migration-20261024T093041Z.stderr.log",
+      "stdout": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\GREEN-migration-20261024T093041Z.stdout.log",
+      "stderr": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\GREEN-migration-20261024T093041Z.stderr.log",
       "metadata": {
         "path": ".superpowers/sdd/2026-10-24-m2-future-schema-controls/task-1-logs/GREEN-migration-20261024T093041Z.meta.txt",
         "bytes": 788,
@@ -73,14 +73,14 @@
       "interpretation": "one isolated test passed"
     },
     {
-      "command": "D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-m2-future-schema-controls/root-check.py test_improvement_operation_execution.py OperationExecutionTests.test_unknown_future_schema_never_becomes_native_authority_even_if_old_guards_exist",
-      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+      "command": "D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-m2-future-schema-controls/root-check.py test_improvement_operation_execution.py OperationExecutionTests.test_unknown_future_schema_never_becomes_native_authority_even_if_old_guards_exist",
+      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
       "start_utc": "2026-10-24T09:30:17.7924470Z",
       "end_utc": "2026-10-24T09:30:21.9855497Z",
       "pid": "10668",
       "exit": "1",
-      "stdout": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\RED-execution-20261024T093017Z.stdout.log",
-      "stderr": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\RED-execution-20261024T093017Z.stderr.log",
+      "stdout": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\RED-execution-20261024T093017Z.stdout.log",
+      "stderr": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\RED-execution-20261024T093017Z.stderr.log",
       "metadata": {
         "path": ".superpowers/sdd/2026-10-24-m2-future-schema-controls/task-1-logs/RED-execution-20261024T093017Z.meta.txt",
         "bytes": 813,
@@ -99,14 +99,14 @@
       "interpretation": "stale known9 fixture premise, not a production validator defect"
     },
     {
-      "command": "D:/Project/UNI-MATE/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-m2-future-schema-controls/root-check.py test_improvement_operations.py OperationMigrationTests.test_unknown_future_version_rejects_without_backup_or_mutation",
-      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
+      "command": "D:/Project/Javis-OS/.venv/Scripts/python.exe -B .superpowers/sdd/2026-10-24-m2-future-schema-controls/root-check.py test_improvement_operations.py OperationMigrationTests.test_unknown_future_version_rejects_without_backup_or_mutation",
+      "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
       "start_utc": "2026-10-24T09:30:13.4503449Z",
       "end_utc": "2026-10-24T09:30:17.7673660Z",
       "pid": "6072",
       "exit": "1",
-      "stdout": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\RED-migration-20261024T093013Z.stdout.log",
-      "stderr": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\RED-migration-20261024T093013Z.stderr.log",
+      "stdout": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\RED-migration-20261024T093013Z.stdout.log",
+      "stderr": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-future-schema-controls\\task-1-logs\\RED-migration-20261024T093013Z.stderr.log",
       "metadata": {
         "path": ".superpowers/sdd/2026-10-24-m2-future-schema-controls/task-1-logs/RED-migration-20261024T093013Z.meta.txt",
         "bytes": 783,
