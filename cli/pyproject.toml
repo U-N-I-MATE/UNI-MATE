@@ -8,8 +8,8 @@ version = "0.17.0"
 description = "UNI MATE CLI - nói chuyện với UNI MATE từ terminal"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "MIT" }
-authors = [{ name = "UNI MATE" }]
+license = { text = "AGPL-3.0-only" }
+authors = [{ name = "U.N.I SERVICE AND TRADING CO., LTD." }]
 keywords = ["unimate", "cli", "ai", "agent", "second-brain"]
 
 # CHỈ httpx. Đây là một luật, không phải sự tình cờ: gói này phải cài được trên máy chưa từng
