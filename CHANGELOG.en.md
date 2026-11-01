@@ -10,11 +10,15 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ### Fixed
 - **The chat now shows progress while a workflow runs:** each step and command appears in the chat, and tapping the summary line lists them all. Before there was only one status line.
 - **Reopening a running chat no longer shows an empty bubble** or loses the steps block.
+- **Brain folder picker: paste a path and press Enter**, and the folder list always scrolls on short screens.
+- **Closing the "Vault structure incomplete" banner is remembered** for that brain.
+- **The pack install dialog no longer says "data only"** for a code pack switched on from the Connections page.
 
 ### Improved
 - **UNI MATE's default port is now 8688** on new installs, Docker, install scripts and docs. A machine with its own port in `.env` keeps that port.
 - **The auto-start card, the mic hint and the voice test page show the port actually in use** instead of a fixed address.
 - **ChatGPT Live voice samples now introduce themselves as Uni.** All 9 samples were re-recorded.
+- **UNI MATE home page: tech.unihq.vn/unimate.** The "by UNI TECH" line, the author label on AI images and the commercial licence contact use the U.N.I domain.
 
 ### Fixed
 - **The warning about call and reading voices of different genders gains a "Keep as is, don't remind me" button.** If you chose that on purpose, the screen stops nagging.

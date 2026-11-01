@@ -10,11 +10,15 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 ### Sửa lỗi
 - **Khung chat giờ hiện tiến trình khi chạy quy trình:** từng bước, từng lệnh đang chạy hiện ngay trong chat, bấm dòng tóm tắt để xem hết. Trước đây chỉ có một dòng trạng thái.
 - **Mở lại một chat đang chạy không còn hiện bong bóng trống** và không mất khối tiến trình.
+- **Hộp chọn bộ não: dán đường dẫn rồi bấm Enter**, danh sách thư mục luôn cuộn được trên màn hình thấp.
+- **Khung "Cấu trúc vault chưa chuẩn" bấm đóng là nhớ** cho bộ não đó, không hiện lại.
+- **Hộp cài gói không còn ghi "chỉ có dữ liệu"** cho gói có chạy mã được bật sẵn từ trang Kết nối.
 
 ### Cải thiện
 - **Cổng mặc định của UNI MATE giờ là 8688** ở bản cài mới, Docker, script cài và tài liệu. Máy nào đã đặt cổng riêng trong `.env` thì vẫn giữ cổng đó.
 - **Thẻ Tự bật, lời nhắc micro và trang thử giọng hiện đúng cổng đang chạy**, không còn ghi cố định một địa chỉ.
 - **Nghe thử giọng ChatGPT Live giờ tự giới thiệu là Uni.** Thu lại cả 9 mẫu giọng.
+- **Trang chủ UNI MATE: tech.unihq.vn/unimate.** Dòng "by UNI TECH", nhãn tác giả trên ảnh AI và liên hệ giấy phép thương mại dùng tên miền U.N.I.
 
 ### Sửa lỗi
 - **Cảnh báo giọng gọi khác giới tính giọng đọc có thêm nút "Giữ nguyên, không nhắc nữa".** Bạn chủ động chọn vậy thì màn hình thôi nhắc lại.
