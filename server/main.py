@@ -6371,6 +6371,17 @@ async def backup_status(brain: str = Query("brain")):
     }
 
 
+BACKUP_MIN_HOURS = 0.25   # 15 phút: chu kỳ ngắn nhất của đồng bộ brain với GitHub
+
+
+def backup_interval_hours(value) -> float:
+    """Chu kỳ đồng bộ brain (giờ), số lẻ được, ít nhất BACKUP_MIN_HOURS. Giá trị hỏng thì ValueError."""
+    h = float(value)
+    if h != h or h in (float("inf"), float("-inf")):
+        raise ValueError("interval_hours")
+    return max(BACKUP_MIN_HOURS, round(h, 2))
+
+
 @app.post("/backup/config")
 async def backup_config(
     repo_url: str = Form(None), token: str = Form(None), branch: str = Form(None),
@@ -6390,8 +6401,10 @@ async def backup_config(
     if sync_images is not None:
         b["sync_images"] = sync_images in ("1", "true", "True", "on")
     if interval_hours is not None:
+        # Số lẻ được (0.25 = 15 phút, chủ dự án cần máy nhà và VPS khớp nhau nhanh, 01/11/2026); dưới 15 phút
+        # thì kéo về 15: mỗi lượt là một lần kéo + đẩy git cả thư mục brains.
         try:
-            b["interval_hours"] = max(1, int(interval_hours))
+            b["interval_hours"] = backup_interval_hours(interval_hours.replace(",", "."))
         except ValueError:
             pass
     cfgmod.write_settings(cfg)
@@ -14139,7 +14152,7 @@ async def _start_scheduler():
                 try:
                     bcfg = cfgmod.read_settings().get("backup", {}) or {}
                     if bcfg.get("enabled") and bcfg.get("repo_url") and bcfg.get("token") and git_brain.has_git():
-                        interval = max(1, int(bcfg.get("interval_hours", 6))) * 3600
+                        interval = backup_interval_hours(bcfg.get("interval_hours", 6)) * 3600
                         if time.time() - float(bcfg.get("last_backup", 0)) >= interval:
                             await asyncio.to_thread(_do_backup)   # 1 lần: toàn bộ thư mục brains, 2 chiều
                 except Exception as be:

@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.429.5] - 2026-11-01
+### Cải thiện
+- **Đồng bộ bộ não với GitHub đặt được chu kỳ ngắn tới 15 phút** (ô nhập nhận 0,25 giờ). Máy nhà và VPS khớp nhau nhanh hơn; trước đây ngắn nhất 1 giờ.
+
 ## [0.429.4] - 2026-11-01
 ### Cải thiện
 - **Kiểm thử tự động bớt báo đỏ oan:** một bộ kiểm vốn chạy vài giây mà hiếm hoi bị treo thì được chạy lại một lần, và log ghi rõ chỗ treo.

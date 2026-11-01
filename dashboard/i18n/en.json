@@ -2110,7 +2110,7 @@
   "cs.bk_token_label": "GitHub token (fine-grained, Contents permission)",
   "cs.bk_token_ph": "e.g. github_pat_...",
   "cs.bk_branch": "Branch",
-  "cs.bk_interval": "Auto-sync every (hours)",
+  "cs.bk_interval": "Auto-sync every (hours; 0.25 = 15 minutes)",
   "cs.bk_auto": "Automatic",
   "cs.bk_images": "Sync images too",
   "cs.bk_img_a": "With \"Sync images too\" on, images in the brain (jpg, png, gif, webp - up to 10MB each) also go to the repo and follow you to other machines. Think it over first:",

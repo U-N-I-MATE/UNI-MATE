@@ -2110,7 +2110,7 @@
   "cs.bk_token_label": "GitHub token (fine-grained, quyền Contents)",
   "cs.bk_token_ph": "Ví dụ: github_pat_...",
   "cs.bk_branch": "Nhánh",
-  "cs.bk_interval": "Tự đồng bộ mỗi (giờ)",
+  "cs.bk_interval": "Tự đồng bộ mỗi (giờ; 0,25 = 15 phút)",
   "cs.bk_auto": "Tự động",
   "cs.bk_images": "Đồng bộ cả ảnh",
   "cs.bk_img_a": "Bật \"Đồng bộ cả ảnh\" thì ảnh trong brain (jpg, png, gif, webp - mỗi ảnh tối đa 10MB) cũng lên repo và theo bạn sang máy khác. Cân nhắc trước khi bật:",

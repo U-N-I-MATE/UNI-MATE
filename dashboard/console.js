@@ -2321,7 +2321,7 @@
           <div class="si-field"><label>${esc(window.t("cs.bk_token_label"))}</label><input id="bkToken" type="password" placeholder="${esc(window.t("cs.bk_token_ph"))}"></div>
           <div class="si-row" style="gap:14px;flex-wrap:wrap">
             <div class="si-field"><label>${esc(window.t("cs.bk_branch"))}</label><input id="bkBranch" value="main" style="max-width:120px"></div>
-            <div class="si-field"><label>${esc(window.t("cs.bk_interval"))}</label><input type="number" id="bkInterval" min="1" value="6" style="max-width:120px"></div>
+            <div class="si-field"><label>${esc(window.t("cs.bk_interval"))}</label><input type="number" id="bkInterval" min="0.25" step="0.25" value="6" style="max-width:120px"></div>
             <div class="si-field"><label>${esc(window.t("cs.bk_auto"))}</label><button class="si-chip" id="bkAuto">○ ${esc(window.t("settings.tag_off"))}</button></div>
             <div class="si-field"><label for="bkAnhRow">${esc(window.t("cs.bk_images"))}${infoBtn()}</label><button class="si-chip" id="bkAnh">○ ${esc(window.t("settings.tag_off"))}</button></div>
           </div>
