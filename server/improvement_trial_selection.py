@@ -31,15 +31,16 @@ _binary_observation = threading.local()
 
 # Audited ordinary discovery semantics. Unknown source changes require another
 # parity review, rather than silently assigning the SDK a different executable.
+# UNI MATE 01: _home_dir, _state_dir, ClaudeSDK._options re-pinned after the rename (javis -> unimate only).
 _DISCOVERY_CODE = {
     "tim_binary": "3a106ae21c4cfa126d8c36e732dffe9045226239038bff13cdb70db2860b1c2b",
     "_duong_dan_tim_binary": "4b54e92c6b5b078adcf123159c37341bf99d304eb8195dae82431b71622d3ba2",
     "_thu_muc_bin_windows": "84ec5dc0a1c0ec7c977e6b80383f57497509b6cd5ef6547b7b5f1a0da618254c",
-    "_home_dir": "5c70cc1085f020104f4b72bc08a323bda413aa69bdd83ed32d8dd8caa6b97781",
-    "_state_dir": "e97b40c8983e0795acb59b2c8a1ef726ff4e44acb07c9c6699dbf442c2e2fbd8",
+    "_home_dir": "dedc55d41409824c464d50674d10d34e2c9a1276082c493bc6198968cabe9e2e",
+    "_state_dir": "58fae7faa7286dac5abd0e37ed276549332f82ec82725dd1779360f53109fb44",
     "_doc_bin_nho": "df04b8ed0929d15f74cbce87f7a9c803c071a1f7447d53f542874e1dbbb24979",
     "_binary_da_nho": "0a70eeed3ebe4623019425b374f3ce20acec9d539f36c882dbd8d38e50b9dcbc",
-    "ClaudeSDK._options": "278718fd845cc87cd8c1c7a10285349fbb5fad1fbefea770f3be910f678c380a",
+    "ClaudeSDK._options": "9ad2fcf7b01353872eef2f0e456b4ec5bab44ac27904f7ad238c076de05c091a",
 }
 
 
