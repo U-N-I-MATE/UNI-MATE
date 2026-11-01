@@ -82,6 +82,8 @@ async def chay(events, emit: Callable[[dict], Awaitable[None]]) -> Dict[str, Any
 
     Khung phát ra:
     - `status` mỗi khi một bước bắt đầu (chip "đang làm" của khung chat);
+    - `tool_call`/`tool_result` for each step and each tool a step calls, so the chat draws the
+      same steps block as a normal turn;
     - `wf_event` cho MỌI sự kiện trừ `step_text` (cột phải vẽ tiến độ; step_text quá dày và
       cột phải không hiện chữ từng bước).
     Không phát `stream`: main.py gửi cả tin trả lời một lần sau khi có kết quả, để bong bóng
@@ -92,6 +94,20 @@ async def chay(events, emit: Callable[[dict], Awaitable[None]]) -> Dict[str, Any
     agent_cua_buoc: Dict[int, str] = {}
     buoc_dang_chay: Optional[int] = None
     da_ket = False
+    open_step = False
+
+    async def close_step():
+        nonlocal open_step
+        if open_step:
+            await emit({"type": "tool_result"})
+            open_step = False
+
+    async def open_new_step(frame):
+        nonlocal open_step
+        await close_step()
+        await emit({"type": "tool_call", **frame})
+        open_step = True
+
     try:
         async for ev in events:
             t = ev.get("type")
@@ -103,9 +119,25 @@ async def chay(events, emit: Callable[[dict], Awaitable[None]]) -> Dict[str, Any
                 buoc_dang_chay = i
                 agent_cua_buoc[i] = str(ev.get("agent") or "")
                 tong = kq["so_buoc"] or (i + 1)
-                await emit({"type": "status", "content": localefmt.chu(
+                nhan_buoc = localefmt.chu(
                     f"Bước {i + 1}/{tong}: {agent_cua_buoc[i]} đang làm...",
-                    f"Step {i + 1}/{tong}: {agent_cua_buoc[i]} is working...")})
+                    f"Step {i + 1}/{tong}: {agent_cua_buoc[i]} is working...")
+                await emit({"type": "status", "content": nhan_buoc})
+                await open_new_step({"tool": "workflow_step", "content": nhan_buoc})
+            elif t == "step_tool":
+                ten = str(ev.get("tool") or "")
+                await open_new_step({"tool": ten, "detail": str(ev.get("detail") or ""),
+                                     "content": ten})
+            elif t == "step_verify":
+                await open_new_step({"tool": "workflow_verify", "content": localefmt.chu(
+                    f"{ev.get('agent') or ''} đang kiểm chứng bước {int(ev.get('i') or 0) + 1}...",
+                    f"{ev.get('agent') or ''} is verifying step {int(ev.get('i') or 0) + 1}...")})
+            elif t == "step_retry":
+                await open_new_step({"tool": "workflow_retry", "content": localefmt.chu(
+                    f"Làm lại bước {int(ev.get('i') or 0) + 1}...",
+                    f"Redoing step {int(ev.get('i') or 0) + 1}...")})
+            elif t in ("step_done", "step_error"):
+                await close_step()
             elif t == "done":
                 kq["trang_thai"] = "done"
                 kq["ket_qua"] = str(ev.get("result") or "")
@@ -128,6 +160,7 @@ async def chay(events, emit: Callable[[dict], Awaitable[None]]) -> Dict[str, Any
                 da_ket = True
             if t != "step_text":
                 await emit({"type": "wf_event", "event": dict(ev)})
+        await close_step()
     finally:
         aclose = getattr(events, "aclose", None)
         if aclose:

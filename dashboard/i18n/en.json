@@ -3160,7 +3160,7 @@
   "fresh.stuck_title": "Still running the old version even after a reload.",
   "fresh.stuck_sub": "Press {phim} (on a Mac: {phim_mac}). If nothing changes, a cache layer between your machine and UNI MATE is holding the old files: {ds}",
   "app.mic_insecure": "Your browser blocked the microphone because this page is not on a secure connection.",
-  "app.mic_insecure_fix": "Open UNI MATE at http://localhost:{port} on the machine that runs UNI MATE, or put your domain on HTTPS.",
+  "app.mic_insecure_fix": "Open http://localhost:{port} on the machine running UNI MATE, or put your domain on HTTPS.",
   "app.mic_denied_fix": "Click the padlock icon next to the address bar to grant it again, then press the mic button once more.",
   "app.mic_none": "No microphone was found on this machine.",
   "app.mic_none_fix": "If you are controlling this machine remotely, the mic on the machine you are sitting at usually does not come along.",

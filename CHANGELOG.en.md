@@ -7,6 +7,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
 ## [0.429.2] - 2026-11-01
+### Fixed
+- **The chat now shows progress while a workflow runs:** each step and command appears in the chat, and tapping the summary line lists them all. Before there was only one status line.
+- **Reopening a running chat no longer shows an empty bubble** or loses the steps block.
+
 ### Improved
 - **UNI MATE's default port is now 8688** on new installs, Docker, install scripts and docs. A machine with its own port in `.env` keeps that port.
 - **The auto-start card, the mic hint and the voice test page show the port actually in use** instead of a fixed address.

@@ -71,6 +71,24 @@ check("chay emit wf_event cho moi su kien tru step_text", loai.count("wf_event")
 st = [f for f in fr if f["type"] == "status"]
 check("chay emit status moi buoc", [f["content"] for f in st] == ["Bước 1/2: A đang làm...", "Bước 2/2: B đang làm..."])
 
+# The chat steps block lives on tool_call frames: every step and tool must produce one.
+kq, fr = run([
+    {"type": "start", "workflow": "W", "steps": 1},
+    {"type": "step_start", "i": 0, "agent": "A", "task": "t"},
+    {"type": "step_tool", "i": 0, "tool": "Bash", "detail": "git status"},
+    {"type": "step_tool", "i": 0, "tool": "Read"},
+    {"type": "step_verify", "i": 0, "agent": "V", "attempt": 1},
+    {"type": "step_done", "i": 0, "agent": "A", "output": "o"},
+    {"type": "done", "result": "o"},
+])
+calls = [f for f in fr if f["type"] == "tool_call"]
+check("each step and tool becomes a tool_call", [f["tool"] for f in calls]
+      == ["workflow_step", "Bash", "Read", "workflow_verify"])
+check("the tool_call carries the command detail", calls[1]["detail"] == "git status")
+check("the step label reads as a sentence", calls[0]["content"] == "Bước 1/1: A đang làm...")
+check("every tool_call is closed by a tool_result", len(calls)
+      == len([f for f in fr if f["type"] == "tool_result"]))
+
 kq, fr = run([
     {"type": "start", "workflow": "W", "steps": 1},
     {"type": "step_start", "i": 0, "agent": "A", "task": "t"},

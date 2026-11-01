@@ -3160,7 +3160,7 @@
   "fresh.stuck_title": "Vẫn đang chạy bản cũ dù đã tải lại.",
   "fresh.stuck_sub": "Bấm {phim} (máy Mac: {phim_mac}). Vẫn vậy thì có một tầng cache giữa máy bạn và UNI MATE đang giữ file cũ: {ds}",
   "app.mic_insecure": "Trình duyệt chặn micro vì trang này không chạy qua kết nối bảo mật.",
-  "app.mic_insecure_fix": "Mở UNI MATE bằng http://localhost:{port} trên chính máy chạy nó, hoặc cho tên miền của bạn dùng HTTPS.",
+  "app.mic_insecure_fix": "Mở http://localhost:{port} trên máy chạy UNI MATE, hoặc cho tên miền của bạn dùng HTTPS.",
   "app.mic_denied_fix": "Bấm biểu tượng ổ khoá cạnh thanh địa chỉ để cấp lại, rồi bấm nút mic lần nữa.",
   "app.mic_none": "Không tìm thấy microphone nào trên máy này.",
   "app.mic_none_fix": "Nếu bạn đang điều khiển máy từ xa thì mic của máy bạn ngồi thường không đi theo.",

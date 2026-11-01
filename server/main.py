@@ -10806,7 +10806,7 @@ async def _run_workflow_step(node, prompt, mk, agent_sysprompt, sink, router=Non
                             "content": ev["content"]})
             elif ev["type"] == "tool_call":
                 await sink({"type": "step_tool", "i": index, "node": node.id,
-                            "tool": ev["name"]})
+                            "tool": ev["name"], "detail": tool_label.chi_tiet(ev)})
             elif ev["type"] == "final":
                 out = ev.get("content") or out
             elif ev["type"] == "error":
@@ -11551,7 +11551,7 @@ async def _execute_workflow_raw(brain, slug, input="", tools=None, session_id=""
                 if ev["type"] == "text":
                     yield {"type": "step_text", "i": i, "content": ev["content"]}
                 elif ev["type"] == "tool_call":
-                    yield {"type": "step_tool", "i": i, "tool": ev["name"]}
+                    yield {"type": "step_tool", "i": i, "tool": ev["name"], "detail": tool_label.chi_tiet(ev)}
                 elif ev["type"] == "final":
                     out = ev.get("content") or out
                 elif ev["type"] == "error":

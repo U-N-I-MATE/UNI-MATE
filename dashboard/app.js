@@ -1460,8 +1460,8 @@ function handleMessage(data) {
       showActivity(escapeHtml(data.content || ""));
     }
   } else if (data.type === "wf_event") {
-    // Tiến độ từng bước của một lần chạy quy trình (trang Cộng sự vẽ ở cột phải). Khung chat
-    // không vẽ gì: chip trạng thái đã đi bằng khung status riêng.
+    // Per-step progress of a workflow run, drawn in the right column of the Partners page. The
+    // chat draws its steps block from the tool_call frames workflow_chat.chay sends alongside.
     try { if (window.UniMateWorkspace) window.UniMateWorkspace.onWfEvent(data); } catch (e) {}
   } else if (data.type === "user_text") {
     if (data.voice_turn_id && (!t || String(t.id) !== String(data.voice_turn_id))) return;
@@ -2265,9 +2265,12 @@ async function openStoredSession(id, stillCurrent) {
     // Phiên này đang generate NỀN → gắn bong bóng SỐNG (kèm phần đã stream) để xem tiếp trực tiếp.
     const t = turns[id];
     if (t && t.running) {
-      t.bubble = createStreamingBubble();
+      // Reopened while running: put the steps block back first. No text yet means no answer
+      // bubble and no "writing" chip: an empty bubble there looks like a dead reply.
+      veKhoiBuoc(t, true);
+      t.bubble = t.text ? createStreamingBubble() : null;
       if (t.text) t.bubble.querySelector(".bubble").innerHTML = markdownToHtml(t.text, undefined, t.bubble.dataset.anhV);
-      showActivity(Icons.msg("pen-line", window.t("app.act_writing")));
+      showActivity(t.text ? Icons.msg("pen-line", window.t("app.act_writing")) : window.t("app.act_thinking"));
       runActions(turn.turnStart());
     } else {
       runActions(turn.turnDone());   // đổi sang phiên không chạy gì: đừng kẹt ở "ĐANG SUY NGHĨ"
@@ -2689,7 +2692,8 @@ function showActivity(html) {
 // nay GIU lai du buoc va song qua F5. Luot khong goi cong cu nao thi khong dung khoi nao.
 function veKhoiBuoc(t, dangChay) {
   if (!t || !window.UniMateSteps || !window.UniMateSteps.tomTat(t.buoc).hien) return null;
-  const moi = !t.buocEl;
+  // A block detached by switching chats must be attached again, not just redrawn.
+  const moi = !t.buocEl || !t.buocEl.isConnected;
   t.buocEl = window.UniMateSteps.ve(t.buocEl, t.buoc, dangChay);
   if (moi) { chatAppend(t.buocEl); scrollBottom(); }
   return t.buocEl;
@@ -2706,6 +2710,7 @@ function hideActivity() {
 function redrawRunningTurn() {
   const sid = savedSessionId, t = sid ? turns[sid] : null;
   if (!t || !t.running) return;
+  veKhoiBuoc(t, true);
   if (t.text) {
     if (!(t.bubble && t.bubble.isConnected)) t.bubble = createStreamingBubble();
     t.bubble.dataset.md = t.text;
