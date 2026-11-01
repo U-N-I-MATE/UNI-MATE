@@ -10,14 +10,18 @@ import secrets
 
 import avatar_upload
 
-SHAPES = ("circle", "square", "triangle", "cloud", "pentagon", "star")
+# 6 dáng ĐẦU là bộ gốc và là bộ bốc mặc định theo slug (`seed % 6`), đừng đổi thứ tự hay chèn vào giữa.
+# "uni" (linh vật UNI MATE, 0.429.1) chỉ được CHỌN, không vào bộ bốc ngẫu nhiên để trợ lý cũ giữ đúng dáng.
+SHAPES_MAC_DINH = ("circle", "square", "triangle", "cloud", "pentagon", "star")
+SHAPES = SHAPES_MAC_DINH + ("uni",)
 # 12 màu ĐẦU là bộ gốc và là bộ bốc mặc định theo slug. Đừng đổi thứ tự hay chèn vào giữa:
 # trợ lý cũ chưa lưu avatar lấy màu bằng `seed % 12`, đổi ở đây là cả danh sách đổi màu.
 PALETTES_MAC_DINH = ("amber", "pearl", "clay", "rose", "honey", "sage", "jade", "blue",
                      "lavender", "pink", "slate", "cocoa")
 # Tám màu thêm ở 0.59.36 trước đây THIẾU ở đây, nên chọn "Cam" cho trợ lý là máy chủ trả 400.
+# "uni" (Tím công nghệ UNI TECH, 0.429.1) cũng từng THIẾU ở đây: chọn màu UNI MATE cho agent là máy chủ trả 400.
 PALETTES = PALETTES_MAC_DINH + ("cam", "nang", "chanh", "bacha", "thanhthien", "cham", "tim",
-                                "ruby", "custom")
+                                "ruby", "uni", "custom")
 EYES = ("den", "trang", "custom")
 EYE_SIZE_MIN, EYE_SIZE_MAX = 0.8, 1.5
 _HEX = re.compile(r"#[0-9a-fA-F]{6}")
@@ -43,7 +47,7 @@ def for_agent(meta, slug):
     avatar = meta.get("avatar") or {}
     if not isinstance(avatar, dict):
         avatar = {}
-    out = {"shape": avatar.get("shape") if avatar.get("shape") in SHAPES else SHAPES[seed % len(SHAPES)],
+    out = {"shape": avatar.get("shape") if avatar.get("shape") in SHAPES else SHAPES_MAC_DINH[seed % len(SHAPES_MAC_DINH)],
            "palette": avatar.get("palette") if avatar.get("palette") in PALETTES
            else PALETTES_MAC_DINH[seed % len(PALETTES_MAC_DINH)]}
     color = _hex(avatar.get("color"))
@@ -70,7 +74,7 @@ def for_agent(meta, slug):
 def for_save(previous, slug, shape=None, palette=None, color=None, eye=None, eye_color=None,
              eye_size=None, image=None):
     avatar = for_agent(previous, slug) if previous is not None else {
-        "shape": secrets.choice(SHAPES), "palette": secrets.choice(PALETTES_MAC_DINH)}
+        "shape": secrets.choice(SHAPES_MAC_DINH), "palette": secrets.choice(PALETTES_MAC_DINH)}
     for key, value, allowed in (("shape", shape, SHAPES), ("palette", palette, PALETTES),
                                 ("eye", eye, EYES)):
         if value is not None:

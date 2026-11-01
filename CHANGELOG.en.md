@@ -13,6 +13,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **Brain folder picker: paste a path and press Enter**, and the folder list always scrolls on short screens.
 - **Closing the "Vault structure incomplete" banner is remembered** for that brain.
 - **The pack install dialog no longer says "data only"** for a code pack switched on from the Connections page.
+- **Creating or editing an agent with the UNI MATE colour or shape no longer says "That avatar colour is not valid".** The server did not yet accept the new Tech Purple colour and mascot shape.
 
 ### Improved
 - **UNI MATE's default port is now 8688** on new installs, Docker, install scripts and docs. A machine with its own port in `.env` keeps that port.

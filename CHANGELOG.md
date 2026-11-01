@@ -13,6 +13,7 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 - **Hộp chọn bộ não: dán đường dẫn rồi bấm Enter**, danh sách thư mục luôn cuộn được trên màn hình thấp.
 - **Khung "Cấu trúc vault chưa chuẩn" bấm đóng là nhớ** cho bộ não đó, không hiện lại.
 - **Hộp cài gói không còn ghi "chỉ có dữ liệu"** cho gói có chạy mã được bật sẵn từ trang Kết nối.
+- **Tạo hay sửa agent với màu hoặc dáng UNI MATE không còn báo "Màu đại diện không hợp lệ".** Máy chủ trước đây chưa nhận màu Tím công nghệ và dáng linh vật mới.
 
 ### Cải thiện
 - **Cổng mặc định của UNI MATE giờ là 8688** ở bản cài mới, Docker, script cài và tài liệu. Máy nào đã đặt cổng riêng trong `.env` thì vẫn giữ cổng đó.

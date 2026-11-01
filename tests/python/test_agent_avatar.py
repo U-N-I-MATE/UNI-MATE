@@ -76,4 +76,18 @@ assert agent_avatar.for_agent({}, "old-agent")["palette"] == agent_avatar.PALETT
 # Dữ liệu hỏng trong frontmatter không lọt ra ngoài.
 assert agent_avatar.for_agent({"avatar": {"palette": "custom", "color": "xyz", "eye": "custom"}}, "x") == \
     agent_avatar.for_agent({}, "x")
+# Mọi dáng và màu bảng chọn của dashboard (pet.js) đều phải được máy chủ nhận: thiếu "uni" (linh vật
+# UNI MATE, 0.429.1) là bấm Tạo agent bị báo "Màu đại diện không hợp lệ".
+import re
+_pet = (ROOT / "dashboard" / "pet.js").read_text(encoding="utf-8")
+def _khoa(ten):
+    i = _pet.index("var " + ten + " = {")
+    return re.findall(r"^\s{4}(\w+):", _pet[i:_pet.index("};", i)], re.M)
+assert set(_khoa("SHAPES")) <= set(agent_avatar.SHAPES), set(_khoa("SHAPES")) - set(agent_avatar.SHAPES)
+assert set(_khoa("PALETTES")) <= set(agent_avatar.PALETTES), set(_khoa("PALETTES")) - set(agent_avatar.PALETTES)
+r = save(slug=slug, avatar_shape="uni", avatar_palette="uni")
+assert r.status_code == 200, r.text
+assert read()["avatar"]["shape"] == "uni" and read()["avatar"]["palette"] == "uni"
+# Dáng mặc định của trợ lý cũ vẫn bốc trong 6 dáng gốc, thêm "uni" không làm trợ lý cũ đổi dáng.
+assert agent_avatar.for_agent({}, "old-agent")["shape"] == agent_avatar.SHAPES_MAC_DINH[seed % 6]
 print("OK - avatar API: persistence, legacy updates, random creation and invalid-input rejection")
