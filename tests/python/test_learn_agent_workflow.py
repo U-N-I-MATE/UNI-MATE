@@ -168,12 +168,12 @@ def test_dry_run_chi_liet_ke(tmp_path):
 def test_fallback_unimate_agents_khi_chua_co_phang(tmp_path):
     feature = _feature(tmp_path)
     cfg = feature.read_config()
-    _write(tmp_path / "UNI MATE" / "agents" / "cu.md", "---\ntype: agent\n---\nx")
+    _write(tmp_path / "UniMate" / "agents" / "cu.md", "---\ntype: agent\n---\nx")
     rep = feature._promote_sync("brain", {"agents": [_agent(slug="cu")]}, cfg, CAPS, allow_write=True)
     assert rep["agents"] == [] and any("không ghi đè" in b for b in rep["blocked"])
     rep = feature._promote_sync("brain", {"agents": [_agent()]}, cfg, CAPS, allow_write=True)
     assert rep["agents"] == ["viet-email"]
-    assert (tmp_path / "UNI MATE" / "agents" / "viet-email.md").exists(), \
+    assert (tmp_path / "UniMate" / "agents" / "viet-email.md").exists(), \
         "brain chưa migrate (chỉ có UniMate/agents) thì ghi tiếp vào đó, không tách đôi kho"
 
 
@@ -311,7 +311,7 @@ def test_update_ghi_dung_file_legacy_khong_tach_doi_kho(tmp_path):
     rep = feature._promote_sync("brain", {"workflows": [_upd_wf()]}, cfg, CAPS, allow_write=True)
     assert rep["workflows_updated"] == ["nghien-cuu-viet-bai"], rep
     assert not (tmp_path / "workflows" / "nghien-cuu-viet-bai.md").exists()
-    fm, _ = _fm(tmp_path / "UNI MATE" / "workflows" / "nghien-cuu-viet-bai.md")
+    fm, _ = _fm(tmp_path / "UniMate" / "workflows" / "nghien-cuu-viet-bai.md")
     assert fm["steps"][0]["task"] == "Viết thẳng từ {{input}}"
 
 

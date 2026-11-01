@@ -206,7 +206,7 @@ class TasksFeature:
         return str(Path(self.deps.brain_root(brain)).resolve())
 
     def _legacy_path(self, root: str) -> Path:
-        return Path(root) / "UNI MATE" / "kanban.json"
+        return Path(root) / "UniMate" / "kanban.json"
 
     def _ensure(self, brain: str) -> str:
         root = self._root(brain)

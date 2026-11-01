@@ -127,7 +127,7 @@ check(f"1 snapshot của {N_TASK} việc chỉ tốn {n_truy_van} truy vấn tas
       n_truy_van <= 2)
 
 # ---- 5. Mirror ghi ra đúng nội dung ----
-mirror = json.loads((BRAIN / "UNI MATE" / "kanban.json").read_text(encoding="utf-8"))
+mirror = json.loads((BRAIN / "UniMate" / "kanban.json").read_text(encoding="utf-8"))
 check(f"mirror có đủ {N_TASK} việc", len(mirror["tasks"]) == N_TASK)
 co_log = [t for t in mirror["tasks"] if t.get("log")]
 check(f"mọi việc đều có nhật ký trong mirror ({len(co_log)}/{N_TASK})", len(co_log) == N_TASK)

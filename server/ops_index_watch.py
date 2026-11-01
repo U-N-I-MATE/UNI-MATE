@@ -87,10 +87,10 @@ def brain_signature(root, agents_dir, workflows_dir, plugins_dir: Optional[Path]
     for base in SKILL_BASES:
         _child_manifests(parts, root / base, ("SKILL.md",))
         _child_manifests(parts, root / base / ".disabled", ("SKILL.md",))
-    _md_files(parts, root / "UNI MATE" / "loops")
-    _stat(parts, root / "UNI MATE" / "loop-state.json")   # a loop that paused itself shows in the index
+    _md_files(parts, root / "UniMate" / "loops")
+    _stat(parts, root / "UniMate" / "loop-state.json")   # a loop that paused itself shows in the index
     _child_manifests(parts, plugins_dir, PLUGIN_FILES)
-    _stat(parts, root / "UNI MATE" / "index.md")          # deleted or edited by hand: write it again
+    _stat(parts, root / "UniMate" / "index.md")          # deleted or edited by hand: write it again
     return hashlib.blake2b(repr(parts).encode("utf-8"), digest_size=16).hexdigest()
 
 

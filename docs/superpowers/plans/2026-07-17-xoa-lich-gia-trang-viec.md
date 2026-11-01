@@ -113,7 +113,7 @@ check("helper: _automations_path đã xoá", not hasattr(main, "_automations_pat
 # tử), và comment mới ở đầu khối cũng nhắc nó để giải thích vì sao đã xoá. Assert trần sẽ
 # BẤT KHẢ THI dù code đã đúng.
 check("nguồn: không còn code dựng đường dẫn tới automations.json",
-      '"UNI MATE" / "automations.json"' not in src)
+      '"UniMate" / "automations.json"' not in src)
 
 # ---- 2b. Hai lớp chiếu vào hình dạng Lịch giả cũng chết theo ----
 # Caller duy nhất của cả hai là /automations GET (main.py:3199). Chúng chiếu loop/nhắc hẹn

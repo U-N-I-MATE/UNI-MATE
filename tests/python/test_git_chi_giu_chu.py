@@ -96,7 +96,7 @@ check("gọi lần hai không ghi lại vô ích (idempotent)", G._ensure_gitign
 d2 = tempfile.mkdtemp()
 (Path(d2) / ".gitignore").write_text(
     "# UNI MATE brain - KHÔNG commit: khoá, log thô (có thể chứa secret), nhật ký nền.\n"
-    ".unimate-learn.lock\nUNI MATE/learn-log/\nattachments/\ninbox/\n*.tmp\n\n"
+    ".unimate-learn.lock\nUniMate/learn-log/\nattachments/\ninbox/\n*.tmp\n\n"
     "# luat rieng cua toi\nbao-mat/\n", encoding="utf-8")
 gi2 = _gi(d2)
 check("nâng cấp: giữ nguyên luật riêng của user", "bao-mat/" in gi2)

@@ -73,7 +73,7 @@ store.claim(other, "w1")
 store.complete(other, "w1", "xong")
 
 # ---- UNI MATE: loops (markdown log, local time) ----
-ld = brain / "UNI MATE" / "loop-log"
+ld = brain / "UniMate" / "loop-log"
 ld.mkdir(parents=True)
 hm = datetime.now(TZ) - timedelta(minutes=5)
 (ld / f"{hm.date().isoformat()}.md").write_text(
@@ -85,7 +85,7 @@ work_log.append(str(brain), "reminder", "r_1", "Báo cáo POS", "ok", seconds=40
 work_log.append(str(brain), "reminder", "r_2", "Nhắc gọi khách", "ok", mode="notify", ts=now - 50)
 work_log.append(str(brain), "reminder", "r_1", "Báo cáo POS", "retry", mode="task", ts=now - 70)
 work_log.append(str(brain), "watch", "w_1", "Giá đối thủ", "ok", ts=now - 30)
-(brain / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
+(brain / "UniMate" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_1", "mode": "task", "fired_at": now - 60, "label": "Báo cáo POS"},      # same run as the log line
     {"id": "r_old", "mode": "task", "fired_at": now - 3600, "label": "Bản tin cũ"},   # before the log: last run
 ]}), encoding="utf-8")

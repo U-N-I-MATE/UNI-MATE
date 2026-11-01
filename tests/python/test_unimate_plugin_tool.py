@@ -100,7 +100,7 @@ import main  # noqa: E402  (GET /plugins and the operations index)
 lst = asyncio.run(main.plugins_list(brain=VAULT))
 check("GET /plugins lists it", any(p["slug"] == "vat-calc" and p["source"] == "user" for p in lst["plugins"]))
 plugin_authoring.rebuild_index(VAULT)
-idx = Path(VAULT) / "UNI MATE" / "index.md"
+idx = Path(VAULT) / "UniMate" / "index.md"
 check("operations index rebuilt with the plugin", idx.is_file() and "vat-calc" in idx.read_text(encoding="utf-8"))
 
 # ---- 3. read ----

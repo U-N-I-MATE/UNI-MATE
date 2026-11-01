@@ -196,7 +196,7 @@ lessons = w.read_lessons(BRAIN, "acme/learn")
 check("13.1: a CI failure fixed later becomes a lesson", any("unit-tests" in x for x in lessons))
 check("13.1: lessons live in the brain, not in the repo",
       w.lessons_path(BRAIN, "acme/learn").is_file() and str(w.lessons_path(BRAIN, "acme/learn")).startswith(BRAIN)
-      and not (wl / "UNI MATE").exists())
+      and not (wl / "UniMate").exists())
 check("13.1: the next turn's prompt carries the lesson", "unit-tests" in github_repos.prompt_block("cc5", BRAIN))
 for i in range(40):
     w.add_lesson(BRAIN, "acme/learn", f"bài học {i}")

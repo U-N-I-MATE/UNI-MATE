@@ -80,14 +80,14 @@ feat.save_loop("brain", {"name": "Loop Ambient", "slug": "loop-ambient", "mode":
                          "ambient_mcp": True, "body": "đọc gmail mỗi vòng"})
 got = feat.get_loop("brain", "loop-ambient")
 check("save: BẬT → đọc lại True", bool(got) and got["ambient_mcp"] is True)
-raw_amb = (Path(_BRAIN_ROOT) / "UNI MATE" / "loops" / "loop-ambient.md").read_text(encoding="utf-8")
+raw_amb = (Path(_BRAIN_ROOT) / "UniMate" / "loops" / "loop-ambient.md").read_text(encoding="utf-8")
 check("save: file BẬT có dòng ambient_mcp: true", "ambient_mcp: true" in raw_amb)
 
 feat.save_loop("brain", {"name": "Loop Thuong", "slug": "loop-thuong", "mode": "suggest",
                          "body": "việc thường"})
 got2 = feat.get_loop("brain", "loop-thuong")
 check("save: mặc định → đọc lại False", bool(got2) and got2["ambient_mcp"] is False)
-raw_thuong = (Path(_BRAIN_ROOT) / "UNI MATE" / "loops" / "loop-thuong.md").read_text(encoding="utf-8")
+raw_thuong = (Path(_BRAIN_ROOT) / "UniMate" / "loops" / "loop-thuong.md").read_text(encoding="utf-8")
 check("save: file mặc định KHÔNG có dòng ambient_mcp", "ambient_mcp" not in raw_thuong)
 
 

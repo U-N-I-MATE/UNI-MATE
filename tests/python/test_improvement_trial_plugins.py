@@ -57,7 +57,7 @@ class PluginProjectionTests(unittest.TestCase):
 
     def plugin(self, slug="alpha", *, source="bundled", enabled=True, tools=("demo_ping",), code=None, extra=""):
         base = {"bundled": self.bundled, "user": self.state / "plugins", "vault": self.brain / "plugins",
-                "legacy": self.brain / "UNI MATE" / "plugins"}[source]
+                "legacy": self.brain / "UniMate" / "plugins"}[source]
         path = base / slug
         path.mkdir(parents=True, exist_ok=True)
         manifest = {"name": "Alpha", "description": "base description", "enabled": enabled,

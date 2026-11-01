@@ -86,7 +86,7 @@ finally:
 check("nạp đúng mã 0.108.0: kho cũ không biết bảng A5", not hasattr(OLD_S, "A5_TABLES") and hasattr(RS, "A5_TABLES"))
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a5rb-")).resolve())
-(Path(BRAIN) / "UNI MATE").mkdir(parents=True)
+(Path(BRAIN) / "UniMate").mkdir(parents=True)
 
 
 class Evidence:

@@ -27,7 +27,7 @@ import sentinel  # noqa: E402
 def _brains(brains_dir: Path) -> list:
     if not brains_dir.is_dir():
         return []
-    return [p for p in sorted(brains_dir.iterdir()) if p.is_dir() and (p / "UNI MATE").is_dir()]
+    return [p for p in sorted(brains_dir.iterdir()) if p.is_dir() and (p / "UniMate").is_dir()]
 
 
 def main(argv=None) -> int:

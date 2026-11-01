@@ -62,7 +62,7 @@ B = str(brain)
 
 
 def stored(rid):
-    data = json.loads((brain / "UNI MATE" / "reminders.json").read_text(encoding="utf-8"))
+    data = json.loads((brain / "UniMate" / "reminders.json").read_text(encoding="utf-8"))
     return next(r for r in data["reminders"] if r["id"] == rid)
 
 

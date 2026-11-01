@@ -414,7 +414,7 @@ class LearnDeps:
     stage_agent_procedure: Optional[Callable] = None
 
 
-ALLOWED_WRITE_PREFIXES = ["memory", "Memory", "Wiki", "skills", ".claude/skills", "UNI MATE",
+ALLOWED_WRITE_PREFIXES = ["memory", "Memory", "Wiki", "skills", ".claude/skills", "UniMate",
                           "agents", "workflows"]
 
 
@@ -1534,7 +1534,7 @@ class LearnFeature:
             if caps.get("workflow"):
                 wf_dir = self._cap_dir(brain, "workflows", "UniMate/workflows", create=True)
                 ag_dir = self._cap_dir(brain, "agents", "UniMate/agents")
-                legacy_ag = Path(root) / "UNI MATE" / "agents"
+                legacy_ag = Path(root) / "UniMate" / "agents"
                 for w in (manifest.get("workflows") or []):
                     slug = _slugify(w.get("slug") or w.get("name") or "")
                     steps_in = w.get("steps") or []
@@ -2112,7 +2112,7 @@ class LearnFeature:
     # ── learn-log (người đọc) ──
     def _log(self, brain: str, kind: str, title: str, body: str) -> None:
         try:
-            d = Path(self.deps.brain_root(brain)) / "UNI MATE" / "learn-log"
+            d = Path(self.deps.brain_root(brain)) / "UniMate" / "learn-log"
             d.mkdir(parents=True, exist_ok=True)
             now = _now_vn()
             with open(d / f"{now.strftime('%Y-%m-%d')}.md", "a", encoding="utf-8") as fh:
@@ -2211,7 +2211,7 @@ class LearnFeature:
             được trong 3 ngày gần nhất - phân trang mà không có gì để lật. Vẫn có trần 60 file
             để một brain chạy lâu năm không kéo cả năm nhật ký lên chỉ vì ai đó gõ limit to.
             """
-            d = Path(self.deps.brain_root(brain)) / "UNI MATE" / "learn-log"
+            d = Path(self.deps.brain_root(brain)) / "UniMate" / "learn-log"
             entries = []
             want = max(1, min(int(limit or 15), 500))
             if d.is_dir():

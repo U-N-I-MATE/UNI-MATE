@@ -101,7 +101,7 @@ check("quick link read from the box cloudflared prints", rt.parse_quick_url(box)
 check("the request to api.trycloudflare.com is not taken for the link",
       rt.parse_quick_url('failed to request quick Tunnel: Post "https://api.trycloudflare.com/tunnel"') == "")
 cfg_line = ('2026-10-20T03:47:15Z INF Updated to new configuration config="{\\"ingress\\":[{\\"hostname\\":'
-            '\\"UNI MATE.Example.com\\", \\"service\\":\\"http://localhost:7777\\"}, {\\"service\\":\\"http_status:404\\"}],'
+            '\\"UniMate.Example.com\\", \\"service\\":\\"http://localhost:7777\\"}, {\\"service\\":\\"http_status:404\\"}],'
             ' \\"warp-routing\\":{\\"enabled\\":false}}" version=3')
 check("hostname and service read from a token tunnel's config line",
       rt.parse_ingress(cfg_line) == [("unimate.example.com", "http://localhost:7777")])

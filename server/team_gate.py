@@ -66,7 +66,7 @@ _GIT_BAD = ("--output", "--ext-diff", "--textconv", "-o")
 # Paths inside the step's folders whose content runs or configures code: writing them is never "in scope" (a vault plugin
 # loads into the server, Claude/Grok/Codex settings carry hooks, git config runs fsmonitor, UniMate/ holds loops and
 # reminders that run on their own).
-PROTECTED_PARTS = ("plugins", ".claude", ".git", ".grok", ".codex", ".agents", ".gemini", ".antigravity", "UNI MATE",
+PROTECTED_PARTS = ("plugins", ".claude", ".git", ".grok", ".codex", ".agents", ".gemini", ".antigravity", "UniMate",
                    ".unimate")
 PROTECTED_FILES = (".mcp.json", ".mcp_hub.json", "CLAUDE.md", "AGENTS.md", "GEMINI.md")
 _FIND_ACT = frozenset({"-exec", "-execdir", "-delete", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"})
@@ -362,7 +362,7 @@ def native_check(gate_id: Optional[str], tool: str, inp: dict) -> tuple:
 # never look like the step's.
 
 PROTECT_MAX_FILES = 2000
-_PROTECT_SKIP = ("UNI MATE", ".unimate")
+_PROTECT_SKIP = ("UniMate", ".unimate")
 
 
 def _protected_files(root: Path) -> list:

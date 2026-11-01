@@ -71,7 +71,7 @@ def kanban_failures(state_dir: Path, since: float) -> List[dict]:
 def reminder_failures(brains: Iterable[Path], since: float) -> List[dict]:
     out = []
     for b in brains:
-        d = _read_json(Path(b) / "UNI MATE" / "reminders.json")
+        d = _read_json(Path(b) / "UniMate" / "reminders.json")
         for r in (d or {}).get("reminders", []) if isinstance(d, dict) else []:
             if r.get("error") and float(r.get("fired_at") or 0) >= since:
                 out.append({"source": "reminder", "ref": r.get("id"), "brain": str(b),
@@ -83,7 +83,7 @@ def reminder_failures(brains: Iterable[Path], since: float) -> List[dict]:
 def loop_failures(brains: Iterable[Path]) -> List[dict]:
     out = []
     for b in brains:
-        d = _read_json(Path(b) / "UNI MATE" / "loop-state.json")
+        d = _read_json(Path(b) / "UniMate" / "loop-state.json")
         if not isinstance(d, dict):
             continue
         for slug, st in d.items():

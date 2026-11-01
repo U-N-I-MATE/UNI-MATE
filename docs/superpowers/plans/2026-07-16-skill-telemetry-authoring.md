@@ -912,7 +912,7 @@ check("bump slug khác tạo bản ghi riêng", u.get("skill-khac", {}).get("use
 
 # ---- đúng vị trí ----
 check("sidecar nằm ở UniMate/skill-usage.json",
-      skill_usage.usage_path(_ROOT) == _ROOT / "UNI MATE" / "skill-usage.json")
+      skill_usage.usage_path(_ROOT) == _ROOT / "UniMate" / "skill-usage.json")
 check("sidecar thật sự tồn tại trên đĩa", skill_usage.usage_path(_ROOT).is_file())
 
 # ---- file hỏng: KHÔNG được làm gãy ----
@@ -1020,7 +1020,7 @@ _LOCK = threading.Lock()   # serialize read-modify-write trong process
 
 
 def usage_path(brain_root) -> Path:
-    return Path(brain_root) / "UNI MATE" / "skill-usage.json"
+    return Path(brain_root) / "UniMate" / "skill-usage.json"
 
 
 def read_usage(brain_root) -> dict:

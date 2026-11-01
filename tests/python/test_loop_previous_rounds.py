@@ -71,7 +71,7 @@ OTHER = "loop-khac"
 
 
 def _write_loop(slug, body):
-    d = Path(_BRAIN) / "UNI MATE" / "loops"
+    d = Path(_BRAIN) / "UniMate" / "loops"
     d.mkdir(parents=True, exist_ok=True)
     (d / f"{slug}.md").write_text(
         f"---\nname: {slug}\ngoal: custom\nmode: suggest\nenabled: false\n---\n{body}\n", encoding="utf-8")
@@ -127,7 +127,7 @@ check("newest round is in the tail", "Đề xuất số 7" in block)
 
 # 5. No log on disk: fall back to the state's last summary.
 import shutil  # noqa: E402
-shutil.rmtree(Path(_BRAIN) / "UNI MATE" / "loop-log")
+shutil.rmtree(Path(_BRAIN) / "UniMate" / "loop-log")
 fb = feat._previous_rounds_block("brain", SLUG)
 check("without a log, the state's last summary is used", "Đề xuất số 7" in fb)
 

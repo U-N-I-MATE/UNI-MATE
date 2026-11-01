@@ -130,7 +130,7 @@ it = store.add_intent(OWNER, session_id="s1", message_id=11, text=USER_TEXT, con
 check("intent giữ nguyên lời người dùng", it["text"] == USER_TEXT and it["constraints"] == ["không xoá ghi chú cũ"])
 frame = R.validate_proposal(proposal(constraints=["không xoá ghi chú cũ"]), USER_TEXT)
 g, created = store.create(UNI MATE, it["id"], frame, idempotency_key="msg:s1:11", session_id="s1",
-                          output_root=str(Path(BRAIN) / "UNI MATE" / "resonance" / "x"), budget_calls=6)
+                          output_root=str(Path(BRAIN) / "UniMate" / "resonance" / "x"), budget_calls=6)
 check("tạo mục tiêu: revision 1, active, không cần duyệt", created and g.revision == 1 and g.status == "active")
 check("tạo mục tiêu: GoalRecord mang khung SMART", g.understanding.startswith("Một ghi chú")
       and len(g.criteria) == 2 and g.horizon["kind"] == "deadline")
@@ -288,10 +288,10 @@ check("ràng buộc của người dùng luôn nằm trong mục tiêu", "không
 
 # ───────────────────────────── công tắc theo brain ─────────────────────────────
 check("Resonance mặc định tắt", R.enabled_for(BRAIN) is False)
-(Path(BRAIN) / "UNI MATE").mkdir(parents=True, exist_ok=True)
-(Path(BRAIN) / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+(Path(BRAIN) / "UniMate").mkdir(parents=True, exist_ok=True)
+(Path(BRAIN) / "UniMate" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
 check("bật bằng UniMate/resonance.json của đúng brain", R.enabled_for(BRAIN) is True and R.enabled_for(OTHER) is False)
-(Path(BRAIN) / "UNI MATE" / "resonance.json").write_text("{hỏng", encoding="utf-8")
+(Path(BRAIN) / "UniMate" / "resonance.json").write_text("{hỏng", encoding="utf-8")
 check("file công tắc hỏng thì coi như tắt", R.enabled_for(BRAIN) is False)
 
 # kho mở lại vẫn còn dữ liệu (bền qua restart)

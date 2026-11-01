@@ -207,7 +207,7 @@ def vault_plugins_dir(vault_root: Optional[str]) -> Optional[Path]:
     flat = root / "plugins"
     if flat.is_dir():
         return flat
-    nested = root / "UNI MATE" / "plugins"
+    nested = root / "UniMate" / "plugins"
     if nested.is_dir():
         return nested
     return flat

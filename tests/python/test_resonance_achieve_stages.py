@@ -94,7 +94,7 @@ async def _notes(goal, kind, text, card=""):
 def world(name):
     """Một kho và một brain riêng: trần là trần TỔNG trên cả kho, hai ca không được tiêu chung."""
     brain = Path(tempfile.mkdtemp(prefix=f"brain-{name}-")).resolve()
-    (brain / "UNI MATE").mkdir(parents=True)
+    (brain / "UniMate").mkdir(parents=True)
     db = _STATE / f"{name}.sqlite3"
     RA.enable(RS.GoalStore(db), brain)       # A1: mục tiêu thuộc một trợ lý đang bật trong kho này
     return str(brain), db

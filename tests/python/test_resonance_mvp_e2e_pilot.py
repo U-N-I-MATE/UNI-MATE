@@ -65,9 +65,9 @@ if CEILING < 0:
 BASE = Path(tempfile.mkdtemp(prefix="rse2e-", dir=os.environ.get("TEMP") or None)).resolve()
 STATE, BRAINS = BASE / "state", BASE / "brains"
 BRAIN = BRAINS / "Brain Default"
-for d in (STATE, BRAIN / "UNI MATE", BRAIN / "Notes"):
+for d in (STATE, BRAIN / "UniMate", BRAIN / "Notes"):
     d.mkdir(parents=True, exist_ok=True)
-(BRAIN / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+(BRAIN / "UniMate" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
 KEEP = BRAIN / "Notes" / "ghi-chu-cu.md"
 KEEP.write_text("Ghi chú cũ, không được xoá.\n", encoding="utf-8")
 _keep_sha = hashlib.sha256(KEEP.read_bytes()).hexdigest()

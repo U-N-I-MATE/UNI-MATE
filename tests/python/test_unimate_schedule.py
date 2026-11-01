@@ -57,7 +57,7 @@ _vault = tempfile.mkdtemp(prefix="unimate-vault-")
 res = sched._create_loop_file(_vault, name="Quét đơn mỗi 2 tiếng",
                               prompt="Mỗi vòng đọc số đơn hôm nay qua MCP POS rồi ghi nháp.",
                               schedule="120m", owner_chat="123")
-f = Path(_vault) / "UNI MATE" / "loops" / "quet-don-moi-2-tieng.md"
+f = Path(_vault) / "UniMate" / "loops" / "quet-don-moi-2-tieng.md"
 check("loop: ghi đúng <vault>/UniMate/loops/<slug>.md", f.is_file())
 body = f.read_text(encoding="utf-8") if f.is_file() else ""
 check("loop: frontmatter có type: loop", "type: loop" in body)
@@ -69,11 +69,11 @@ check("loop: kết quả nói rõ mức quyền", "toàn quyền" in str(res))
 _res_nhe = sched._create_loop_file(_vault, name="Chỉ đọc rồi báo",
                                    prompt="Mỗi vòng đọc số đơn rồi đề xuất.",
                                    schedule="60m", mode="suggest")
-_f_nhe = Path(_vault) / "UNI MATE" / "loops" / "chi-doc-roi-bao.md"
+_f_nhe = Path(_vault) / "UniMate" / "loops" / "chi-doc-roi-bao.md"
 check("loop: muc_quyen=suggest hạ được xuống mode: suggest",
       _f_nhe.is_file() and "mode: suggest" in _f_nhe.read_text(encoding="utf-8"))
 _res_la = sched._create_loop_file(_vault, name="Mode lạ", prompt="x", schedule="60m", mode="sieu-cap")
-_f_la = Path(_vault) / "UNI MATE" / "loops" / "mode-la.md"
+_f_la = Path(_vault) / "UniMate" / "loops" / "mode-la.md"
 check("loop: mode lạ kẹp về full, không nổ",
       _f_la.is_file() and "mode: full" in _f_la.read_text(encoding="utf-8"))
 check("loop: interval_min từ '120m'", "interval_min: 120" in body)
@@ -106,7 +106,7 @@ for _nm in _boundary_names:
     _v = tempfile.mkdtemp(prefix="unimate-vault-yaml-")  # vault riêng: tránh 2 tên trùng slug ("@weird"/"!weird")
     _res = sched._create_loop_file(_v, name=_nm, prompt="x", schedule="120m")
     check(f"yaml-safe tên {_nm!r}: tạo không lỗi", not str(_res).startswith("ERROR"))
-    _files = list((Path(_v) / "UNI MATE" / "loops").glob("*.md"))
+    _files = list((Path(_v) / "UniMate" / "loops").glob("*.md"))
     check(f"yaml-safe tên {_nm!r}: ghi đúng 1 file", len(_files) == 1)
     if _files:
         _body = _files[0].read_text(encoding="utf-8")
@@ -124,7 +124,7 @@ for _nm in _boundary_names:
 _v_owner = tempfile.mkdtemp(prefix="unimate-vault-yaml-")
 sched._create_loop_file(_v_owner, name="Việc test owner", prompt="x", schedule="120m",
                         owner_chat='chat"tiem-an-loi')
-_f_owner = list((Path(_v_owner) / "UNI MATE" / "loops").glob("*.md"))
+_f_owner = list((Path(_v_owner) / "UniMate" / "loops").glob("*.md"))
 if _f_owner:
     _fm_owner_text = _f_owner[0].read_text(encoding="utf-8").split("---")[1]
     try:
@@ -271,7 +271,7 @@ check("I3 AN TOÀN: tạo loop với lịch mơ hồ -> ERROR rõ ràng, KHÔNG 
 check("I3 AN TOÀN: ERROR gợi ý cách sửa (số+đơn vị hoặc cron)",
       "cron" in _res_amb.lower() or "đơn vị" in _res_amb)
 check("I3 AN TOÀN: không có file .md nào được ghi khi lịch mơ hồ",
-      not list((Path(_vault_amb) / "UNI MATE" / "loops").glob("*.md")))
+      not list((Path(_vault_amb) / "UniMate" / "loops").glob("*.md")))
 
 # Mốc giờ cố định lặp hằng ngày -> route sang reminder + cron đúng giờ, KHÔNG phải interval 420.
 check("I3: 'mỗi sáng 7h' -> route 'reminder' (cron), không còn là loop interval=420 phút",

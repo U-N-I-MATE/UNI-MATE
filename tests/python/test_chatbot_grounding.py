@@ -65,7 +65,7 @@ if _STATE not in str(chatbot_log.THU_MUC):
 # ============================================================
 BRAIN = Path(tempfile.mkdtemp(prefix="unimate-cbg-brain-"))
 (BRAIN / "inbox" / "khach").mkdir(parents=True)
-(BRAIN / "UNI MATE" / "agents").mkdir(parents=True)
+(BRAIN / "UniMate" / "agents").mkdir(parents=True)
 
 (BRAIN / "bang-gia.md").write_text(
     "---\ntype: source\n---\n"

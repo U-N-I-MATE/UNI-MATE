@@ -315,7 +315,7 @@ async def matrix():
                                                                                                 "filtered"),
              "null status": (dict(ORDER, status=None), "filtered"),
              "missing status": ({k: v for k, v in ORDER.items() if k != "status"}, "filtered"),
-             "unicode case": (dict(ORDER, items=[{"name": "trợ lý ai unimate"}]), "done")}
+             "unicode case": (dict(ORDER, items=[{"name": "trợ lý ai uni mate"}]), "done")}
     got = {}
     for n, (o, _) in cases.items():
         got[n] = (await send_order(hfl, tfl, o, "")).get("status")

@@ -110,7 +110,7 @@ def kanban_events(store, root: str, since: float, until: float) -> list:
 def loop_events(brain_root: str, since: float, until: float, tz) -> list:
     out = []
     d0, d1 = _local(since, tz).date(), _local(until, tz).date()
-    folder = Path(brain_root) / "UNI MATE" / "loop-log"
+    folder = Path(brain_root) / "UniMate" / "loop-log"
     if not folder.is_dir():
         return out
     d = d0
@@ -153,7 +153,7 @@ def reminder_last_runs(brain_root: str, since: float, until: float, logged: set)
     """Reminders that fired before work_log existed: their last run, unless the log already has it."""
     out = []
     try:
-        data = json.loads((Path(brain_root) / "UNI MATE" / "reminders.json").read_text(encoding="utf-8"))
+        data = json.loads((Path(brain_root) / "UniMate" / "reminders.json").read_text(encoding="utf-8"))
     except Exception:
         return out
     for r in data.get("reminders") or []:

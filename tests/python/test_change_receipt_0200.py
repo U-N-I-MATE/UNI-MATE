@@ -21,12 +21,12 @@ def check(name, cond):
 
 
 root = Path(tempfile.mkdtemp(prefix="unimate-receipt-"))
-(root / "UNI MATE" / "loops").mkdir(parents=True)
+(root / "UniMate" / "loops").mkdir(parents=True)
 (root / "agents").mkdir()
 (root / "skills" / "old").mkdir(parents=True)
 (root / "skills" / "old" / "SKILL.md").write_text("---\nname: Old skill\n---\nx", encoding="utf-8")
 (root / "agents" / "lan.md").write_text("---\nname: Lan\n---\nbody", encoding="utf-8")
-(root / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
+(root / "UniMate" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_old", "status": "pending", "label": "Old"}]}), encoding="utf-8")
 
 check("no snapshot, no receipt", cr.diff(None, root) == [])
@@ -34,10 +34,10 @@ snap = cr.snapshot(root)
 check("unchanged brain gives nothing", cr.diff(snap, root) == [])
 
 time.sleep(0.01)
-(root / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
+(root / "UniMate" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_old", "status": "cancelled", "label": "Old"},
     {"id": "r_new", "status": "pending", "label": "Báo doanh thu 7h"}]}), encoding="utf-8")
-(root / "UNI MATE" / "loops" / "quet-don.md").write_text("---\nname: Quét đơn\n---\n", encoding="utf-8")
+(root / "UniMate" / "loops" / "quet-don.md").write_text("---\nname: Quét đơn\n---\n", encoding="utf-8")
 (root / "agents" / "lan.md").write_text("---\nname: Lan (sửa)\n---\nbody 2", encoding="utf-8")
 (root / "skills" / "viet-email").mkdir()
 (root / "skills" / "viet-email" / "SKILL.md").write_text("---\nname: \"Viết email\"\n---\n", encoding="utf-8")

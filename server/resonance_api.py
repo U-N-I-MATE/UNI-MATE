@@ -70,7 +70,7 @@ def _err(code: int, vi: str, en: str, **extra) -> JSONResponse:
 
 def set_enabled(brain_root: str, on: bool) -> None:
     """Bật/tắt Resonance cho MỘT brain (`<brain>/UniMate/resonance.json`). Ghi tạm rồi đổi tên, giữ khoá lạ khác."""
-    f = Path(brain_root) / "UNI MATE" / "resonance.json"
+    f = Path(brain_root) / "UniMate" / "resonance.json"
     f.parent.mkdir(parents=True, exist_ok=True)
     data = {}
     try:

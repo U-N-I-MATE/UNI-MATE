@@ -314,7 +314,7 @@ evs = asyncio.run(collect(FB([codex, claude])))
 check("healthy Codex run: unchanged, Claude never runs", evs[-1] == FINAL("xong") and claude.ran == 0)
 
 # ---- 9. End to end at the reminder layer: a missing hub is a FAILED job, not a done one ---------
-REM_FILE = BRAIN / "UNI MATE" / "reminders.json"
+REM_FILE = BRAIN / "UniMate" / "reminders.json"
 sent = []
 
 

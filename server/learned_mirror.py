@@ -79,7 +79,7 @@ def _log(msg: str) -> None:
 # ───────────── paths, hashing, state ─────────────
 
 def learned_dir(root: Any) -> Path:
-    return Path(root) / "UNI MATE" / "learned"
+    return Path(root) / "UniMate" / "learned"
 
 
 def _paths(root: str, kind: str, name: str) -> Tuple[Path, Path]:

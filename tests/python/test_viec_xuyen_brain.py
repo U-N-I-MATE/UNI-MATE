@@ -72,8 +72,8 @@ _mv = _lf.move_loop(_bA, _bB, _slug)
 check("A: move_loop trả ok", _mv.get("ok") is True)
 check("A: loop BIẾN MẤT khỏi brain nguồn", _lf.get_loop(_bA, _slug) is None)
 check("A: loop XUẤT HIỆN ở brain đích", bool(_lf.get_loop(_bB, _slug)))
-check("A: file .md nguồn đã xoá", not (Path(_bA) / "UNI MATE" / "loops" / f"{_slug}.md").exists())
-check("A: file .md đích tồn tại", (Path(_bB) / "UNI MATE" / "loops" / f"{_slug}.md").exists())
+check("A: file .md nguồn đã xoá", not (Path(_bA) / "UniMate" / "loops" / f"{_slug}.md").exists())
+check("A: file .md đích tồn tại", (Path(_bB) / "UniMate" / "loops" / f"{_slug}.md").exists())
 check("A: state runtime (last_run) theo sang đích",
       _lf.read_state(_bB).get(_slug, {}).get("last_run") == 12345.0)
 
@@ -165,8 +165,8 @@ check("D: entry brain đã xoá được dọn khỏi map", "chat999" not in mai
 
 # ══════════════════════ E. GET /viec/all gắn đúng brain cho item (mảnh 1) ══════════════════════
 _vb = Path(main.BRAINS_DIR) / "ViecBrain"
-(_vb / "UNI MATE" / "loops").mkdir(parents=True, exist_ok=True)
-(_vb / "UNI MATE" / "loops" / "test-loop.md").write_text(
+(_vb / "UniMate" / "loops").mkdir(parents=True, exist_ok=True)
+(_vb / "UniMate" / "loops" / "test-loop.md").write_text(
     "---\ntype: loop\nname: Test Loop\nslug: test-loop\nenabled: false\n"
     "goal: custom\nmode: suggest\ninterval_min: 120\n---\n\nlam viec gi do moi vong\n",
     encoding="utf-8")

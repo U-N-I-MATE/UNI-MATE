@@ -142,7 +142,7 @@ def _vi_tri(root: Path) -> dict:
     return {
         "dashboard": _thu_muc_con(root, r"^(\d+\s*[-_.]\s*)?dashboard$", "00 - Dashboard") / "Dashboard.md",
         "memory": root / "memory" / "MEMORY.md",
-        "unimate_readme": root / "UNI MATE" / "README.md",
+        "unimate_readme": root / "UniMate" / "README.md",
         "wiki_index": wiki / "index.md",
         "wiki_log": wiki / "log.md",
         "open_questions": wiki / "_open-questions.md",

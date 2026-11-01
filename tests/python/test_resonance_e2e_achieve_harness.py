@@ -219,7 +219,7 @@ import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
 
 _B = Path(tempfile.mkdtemp(prefix="ach-h-brain-")).resolve()
-(_B / "UNI MATE").mkdir()
+(_B / "UniMate").mkdir()
 _ST = RS.GoalStore(Path(tempfile.mkdtemp(prefix="ach-h-db-")) / "r.sqlite3")
 import _resonance_agent as RA  # noqa: E402  - A1: Cộng hưởng bật theo trợ lý
 RA.preapprove()  # A4: chủ dự án cho phép phạm vi ngay sau khi lập (D1); xem _resonance_agent.preapprove

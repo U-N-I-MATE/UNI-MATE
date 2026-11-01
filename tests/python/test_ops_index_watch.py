@@ -41,7 +41,7 @@ write.n = 1
 
 # ---- 1. The signature moves with every input the index lists, and with nothing else ----
 root = Path(tempfile.mkdtemp(prefix="unimate-opsidx-brain-"))
-(root / "UNI MATE").mkdir()
+(root / "UniMate").mkdir()
 
 
 def sig():
@@ -60,11 +60,11 @@ steps = [
     ("adding a skill", lambda: write(root / "skills" / "email" / "SKILL.md", "---\nname: email\n---\n")),
     ("disabling a skill", lambda: (root / "skills" / ".disabled").mkdir() or
      (root / "skills" / "email").rename(root / "skills" / ".disabled" / "email")),
-    ("adding a loop", lambda: write(root / "UNI MATE" / "loops" / "watch.md", "---\nname: Watch\n---\n")),
-    ("a loop pausing itself", lambda: write(root / "UNI MATE" / "loop-state.json", "{}")),
+    ("adding a loop", lambda: write(root / "UniMate" / "loops" / "watch.md", "---\nname: Watch\n---\n")),
+    ("a loop pausing itself", lambda: write(root / "UniMate" / "loop-state.json", "{}")),
     ("adding a brain plugin", lambda: write(root / "plugins" / "calc" / "plugin.yaml", "name: calc\n")),
-    ("editing the index by hand", lambda: write(root / "UNI MATE" / "index.md", "x")),
-    ("deleting the index by hand", lambda: (root / "UNI MATE" / "index.md").unlink()),
+    ("editing the index by hand", lambda: write(root / "UniMate" / "index.md", "x")),
+    ("deleting the index by hand", lambda: (root / "UniMate" / "index.md").unlink()),
 ]
 for label, act in steps:
     before = sig()
@@ -130,7 +130,7 @@ base = Path(tempfile.mkdtemp(prefix="unimate-opsidx-brains-"))
 main.BRAINS_DIR = str(base)
 psc = base / "PSC Advisor"
 main._ensure_brain_scaffold(psc)
-idx = psc / "UNI MATE" / "index.md"
+idx = psc / "UniMate" / "index.md"
 (base / "not-a-brain").mkdir()
 
 main._ops_index_sweep()
@@ -141,7 +141,7 @@ for i in range(18):
 main._ops_index_sweep()
 text = idx.read_text(encoding="utf-8")
 check("after new agents the next sweep lists all 18", "**Tổng quan:** 18 agents" in text, text[:300])
-check("a folder that is not a brain gets no index", not (base / "not-a-brain" / "UNI MATE").exists())
+check("a folder that is not a brain gets no index", not (base / "not-a-brain" / "UniMate").exists())
 
 calls = []
 real = main._OPS_INDEX_WATCH._rebuild

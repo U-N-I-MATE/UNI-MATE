@@ -98,7 +98,7 @@ check("file ngoài generated_images giữ nguyên, không chép",
 check("trả đúng danh sách đường tuyệt đối trong brain",
       len(ds) == 4 and all(Path(x).is_file() and Path(x).parent == attach for x in ds), ds)
 check("PNG được gắn nhãn UNI MATE như ảnh tự tạo",
-      b"unimateos" in (attach / "codex-01a0e847-exec-aaa.png").read_bytes().lower())
+      b"uni mate" in (attach / "codex-01a0e847-exec-aaa.png").read_bytes().lower())
 
 # Chạy lại (resume, gọi hai lần) → không đẻ bản sao.
 moi2, _ = anh_codex.dua_anh_ve_brain(cau, THREAD, t0, str(vault))

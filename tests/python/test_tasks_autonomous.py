@@ -51,7 +51,7 @@ def _feature(tmp_path, brains):
 
 def test_legacy_json_migrates_once_and_keeps_snapshot(tmp_path):
     brain = tmp_path / "Brain A"
-    legacy = brain / "UNI MATE" / "kanban.json"
+    legacy = brain / "UniMate" / "kanban.json"
     legacy.parent.mkdir(parents=True)
     legacy.write_text(
         json.dumps(

@@ -52,7 +52,7 @@ check("bump slug khác tạo bản ghi riêng", u.get("skill-khac", {}).get("use
 
 # ---- đúng vị trí ----
 check("sidecar nằm ở UniMate/skill-usage.json",
-      skill_usage.usage_path(_ROOT) == _ROOT / "UNI MATE" / "skill-usage.json")
+      skill_usage.usage_path(_ROOT) == _ROOT / "UniMate" / "skill-usage.json")
 check("sidecar thật sự tồn tại trên đĩa", skill_usage.usage_path(_ROOT).is_file())
 
 # ---- file hỏng: KHÔNG được làm gãy ----
@@ -80,7 +80,7 @@ except Exception as e:
     check(f"brain root không ghi được → bump nuốt lỗi, không raise (raised {e!r})", False)
 check("brain root không ghi được → read_usage trả {}", skill_usage.read_usage(_BOGUS_ROOT) == {})
 check("brain root không ghi được → không có gì được tạo dưới file đó",
-      _BOGUS_ROOT.is_file() and not (_BOGUS_ROOT / "UNI MATE").exists())
+      _BOGUS_ROOT.is_file() and not (_BOGUS_ROOT / "UniMate").exists())
 os.unlink(_bogus_file)
 
 # ---- gọi song song: _LOCK phải serialize read-modify-write, KHÔNG được mất bump nào ----
@@ -224,7 +224,7 @@ _HUB_SKILL_DIR2 = _HUB_ROOT2 / "skills" / _HUB_SLUG2
 _HUB_SKILL_DIR2.mkdir(parents=True)
 _HUB_CONTENT2 = "---\nname: Demo2\ndescription: skill sidecar hong\ngroup: Test\n---\nNoi dung 2."
 (_HUB_SKILL_DIR2 / "SKILL.md").write_text(_HUB_CONTENT2, encoding="utf-8")
-(_HUB_ROOT2 / "UNI MATE").write_text("chiem cho, khong phai thu muc", encoding="utf-8")
+(_HUB_ROOT2 / "UniMate").write_text("chiem cho, khong phai thu muc", encoding="utf-8")
 
 _hub_tools2, _hub_route2 = mcp_hub._builtin_tools("auto", str(_HUB_ROOT2))
 _hub_handler2 = _hub_route2["unimate_use_skill"]["call"]

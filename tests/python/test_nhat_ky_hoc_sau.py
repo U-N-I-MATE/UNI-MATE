@@ -35,7 +35,7 @@ from starlette.testclient import TestClient  # noqa: E402
 from pathlib import Path  # noqa: E402
 
 VAULT = Path(tempfile.mkdtemp(prefix="unimate-hocvault-")) / "brain"
-log_dir = VAULT / "UNI MATE" / "learn-log"
+log_dir = VAULT / "UniMate" / "learn-log"
 log_dir.mkdir(parents=True)
 for ngay in range(1, 31):
     (log_dir / f"2026-07-{ngay:02d}.md").write_text(

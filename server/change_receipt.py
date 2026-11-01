@@ -49,7 +49,7 @@ def _mtimes(folder: Path, pattern: str) -> Dict[str, int]:
 
 def _pending_reminders(root: Path) -> Dict[str, str]:
     try:
-        d = json.loads((root / "UNI MATE" / "reminders.json").read_text(encoding="utf-8"))
+        d = json.loads((root / "UniMate" / "reminders.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
     return {str(r.get("id")): str(r.get("label") or r.get("text") or "")[:120]
@@ -61,7 +61,7 @@ def snapshot(brain_root) -> dict:
     root = Path(brain_root)
     return {
         "reminder": _pending_reminders(root),
-        "loop": _mtimes(root / "UNI MATE" / "loops", "*.md"),
+        "loop": _mtimes(root / "UniMate" / "loops", "*.md"),
         "agent": _mtimes(root / "agents", "*.md"),
         "workflow": _mtimes(root / "workflows", "*.md"),
         "skill": _mtimes(root / "skills", "*/SKILL.md"),
@@ -69,7 +69,7 @@ def snapshot(brain_root) -> dict:
 
 
 def _title(root: Path, kind: str, slug: str) -> str:
-    path = {"loop": root / "UNI MATE" / "loops" / f"{slug}.md", "agent": root / "agents" / f"{slug}.md",
+    path = {"loop": root / "UniMate" / "loops" / f"{slug}.md", "agent": root / "agents" / f"{slug}.md",
             "workflow": root / "workflows" / f"{slug}.md", "skill": root / "skills" / slug / "SKILL.md"}.get(kind)
     if path is None:
         return slug

@@ -49,7 +49,7 @@ def check(name, cond):
 
 
 _VAULT = pathlib.Path(tempfile.mkdtemp(prefix="unimate-vault-"))
-(_VAULT / "UNI MATE").mkdir(parents=True, exist_ok=True)
+(_VAULT / "UniMate").mkdir(parents=True, exist_ok=True)
 
 
 # ============================================================
@@ -116,7 +116,7 @@ async def _chay():
     feat = tasks_mod.register(FastAPI(), tasks_mod.TasksDeps(
         brain_root=lambda b: b if os.path.isdir(b) else str(_VAULT),
         atomic_write_text=lambda p, s: pathlib.Path(p).write_text(s, encoding="utf-8"),
-        execute_workflow=None, workflows_dir=lambda b: str(_VAULT / "UNI MATE" / "workflows"),
+        execute_workflow=None, workflows_dir=lambda b: str(_VAULT / "UniMate" / "workflows"),
         build_system_prompt=lambda *a, **k: "", aux_model=lambda *a, **k: ("", ""),
         aux_swap=None, safe_tools=[], state_dir=pathlib.Path(os.environ["UNIMATE_STATE_DIR"]),
         scheduler_brains=lambda: [str(_VAULT)], apply_mcp=None,

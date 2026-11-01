@@ -39,7 +39,7 @@ def check(name, cond):
 
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a2-")).resolve())
-(Path(BRAIN) / "UNI MATE").mkdir(parents=True)
+(Path(BRAIN) / "UniMate").mkdir(parents=True)
 (Path(BRAIN) / "Inbox").mkdir(parents=True)
 P = RS.Principal("agent", "unimate", BRAIN)
 OWNER = RS.Principal("owner", "owner", BRAIN)

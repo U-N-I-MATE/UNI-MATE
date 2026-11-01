@@ -188,8 +188,8 @@ check("bảng đúng kèm dòng tóm tắt nhắc cả ba người: dòng tóm t
 
 # ───────────── Pilot lần 3: ảnh chụp brain, khung tìm tool (sổ lượt chat kiểm ở test_resonance_achieve_stages) ─────
 br = tmp / "brain3"
-(br / "UNI MATE").mkdir(parents=True)
-(br / "UNI MATE" / "resonance.json").write_text("{}", encoding="utf-8")
+(br / "UniMate").mkdir(parents=True)
+(br / "UniMate" / "resonance.json").write_text("{}", encoding="utf-8")
 (br / "Notes").mkdir()
 (br / "Notes" / "a.md").write_text("a", encoding="utf-8")
 s0 = G.snapshot_files(br)

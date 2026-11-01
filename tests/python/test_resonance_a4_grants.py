@@ -88,7 +88,7 @@ class World:
     def __init__(self, name):
         World.n += 1
         self.brain = str(Path(tempfile.mkdtemp(prefix=f"brain-a4-{name}-")).resolve())
-        (Path(self.brain) / "UNI MATE").mkdir(parents=True)
+        (Path(self.brain) / "UniMate").mkdir(parents=True)
         self.store = RS.GoalStore(_STATE / f"{name}.sqlite3")
         self.agent = RA.enable(self.store, self.brain)
         self.p = RS.Principal("agent", self.agent["agent_key"], self.brain)

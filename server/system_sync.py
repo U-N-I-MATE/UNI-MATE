@@ -597,7 +597,7 @@ def sync_brain(brain_root) -> dict:
                     enabled_p, disabled_p = _skill_paths(root, slug, rel)
                     dst = disabled_p if off else enabled_p
                 else:
-                    dst = root / "UNI MATE" / "loops" / f"{slug}.md"
+                    dst = root / "UniMate" / "loops" / f"{slug}.md"
 
                 entry = files.get(key) or {}
                 if not dst.exists():

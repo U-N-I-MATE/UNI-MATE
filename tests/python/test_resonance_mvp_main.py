@@ -43,8 +43,8 @@ check("tắt: system prompt không nhắc unimate_goal", "unimate_goal" not in p
 # ───────────── bật (A1: theo agent, trong lượt của agent đó) ─────────────
 import _resonance_agent as RA  # noqa: E402
 RA.preapprove()  # A4: chủ dự án cho phép phạm vi ngay sau khi lập (D1); xem _resonance_agent.preapprove
-(Path(BRAIN) / "UNI MATE").mkdir(parents=True, exist_ok=True)
-(Path(BRAIN) / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+(Path(BRAIN) / "UniMate").mkdir(parents=True, exist_ok=True)
+(Path(BRAIN) / "UniMate" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
 check("công tắc brain cũ bật mà chưa có agent nào: prompt vẫn không nhắc unimate_goal (không còn cấp quyền)",
       "unimate_goal" not in main.build_system_prompt(BRAIN))
 AG = RA.enable(main._resonance_store(), BRAIN)

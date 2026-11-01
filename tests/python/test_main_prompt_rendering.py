@@ -166,7 +166,7 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
     except Exception:
         pass
     ag, wf = _agents_dir(brain), _workflows_dir(brain)
-    lp = Path(root) / "UNI MATE" / "loops"
+    lp = Path(root) / "UniMate" / "loops"
     sk = _skills_dir(brain)
     base += (
         "\n\n# === LỚP AGENTIC (vault đang làm việc) ===\n"
@@ -497,8 +497,8 @@ class MainRenderingTests(unittest.TestCase):
     def test_actual_production_skill_budget_selection_remains_outside_renderer(self):
         self.fixture()
         self.skills = [{"slug": f"skill-{i:02}", "name": f"Skill {i}", "description": "Do work", "enabled": True} for i in range(8)]
-        (self.brain / "UNI MATE").mkdir()
-        (self.brain / "UNI MATE" / "skill-usage.json").write_text('{"skill-07":{"pinned":true}}', encoding="utf-8")
+        (self.brain / "UniMate").mkdir()
+        (self.brain / "UniMate" / "skill-usage.json").write_text('{"skill-07":{"pinned":true}}', encoding="utf-8")
         with patch.object(main.skill_router, "SKILL_LIST_MAX", 2):
             old = self.legacy_namespace()["_skill_router_block"]
             actual = main._skill_router_block(str(self.brain), str(self.brain), self.skills)

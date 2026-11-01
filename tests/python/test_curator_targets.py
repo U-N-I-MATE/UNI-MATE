@@ -47,7 +47,7 @@ ROOT = Path(_TMP) / "brains"
 def make_brain(name, conv_days_ago=None, learnlog_days_ago=None):
     """Dựng brain giả. conv_days_ago=None → không có Memory/conversations."""
     root = ROOT / name
-    (root / "UNI MATE").mkdir(parents=True, exist_ok=True)
+    (root / "UniMate").mkdir(parents=True, exist_ok=True)
     if conv_days_ago is not None:
         d = root / "Memory" / "conversations"
         d.mkdir(parents=True, exist_ok=True)
@@ -56,7 +56,7 @@ def make_brain(name, conv_days_ago=None, learnlog_days_ago=None):
         t = time.time() - conv_days_ago * 86400
         os.utime(f, (t, t))
     if learnlog_days_ago is not None:
-        d = root / "UNI MATE" / "learn-log"
+        d = root / "UniMate" / "learn-log"
         d.mkdir(parents=True, exist_ok=True)
         f = d / "2026-07-25.md"
         f.write_text("curator ghi", encoding="utf-8")

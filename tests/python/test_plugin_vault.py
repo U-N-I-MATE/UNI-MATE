@@ -96,7 +96,7 @@ try:
     # gốc project, không có UniMate/ ở gốc) - đây chính là hiện trường của Critical.
     _cwd_khong_phai_brain = str(ROOT)   # gốc project, không có UniMate/
     check("tiền đề: cwd mô phỏng KHÔNG phải một brain (không có UniMate/ ở gốc)",
-          not (Path(_cwd_khong_phai_brain) / "UNI MATE").is_dir())
+          not (Path(_cwd_khong_phai_brain) / "UniMate").is_dir())
 
     eng = claude_sdk_engine.ClaudeSDK(cwd=_cwd_khong_phai_brain)
     eng.unimate_vault = _BRAIN   # _apply_mcp (main.py) đặt tường minh - KHÔNG suy từ cwd

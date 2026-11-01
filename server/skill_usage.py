@@ -34,7 +34,7 @@ _LOCK = threading.Lock()   # serialize read-modify-write trong process
 
 
 def usage_path(brain_root) -> Path:
-    return Path(brain_root) / "UNI MATE" / "skill-usage.json"
+    return Path(brain_root) / "UniMate" / "skill-usage.json"
 
 
 def read_usage(brain_root) -> dict:

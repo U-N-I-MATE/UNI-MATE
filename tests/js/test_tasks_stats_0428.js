@@ -54,7 +54,7 @@ setTimeout(() => {
   check("UNI MATE tab: share, split bar with the UNI MATE logo, time given back", /nv\.sta\.ai_share/.test(ai) && /ts-split/.test(ai) && /src="\/static\/logo\.svg"/.test(ai) && /nv\.sta\.time_back/.test(ai));
   check("no money anywhere", !/(đ|\$|VND|money|tiền)/i.test(ai.replace(/nv\.sta\.time_how/g, "")));
   check("UNI MATE tab: what, assistants (UNI MATE Core with the logo), 24 hours, reliability, ideas",
-    /nv\.sta\.what/.test(ai) && /UNI MATE Core/.test(ai) && /ts-24/.test(ai) && /ts-relbar/.test(ai) && /data-act="st-give" data-id="m:y"/.test(ai));
+    /nv\.sta\.what/.test(ai) && /UniMate Core/.test(ai) && /ts-24/.test(ai) && /ts-relbar/.test(ai) && /data-act="st-give" data-id="m:y"/.test(ai));
   check("time card can edit the minutes", /data-act="st-mins"/.test(ai));
   check("My tab: done, UNI MATE says with the logo, tiles, per day, map, golden hours, habits, projects, moved",
     /nv\.sta\.me_done_in/.test(me) && /nv\.sta\.unimate_says/.test(me) && /src="\/static\/logo\.svg"/.test(me) && /ts-tiles/.test(me)

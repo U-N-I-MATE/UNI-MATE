@@ -88,7 +88,7 @@ check("nạp đúng mã 0.95.1: kho cũ không biết bảng quyền A4", not ha
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a4rb-")).resolve())
 (Path(BRAIN) / "Inbox").mkdir(parents=True)
-(Path(BRAIN) / "UNI MATE").mkdir(parents=True)
+(Path(BRAIN) / "UniMate").mkdir(parents=True)
 DELIV = "Inbox/a4rb.md"
 GOOD = "# Ghi chú\n\nBáo cáo quý, máy lạnh.\n"
 USER = "Viết giúp anh một ghi chú tổng hợp trong Inbox gồm báo cáo quý và máy lạnh."

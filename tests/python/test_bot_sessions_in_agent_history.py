@@ -139,7 +139,7 @@ gs = ms.create_session(brain="brain", engine="cli", title="", channel="bot:" + s
 ms.append_message(gs, "user", "[Minh Quý] @Uni Vũ hầy")
 check("(chuẩn bị) phiên nhóm chưa có tên: tiêu đề hiện đang là tin đầu",
       next(x for x in ms.list_sessions(limit=50, brain=["brain"], channel="*") if x["id"] == gs)["preview"].startswith("[Minh Quý]"))
-check("đặt tên phiên theo tên nhóm", ms.name_group_session(gs, "  Lớp UNI MATE   OS ") is True
+check("đặt tên phiên theo tên nhóm", ms.name_group_session(gs, "  Lớp UNI   MATE ") is True
       and ms.get_session(gs)["title"] == "Lớp UNI MATE", ms.get_session(gs))
 check("đã có tên thì KHÔNG ghi đè (kể cả tên chủ tự đặt)", ms.name_group_session(gs, "Nhóm khác") is False
       and ms.get_session(gs)["title"] == "Lớp UNI MATE")

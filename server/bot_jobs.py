@@ -121,7 +121,7 @@ def guess_loop(owner_chat: str, day: str, turns: dict, tz=None) -> str:
 
 
 def _sidecar(root: str) -> Path:
-    return Path(root) / "UNI MATE" / SIDECAR
+    return Path(root) / "UniMate" / SIDECAR
 
 
 def _load_sidecar(root: str) -> dict:
@@ -146,7 +146,7 @@ def _save_sidecar(root: str, jobs: dict) -> None:
 
 def _reminders(root: str) -> list:
     try:
-        return json.loads((Path(root) / "UNI MATE" / "reminders.json").read_text(encoding="utf-8")).get("reminders") or []
+        return json.loads((Path(root) / "UniMate" / "reminders.json").read_text(encoding="utf-8")).get("reminders") or []
     except Exception:
         return []
 

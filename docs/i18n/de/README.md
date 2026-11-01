@@ -36,7 +36,7 @@ Lass ihn auf deinem Laptop oder einem kleinen VPS laufen. Sprich mit ihm per Sti
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · [🇨🇳 简体中文](../zh/README.md) · [🇪🇸 Español](../es/README.md) · [🇯🇵 日本語](../ja/README.md) · [🇮🇳 हिन्दी](../hi/README.md) · [🇧🇷 Português](../pt-BR/README.md) · [🇰🇷 한국어](../ko/README.md) · [🇷🇺 Русский](../ru/README.md) · 🇩🇪 **Deutsch** · [🇫🇷 Français](../fr/README.md) · [🇮🇩 Bahasa Indonesia](../id/README.md) · [🌍 Beim Übersetzen helfen](../../../CONTRIBUTING.md#translations)
 
-[Schnellstart](#-schnellstart) · [Warum UNI MATE](#-warum-unimate) · [Gehirne](#-12-gehirne-ein-werkzeugkasten) · [Funktionen](#-funktionen) · [Installation](#-installation) · [Dokumentation](../../../docs/en/README.md) · [Unterstützen](#-unterstütze-UNI-MATE)
+[Schnellstart](#-schnellstart) · [Warum UNI MATE](#-warum-uni-mate) · [Gehirne](#-12-gehirne-ein-werkzeugkasten) · [Funktionen](#-funktionen) · [Installation](#-installation) · [Dokumentation](../../../docs/en/README.md) · [Unterstützen](#-unterstütze-uni-mate)
 
 <br>
 

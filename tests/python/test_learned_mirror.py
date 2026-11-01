@@ -60,7 +60,7 @@ def sha(p):
 BRAIN = Path(BRAINS) / "Shop"
 BRAIN.mkdir(parents=True)
 ROOT_B = str(BRAIN.resolve())
-LEARNED = BRAIN / "UNI MATE" / "learned"
+LEARNED = BRAIN / "UniMate" / "learned"
 NOW = 1_800_000_000.0
 CHAT_TEXT = "customer asks about shipping price to Hanoi"
 

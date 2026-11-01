@@ -98,7 +98,7 @@ _n = {"mid": 0, "call": 0}
 
 def world(name):
     brain = Path(tempfile.mkdtemp(prefix=f"brain-{name}-")).resolve()
-    (brain / "UNI MATE").mkdir(parents=True)
+    (brain / "UniMate").mkdir(parents=True)
     store = RS.GoalStore(_STATE / f"{name}.sqlite3")
     RA.enable(store, brain)       # A1: mục tiêu thuộc một trợ lý đang bật trong kho của thế giới này
     return str(brain), store, RS.Principal("agent", "unimate", str(brain))

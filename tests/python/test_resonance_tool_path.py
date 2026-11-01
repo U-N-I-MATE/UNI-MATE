@@ -42,7 +42,7 @@ import _resonance_agent as RA  # noqa: E402
 
 def _brain():
     d = Path(tempfile.mkdtemp(prefix="brain-toolpath-")).resolve()
-    (d / "UNI MATE").mkdir()
+    (d / "UniMate").mkdir()
     return str(d)
 
 

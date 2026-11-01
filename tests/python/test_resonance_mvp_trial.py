@@ -33,7 +33,7 @@ def check(name, cond):
 FIX = json.loads((Path(ROOT) / "tests" / "fixtures" / "resonance" / "mvp_cases.json").read_text(encoding="utf-8"))
 CASES = {c["id"]: c for c in FIX["cases"]}
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-m5-")).resolve())
-(Path(BRAIN) / "UNI MATE").mkdir(parents=True)
+(Path(BRAIN) / "UniMate").mkdir(parents=True)
 P = RS.Principal("agent", "unimate", BRAIN)
 OWNER = RS.Principal("owner", "owner", BRAIN)
 store = RS.GoalStore()

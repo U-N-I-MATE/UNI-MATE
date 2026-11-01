@@ -188,7 +188,7 @@ Và thêm helper vào cùng class:
         (vd chat chạy với cwd = thư mục project) - khi đó plugin tự lo fallback như cũ."""
         try:
             root = Path(self.cwd)
-            return str(root) if (root / "UNI MATE").is_dir() else None
+            return str(root) if (root / "UniMate").is_dir() else None
         except Exception:
             return None
 ```
@@ -358,7 +358,7 @@ _vault = tempfile.mkdtemp(prefix="unimate-vault-")
 res = sched._create_loop_file(_vault, name="Quét đơn mỗi 2 tiếng",
                               prompt="Mỗi vòng đọc số đơn hôm nay qua MCP POS rồi ghi nháp.",
                               schedule="120m", owner_chat="123")
-f = Path(_vault) / "UNI MATE" / "loops" / "quet-don-moi-2-tieng.md"
+f = Path(_vault) / "UniMate" / "loops" / "quet-don-moi-2-tieng.md"
 check("loop: ghi đúng <vault>/UniMate/loops/<slug>.md", f.is_file())
 body = f.read_text(encoding="utf-8") if f.is_file() else ""
 check("loop: frontmatter có type: loop", "type: loop" in body)

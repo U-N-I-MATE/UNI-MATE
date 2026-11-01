@@ -22,7 +22,7 @@ KEEP = 20000
 
 
 def path(brain_root: str) -> Path:
-    return Path(brain_root) / "UNI MATE" / FILE
+    return Path(brain_root) / "UniMate" / FILE
 
 
 def append(brain_root: str, kind: str, ref: str, title: str, status: str, seconds: float = 0, mode: str = "",

@@ -36,7 +36,7 @@
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · [🇨🇳 简体中文](../zh/README.md) · [🇪🇸 Español](../es/README.md) · 🇯🇵 **日本語** · [🇮🇳 हिन्दी](../hi/README.md) · [🇧🇷 Português](../pt-BR/README.md) · [🇰🇷 한국어](../ko/README.md) · [🇷🇺 Русский](../ru/README.md) · [🇩🇪 Deutsch](../de/README.md) · [🇫🇷 Français](../fr/README.md) · [🇮🇩 Bahasa Indonesia](../id/README.md) · [🌍 翻訳に協力する](../../../CONTRIBUTING.md#translations)
 
-[クイックスタート](#-クイックスタート) · [UNI MATE を選ぶ理由](#-unimate-を選ぶ理由) · [頭脳](#-12-の頭脳ひとつのツールキット) · [機能](#-機能) · [インストール](#-インストール) · [ドキュメント](../../../docs/en/README.md) · [支援](#-UNI-MATE-を支援する)
+[クイックスタート](#-クイックスタート) · [UNI MATE を選ぶ理由](#-uni-mate-を選ぶ理由) · [頭脳](#-12-の頭脳ひとつのツールキット) · [機能](#-機能) · [インストール](#-インストール) · [ドキュメント](../../../docs/en/README.md) · [支援](#-uni-mate-を支援する)
 
 <br>
 

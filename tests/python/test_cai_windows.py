@@ -172,11 +172,11 @@ readme = (ROOT / "docs" / "i18n" / "vi" / "README.md").read_text(encoding="utf-8
 readme_en = (ROOT / "README.md").read_text(encoding="utf-8")
 check("README nói một lệnh cài hết cho Windows", "install.ps1" in readme)
 check("README nhắc phải khởi động lại UNI MATE khi cài thêm CLI",
-      "khởi động lại unimate" in readme.lower())
+      "khởi động lại uni mate" in readme.lower())
 check("README không còn mời Gemini CLI (đã gỡ ở 0.50.0)", "Gemini CLI" not in readme)
 # Từ 0.66.0 README.md gốc là tiếng Anh: ba điều trên phải đúng ở cả bản đó.
 check("README (en) nói một lệnh cài hết cho Windows", "install.ps1" in readme_en)
-check("README (en) nhắc phải khởi động lại UNI MATE khi cài thêm CLI", "restart unimate" in readme_en.lower())
+check("README (en) nhắc phải khởi động lại UNI MATE khi cài thêm CLI", "restart uni mate" in readme_en.lower())
 check("README (en) không mời Gemini CLI", "Gemini CLI" not in readme_en)
 
 if _fails:

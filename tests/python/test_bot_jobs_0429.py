@@ -79,7 +79,7 @@ asyncio.run(sched._do_create(str(vault), {"name": "Báo cáo", "prompt": "Gửi 
 check("a reminder made in a bot turn carries bot_id", sent.get("bot_id") == "bot_vu", sent)
 asyncio.run(sched._do_create(str(vault), {"name": "Soi đơn", "prompt": "Soi đơn mới", "schedule": "2 tiếng",
                                           "chat_id": "zalo:c1"}))
-lp_text = (vault / "UNI MATE" / "loops" / "soi-don.md").read_text(encoding="utf-8")
+lp_text = (vault / "UniMate" / "loops" / "soi-don.md").read_text(encoding="utf-8")
 check("a loop made in a bot turn carries bot_id in its frontmatter", "bot_id: \"bot_vu\"" in lp_text, lp_text)
 
 # ---- unimate_task ----
@@ -126,13 +126,13 @@ check("a malformed bot id is dropped", "bot_id" not in bad)
 # ---- loops keep bot_id across a save ----
 obj = self_improve.LoopFeature.__new__(self_improve.LoopFeature)
 obj.deps = SimpleNamespace(atomic_write_text=lambda p, s: Path(p).write_text(s, encoding="utf-8"))
-obj._loops_dir = lambda brain: vault / "UNI MATE" / "loops"
-obj._loop_path = lambda brain, slug: vault / "UNI MATE" / "loops" / f"{slug}.md"
+obj._loops_dir = lambda brain: vault / "UniMate" / "loops"
+obj._loop_path = lambda brain, slug: vault / "UniMate" / "loops" / f"{slug}.md"
 lp = obj._norm_loop({"name": "Soi đơn", "bot_id": "bot_vu", "goal": "custom"}, "Soi đơn mới", "soi-don")
 check("a loop file is read with its bot", lp["bot_id"] == "bot_vu")
 lp["enabled"] = True
 obj.save_loop("b", lp)
-parsed = "bot_id: bot_vu" in (vault / "UNI MATE" / "loops" / "soi-don.md").read_text(encoding="utf-8")
+parsed = "bot_id: bot_vu" in (vault / "UniMate" / "loops" / "soi-don.md").read_text(encoding="utf-8")
 check("a loop keeps its bot when it is saved again (toggle, edit)", parsed is True)
 store_hint = TaskStore(Path(tempfile.mkdtemp()) / "k.sqlite3")
 hint_root = str(Path(tempfile.mkdtemp()).resolve())
@@ -154,8 +154,8 @@ logs = {
     "bot_shop": [{"ts": now - 1000, "chat_id": "s7", "dap": "ok"}, {"ts": now - 20000, "chat_id": "s7", "dap": "ok"}],
     "bot_far": [{"ts": now - 7000, "chat_id": "f1", "dap": "ok"}],
 }
-(brain / "UNI MATE").mkdir(parents=True)
-(brain / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
+(brain / "UniMate").mkdir(parents=True)
+(brain / "UniMate" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_new", "bot_id": "bot_vu", "created_by": "unimate_schedule", "created_at": now - 99999},       # stamped
     {"id": "r_old", "created_by": "unimate_schedule", "chat_id": "", "created_at": now - 3100},               # vu's turn
     {"id": "r_both", "created_by": "unimate_schedule", "chat_id": "", "created_at": now - 1100},              # two bots

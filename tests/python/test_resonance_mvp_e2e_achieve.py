@@ -60,7 +60,7 @@ MAX_CALLS = CHAT_LIMIT + PHASE_CEILING[2]
 BASE = Path(tempfile.mkdtemp(prefix="rsach-", dir=os.environ.get("TEMP") or None)).resolve()
 STATE, BRAINS = BASE / "state", BASE / "brains"
 BRAIN = BRAINS / "Brain Default"
-for d in (STATE, BRAIN / "UNI MATE", BRAIN / "agents"):
+for d in (STATE, BRAIN / "UniMate", BRAIN / "agents"):
     d.mkdir(parents=True, exist_ok=True)
 # A1: không bật công tắc brain cũ (nó không còn cấp quyền). Trợ lý tạm: vai trung lập, không chọn model riêng.
 AGENT_SLUG = "tro-ly-tai-lieu"

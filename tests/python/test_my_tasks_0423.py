@@ -104,7 +104,7 @@ pd = feat.project_delete("brain", pid)
 check("deleting a project keeps its tasks, without the project", pd["ok"] and pd["tasks"] == [rep["id"]]
       and next(x for x in feat.load("brain")["tasks"] if x["id"] == rep["id"])["project"] == "")
 
-store = roots["brain"] / "UNI MATE" / "my-tasks.json"
+store = roots["brain"] / "UniMate" / "my-tasks.json"
 check("the store is a JSON file in the brain", json.loads(store.read_text(encoding="utf-8"))["rev"] > 0)
 
 app = FastAPI()

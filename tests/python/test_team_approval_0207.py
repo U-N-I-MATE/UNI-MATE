@@ -477,7 +477,7 @@ cases = [("Bash", {"command": "ls -la"}, "free"), ("Bash", {"command": "git stat
          ("Write", {"file_path": str(STATE / "brain" / "plugins" / "x" / "plugin.py")}, "outside"),
          ("Write", {"file_path": str(STATE / "brain" / ".claude" / "settings.json")}, "outside"),
          ("Edit", {"file_path": str(STATE / "brain" / ".git" / "config")}, "outside"),
-         ("Write", {"file_path": str(STATE / "brain" / "UNI MATE" / "loops" / "x.md")}, "outside"),
+         ("Write", {"file_path": str(STATE / "brain" / "UniMate" / "loops" / "x.md")}, "outside"),
          ("WebFetch", {"url": "https://example.com/docs/guide"}, "free"),
          ("WebFetch", {"url": "https://api.telegram.org/bot123/sendMessage?chat_id=1&text=hi"}, "outside"),
          # 0.267.0 (a user's team): chained reads were stopped for approval; writes in a chain still are

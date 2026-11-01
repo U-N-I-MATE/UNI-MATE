@@ -372,7 +372,7 @@ class MyTasks:
 
     # ---- habit coach ----
     def _coach_path(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "UNI MATE" / COACH
+        return Path(self.deps.brain_root(brain)) / "UniMate" / COACH
 
     def load_coach(self, brain: str) -> dict:
         try:
@@ -441,7 +441,7 @@ class MyTasks:
 
     # ---- store ----
     def _path(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "UNI MATE" / STORE
+        return Path(self.deps.brain_root(brain)) / "UniMate" / STORE
 
     def load(self, brain: str) -> dict:
         p = self._path(brain)

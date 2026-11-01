@@ -274,7 +274,7 @@ class LoopFeature:
     # ══════════════════════ registry: UniMate/loops/<slug>.md ══════════════════════
 
     def _loops_dir(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "UNI MATE" / "loops"
+        return Path(self.deps.brain_root(brain)) / "UniMate" / "loops"
 
     def _loop_path(self, brain: str, slug: str) -> Optional[Path]:
         """Path file loop AN TOÀN theo slug tuỳ ý (kể cả stem tiếng Việt user tự đặt):
@@ -289,7 +289,7 @@ class LoopFeature:
         return fp
 
     def _state_path(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "UNI MATE" / "loop-state.json"
+        return Path(self.deps.brain_root(brain)) / "UniMate" / "loop-state.json"
 
     def _norm_loop(self, fm: dict, body: str, stem: str) -> dict:
         # MẶC ĐỊNH 'custom' (thân file = việc loop làm mỗi vòng) - đúng "format ĐƠN GIẢN" ở
@@ -644,7 +644,7 @@ class LoopFeature:
 
     def _log_append(self, brain: str, entry: dict) -> None:
         try:
-            d = Path(self.deps.brain_root(brain)) / "UNI MATE" / "loop-log"
+            d = Path(self.deps.brain_root(brain)) / "UniMate" / "loop-log"
             d.mkdir(parents=True, exist_ok=True)
             now = _now_vn()
             with open(d / f"{now.strftime('%Y-%m-%d')}.md", "a", encoding="utf-8") as fh:
@@ -653,7 +653,7 @@ class LoopFeature:
             print(f"[loop log] {e}", file=__import__('sys').stderr)
 
     def _read_log_entries(self, brain: str, slug: str = "", limit: int = 10) -> List[str]:
-        d = Path(self.deps.brain_root(brain)) / "UNI MATE" / "loop-log"
+        d = Path(self.deps.brain_root(brain)) / "UniMate" / "loop-log"
         entries: List[str] = []
         if d.is_dir():
             # Đọc file mới nhất trước; trong mỗi file entry mới nằm DƯỚI (ghi nối) nên đảo lại để

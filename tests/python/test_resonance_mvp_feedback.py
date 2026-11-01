@@ -196,8 +196,8 @@ code, body = api("post", f"/goals/{g2.id}/feedback", json={"kind": "outcome_acce
 check("Đạt yêu cầu từ thẻ revision cũ: 409", code == 409)
 
 # ───────────── test_feedback_cross_brain ─────────────
-(Path(OTHER) / "UNI MATE").mkdir(parents=True, exist_ok=True)
-(Path(OTHER) / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+(Path(OTHER) / "UniMate").mkdir(parents=True, exist_ok=True)
+(Path(OTHER) / "UniMate" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
 r = client.get(f"/goals/{g2.id}", params={"brain": OTHER})
 check("test_feedback_cross_brain: đọc mục tiêu của brain khác qua brain này: 404", r.status_code == 404)
 r = client.post(f"/goals/{g2.id}/feedback", params={"brain": OTHER},

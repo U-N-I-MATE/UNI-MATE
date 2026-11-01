@@ -36,7 +36,7 @@ Jalankan di laptop atau VPS kecil. Ajak bicara dengan suara. Pasang Claude, Chat
 
 [🇬🇧 English](../../../README.md) · [🇻🇳 Tiếng Việt](../vi/README.md) · [🇨🇳 简体中文](../zh/README.md) · [🇪🇸 Español](../es/README.md) · [🇯🇵 日本語](../ja/README.md) · [🇮🇳 हिन्दी](../hi/README.md) · [🇧🇷 Português](../pt-BR/README.md) · [🇰🇷 한국어](../ko/README.md) · [🇷🇺 Русский](../ru/README.md) · [🇩🇪 Deutsch](../de/README.md) · [🇫🇷 Français](../fr/README.md) · 🇮🇩 **Bahasa Indonesia** · [🌍 Bantu menerjemahkan](../../../CONTRIBUTING.md#translations)
 
-[Mulai cepat](#-mulai-cepat) · [Mengapa UNI MATE](#-mengapa-unimate) · [Otak](#-12-otak-satu-toolkit) · [Fitur](#-fitur) · [Instalasi](#-instalasi) · [Dokumentasi](../../../docs/en/README.md) · [Dukungan](#-dukung-UNI-MATE)
+[Mulai cepat](#-mulai-cepat) · [Mengapa UNI MATE](#-mengapa-uni-mate) · [Otak](#-12-otak-satu-toolkit) · [Fitur](#-fitur) · [Instalasi](#-instalasi) · [Dokumentasi](../../../docs/en/README.md) · [Dukungan](#-dukung-uni-mate)
 
 <br>
 

@@ -57,8 +57,8 @@ def check(name, cond):
 FIX = json.loads((Path(ROOT) / "tests" / "fixtures" / "resonance" / "mvp_cases.json").read_text(encoding="utf-8"))
 PLAN = FIX["pilot"]
 BRAIN = Path(tempfile.mkdtemp(prefix="brain-m5p-")).resolve()
-(BRAIN / "UNI MATE").mkdir(parents=True)
-(BRAIN / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+(BRAIN / "UniMate").mkdir(parents=True)
+(BRAIN / "UniMate" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
 KEY = main._brain_key(str(BRAIN))
 P = RS.Principal("agent", "unimate", KEY)
 store = main._resonance_store()

@@ -88,7 +88,7 @@ class Team:
 
     def __init__(self, state: Path, name: str, pair: bool = True):
         self.brain = str(Path(tempfile.mkdtemp(prefix=f"brain-a5-{name}-")).resolve())
-        (Path(self.brain) / "UNI MATE").mkdir(parents=True)
+        (Path(self.brain) / "UniMate").mkdir(parents=True)
         self.state = state
         self.name = name
         self.store = RS.GoalStore(state / f"{name}.sqlite3")

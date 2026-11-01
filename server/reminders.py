@@ -362,7 +362,7 @@ class RemindersFeature:
 
     # ── store (JSON trong brain) ──
     def _path(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "UNI MATE" / "reminders.json"
+        return Path(self.deps.brain_root(brain)) / "UniMate" / "reminders.json"
 
     def _load(self, brain: str) -> dict:
         data = {"reminders": [], "updated": 0.0}
@@ -381,7 +381,7 @@ class RemindersFeature:
         self.deps.atomic_write_text(self._path(brain), json.dumps(data, ensure_ascii=False, indent=2))
 
     def _scripts_dir(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "UNI MATE" / "scripts"
+        return Path(self.deps.brain_root(brain)) / "UniMate" / "scripts"
 
     def _resolve_script(self, brain: str, script: str) -> Path:
         """script CHỈ nhận TÊN FILE nằm trong <brain>/UniMate/scripts (không path, không '..').

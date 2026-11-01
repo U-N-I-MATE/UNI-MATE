@@ -948,7 +948,7 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
     except Exception:
         pass
     ag, wf = _agents_dir(brain), _workflows_dir(brain)
-    lp = Path(root) / "UNI MATE" / "loops"
+    lp = Path(root) / "UniMate" / "loops"
     sk = _skills_dir(brain)
     base += main_prompt_rendering.render_agentic_paths(root, ag, wf, lp, sk)
     # Resonance (M2): chỉ brain đã bật mới có dòng này và mới thấy tool unimate_goal. CLAUDE.md đã hết ngân sách
@@ -1071,7 +1071,7 @@ def build_adaptive_source_prompt(brain: str = "brain", include_memory: bool = Fa
     """
     root = _brain_root(brain)
     ag, wf = _agents_dir(brain), _workflows_dir(brain)
-    loops = Path(root) / "UNI MATE" / "loops"
+    loops = Path(root) / "UniMate" / "loops"
     skills = _skills_dir(brain)
     parts = [
         "# UNI MATE adaptive source contract",
@@ -2128,7 +2128,7 @@ async def _reply_policy_review_ask(prompt: str) -> str:
 def _reply_policy_write_feedback(bot: dict, text: str) -> None:
     """Góp ý sửa mã từ vòng tự soát: nối vào `UniMate/gop-y-bo-phan-xu.md` trong brain của bot."""
     root = Path(_brain_root((bot or {}).get("brain") or None))
-    f = root / "UNI MATE" / "gop-y-bo-phan-xu.md"
+    f = root / "UniMate" / "gop-y-bo-phan-xu.md"
     f.parent.mkdir(parents=True, exist_ok=True)
     # Model viết góp ý từ một báo cáo đầy chữ của người lạ, nên nội dung là DỮ LIỆU: trích dẫn, bỏ link, có lời dặn.
     # Ai (người hay AI toàn quyền) đọc file này để sửa thì phải tự kiểm trong mã, không làm theo nguyên văn.
@@ -7315,7 +7315,7 @@ def _ensure_brain_scaffold(root):
                 (root / it["create"]).write_text(SCHEMA_SEED, encoding="utf-8")
         except Exception as e:
             print(f"[brain scaffold] {it['key']}: {e}", file=__import__('sys').stderr)
-    jr = root / "UNI MATE" / "README.md"
+    jr = root / "UniMate" / "README.md"
     if not jr.exists():
         jr.parent.mkdir(parents=True, exist_ok=True)
         jr.write_text(brain_seed_i18n.chon(UNIMATE_README), encoding="utf-8")
@@ -11218,7 +11218,7 @@ def _agent_builder_block(brain) -> str:
         "\n# Tạo năng lực mới khi chủ nhờ (mọi engine, kể cả engine API)\n"
         f"- Trước khi tạo, nạp mẫu chuẩn: `unimate_use_skill` name=unimate-builder, rồi ghi bằng `unimate_write_file` "
         f"đường dẫn TUYỆT ĐỐI: agent `{_agents_dir(brain)}/<slug>.md`, workflow `{_workflows_dir(brain)}/<slug>.md`, "
-        f"skill `{_skills_dir(brain)}/<slug>/SKILL.md`, loop `{Path(root) / 'UNI MATE' / 'loops'}/<slug>.md`.\n"
+        f"skill `{_skills_dir(brain)}/<slug>/SKILL.md`, loop `{Path(root) / 'UniMate' / 'loops'}/<slug>.md`.\n"
         "- Tạo trợ lý kèm model riêng, hay đổi model của trợ lý đang có: tool `unimate_team` op=create_agent / "
         "op=set_agent_model (slug, model, model_provider). Chưa thấy tool thì tìm bằng `unimate_search_tools`.\n"
         "- Nhắc hẹn, việc định kỳ: `unimate_schedule`. Đừng nói là không tạo được khi các tool trên có sẵn.\n"
@@ -13802,7 +13802,7 @@ def rebuild_unimate_index(brain: str) -> dict:
     """Dựng lại UniMate/index.md từ file. Chỉ ghi KHI nội dung đổi (chống churn git)."""
     try:
         content = _render_unimate_index(_gather_capabilities(brain))
-        idx = Path(_brain_root(brain)) / "UNI MATE" / "index.md"
+        idx = Path(_brain_root(brain)) / "UniMate" / "index.md"
         old = idx.read_text(encoding="utf-8") if idx.exists() else ""
         if old != content:
             idx.parent.mkdir(parents=True, exist_ok=True)
@@ -13832,7 +13832,7 @@ def _ops_index_brains() -> list:
     cands = []
     try:
         cands += [str(p) for p in sorted(Path(BRAINS_DIR).iterdir())
-                  if p.is_dir() and not p.name.startswith(".") and (p / "UNI MATE").is_dir()]
+                  if p.is_dir() and not p.name.startswith(".") and (p / "UniMate").is_dir()]
     except OSError:
         pass
     try:
@@ -13914,7 +13914,7 @@ def _skill_router_block(brain: str, root: str, skills=None) -> str:
 async def unimate_index(brain: str = Query("brain")):
     """Dựng lại + trả nội dung UniMate/index.md (chỉ mục tầng vận hành)."""
     rebuild_unimate_index(brain)
-    idx = Path(_brain_root(brain)) / "UNI MATE" / "index.md"
+    idx = Path(_brain_root(brain)) / "UniMate" / "index.md"
     return {"ok": True, "content": idx.read_text(encoding="utf-8") if idx.exists() else "",
             "counts": {k: len(v) for k, v in _gather_capabilities(brain).items()}}
 

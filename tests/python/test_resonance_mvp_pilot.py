@@ -53,8 +53,8 @@ def check(name, cond):
 
 
 BRAIN = Path(tempfile.mkdtemp(prefix="brain-pilot-")).resolve()
-(BRAIN / "UNI MATE").mkdir(parents=True)
-(BRAIN / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+(BRAIN / "UniMate").mkdir(parents=True)
+(BRAIN / "UniMate" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
 (BRAIN / "Notes").mkdir()
 (BRAIN / "Notes" / "ghi-chu-cu.md").write_text("Ghi chú cũ, không được xoá.\n", encoding="utf-8")
 KEY = main._brain_key(str(BRAIN))

@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Optional
 
 MAX_LEN = 60
-FILE = Path("UNI MATE") / "brain.json"
+FILE = Path("UniMate") / "brain.json"
 
 
 def _file(root) -> Path:

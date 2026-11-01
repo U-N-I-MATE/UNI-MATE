@@ -201,7 +201,7 @@ def _yaml_scalar(s: str) -> str:
 
 
 def _loops_dir(vault_root: str) -> Path:
-    return Path(vault_root) / "UNI MATE" / "loops"
+    return Path(vault_root) / "UniMate" / "loops"
 
 
 _LOOP_MODES = ("suggest", "auto", "full")

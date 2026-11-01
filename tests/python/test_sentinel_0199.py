@@ -28,7 +28,7 @@ now = time.time()
 state = Path(tempfile.mkdtemp(prefix="unimate-sentinel-state-"))
 brains_dir = Path(tempfile.mkdtemp(prefix="unimate-sentinel-brains-"))
 shop = brains_dir / "shop"
-(shop / "UNI MATE").mkdir(parents=True)
+(shop / "UniMate").mkdir(parents=True)
 
 con = sqlite3.connect(state / "kanban.sqlite3")
 con.execute("CREATE TABLE tasks (id TEXT, brain_root TEXT, title TEXT, status TEXT, block_kind TEXT, "
@@ -42,10 +42,10 @@ con.executemany("INSERT INTO tasks VALUES (?,?,?,?,?,?,?)", [
 ])
 con.commit()
 con.close()
-(shop / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
+(shop / "UniMate" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_1", "label": "Báo doanh thu", "error": "Zalo token expired (code 403)", "fired_at": now - 300},
     {"id": "r_2", "label": "OK", "error": "", "fired_at": now - 300}]}), encoding="utf-8")
-(shop / "UNI MATE" / "loop-state.json").write_text(json.dumps({
+(shop / "UniMate" / "loop-state.json").write_text(json.dumps({
     "quet-don": {"fail_streak": 3, "auto_paused_reason": "Tự tạm dừng 17/10 09:00: 3 lần lỗi", "last_run": now - 600},
     "ok-loop": {"fail_streak": 0}}), encoding="utf-8")
 (state / "webhooks.json").write_text(json.dumps({"hooks": [{"id": "wh_1", "name": "Lead", "brain": str(shop),
@@ -54,7 +54,7 @@ con.close()
 (state / "incidents.json").write_text(json.dumps({"incidents": [{"id": "i1", "status": "needs_you"},
                                                                {"id": "i2", "status": "resolved"}]}), encoding="utf-8")
 
-before = {p: p.stat().st_mtime for p in [state / "kanban.sqlite3", shop / "UNI MATE" / "reminders.json"]}
+before = {p: p.stat().st_mtime for p in [state / "kanban.sqlite3", shop / "UniMate" / "reminders.json"]}
 rep = sentinel.scan(state, [shop], now=now)
 top = rep["issues"][0]
 check("same cause across stores groups into one issue", top["count"] == 3

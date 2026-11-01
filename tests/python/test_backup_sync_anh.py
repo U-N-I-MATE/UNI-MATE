@@ -148,7 +148,7 @@ def test_force_add_vuot_gitignore_cua_brain(tmp_path):
     staged = (_git(mirror, "diff", "--cached", "--name-only").stdout or "")
     assert "b/attachments/sp.jpg" in staged
     # log thô bị ignore ở khối 3 vẫn KHÔNG bị cuốn vào (force đích danh, không phải -f cả cây)
-    _w(mirror / "b" / "UNI MATE" / "learn-log" / "2026.md", "log")
+    _w(mirror / "b" / "UniMate" / "learn-log" / "2026.md", "log")
     _git(mirror, "add", "-A")
     assert "learn-log" not in (_git(mirror, "diff", "--cached", "--name-only").stdout or "")
 

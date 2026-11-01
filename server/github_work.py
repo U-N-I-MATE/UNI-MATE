@@ -1041,7 +1041,7 @@ def _is_review_turn(user_message: str) -> bool:
 def lessons_path(brain: str, full_name: str):
     from pathlib import Path
     root = Path(_brain_root(brain) or brain or ".")
-    return root / "UNI MATE" / "learned" / "repos" / (full_name.replace("/", "__") + ".md")
+    return root / "UniMate" / "learned" / "repos" / (full_name.replace("/", "__") + ".md")
 
 
 def read_lessons(brain: str, full_name: str) -> List[str]:

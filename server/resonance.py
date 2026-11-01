@@ -473,7 +473,7 @@ def enabled_for(brain_root) -> bool:
     `agent_gate`. Chỉ còn dùng cho nhãn giao diện cũ và để bản 0.86.x đọc khi quay về (thiết kế A1 mục 5)."""
     try:
         import json as _json
-        f = Path(str(brain_root or "")) / "UNI MATE" / "resonance.json"
+        f = Path(str(brain_root or "")) / "UniMate" / "resonance.json"
         if not f.is_file():
             return False
         return _json.loads(f.read_text(encoding="utf-8")).get("enabled") is True
@@ -490,7 +490,7 @@ def agent_file_exists(brain_root: str, slug: str) -> bool:
     root = Path(str(brain_root or ""))
     d = root / "agents"
     if not d.is_dir():
-        d = root / "UNI MATE" / "agents"
+        d = root / "UniMate" / "agents"
     return (d / f"{s}.md").is_file()
 
 
@@ -987,7 +987,7 @@ async def form_goal(message_ref: str, context: dict, deps: "GoalDeps") -> GoalRe
                               constraints=context.get("constraints") or ())
     goal, _created = store.create(
         p, intent["id"], frame, idempotency_key=message_ref, session_id=context.get("session_id") or "",
-        output_base=str(Path(str(context.get("brain_root") or "")) / "UNI MATE" / "resonance" / "outputs"),
+        output_base=str(Path(str(context.get("brain_root") or "")) / "UniMate" / "resonance" / "outputs"),
         budget_calls=int(context.get("budget_calls") or GOAL_DEFAULT_CALLS), message_ref=message_ref,
         work_due_at=context.get("hold_until"), handoff_owner=BOOT_ID if context.get("hold_until") else None,
         agent_key=context.get("agent_key"), agent_version=context.get("agent_version"),
@@ -2052,7 +2052,7 @@ def _reviewer_role_text(deps: "GoalDeps", slug: str) -> str:
     if not agent_file_exists(deps.brain_root, slug):
         return ""
     root = Path(str(deps.brain_root or ""))
-    d = root / "agents" if (root / "agents").is_dir() else root / "UNI MATE" / "agents"
+    d = root / "agents" if (root / "agents").is_dir() else root / "UniMate" / "agents"
     try:
         raw = (d / f"{slug}.md").read_text(encoding="utf-8")
     except OSError:

@@ -372,7 +372,7 @@ class TurnLedger:
         return len(self.entries())
 
 
-def snapshot_files(root: Path, skip=("UNI MATE",)) -> dict:
+def snapshot_files(root: Path, skip=("UniMate",)) -> dict:
     """{đường dẫn tương đối: sha256} của mọi file trong brain (bỏ thư mục hệ thống trong `skip`). Dùng để biết bộ não
     đã ghi gì trong lượt chat, kể cả khi pilot dừng sớm (review pilot lần 2)."""
     import hashlib

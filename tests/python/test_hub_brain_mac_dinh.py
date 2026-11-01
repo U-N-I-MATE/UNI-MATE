@@ -27,8 +27,8 @@ from pathlib import Path
 
 _TMP = Path(tempfile.mkdtemp(prefix="unimate-hub-brain-"))
 _BRAINS = _TMP / "brains"
-(_BRAINS / "Brain Default" / "UNI MATE").mkdir(parents=True, exist_ok=True)
-(_BRAINS / "Brain Phu" / "UNI MATE").mkdir(parents=True, exist_ok=True)
+(_BRAINS / "Brain Default" / "UniMate").mkdir(parents=True, exist_ok=True)
+(_BRAINS / "Brain Phu" / "UniMate").mkdir(parents=True, exist_ok=True)
 
 os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
 os.environ["UNIMATE_SESSIONS_DB"] = str(_TMP / "conversations.db")

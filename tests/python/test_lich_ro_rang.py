@@ -144,8 +144,8 @@ check("user đồng ý thì tạo tiếp được bằng allow_no_channel",
       creates_ok(feat3, brain3, cron="0 7 * * *", mode="task", allow_no_channel=True))
 # Job script là loại giám sát: reminders.py cố ý IM LẶNG khi stdout rỗng, nên thiếu kênh báo
 # không phải lý do chặn - chặn nó là làm hỏng một tính năng đang đúng.
-(Path(brain3) / "UNI MATE" / "scripts").mkdir(parents=True, exist_ok=True)
-(Path(brain3) / "UNI MATE" / "scripts" / "ping.py").write_text("print('[SILENT]')\n", encoding="utf-8")
+(Path(brain3) / "UniMate" / "scripts").mkdir(parents=True, exist_ok=True)
+(Path(brain3) / "UniMate" / "scripts" / "ping.py").write_text("print('[SILENT]')\n", encoding="utf-8")
 check("job script KHÔNG bị chặn (giám sát im lặng là bình thường)",
       creates_ok(feat3, brain3, text="", mode="script", script="ping.py", delay_min=5))
 

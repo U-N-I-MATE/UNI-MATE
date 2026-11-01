@@ -165,7 +165,7 @@ def run_case(scen: str) -> int:
     base = Path(tempfile.mkdtemp(prefix="rsa5p-", dir=os.environ.get("TEMP") or None)).resolve()
     state, brains = base / "state", base / "brains"
     brain = brains / "Brain Default"
-    for d in (state, brain / "Inbox", brain / "agents", brain / "Notes", brain / "UNI MATE"):
+    for d in (state, brain / "Inbox", brain / "agents", brain / "Notes", brain / "UniMate"):
         d.mkdir(parents=True, exist_ok=True)
     (brain / "agents" / f"{MAKER}.md").write_text(FROZEN["maker_md"], encoding="utf-8", newline="\n")
     (brain / "agents" / f"{REVIEWER}.md").write_text(FROZEN["reviewer_md"], encoding="utf-8", newline="\n")
