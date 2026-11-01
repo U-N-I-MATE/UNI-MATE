@@ -3103,6 +3103,7 @@
   "store.inspect.enable.title": "Turn on right after installing",
   "store.inspect.enable.off_note": "Off by default because the pack runs code, so you can look it over first.",
   "store.inspect.enable.on_note": "The pack is data only, so turning it on makes it usable right away.",
+  "store.inspect.enable.on_note_code": "The pack runs code. It is on because you just connected this service yourself; turn it off if you want to look it over first.",
   "store.inspect.install_btn": "Install",
   "store.installing": "Installing…",
   "store.install_failed": "Install failed.",
