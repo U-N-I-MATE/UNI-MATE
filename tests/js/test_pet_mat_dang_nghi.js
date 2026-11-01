@@ -66,7 +66,9 @@ global.document = {
   body: { appendChild() {} },
   querySelectorAll: () => [],
 };
-global.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
+// Soi bộ biểu cảm CHUNG, nên dựng pet bằng hình ngôi sao (linh vật UNI MATE mặc định có bộ riêng,
+// xem test_pet_uni_bieu_cam.js).
+global.localStorage = { getItem: () => JSON.stringify({ shape: "star", palette: "cam" }), setItem() {}, removeItem() {} };
 global.performance = { now: () => dongHo };
 global.requestAnimationFrame = window.requestAnimationFrame;
 global.cancelAnimationFrame = window.cancelAnimationFrame;

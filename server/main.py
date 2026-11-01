@@ -15715,6 +15715,9 @@ async def service_worker():
 # ============================================
 _LOGO_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 _DEFAULT_LOGO = DASHBOARD_PATH / "logo.png"
+# Biểu tượng tab (16-32px): cùng linh vật nhưng bỏ má hồng, ở cỡ đó má chỉ là vệt nhoè (chủ dự án
+# chốt 01/11/2026). Chỉ dùng khi người dùng CHƯA tải logo riêng.
+_DEFAULT_FAVICON = DASHBOARD_PATH / "favicon.png"
 _MAX_LOGO_BYTES = 5 * 1024 * 1024   # 5MB
 
 
@@ -15780,8 +15783,9 @@ async def brand_theme_css():
 
 
 @app.get("/brand-logo")
-async def brand_logo():
-    p = _current_logo_file() or _DEFAULT_LOGO
+async def brand_logo(nho: str = ""):
+    # `nho=1`: thẻ <link rel=icon> xin bản cho tab; logo riêng của người dùng vẫn thắng.
+    p = _current_logo_file() or (_DEFAULT_FAVICON if nho and _DEFAULT_FAVICON.exists() else _DEFAULT_LOGO)
     if not p.exists():
         return JSONResponse({"error": "no logo"}, status_code=404)
     # cache ngắn: đổi ảnh xong thấy ngay trong ~1 phút; JS còn bust bằng ?v= khi vừa upload.
@@ -15791,8 +15795,9 @@ async def brand_logo():
 @app.get("/favicon.ico")
 async def favicon_ico():
     """Favicon = logo hiện tại. Trình duyệt LUÔN tự gọi /favicon.ico và cache rất lì;
-    trước đây route này trả 404 nên tab giữ icon cũ. Trả thẳng ảnh logo cho khớp app."""
-    p = _current_logo_file() or _DEFAULT_LOGO
+    trước đây route này trả 404 nên tab giữ icon cũ. Trả thẳng ảnh logo cho khớp app
+    (logo mặc định thì dùng bản cho tab, không má hồng)."""
+    p = _current_logo_file() or (_DEFAULT_FAVICON if _DEFAULT_FAVICON.exists() else _DEFAULT_LOGO)
     if not p.exists():
         return JSONResponse({"error": "no favicon"}, status_code=404)
     media = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",

@@ -53,7 +53,9 @@ const doc = {
 new Function("window", "document", "localStorage", "fetch", "requestAnimationFrame", "cancelAnimationFrame",
   "performance", "CustomEvent", "FormData", "setTimeout", "clearTimeout",
   fs.readFileSync(path.join(ROOT, "dashboard", "pet.js"), "utf8"))(
-  win, doc, { getItem: () => null, setItem() {} }, () => Promise.reject(new Error("offline")),
+  // Soi bộ biểu cảm CHUNG của mọi hình, nên dựng pet bằng hình ngôi sao. Linh vật UNI MATE (mặc
+  // định) có bộ biểu cảm riêng, soi ở test_pet_uni_bieu_cam.js.
+  win, doc, { getItem: () => JSON.stringify({ shape: "star", palette: "cam" }), setItem() {} }, () => Promise.reject(new Error("offline")),
   (cb) => { hangRaf.push(cb); return hangRaf.length; }, () => {}, { now: () => now },
   function () {}, function () { this.append = () => {}; }, henGio, () => {});
 const P = win.UniMatePet;

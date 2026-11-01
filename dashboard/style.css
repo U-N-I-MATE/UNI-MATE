@@ -4024,6 +4024,21 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 .pet-face { fill: var(--pet-face, #f28c28); }
 .pet-eyes { fill: var(--pet-eye, #201e1e); }
 .pet-line { fill: none; stroke: var(--pet-eye, #201e1e); stroke-width: 7; stroke-linecap: round; }
+/* Linh vật UNI MATE (hình `uni`, bản D2): mắt tròng trắng, con ngươi sẫm, đốm sáng; nét nhắm/cười vẽ trắng để
+   nổi trên thân tím; mắt tim hồng; má hồng mờ như bản thiết kế. */
+.pet-trong, .pet-dom { fill: #ffffff; }
+.pet-nguoi { fill: #1e1b33; }
+.pet[data-kieu-mat="longlanh"] .pet-line { stroke: #ffffff; }
+.pet[data-kieu-mat="longlanh"] .pet-eyes path:not(.pet-line) { fill: #f28db8; }
+.pet-ma { fill: #e9a6c9; fill-opacity: 0.6; }
+/* Linh vật UNI MATE: chấm vàng bật lên trên đầu khi có việc mới, hạ xuống khi buồn ngủ;
+   miệng mấp máy lúc đang đọc câu trả lời. */
+.pet-cham { transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+.pet[data-cham="len"] .pet-cham { transform: translateY(-70px); }
+.pet[data-cham="xuong"] .pet-cham { transform: translateY(11px); }
+.pet-mieng-noi { transform-box: fill-box; transform-origin: center; animation: petNoi .3s ease-in-out infinite alternate; }
+@keyframes petNoi { from { transform: scaleY(.45); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { .pet-cham { transition: none; } .pet-mieng-noi { animation: none; } }
 /* Vành quỹ đạo: MỘT path có dash xoay. Chỉ thấy rõ khi UNI MATE đang làm việc thật
    (thinking / speaking), lúc nghỉ thì mờ gần hết đúng như chủ dự án chốt. */
 .pet-ring {

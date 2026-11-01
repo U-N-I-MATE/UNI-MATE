@@ -11,4 +11,5 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 - **UNI MATE 01: bản đầu tiên của UNI MATE.** Trợ lý AI tự cài trên máy, sản phẩm của UNI TECH, Công ty TNHH Dịch vụ và Thương mại U.N.I.
 - **Mã nguồn mở theo giấy phép GNU AGPL-3.0**, kèm giấy phép thương mại của U.N.I cho ai muốn dùng mà không theo nghĩa vụ AGPL. Xem `LICENSE` và `NOTICE.md`.
 - **Gọi bằng giọng nói là "Uni"**, tên hiển thị là "UNI MATE". Tai nghe tự sửa các cách nghe nhầm hay gặp như "Diu ni", "Yu ni", "U ni mết".
+- **Linh vật UNI MATE mới, cũng là logo và biểu tượng app.** Thân tím, chấm vàng, má hồng, mắt to tròng trắng. Mặc định không có miệng; miệng chỉ hiện lúc đang đọc câu trả lời, lúc xong việc, lúc bạn thả tim và lúc micro bắt được giọng. Có việc nền trả kết quả thì chấm vàng bật lên trên đầu.
 - **Kho tiện ích riêng `unimate-store`** (377 gói) và **công cụ Zalo riêng `unimate-zalo`**.

@@ -1310,6 +1310,7 @@ function handleMessage(data) {
       }
     } catch (e) {}
     try { if (window.UniMateStar) window.UniMateStar.moment("work"); } catch (e) {}   // việc nền vừa trả kết quả
+    try { if (window.UniMatePet) window.UniMatePet.react("viecmoi"); } catch (e) {}   // linh vật bật chấm vàng: có việc mới
     return;
   }
   if (data.type === "status") {

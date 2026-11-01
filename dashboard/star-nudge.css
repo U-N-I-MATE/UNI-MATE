@@ -86,14 +86,20 @@
 @keyframes snTro { 0%, 100% { transform: translate(6px, 6px); } 50% { transform: translate(0, 0); } }
 @keyframes snCham { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(.75); opacity: .6; } }
 
-/* Linh vật: ngôi sao cam của logo UNI MATE (logo.svg), màu cố định như logo ở cả hai tông */
+/* Linh vật UNI MATE (logo.svg): Tím công nghệ #5B2DA0 ở giao diện sáng, tím sáng #8568C3 trong
+   thang UNI TECH ở giao diện tối (thân tím đậm chìm vào nền tối); nét mặt trắng, chấm vàng, má hồng. */
 .sn-sao { width: 100%; height: 100%; overflow: visible; }
-.sn-hinh { fill: #FD6100; }
-.sn-vien { fill: none; stroke: #FBBA9C; stroke-width: 6.5; stroke-linejoin: round; }
-.sn-cuoi { fill: none; stroke: #1F1F1F; stroke-width: 10; stroke-linecap: round; }
-.sn-mat ellipse { fill: #1F1F1F; }
-.sn-mat { transform-origin: 160px 152px; animation: snChop 4.5s infinite; }
-.sn-tim { fill: #fff; stroke: #1F1F1F; stroke-width: 2.4; stroke-linejoin: round; }
+.sn-hinh { fill: #8568C3; }
+:root[data-theme="light"] .sn-hinh { fill: #5B2DA0; }
+.sn-cham { fill: #C9A24B; }
+.sn-ma { fill: #E9A6C9; fill-opacity: .6; }
+.sn-net { fill: none; stroke: #fff; stroke-width: 8; stroke-linecap: round; }
+.sn-mieng { fill: #fff; stroke: #fff; stroke-width: 3; stroke-linejoin: round; }
+.sn-luoi { fill: #F28DB8; }
+.sn-trong { fill: #fff; }
+.sn-nguoi { fill: #1E1B33; }
+.sn-mat { transform-box: fill-box; transform-origin: center; animation: snChop 4.5s infinite; }
+.sn-tim { fill: #fff; }
 .sn-lap path { fill: #FFB627; animation: snLap 2.4s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
 .sn-lap path:nth-child(2) { animation-delay: .8s; }
 .sn-lap path:nth-child(3) { animation-delay: 1.6s; }

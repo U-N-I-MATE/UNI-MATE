@@ -1,11 +1,13 @@
-/* Logo, favicon và linh vật mặc định là CÙNG MỘT nhân vật: ngôi sao màu cam (0.64.47).
+/* Logo, favicon và linh vật mặc định là CÙNG MỘT nhân vật: linh vật UNI MATE.
 
        node tests/js/test_logo_linh_vat.js
 
-   Chủ dự án chốt 24/09: linh vật chính thức của UNI MATE là ngôi sao cam, mắt cười ^^; logo,
-   favicon và linh vật mặc định đều phải là hình đó. Ba thứ này nằm ở ba chỗ khác nhau
-   (dashboard/logo.svg + các PNG xuất từ nó, bảng SHAPES/PALETTES trong pet.js, MAC_DINH), nên
-   rất dễ lệch nhau khi một chỗ được sửa mà chỗ kia quên. Test này khoá sự trùng khớp đó.
+   Chủ dự án chốt 01/11/2026: linh vật UNI MATE là D2 "mắt long lanh" của UNI TECH (thân Tím
+   công nghệ #5B2DA0, chấm vàng, má hồng, mắt tròng trắng); logo, biểu tượng app, favicon và
+   linh vật mặc định đều là hình đó (thay ngôi sao cam của bản gốc). Ba thứ này nằm ở ba chỗ
+   khác nhau (dashboard/logo.svg + các PNG xuất từ nó, bảng SHAPES/PALETTES trong pet.js,
+   MAC_DINH), nên rất dễ lệch nhau khi một chỗ được sửa mà chỗ kia quên. Test này khoá sự trùng
+   khớp đó.
 
    KHÔNG dùng ký tự em dash. */
 const fs = require("fs");
@@ -20,19 +22,23 @@ function check(name, cond, extra) {
 
 const pet = read("dashboard/pet.js");
 const svg = read("dashboard/logo.svg");
-const dSao = (/star:\s+\{ key: "pet\.shape\.star",\s+d: "([^"]+)"/.exec(pet) || [])[1] || "";
-const cam = /cam:\s+\{ key: "pet\.color\.cam",\s+sun: \["(#\w{6})", "(#\w{6})"/.exec(pet) || [];
+const dThan = (/uni:\s+\{ key: "pet\.shape\.uni",\s+d: "([^"]+)"/.exec(pet) || [])[1] || "";
+const uni = /uni:\s+\{ key: "pet\.color\.uni",\s+sun: \["(#\w{6})"/.exec(pet) || [];
 
-check("linh vật mặc định là NGÔI SAO", /var MAC_DINH = \{[^}]*shape: "star"/.test(pet));
-check("linh vật mặc định màu CAM", /var MAC_DINH = \{[^}]*palette: "cam"/.test(pet));
-check("nút Đặt lại trả về đúng ngôi sao cam",
-  /P\.setCfg\(\{ shape: "star", palette: "cam",/.test(read("dashboard/console.js")));
-check("logo.svg vẽ ĐÚNG đường ngôi sao của linh vật", dSao.length > 50 && svg.split(dSao).length - 1 === 2,
-  "số lần xuất hiện: " + (svg.split(dSao).length - 1));
-check("thân logo cùng màu thân bảng Cam", !!cam[1] && svg.includes('fill="' + cam[1] + '"'), cam[1]);
-check("viền logo cùng màu vành bảng Cam", !!cam[2] && svg.includes('stroke="' + cam[2] + '"'), cam[2]);
-const dMat = (/<path d="(M[^"]+)"\s+fill="none" stroke="#1F1F1F"/.exec(svg) || [])[1] || "";
-check("logo có đôi mắt cười ^^ (đúng hai cung, đầu bo tròn)", (dMat.match(/Q/g) || []).length === 2 && /stroke-linecap="round"/.test(svg), dMat);
+check("linh vật mặc định là linh vật UNI MATE", /var MAC_DINH = \{[^}]*shape: "uni"/.test(pet));
+check("linh vật mặc định dùng bảng màu UNI MATE", /var MAC_DINH = \{[^}]*palette: "uni"/.test(pet));
+check("nút Đặt lại trả về đúng linh vật UNI MATE",
+  /P\.setCfg\(\{ shape: "uni", palette: "uni",/.test(read("dashboard/console.js")));
+check("logo.svg vẽ ĐÚNG đường thân của linh vật", dThan.length > 50 && svg.split(dThan).length - 1 === 1,
+  "số lần xuất hiện: " + (svg.split(dThan).length - 1));
+check("thân logo cùng màu thân bảng UNI MATE (Tím công nghệ)", uni[1] === "#5B2DA0" && svg.includes('fill="' + uni[1] + '"'), uni[1]);
+check("logo có chấm vàng #C9A24B", /<circle cx="160" cy="108.5" r="15.6" fill="#C9A24B"\/>/.test(svg));
+const trong = svg.match(/<ellipse [^>]*rx="14.04" ry="16.38" fill="#FFFFFF"\/>/g) || [];
+const nguoi = svg.match(/fill="#1E1B33"/g) || [];
+check("logo có đôi mắt tròng trắng, con ngươi tối", trong.length === 2 && nguoi.length === 2, trong.length + "/" + nguoi.length);
+check("logo không có miệng (miệng chỉ hiện ở con pet khi cần)", !/stroke=/.test(svg) && (svg.match(/<ellipse/g) || []).length === 6);
+check("má hồng nằm trong nhóm id=\"ma\" để favicon bỏ đi được", /<g id="ma">(<ellipse [^>]*fill="#E9A6C9"[^>]*\/>){2}<\/g>/.test(svg));
+check("favicon xuất từ logo.svg nhưng bỏ má hồng", /favicon\.png", khong_ma, 64/.test(read("tools/gen_logo.py")));
 check("logo nền trong suốt (không có hình nền)", !/<rect/.test(svg));
 
 // Các PNG phải là ảnh vuông đúng cỡ (đọc thẳng header PNG, khỏi cần thư viện ảnh).

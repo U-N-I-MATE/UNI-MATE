@@ -40,7 +40,51 @@
     // đầu cánh (bán kính khoảng 100) vẫn nằm trong khung chân dung kể cả khi có vành 1,14 lần.
     // Đừng phóng quá 1,17: vành của ô chọn hình dáng bắt đầu chạm mép khung (bán kính 118).
     star:     { key: "pet.shape.star",     d: "M145 81 Q160 59.4 175 81 L177.9 85.1 Q195.8 110.7 225.8 119.9 L230.6 121.3 Q255.7 128.9 239.8 149.8 L236.8 153.8 Q217.9 178.8 218.5 210.1 L218.6 215.1 Q219.1 241.4 194.3 232.8 L189.6 231.1 Q160 220.8 130.4 231.1 L125.7 232.8 Q100.9 241.4 101.4 215.1 L101.5 210.1 Q102.1 178.8 83.2 153.8 L80.2 149.8 Q64.3 128.9 89.4 121.3 L94.2 119.9 Q124.2 110.7 142.1 85.1 Z" },
+    // LINH VẬT UNI MATE (phương án D2 "Mắt long lanh", chủ dự án chốt 01/11/2026): đầu tai mèo màu Tím công nghệ,
+    // chấm vàng trên trán, má hồng, mắt tròng trắng. Lấy nguyên đường của bản thiết kế (viewBox -128..128), thu 0,78
+    // lần và đặt sao cho tâm hai mắt rơi đúng y=160 như mọi hình khác. Chấm vàng, má hồng và kiểu mắt nằm ở UNI_HINH.
+    uni:      { key: "pet.shape.uni",      d: "M75.76 100.7 Q75.76 60.14 97.6 60.14 Q121 60.14 121 81.98 Q160 69.5 199 81.98 Q199 60.14 222.4 60.14 Q244.24 60.14 244.24 100.7 V139.7 Q244.24 219.26 160 219.26 Q75.76 219.26 75.76 139.7 Z" },
   };
+
+  // Riêng hình `uni`: hai mắt đặt rộng như bản thiết kế (cách tâm 31,2, khi nép mép 22), kèm chấm vàng và má hồng
+  // vẽ thêm trên mặt, và mắt vẽ kiểu tròng trắng (xem longLanh). Hình khác giữ nguyên cách vẽ cũ.
+  var UNI_HINH = {
+    cach: 31.2, nep: 22, tamNep: 40,
+    deco: '<circle class="pet-cham" cx="160" cy="108.5" r="15.6" fill="#C9A24B"/>' +
+          '<ellipse class="pet-ma" cx="105.4" cy="181.8" rx="12.5" ry="7"/>' +
+          '<ellipse class="pet-ma" cx="214.6" cy="181.8" rx="12.5" ry="7"/>',
+  };
+
+  // Bộ biểu cảm của linh vật UNI MATE (bản thiết kế "Phuongan_Linhvat_UNIMATE_Bieucam", chủ dự án
+  // chốt 01/11/2026). Nét mắt nhắm theo đúng bản vẽ, to hơn các hình khác vì tròng mắt to hơn;
+  // dáng nào không có ở đây thì dùng bảng EYES chung (đã đổi sang tròng trắng qua longLanh).
+  var UNI_MAT = {
+    blink:  '<path class="pet-line" d="M-12.5 1.6 H12.5"/>',
+    happy:  '<path class="pet-line" d="M-12.5 6.2 Q0 -10.9 12.5 6.2"/>',
+    ratvui: '<path class="pet-line" d="M-12.5 6.2 Q0 -10.9 12.5 6.2"/>',
+    sleepy: '<path class="pet-line" d="M-12.5 -1.6 Q0 10.9 12.5 -1.6"/>',
+    cuoi:   '<ellipse rx="7.2" ry="17.5"/>',
+  };
+  // MIỆNG: mặc định KHÔNG có, chỉ hiện ở 04 lúc. Màu trắng như nét mắt nhắm (miệng tối chìm vào
+  // thân tím ở giao diện sáng, tương phản 1,9), to gấp 1,5 lần bản vẽ vì pet trong app chỉ rộng
+  // chừng 38px. Rất vui là nửa vầng trăng có lưỡi hồng (dáng tam giác cũ trông như miệng mèo).
+  // Toạ độ theo bản vẽ D2 (mắt ở y=14); miengSvg() quy về toạ độ con pet. Màu ghi bằng style
+  // để không bị luật tô hồng của mắt tim (.pet-eyes path) đè lên.
+  var TRANG = "fill:#ffffff;stroke:#ffffff;stroke-linejoin:round;stroke-linecap:round";
+  var MIENG = {
+    cuoi:   '<path d="M-11 42 Q0 52 11 42" style="fill:none;stroke:#ffffff;stroke-width:5;stroke-linecap:round"/>',
+    noi:    '<ellipse class="pet-mieng-noi" cx="0" cy="47" rx="8" ry="10" style="fill:#ffffff"/>',
+    ngac:   '<ellipse cx="0" cy="46" rx="9" ry="10" style="fill:#ffffff"/>',
+    ratvui: '<path d="M-17 37 H17 Q17 58 0 58 Q-17 58 -17 37 Z" style="' + TRANG + ';stroke-width:3"/>' +
+            '<path d="M-9 55 Q0 46 9 55 Q0 59.5 -9 55 Z" style="fill:#f28db8"/>',
+  };
+  // Lúc nào thì có miệng: theo phản ứng đang diễn trước, rồi mới tới trạng thái của lượt.
+  var MIENG_PHAN_UNG = { cuoi: "cuoi", ratvui: "ratvui", surprised: "ngac" };
+  var MIENG_TRANG_THAI = { speaking: "noi", hearing: "ngac" };
+  function miengSvg(ten) {
+    var m = MIENG[ten];
+    return m ? '<g class="pet-mieng" transform="scale(0.78) translate(0 -14) translate(0 44) scale(1.5) translate(0 -44)">' + m + "</g>" : "";
+  }
 
   // Mỗi bảng màu tự mang cả hai tông: [thân, vành quỹ đạo, dự phòng]. Tông theo giao diện đang bật
   // (unimateTheme), nên pet không bao giờ chói lên giữa nền tối.
@@ -81,6 +125,9 @@
     thanhthien: { key: "pet.color.thanhthien", sun: ["#1EA3C8", "#6BCBE5", "#D4EBF2"], moon: ["#4EBBDA", "#85CCE0", "#1D2A2D"] },
     cham:       { key: "pet.color.cham",       sun: ["#4052C9", "#969FDF", "#D8DBEE"], moon: ["#6A77CC", "#9BA3D9", "#1D1F2D"] },
     tim:        { key: "pet.color.tim",        sun: ["#AD55C3", "#D3A6DE", "#E9D9ED"], moon: ["#BA7CCA", "#D0AAD9", "#2A1D2D"] },
+    // UNI: màu THƯƠNG HIỆU từ UNI MATE 01, Tím công nghệ #5B2DA0 của UNI TECH; tông tối lấy sắc sáng hơn cùng
+    // thang màu UNI TECH (#8568C3) để thân không chìm vào nền tối.
+    uni:        { key: "pet.color.uni",        sun: ["#5B2DA0", "#BDABED", "#EEE4FF"], moon: ["#8568C3", "#BDABED", "#23004E"] },
     ruby:       { key: "pet.color.ruby",       sun: ["#D83137", "#E78E91", "#F1D5D6"], moon: ["#D76064", "#E09497", "#2D1D1D"] },
   };
 
@@ -141,7 +188,7 @@
   // `color` / `eyeColor` là mã màu của ô TỰ CHỌN. Chúng nằm sẵn trong cấu hình kể cả khi đang
   // dùng màu có sẵn, để bấm lại ô tự chọn là ra đúng màu lần trước chứ không về một màu lạ.
   // Mặc định là LINH VẬT CHÍNH THỨC: ngôi sao màu cam, trùng logo (chủ dự án chốt 24/09, 0.64.47).
-  var MAC_DINH = { enabled: true, shape: "star", palette: "cam", side: "right", pos: 0.62, size: 72, eye: "den", eyeSize: 1, color: "#fd6100", eyeColor: "#2a62b0" };
+  var MAC_DINH = { enabled: true, shape: "uni", palette: "uni", side: "right", pos: 0.62, size: 72, eye: "den", eyeSize: 1, color: "#5b2da0", eyeColor: "#2a62b0" };
 
   // DÁNG LIẾC - chữ ký của nhân vật. Linh vật KHÔNG nhìn thẳng lúc nghỉ: nó liếc chéo lên
   // phía trên bên phải, đúng như hình logo tĩnh. Nhìn thẳng thì ra một cái mặt cười vô hồn;
@@ -174,6 +221,9 @@
     // Đang nghĩ: hai tròng nhìn chéo lên, một bên hẹp hơn một chút cho ra vẻ đang lục trí nhớ.
     thinking:   ['<ellipse cx="2" cy="-8" rx="6.4" ry="15"/>', '<ellipse cx="2" cy="-9" rx="7.6" ry="18"/>'],
     happy:      '<path class="pet-line" d="M-9 6 Q0 -7 9 6"/>',
+    // Hai phản ứng của linh vật UNI MATE (xem UNI_MAT, MIENG); hình khác diễn bằng mắt cười.
+    cuoi:       '<path class="pet-line" d="M-9 6 Q0 -7 9 6"/>',
+    ratvui:     '<path class="pet-line" d="M-9 6 Q0 -7 9 6"/>',
     // Hai gạch ngang lúc ĐANG NGHĨ. Cố ý NGẮN hơn dáng chớp mắt và hơi nhếch lên: chớp mắt là
     // mắt NHẮM (vệt kéo hết bề ngang con mắt), còn đây là mắt lim dim nghĩ ngợi - hai thứ đó
     // trông giống nhau thì một cú chớp giữa lúc nghĩ nhìn như máy bị khựng.
@@ -254,7 +304,13 @@
     xong:   { mat: ["happy"],     ms: 1700, anim: "hop" },
     choang: { mat: ["dizzy"],     ms: 1500, anim: "shake" },
     thuc:   { mat: ["surprised"], ms: 700,  anim: "squish" },
+    // Người dùng thả tim / like một câu trả lời (sự kiện unimate:react-positive).
+    ratvui: { mat: ["ratvui"],    ms: 1900, anim: "hop" },
   };
+  // CÓ VIỆC MỚI (việc nền vừa trả kết quả): linh vật UNI MATE bật chấm vàng lên trên đầu như
+  // một cái chuông báo, giữ chừng này rồi hạ về.
+  var CHAM_LEN_MS = 4000;
+  var chamLenDen = 0, chamTimer = 0;
   // Ngồi yên bao lâu thì ngủ gật (ms). Chỉ khi ĐANG NGHỈ: đang nghe, nghĩ, nói thì không ngủ.
   var NGU_SAU = 90000;
 
@@ -448,6 +504,7 @@
           '<g class="pet-rig">' +
             '<path class="pet-ring" pathLength="360"></path>' +
             '<path class="pet-face"></path>' +
+            '<g class="pet-deco"></g>' +
             '<g class="pet-eyes"></g>' +
           '</g>' +
         '</svg>' +
@@ -505,6 +562,9 @@
     var d = SHAPES[cfg.shape].d;
     pFace.setAttribute("d", d);
     pRing.setAttribute("d", d);
+    var deco = el.querySelector(".pet-deco");
+    if (deco) deco.innerHTML = cfg.shape === "uni" ? UNI_HINH.deco : "";
+    el.dataset.kieuMat = cfg.shape === "uni" ? "longlanh" : "";
     var tone = toneCua(cfg.palette, cfg.color);
     el.style.setProperty("--pet-face", tone[0]);
     el.style.setProperty("--pet-ring", tone[1]);
@@ -567,18 +627,69 @@
   // sang nửa thân còn nhìn thấy, và xích lại gần nhau một chút cho vừa chỗ. Đừng để chúng
   // đứng yên giữa mặt: một nửa mặt bị mép màn hình cắt mất thì con mắt bên kia cũng mất theo,
   // và cái thò ra chỉ còn một con mắt rưỡi.
+  // MẮT LONG LANH (linh vật UNI MATE, bản D2): mỗi con mắt dạng elip của bảng EYES vẽ thành tròng trắng, con
+  // ngươi sẫm hơi lệch xuống và một đốm sáng, đúng tỉ lệ bản thiết kế (mắt thường rx 7,2 ry 17,5 ra tròng 14 x 16,4,
+  // con ngươi 8,6 x 10,9, đốm sáng bán kính 3,9). Dáng nét (nhắm, cười, ngủ) giữ nguyên hình, chỉ đổi màu nét sang
+  // trắng bằng CSS. Kết quả nhớ lại theo từng chuỗi vì bảng EYES chỉ có vài chục dáng.
+  var _phongNet = {};
+  function phongNet(m) {
+    if (_phongNet[m] !== undefined) return _phongNet[m];
+    var out = m.replace(/(<path class="pet-line" d=")([^"]+)"/g, function (_, dau, d) {
+      return dau + d.replace(/-?\d+(?:\.\d+)?/g, function (x) { return String(Math.round(x * 1.39 * 100) / 100); }) + '"';
+    });
+    _phongNet[m] = out;
+    return out;
+  }
+
+  var _longLanh = {};
+  function longLanh(m) {
+    if (_longLanh[m] !== undefined) return _longLanh[m];
+    var so = function (x) { return Math.round(x * 100) / 100; };
+    var out = m.replace(/<ellipse([^>]*)\/>/g, function (_, a) {
+      var lay = function (k, mac) { var r = new RegExp(" " + k + '="(-?[\\d.]+)"').exec(a); return r ? +r[1] : mac; };
+      var cx = lay("cx", 0), cy = lay("cy", 0), rx = lay("rx", 7.2), ry = lay("ry", 17.5);
+      return '<ellipse class="pet-trong" cx="' + so(cx) + '" cy="' + so(cy) + '" rx="' + so(rx * 1.95) + '" ry="' + so(ry * 0.936) + '"/>' +
+             '<ellipse class="pet-nguoi" cx="' + so(cx) + '" cy="' + so(cy + ry * 0.178) + '" rx="' + so(rx * 1.19) + '" ry="' + so(ry * 0.624) + '"/>' +
+             '<circle class="pet-dom" cx="' + so(cx - rx * 0.43) + '" cy="' + so(cy - ry * 0.134) + '" r="' + so(rx * 0.54) + '"/>';
+    });
+    _longLanh[m] = out;
+    return out;
+  }
+
+  // Chấm vàng của linh vật UNI MATE: bật lên trên đầu khi có việc mới, hạ xuống khi buồn ngủ.
+  function datCham() {
+    var now = typeof performance !== "undefined" ? performance.now() : 0;
+    var v = chamLenDen > now ? "len" : (mood === "sleepy" ? "xuong" : "");
+    if (v) el.dataset.cham = v; else delete el.dataset.cham;
+  }
+  function coViecMoi() {
+    if (!el || el.hidden || cfg.shape !== "uni") return;
+    chamLenDen = (typeof performance !== "undefined" ? performance.now() : 0) + CHAM_LEN_MS;
+    datCham();
+    clearTimeout(chamTimer);
+    chamTimer = setTimeout(function () { if (el) datCham(); }, CHAM_LEN_MS + 20);
+  }
+
   function veMat(ten) {
     if (!gEyes) return;
-    var e = EYES[ten] || EYES.neutral;
+    var uni = cfg.shape === "uni";
+    var e = (uni && UNI_MAT[ten]) || EYES[ten] || EYES.neutral;
     var trai = typeof e === "string" ? e : e[0];
     var phai = typeof e === "string" ? e : e[1];
+    if (uni) {
+      // Dáng nét (buồn, nghi ngờ, gồng sức...) mượn của bảng chung thì phóng theo cỡ tròng mắt
+      // to của linh vật UNI MATE, giữ nguyên độ dày nét.
+      if (!UNI_MAT[ten]) { trai = phongNet(trai); phai = phongNet(phai); }
+      trai = longLanh(trai); phai = longLanh(phai);
+    }
     var a, b;
     if (el && el.dataset.out !== "1") {
-      var tam = cfg.side === "right" ? -34 : 34;   // tâm của cặp mắt, lệch về phía còn thấy
-      var c = cachMat(14);
+      var uniNep = cfg.shape === "uni";
+      var tam = (cfg.side === "right" ? -1 : 1) * (uniNep ? UNI_HINH.tamNep : 34);   // tâm của cặp mắt, lệch về phía còn thấy
+      var c = cachMat(uniNep ? UNI_HINH.nep : 14);
       a = [tam - c, 0]; b = [tam + c, 0];
     } else {
-      var c2 = cachMat(15);
+      var c2 = cachMat(cfg.shape === "uni" ? UNI_HINH.cach : 15);
       a = [-c2, 0]; b = [c2, 0];
     }
     var nua = (b[0] - a[0]) / 2;
@@ -596,9 +707,16 @@
     var kMax = Math.max(0.5, (nua - KHE_MAT / 2) / Math.max(nuaRongMat(trai), nuaRongMat(phai)));
     var kv = Math.min(k, kMax);
     var co = kv === 1 ? "" : " scale(" + (Math.round(kv * 1000) / 1000) + ")";
+    // Miệng (chỉ linh vật UNI MATE) nằm giữa hai mắt, trong cùng nhóm mắt nên liếc theo, nép theo.
+    var mieng = "";
+    if (uni) {
+      var km = phanUngTen ? MIENG_PHAN_UNG[phanUngTen] : MIENG_TRANG_THAI[state];
+      mieng = km ? '<g transform="translate(' + (160 + (a[0] + b[0]) / 2) + " 160)" + co + '">' + miengSvg(km) + "</g>" : "";
+      if (el) datCham();
+    }
     gEyes.innerHTML =
       '<g transform="translate(' + (160 + a[0]) + " " + (160 + a[1]) + ")" + co + '">' + trai + "</g>" +
-      '<g transform="translate(' + (160 + b[0]) + " " + (160 + b[1]) + ")" + co + '">' + phai + "</g>";
+      '<g transform="translate(' + (160 + b[0]) + " " + (160 + b[1]) + ")" + co + '">' + phai + "</g>" + mieng;
   }
 
   // ---- Vòng vẽ ----
@@ -786,6 +904,8 @@
     // Đang nghỉ mà con trỏ nằm trên thân: tò mò nhìn lại, không ngồi trơ.
     if (state === "idle" && diChuot) mood = "curious";
     if (state === "idle" && nguGat) mood = "sleepy";
+    // Linh vật UNI MATE nói bằng MIỆNG nên mắt vẫn mở (bản vẽ "Đang nói"); hình khác cười ^^.
+    if (state === "speaking" && cfg.shape === "uni") mood = "neutral";
     // Vào lại trạng thái nghĩ thì bắt đầu từ dáng ĐẦU của NGHI_MAT và chờ đủ một nhịp mới đổi.
     // Không đặt lại thì mốc cũ đã trôi qua từ lâu, nên vừa bắt đầu nghĩ là mắt nháy sang dáng
     // kia ngay lập tức, trông như giật.
@@ -804,6 +924,7 @@
     if (!p || !el || el.hidden) return;
     var now = typeof performance !== "undefined" ? performance.now() : 0;
     phanUngTen = p.mat[Math.floor(Math.random() * p.mat.length)];
+    if (ten === "xong" && cfg.shape === "uni") phanUngTen = "cuoi";
     mood = phanUngTen;
     if (!dangChop) veMat(mood);
     vuiDen = now + p.ms;                 // vòng vẽ trả về trạng thái thật khi hết giờ
@@ -1031,6 +1152,7 @@
       else choXong = true;
       return;
     }
+    if (ten === "viecmoi") { coViecMoi(); return; }
     if (PHAN_UNG[ten]) dienPhanUng(ten);
   }
   // `tam`: đổi TẠM lúc đang kéo thanh trượt hay rê trong bảng chọn màu. Con pet đổi ngay cho
@@ -1060,6 +1182,8 @@
     veDauAn();
     try { window.unimateTheme && window.unimateTheme.on(function () { apDung(); veDauAn(); }); } catch (e) {}
     window.addEventListener("unimate:i18n", function () { veMenu(); });
+    // Người dùng thả tim / like câu trả lời: linh vật RẤT VUI (cùng sự kiện thẻ mời tặng sao nghe).
+    window.addEventListener("unimate:react-positive", function () { react("ratvui"); });
     // Logo riêng của người dùng thắng linh vật, nên phải hỏi máy chủ một lượt. Hỏi SAU khi
     // đã vẽ bằng localStorage: chờ mạng xong mới vẽ thì thanh bên nháy một nhịp lúc mở trang.
     fetch("/settings").then(function (r) { return r.json(); }).then(function (j) {
@@ -1091,8 +1215,11 @@
     var d = (SHAPES[shape] || SHAPES.circle).d;
     var tone = toneCua(palette, o.mau);
     var mat = mauMatCua(o.mat, o.mauMat) || mauMatTuDong(tone[0]);
-    var lx = o.liecX === undefined ? LIEC_X : Number(o.liecX);
-    var ly = o.liecY === undefined ? LIEC_Y : Number(o.liecY);
+    // Linh vật UNI MATE nhìn thẳng ở chân dung, đúng như bản thiết kế D2 (mắt cân giữa chấm vàng
+    // và hai má); các hình khác giữ dáng liếc cũ.
+    var uni = shape === "uni";
+    var lx = o.liecX === undefined ? (uni ? 0 : LIEC_X) : Number(o.liecX);
+    var ly = o.liecY === undefined ? (uni ? -1.58 : LIEC_Y) : Number(o.liecY);
     var ex = 160 + lx, ey = 160 + ly;
     // Vành dùng CHUNG path với thân rồi phóng 1,1 lần quanh tâm, y hệt con pet sống (xem
     // .pet-ring trong style.css). Khai một hình, hai chỗ không bao giờ lệch dáng nhau.
@@ -1113,6 +1240,22 @@
     var k = heSo(o.coMat);
     var cach = 15 * (1 + (k - 1) * 0.47);
     var rx = 7.2 * k, ry = 17.5 * k;
+    if (uni) {
+      // Linh vật UNI MATE: chân dung là ảnh SVG đứng riêng (avatar, dấu ấn thanh bên), không chắc
+      // nằm trong .pet nên màu tròng trắng, con ngươi, má hồng ghi thẳng vào thuộc tính.
+      var cu = UNI_HINH.cach * (1 + (k - 1) * 0.47);
+      var mat2 = function (x) {
+        // Tròng trắng ghi cx, cy, rx, ry trước (đó là "con mắt" khi đo khung, xem
+        // test_pet_chan_dung_hai_mat); con ngươi, đốm sáng ghi màu trước.
+        return longLanh('<ellipse cx="' + x + '" cy="' + ey + '" rx="' + rx + '" ry="' + ry + '"/>')
+          .replace(/<ellipse class="pet-trong" ([^/]*)\/>/, '<ellipse $1 fill="#ffffff"/>')
+          .replace('class="pet-nguoi"', 'fill="#1e1b33"').replace('class="pet-dom"', 'fill="#ffffff"');
+      };
+      return '<svg viewBox="' + (o.vanh ? "42 42 236 236" : "58 58 204 204") + '" aria-hidden="true">' + vanh +
+        '<path d="' + d + '" fill="' + tone[0] + '"/>' +
+        UNI_HINH.deco.replace(/class="pet-ma"/g, 'fill="#e9a6c9" fill-opacity="0.6"').replace('class="pet-cham" ', "") +
+        mat2(ex - cu) + mat2(ex + cu) + "</svg>";
+    }
     return '<svg viewBox="' + (o.vanh ? "42 42 236 236" : "58 58 204 204") + '" aria-hidden="true">' + vanh +
       '<path d="' + d + '" fill="' + tone[0] + '"/>' +
       '<ellipse cx="' + (ex - cach) + '" cy="' + ey + '" rx="' + rx + '" ry="' + ry + '" fill="' + mat + '"/>' +

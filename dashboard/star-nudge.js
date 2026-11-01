@@ -62,33 +62,45 @@
     return false;
   }
 
-  // ── Linh vật: đúng ngôi sao cam của logo UNI MATE (dashboard/logo.svg) ─────────────────────
-  // Chủ repo 25/10: "lấy sao giống hình icon unimate sẵn có". Cùng đường hình, cùng màu thân
-  // #FD6100 và viền #FBBA9C với logo; chỉ đổi nét mặt theo từng màn:
-  //   vui   - mắt cười ^^ y như logo (màn mời);
-  //   mong  - mắt tròn dài như linh vật đang sống, ngước lên chờ (màn "tặng xong chưa");
-  //   thuong - mắt hình tim (màn cảm ơn).
-  // Sửa hình sao ở logo.svg / pet.js thì sửa luôn ở đây.
-  var SAO_UNIMATE = "M145 81 Q160 59.4 175 81 L177.9 85.1 Q195.8 110.7 225.8 119.9 L230.6 121.3 Q255.7 128.9 239.8 149.8 "
-    + "L236.8 153.8 Q217.9 178.8 218.5 210.1 L218.6 215.1 Q219.1 241.4 194.3 232.8 L189.6 231.1 Q160 220.8 130.4 231.1 "
-    + "L125.7 232.8 Q100.9 241.4 101.4 215.1 L101.5 210.1 Q102.1 178.8 83.2 153.8 L80.2 149.8 Q64.3 128.9 89.4 121.3 "
-    + "L94.2 119.9 Q124.2 110.7 142.1 85.1 Z";
-  function timTai(x, y) {
-    return '<path class="sn-tim" transform="translate(' + x + " " + y + ') scale(1.25)" '
+  // ── Linh vật: đúng linh vật UNI MATE của logo (dashboard/logo.svg) ──────────────────────
+  // Chủ repo 25/10: "lấy sao giống hình icon unimate sẵn có". Từ 01/11/2026 linh vật là D2 "mắt
+  // long lanh" của UNI TECH: cùng đường thân với logo và SHAPES.uni (pet.js), chấm vàng, má hồng,
+  // nét mặt trắng; chỉ đổi nét mặt theo từng màn, theo bộ biểu cảm chủ dự án chốt:
+  //   vui    - Rất vui: mắt cười ^^ và miệng nửa vầng trăng có lưỡi hồng (màn mời);
+  //   mong   - mắt tròng trắng mở to, chớp chớp, chờ (màn "tặng xong chưa");
+  //   thuong - mắt hình tim, miệng cười nhẹ (màn cảm ơn).
+  // Sửa thân ở logo.svg / pet.js thì sửa luôn ở đây.
+  var THAN_UNIMATE = "M75.76 100.7 Q75.76 60.14 97.6 60.14 Q121 60.14 121 81.98 Q160 69.5 199 81.98 "
+    + "Q199 60.14 222.4 60.14 Q244.24 60.14 244.24 100.7 V139.7 Q244.24 219.26 160 219.26 Q75.76 219.26 75.76 139.7 Z";
+  // Nét mặt vẽ theo toạ độ bản thiết kế D2 (tâm thân ở gốc), nhóm này quy về toạ độ của thân.
+  var D2 = 'transform="translate(160 147.5) scale(0.78)"';
+  var MIENG = 'transform="translate(0 44) scale(1.5) translate(0 -44)"';
+  function timTai(x) {
+    return '<path class="sn-tim" transform="translate(' + x + ' 16) scale(1.5)" '
       + 'd="M0 9C-3-1-15-1-13 -7C-11.5-12-4-12 0-5C4-12 11.5-12 13-7C15-1 3-1 0 9Z"/>';
+  }
+  function matTrong(x) {
+    return '<ellipse class="sn-trong" cx="' + x + '" cy="14" rx="18" ry="21"/>'
+      + '<ellipse class="sn-nguoi" cx="' + x + '" cy="18" rx="11" ry="14"/>'
+      + '<circle class="sn-trong" cx="' + (x - 4) + '" cy="11" r="5"/>';
   }
   function linhVat(mat) {
     var mat_ = mat === "thuong"
-      ? timTai(134.5, 163) + timTai(185.2, 163)
+      ? timTai(-40) + timTai(40)
+        + '<g ' + MIENG + '><path class="sn-net" style="stroke-width:5" d="M-11 42 Q0 52 11 42"/></g>'
       : mat === "mong"
-        ? '<g class="sn-mat"><ellipse cx="141" cy="152" rx="7.2" ry="15"/><ellipse cx="179" cy="152" rx="7.2" ry="15"/></g>'
-        : '<path class="sn-cuoi" d="M119.5 168.7 Q134.5 147.1 149.6 168.7 M170.2 168.7 Q185.2 147.1 200.1 168.7"/>';
+        ? '<g class="sn-mat">' + matTrong(-40) + matTrong(40) + "</g>"
+        : '<path class="sn-net" d="M-56 22 Q-40 0 -24 22 M24 22 Q40 0 56 22"/>'
+          + '<g ' + MIENG + '><path class="sn-mieng" d="M-17 37 H17 Q17 58 0 58 Q-17 58 -17 37 Z"/>'
+          + '<path class="sn-luoi" d="M-9 55 Q0 46 9 55 Q0 59.5 -9 55 Z"/></g>';
     return '<svg class="sn-sao" viewBox="36 30 248 248" aria-hidden="true">'
       + '<g class="sn-lap"><path d="M60 70l5 12 12 5-12 5-5 12-5-12-12-5 12-5z"/>'
       + '<path d="M262 56l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"/><path d="M268 214l3.5 8 8 3.5-8 3.5-3.5 8-3.5-8-8-3.5 8-3.5z"/></g>'
       + '<g class="sn-than">'
-      + '<path class="sn-vien" d="' + SAO_UNIMATE + '" transform="translate(160 160) scale(1.12) translate(-160 -160)"/>'
-      + '<path class="sn-hinh" d="' + SAO_UNIMATE + '"/>' + mat_ + "</g></svg>";
+      + '<path class="sn-hinh" d="' + THAN_UNIMATE + '"/>'
+      + '<g ' + D2 + '><circle class="sn-cham" cx="0" cy="-50" r="20"/>'
+      + '<ellipse class="sn-ma" cx="-70" cy="44" rx="16" ry="9"/><ellipse class="sn-ma" cx="70" cy="44" rx="16" ry="9"/>'
+      + mat_ + "</g></g></svg>";
   }
 
   // ── Hình minh hoạ: đúng chỗ nút Star trên trang GitHub ───────────────────────────────────

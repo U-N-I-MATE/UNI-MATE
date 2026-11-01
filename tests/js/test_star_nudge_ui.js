@@ -3,7 +3,7 @@
        node tests/js/test_star_nudge_ui.js
 
    Chủ repo 25/10/2026: mời ở khoảnh khắc vui (lần đầu thả tim là dễ nhất), viết cho người không
-   biết GitHub, hình minh hoạ trực quan, linh vật là ngôi sao của logo UNI MATE, số sao không viết
+   biết GitHub, hình minh hoạ trực quan, linh vật là linh vật của logo UNI MATE, số sao không viết
    cứng. Test này canh các dây nối dễ đứt im lặng: sửa chat-reactions.js hay app.js mà quên sự
    kiện thì thẻ không bao giờ hiện, và không ai thấy lỗi. */
 const fs = require("fs");
@@ -56,12 +56,14 @@ check("bước đăng nhập nhắc Continue with Google", /Continue with Google
 check("bước 2 nói đúng vị trí theo thiết bị", /dt \? "star\.step2_dt" : "star\.step2"/.test(SN));
 check("số sao đọc từ server, không viết cứng", /phanSo\(d\.count\)/.test(SN) && !/\b286\b/.test(SN));
 
-// 4. Linh vật là ngôi sao của logo UNI MATE
-const saoLogo = (LOGO.match(/<path d="(M145 81[^"]+)"/) || [])[1];
-const saoThe = (SN.match(/var SAO_UNIMATE = ([\s\S]*?);\n/) || [])[1];
-const noiChuoi = saoThe ? saoThe.replace(/"\s*\+\s*"/g, "").replace(/^"|"$/g, "").trim() : "";
-check("đường hình sao trùng logo.svg", !!saoLogo && noiChuoi === saoLogo, noiChuoi.slice(0, 40));
-check("màu thân và viền của logo", /fill: #FD6100/.test(CSS) && /stroke: #FBBA9C/.test(CSS));
+// 4. Linh vật là linh vật của logo UNI MATE (cùng đường thân với logo.svg và pet.js)
+const thanLogo = (LOGO.match(/<path d="(M75\.76[^"]+)"/) || [])[1];
+const thanThe = (SN.match(/var THAN_UNIMATE = ([\s\S]*?);\n/) || [])[1];
+const noiChuoi = thanThe ? thanThe.replace(/"\s*\+\s*"/g, "").replace(/^"|"$/g, "").trim() : "";
+check("đường thân trùng logo.svg", !!thanLogo && noiChuoi === thanLogo, noiChuoi.slice(0, 40));
+check("màu thân theo bộ nhận diện: tím #5B2DA0 nền sáng, #8568C3 nền tối",
+  /\.sn-hinh \{ fill: #8568C3; \}/.test(CSS) && /\[data-theme="light"\] \.sn-hinh \{ fill: #5B2DA0; \}/.test(CSS));
+check("nét mặt trắng, có chấm vàng và má hồng", /\.sn-net \{[^}]*stroke: #fff/.test(CSS) && /\.sn-cham \{ fill: #C9A24B/.test(CSS) && /\.sn-ma \{/.test(CSS));
 
 // 5. Chữ đủ to cho điện thoại, có chừa cho người tắt chuyển động
 const nho = [...CSS.matchAll(/\.sn-[a-z-]+[^{]*\{[^}]*font(?:-size)?:[^;}]*?(\d+(?:\.\d+)?)px/g)]

@@ -82,13 +82,14 @@ check("biên đảo mắt nhỏ hơn dáng nghỉ (giữ được chữ ký)",
 check("rời chuột thì trôi về dáng liếc chứ không về giữa", /if \(ranh\) \{\s*\n\s*if \(now > liecLuc\)/.test(pet));
 // Chân dung nhận được hướng liếc KHÁC (ô xem thử lớn trong cài đặt trợ lý liếc trái-xuống),
 // nhưng MẶC ĐỊNH vẫn phải là dáng liếc chữ ký - không thì mọi avatar đổi hướng nhìn một lượt.
-check("chân dung tĩnh mặc định vẫn dùng đúng dáng liếc",
-  /o\.liecX === undefined \? LIEC_X/.test(pet) && /o\.liecY === undefined \? LIEC_Y/.test(pet)
+// Riêng linh vật UNI MATE nhìn thẳng ở chân dung, đúng bản thiết kế D2 (chủ dự án chốt 01/11/2026).
+check("chân dung tĩnh mặc định vẫn dùng đúng dáng liếc (linh vật UNI MATE nhìn thẳng)",
+  /o\.liecX === undefined \? \(uni \? 0 : LIEC_X\)/.test(pet) && /o\.liecY === undefined \? \(uni \? -1\.58 : LIEC_Y\)/.test(pet)
   && /var ex = 160 \+ lx, ey = 160 \+ ly;/.test(pet));
 
 // ---- 3. Nép ở mép: mắt né sang nửa còn nhìn thấy ----
 check("nép bên phải thì mắt dồn sang TRÁI và ngược lại",
-  /var tam = cfg\.side === "right" \? -34 : 34;/.test(pet));
+  /var tam = \(cfg\.side === "right" \? -1 : 1\) \* \(uniNep \? UNI_HINH\.tamNep : 34\);/.test(pet));
 check("nép thì ghìm tầm mắt lại", /var ghim = el\.dataset\.out === "1" \? 1 : 0\.45;/.test(pet));
 check("biểu cảm tả MỘT con mắt quanh gốc, không phải cả cặp",
   !/EYES = \{[\s\S]{0,200}cx="145"/.test(pet));
