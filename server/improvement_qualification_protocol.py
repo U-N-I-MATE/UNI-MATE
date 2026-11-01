@@ -142,7 +142,7 @@ def validate_startup3(value):
             or _within(env['APPDATA'], root) != home / 'AppData' / 'Roaming'
             or _within(env['LOCALAPPDATA'], root) != home / 'AppData' / 'Local'):
         raise ValueError('qualification_home_inconsistent')
-    for name in ('TEMP', 'TMP', 'JAVIS_STATE_DIR', 'BRAINS_DIR', 'OBSIDIAN_VAULT_PATH', 'BRAIN_PATH', 'SOURCES_PATH'):
+    for name in ('TEMP', 'TMP', 'UNIMATE_STATE_DIR', 'BRAINS_DIR', 'OBSIDIAN_VAULT_PATH', 'BRAIN_PATH', 'SOURCES_PATH'):
         _within(env[name], root)
     if value['kind'] == 'preflight':
         if q['version'] != 1 or q['attempt_link'] is not None: raise ValueError('qualification_preflight_link_forbidden')

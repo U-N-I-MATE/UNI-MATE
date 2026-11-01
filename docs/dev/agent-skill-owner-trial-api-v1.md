@@ -30,8 +30,8 @@ membership. Native user root is the default `Path.home()/".claude"`; custom root
 unsupported. Collector gates and unknown trial invariants remain separate.
 
 Resolve the current ordinary SDK binary without mutating discovery. Its priority is
-JAVIS_CLAUDE_CLI, then the actual tim_binary filesystem/cache selection, not the separate
-find_claude_cli/JAVIS_CLAUDE_BIN path. Pin only the strictly projected persisted selection
+UNIMATE_CLAUDE_CLI, then the actual tim_binary filesystem/cache selection, not the separate
+find_claude_cli/UNIMATE_CLAUDE_BIN path. Pin only the strictly projected persisted selection
 and that exact current binary through create_pin. Unresolved/unsupported current binaries
 do not trigger a search for an older qualified installation or the SDK bundled binary.
 Metadata paths never run native version/auth checks. Explicit start performs actual adapter

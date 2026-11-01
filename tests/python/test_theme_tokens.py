@@ -46,7 +46,7 @@ _hard = [c for c in re.findall(r"#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)", CP_RULES)
          if not re.fullmatch(r"rgba?\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)", c)]
 check(f"cp-css không gõ cứng màu (còn: {_hard})", not _hard)
 
-check("khung nhập ở tab Trò chuyện dùng đúng nền của thanh nhập màn Javis",
+check("khung nhập ở tab Trò chuyện dùng đúng nền của thanh nhập màn UNI MATE",
       ".chatpage-slot .hud-voice{ background:var(--bg2);" in CP_CSS)
 # 0.153.0: the owner approved a rounder composer (18px -> 24px).
 check("the Chat page composer has the same corners as the original (24px)",

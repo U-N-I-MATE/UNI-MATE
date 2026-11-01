@@ -1,5 +1,5 @@
 """
-cron_util.py - Bộ đọc & tính lịch cron 5 trường cho Javis (KHÔNG phụ thuộc thư viện ngoài).
+cron_util.py - Bộ đọc & tính lịch cron 5 trường cho UNI MATE (KHÔNG phụ thuộc thư viện ngoài).
 
 Vì project giữ dependency tối giản (không có croniter), module này tự parse biểu thức cron
 chuẩn 5 trường "phút giờ ngày-tháng tháng thứ" và tính LẦN CHẠY KẾ TIẾP sau một mốc thời gian.
@@ -10,7 +10,7 @@ thứ (sun..sat) chấp nhận. dow: 0=Chủ nhật..6=Thứ bảy (7 cũng = Ch
 @midnight @weekly @monthly @yearly/@annually. Ngữ nghĩa Vixie: nếu CẢ ngày-tháng lẫn thứ đều
 bị giới hạn (khác '*') thì 1 ngày khớp khi khớp MỘT trong hai (OR).
 
-Tính theo timezone truyền vào (Javis dùng giờ VN UTC+7 - offset cố định, không DST nên số học
+Tính theo timezone truyền vào (UNI MATE dùng giờ VN UTC+7 - offset cố định, không DST nên số học
 datetime an toàn).
 """
 from __future__ import annotations

@@ -5,12 +5,12 @@ Goal12–17 and code-first Phase1 apply. Pinned Harness² commit
 
 ## Source and transition decision before implementation
 
-| Source | Reuse | Javis adapter and reason |
+| Source | Reuse | UNI MATE adapter and reason |
 |---|---|---|
 | core/prompts.py blob9ccacf23b64ac15b06a1939f26224960f56d757c: compose_round,_tidy,_work,_lens,_st,_SurfaceText,ANSWER_FREE,EVIDENCE_BOUNDARY,_KEEP_BASE | Extract actual unchanged definitions, retaining exact AST/source hashes, copyright and Apache2.0. No executor/benchmark import. | Static narrow body surface replaces registry construction for Codex/OpenCode guardrail/plugin surfaces; minimal typed prompt inputs replace annotation-only spec/tree dependencies. Single checkpoint t=k=1 only. |
-| aggregate in same blob | Inspected; not selected for this adapter | Hardcodes k baseline rollouts and2k single-rollout candidates. Javis has multiple tuning cases/repeats; compose_round first checkpoint truthfully accepts their grouped evidence without inventing sample counts. |
-| core/recursion.py blobdda6b98cd5af100b8941f33cbb079462299c5280: run_parallel415,_run_stage; run_sequential530–559 | Match evidence shape, not copy executor | Upstream runs a NEW composed tree separately. Preserve Javis leases/cancel/ledger/native ownership and independently probe/qualify a new candidate. No second executor/ledger or imported finals-only selection. |
-| tests/test_workflow.py blob2b7ebeb1816346f606922816a6f3609c64e8f8cc | Inspected for reusable coverage | No direct compose prompt/adapter assertions; add meaningful Javis fixture/closed-contract tests and verbatim-source provenance checks. |
+| aggregate in same blob | Inspected; not selected for this adapter | Hardcodes k baseline rollouts and2k single-rollout candidates. UNI MATE has multiple tuning cases/repeats; compose_round first checkpoint truthfully accepts their grouped evidence without inventing sample counts. |
+| core/recursion.py blobdda6b98cd5af100b8941f33cbb079462299c5280: run_parallel415,_run_stage; run_sequential530–559 | Match evidence shape, not copy executor | Upstream runs a NEW composed tree separately. Preserve UNI MATE leases/cancel/ledger/native ownership and independently probe/qualify a new candidate. No second executor/ledger or imported finals-only selection. |
+| tests/test_workflow.py blob2b7ebeb1816346f606922816a6f3609c64e8f8cc | Inspected for reusable coverage | No direct compose prompt/adapter assertions; add meaningful UNI MATE fixture/closed-contract tests and verbatim-source provenance checks. |
 
 First functioning slice: exact upstream compose implementation renders a single
 checkpoint over a validated baseline and two existing distinct execution/domain

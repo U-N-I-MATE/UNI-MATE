@@ -1,16 +1,16 @@
-"""Khuôn THAM SỐ THẬT của MCP zalo-agent-cli 1.6.2 mà Javis gọi (0.64.84).
+"""Khuôn THAM SỐ THẬT của MCP zalo-agent-cli 1.6.2 mà UNI MATE gọi (0.64.84).
 
     python tests/run.py zalo_mcp_khuon      (KHÔNG mạng, MCP giả)
 
 Chủ thử ngày 29/09/2026: bot trả lời trong nhóm Zalo, câu trả lời hiện trong Hộp thư nhưng KHÔNG
 tới nhóm; chat riêng thì vẫn tới. Đọc mã nguồn MCP ở tag v1.6.2 (src/mcp/mcp-tools.js,
-message-buffer.js) mới thấy tài liệu mcp-guide.md và mã Javis lệch với thứ MCP thật sự đọc:
+message-buffer.js) mới thấy tài liệu mcp-guide.md và mã UNI MATE lệch với thứ MCP thật sự đọc:
 
   - `zalo_send_message` đọc `threadType` (0 = chat riêng, mặc định; 1 = nhóm), KHÔNG phải `type`.
     MCP bỏ qua khoá lạ, nên mọi tin gửi vào nhóm đi như chat riêng và Zalo không giao được.
   - `zalo_get_messages` đọc `since` (SỐ NGUYÊN, số thứ tự toàn cục của bộ đệm) và `limit` (1..100),
     KHÔNG có `cursor`. Trả về tin CŨ NHẤT TRƯỚC, tối đa `limit` tin, kèm `cursor` (số, của tin cuối
-    lô) và `hasMore`. Javis truyền `cursor` nên mỗi lần đọc lại 100 tin cũ nhất; bộ đệm giữ tới 500
+    lô) và `hasMore`. UNI MATE truyền `cursor` nên mỗi lần đọc lại 100 tin cũ nhất; bộ đệm giữ tới 500
     tin mỗi cuộc chat trong 2 giờ nên nick ở nhiều nhóm sôi nổi sẽ không bao giờ đọc tới tin mới.
   - Số thứ tự đó đếm lại từ đầu mỗi lần tiến trình MCP khởi động, nên `since` cũ giữ qua một lần
     khởi động lại là bỏ qua tin mới. Vì vậy `since` chỉ được giữ trong RAM và gắn với số hiệu
@@ -27,7 +27,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-zpkhuon-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-zpkhuon-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -50,7 +50,7 @@ def check(name, cond, them=""):
         _fails.append(name)
 
 
-CONN = {"id": "zk-1", "label": "Javis Vũ", "connector_id": "zalo"}
+CONN = {"id": "zk-1", "label": "Uni Vũ", "connector_id": "zalo"}
 CALLS = []              # (tool, args)
 DAP = {}                # tool -> hàm trả kết quả giả
 
@@ -114,7 +114,7 @@ def _get_messages(a):
 
 DAP["zalo_get_messages"] = _get_messages
 DAP["zalo_list_threads"] = lambda a: {"threads": [
-    {"threadId": "5550001", "name": "Lớp Javis OS", "threadType": "group"}]}
+    {"threadId": "5550001", "name": "Lớp UNI MATE", "threadType": "group"}]}
 
 BUFFER["tin"] = [(1, _msg(1)), (2, _msg(2)), (3, _msg(3))]
 
@@ -214,11 +214,11 @@ check("phiên dựng lại thì epoch KHÁC (số không bao giờ tái dùng)",
 EP["v"] = 6
 zc._TT.clear()
 DAP["zalo_list_threads"] = lambda a: {"threads": [
-    {"threadId": "5550001", "name": "Lớp Javis OS", "threadType": "group"}]}
+    {"threadId": "5550001", "name": "Lớp UNI MATE", "threadType": "group"}]}
 BUFFER["tin"] = [(1, _msg(31))]
 asyncio.run(zc.doc_mot_lan(dict(CONN)))       # nạp bảng lần đầu
 DAP["zalo_list_threads"] = lambda a: {"threads": [
-    {"threadId": "5550001", "name": "Lớp Javis OS", "threadType": "group"},
+    {"threadId": "5550001", "name": "Lớp UNI MATE", "threadType": "group"},
     {"threadId": "5559000", "name": "Test Bot Zalo", "threadType": "group"}]}
 BUFFER["tin"] = [(1, _msg(32, "5559000"))]   # tin có threadType, thread chưa có trong bảng
 EP["v"] = 7

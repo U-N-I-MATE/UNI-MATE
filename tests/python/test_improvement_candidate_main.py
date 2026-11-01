@@ -51,7 +51,7 @@ class MainCandidateTests(unittest.TestCase):
             for path, method in self.routes():
                 if method != "POST":
                     continue
-                response = self.client.post(path, cookies={"javis_session": "owner-cookie"},
+                response = self.client.post(path, cookies={"unimate_session": "owner-cookie"},
                     headers={"Origin": "https://foreign.example"}, json={})
                 self.assertEqual(response.status_code, 403, (path, response.text))
                 self.assertEqual(response.json()["blocked"], "web_security")

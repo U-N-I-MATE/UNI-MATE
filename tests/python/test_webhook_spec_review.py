@@ -96,8 +96,8 @@ async def rules_and_triage():
           r["decision"] == "invalid" and r["reason"] == "number_out_of_range")
     k = lambda v: ev({"dedup": {"business_paths": ["id"]}}, '{"id": ' + v + "}")["business_key"]["hash"]  # noqa: E731
     check("R1 P3: 1 and 1.0 are one business key (as eq says), \"1\" another", k("1") == k("1.0") != k('"1"'))
-    decomposed = '{"items": [{"name": "Gói TRỢ LÝ AI JAVIS"}]}'
-    r = ev({"filter": {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI JAVIS", "quantifier": "any"}},
+    decomposed = '{"items": [{"name": "Gói TRỢ LÝ AI UNI MATE"}]}'
+    r = ev({"filter": {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI UNI MATE", "quantifier": "any"}},
            decomposed)
     check("R1 P3: text in decomposed Unicode (NFD) matches the composed value (NFC compare)", r["decision"] == "run", r)
 
@@ -111,7 +111,7 @@ async def receiving():
     app = FastAPI()
     app.include_router(f.router)
     cl = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t")
-    # R2 P2-5: a provider-checked hook takes a real delivery that carries no Javis token.
+    # R2 P2-5: a provider-checked hook takes a real delivery that carries no UNI MATE token.
     hg, tg, err = f.create("/b1", name="GitHub", target="task", text="x", verify={"provider": "github", "secret": "gh-secret-1"})
     assert hg, err
     raw = b'{"action": "opened"}'
@@ -121,19 +121,19 @@ async def receiving():
                                                                      "Content-Type": "application/json"})
     bad = await cl.post(f"/hooks/{hg['id']}", content=raw, headers={"X-Hub-Signature-256": sig[:-1] + "0",
                                                                       "Content-Type": "application/json"})
-    tok_bad_sig = await cl.post(f"/hooks/{hg['id']}", content=raw, headers={"X-Javis-Token": tg,
+    tok_bad_sig = await cl.post(f"/hooks/{hg['id']}", content=raw, headers={"X-UniMate-Token": tg,
                                                                               "X-Hub-Signature-256": "sha256=00"})
     plain, tp, _ = f.create("/b1", name="Thường", target="task", text="x")
     no_tok = await cl.post(f"/hooks/{plain['id']}", content=b"{}")
-    check("R2 P2-5: a signed GitHub delivery without the Javis token is received (202); a wrong signature is 401 even "
+    check("R2 P2-5: a signed GitHub delivery without the UNI MATE token is received (202); a wrong signature is 401 even "
           "with the token; a hook without a provider still needs its token",
           ok.status_code == 202 and bad.status_code == 401 and tok_bad_sig.status_code == 401
           and no_tok.status_code == 401, (ok.status_code, ok.text[:200], bad.status_code, tok_bad_sig.status_code))
     # R3 P2-3: junk from many addresses never locks out a sender with a valid token.
     for i in range(700):
         await cl.post(f"/hooks/{plain['id']}", content=b"{}", headers={"X-Forwarded-For": f"203.0.113.{i % 250}",
-                                                                       "X-Javis-Token": "junk"})
-    good = await cl.post(f"/hooks/{plain['id']}", content=b"{}", headers={"X-Javis-Token": tp,
+                                                                       "X-UniMate-Token": "junk"})
+    good = await cl.post(f"/hooks/{plain['id']}", content=b"{}", headers={"X-UniMate-Token": tp,
                                                                           "X-Forwarded-For": "203.0.113.7"})
     for _ in range(40):
         await cl.post(f"/hooks/{plain['id']}", content=b"{}", headers={"X-Forwarded-For": "198.51.100.9"})
@@ -145,7 +145,7 @@ async def receiving():
           (good.status_code, noisy.status_code, other.status_code))
     f.update(plain["id"], {"enabled": False})
     for _ in range(40):
-        await cl.post(f"/hooks/{plain['id']}", content=b"{}", headers={"X-Javis-Token": tp, "X-Forwarded-For": "192.0.2.5"})
+        await cl.post(f"/hooks/{plain['id']}", content=b"{}", headers={"X-UniMate-Token": tp, "X-Forwarded-For": "192.0.2.5"})
     f.update(plain["id"], {"enabled": True})
     after = await cl.post(f"/hooks/{plain['id']}", content=b"{}", headers={"X-Forwarded-For": "192.0.2.5"})
     check("R3 P2-3: 401s from a hook that stopped receiving do not count against the sender", after.status_code == 401,
@@ -386,7 +386,7 @@ async def privacy_and_ops():
     code_x, resp_x = await f.accept_body(dict(hx, enabled=True), b"{}", "application/json", "")
     check("R1 P3: a hook switched off after the token check stores nothing (401)", code_x == 401
           and not st.page(hook_id=hx["id"])["items"], (code_x, resp_x))
-    # R2 P3: the token header cannot be one Javis stores with the event.
+    # R2 P3: the token header cannot be one UNI MATE stores with the event.
     _, _, err_h = f.create("/b1", name="Hdr", target="task", text="x", token_header="X-Request-Id")
     check("R2 P3: a token header named like a stored header (X-Request-Id) is refused", "store" in (err_h or ""), err_h)
     await cl.aclose()
@@ -632,19 +632,19 @@ async def whole_chain():
           b6["status"] == "unknown" and c6 == 200 and prev["may_repeat"] == ["crm"], (b6["status"], prev))
     check("R6 P2-6: confirming a preview after the hook changed is refused (409: preview again)", cc == 409, (cc, conf))
     mx.HTTP["by_host"]["amb6.example"] = 200
-    # R6 P2-7: a test event says so to the receiver in a header (a raw body cannot carry `_javis.test`).
+    # R6 P2-7: a test event says so to the receiver in a header (a raw body cannot carry `_unimate.test`).
     ht, tt, _ = f.create("/b1", name="Thử", target="", text="", level="full",
                          actions=[{"id": "crm", "kind": "http", "url": "https://test6.example/in", "body": "raw"}])
     mx.HITS.clear()
     code, resp = await f.test_send({"id": ht["id"], "payload": {"x": 1}, "confirm": True})
     await f.wait_idle()
     hits = [x for x in mx.HITS if x["host"] == "test6.example"]
-    check("R6 P2-7: a test send reaches the receiver with X-Javis-Test: 1", code == 200 and hits
-          and hits[0]["headers"].get("x-javis-test") == "1", (code, resp, hits[:1]))
+    check("R6 P2-7: a test send reaches the receiver with X-UniMate-Test: 1", code == 200 and hits
+          and hits[0]["headers"].get("x-unimate-test") == "1", (code, resp, hits[:1]))
     c, rl = await f.accept(ht["id"], tt, b'{"x": 2}', "application/json", "")
     await f.wait_idle()
     hits = [x for x in mx.HITS if x["host"] == "test6.example"]
-    check("R6 P2-7: a real event carries no test header", len(hits) == 2 and "x-javis-test" not in hits[1]["headers"])
+    check("R6 P2-7: a real event carries no test header", len(hits) == 2 and "x-unimate-test" not in hits[1]["headers"])
     # R6 P2-8: deleting a hook closes its events waiting for the owner; an ingest racing the delete stores nothing.
     hd, td, _ = f.create("/b1", name="Xoá", target="", text="", level="full",
                          actions=[{"id": "crm", "kind": "http", "url": "https://amb6.example/in"}])
@@ -663,7 +663,7 @@ async def whole_chain():
           waiting == "unknown" and closed == "cancelled", (waiting, closed))
     check("R6 P2-8: an ingest for a hook deleted after its token check stores nothing (401)",
           ci == 401 and n1 == n0, (ci, ri, n0, n1))
-    # R6 P2-9: a fault in Javis while one delivery runs leaves it unknown; the others finish.
+    # R6 P2-9: a fault in UNI MATE while one delivery runs leaves it unknown; the others finish.
     hg, tg, _ = f.create("/b1", name="Lỗi trong", target="", text="", level="full",
                          actions=[{"id": "a", "kind": "http", "url": "https://boom.example/in"},
                                   {"id": "b", "kind": "http", "url": "https://fine.example/in"}])
@@ -823,7 +823,7 @@ async def fix_review():
     left = s2._db.execute("SELECT COUNT(*) FROM events WHERE id=?", (rq["event_id"],)).fetchone()[0]
     check("R7 P2-3: a queued event of a deleted hook is cancelled, and retention removes it (no customer data kept "
           "forever)", stq == "cancelled" and left == 0, (stq, left))
-    # R7 P2-4: a fault in Javis BEFORE the send is retried (nothing went out), not left as "may have acted".
+    # R7 P2-4: a fault in UNI MATE BEFORE the send is retried (nothing went out), not left as "may have acted".
     hp, tp, _ = f.create("/b1", name="Lỗi trước", target="", text="", level="full",
                          actions=[{"id": "crm", "kind": "http", "url": "https://pre7.example/in"}])
     real_b = st.breaker_open_until
@@ -866,8 +866,8 @@ async def fix_review():
     ctx = {"delivery_id": "dlv_1", "event_id": "ev_1", "source": "test"}
     u = wa.target_url({"kind": "apps_script", "url": "https://script.google.com/macros/s/X/exec"}, ctx)
     u2 = wa.target_url({"kind": "apps_script", "url": "https://script.google.com/macros/s/X/exec"}, dict(ctx, source="http"))
-    check("R7 P3: an Apps Script test event carries javis_test=1 without delivery_ref query; a real one does not",
-          u.endswith("?javis_test=1") and "javis_test" not in u2, (u, u2))
+    check("R7 P3: an Apps Script test event carries unimate_test=1 without delivery_ref query; a real one does not",
+          u.endswith("?unimate_test=1") and "unimate_test" not in u2, (u, u2))
     # R7 P3: plugins allowed to use AI count among the AI hooks (they may run long).
     old_ph = f.deps.plugin_handler
     f.deps.plugin_handler = lambda b, slug, n: {"handler": lambda e, c: {"status": "completed"}, "ctx": None,
@@ -981,9 +981,9 @@ async def chain_review_two():
     # R8 P3: X-Request-ID is not a delivery key for a new hook.
     hx, tx, _ = f.create("/b1", name="Req id", target="task", text="x")
     a1 = await cl.post(f"/hooks/{hx['id']}", content=b"{}", headers={"content-type": "application/json",
-                                                                     "x-javis-token": tx, "x-request-id": "r1"})
+                                                                     "x-unimate-token": tx, "x-request-id": "r1"})
     a2 = await cl.post(f"/hooks/{hx['id']}", content=b"{}", headers={"content-type": "application/json",
-                                                                     "x-javis-token": tx, "x-request-id": "r1"})
+                                                                     "x-unimate-token": tx, "x-request-id": "r1"})
     check("R8 P3: two deliveries with the same X-Request-ID on a new hook are two events (it is a per-attempt id)",
           a1.status_code == 202 and a2.status_code == 202 and a1.json()["event_id"] != a2.json()["event_id"],
           (a1.status_code, a2.status_code, a2.text[:120]))

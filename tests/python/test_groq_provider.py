@@ -20,7 +20,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-groq-test-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-groq-test-"))
 
 import aux_engine  # noqa: E402
 import config as cfgmod  # noqa: E402
@@ -87,7 +87,7 @@ class _Fake(BaseHTTPRequestHandler):
             return
         msg = ({"role": "assistant", "content": None,
                 "tool_calls": [{"id": "c1", "type": "function",
-                                "function": {"name": "javis_connections", "arguments": "{}"}}]}
+                                "function": {"name": "unimate_connections", "arguments": "{}"}}]}
                if first else {"role": "assistant", "content": "Đã gọi tool xong"})
         out = {"choices": [{"message": msg, "finish_reason": "tool_calls" if first else "stop"}],
                "usage": {"prompt_tokens": 10, "completion_tokens": 5}}
@@ -103,7 +103,7 @@ _srv = HTTPServer(("127.0.0.1", 0), _Fake)
 threading.Thread(target=_srv.serve_forever, daemon=True).start()
 engine.GROQ_URL = f"http://127.0.0.1:{_srv.server_address[1]}/openai/v1/chat/completions"
 
-TOOLS = [{"fn": "javis_connections", "server": "javis", "name": "javis_connections",
+TOOLS = [{"fn": "unimate_connections", "server": "unimate", "name": "unimate_connections",
           "description": "liệt kê nguồn", "schema": {"type": "object", "properties": {}, "required": []}}]
 
 
@@ -111,7 +111,7 @@ async def _call(_args):
     return "Kết nối: POS, Lịch"
 
 
-ROUTE = {"javis_connections": {"call": _call}}
+ROUTE = {"unimate_connections": {"call": _call}}
 
 
 async def _run():
@@ -129,7 +129,7 @@ async def _run():
         kinds.append(ev["type"])
         if ev["type"] == "tool_call":
             called.append(ev.get("name"))
-    check("vòng tool MCP gọi được tool", called == ["javis_connections"])
+    check("vòng tool MCP gọi được tool", called == ["unimate_connections"])
     check("và trả về chữ sau khi có kết quả tool", "text" in kinds)
 
     # reasoning_effort gửi nhầm cho model thường là Groq trả 400 -> phải lọc theo model.

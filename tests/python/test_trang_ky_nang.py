@@ -50,7 +50,7 @@ def brain(td):
 
 
 def nhap(files, **kw):
-    td = tempfile.mkdtemp(prefix="javis-kynang-")
+    td = tempfile.mkdtemp(prefix="unimate-kynang-")
     dirs = brain(td)
     res = share_bundle.import_bundle(zip_of(files), "goi.zip", **dirs, **kw)
     return res, dirs["skills_root"]
@@ -91,7 +91,7 @@ check("skill không có 'name' lấy tên thư mục, không làm hỏng skill b
       sorted(res["imported"]) == ["skill:a", "skill:be"], res)
 
 # ---- 4. Trùng tên: bỏ qua đúng cái trùng, vẫn nhập cái mới ----
-td = tempfile.mkdtemp(prefix="javis-kynang-")
+td = tempfile.mkdtemp(prefix="unimate-kynang-")
 dirs = brain(td)
 (dirs["skills_root"] / "viet-email").mkdir()
 (dirs["skills_root"] / "viet-email" / "SKILL.md").write_text(SK("Viết email", "bản cũ"), encoding="utf-8")
@@ -103,7 +103,7 @@ check("bản cũ không bị ghi đè khi không tick ghi đè",
       "bản cũ" in (dirs["skills_root"] / "viet-email" / "SKILL.md").read_text(encoding="utf-8"))
 
 # ---- 5. Xuất skill = cấu trúc chuẩn, vòng tròn xuất → nhập ----
-td = tempfile.mkdtemp(prefix="javis-kynang-")
+td = tempfile.mkdtemp(prefix="unimate-kynang-")
 dirs = brain(td)
 for slug, ten in (("viet-email", "Viết email"), ("chot-don", "Chốt đơn")):
     (dirs["skills_root"] / slug).mkdir()

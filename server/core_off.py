@@ -1,9 +1,9 @@
-"""Năng lực MẶC ĐỊNH của Javis phải gỡ được, và trạng thái "đã gỡ" ghi ở STATE_DIR.
+"""Năng lực MẶC ĐỊNH của UNI MATE phải gỡ được, và trạng thái "đã gỡ" ghi ở STATE_DIR.
 
 Vì sao cần một module cho một file JSON
 ---------------------------------------
 Đích đến chủ dự án đặt ra (2026-09-03): bao giờ có kho thì xoá bớt, để lại đúng cấu trúc mặc
-định của Javis, còn lại người dùng tự chọn cài thêm plugin, skill hay kết nối. Bây giờ chưa xoá
+định của UNI MATE, còn lại người dùng tự chọn cài thêm plugin, skill hay kết nối. Bây giờ chưa xoá
 gì, nhưng cấu trúc phải sẵn từ trước, nếu không thì ngày xoá là một lần vá vội giữa đường.
 
 Cấu trúc đó chỉ cần một ý: **"đã gỡ" là DỮ LIỆU NGƯỜI DÙNG, không phải trạng thái của mã
@@ -59,7 +59,7 @@ def _doc() -> dict:
                 raise ValueError("gốc phải là object")
         except Exception as e:
             # File hỏng thì coi như CHƯA GỠ GÌ, không phải gỡ hết. Suy biến phải nghiêng về
-            # "người dùng thấy đủ năng lực" chứ không phải "Javis đột nhiên trống rỗng".
+            # "người dùng thấy đủ năng lực" chứ không phải "UNI MATE đột nhiên trống rỗng".
             print(f"[core_off] lỗi đọc {STORE.name}: {e}", file=sys.stderr)
             _cache.update(sig=sig, data={})
             return _cache["data"]

@@ -23,10 +23,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-turnctx-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
-os.environ.pop("JAVIS_ENABLE_USER_PLUGINS", None)
-os.environ.pop("JAVIS_ENABLE_VAULT_PLUGINS", None)
+_STATE = tempfile.mkdtemp(prefix="unimate-turnctx-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
+os.environ.pop("UNIMATE_ENABLE_USER_PLUGINS", None)
+os.environ.pop("UNIMATE_ENABLE_VAULT_PLUGINS", None)
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -71,7 +71,7 @@ def remove_plugins() -> None:
 
 
 def plugin_module(slug: str):
-    return sys.modules.get("javis_plugin_user_" + slug.replace("-", "_"))
+    return sys.modules.get("unimate_plugin_user_" + slug.replace("-", "_"))
 
 
 RECORDER = '''
@@ -145,11 +145,11 @@ check("no plugin at all: hook reports nobody listening", plugins_host.has_chatbo
 
 write_plugin("ctx-verdict", VERDICT)
 # User plugins load by default since 0.162.0, so "off" has to be said explicitly here.
-os.environ["JAVIS_ENABLE_USER_PLUGINS"] = "false"
+os.environ["UNIMATE_ENABLE_USER_PLUGINS"] = "false"
 p = turn()
-check("user plugin installed but JAVIS_ENABLE_USER_PLUGINS off: prompt unchanged", p == baseline() and "VERIFIED" not in p)
+check("user plugin installed but UNIMATE_ENABLE_USER_PLUGINS off: prompt unchanged", p == baseline() and "VERIFIED" not in p)
 
-os.environ["JAVIS_ENABLE_USER_PLUGINS"] = "true"
+os.environ["UNIMATE_ENABLE_USER_PLUGINS"] = "true"
 write_plugin("ctx-verdict", VERDICT, enabled=False)
 p = turn()
 check("plugin disabled in its manifest: prompt unchanged", p == baseline() and "VERIFIED" not in p)

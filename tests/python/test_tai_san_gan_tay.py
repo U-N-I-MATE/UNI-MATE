@@ -8,15 +8,15 @@ có đường nào để tự thêm vào - trong khi khung Project ngay bên c�
 Ba quyết định đáng canh, vì cả ba đều có cách làm sai trông hợp lý hơn:
 
 1. TRỘN hai nguồn lúc đọc, không thay thế. Máy vẫn dò như cũ (bắt được cả cuộc chat từ tháng
-   trước), người vẫn gắn được thứ máy không dò ra (file Javis ghi lặng lẽ giữa lượt). Trùng
+   trước), người vẫn gắn được thứ máy không dò ra (file UNI MATE ghi lặng lẽ giữa lượt). Trùng
    nhau thì bản GẮN TAY thắng: chỉ nó mới có id để gỡ và ghim.
 
 2. Brain lấy từ PHIÊN, không nhận từ client - y hệt luật của route project. Cho client khai
    brain là mở đường cho một cuộc trỏ sang file của brain khác, phá rào `_safe_path` bằng
    DỮ LIỆU chứ không bằng lỗi code, nên không rào nào bắt được.
 
-3. Gắn tay thì Javis phải THẤY. Không bơm vào system prompt thì nút thêm file chỉ là một danh
-   sách để ngắm: người dùng gắn bảng giá vào rồi hỏi ngay, và Javis trả lời như chưa hề thấy.
+3. Gắn tay thì UNI MATE phải THẤY. Không bơm vào system prompt thì nút thêm file chỉ là một danh
+   sách để ngắm: người dùng gắn bảng giá vào rồi hỏi ngay, và UNI MATE trả lời như chưa hề thấy.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
@@ -24,7 +24,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-gantay-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-gantay-"))
 
 from fastapi.testclient import TestClient  # noqa: E402
 import main  # noqa: E402
@@ -42,12 +42,12 @@ def check(name, cond, them=""):
 
 # Brain riêng trong thư mục tạm, cùng lối cô lập như test_tai_san_cuoc_chat: ghi vào brain
 # mặc định là rải file thật vào `brains/` của người chạy lẫn của CI.
-BRAIN = tempfile.mkdtemp(prefix="javis-brain-gantay-")
+BRAIN = tempfile.mkdtemp(prefix="unimate-brain-gantay-")
 broot = Path(BRAIN)
 # KHOÁ trần duyệt vào đúng brain này. Không đặt thì `_files_ceiling` cho localhost trần tới cả
 # ổ đĩa (chủ máy tin cậy), đường dẫn tương đối tính từ "/" chứ không từ brain, và test sẽ đo
 # nhầm một cấu hình khác hẳn cấu hình mà giao diện đang chạy.
-os.environ["JAVIS_FILES_ROOT"] = BRAIN
+os.environ["UNIMATE_FILES_ROOT"] = BRAIN
 (broot / "06 - Sources").mkdir(parents=True, exist_ok=True)
 (broot / "06 - Sources" / "bang-gia.md").write_text("Nước mắm 500ml: 120k", encoding="utf-8")
 (broot / "06 - Sources" / "brief.md").write_text("Brief landing", encoding="utf-8")
@@ -118,7 +118,7 @@ fs = {f["name"]: f for f in d["files"]}
 check("file gắn tay có trong danh sách", "bang-gia.md" in fs)
 check("và được đánh dấu là gắn tay (có id để gỡ/ghim)",
       fs.get("bang-gia.md", {}).get("manual") is True and fs.get("bang-gia.md", {}).get("id") == FID)
-check("file Javis tự dò ra vẫn còn nguyên", "ke-hoach.md" in fs)
+check("file UNI MATE tự dò ra vẫn còn nguyên", "ke-hoach.md" in fs)
 check("và KHÔNG bị đánh dấu gắn tay", fs.get("ke-hoach.md", {}).get("manual") is False)
 # Thứ mình chủ động gắn vào phải nằm chỗ mắt nhìn trước.
 check("phần gắn tay đứng TRƯỚC phần tự dò", d["files"][0]["manual"] is True)
@@ -128,7 +128,7 @@ ls = {l["url"]: l for l in d["links"]}
 check("link gắn tay có, kèm nhãn",
       ls.get("https://elegant.vn/", {}).get("manual") is True
       and ls.get("https://elegant.vn/", {}).get("label") == "Mẫu tham khảo")
-check("link Javis dò ra vẫn còn", ls.get("https://moc-viet.vn/bang-gia", {}).get("manual") is False)
+check("link UNI MATE dò ra vẫn còn", ls.get("https://moc-viet.vn/bang-gia", {}).get("manual") is False)
 
 # Gắn tay ĐÚNG file mà máy cũng dò ra: chỉ được hiện MỘT hàng, và phải là hàng gắn tay -
 # hàng tự dò không có id nên bấm gỡ không được, người dùng tưởng nút hỏng.
@@ -189,7 +189,7 @@ check("xoá hội thoại thì tài liệu gắn tay đi theo, không để lạ
       st.list_session_files("cuoc-khac") == [])
 
 # ============================================================
-# 7. Javis THẤY thứ được gắn - đây mới là điểm làm cho nút thêm có nghĩa
+# 7. UNI MATE THẤY thứ được gắn - đây mới là điểm làm cho nút thêm có nghĩa
 # ============================================================
 st.get_or_create("cuoc-prompt", brain=BRAIN, engine="cli", model="x")
 check("chưa gắn gì thì không có khối nào chen vào prompt",
@@ -203,7 +203,7 @@ check("link cũng có trong prompt", "https://elegant.vn/" in khoi)
 check("chưa ghim thì KHÔNG nạp nội dung", "120k" not in khoi)
 st.set_session_file_pinned("cuoc-prompt", pid2, True)
 khoi2 = main._session_block("cuoc-prompt")
-# Ghim bảng giá vào rồi thì người dùng nghĩ Javis đã BIẾT bảng giá, chứ không phải biết TÊN nó.
+# Ghim bảng giá vào rồi thì người dùng nghĩ UNI MATE đã BIẾT bảng giá, chứ không phải biết TÊN nó.
 check("ghim thì nạp luôn nội dung", "120k" in khoi2, khoi2[:300])
 check("khối của cuộc được ghép vào system prompt",
       "120k" in main.build_system_prompt(BRAIN, include_memory=False, include_skills=False,

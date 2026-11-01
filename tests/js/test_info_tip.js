@@ -42,9 +42,9 @@ const ctx = { window: { innerWidth: 1280, innerHeight: 800, matchMedia: () => ({
   document: { addEventListener: (k, f) => { docListeners[k] = f; }, createElement: () => el(""), body: bodyEl } };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(ROOT, "dashboard", "info-tip.js"), "utf8"), ctx);
-const JI = ctx.window.JavisInfo;
+const JI = ctx.window.UniMateInfo;
 const onClick = docListeners.click, onKey = docListeners.keydown;
-check("có JavisInfo.btn / body và trình nghe bấm, phím", JI && typeof JI.btn === "function" && typeof JI.body === "function" && !!onClick && !!onKey);
+check("có UniMateInfo.btn / body và trình nghe bấm, phím", JI && typeof JI.btn === "function" && typeof JI.body === "function" && !!onClick && !!onKey);
 const b = JI.btn('Xem <giải thích>');
 check("nút: là button, nhãn đọc được, nhãn được escape, aria-expanded=false",
   /^<button type="button" class="info-i" aria-expanded="false"/.test(b) && b.includes('aria-label="Xem &lt;giải thích&gt;"'), b);
@@ -81,7 +81,7 @@ check("điện thoại: popup thành bảng từ dưới lên", pops().length ==
 JI.close(false);
 
 // Các mục của tab Cài đặt: câu giải thích nằm trong khối i, ngoài mặt không còn.
-ctx.window.JavisInfo = JI;
+ctx.window.UniMateInfo = JI;
 global.window = ctx.window;
 const RAX = require(path.join(ROOT, "dashboard", "resonance-agent.js"));
 const ph = RAX.panelHtml({ slug: "a", status: "active", enabled: true }, "ready", [], []);

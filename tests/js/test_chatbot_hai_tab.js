@@ -45,10 +45,10 @@ check("nhãn tab: Hội thoại, Bot, Kênh, Thống kê (vi, en); khoá tab cũ
   VI["ib.tab_stats"] === "Thống kê" && !("ht.tab_kenh" in VI) && !("ht.tab_chatbot" in VI) && !("ht.tab_kenh" in EN) && !("ht.tab_chatbot" in EN));
 check("tab Bot dựng danh sách bot (chatbots.js); tài khoản kênh nằm ở tab Kênh",
   /function renderBot\(body\)/.test(CV) && /class="ht-tab-bot"><div class="ht-bot-ds"><\/div><\/div>/.test(CV) &&
-  /window\.JavisChatbots && window\.JavisChatbots\.render/.test(CV) && /renderSub\(body, window\.JavisInboxChannels/.test(CV));
+  /window\.UniMateChatbots && window\.UniMateChatbots\.render/.test(CV) && /renderSub\(body, window\.UniMateInboxChannels/.test(CV));
 check("KHÔNG dùng lại lớp 'ht-bot' (tên cũ của ô chọn bot ở Hòm thư, test_hoi_thoai_bo_loc canh nó)", !/class="ht-bot"/.test(CV));
 check("nhịp làm mới danh sách kênh chạy ở tab Kênh", /else if \(_tab === "kenh"\) \{\s*\n\s*taiTK\(true\);/.test(CV) &&
-  /if \(_tab === "kenh" && window\.JavisInboxChannels\) window\.JavisInboxChannels\.paint\(\);/.test(CV));
+  /if \(_tab === "kenh" && window\.UniMateInboxChannels\) window\.UniMateInboxChannels\.paint\(\);/.test(CV));
 
 // ---- 2. tab Kênh (Chatbot v5, inbox-channels.js) ----
 const KN = fs.readFileSync(path.join(root, "dashboard", "inbox-channels.js"), "utf8");
@@ -59,13 +59,13 @@ check("CANARY: xem mọi brain thì liệt kê MỌI tài khoản, kể cả kê
   /\(_tkMoiBrain \? "&tat_ca=1" : ""\)/.test(CV));
 check("chưa có tài khoản nào thì nói rõ (không để trống trơn)", /ht\.tk_rong/.test(KN) && VI["ht.tk_rong"] && EN["ht.tk_rong"]);
 check("'Tạo bot cho kênh này' mở form ngay tại tab Bot, không dựng lại tab", /if \(_tab !== "bot"\) chonTab\("bot"\);/.test(CV) &&
-  /javis:chatbot-new/.test(CV) && VI["ht.tk_tao_bot"] === "Tạo bot cho kênh này");
+  /unimate:chatbot-new/.test(CV) && VI["ht.tk_tao_bot"] === "Tạo bot cho kênh này");
 check("hộp thư trống chỉ sang tab Kênh (nơi thêm tài khoản)", /nut\.onclick = function \(\) \{ chonTab\("kenh"\); \};/.test(CV));
 
 // ---- 3. chip kênh trên thẻ bot: quản lý kênh không mất ----
-check("chip kênh kiểu bot là NÚT bấm được, gọi JavisConversations.suaKenh",
+check("chip kênh kiểu bot là NÚT bấm được, gọi UniMateConversations.suaKenh",
   /if \(k\.kind === "bot"\) \{\s*\n\s*return '<button type="button" class="cb-kenh-chip cb-kenh-sua" data-tk="'/.test(CB) &&
-  /window\.JavisConversations && window\.JavisConversations\.suaKenh/.test(CB));
+  /window\.UniMateConversations && window\.UniMateConversations\.suaKenh/.test(CB));
 check("chip kênh kiểu tài khoản (Zalo cá nhân) chỉ để đọc", /return '<span class="cb-kenh-chip" title="'/.test(CB));
 check("chip 'Thêm kênh' trên thẻ mở form Sửa thẳng ở bước chọn kênh",
   /class="cb-kenh-chip cb-kenh-them"/.test(CB) && /moForm\(b, \{ buoc: 1 \}\)/.test(CB) && /var buoc = \(truoc && truoc\.buoc\) \|\| \(sua \? 2 : 1\);/.test(CB));

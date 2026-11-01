@@ -12,13 +12,13 @@ import localefmt
 
 SPEC = KenhSpec(
     id="whatsapp", nhan="WhatsApp", kind="bot", logo="whatsapp", mau="#25D366",
-    lay_token=("Cần Javis có tên miền HTTPS. Ở developers.facebook.com tạo app WhatsApp, đặt webhook theo "
+    lay_token=("Cần UNI MATE có tên miền HTTPS. Ở developers.facebook.com tạo app WhatsApp, đặt webhook theo "
                "trang Kênh, rồi dán ba thứ cách nhau dấu cách: Phone number ID, Access token vĩnh viễn, "
                "App secret. Chi tiết: docs/en/29-slack-whatsapp.md."),
     tom_tat="Kênh nhắn tin phổ biến nhất thế giới. Chỉ chat riêng; ngoài 24 giờ kể từ tin cuối của khách thì không nhắn trước được.",
     nang_luc={"nhom": False, "gui_chu": True, "gui_file": True},
     en={
-        "lay_token": ("Javis needs an HTTPS domain. On developers.facebook.com create a WhatsApp app, set the "
+        "lay_token": ("UNI MATE needs an HTTPS domain. On developers.facebook.com create a WhatsApp app, set the "
                       "webhook shown on the Channels page, then paste three things separated by spaces: the "
                       "Phone number ID, a permanent Access token, the App secret. Details: docs/en/29-slack-whatsapp.md."),
         "tom_tat": ("The most used messaging app worldwide. Private chats only; you cannot message a customer "

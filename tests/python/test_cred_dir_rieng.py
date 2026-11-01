@@ -1,4 +1,4 @@
-"""Connector tự giữ token NGOÀI Javis phải có kho riêng, và xoá kết nối là xoá token theo.
+"""Connector tự giữ token NGOÀI UNI MATE phải có kho riêng, và xoá kết nối là xoá token theo.
 
     python tests/run.py cred_dir_rieng
 
@@ -7,9 +7,9 @@ Không cần pytest, không chạm mạng.
 Bối cảnh (báo từ người dùng thật, 2026-07-30): "xoá đi cài lại rất nhiều lần" mà Lịch Google
 vẫn báo thiếu quyền. Hoá ra người dùng đang đi qua connector `google-workspace`, chứ không phải
 thẻ Lịch rời - mà connector đó chạy `workspace-mcp`, một server TỰ chạy luồng OAuth của nó và
-cache token ra `~/.google_workspace_mcp/credentials`, nằm ngoài tầm với của Javis.
+cache token ra `~/.google_workspace_mcp/credentials`, nằm ngoài tầm với của UNI MATE.
 
-Hệ quả: xoá kết nối trong Javis không dọn gì cả. Thêm lại là tiến trình con đọc đúng file token
+Hệ quả: xoá kết nối trong UNI MATE không dọn gì cả. Thêm lại là tiến trình con đọc đúng file token
 cũ, không mở lại màn đăng nhập, nên token cấp thiếu quyền thì thiếu vĩnh viễn - đúng vòng lặp
 người dùng mắc kẹt. Kèm theo đó, mọi tài khoản dùng chung một kho nên hai connection giẫm nhau.
 
@@ -50,7 +50,7 @@ check("connector có khai -> trả về đường dẫn", d1 is not None)
 check("env đúng tên workspace-mcp đọc", (d1 or {}).get("env") == "WORKSPACE_MCP_CREDENTIALS_DIR")
 check("hai tài khoản -> hai thư mục KHÁC nhau (không giẫm token của nhau)",
       d1 and d2 and d1["path"] != d2["path"])
-check("thư mục nằm trong STATE_DIR của Javis, không phải home của user",
+check("thư mục nằm trong STATE_DIR của UNI MATE, không phải home của user",
       d1 and "connector-cred" in str(d1["path"]))
 check("CANARY: connector KHÔNG khai cred_dir thì trả None (không đẻ thư mục thừa)",
       mcp_store._cred_dir({"id": "x", "connector_id": "google-calendar", "slug": "s"}) is None)

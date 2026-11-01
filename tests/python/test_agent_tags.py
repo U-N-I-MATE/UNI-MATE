@@ -17,8 +17,8 @@ import tempfile
 import threading
 from pathlib import Path
 
-STATE = tempfile.mkdtemp(prefix="javis-tags-state-")
-os.environ.setdefault("JAVIS_STATE_DIR", STATE)
+STATE = tempfile.mkdtemp(prefix="unimate-tags-state-")
+os.environ.setdefault("UNIMATE_STATE_DIR", STATE)
 
 import agent_tags  # noqa: E402
 import main  # noqa: E402
@@ -45,8 +45,8 @@ def brain_moi(prefix):
     return b
 
 
-B = brain_moi("javis-tags-a-")
-B2 = brain_moi("javis-tags-b-")
+B = brain_moi("unimate-tags-a-")
+B2 = brain_moi("unimate-tags-b-")
 
 
 def viet(brain, slug, fm, body="Bạn là trợ lý. Giữ giọng gần gũi."):
@@ -231,7 +231,7 @@ check("9 chuỗi đơn được nhận như một tag", r.status_code == 200 and
 meta(B, "mk", tags=J("Marketing", "Viết nội dung"))
 zipb, _ten = share_bundle.build_bundle("agent", "mk", agents_dir=B / "agents", workflows_dir=B / "workflows",
                                        skills_root=B / "skills")
-B3 = brain_moi("javis-tags-c-")
+B3 = brain_moi("unimate-tags-c-")
 share_bundle.import_bundle(zipb, "goi.zip", agents_dir=B3 / "agents", workflows_dir=B3 / "workflows",
                            skills_root=B3 / "skills")
 check("10 xuất/nhập vòng kín giữ đủ tag", mot(B3, "mk")["tags"] == ["Marketing", "Viết nội dung"])
@@ -242,7 +242,7 @@ check("10 nhập gói cũ: group thành đúng một tag", mot(B3, "goi-cu")["ta
 meta(B3, "goi-cu", pinned="1")
 meta(B3, "goi-cu", pinned="0")
 check("10 gói cũ chuyển đúng một lần (lưu hai lần không nhân đôi)", doc(B3, "goi-cu")[0]["tags"] == ["Bán hàng"])
-idx = main._render_javis_index(main._gather_capabilities(str(B)))
+idx = main._render_unimate_index(main._gather_capabilities(str(B)))
 check("chỉ mục ghi tag trên dòng agent", "tags: Marketing, Viết nội dung" in idx)
 
 # ============================================================ 11-12. Không chạm danh tính, phiên, Cộng hưởng; workflow như cũ
@@ -260,7 +260,7 @@ check("12 workflow không nhận tag (400)", r.status_code == 400 and r.json().g
 # ============================================================ Review PR #617 vòng 1: R1 đến R4
 # R1. Dữ liệu ĐANG CÓ vượt giới hạn tag mới (nhóm cũ dài hơn 40 ký tự, file có hơn 20 tag) không bị cắt hay
 # xoá khi người dùng chỉ ghim, lưu form, nhập gói hay tải lại. Kiểm metadata nguồn trong file, không chỉ HTTP 200.
-B4 = brain_moi("javis-tags-r1-")
+B4 = brain_moi("unimate-tags-r1-")
 DAI = "Marketing noi dung cho thi truong quoc te 2026"          # 46 ký tự, hợp lệ ở 0.96.1
 viet(B4, "dai", f"type: agent\nname: Dài\nslug: dai\nrole: x\ngroup: {DAI}\nmodel: sonnet\n", "Thân dài.")
 viet(B4, "thuong", "type: agent\nname: Thường\nslug: thuong\nrole: x\ngroup: Marketing\n", "Thân thường.")
@@ -287,7 +287,7 @@ check("R1 đổi tên được tag cũ dài sang tên hợp lệ", r.status_code
 viet(B4, "dai3", f"type: agent\nname: Dài 3\nslug: dai3\nrole: x\ngroup: {DAI}\n", "Thân.")
 r = client.post("/agents/tags/delete", data={"brain": str(B4), "tag": DAI})
 check("R1 xoá được tag cũ dài", r.status_code == 200 and doc(B4, "dai3")[0]["tags"] == [], r.text)
-B5 = brain_moi("javis-tags-r1-nhap-")
+B5 = brain_moi("unimate-tags-r1-nhap-")
 cu = f"---\ntype: agent\nname: Gói dài\nslug: goi-dai\nrole: x\ngroup: {DAI}\n---\nthân\n".encode("utf-8")
 share_bundle.import_bundle(cu, "goi-dai.md", agents_dir=B5 / "agents", workflows_dir=B5 / "workflows",
                            skills_root=B5 / "skills")
@@ -311,7 +311,7 @@ check("R1 bỏ tag khi đang quá 20 luôn được", r.status_code == 200 and r
 
 # R2 + R3. Dữ liệu API THẬT đưa vào mã thật của trang Cộng sự và Studio (tests/js/agent_tags_ui_probe.js).
 import subprocess  # noqa: E402
-B6 = brain_moi("javis-tags-r3-")
+B6 = brain_moi("unimate-tags-r3-")
 NFD = "Viết"
 for slug, tgs in (("a", ["Straße"]), ("b", ["STRASSE"]), ("c", ["Viết"]), ("d", ["VIẾT"]), ("e", ["Viet"]),
                   ("f", [NFD]), ("g", ["__proto__", "constructor", "Marketing"]), ("h", ["constructor"])):
@@ -362,7 +362,7 @@ check("R3 đổi tên theo khoá: Viết, VIẾT, NFD cùng đổi; Viet giữ n
 
 # R4. I/O của các đường tag chạy ở worker: event loop vẫn phản hồi khi đĩa chậm. Ghi chậm là GIẢ LẬP
 # (sleep trong _write_md), không phải số đo máy thật.
-B7 = brain_moi("javis-tags-r4-")
+B7 = brain_moi("unimate-tags-r4-")
 for i in range(3):
     viet(B7, f"cham{i}", f"type: agent\nname: C{i}\nslug: cham{i}\nrole: x\ntags:\n- Chậm\n", f"Thân {i}.")
 import time  # noqa: E402
@@ -451,7 +451,7 @@ finally:
 # đĩa và GET /agents. Chỉ đợi sự kiện (có hạn giờ để không treo), không dùng sleep làm điều kiện đồng bộ.
 import httpx  # noqa: E402
 
-B8 = brain_moi("javis-tags-r5-")
+B8 = brain_moi("unimate-tags-r5-")
 _goc5 = main._write_md
 
 

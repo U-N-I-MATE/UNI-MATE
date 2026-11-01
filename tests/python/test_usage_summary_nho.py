@@ -19,7 +19,7 @@ import sys
 import tempfile
 import threading
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-usagenho-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-usagenho-"))
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -45,7 +45,7 @@ def chen(n, path="/p/a"):
     for i in range(n):
         w.execute("INSERT INTO file_daily(path,day,provider,source,activity,model,project,"
                   "input,output,cache_read,cache_create) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-                  (f"{path}/{i}", HOM_NAY, "claude", "javis", "chat", "claude-opus-5", "prj", 100, 50, 0, 0))
+                  (f"{path}/{i}", HOM_NAY, "claude", "unimate", "chat", "claude-opus-5", "prj", 100, 50, 0, 0))
     w.commit()
     w.close()
 

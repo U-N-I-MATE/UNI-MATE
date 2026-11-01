@@ -4,7 +4,7 @@ Goal12–17, owned-compose-runtime and compose-permission-role-contract plans ap
 Finish the currently reviewed consent unit first. This plan records the next
 bounded connection before code; it does not enable an account/model query.
 
-Retain pinned upstream compose_round actual vendor and existing Javis owner/
+Retain pinned upstream compose_round actual vendor and existing UNI MATE owner/
 CallLedger/lease/materialization/runner/tasks/recovery. The previously inspected
 recursion._run_stage blobdda6b98cd5af100b8941f33cbb079462299c5280 has benchmark
 filesystem/executor/retry/accounting dependencies, so adapt existing ownership;

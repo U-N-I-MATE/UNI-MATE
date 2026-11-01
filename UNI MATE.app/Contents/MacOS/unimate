@@ -1,0 +1,6 @@
+#!/bin/bash
+# App bundle entrypoint -> delegates to bin/unimate-start.sh.
+# Resolves the repo root relative to this bundle, so keep "UNI MATE.app"
+# inside the repo folder (repo/UNI MATE.app/Contents/MacOS/unimate).
+DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+exec "${DIR}/bin/unimate-start.sh"

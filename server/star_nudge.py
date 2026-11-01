@@ -1,4 +1,4 @@
-"""Lời mời tặng sao Javis trên GitHub (0.324.0, chủ repo 25/10/2026).
+"""Lời mời tặng sao UNI MATE trên GitHub (0.324.0, chủ repo 25/10/2026).
 
 Chủ repo muốn tăng sao cho dự án bằng một lời mời hiện "thi thoảng, đúng lúc", viết cho người
 không biết GitHub là gì. Ba quyết định của chủ repo nằm ở đây:
@@ -11,7 +11,7 @@ không biết GitHub là gì. Ba quyết định của chủ repo nằm ở đâ
   ngày một lần, mốc kế tiếp tự tính theo bước tròn. Không đọc được thì không hiện số nào.
 
 Trạng thái (đã tặng, để sau, đừng hỏi nữa) nằm trong settings.json của server chứ không trong
-trình duyệt: người dùng Javis trên cả máy tính lẫn điện thoại không bị hỏi hai lần.
+trình duyệt: người dùng UNI MATE trên cả máy tính lẫn điện thoại không bị hỏi hai lần.
 
 Module này không biết gì về FastAPI: mọi hàm nhận thời điểm `now` và dữ liệu đầu vào, để test
 gọi thẳng. Route nằm ở routes/star_nudge.py.
@@ -21,7 +21,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-REPO = "blogminhquy/javis-os"
+REPO = "U-N-I-MATE/UNI-MATE"
 REPO_URL = "https://github.com/" + REPO
 API_URL = "https://api.github.com/repos/" + REPO
 
@@ -159,7 +159,7 @@ def _hoi_github(timeout: float = 5.0) -> int:
     """Gọi API công khai của GitHub (không cần đăng nhập, 60 lượt/giờ mỗi IP - dư cho một lần
     mỗi ngày). urllib tự đi qua HTTPS_PROXY của máy nếu có."""
     req = urllib.request.Request(API_URL, headers={
-        "Accept": "application/vnd.github+json", "User-Agent": "javis-os"})
+        "Accept": "application/vnd.github+json", "User-Agent": "UNI-MATE"})
     with urllib.request.urlopen(req, timeout=timeout) as r:      # noqa: S310 - URL cố định https
         n = json.loads(r.read().decode("utf-8")).get("stargazers_count")
     if not isinstance(n, int) or n < 0:

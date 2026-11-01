@@ -46,7 +46,7 @@ check("CSS: tên co giãn; giờ nhỏ 12px, không phóng to trên màn hẹp",
 const phaiSrc = cut("  function manRong() {", "  // ---------- kéo đường biên");
 function dungPhai(narrow, saved) {
   const cls = new Set();
-  const store = saved == null ? {} : { javis_ws_right: saved };
+  const store = saved == null ? {} : { unimate_ws_right: saved };
   const page = { classList: { contains: (c) => cls.has(c), toggle: (c, on) => { if (on) cls.add(c); else cls.delete(c); } } };
   const ctx = vm.createContext({
     S: { el: { querySelector: () => page } },
@@ -61,16 +61,16 @@ let w = dungPhai(false, null);
 if (w.api.manRong() && !w.api.nhoPhaiHien()) w.cls.add("right-open");
 check("màn rộng, lần đầu: cột phải ẨN", !w.api.phaiDangHien() && w.cls.has("right-open"));
 w.api.datPhai(true);
-check("bấm nút: hiện, và nhớ", w.api.phaiDangHien() && w.store.javis_ws_right === "1");
+check("bấm nút: hiện, và nhớ", w.api.phaiDangHien() && w.store.unimate_ws_right === "1");
 w.api.datPhai(false);
-check("bấm lần nữa: ẩn, và nhớ", !w.api.phaiDangHien() && w.store.javis_ws_right === "0");
+check("bấm lần nữa: ẩn, và nhớ", !w.api.phaiDangHien() && w.store.unimate_ws_right === "0");
 w = dungPhai(false, "1");
 check("đã nhớ hiện: mở trang là hiện", w.api.nhoPhaiHien() === true);
 w.api.datPhai(true, true);
-check("hiện tạm (mở Cài đặt để xác nhận trợ lý) không ghi đè lựa chọn", w.store.javis_ws_right === "1");
+check("hiện tạm (mở Cài đặt để xác nhận trợ lý) không ghi đè lựa chọn", w.store.unimate_ws_right === "1");
 w = dungPhai(true, null);
 w.api.datPhai(true);
-check("màn hẹp: cột phải là ngăn kéo, hiện = mở ngăn, không ghi nhớ", w.cls.has("right-open") && !("javis_ws_right" in w.store));
+check("màn hẹp: cột phải là ngăn kéo, hiện = mở ngăn, không ghi nhớ", w.cls.has("right-open") && !("unimate_ws_right" in w.store));
 check("render: màn rộng mặc định thêm right-open khi chưa nhớ hiện",
   /if \(manRong\(\) && !nhoPhaiHien\(\)\) page\.classList\.add\("right-open"\);/.test(src));
 
@@ -95,7 +95,7 @@ k.api.noiKeoBien(page2);
 handlers.pointerdown({ button: 0, clientX: 300, preventDefault() {}, pointerId: 1 });
 handlers.pointermove({ clientX: 380 });
 handlers.pointerup({});
-check("kéo biên trái sang phải 80px: cột rộng 380px và được nhớ", props["--ws-left-w"] === "380px" && store2.javis_ws_left_w === "380",
+check("kéo biên trái sang phải 80px: cột rộng 380px và được nhớ", props["--ws-left-w"] === "380px" && store2.unimate_ws_left_w === "380",
   JSON.stringify([props, store2]));
 handlers.pointerdown({ button: 0, clientX: 380, preventDefault() {}, pointerId: 1 });
 handlers.pointermove({ clientX: 10 });
@@ -111,8 +111,8 @@ check("không rộng quá 45% trang", k.api.chanBeRong("left", 2000, page2) === 
 handlers.keydown({ key: "ArrowRight", preventDefault() {} });
 check("bàn phím: mũi tên phải nới 16px", props["--ws-left-w"] === "236px", props["--ws-left-w"]);
 handlers.dblclick();
-check("nhấp đúp: về bề rộng mặc định, quên số đã nhớ", !("--ws-left-w" in props) && !store2.javis_ws_left_w);
-store2.javis_ws_right_w = "900";
+check("nhấp đúp: về bề rộng mặc định, quên số đã nhớ", !("--ws-left-w" in props) && !store2.unimate_ws_left_w);
+store2.unimate_ws_right_w = "900";
 k.api.apBeRong(page2);
 check("mở trang: áp lại bề rộng đã nhớ, vẫn chặn trần", props["--ws-right-w"] === "600px", props["--ws-right-w"]);
 
@@ -123,7 +123,7 @@ check("CSS: cột trái rộng hơn mặc định và theo biến kéo được;
 // 0.181.0: the owner reversed the 120ch widening (answers ran up to the outline bar); the assistant page keeps the main
 // chat's 72ch measure.
 check("CSS: no 120ch widening on the assistant page any more (same measure as the main chat)",
-  !/\.wspage\.right-open \.ws-slot \.msg-javis \.bubble \{ max-width: min\(120ch/.test(css));
+  !/\.wspage\.right-open \.ws-slot \.msg-unimate \.bubble \{ max-width: min\(120ch/.test(css));
 // Rà soát trước khi phát hành.
 check("đổi khổ màn: đặt lại right-open theo nghĩa mới (màn hẹp đóng ngăn, màn rộng theo lựa chọn)",
   /function theoKhoMan\(\)[\s\S]{0,600}page\.classList\.toggle\("right-open", manRong\(\) \? !nhoPhaiHien\(\) : false\)/.test(src) &&

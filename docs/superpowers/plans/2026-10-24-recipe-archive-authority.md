@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development. Execute both tasks sequentially with fresh scoped review and one serial local app/native test slot. Task1 alone is not completed library integration.
 
-**Goal:** Write real encrypted canonical recipes from authenticated Javis candidate/trial history, expose revocable cold metadata, and support actual effective-view trial references without losing historical schema9 compatibility.
+**Goal:** Write real encrypted canonical recipes from authenticated UNI MATE candidate/trial history, expose revocable cold metadata, and support actual effective-view trial references without losing historical schema9 compatibility.
 
 **Architecture:** Reuse actual ExperimentPlans/SkillCandidates/TrialResults/ComparisonResults and existing encrypted RevisionBlobs/event replay. Extract only the existing sealed-preparation SQL snapshot so archive capture and native proposer share its exact lineage rules. Add source-side archive authoring now; destination retrieval consent, actual upstream snapshot crash recovery and downstream native/candidate/view/apply dependencies remain the immediately following integration, before orchestration comparison.
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS only. Never modify/reset/clean D:/Project/Javis-OS; its .venv Python may execute with -B. English code/comments/commits; VERSION0.299.0 unchanged.
+- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE only. Never modify/reset/clean D:/Project/UNI-MATE; its .venv Python may execute with -B. English code/comments/commits; VERSION0.299.0 unchanged.
 - Preserve historical SQL1–9 literals, events, encrypted history, existing sealed recipes=[] inputs/provenance, limits/two ordinary candidates/one compose/repair and baseline/unknown behavior. No model/reasoning/owner-rule/permission/guardrail change.
 - No actual CLI/SDKClient/provider/account/model query, qualification registration, deploy/restart, real-brain migration or activation. Fixture/DI engineering is not business/native proof. Full M0–M8 Goal remains active.
 - Never modify tests/python/test_improvement_view_reservations.py (rawSHA0577b5181fb090ba897ec8c3d0fce10fe88d2d09d03839497150cdacf6e793e0). New actual native helper dependencies enter PROFILE_SOURCES; changed source remains UNQUALIFIED and both reviewed registries remain closed.
@@ -29,7 +29,7 @@
 
 ## Reuse/transition decision before code
 
-Actual upstream Library serialization/index is already integrated as the checked private derived component. Database source authorization, immutable evidence/retention and owner decisions have no equivalent in pinned library.py39e50684b4044e483a3c16a447958044d4b5e6de, so keep Javis authority rather than copy another filesystem store. Reuse actual _snapshot/_tuning/TrialResults/ComparisonResults/proposal readers; one small preparation-history extraction avoids a second sealed-input reconstructor. Do not import a benchmark/controller/provider or create a parallel authority ledger.
+Actual upstream Library serialization/index is already integrated as the checked private derived component. Database source authorization, immutable evidence/retention and owner decisions have no equivalent in pinned library.py39e50684b4044e483a3c16a447958044d4b5e6de, so keep UNI MATE authority rather than copy another filesystem store. Reuse actual _snapshot/_tuning/TrialResults/ComparisonResults/proposal readers; one small preparation-history extraction avoids a second sealed-input reconstructor. Do not import a benchmark/controller/provider or create a parallel authority ledger.
 
 Concrete integration gap found against actual consumers: schema9 trial-ref trigger recognizes preparation/legacy comparison links, while current effective-view trials live in improvement_view_trial_links. Task2 must add an explicitly versioned10 overlay, preserving9 constants/proof, rather than pretending current v4 refs are supported or narrowing the final archive to legacy evidence. This costs a trigger-only backup/migration and explicit8/9/10 consumers; no historical table rebuild or row rewrite. Task1's source service is implemented first and Task2 completes this required current-pipeline integration before proceeding to destination retrieval.
 

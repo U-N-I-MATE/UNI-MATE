@@ -3,7 +3,7 @@
 
 Vì sao có file này
 ------------------
-Javis chạy phần lớn trên VPS. Rất nhiều việc vặt của chủ máy (kéo code mới, xem log, chạy
+UNI MATE chạy phần lớn trên VPS. Rất nhiều việc vặt của chủ máy (kéo code mới, xem log, chạy
 `agy` để đăng nhập Antigravity, cài một CLI) vẫn phải mở SSH ở một cửa sổ khác. Tab Code đưa
 đúng cái terminal đó vào trong dashboard.
 
@@ -25,7 +25,7 @@ Bảo mật
 -------
 Đây là chạy lệnh tuỳ ý trên máy chủ, tức là quyền cao nhất mà dashboard có thể cấp. Ba hàng
 rào: WebSocket đòi đúng session đăng nhập như `/ws` (không nhận token API - terminal chỉ dành
-cho trình duyệt đã đăng nhập), `JAVIS_TERMINAL=0` tắt hẳn tính năng, và số phiên mở cùng lúc
+cho trình duyệt đã đăng nhập), `UNIMATE_TERMINAL=0` tắt hẳn tính năng, và số phiên mở cùng lúc
 bị chặn ở `MAX_PHIEN`. Shell thừa kế env của server (trong đó có API key trong .env) - đúng
 như mọi terminal khác của chủ máy, nhưng cần biết là nó ở đó.
 
@@ -77,14 +77,14 @@ HANG_GO_TOI_DA = 2000                  # gói chờ ghi xuống shell; đầy ng
 
 
 def bat() -> bool:
-    """Tính năng terminal có bật không. `JAVIS_TERMINAL=0` (hoặc off/false/no) là tắt hẳn."""
-    v = str(os.getenv("JAVIS_TERMINAL", "")).strip().lower()
+    """Tính năng terminal có bật không. `UNIMATE_TERMINAL=0` (hoặc off/false/no) là tắt hẳn."""
+    v = str(os.getenv("UNIMATE_TERMINAL", "")).strip().lower()
     return v not in ("0", "off", "false", "no")
 
 
 def shell_argv() -> list[str]:
-    """Shell sẽ chạy. `JAVIS_TERMINAL_SHELL` ghi đè; còn lại theo nếp của từng hệ."""
-    rieng = str(os.getenv("JAVIS_TERMINAL_SHELL", "")).strip()
+    """Shell sẽ chạy. `UNIMATE_TERMINAL_SHELL` ghi đè; còn lại theo nếp của từng hệ."""
+    rieng = str(os.getenv("UNIMATE_TERMINAL_SHELL", "")).strip()
     if rieng:
         return [rieng]
     if IS_WINDOWS:
@@ -106,18 +106,18 @@ def shell_argv() -> list[str]:
 
 
 def _khong_co_trinh_duyet() -> bool:
-    """Máy chạy Javis có mở nổi một trình duyệt mà NGƯỜI DÙNG NHÌN THẤY không.
+    """Máy chạy UNI MATE có mở nổi một trình duyệt mà NGƯỜI DÙNG NHÌN THẤY không.
 
     Câu hỏi này quyết định luồng đăng nhập OAuth của mọi CLI chạy trong tab Code, xem `_env`.
 
-    - `JAVIS_TERMINAL_REMOTE=1/0` ghi đè, cho ai có bố trí lạ (X11 forwarding, máy để bàn chạy
+    - `UNIMATE_TERMINAL_REMOTE=1/0` ghi đè, cho ai có bố trí lạ (X11 forwarding, máy để bàn chạy
       Docker có chia màn hình...).
     - Windows/macOS chạy THẲNG trên máy: trình duyệt ở ngay trước mặt, giữ nguyên luồng cũ.
     - Linux: có `DISPLAY`/`WAYLAND_DISPLAY` là máy để bàn có màn hình; không có thì đây là VPS
       hoặc container - kể cả khi container đó nằm trên chính máy Mac của người dùng, vì trình
       duyệt nằm NGOÀI container còn CLI nằm trong.
     """
-    v = str(os.getenv("JAVIS_TERMINAL_REMOTE", "")).strip().lower()
+    v = str(os.getenv("UNIMATE_TERMINAL_REMOTE", "")).strip().lower()
     if v in ("1", "on", "true", "yes"):
         return True
     if v in ("0", "off", "false", "no"):
@@ -136,11 +136,11 @@ def _env(extra: dict | None = None) -> dict:
     # dấu hỏi. Chỉ setdefault - máy nào đã khai locale riêng thì giữ nguyên.
     if not IS_WINDOWS:
         e.setdefault("LANG", "C.UTF-8")
-    # Dấu để script biết mình đang chạy trong terminal của Javis (vd muốn né tự cập nhật).
-    e["JAVIS_IN_TERMINAL"] = "1"
+    # Dấu để script biết mình đang chạy trong terminal của UNI MATE (vd muốn né tự cập nhật).
+    e["UNIMATE_IN_TERMINAL"] = "1"
     # PATH của server (systemd/Docker) thường CỤT - thiếu ~/.local/bin, đúng chỗ installer
     # chính chủ thả binary (agy, uv...). Hệ quả thật (16/08): người dùng cài agy xong, gõ
-    # `agy` trong terminal của Javis nhận "command not found", tưởng cài hỏng, không đăng
+    # `agy` trong terminal của UNI MATE nhận "command not found", tưởng cài hỏng, không đăng
     # nhập nổi Antigravity. Bù các ngăn quen thuộc, chỉ thêm ngăn ĐANG TỒN TẠI và chưa có
     # trong PATH - không phát minh PATH mới, chỉ vá chỗ server nghèo hơn shell thường.
     try:
@@ -158,7 +158,7 @@ def _env(extra: dict | None = None) -> dict:
         pass
     # ĐĂNG NHẬP OAUTH TRONG TAB CODE: nói thẳng với CLI rằng người dùng đang ngồi ở MÁY KHÁC.
     #
-    # Sự cố 05/09 (chủ repo, Javis chạy Docker, trình duyệt trên máy Mac): gõ `agy` trong tab
+    # Sự cố 05/09 (chủ repo, UNI MATE chạy Docker, trình duyệt trên máy Mac): gõ `agy` trong tab
     # Code, màn hình in link Google rồi ĐỨNG IM - không có ô nào để dán mã về, đăng nhập tắc ở
     # đó. Nguyên nhân không nằm ở bàn phím của terminal (pty thật, gõ được) mà ở chỗ `agy` chọn
     # đường đăng nhập THEO MÔI TRƯỜNG:
@@ -166,7 +166,7 @@ def _env(extra: dict | None = None) -> dict:
     #     lại URL callback (kèm mã) vào terminal.
     #   - Không thấy -> coi trình duyệt cùng máy: chỉ mở một cổng loopback
     #     `localhost:<cổng>/oauth-callback` rồi nằm chờ, và KHÔNG hỏi gì cả.
-    # Terminal của Javis là pty thật ngay trên máy chủ nên chẳng có biến SSH nào -> luôn rơi
+    # Terminal của UNI MATE là pty thật ngay trên máy chủ nên chẳng có biến SSH nào -> luôn rơi
     # vào đường thứ hai. Trình duyệt lại ở máy Mac, nên Google trả về localhost CỦA MAC, chỗ đó
     # không có ai nghe: mã không bao giờ về tới `agy`, mà cũng không có chỗ nào để gõ nó vào.
     # Cùng một bệnh với mọi CLI đăng nhập kiểu loopback khi máy chủ không có màn hình.
@@ -175,7 +175,7 @@ def _env(extra: dict | None = None) -> dict:
     # thật. Cố ý không đặt `SSH_TTY`: giá trị của nó là đường dẫn tty, bịa ra một đường không
     # tồn tại còn hại hơn là thiếu.
     if _khong_co_trinh_duyet() and not e.get("SSH_CONNECTION"):
-        # Định dạng thật: "<ip khách> <cổng khách> <ip máy chủ> <cổng máy chủ>". Javis không
+        # Định dạng thật: "<ip khách> <cổng khách> <ip máy chủ> <cổng máy chủ>". UNI MATE không
         # biết IP của trình duyệt (WebSocket có thể qua proxy), và không CLI nào đọc mấy số
         # này - chúng chỉ hỏi "biến có hay không". Điền loopback cho đúng dạng.
         e["SSH_CONNECTION"] = "127.0.0.1 0 127.0.0.1 22"
@@ -195,7 +195,7 @@ def _lenh_moi_dau() -> str:
     Windows mặc định trả output theo codepage OEM của máy (tiếng Việt hay là cp1258/cp437),
     trong khi ở đây output được giải mã bằng UTF-8. Không bảo nó đổi thì mọi dòng có dấu về
     tới trình duyệt là một mớ ký tự lạ - hỏng lặng lẽ, và hỏng đúng với người dùng chính của
-    Javis. Một dòng lệnh chữa được, nên chữa.
+    UNI MATE. Một dòng lệnh chữa được, nên chữa.
 
     Chưa chạy thử được trên Windows từ môi trường này. Nếu bản PowerShell nào không nuốt được
     câu lệnh, người dùng thấy MỘT dòng lỗi ở đầu màn hình rồi mọi thứ chạy tiếp - lộ ra chứ
@@ -223,7 +223,7 @@ class Phien:
     def __init__(self, sid: str, cwd: str, cols: int, rows: int, loop, extra_env: dict | None = None):
         self.id = sid
         self.cwd = str(cwd)
-        self.extra_env = dict(extra_env or {})   # vd JAVIS_BRAIN - đường về gốc brain đang chọn
+        self.extra_env = dict(extra_env or {})   # vd UNIMATE_BRAIN - đường về gốc brain đang chọn
         self.cols = _gioi_han(cols, 20, 500, 80)
         self.rows = _gioi_han(rows, 5, 200, 24)
         self.che_do = che_do()
@@ -523,7 +523,7 @@ class Phien:
 
         Đây là câu hỏi phải hỏi trước mỗi `killpg`, và nó không thừa: lúc viết test cho nhánh
         ống trên Linux, `killpg` đã bắn SIGHUP vào nhóm của chính tiến trình gọi và giết luôn
-        cả lượt chạy test. Trong Javis thật thì nhánh POSIX luôn setsid nên chuyện đó không
+        cả lượt chạy test. Trong UNI MATE thật thì nhánh POSIX luôn setsid nên chuyện đó không
         tới được - nhưng "không tới được" mà sai thì mất cả server, nên chốt bằng điều kiện
         chứ không bằng niềm tin."""
         try:

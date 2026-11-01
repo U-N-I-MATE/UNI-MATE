@@ -2,9 +2,9 @@
 
     python tests/run.py codex_tien_do      (KHÔNG mạng, Codex giả)
 
-Khách báo 08/10/2026: ra lệnh xong Javis "xử lý một lúc rồi đứng im". Một phần của chuyện đó:
+Khách báo 08/10/2026: ra lệnh xong UNI MATE "xử lý một lúc rồi đứng im". Một phần của chuyện đó:
 nhánh Codex chỉ nghe `item.completed`, nên suốt lúc một lệnh dài chạy (cài thư viện, quét file),
-khung chat không có gì mới, chỉ chữ "Javis đang suy nghĩ..." đếm giờ, trông như treo. Đo trên
+khung chat không có gì mới, chỉ chữ "UNI MATE đang suy nghĩ..." đếm giờ, trông như treo. Đo trên
 Codex 0.160 thật: lệnh `ping` 5 giây có `item.started` ở giây 8,8, `item.completed` ở giây 14.
 
 Điều được ghim:
@@ -108,7 +108,7 @@ harness._CodexGia = _CodexTienDo
 mp = _Patch()
 try:
     import pathlib
-    ws, _store = harness._chay_mot_luot(mp, pathlib.Path(tempfile.mkdtemp(prefix="javis-codex-td-")))
+    ws, _store = harness._chay_mot_luot(mp, pathlib.Path(tempfile.mkdtemp(prefix="unimate-codex-td-")))
 finally:
     mp.undo()
 khung = [(g.get("type"), g.get("tool") or g.get("content")) for g in ws.sent

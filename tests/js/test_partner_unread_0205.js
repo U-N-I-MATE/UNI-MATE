@@ -19,7 +19,7 @@ const lu = ws.slice(ws.indexOf("async function loadUnread()"), ws.indexOf("funct
 check("newest message moves a partner up (re-sort)", /a\.last_chat_at = Number\(u\.last_at\)/.test(lu) && /S\.agents = sapXep\(S\.agents, "last_chat_at"\);/.test(lu));
 const td = ws.slice(ws.indexOf("function onTurnDone(sid) {"), ws.indexOf("function onTurnDone(sid) {") + 900);
 check("a reply just written re-sorts too", /S\.agents = sapXep\(S\.agents, "last_chat_at"\);/.test(td) && /else if \(sid && S\.loai === "agent"\) henUnread\(\);/.test(td));
-check("events read the counts again", /\["javis:sessions-changed", "javis:agent-read"\]\.forEach\(function \(ev\) \{ window\.addEventListener\(ev, henUnread\); \}\);/.test(ws)
+check("events read the counts again", /\["unimate:sessions-changed", "unimate:agent-read"\]\.forEach\(function \(ev\) \{ window\.addEventListener\(ev, henUnread\); \}\);/.test(ws)
   && /data\.type === "agent_read"/.test(app));
 check("opening a partner's chat reads it", /if \(S\.loai === "agent"\) daDoc\(item\.slug\);/.test(ws) && ws.includes('api("/agents/opened"'));
 check("unread pill and muted mark in the corner cluster", ws.includes("gioNhanHtml(x.last_chat_at) + tinHtml(x) +"));
@@ -36,7 +36,7 @@ check("unread rows read in full ink", css.includes(".ws-item-wrap.has-unread .ws
 global.window = { addEventListener() {}, t: (k, v) => (k === "ws.unread_n" ? v.n + " unread" : k) };
 global.document = { hidden: false, addEventListener() {} };
 require(path.join(R, "dashboard/workspace.js"));
-const W = window.JavisWorkspace;
+const W = window.UniMateWorkspace;
 const S = W.state();
 S.un = { a: { n: 3, last_at: 1, muted_until: 0 }, b: { n: 120, last_at: 1, muted_until: -1 }, c: { n: 0, muted_until: 0 } };
 const a = W.tinHtml({ slug: "a" }), b = W.tinHtml({ slug: "b" }), c = W.tinHtml({ slug: "c" });

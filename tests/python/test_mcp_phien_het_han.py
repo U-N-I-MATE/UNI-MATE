@@ -1,16 +1,16 @@
-"""Máy chủ MCP xoá phiên: Javis phải TỰ BẮT TAY LẠI, không được im lặng trả hộp rỗng.
+"""Máy chủ MCP xoá phiên: UNI MATE phải TỰ BẮT TAY LẠI, không được im lặng trả hộp rỗng.
 
     python tests/run.py mcp_phien_het_han      (KHÔNG mạng - giả lập httpx)
 
 Lỗi thật, chủ repo báo 03/09/2026 với Pancake POS "Làng Chài Xưa", và đã tái diễn nhiều lần
-trước đó (05/07, 26/08, 02/09): trang Kết nối chấm XANH, quyền đủ, `javis_connections` báo
+trước đó (05/07, 26/08, 02/09): trang Kết nối chấm XANH, quyền đủ, `unimate_connections` báo
 "ổn", mà không bộ não nào tìm ra một tool POS nào. Người dùng đi tìm lỗi ở token, ở quyền, ở
 brain - trong khi cả ba đều đúng.
 
 Gốc rễ nằm ở MỘT dòng thiếu trong `McpHttpSession._rpc`: nó KHÔNG đọc mã HTTP.
 
 Chuẩn Streamable HTTP cho phép máy chủ xoá phiên bất cứ lúc nào (hết hạn, deploy lại, bộ cân
-tải đổi máy) và quy định lúc đó máy chủ trả **404**, còn **client PHẢI tự bắt tay lại**. Javis
+tải đổi máy) và quy định lúc đó máy chủ trả **404**, còn **client PHẢI tự bắt tay lại**. UNI MATE
 không đọc mã, nên 404 kèm thân JSON-RPC bị `r.json()` nuốt thành một phản hồi bình thường:
 
     tools/list -> {"error": {...}}  ->  ((res).get("result") or {}).get("tools", [])  ->  []
@@ -27,7 +27,7 @@ Không có ngoại lệ nào được ném ra, và cả dây chuyền phía trê
     "Hoạt động bình thường (0 công cụ)".
 
 Trách nhiệm: máy chủ Pancake xoá phiên là ĐÚNG chuẩn, không phải lỗi của họ. Bên sai chuẩn là
-Javis. Nên bản vá nằm hết ở phía Javis, và test này ghim cả bốn mảnh của nó.
+UNI MATE. Nên bản vá nằm hết ở phía UNI MATE, và test này ghim cả bốn mảnh của nó.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -35,7 +35,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-phien-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-phien-"))
 
 import httpx          # noqa: E402
 import mcp_client     # noqa: E402

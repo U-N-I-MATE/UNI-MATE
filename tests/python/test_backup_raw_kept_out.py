@@ -1,7 +1,7 @@
 """Agent run logs and text under attachments never reach the GitHub backup (customer report 0.270, code 14).
 
 The brain .gitignore ignores both, but it is only written when learning is on, so a brain without it pushed
-`memory/agents/<slug>/runs/*.md` and the text Javis extracts from Team attachments. The backup filter now keeps them
+`memory/agents/<slug>/runs/*.md` and the text UNI MATE extracts from Team attachments. The backup filter now keeps them
 out by itself, and treats copies an older version already pushed as out of scope (not overwritten, not deleted, not
 applied back), so a machine still on an older version never loses its local copies.
 

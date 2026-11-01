@@ -159,7 +159,7 @@ def fingerprint_parts(cli, opts) -> dict:
         servers = str(raw)
     try:
         import plugins_host
-        plugins = repr(plugins_host._signature(cli.javis_vault, scope_vault=False))
+        plugins = repr(plugins_host._signature(cli.unimate_vault, scope_vault=False))
     except Exception:  # noqa: BLE001
         plugins = ""
     env = getattr(opts, "env", None) or {}
@@ -178,7 +178,7 @@ def fingerprint_parts(cli, opts) -> dict:
                          bool(getattr(opts, "include_hook_events", False))],
         "system_prompt_type": sp.get("type") if isinstance(sp, dict) else ("raw" if sp else ""),
         "mcp_servers": servers, "plugins": plugins, "auth_env": hashlib.sha256(json.dumps(auth).encode()).hexdigest(),
-        "mode": cli.javis_mode, "vault": str(cli.javis_vault or ""), "hooks": bool(getattr(opts, "hooks", None)),
+        "mode": cli.unimate_mode, "vault": str(cli.unimate_vault or ""), "hooks": bool(getattr(opts, "hooks", None)),
         "resume": str(getattr(opts, "resume", None) or ""),
         # Claude Code reads these at start-up only: a new skill or a CLAUDE.md edit needs a new process.
         "claude_md": _stat(os.path.join(cwd, "CLAUDE.md")),
@@ -188,7 +188,7 @@ def fingerprint_parts(cli, opts) -> dict:
                              _stat(os.path.join(cwd, ".claude", "settings.local.json"))],
         "user_settings": _stat(os.path.join(conf_dir, "settings.json")),
         # NOT the credentials file: Claude Code rewrites it on every run, so its stat changes every turn and no warm
-        # process would ever be reused (0.387.0). A sign-in or sign-out through Javis drops the Claude slots instead
+        # process would ever be reused (0.387.0). A sign-in or sign-out through UNI MATE drops the Claude slots instead
         # (warm_pool.drop_kind in main's /claude/login* and /claude/logout).
         "strict_mcp": bool(getattr(opts, "strict_mcp_config", False)),
     }
@@ -198,11 +198,11 @@ def _warm_options(cli, opts, handle: ClaudeHandle):
     """The engine's own options, rerouted to the slot: lane key in the hub header, hooks and stderr via the handle."""
     import turn_context
     servers = getattr(opts, "mcp_servers", None)
-    if isinstance(servers, dict) and isinstance(servers.get("javis"), dict):
-        hub = dict(servers["javis"])
+    if isinstance(servers, dict) and isinstance(servers.get("unimate"), dict):
+        hub = dict(servers["unimate"])
         if isinstance(hub.get("headers"), dict):
             hub["headers"] = {**hub["headers"], turn_context.HEADER: handle.lane.key}
-            opts.mcp_servers = {**servers, "javis": hub}
+            opts.mcp_servers = {**servers, "unimate": hub}
     if getattr(opts, "hooks", None):
         from claude_agent_sdk import HookMatcher
         hooks = {}
@@ -290,10 +290,10 @@ async def _query(cli, prompt, key: str, allow_warm: bool) -> AsyncIterator[dict]
     import turn_context
     from claude_agent_sdk import ResultMessage
 
-    IDLE = eng.tran_watchdog("JAVIS_CLAUDE_IDLE_TIMEOUT", "0")
-    TOOL_IDLE = eng.tran_watchdog("JAVIS_CLAUDE_TOOL_TIMEOUT", "3600")
-    FIRST_IDLE = eng.tran_watchdog("JAVIS_CLAUDE_FIRST_TIMEOUT", "0")
-    RESULT_IDLE = eng.tran_watchdog("JAVIS_CLAUDE_RESULT_TIMEOUT", "30")
+    IDLE = eng.tran_watchdog("UNIMATE_CLAUDE_IDLE_TIMEOUT", "0")
+    TOOL_IDLE = eng.tran_watchdog("UNIMATE_CLAUDE_TOOL_TIMEOUT", "3600")
+    FIRST_IDLE = eng.tran_watchdog("UNIMATE_CLAUDE_FIRST_TIMEOUT", "0")
+    RESULT_IDLE = eng.tran_watchdog("UNIMATE_CLAUDE_RESULT_TIMEOUT", "30")
     cli._sweep_stale_tmp()
     tran_init = eng.ap_tran_khoi_dong()
     cli._stderr_tail.clear()
@@ -380,24 +380,24 @@ async def _query(cli, prompt, key: str, allow_warm: bool) -> AsyncIterator[dict]
                 if ly_do == "tool":
                     err = localefmt.chu(
                         f"Tool chạy quá {int(TOOL_IDLE)}s chưa xong - đã dừng để tránh treo server. "
-                        f"(tăng JAVIS_CLAUDE_TOOL_TIMEOUT nếu tác vụ thật sự dài hơn, đặt 0 để bỏ hẳn trần)",
+                        f"(tăng UNIMATE_CLAUDE_TOOL_TIMEOUT nếu tác vụ thật sự dài hơn, đặt 0 để bỏ hẳn trần)",
                         f"A tool ran over {int(TOOL_IDLE)}s without finishing - stopped to avoid hanging the server. "
-                        f"(raise JAVIS_CLAUDE_TOOL_TIMEOUT if the job really takes longer, set 0 to remove the limit)")
+                        f"(raise UNIMATE_CLAUDE_TOOL_TIMEOUT if the job really takes longer, set 0 to remove the limit)")
                 elif ly_do == "dau":
                     err = localefmt.chu(
                         f"Claude chưa trả lời gì sau {int(FIRST_IDLE)}s - đã dừng để tránh treo server. Hay gặp khi "
                         f"hội thoại đã rất dài: lượt đầu phải nạp lại toàn bộ ngữ cảnh nên lâu. Mở hội thoại mới "
-                        f"thường hết ngay. (JAVIS_CLAUDE_FIRST_TIMEOUT=0 để bỏ hẳn trần này)",
+                        f"thường hết ngay. (UNIMATE_CLAUDE_FIRST_TIMEOUT=0 để bỏ hẳn trần này)",
                         f"Claude had not answered after {int(FIRST_IDLE)}s - stopped to avoid hanging the server. "
                         f"Common when the conversation is very long: the first turn must reload the whole context, "
                         f"which is slow. A new conversation usually fixes it. "
-                        f"(JAVIS_CLAUDE_FIRST_TIMEOUT=0 removes this limit)")
+                        f"(UNIMATE_CLAUDE_FIRST_TIMEOUT=0 removes this limit)")
                 else:
                     err = localefmt.chu(
                         f"Claude đang trả lời rồi im {int(IDLE)}s - đã dừng để tránh treo server. "
-                        f"(JAVIS_CLAUDE_IDLE_TIMEOUT=0 để bỏ hẳn trần này)",
+                        f"(UNIMATE_CLAUDE_IDLE_TIMEOUT=0 để bỏ hẳn trần này)",
                         f"Claude went silent for {int(IDLE)}s mid-answer - stopped to avoid hanging the server. "
-                        f"(JAVIS_CLAUDE_IDLE_TIMEOUT=0 removes this limit)")
+                        f"(UNIMATE_CLAUDE_IDLE_TIMEOUT=0 removes this limit)")
                 try:
                     await client.interrupt()
                 except Exception:
@@ -407,10 +407,10 @@ async def _query(cli, prompt, key: str, allow_warm: bool) -> AsyncIterator[dict]
             got_any = True
             events, sid = eng.map_message(msg)
             if sid:
-                if sid != cli.session_id and cli.javis_vault:
+                if sid != cli.session_id and cli.unimate_vault:
                     try:
                         import session_brain
-                        session_brain.record(sid, cli.javis_vault)
+                        session_brain.record(sid, cli.unimate_vault)
                     except Exception:
                         pass
                 cli.session_id = sid

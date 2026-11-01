@@ -14,7 +14,7 @@ J (phán xử) và L (học): `docs/dev/team-chat-t3-contract.md`. Phần này k
 | Nhóm | `server/team_runner.py`, `server/team_api.py` | tín hiệu chấp nhận đề xuất, chốt quyết định, sửa sau kết quả, huỷ; thức khi chủ @ hay giao việc; dòng `max_tier`, dự trữ 20% trong bảng giới hạn |
 | Kho Cộng hưởng | `server/resonance_store.py` | mở kho là tạo bảng nhịp và nâng cấp một lần; bật lại từ `off` về B3 |
 | Máy chủ | `server/main.py` | `_pulse_tick` trong `_scheduler_loop` (cờ bận riêng), phụ thuộc thật, thức khi chủ nhắn chat riêng, xoá agent thì `void` tín hiệu, đăng ký route |
-| Giao diện | `dashboard/agent-pulse.js`, `dashboard/pulse-seen.js`, `workspace.js`, `teams.js`, `console.css`, i18n | bảng Nhịp trên thẻ trợ lý và dòng thành viên, sổ `window.JavisPulseParts`, sự kiện đã xem |
+| Giao diện | `dashboard/agent-pulse.js`, `dashboard/pulse-seen.js`, `workspace.js`, `teams.js`, `console.css`, i18n | bảng Nhịp trên thẻ trợ lý và dòng thành viên, sổ `window.UniMatePulseParts`, sự kiện đã xem |
 
 ## 2. Chính sách `pulse.v1`
 
@@ -147,7 +147,7 @@ khách quan ±0.5 w0.8 (mục 2a); tin chủ động đã xem, qua 24 giờ khô
 ## 7. Chỗ phần J và L cắm vào
 
 - `agent_pulse_host.register_view_part(name, fn(store, agent_key) -> dict)`: mục trong `GET /agents/{slug}/pulse` (`parts`).
-- `window.JavisPulseParts.push({name, render(view) -> html})`: mục trên bảng Nhịp (tự escape).
+- `window.UniMatePulseParts.push({name, render(view) -> html})`: mục trên bảng Nhịp (tự escape).
 - `agent_pulse_host.register_reason_handler(code, fn(host, reason))`: phục vụ `reaction_review` (L), `related_review`,
   `wait_unblocked` (J). Hàm tự nhận lý do bằng `WakeReasons.claim(reason_id, try_busy=..., release_busy=...)` với
   `host.busy_pair(agent_key)`.
@@ -237,7 +237,7 @@ ngăn xếp luồng loop mỗi lần bị giữ quá 50 ms, một lần chạy m
 `get_decision`, `agent_any`, `_reserve`, `mark_engine`, `settle`, `cases`, `get_offset`); nhánh không còn lần nào trong mã phán
 xử hay nhịp. Còn lại ngoài phạm vi: `team_runner._reply_turn` và nhả khoá trong `agent_review` (đã chuyển sau lần đo, commit
 kế tiếp) và route `POST /sessions/{id}/messages/{mid}/reaction` (ghi kho trên loop, chưa sửa ở đây). Trễ loop còn lại ở pha
-đồng thời (khoảng 100 tới 140 ms, một hai mẫu) không có ngăn xếp trong mã Javis: tranh GIL giữa nhiều luồng phụ cùng chạy.
+đồng thời (khoảng 100 tới 140 ms, một hai mẫu) không có ngăn xếp trong mã UNI MATE: tranh GIL giữa nhiều luồng phụ cùng chạy.
 Sóng lô phán xử riêng dao động (một lần 116 ms) cùng lý do. Số lô phán xử giả trong pha đồng thời có lúc dưới 24 vì bench chỉ
 chờ việc nền của bộ phán xử, không chờ tác vụ `run_message` do route sinh ra (cửa sổ đo, không phải mất lượt).
 

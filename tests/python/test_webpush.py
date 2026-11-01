@@ -4,11 +4,11 @@
 
 Vì sao có file này
 ==================
-Javis tự mã hoá Web Push thay vì cài `pywebpush` - gói đó kéo theo `http-ece`, thứ chỉ phát
-hành dạng mã nguồn và phải biên dịch lúc cài, tức là có máy sẽ cài Javis không lên được.
+UNI MATE tự mã hoá Web Push thay vì cài `pywebpush` - gói đó kéo theo `http-ece`, thứ chỉ phát
+hành dạng mã nguồn và phải biên dịch lúc cài, tức là có máy sẽ cài UNI MATE không lên được.
 Đổi lại, phần mã hoá thành TRÁCH NHIỆM CỦA MÌNH, và nó là loại code hỏng rất im: sai một
 bước dẫn khoá thì hàm vẫn trả về đủ byte, server đẩy vẫn nhận 201, chỉ có trình duyệt là
-lặng lẽ không hiện gì. Không ai truy ra được từ phía Javis.
+lặng lẽ không hiện gì. Không ai truy ra được từ phía UNI MATE.
 
 Nên test này không kiểm "có ra bytes". Nó kiểm ba thứ THẬT:
 
@@ -28,7 +28,7 @@ import tempfile
 
 from _paths import ROOT, SERVER  # noqa: E402,F401
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-push-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-push-"))
 
 from cryptography.hazmat.primitives import hashes, serialization  # noqa: E402
 from cryptography.hazmat.primitives.asymmetric import ec  # noqa: E402
@@ -53,7 +53,7 @@ raw = webpush.b64u_giai(k1)
 check("khoá là điểm P-256 dạng uncompressed 65 byte", len(raw) == 65 and raw[0] == 0x04, len(raw))
 check("khoá lưu ra file để sống qua lần khởi động sau", webpush.VAPID_FILE.exists())
 # Đổi khoá = mọi đăng ký cũ thành rác, nên nó phải nằm ở STATE_DIR chứ không trong cây mã nguồn.
-check("khoá nằm trong STATE_DIR", str(webpush.VAPID_FILE).startswith(os.environ["JAVIS_STATE_DIR"]))
+check("khoá nằm trong STATE_DIR", str(webpush.VAPID_FILE).startswith(os.environ["UNIMATE_STATE_DIR"]))
 
 # ─────────── 2. Mã hoá đúng chuẩn, giải ngược lại được ───────────
 ua = ec.generate_private_key(ec.SECP256R1())
@@ -61,13 +61,13 @@ ua_pub = ua.public_key().public_bytes(serialization.Encoding.X962,
                                       serialization.PublicFormat.UncompressedPoint)
 p256dh = webpush.b64u(ua_pub)
 auth = webpush.b64u(os.urandom(16))
-tin = "Javis: doanh thu hôm nay 12 đơn 🎉".encode("utf-8")
+tin = "UNI MATE: doanh thu hôm nay 12 đơn 🎉".encode("utf-8")
 
 body = webpush.ma_hoa(tin, p256dh, auth)
 check("giải mã ngược ra ĐÚNG bản gốc (ECDH+HKDF+AESGCM khớp cả hai chiều)",
       webpush.giai_ma(body, ua, auth) == tin)
 check("giữ nguyên tiếng Việt có dấu và emoji",
-      webpush.giai_ma(body, ua, auth).decode("utf-8") == "Javis: doanh thu hôm nay 12 đơn 🎉")
+      webpush.giai_ma(body, ua, auth).decode("utf-8") == "UNI MATE: doanh thu hôm nay 12 đơn 🎉")
 
 check("khung RFC8188 - salt 16 byte", len(body[:16]) == 16)
 check("khung RFC8188 - record size 4096", struct.unpack("!L", body[16:20])[0] == 4096)
@@ -177,7 +177,7 @@ _GiaClient.ma_tra = {sub2["endpoint"]: 410}      # 410 = đăng ký đã chết
 httpx.AsyncClient = _GiaClient
 try:
     da_gui, da_don, chi_tiet = asyncio.new_event_loop().run_until_complete(
-        webpush.gui_het("Javis", "Doanh thu hôm nay 12 đơn", "/?mo_thu=abc", tag="javis-abc"))
+        webpush.gui_het("UNI MATE", "Doanh thu hôm nay 12 đơn", "/?mo_thu=abc", tag="unimate-abc"))
 finally:
     httpx.AsyncClient = that_client
 
@@ -203,10 +203,10 @@ check("Content-Type là octet-stream", h.get("Content-Type") == "application/oct
 # Đóng vai trình duyệt mở gói ra.
 mo = json.loads(webpush.giai_ma(goi["body"], ua, auth).decode("utf-8"))
 check("CANARY: trình duyệt giải mã ra ĐÚNG nội dung đã gửi",
-      mo["title"] == "Javis" and mo["body"] == "Doanh thu hôm nay 12 đơn", mo)
+      mo["title"] == "UNI MATE" and mo["body"] == "Doanh thu hôm nay 12 đơn", mo)
 # Không có url thì bấm vào thông báo chỉ mở trang chủ, người dùng lại phải tự đi tìm.
 check("gói mang theo đường về đúng mẩu thư", mo["url"] == "/?mo_thu=abc", mo.get("url"))
-check("gói mang tag để tin mới ĐÈ tin cũ, không xếp chồng", mo["tag"] == "javis-abc")
+check("gói mang tag để tin mới ĐÈ tin cũ, không xếp chồng", mo["tag"] == "unimate-abc")
 
 
 # ─────────── 6. Claim `sub` của VAPID phải LIÊN HỆ ĐƯỢC ───────────
@@ -219,12 +219,12 @@ check("sub là mailto: hoặc https: theo RFC 8292",
       lh.startswith("mailto:") or lh.startswith("https://"), lh)
 claims_lh = json.loads(webpush.b64u_giai(webpush._jwt_vapid("https://web.push.apple.com/x").split(".")[1]))
 check("JWT gửi đi mang đúng địa chỉ đó", claims_lh["sub"] == lh, claims_lh.get("sub"))
-os.environ["JAVIS_PUSH_CONTACT"] = "mailto:toi@congty.vn"
-check("đổi được bằng JAVIS_PUSH_CONTACT", webpush.lien_he() == "mailto:toi@congty.vn")
-os.environ["JAVIS_PUSH_CONTACT"] = "khong-phai-url"
+os.environ["UNIMATE_PUSH_CONTACT"] = "mailto:toi@congty.vn"
+check("đổi được bằng UNIMATE_PUSH_CONTACT", webpush.lien_he() == "mailto:toi@congty.vn")
+os.environ["UNIMATE_PUSH_CONTACT"] = "khong-phai-url"
 check("giá trị rác thì rơi về mặc định hợp lệ, không gửi rác cho Apple",
       webpush.lien_he().startswith("mailto:"), webpush.lien_he())
-os.environ.pop("JAVIS_PUSH_CONTACT", None)
+os.environ.pop("UNIMATE_PUSH_CONTACT", None)
 
 check("nhận ra dịch vụ đẩy của Apple", "Apple" in webpush.ten_dich_vu("https://web.push.apple.com/x"))
 check("nhận ra dịch vụ đẩy của Google", "Google" in webpush.ten_dich_vu("https://fcm.googleapis.com/x"))

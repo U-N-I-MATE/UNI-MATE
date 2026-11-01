@@ -62,5 +62,5 @@
 
   var api = { dem: dem, boCuPhapMd: boCuPhapMd };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
-  if (typeof window !== "undefined") window.JavisWordCount = api;
+  if (typeof window !== "undefined") window.UniMateWordCount = api;
 })();

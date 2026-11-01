@@ -11,7 +11,7 @@ việc thì vẫn chưa ai làm.
 
 Chốt hướng (chủ repo, 2026-08-07): "Bỏ các quyền giúp anh, có cảnh báo là được." Rồi tới
 2026-09-10 chủ repo bỏ luôn luật an toàn "không giao tự động tiền/đơn/đăng bài/nhắn khách" trên
-toàn Javis: câu cảnh báo lúc tạo (`canh_bao`) và hộp cảnh báo đỏ trên form được gỡ, loop cũng
+toàn UNI MATE: câu cảnh báo lúc tạo (`canh_bao`) và hộp cảnh báo đỏ trên form được gỡ, loop cũng
 mặc định toàn quyền như nhắc hẹn.
 
 Test này khoá ba thứ: mặc định toàn quyền, ba mức dựng engine khác nhau thật, và phần cảnh báo
@@ -24,8 +24,8 @@ import tempfile
 
 from _paths import ROOT, SERVER  # noqa: E402,F401
 
-_STATE = tempfile.mkdtemp(prefix="javis-nhachen-")
-os.environ.setdefault("JAVIS_STATE_DIR", _STATE)
+_STATE = tempfile.mkdtemp(prefix="unimate-nhachen-")
+os.environ.setdefault("UNIMATE_STATE_DIR", _STATE)
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -81,7 +81,7 @@ _GHI = {}
 class _Deps:
     safe_tools = ["Read", "Write", "Edit"]
     readonly_tools = ["Read", "Glob", "Grep"]
-    mcp_allow_patterns = staticmethod(lambda: ["mcp__javis__*"])
+    mcp_allow_patterns = staticmethod(lambda: ["mcp__unimate__*"])
     aux_swap = None
     aux_model = staticmethod(lambda: None)
 
@@ -132,7 +132,7 @@ check("toàn quyền: prompt dặn đừng hỏi lại rồi ngồi đợi (khô
 g = _chay("auto")
 check("ghi file: allowlist là bộ tool ghi được", "Write" in (g["allowed_tools"] or []))
 check("ghi file: vẫn kèm pattern MCP để gọi được tool đọc",
-      "mcp__javis__*" in (g["allowed_tools"] or []))
+      "mcp__unimate__*" in (g["allowed_tools"] or []))
 check("ghi file: hub chạy ở mức auto", g["hub_mode"] == "auto")
 check("ghi file: prompt vẫn cấm hành động ra ngoài",
       "KHÔNG tạo đơn" in g["prompt"] and "gửi tin ra ngoài" in g["prompt"])
@@ -154,9 +154,9 @@ check("reminders.py không còn hằng cảnh báo toàn quyền", not hasattr(R
 SRC = (SERVER / "reminders.py").read_text(encoding="utf-8")
 check("endpoint tạo không còn trả canh_bao", '"canh_bao"' not in SRC)
 
-PLUGIN = (ROOT / "system" / "plugins" / "javis-schedule" / "plugin.py").read_text(encoding="utf-8")
-check("tool javis_schedule không còn đọc lại cảnh báo", 'data.get("canh_bao")' not in PLUGIN)
-check("tool javis_schedule nói mức quyền của nhắc hẹn vừa tạo", 'data.get("muc_quyen")' in PLUGIN)
+PLUGIN = (ROOT / "system" / "plugins" / "unimate-schedule" / "plugin.py").read_text(encoding="utf-8")
+check("tool unimate_schedule không còn đọc lại cảnh báo", 'data.get("canh_bao")' not in PLUGIN)
+check("tool unimate_schedule nói mức quyền của nhắc hẹn vừa tạo", 'data.get("muc_quyen")' in PLUGIN)
 check("tool nhận tham số muc_quyen", '"muc_quyen"' in PLUGIN)
 
 CLAUDEMD = (ROOT / "CLAUDE.md").read_text(encoding="utf-8")

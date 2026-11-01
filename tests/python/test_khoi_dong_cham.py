@@ -12,11 +12,11 @@ chờ rất lâu rồi nhận đúng hai dòng này trên dashboard:
 
 Chuỗi nhân quả, đọc từ dưới lên:
   1. `claude` lúc khởi động phải đấu XONG mọi MCP server rồi mới nhận việc.
-  2. Nó đấu vào hub Javis, hub trả tool bằng `mcp_client.discover_resolved`.
+  2. Nó đấu vào hub UNI MATE, hub trả tool bằng `mcp_client.discover_resolved`.
   3. Hàm đó dò TUẦN TỰ từng connection, mỗi connection được chờ hết trần của transport
      (http 60s, stdio 90s lúc init). Chục connector là tổng thời gian tính bằng phút.
   4. Agent SDK chỉ chờ control request `initialize` đúng 60 giây rồi ném exception.
-  5. Javis in nguyên chuỗi tiếng Anh đó ra cho người dùng.
+  5. UNI MATE in nguyên chuỗi tiếng Anh đó ra cho người dùng.
 
 Ba chỗ đều sai nên test khoá cả ba: dò song song có trần từng nguồn (bước 3), nới trần chờ
 khởi động (bước 4), và dịch lỗi ra câu chỉ được việc phải làm (bước 5).
@@ -105,7 +105,7 @@ _bo = []
 _inval_that = mcp_client.pool.invalidate
 mcp_client.pool.invalidate = lambda k: _bo.append(k)
 mcp_client.pool.list_tools = _mot_treo
-os.environ["JAVIS_MCP_DISCOVER_TIMEOUT"] = "0.4"
+os.environ["UNIMATE_MCP_DISCOVER_TIMEOUT"] = "0.4"
 try:
     t0 = time.time()
     tools2, _ = asyncio.run(mcp_client.discover_resolved([_conn(i) for i in range(5)]))
@@ -113,7 +113,7 @@ try:
 finally:
     mcp_client.pool.list_tools = _that
     mcp_client.pool.invalidate = _inval_that
-    os.environ.pop("JAVIS_MCP_DISCOVER_TIMEOUT", None)
+    os.environ.pop("UNIMATE_MCP_DISCOVER_TIMEOUT", None)
 
 # Trần rộng tay là CỐ Ý: thứ cần bác bỏ ở đây là "cả vòng ngồi chờ hết TREO_S", tức 30
 # giây, nên chỉ cần dưới một phần năm số đó là đã kết luận được. Bóp sát 1.5s chẳng bắt
@@ -133,16 +133,16 @@ check("phiên của nguồn bị cắt bị vứt (invalidate), không tái dùn
 # ============================================================
 check("mặc định có trần (không phải vô hạn)", mcp_client.tran_dial() == 20.0)
 for raw, mong in (("0", None), ("-5", None), ("7.5", 7.5), ("linh tinh", 20.0)):
-    os.environ["JAVIS_MCP_DISCOVER_TIMEOUT"] = raw
-    check(f"JAVIS_MCP_DISCOVER_TIMEOUT='{raw}' → {mong}", mcp_client.tran_dial() == mong)
-os.environ.pop("JAVIS_MCP_DISCOVER_TIMEOUT", None)
+    os.environ["UNIMATE_MCP_DISCOVER_TIMEOUT"] = raw
+    check(f"UNIMATE_MCP_DISCOVER_TIMEOUT='{raw}' → {mong}", mcp_client.tran_dial() == mong)
+os.environ.pop("UNIMATE_MCP_DISCOVER_TIMEOUT", None)
 
 
 # ============================================================
 # 4. Trần chờ `claude` khởi động: SDK chỉ nhận qua env, sàn cứng 60s
 # ============================================================
 def _sach():
-    os.environ.pop("JAVIS_CLAUDE_INIT_TIMEOUT", None)
+    os.environ.pop("UNIMATE_CLAUDE_INIT_TIMEOUT", None)
     os.environ.pop("CLAUDE_CODE_STREAM_CLOSE_TIMEOUT", None)
 
 
@@ -153,17 +153,17 @@ check("ghi đúng env mà SDK đọc, đơn vị mili giây",
       os.environ.get("CLAUDE_CODE_STREAM_CLOSE_TIMEOUT") == "300000")
 
 _sach()
-os.environ["JAVIS_CLAUDE_INIT_TIMEOUT"] = "900"
-check("đặt biến Javis → theo người dùng", eng.ap_tran_khoi_dong() == 900.0)
+os.environ["UNIMATE_CLAUDE_INIT_TIMEOUT"] = "900"
+check("đặt biến UNI MATE → theo người dùng", eng.ap_tran_khoi_dong() == 900.0)
 check("env SDK đi theo", os.environ.get("CLAUDE_CODE_STREAM_CLOSE_TIMEOUT") == "900000")
 
 _sach()
-os.environ["JAVIS_CLAUDE_INIT_TIMEOUT"] = "10"
+os.environ["UNIMATE_CLAUDE_INIT_TIMEOUT"] = "10"
 check("đặt thấp hơn sàn 60s của SDK → kẹp về 60, không tự lừa mình",
       eng.ap_tran_khoi_dong() == 60.0)
 
 _sach()
-os.environ["JAVIS_CLAUDE_INIT_TIMEOUT"] = "linh tinh"
+os.environ["UNIMATE_CLAUDE_INIT_TIMEOUT"] = "linh tinh"
 check("giá trị rác → về mặc định chứ không làm nổ lượt chat", eng.ap_tran_khoi_dong() == 300.0)
 
 _sach()
@@ -182,7 +182,7 @@ check("hết giờ khởi động: không còn ném nguyên chuỗi SDK ra mặt
       "Control request timeout" not in _loi_init)
 check("nói rõ thủ phạm là nguồn dữ liệu MCP", "nguồn" in _loi_init.lower())
 check("chỉ đúng chỗ bấm để sửa", "trang Kết nối" in _loi_init)
-check("nêu cả biến môi trường cho người biết chỉnh", "JAVIS_CLAUDE_INIT_TIMEOUT" in _loi_init)
+check("nêu cả biến môi trường cho người biết chỉnh", "UNIMATE_CLAUDE_INIT_TIMEOUT" in _loi_init)
 check("nêu đúng con số trần đang áp dụng", "300s" in _loi_init)
 check("trần None (người dùng tự đặt env SDK) vẫn ra câu đọc được, không ra 'Nones'",
       "None" not in eng.loi_de_hieu(Exception("Control request timeout: initialize")))

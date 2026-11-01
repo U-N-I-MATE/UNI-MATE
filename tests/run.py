@@ -1,4 +1,4 @@
-"""Chạy toàn bộ test của Javis (Python + JS). Chạy từ ĐÂU cũng được.
+"""Chạy toàn bộ test của UNI MATE (Python + JS). Chạy từ ĐÂU cũng được.
 
     python tests/run.py                  # tất cả
     python tests/run.py zalo             # chỉ file có 'zalo' trong tên
@@ -99,14 +99,14 @@ def chay_mot(cmd, env, cwd=ROOT, han_giay=None):
     Xem tests/python/_paths.py: test tự dọn thư mục tạm lúc atexit, nhưng trên Windows sqlite
     còn mở ở biến module thì lúc đó chưa xoá được, còn test JS thì không tự dọn. Tạo thư mục ở
     ĐÂY (cùng tiền tố `jt-<pid>-` của _paths để lượt bị giết ngang cũng được quét), trỏ
-    TMP/TEMP/TMPDIR/JAVIS_TEST_TMP của tiến trình con vào đó, chờ nó thoát rồi xoá - lúc này
+    TMP/TEMP/TMPDIR/UNIMATE_TEST_TMP của tiến trình con vào đó, chờ nó thoát rồi xoá - lúc này
     file đã được nhả. Một tầng, không lồng: thêm tầng là đường dẫn vượt 260 ký tự trên Windows.
 
     `han_giay` (`--timeout`, 0.344.0): quá hạn thì giết cả cây tiến trình và trả mã 124 kèm dòng
     "QUÁ GIỜ". Không có hạn thì một file treo giữ máy CI tới trần 6 tiếng mà log không nói file nào.
     """
     tam = tempfile.mkdtemp(prefix=f"jt-{os.getpid()}-")
-    env = dict(env, TMP=tam, TEMP=tam, TMPDIR=tam, JAVIS_TEST_TMP=tam)
+    env = dict(env, TMP=tam, TEMP=tam, TMPDIR=tam, UNIMATE_TEST_TMP=tam)
     nhom = {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt" else {"start_new_session": True}
     try:
         p = subprocess.Popen(cmd, cwd=str(cwd), env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -147,7 +147,7 @@ def ban_sao_repo(so: int) -> list:
     Vì sao: trạng thái app mặc định nằm NGAY TRONG cây mã (server/*.json, server/*.db, brains/), và
     nhiều test đọc ghi đúng chỗ đó. Chạy lần lượt thì không sao, chạy 4 file cùng lúc thì chúng giẫm
     lên nhau: CI 26/10 đỏ ở test_chat_disconnect vì một file khác ghi vào `brains/Brain Default` đúng
-    lúc lượt chat đang chạy. Đổi JAVIS_STATE_DIR/BRAINS_DIR thì lại sai với test tự đặt hai biến đó
+    lúc lượt chat đang chạy. Đổi UNIMATE_STATE_DIR/BRAINS_DIR thì lại sai với test tự đặt hai biến đó
     bằng `setdefault` và với code tìm module trong STATE_DIR. Bản sao giữ nguyên mọi đường dẫn mặc
     định: mỗi luồng là một "CI cũ" thu nhỏ, các file trong luồng chạy lần lượt trên một cây riêng.
 
@@ -253,8 +253,8 @@ def main() -> int:
     node = shutil.which("node")
     # Chốt trung tâm (review T3 J P2-2): MỌI test chạy qua đây đều không dựng được engine phán xử hay lượt học thật, kể cả
     # test không nạp tests/python/_paths.py. `agent_judge.Judge` từ chối mọi hàm hỏi model chưa đánh dấu là engine giả.
-    env = dict(os.environ, PYTHONIOENCODING="utf-8", JAVIS_NO_REAL_JUDGE_ENGINE="1", JAVIS_NO_REAL_REVIEW_ENGINE="1",
-               JAVIS_NO_REAL_TEAM_ENGINE="1")
+    env = dict(os.environ, PYTHONIOENCODING="utf-8", UNIMATE_NO_REAL_JUDGE_ENGINE="1", UNIMATE_NO_REAL_REVIEW_ENGINE="1",
+               UNIMATE_NO_REAL_TEAM_ENGINE="1")
 
     viec = []
     if not chi_js:

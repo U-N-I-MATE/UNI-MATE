@@ -26,7 +26,7 @@ def packet(kind='preflight', *, scratch=r'C:\private\scratch'):
     from improvement_native_protocol import _ENV_PATHS, _ENV_FIXED
     environment = {**{key: scratch for key in _ENV_PATHS}, **_ENV_FIXED}
     environment.update(TEMP=scratch + r'\tmp', TMP=scratch + r'\tmp',
-        JAVIS_STATE_DIR=scratch + r'\host-state', BRAINS_DIR=scratch + r'\empty-brains',
+        UNIMATE_STATE_DIR=scratch + r'\host-state', BRAINS_DIR=scratch + r'\empty-brains',
         OBSIDIAN_VAULT_PATH=scratch + r'\empty-vault', BRAIN_PATH=scratch + r'\empty-brain',
         SOURCES_PATH=scratch + r'\empty-sources')
     config = dict(version=1, provider='anthropic-cli', engine_id='claude-sdk', model='selected', reasoning='high',

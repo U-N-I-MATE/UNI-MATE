@@ -5,7 +5,7 @@
 Vì sao file này tồn tại: chủ dự án báo 16/09 "sau vài lần cập nhật, bật mic là bỏ qua lớp nói
 chuyện nhanh, đi thẳng vào lớp suy luận". Soi mã thì đường rẽ vào làn nhanh không đổi từ 0.57.7;
 thứ đổi được trải nghiệm mà KHÔNG để lại dấu vết nào trên màn hình là nhánh rơi về bộ não chính
-khi bộ não giọng lỗi: nó chỉ in stderr và gửi một `status` bị "Javis đang suy nghĩ..." đè lên
+khi bộ não giọng lỗi: nó chỉ in stderr và gửi một `status` bị "UNI MATE đang suy nghĩ..." đè lên
 ngay. Bốn lớp canh:
   1. voice_brain nhớ lỗi gần nhất, xoá khi chạy lại tốt, và soạn câu báo gọi đúng tên bộ não.
   2. run_voice_turn: nhánh except gửi bong bóng `system` (ở lại trong khung chat) TRƯỚC khi gọi
@@ -21,7 +21,7 @@ import re
 import tempfile
 from contextlib import redirect_stderr
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-voicefb-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-voicefb-")
 
 from fastapi.testclient import TestClient   # noqa: E402
 import voice_brain as vb   # noqa: E402

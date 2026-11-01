@@ -1,7 +1,7 @@
-"""Stdio MCP processes that outlived the Javis server which started them.
+"""Stdio MCP processes that outlived the UNI MATE server which started them.
 
-Why this exists (field report 2026-10-13, bot "Javis Vũ"): the bot stopped answering a Zalo group at
-21:09. The account had TWO `javis-zalo mcp start` processes: one from 20:49, one the server started
+Why this exists (field report 2026-10-13, bot "Uni Vũ"): the bot stopped answering a Zalo group at
+21:09. The account had TWO `unimate-zalo mcp start` processes: one from 20:49, one the server started
 when it came back at 21:10. Zalo pushes each message to one socket only, the bot read the new process,
 and the new process received almost nothing (one sticker in two hours).
 
@@ -58,7 +58,7 @@ def _proc_start(pid: int) -> str:
 # Start time of this server process (0.283.0). A recorded owner pid that is alive is only the same server when its
 # start time matches: after a restart the old server's pid is often handed to another process (a container hands out
 # small pids again), and the old reaper then read "its server still runs" and left the survivor alive. Field report
-# 22/10/2026 (Javis Vũ): after an update, an old `mcp start` kept evicting the new one every few minutes.
+# 22/10/2026 (Uni Vũ): after an update, an old `mcp start` kept evicting the new one every few minutes.
 _SERVER_START = _proc_start(os.getpid())
 
 
@@ -115,7 +115,7 @@ def forget(key: str, pid: int) -> None:
 
 def _markers(args: List[str]) -> List[str]:
     """Every string whose presence in a command line marks the process as ours: `_marker`, plus the package name of a
-    tarball URL (`.../javis-zalo/tar.gz/...` -> "/javis-zalo/"). npx runs the package as `node .../javis-zalo/...`, so
+    tarball URL (`.../unimate-zalo/tar.gz/...` -> "/unimate-zalo/"). npx runs the package as `node .../unimate-zalo/...`, so
     once its `npm exec` launcher is gone the URL is in no command line of the group (0.283.0)."""
     out = []
     m = _marker(args)

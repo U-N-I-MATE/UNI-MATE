@@ -134,12 +134,12 @@
     "Permission denial is observed through absent native capability/tool-error results, not inferred permission callback invocation"
   ],
   "reproduce": {
-    "runtime": "D:/Project/Javis-OS/.venv/Scripts/python.exe",
+    "runtime": "D:/Project/UNI-MATE/.venv/Scripts/python.exe",
     "script": "tests/python/test_improvement_runtime_qualification.py",
-    "opt_in_environment": "JAVIS_TEST_NATIVE_QUALIFICATION_CLI=<explicit exact candidate path>",
+    "opt_in_environment": "UNIMATE_TEST_NATIVE_QUALIFICATION_CLI=<explicit exact candidate path>",
     "default": "native tests skipped; engineering/unknown-runtime tests run without opt-in",
-    "evidence_environment": "JAVIS_TEST_NATIVE_QUALIFICATION_EVIDENCE=docs/dev/agent-skill-runtime-2.1.308-qualification.json",
-    "state_isolation": "Before server imports, set JAVIS_STATE_DIR, BRAINS_DIR, OBSIDIAN_VAULT_PATH, BRAIN_PATH, SOURCES_PATH and JAVIS_SESSIONS_DB to scratch locations; use tests/python on sys.path."
+    "evidence_environment": "UNIMATE_TEST_NATIVE_QUALIFICATION_EVIDENCE=docs/dev/agent-skill-runtime-2.1.308-qualification.json",
+    "state_isolation": "Before server imports, set UNIMATE_STATE_DIR, BRAINS_DIR, OBSIDIAN_VAULT_PATH, BRAIN_PATH, SOURCES_PATH and UNIMATE_SESSIONS_DB to scratch locations; use tests/python on sys.path."
   },
   "source_sha256": {
     "server/improvement_worker.py": "6b5222f7b034095ecd2fed10b629a8adb12688d9260e9eb273ec06d733a80851",

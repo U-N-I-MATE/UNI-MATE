@@ -1,6 +1,6 @@
 """Helper chung cho test Resonance từ A1: bật Cộng hưởng theo AGENT thay cho công tắc brain cũ.
 
-Test M1 đến M5 trước A1 bật bằng `<brain>/Javis/resonance.json`. Từ A1 công tắc đó không cấp quyền gì; mục tiêu phải
+Test M1 đến M5 trước A1 bật bằng `<brain>/UniMate/resonance.json`. Từ A1 công tắc đó không cấp quyền gì; mục tiêu phải
 thuộc một agent đang bật. Các helper dưới đây làm đúng việc chủ dự án làm qua host (tạo file agent, bật, gán mục
 tiêu, tắt) để nội dung kiểm của test cũ giữ nguyên.
 """

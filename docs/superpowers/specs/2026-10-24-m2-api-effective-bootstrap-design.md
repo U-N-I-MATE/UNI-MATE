@@ -102,8 +102,8 @@ import path. Reservation sets these existing application paths before the first
 application import, all derived from its own root:
 
 ```
-JAVIS_STATE_DIR       = root/state
-JAVIS_SESSIONS_DB     = root/state/conversations.db
+UNIMATE_STATE_DIR       = root/state
+UNIMATE_SESSIONS_DB     = root/state/conversations.db
 CLAUDE_CWD           = root/brain
 BRAIN_PATH           = root/legacy-brain
 BRAINS_DIR           = root/brains
@@ -546,7 +546,7 @@ refuse those reads. The gate must enumerate the concrete profile's reachable
 read tools, target/dependency paths and aliases, and prove their behavior with
 actual consumer tests, including stale/revoked authority and alternate path
 forms. A named skill-handler receipt, disabled external connections, or the
-protocol fixture choosing only javis_use_skill cannot satisfy that gate.
+protocol fixture choosing only unimate_use_skill cannot satisfy that gate.
 
 Product effective-profile admission must require this verified direct-read
 coverage **in addition to** host binding, source/grant/policy compatibility,

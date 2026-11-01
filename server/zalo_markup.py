@@ -65,7 +65,7 @@ def clean_send_args(tool: str, args):
 # styles to send with it. Positions count UTF-16 units like JavaScript: an emoji is 2.
 #
 # Besides Markdown, `{red:...}`, `{orange:...}`, `{yellow:...}`, `{green:...}`, `{big:...}` and `{small:...}` colour
-# or resize a span, the same syntax as `javis-zalo msg send --md`. Names are those of `javis-zalo msg send --style`.
+# or resize a span, the same syntax as `unimate-zalo msg send --md`. Names are those of `unimate-zalo msg send --style`.
 STYLE_NAMES = ("bold", "italic", "underline", "strikethrough", "red", "orange", "yellow", "green", "big", "small")
 MAX_STYLES = 60
 

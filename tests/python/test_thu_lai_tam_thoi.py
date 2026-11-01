@@ -30,8 +30,8 @@ import os
 import sys
 import tempfile
 
-_STATE = tempfile.mkdtemp(prefix="javis-thulai-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-thulai-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")

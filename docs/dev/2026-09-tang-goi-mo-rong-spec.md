@@ -1,4 +1,4 @@
-# Kế hoạch: Tầng Gói mở rộng (Pack Layer) cho Javis OS
+# Kế hoạch: Tầng Gói mở rộng (Pack Layer) cho UNI MATE
 
 > Bản kế hoạch dev, viết 2026-09-03 trên nền code v0.55.7. Mục tiêu: đưa connector và plugin
 > thành GÓI cài được lúc chạy (zip, URL hoặc repo riêng, và về sau là kho công khai), giữ
@@ -6,7 +6,7 @@
 
 ## Bối cảnh
 
-Javis đã có nền. Vấn đề bây giờ không phải thiếu tính năng mà là **mọi năng lực mới đều phải đi qua một bản phát hành**. Đo trên repo:
+UNI MATE đã có nền. Vấn đề bây giờ không phải thiếu tính năng mà là **mọi năng lực mới đều phải đi qua một bản phát hành**. Đo trên repo:
 
 - **524 lần bump VERSION trong 3 tháng** (tháng 7: 326, tháng 8: 181, tháng 9: 17).
 - **60 lần trong số đó chỉ để sửa `system/mcp-catalog.json`**, tức thêm hoặc vá một connector.
@@ -43,7 +43,7 @@ Một đơn vị. Một thư mục. Một manifest. Connector và plugin **dùng
 
 ```
 STATE_DIR/packs/<id>/
-    javis-pack.yaml       manifest, giữ nguyên văn tác giả viết
+    unimate-pack.yaml       manifest, giữ nguyên văn tác giả viết
     pack.json             bản đã chuẩn hoá + kiểm, do trình cài ghi
     connectors/*.yaml     mỗi file một connector
     plugins/<slug>/       plugin.yaml + plugin.py, ĐỂ NGUYÊN TẠI CHỖ
@@ -61,7 +61,7 @@ STATE_DIR/packs-staging/      file đã soi nhưng chưa cài, dọn sau 30 phú
 Khoá tiếng Anh toàn bộ ngay từ ngày đầu (đây là hợp đồng công khai mới). `name` và `description` là map đa ngôn ngữ.
 
 ```yaml
-format: javis-pack
+format: unimate-pack
 spec: 1                        # phiên bản SCHEMA, không phải phiên bản gói
 id: acme.pos-vn                # ^[a-z0-9][a-z0-9._-]{0,63}$, bất biến, = tên thư mục
 version: 1.0.0
@@ -109,7 +109,7 @@ Cả ba lượt phản biện đều xác nhận chỉ cần chạm hai chỗ:
 
 Đây là điều chỉnh quan trọng nhất, và là lý do một kho công khai có thể an toàn.
 
-`transport: stdio` chép `command`/`args` từ connector vào connection (`mcp_store.py:225-229`), rồi `mcp_client.py:216-220` spawn nó với `env = dict(os.environ)`, và `POST /connect/add` (`main.py:3112`) dial ngay. **Một gói không chứa một dòng Python nào vẫn chạy được `npx -y goi-doc-hai` với toàn bộ biến môi trường của server chỉ bằng một cú bấm.** Plugin `javis-connect` đã biết chuyện này và ép mọi kết nối stdio do model thêm về `enabled: False` (`plugin.py:224-228`).
+`transport: stdio` chép `command`/`args` từ connector vào connection (`mcp_store.py:225-229`), rồi `mcp_client.py:216-220` spawn nó với `env = dict(os.environ)`, và `POST /connect/add` (`main.py:3112`) dial ngay. **Một gói không chứa một dòng Python nào vẫn chạy được `npx -y goi-doc-hai` với toàn bộ biến môi trường của server chỉ bằng một cú bấm.** Plugin `unimate-connect` đã biết chuyện này và ép mọi kết nối stdio do model thêm về `enabled: False` (`plugin.py:224-228`).
 
 Nên phân **ba bậc, do trình cài tự tính từ cây file đã giải nén, không tin lời tác giả khai**:
 
@@ -119,7 +119,7 @@ transport `http`/`sse`; `url`/`url_template` **chỉ https cổng 443**, tên mi
 **Bậc CODE** - đòi đồng ý riêng từng gói, gắn với hash nội dung:
 bất kỳ file `.py` nào; `transport: stdio` hoặc bất kỳ `command`/`args`; khối `env` tĩnh; `cred_dir`, `isolate_home`, `oauth_file`, `needs_local_browser`; `auth.exchange`.
 
-**Gói chứa Python là chuyện BÌNH THƯỜNG, không phải ngoại lệ phải xin phép hai lần.** Chủ dự án chốt 2026-09-03: gói mở cho mã Python, vì chính chủ là người xem gói trước khi cài. Nên **cổng env `JAVIS_ENABLE_USER_PLUGINS` KHÔNG áp cho gói cài qua trình cài.** Việc này nhất quán chứ không phải nới lỏng, và lý do đáng viết ra:
+**Gói chứa Python là chuyện BÌNH THƯỜNG, không phải ngoại lệ phải xin phép hai lần.** Chủ dự án chốt 2026-09-03: gói mở cho mã Python, vì chính chủ là người xem gói trước khi cài. Nên **cổng env `UNIMATE_ENABLE_USER_PLUGINS` KHÔNG áp cho gói cài qua trình cài.** Việc này nhất quán chứ không phải nới lỏng, và lý do đáng viết ra:
 
 Cổng env sinh ra để bịt đúng một lỗ: `STATE_DIR/plugins/` và `<brain>/plugins/` là thư mục **ghi được**, nên bất cứ thứ gì ghi được vào đó là chạy được code trong tiến trình server mà **không ai bấm gì cả** - kể cả một model đang thao tác file trong brain. Trình cài phá bỏ đúng điều kiện đó: có người bấm, có màn hình liệt kê từng file `.py` trước khi bấm, và có digest ghi lại để lần nạp sau đối chiếu. Ba thứ đó là cùng một loại bảo đảm mà cổng env cung cấp, chỉ chính xác hơn vì nó theo TỪNG gói thay vì bật-tắt-tất-cả.
 
@@ -128,16 +128,16 @@ Nên phân đường, không phân mức tin:
 | Đường vào | Điều kiện chạy code |
 |---|---|
 | Cài qua trình cài (zip, URL, repo riêng, kho) | Đồng ý từng gói, gắn digest. **Không cần env.** |
-| Thả tay thư mục vào `STATE_DIR/plugins/` hoặc `<brain>/plugins/` | Vẫn cần `JAVIS_ENABLE_USER_PLUGINS=true` như hôm nay |
+| Thả tay thư mục vào `STATE_DIR/plugins/` hoặc `<brain>/plugins/` | Vẫn cần `UNIMATE_ENABLE_USER_PLUGINS=true` như hôm nay |
 
-Cổng env vì thế **không bị gỡ**, chỉ thôi chắn con đường vốn đã có người gác. Nó vẫn là đường cứu khi cần tắt sạch mọi plugin người dùng cài mà không vào được dashboard, và `JAVIS_DISABLE_PACKS` là công tắc tương ứng cho gói.
+Cổng env vì thế **không bị gỡ**, chỉ thôi chắn con đường vốn đã có người gác. Nó vẫn là đường cứu khi cần tắt sạch mọi plugin người dùng cài mà không vào được dashboard, và `UNIMATE_DISABLE_PACKS` là công tắc tương ứng cho gói.
 
 **TỪ CHỐI thẳng ở spec 1**, nêu đích danh trường sai:
 `transport: internal` và khoá `internal:` (vì `mcp_client.py:37 _INTERNAL` là **allowlist bảo vệ** `importlib.import_module`, không phải bảng tra); `auth.type: qr` (Zalo là đường riêng); `provider` OAuth lạ; và **id connector trùng với catalog gốc hoặc với gói khác**. Không có `override: true` trong spec 1. Một luật này giết luôn đòn hiểm nhất: một gói ship `id: pancake-pos` kèm `url_template: https://evil.host/mcp` sẽ **âm thầm bẻ hướng một kết nối đang đăng nhập thật**, vì `mcp_store.py:383-388, 489-495` dựng lại url và header **từ connector** ở mỗi lần resolve.
 
-**Ai tin nguồn nào là lựa chọn của người cài, và Javis phải cho họ thấy đủ để chọn.** Chính chủ review gói của chính mình thì đủ; nhưng khi có kho công khai, người fork Javis cài gói của người thứ ba, ở đó "tác giả đã review" không còn là bảo đảm cho họ. Nên gói mang **nhãn nguồn** (chính chủ / kho công khai / zip tự tải / repo riêng) hiện cạnh tên ở mọi chỗ, và màn hình đồng ý của gói chưa qua review nói dài hơn một dòng. Javis không thay người dùng quyết định tin ai; nó chỉ không được để họ bấm mà không biết mình đang bấm gì.
+**Ai tin nguồn nào là lựa chọn của người cài, và UNI MATE phải cho họ thấy đủ để chọn.** Chính chủ review gói của chính mình thì đủ; nhưng khi có kho công khai, người fork UNI MATE cài gói của người thứ ba, ở đó "tác giả đã review" không còn là bảo đảm cho họ. Nên gói mang **nhãn nguồn** (chính chủ / kho công khai / zip tự tải / repo riêng) hiện cạnh tên ở mọi chỗ, và màn hình đồng ý của gói chưa qua review nói dài hơn một dòng. UNI MATE không thay người dùng quyết định tin ai; nó chỉ không được để họ bấm mà không biết mình đang bấm gì.
 
-**Nói thẳng trên màn hình xác nhận, không làm mềm:** `min_mode` chỉ chặn cái **model** được gọi, không chặn cái `register()` được làm. `permissions.network` và `permissions.filesystem` là lời khai, không có tầng chặn. Không có sandbox. Câu chữ bắt buộc: **"Gói này chạy Python thật bên trong server Javis. Nó đọc được mọi khoá API, token và file mà Javis đọc được. Chỉ cài gói từ nguồn bạn tin."** Không icon ổ khoá.
+**Nói thẳng trên màn hình xác nhận, không làm mềm:** `min_mode` chỉ chặn cái **model** được gọi, không chặn cái `register()` được làm. `permissions.network` và `permissions.filesystem` là lời khai, không có tầng chặn. Không có sandbox. Câu chữ bắt buộc: **"Gói này chạy Python thật bên trong server UNI MATE. Nó đọc được mọi khoá API, token và file mà UNI MATE đọc được. Chỉ cài gói từ nguồn bạn tin."** Không icon ổ khoá.
 
 ---
 
@@ -159,7 +159,7 @@ Nên làm lớp gỡ, đừng di trú. Xem mục "Bộ lõi và cái cài thêm"
 
 ## Bộ lõi và cái cài thêm
 
-Đích đến chủ dự án đặt ra: **bao giờ có kho thì xoá bớt, để lại đúng cấu trúc mặc định của Javis, còn lại người dùng tự chọn cài thêm plugin, skill hay kết nối.** Bây giờ chưa xoá gì, nhưng cấu trúc phải sẵn.
+Đích đến chủ dự án đặt ra: **bao giờ có kho thì xoá bớt, để lại đúng cấu trúc mặc định của UNI MATE, còn lại người dùng tự chọn cài thêm plugin, skill hay kết nối.** Bây giờ chưa xoá gì, nhưng cấu trúc phải sẵn.
 
 Cấu trúc đó chỉ cần một ý: **mọi năng lực mặc định đều gỡ được, và trạng thái "đã gỡ" ghi ở `STATE_DIR` chứ không sửa vào cây code.** Cây code là read-only trên Docker và bị `git pull` ghi đè trên bản native, nên đó là chỗ duy nhất trạng thái sống được qua một lần cập nhật.
 
@@ -238,7 +238,7 @@ Chưa có UI cài, chưa chạm mạng. Thả một thư mục vào là connecto
 Giai đoạn giao đúng phần cần nhất: gói riêng bằng zip, và gỡ sạch.
 
 - `server/routes/packs.py` mới theo đúng khuôn factory của `server/routes/__init__.py` (không bao giờ import `main`, mọi thứ qua dataclass `Deps`). **Đăng ký cả 14 endpoint một lượt**, cái của giai đoạn sau trả 501 nhưng **để đúng tên hàm cuối cùng**, vì `test_route_table.py:95-99` bắt cả thứ tự lẫn tên. Cả chương trình chỉ regenerate `route_table.json` **hai lần**.
-- **Mọi `/packs/*` đòi session thật, vô điều kiện**, không phụ thuộc `gate_active()` (`config.py:811-813` trả False trên bản local mặc định, khiến `main.py:190-207` bỏ qua guard). Cài đòi session chứ không nhận API token. **Không tool, skill hay agent nào chạm được `/packs/install`**: endpoint không nằm trong bảng route của hub, và điều này viết vào tài liệu, vì `javis_add_mcp` chính là tiền lệ model chạm được bề mặt dạng cài đặt.
+- **Mọi `/packs/*` đòi session thật, vô điều kiện**, không phụ thuộc `gate_active()` (`config.py:811-813` trả False trên bản local mặc định, khiến `main.py:190-207` bỏ qua guard). Cài đòi session chứ không nhận API token. **Không tool, skill hay agent nào chạm được `/packs/install`**: endpoint không nằm trong bảng route của hub, và điều này viết vào tài liệu, vì `unimate_add_mcp` chính là tiền lệ model chạm được bề mặt dạng cài đặt.
 - **Cài hai bước.** `POST /packs/inspect` stream file lên `packs-staging/<sha256>.zip` (đọc theo khối 1MB, huỷ khi quá 25MB, **đừng** chép cách `/import` ở `main.py:5952` vì nó `await file.read()` nạp hết vào RAM rồi mới kiểm), mở archive chỉ-đọc, đọc manifest, chạy mọi luật, trả về `{manifest, permissions, provides, tier, conflicts, sha256, staging_id}`. **Chưa giải nén gì cả.** `POST /packs/install {staging_id, consent_sha256, ...}` từ chối nếu hash không khớp, tức **buộc cái đã hiện ra phải chính là cái được cài**.
 - **Luật zip.** Chép hằng số và vị từ chống traversal từ `share_bundle.py:36-38, 250-255` (chép logic, **không gọi**, vì `_bad` là closure bên trong `import_bundle` và hàm đó có hình dạng bundle riêng). Thêm cái `share_bundle` chưa cần: từ chối member không phải file thường qua `(info.external_attr >> 16) & 0o170000` (một symlink tên `plugin.py` trỏ vào `.secret_key` sẽ bị mọi endpoint file phục vụ lại); giải nén cố định 0o644/0o755, không nghe mode trong archive; chặn tỉ lệ nén quá 100:1; từ chối thẳng `.env`, `*.pem`, `id_rsa*`, `*.p12`; **chỉ zip, không tar** (Python 3.12 `extractall` vẫn mặc định `filter=None`); chặn kích thước manifest trước khi `safe_load` vì SafeLoader vẫn nở anchor.
 - **Cài nguyên tử có rollback.** Giải nén ra `packs/.tmp-<id>-<pid>-<ts>/`, kiểm trên cây đã giải nén, `os.replace` bản cũ sang `.trash-<id>-<ts>` **trước**, rồi `os.replace(tmp, packs/<id>)`. Hỏng ở bất cứ bước nào thì rmtree tmp và trả bản cũ về. Rồi ghi sổ và gọi đúng bộ ba mà `/plugins/toggle` đang dùng (`main.py:8091-8095`).
@@ -265,7 +265,7 @@ Giai đoạn giao đúng phần cần nhất: gói riêng bằng zip, và gỡ s
   gập "Đã gỡ" có nút Cài lại - không phải cơ chế mới. Nói riêng ra vì bản kế hoạch đầu đã xếp
   skill ra ngoài spec 1, mà chủ dự án nêu rõ 2026-09-03 là muốn cả plugin, skill lẫn kết nối
   đều cài thêm và gỡ được.
-- `dashboard/packs.js` mới phơi `window.JavisPacks = {render}`, gọi từ chỗ dispatch của console.js theo cách `studio.js` đang làm. **Đừng nuôi console.js to thêm** (đã 6.951 dòng). Đăng ký trang ở năm chỗ: `VIEW_ICON`, `RAIL_ITEMS`, `RAIL_GROUPS`, khoá `page.packs.label`/`sub` trong **cả hai** từ điển i18n (đang cân 715/715, test JS đỏ nếu lệch), và một thẻ `<script src>` gần `index.html:803`. Trước khi viết i18n trong code gói, **đổi tên 11 biến cục bộ tên `t` trong console.js**, đáng chú ý là `const [t, c] = SRC[s]` (:1431) và `const chip = (t, iconName)` (:1436), cả hai nằm ngay trong `renderPlugins()`.
+- `dashboard/packs.js` mới phơi `window.UniMatePacks = {render}`, gọi từ chỗ dispatch của console.js theo cách `studio.js` đang làm. **Đừng nuôi console.js to thêm** (đã 6.951 dòng). Đăng ký trang ở năm chỗ: `VIEW_ICON`, `RAIL_ITEMS`, `RAIL_GROUPS`, khoá `page.packs.label`/`sub` trong **cả hai** từ điển i18n (đang cân 715/715, test JS đỏ nếu lệch), và một thẻ `<script src>` gần `index.html:803`. Trước khi viết i18n trong code gói, **đổi tên 11 biến cục bộ tên `t` trong console.js**, đáng chú ý là `const [t, c] = SRC[s]` (:1431) và `const chip = (t, iconName)` (:1436), cả hai nằm ngay trong `renderPlugins()`.
 - **Màn hình đồng ý**, vẽ hoàn toàn từ `/packs/inspect`: tên và phiên bản; xuất xứ nguyên văn (tên file kèm đầu sha256, hoặc repo @ ref @ commit); bậc tin cậy; với bậc CODE là khối đỏ không gập được kèm câu chữ ở trên, liệt kê mọi file `.py` và dung lượng, và bắt gõ đúng id gói; liệt kê tool và hook kèm ghi chú **hook nhìn thấy mọi lần gọi tool và cả kết quả** (`wrap_with_hooks` :533-542 bọc mọi tool trong route, kể cả MCP và builtin); một dòng nói `permissions` là lời khai chứ không phải cưỡng chế; nút Huỷ được focus mặc định, không Enter-để-gửi; ô "Bật sau khi cài" **mặc định TẮT**, đúng luật trong CLAUDE.md là năng lực tạo từ chat không bao giờ tự bật.
 - Trên trang Plugins, plugin đến từ gói được badge `pack` và một link "Quản lý ở trang Gói" thay cho nút xoá, để chỉ có **một** chỗ gỡ. `plugins_host.describe()` (:226-253) phải học nguồn `"pack"`, nếu không một plugin gói đang chạy sẽ hiện sai là "bật (chưa nạp)".
 
@@ -287,13 +287,13 @@ Thêm `category_key` cho cả 29 entry gốc trong một commit máy móc, **gi�
 > từ chối gói cướp tên plugin bundled; quét tương thích lúc khởi động. CHƯA làm:
 > `ctx.record_effect` và sổ hiệu ứng, `permissions.max_effect`.
 
-`_iter_plugin_dirs` thêm nguồn `("pack", d)`, thứ tự **bundled → pack → user → vault**. **Gói có thư mục plugin trùng tên slug bundled thì bị từ chối ngay lúc cài** (danh sách cấm là 11 slug bundled). Việc này giữ nguyên bit-for-bit hành vi user/vault-đè-bundled hôm nay, đồng thời chặn một gói lặng lẽ thay thế `javis_task`/`javis_schedule`/`javis_add_mcp` dưới một màn hình đồng ý chỉ nói "cái này chạy code".
+`_iter_plugin_dirs` thêm nguồn `("pack", d)`, thứ tự **bundled → pack → user → vault**. **Gói có thư mục plugin trùng tên slug bundled thì bị từ chối ngay lúc cài** (danh sách cấm là 11 slug bundled). Việc này giữ nguyên bit-for-bit hành vi user/vault-đè-bundled hôm nay, đồng thời chặn một gói lặng lẽ thay thế `unimate_task`/`unimate_schedule`/`unimate_add_mcp` dưới một màn hình đồng ý chỉ nói "cái này chạy code".
 
-**Cổng env KHÔNG áp cho gói.** Plugin của gói nạp khi gói có `code_consent` hợp lệ, thế là đủ; `_env_user_enabled()` giữ nguyên từng bit cho hai nguồn `user` và `vault` như hôm nay. Lý do đầy đủ ở mục "Ranh giới tin cậy": cổng env bịt lỗ "thư mục ghi được mà không ai bấm gì", còn trình cài thì có người bấm, có màn hình liệt kê từng file `.py`, và có digest ghi lại - cùng loại bảo đảm, chỉ theo từng gói thay vì bật-tắt-tất-cả. `JAVIS_DISABLE_PACKS` là công tắc tắt sạch tương ứng cho gói.
+**Cổng env KHÔNG áp cho gói.** Plugin của gói nạp khi gói có `code_consent` hợp lệ, thế là đủ; `_env_user_enabled()` giữ nguyên từng bit cho hai nguồn `user` và `vault` như hôm nay. Lý do đầy đủ ở mục "Ranh giới tin cậy": cổng env bịt lỗ "thư mục ghi được mà không ai bấm gì", còn trình cài thì có người bấm, có màn hình liệt kê từng file `.py`, và có digest ghi lại - cùng loại bảo đảm, chỉ theo từng gói thay vì bật-tắt-tất-cả. `UNIMATE_DISABLE_PACKS` là công tắc tắt sạch tương ứng cho gói.
 
 **Đồng ý được kiểm lúc NẠP, không phải lúc cài.** `code_consent` ghi digest của mọi file `.py` trong gói; `_load_all` tính lại digest từ đĩa và từ chối nạp khi lệch, và digest nằm trong `_signature()` để đổi nội dung là buộc nạp lại chứ không cưỡi lên cache mtime. Ai ghi được `plugin.py` thì cũng ghi được `packs.json`.
 
-`ctx.on_unload(fn)` và `ctx.record_effect(kind, ref)`. Tool và hook **vốn đã** đảo ngược được (register chỉ append vào list trên `LoadedPlugin` trong cache, không có registry toàn cục, và hub dựng lại bảng route mỗi lần cache miss). Cái **chưa** đảo ngược được: `sys.modules[mod_name]` đặt ở :340-341 và không bao giờ pop, cùng mọi thread/socket/atexit mà `register()` mở ra. Nên `plugins_host.unload(slug)` chạy `on_unload` ngược LIFO, bỏ cache, rồi pop mọi khoá `javis_plugin_*_<slug>`. `set_enabled(..., False)` đi qua `unload` để nút "Tắt" là dừng thật. Thêm khoá manifest `unload: clean | restart-required` để UI nói "cần khởi động lại" thay vì nói dối.
+`ctx.on_unload(fn)` và `ctx.record_effect(kind, ref)`. Tool và hook **vốn đã** đảo ngược được (register chỉ append vào list trên `LoadedPlugin` trong cache, không có registry toàn cục, và hub dựng lại bảng route mỗi lần cache miss). Cái **chưa** đảo ngược được: `sys.modules[mod_name]` đặt ở :340-341 và không bao giờ pop, cùng mọi thread/socket/atexit mà `register()` mở ra. Nên `plugins_host.unload(slug)` chạy `on_unload` ngược LIFO, bỏ cache, rồi pop mọi khoá `unimate_plugin_*_<slug>`. `set_enabled(..., False)` đi qua `unload` để nút "Tắt" là dừng thật. Thêm khoá manifest `unload: clean | restart-required` để UI nói "cần khởi động lại" thay vì nói dối.
 
 **Sửa `sys.path.insert(0, plugin_dir)`** ở `_import_entry` :348-350: một gói chứa `config.py` hay `mcp_hub.py` hiện đang **che module của chính server** trong suốt thân module của nó. Dùng `submodule_search_locations` thay vì chọc `sys.path`.
 
@@ -331,11 +331,11 @@ Không chuyển `meta-ads-graph`, `meta-pages-graph`, `fb-monitor-apify` thành 
 
 `sha256` **ghim từ lần cài đầu**, trong sổ. Kiểm một bản tải về bằng hash do chính index đó cấp thì không chứng minh gì về người phát hành; từ chối một hiện vật **đã đổi** ở **cùng một phiên bản** thì có.
 
-**Kho công khai liệt kê được gói bậc CODE**, nhưng một chạm từ kho vẫn phải đi qua đúng màn hình đồng ý như zip và URL - không có đường tắt "cài ngay" cho gói chứa Python. Kèm hai thứ để người cài thấy mình đang chọn gì: **nhãn nguồn** (chính chủ / cộng đồng / chưa review) và một dòng nói rõ gói này chạy mã. Gói của chính chủ dán nhãn `verified` trong index; gói cộng đồng thì không, và màn hình đồng ý của nó nói dài hơn. Javis không thay người dùng quyết định tin ai.
+**Kho công khai liệt kê được gói bậc CODE**, nhưng một chạm từ kho vẫn phải đi qua đúng màn hình đồng ý như zip và URL - không có đường tắt "cài ngay" cho gói chứa Python. Kèm hai thứ để người cài thấy mình đang chọn gì: **nhãn nguồn** (chính chủ / cộng đồng / chưa review) và một dòng nói rõ gói này chạy mã. Gói của chính chủ dán nhãn `verified` trong index; gói cộng đồng thì không, và màn hình đồng ý của nó nói dài hơn. UNI MATE không thay người dùng quyết định tin ai.
 
-Ba trạng thái suy giảm, không cái nào là stack trace: có cache thì hiện dòng hổ phách và vẫn vẽ lưới; không cache thì trạng thái rỗng kèm "vẫn cài được từ zip hoặc URL"; `format_version` lạ thì nói thẳng "kho này cần Javis mới hơn", không bao giờ parse nửa vời.
+Ba trạng thái suy giảm, không cái nào là stack trace: có cache thì hiện dòng hổ phách và vẫn vẽ lưới; không cache thì trạng thái rỗng kèm "vẫn cài được từ zip hoặc URL"; `format_version` lạ thì nói thẳng "kho này cần UNI MATE mới hơn", không bao giờ parse nửa vời.
 
-Thêm biến môi trường `JAVIS_DISABLE_PACKS` đọc live, deny thắng, tắt sạch mọi gói không-bundled mà không cần vào dashboard.
+Thêm biến môi trường `UNIMATE_DISABLE_PACKS` đọc live, deny thắng, tắt sạch mọi gói không-bundled mà không cần vào dashboard.
 
 Coi index là **dữ liệu không tin được**: `name`, `description` và mô tả tool của gói đi thẳng vào danh sách tool của những engine đang cầm Bash.
 
@@ -387,7 +387,7 @@ Cần nói lại một chỗ so với bản đầu: **29 connector lõi giờ G�
 
 **Không còn cần bản mới:** một connector apikey/http mới kèm icon, trang hướng dẫn, nhãn nhóm, `tool_meta`, `validate`, `arg_rules`, `rate_limit`; một plugin mới có tool và hook; và **chính hai thứ đó ship riêng cho một khách bằng zip hoặc repo private**, đúng mục tiêu đặt ra.
 
-**Những cặp song song sẽ tồn tại vĩnh viễn, nêu ra để không ai bất ngờ:** `system/mcp-catalog.json` cạnh YAML connector của gói; `plugin.yaml` (spec 0) cạnh `javis-pack.yaml`; `system/plugins/` cạnh `STATE_DIR/packs/`; `plugins.json` cạnh `packs.json`; `/plugins` cạnh `/packs`; `connector_id="custom"` cạnh gói. Mỗi cặp đều có lý do riêng. Không cặp nào chết đi.
+**Những cặp song song sẽ tồn tại vĩnh viễn, nêu ra để không ai bất ngờ:** `system/mcp-catalog.json` cạnh YAML connector của gói; `plugin.yaml` (spec 0) cạnh `unimate-pack.yaml`; `system/plugins/` cạnh `STATE_DIR/packs/`; `plugins.json` cạnh `packs.json`; `/plugins` cạnh `/packs`; `connector_id="custom"` cạnh gói. Mỗi cặp đều có lý do riêng. Không cặp nào chết đi.
 
 ---
 

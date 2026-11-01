@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Managed checkout only: C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS. Never modify/reset/clean D:/Project/Javis-OS; its .venv Python may run with -B. English code/comments/commits; VERSION remains0.299.0.
+- Managed checkout only: C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE. Never modify/reset/clean D:/Project/UNI-MATE; its .venv Python may run with -B. English code/comments/commits; VERSION remains0.299.0.
 - Preserve historical _SCHEMA/SCHEMA/IMMUTABLE literals1–8, current encrypted bytes, events, prepared leases/workspaces/CallLedger, selections and exact prior proof. No rewriting sealed input recipes=[] or existing provenance.
 - Current schema becomes9; explicit known read versions1–9 retain8. Unknown versions/drafts refuse; no blanket >=8 acceptance. Schema8 compose rebuild must never run on an installed official8 database.
 - No actual CLI/SDKClient/provider/account/model query, qualification registration, activation, deploy/restart or real-brain write. Fixture/DI evidence is engineering only. Full M0–M8 Goal remains active.

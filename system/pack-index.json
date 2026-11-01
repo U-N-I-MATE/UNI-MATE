@@ -1,15 +1,15 @@
 {
-  "format": "javis-pack-index",
+  "format": "unimate-pack-index",
   "format_version": 1,
   "updated": "2026-09-05",
   "store": {
-    "name": "Kho cài đặt Javis",
-    "url": "https://github.com/blogminhquy/javis-store"
+    "name": "Kho cài đặt UNI MATE",
+    "url": "https://github.com/U-N-I-MATE/unimate-store"
   },
-  "_doc": "ĐÃ ĐÔNG LẠI - kho thật chuyển sang repo riêng https://github.com/blogminhquy/javis-store từ 0.55.30. Tệp này ở lại để bản Javis 0.55.24-0.55.29 (vốn trỏ cứng vào đây) vẫn xem và cài được, nên mục bên dưới dùng địa chỉ TUYỆT ĐỐI trỏ sang kho mới. Không thêm gì vào đây nữa; thêm gói mới ở repo kho.",
+  "_doc": "ĐÃ ĐÔNG LẠI - kho thật chuyển sang repo riêng https://github.com/U-N-I-MATE/unimate-store từ 0.55.30. Tệp này ở lại để bản UNI MATE 0.55.24-0.55.29 (vốn trỏ cứng vào đây) vẫn xem và cài được, nên mục bên dưới dùng địa chỉ TUYỆT ĐỐI trỏ sang kho mới. Không thêm gì vào đây nữa; thêm gói mới ở repo kho.",
   "packs": [
     {
-      "id": "javis.tinh-gia",
+      "id": "unimate.tinh-gia",
       "kind": "tool",
       "name": { "vi": "Tính giá bán", "en": "Pricing helper" },
       "description": {
@@ -17,15 +17,15 @@
         "en": "Turn cost into a shelf price: margin or markup, VAT, rounded up to a tidy number."
       },
       "version": "1.0.0",
-      "author": { "name": "Javis" },
+      "author": { "name": "UNI MATE" },
       "category": "ban-hang",
       "category_label": { "vi": "Bán hàng", "en": "Sales" },
       "tier": "code",
       "verified": true,
       "updated": "2026-09-04",
-      "homepage": "https://github.com/blogminhquy/javis-store",
+      "homepage": "https://github.com/U-N-I-MATE/unimate-store",
       "download": {
-        "url": "https://raw.githubusercontent.com/blogminhquy/javis-store/main/dist/javis-tinh-gia-1.0.0.zip",
+        "url": "https://raw.githubusercontent.com/U-N-I-MATE/unimate-store/main/dist/unimate-tinh-gia-1.0.0.zip",
         "sha256": "2efc5b73e55c98573bae20d765a6cfeabe062646f6dcb9d890fd56bb557e1cdb",
         "size": 5289
       }

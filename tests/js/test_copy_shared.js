@@ -1,4 +1,4 @@
-// Copying a message: one shared helper (JavisActs.copy in chat-acts.js) for the main chat, the Team chat and the code
+// Copying a message: one shared helper (UniMateActs.copy in chat-acts.js) for the main chat, the Team chat and the code
 // block button. It works on plain HTTP (textarea fallback) and tells the caller whether the copy worked, so the Team chat
 // no longer fails silently and copies the same text the main chat would.
 //
@@ -54,8 +54,8 @@ function fakeDoc(execResult) {
   check("execCommand throws: resolves false, does not reject", ok === false);
 
   // What the Team chat copies.
-  global.window = { JavisVisibleMarkdown: (s) => String(s).replace(/<!--[\s\S]*?-->/g, "") };
-  const agent = { author_kind: "agent", content: "## Plan\n\n**Bold** [link](https://x.y)\n<!-- JAVIS_ASK: {} -->" };
+  global.window = { UniMateVisibleMarkdown: (s) => String(s).replace(/<!--[\s\S]*?-->/g, "") };
+  const agent = { author_kind: "agent", content: "## Plan\n\n**Bold** [link](https://x.y)\n<!-- UNIMATE_ASK: {} -->" };
   check("assistant message: the visible markdown, hidden blocks dropped",
     T.copyTextOf(agent) === "## Plan\n\n**Bold** [link](https://x.y)\n", JSON.stringify(T.copyTextOf(agent)));
   delete global.window;
@@ -67,10 +67,10 @@ function fakeDoc(execResult) {
     /var run = A && A\.copy \? A\.copy\(text\) : Promise\.resolve\(false\);/.test(teamsJs)
     && /setNote\(tw\(ok \? "teams\.copied" : "common\.copy_fail"\)\)/.test(teamsJs)
     && !/navigator\.clipboard/.test(teamsJs));
-  check("main chat copyText goes through the shared helper", /function copyText\(s\) \{ return window\.JavisActs\.copy\(s\); \}/.test(app)
+  check("main chat copyText goes through the shared helper", /function copyText\(s\) \{ return window\.UniMateActs\.copy\(s\); \}/.test(app)
     && !/function copyFallback/.test(app));
   check("chat-render.js code and artifact copy use the shared helper when present",
-    /window\.JavisActs && window\.JavisActs\.copy\) return window\.JavisActs\.copy\(text\)/.test(render));
+    /window\.UniMateActs && window\.UniMateActs\.copy\) return window\.UniMateActs\.copy\(text\)/.test(render));
   const v = (f) => Number((indexHtml.match(new RegExp(f.replace(".", "\\.") + "\\?v=(\\d+)")) || [])[1] || 0);
   check("cache bumped for chat-acts.js and teams.js", v("chat-acts.js") >= 5 && v("teams.js") >= 20);
 

@@ -15,7 +15,7 @@ import sys
 import time
 import types
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-warm-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-warm-")
 
 import turn_context  # noqa: E402
 import turn_lane  # noqa: E402
@@ -50,7 +50,7 @@ async def settle():
 
 # ---- the pool ----
 async def pool_cases():
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "400"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "400"
     pool = warm_pool.Pool()
     a = FakeHandle("claude")
     s = pool.admit("A", "claude", "fpA", a)
@@ -107,15 +107,15 @@ async def pool_cases():
     pool.forget("F")
     await settle()
     check("forget closes the slot and drops the recipe", opened[0].closed and not pool.prewarm("F"))
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "0"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "0"
     check("budget 0: nothing taken, nothing prewarmed", pool.take("C", "codex", "fpC") is None
           and not pool.prewarm("C"))
     g = FakeHandle("claude")
     check("budget 0: nothing admitted", pool.admit("G", "claude", "fpG", g) is None)
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "400"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "400"
     await pool.close_all()
     check("close_all closes every slot", c.closed and pool.status()["slots"] == [])
-    del os.environ["JAVIS_WARM_BUDGET_MB"]
+    del os.environ["UNIMATE_WARM_BUDGET_MB"]
     check("default budget is a share of free RAM, at most 1200 MB",
           0 < warm_pool.budget_mb() <= warm_pool.MAX_BUDGET_MB and warm_pool.free_ram_mb() > 0)
 
@@ -126,7 +126,7 @@ asyncio.run(pool_cases())
 async def prewarm_race():
     """A prewarm that lands after the owner's turn already ran cold must not replace that turn's newer process,
     and a prewarm never pushes another conversation out."""
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "400"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "400"
     pool = warm_pool.Pool()
     late = []
 
@@ -145,7 +145,7 @@ async def prewarm_race():
     check("race: the turn's own process stays, the late prewarm is closed (or never opened)",
           pool._slots["R"].handle is fresh and all(h.closed for h in late))
     # Same race with room for both: the prewarm does open, and must still give way.
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "1000"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "1000"
     late.clear()
     pool.remember("R2", "claude", "fpR2", slow_recipe)
     pool.prewarm("R2")
@@ -156,7 +156,7 @@ async def prewarm_race():
     check("race with room: the prewarmed process opened, then gave way to the newer one",
           len(late) == 1 and late[0].closed and pool._slots["R2"].handle is fresh2)
     pool.forget("R2")
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "400"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "400"
     other = FakeHandle("claude")
     pool.remember("Q", "claude", "fpQ", slow_recipe)
     pool.prewarm("Q")
@@ -164,7 +164,7 @@ async def prewarm_race():
     check("prewarm never evicts: R stays, Q is not opened beyond the budget",
           "R" in pool._slots and not fresh.closed and "Q" not in pool._slots and not other.closed)
     await pool.close_all()
-    del os.environ["JAVIS_WARM_BUDGET_MB"]
+    del os.environ["UNIMATE_WARM_BUDGET_MB"]
 
 
 asyncio.run(prewarm_race())
@@ -232,7 +232,7 @@ import claude_warm  # noqa: E402
 from claude_cli import claude_engine  # noqa: E402
 
 eng = claude_engine(system_prompt="x", cwd=tempfile.mkdtemp(), tag="chat:abc:1")
-os.environ["JAVIS_WARM_BUDGET_MB"] = "400"
+os.environ["UNIMATE_WARM_BUDGET_MB"] = "400"
 if type(eng).__name__ == "ClaudeSDK":
     check("the owner's chat engine is eligible", claude_warm.eligible(eng))
     eng.tag = "loop:x"
@@ -241,9 +241,9 @@ if type(eng).__name__ == "ClaudeSDK":
     eng.allowed_tools = ["Read"]
     check("a gated engine is not", not claude_warm.eligible(eng))
     eng.allowed_tools = None
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "0"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "0"
     check("budget 0: no engine is", not claude_warm.eligible(eng))
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "400"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "400"
 else:
     print("skip eligibility: claude-agent-sdk not installed")
 
@@ -253,14 +253,14 @@ def opts(**kw):
                 permission_mode="bypassPermissions", setting_sources=["user"], disallowed_tools=[],
                 include_partial_messages=True, include_hook_events=True, system_prompt={"type": "preset"},
                 env={}, hooks=None, resume="S1",
-                mcp_servers={"javis": {"type": "http", "url": "http://h/mcp",
+                mcp_servers={"unimate": {"type": "http", "url": "http://h/mcp",
                                        "headers": {"Authorization": "x", turn_context.HEADER: "k1"}}})
     base.update(kw)
     return types.SimpleNamespace(**base)
 
 
 fp = claude_warm.fingerprint(eng, opts())
-other_key = opts(mcp_servers={"javis": {"type": "http", "url": "http://h/mcp",
+other_key = opts(mcp_servers={"unimate": {"type": "http", "url": "http://h/mcp",
                                         "headers": {"Authorization": "x", turn_context.HEADER: "k2"}}})
 check("the per-turn hub key is not part of the fingerprint", claude_warm.fingerprint(eng, other_key) == fp)
 check("another system prompt text is not either (Claude keeps the first one on resume)",
@@ -268,14 +268,14 @@ check("another system prompt text is not either (Claude keeps the first one on r
 check("another model is", claude_warm.fingerprint(eng, opts(model="opus")) != fp)
 check("another session is", claude_warm.fingerprint(eng, opts(resume="S2")) != fp)
 check("another effort is", claude_warm.fingerprint(eng, opts(effort="high")) != fp)
-check("another hub URL is", claude_warm.fingerprint(eng, opts(mcp_servers={"javis": {"url": "http://other"}})) != fp)
+check("another hub URL is", claude_warm.fingerprint(eng, opts(mcp_servers={"unimate": {"url": "http://other"}})) != fp)
 with open(os.path.join(eng.cwd, "CLAUDE.md"), "w") as f:
     f.write("edited")
 check("an edited CLAUDE.md is (Claude Code reads it at start-up only)", claude_warm.fingerprint(eng, opts()) != fp)
 
 # 0.387.0: the bug that kept 0.382.0 from ever reusing a process on a real brain. Claude Code rewrites its credentials
 # file on every run, and the fingerprint had that file's stat in it, so every turn looked like a new config.
-conf = tempfile.mkdtemp(prefix="javis-claude-conf-")
+conf = tempfile.mkdtemp(prefix="unimate-claude-conf-")
 cred = os.path.join(conf, ".credentials.json")
 with open(cred, "w") as f:
     f.write('{"claudeAiOauth": {"accessToken": "a1"}}')
@@ -293,7 +293,7 @@ check("a miss names what changed", claude_warm.changed_parts(parts_a, parts_b) =
 
 import codex_steer  # noqa: E402
 
-chome = tempfile.mkdtemp(prefix="javis-codex-home-")
+chome = tempfile.mkdtemp(prefix="unimate-codex-home-")
 ccli = types.SimpleNamespace(cli_path=sys.executable, codex_home=chome, cwd=eng.cwd, sandbox=None, model="gpt-5.5",
                              session_id="th1")
 
@@ -307,14 +307,14 @@ write_auth("acct-1", "1")
 fp_x = codex_steer._fingerprint(ccli, ["codex", "app-server"])
 time.sleep(0.05)
 write_auth("acct-1", "2")
-check("Javis rewriting auth.json each Codex turn (same account) does not change the fingerprint",
+check("UNI MATE rewriting auth.json each Codex turn (same account) does not change the fingerprint",
       codex_steer._fingerprint(ccli, ["codex", "app-server"]) == fp_x)
 write_auth("acct-2", "3")
 check("another ChatGPT account does", codex_steer._fingerprint(ccli, ["codex", "app-server"]) != fp_x)
 
 
 async def drop_cases():
-    os.environ["JAVIS_WARM_BUDGET_MB"] = "1000"
+    os.environ["UNIMATE_WARM_BUDGET_MB"] = "1000"
     pool = warm_pool.Pool()
     a, b = FakeHandle("claude"), FakeHandle("codex")
     pool.release(pool.admit("A", "claude", "x", a, recipe=lambda: None))
@@ -328,7 +328,7 @@ async def drop_cases():
     check("recipes are capped, oldest dropped first",
           len(pool._recipes) == warm_pool.MAX_RECIPES and "k0" not in pool._recipes and f"k{warm_pool.MAX_RECIPES + 4}" in pool._recipes)
     await pool.close_all()
-    del os.environ["JAVIS_WARM_BUDGET_MB"]
+    del os.environ["UNIMATE_WARM_BUDGET_MB"]
 
 
 asyncio.run(drop_cases())
@@ -337,8 +337,8 @@ check("a recipe lives long enough for a chat left over lunch", warm_pool.RECIPE_
 h = claude_warm.ClaudeHandle(None, turn_lane.Lane())
 o = claude_warm._warm_options(eng, opts(), h)
 check("warm options carry the lane key in the hub header",
-      o.mcp_servers["javis"]["headers"][turn_context.HEADER] == h.lane.key
-      and o.mcp_servers["javis"]["headers"]["Authorization"] == "x")
+      o.mcp_servers["unimate"]["headers"][turn_context.HEADER] == h.lane.key
+      and o.mcp_servers["unimate"]["headers"]["Authorization"] == "x")
 h.lane.close()
 
 

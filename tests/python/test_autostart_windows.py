@@ -3,9 +3,9 @@
     python tests/run.py autostart      (KHÔNG mạng, không đụng registry thật)
 
 Chủ repo gửi ảnh chụp trình duyệt sau khi mở máy (2026-08-09): `localhost:7777` trả
-ERR_CONNECTION_REFUSED, kèm "hình như chức năng mở Javis cùng máy startup đang không hoạt động".
+ERR_CONNECTION_REFUSED, kèm "hình như chức năng mở UNI MATE cùng máy startup đang không hoạt động".
 
-Cả tính năng này nằm gọn trong một dòng registry `HKCU\\...\\Run` trỏ `wscript start-javis.vbs`.
+Cả tính năng này nằm gọn trong một dòng registry `HKCU\\...\\Run` trỏ `wscript start-unimate.vbs`.
 Dashboard đọc đúng dòng đó rồi kết luận "Bật". Vấn đề: dòng đó CÒN NGUYÊN trong ít nhất ba
 cảnh mà lúc đăng nhập vẫn không có gì chạy, và không cảnh nào để lại lỗi ở đâu:
 
@@ -14,8 +14,8 @@ cảnh mà lúc đăng nhập vẫn không có gì chạy, và không cảnh nà
      tăng tốc khởi động" cũng tắt bằng đúng cờ này. Đây là cảnh im lặng nhất trong ba.
   2. **Thư mục cài đặt đổi chỗ**, lệnh trỏ đường dẫn cũ. Trạng thái đã tính sẵn cờ `stale` từ
      lâu, nhưng trang Cài đặt bỏ qua nó, nên cùng một máy hỏng mà hai trang nói khác nhau.
-  3. **Mảnh của dây chuyền biến mất** (`start-javis.vbs` hoặc `.venv\\Scripts\\python.exe`).
-     `wscript` không thấy file .vbs thì im, còn `cmd` ghi lỗi vào `javis.log` - một file không
+  3. **Mảnh của dây chuyền biến mất** (`start-unimate.vbs` hoặc `.venv\\Scripts\\python.exe`).
+     `wscript` không thấy file .vbs thì im, còn `cmd` ghi lỗi vào `unimate.log` - một file không
      ai mở ra xem bao giờ.
 
 File này canh phần LOGIC (chạy được trên Linux của CI) và canh việc dashboard thật sự hiện lý
@@ -29,7 +29,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-autostart-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-autostart-"))
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -67,11 +67,11 @@ check("cờ hỏng thì không nổ", main._autostart_bi_chan("linh tinh") is Fa
 # ============================================================
 # 2. Thiếu mảnh nào của dây chuyền khởi động
 # ============================================================
-_tmp = Path(tempfile.mkdtemp(prefix="javis-goc-"))
+_tmp = Path(tempfile.mkdtemp(prefix="unimate-goc-"))
 check("thư mục trống -> thiếu cả hai mảnh",
-      set(main._autostart_thieu_gi(_tmp)) == {"start-javis.vbs", r".venv\Scripts\python.exe"})
+      set(main._autostart_thieu_gi(_tmp)) == {"start-unimate.vbs", r".venv\Scripts\python.exe"})
 
-(_tmp / "start-javis.vbs").write_text("' bo mo phong", encoding="utf-8")
+(_tmp / "start-unimate.vbs").write_text("' bo mo phong", encoding="utf-8")
 check("có .vbs rồi -> chỉ còn thiếu python của venv",
       main._autostart_thieu_gi(_tmp) == [r".venv\Scripts\python.exe"])
 
@@ -93,8 +93,8 @@ check("và chỉ luôn cách gỡ", "bật lại" in _ly)
 _ly = main._autostart_ly_do({"enabled": True, "stale": True})
 check("đường dẫn cũ -> nói rõ là đổi chỗ", "đổi chỗ" in _ly and "bật lại" in _ly.casefold())
 
-_ly = main._autostart_ly_do({"enabled": True, "missing": ["start-javis.vbs"]})
-check("thiếu file -> gọi tên đúng file thiếu", "start-javis.vbs" in _ly)
+_ly = main._autostart_ly_do({"enabled": True, "missing": ["start-unimate.vbs"]})
+check("thiếu file -> gọi tên đúng file thiếu", "start-unimate.vbs" in _ly)
 check("và chỉ luôn cách dựng lại", "setup.bat" in _ly)
 
 check("bật và mọi thứ ổn -> im lặng, không doạ người dùng",
@@ -104,7 +104,7 @@ check("bật và mọi thứ ổn -> im lặng, không doạ người dùng",
 # Chặn thắng stale: gỡ chặn xong mới tới lượt lo đường dẫn, chứ sửa đường dẫn trong khi
 # Windows vẫn chặn thì bấm bao nhiêu lần cũng không chạy.
 _ly = main._autostart_ly_do({"enabled": True, "blocked": True, "stale": True,
-                             "missing": ["start-javis.vbs"]})
+                             "missing": ["start-unimate.vbs"]})
 check("nhiều lỗi cùng lúc -> báo cái phải sửa TRƯỚC", "Task Manager" in _ly)
 
 for _st in ({"enabled": True, "blocked": True}, {"enabled": True, "stale": True},
@@ -123,7 +123,7 @@ check("CANARY: bật lại có gỡ cờ chặn của Task Manager",
 check("chỉ lật cờ ĐÃ CÓ, không tự tạo mới (không có cờ vốn đã là bật)",
       "if _autostart_bi_chan(raw):" in _MAIN_SRC)
 check("trạng thái trả về kèm đường dẫn log để còn chỗ mà soi",
-      '"log": str(PROJECT_ROOT / "server" / "javis.log")' in _MAIN_SRC)
+      '"log": str(PROJECT_ROOT / "server" / "unimate.log")' in _MAIN_SRC)
 
 
 # ============================================================

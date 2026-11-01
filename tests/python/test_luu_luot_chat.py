@@ -9,7 +9,7 @@ Bối cảnh - phụ lục spec 2026-07-28 ghi ba lỗ do hai bản dispatch tr�
   (2) Telegram KHÔNG `append_message` / `auto_title` / `log_conversation` / `learn.enqueue`.
       Hội thoại Telegram vắng mặt ở `/sessions`, ở `brain/Memory/conversations`, và ở vòng
       tự học - lỗ hổng chức năng lớn nhất trong danh sách.
-  (7) Dashboard KHÔNG `strip_control_blocks` trước khi lưu, nên khối `<!-- JAVIS_ASK ... -->`
+  (7) Dashboard KHÔNG `strip_control_blocks` trước khi lưu, nên khối `<!-- UNIMATE_ASK ... -->`
       thô lọt vào kho phiên và nhật ký hội thoại - tức lọt vào chính corpus dùng để tự học.
 
 Test gọi THẲNG `_tg_answer` thật với engine giả, nên nó đo hành vi chứ không đo hình dạng
@@ -23,7 +23,7 @@ import sys
 import tempfile
 import time
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-luuluot-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-luuluot-"))
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -41,8 +41,8 @@ def check(name, cond):
         _fails.append(name)
 
 
-BRAIN = tempfile.mkdtemp(prefix="javis-luuluot-brain-")
-ASK = ('<!-- JAVIS_ASK: {"question":"Xem kỳ nào?",'
+BRAIN = tempfile.mkdtemp(prefix="unimate-luuluot-brain-")
+ASK = ('<!-- UNIMATE_ASK: {"question":"Xem kỳ nào?",'
        '"options":[{"label":"Tuần này","desc":"7 ngày"}]} -->')
 
 
@@ -176,12 +176,12 @@ check("cli: đẩy vào hàng đợi tự học", len(hoc) == 1)
 
 luu = next((c for _s, r, c in kho.messages if r == "assistant"), "")
 check("cli: bản lưu KHÔNG còn khối điều khiển thô",
-      "JAVIS_ASK" not in luu and "<!--" not in luu)
+      "UNIMATE_ASK" not in luu and "<!--" not in luu)
 check("cli: bản lưu vẫn giữ nội dung trả lời", "250k" in luu)
 if nhat_ky:
-    check("cli: nhật ký cũng sạch khối điều khiển", "JAVIS_ASK" not in nhat_ky[0][2])
+    check("cli: nhật ký cũng sạch khối điều khiển", "UNIMATE_ASK" not in nhat_ky[0][2])
 if hoc:
-    check("cli: corpus tự học cũng sạch khối điều khiển", "JAVIS_ASK" not in hoc[0][3])
+    check("cli: corpus tự học cũng sạch khối điều khiển", "UNIMATE_ASK" not in hoc[0][3])
 
 # ---- Phiên Telegram bền qua nhiều lượt (không đẻ phiên mới mỗi tin) ----
 asyncio.run(main._tg_answer("còn hôm qua?", {"chat_id": "555"}))
@@ -236,14 +236,14 @@ if callable(getattr(main, "_persist_turn", None)):
     asyncio.run(main._persist_turn(kho3, "sid-x", BRAIN, "hỏi gì đó", "Trả lời.\n\n" + ASK))
     luu3 = next((c for _s, r, c in kho3.messages if r == "assistant"), "")
     check("_persist_turn: bóc khối điều khiển trước khi vào kho phiên",
-          "JAVIS_ASK" not in luu3 and "<!--" not in luu3)
+          "UNIMATE_ASK" not in luu3 and "<!--" not in luu3)
     check("_persist_turn: giữ nội dung trả lời", "Trả lời." in luu3)
     check("_persist_turn: hạ khối ASK xuống câu hỏi đọc được",
           "Xem kỳ nào?" in luu3 and "1. Tuần này" in luu3)
     check("_persist_turn: nhật ký cũng sạch",
-          nhat_ky3 and "JAVIS_ASK" not in nhat_ky3[0][2])
+          nhat_ky3 and "UNIMATE_ASK" not in nhat_ky3[0][2])
     check("_persist_turn: corpus tự học cũng sạch",
-          hoc3 and "JAVIS_ASK" not in hoc3[0][3])
+          hoc3 and "UNIMATE_ASK" not in hoc3[0][3])
     check("_persist_turn: text rỗng thì KHÔNG lưu gì",
           (asyncio.run(main._persist_turn(kho3, "sid-x", BRAIN, "u", "")) is None)
           and len(kho3.messages) == 1)

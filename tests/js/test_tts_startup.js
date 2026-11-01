@@ -28,11 +28,11 @@ for (const saved of ["1", "0", null]) {
   toggle.checked = true; toggle.change();
   assert.strictEqual(context.voice.ttsEnabled, false, "settings cannot enable speech while mic is off");
   assert.strictEqual(toggle.disabled, true);
-  mic = true; context.window.JavisTts.set(true);
+  mic = true; context.window.UniMateTts.set(true);
   assert.strictEqual(context.voice.ttsEnabled, true);
   assert.strictEqual(toggle.disabled, false, "mic on unlocks the manual mute switch");
   assert.strictEqual(toggle.title, "");
-  context.window.JavisTts.set(false);
+  context.window.UniMateTts.set(false);
   assert.strictEqual(context.voice.ttsEnabled, false);
   assert.ok(stopped > 0);
   // Tắt tiếng thủ công trong lúc mic vẫn mở: bấm lại được ngay, không bị khoá.

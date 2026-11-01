@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Một trang "Cộng sự" thay hai trang Trợ lý/Quy trình, chat được với từng trợ lý và từng quy trình trên cùng khung chat của app, mọi lần chạy quy trình được lưu lại và Javis tra được.
+**Goal:** Một trang "Cộng sự" thay hai trang Trợ lý/Quy trình, chat được với từng trợ lý và từng quy trình trên cùng khung chat của app, mọi lần chạy quy trình được lưu lại và UNI MATE tra được.
 
 **Architecture:** Mọi thứ là một phiên chat: phiên kênh `agent:<slug>` đổi system prompt sang prompt của trợ lý, phiên kênh `workflow:<slug>` biến mỗi tin thành một lần chạy `execute_workflow` và trả kết quả như một lượt chat. Kho `workflow_runs.sqlite3` ghi mọi lần chạy (từ trang Cộng sự lẫn Kanban). Dashboard mượn khung chat có sẵn, thêm cột trái (danh sách) và cột phải (cài đặt / tiến độ / lịch sử).
 
@@ -16,7 +16,7 @@
 - Chuỗi hiển thị cho người dùng phải là tiếng Việt có dấu, lấy từ từ điển `dashboard/i18n/vi.json` (kèm `en.json`), không viết cứng trong JS.
 - Tên hàm/biến mới trong server viết theo phong cách repo (tiếng Việt không dấu hoặc tiếng Anh ngắn), comment tiếng Việt giải thích VÌ SAO.
 - Trang mới phải đăng ký ở đủ ba nơi: `RAIL_ITEMS` (dashboard/console.js), `PAGES` (dashboard/ui-actions.js), `PAGES` (server/ui_targets.py). `tests/js/test_ui_actions.js` canh việc này.
-- Test Python theo khuôn repo: file `tests/python/test_<ten>.py`, đầu file `from _paths import ROOT, SERVER`, đặt `os.environ["JAVIS_STATE_DIR"]` sang thư mục tạm TRƯỚC khi import module server, hàm `check(name, cond)` in `ok`/`FAIL`, cuối file `sys.exit(1 if fails else 0)`.
+- Test Python theo khuôn repo: file `tests/python/test_<ten>.py`, đầu file `from _paths import ROOT, SERVER`, đặt `os.environ["UNIMATE_STATE_DIR"]` sang thư mục tạm TRƯỚC khi import module server, hàm `check(name, cond)` in `ok`/`FAIL`, cuối file `sys.exit(1 if fails else 0)`.
 - Chạy test: `python tests/run.py <tên-lọc>` (Windows tự dùng .venv). Trên máy này có 13 file Python đỏ sẵn trên main sạch (xem memory), chỉ quan tâm test của mình.
 - Commit nhỏ, mỗi task một commit, kết thúc message commit bằng `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.
 - Nhánh làm việc: `feat/cong-su-workspace` (đã có, chứa spec).
@@ -50,14 +50,14 @@
     python tests/run.py workflow_runs
 
 Vì sao có kho này: trước đây bấm Chạy ở trang Quy trình thì kết quả stream vào một ngăn kéo
-tạm, đóng là mất. Hỏi Javis "quy trình chạy gần nhất ra sao" là không có gì để tra.
+tạm, đóng là mất. Hỏi Uni "quy trình chạy gần nhất ra sao" là không có gì để tra.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-wfruns-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-wfruns-")
 
 import workflow_runs  # noqa: E402
 
@@ -138,10 +138,10 @@ Expected: FAIL / ModuleNotFoundError: workflow_runs
 - [ ] **Step 3: Viết `server/workflow_runs.py`**
 
 ```python
-"""Kho lịch sử chạy quy trình - SQLite trong JAVIS_STATE_DIR.
+"""Kho lịch sử chạy quy trình - SQLite trong UNIMATE_STATE_DIR.
 
 Vì sao có: tới 0.58.5, bấm Chạy ở trang Quy trình thì kết quả chỉ stream vào một ngăn kéo tạm,
-đóng là mất, và Javis không có chỗ nào để tra "quy trình chạy gần nhất ra sao". Kho này ghi
+đóng là mất, và UNI MATE không có chỗ nào để tra "quy trình chạy gần nhất ra sao". Kho này ghi
 MỌI lần chạy, bất kể khởi phát từ trang Cộng sự, Kanban, nhắc hẹn hay loop, vì nó được bọc
 ngay trong `execute_workflow` (main.py) chứ không ở từng chỗ gọi.
 
@@ -381,7 +381,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-wfapi-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-wfapi-")
 
 import main  # noqa: E402
 import workflow_runs  # noqa: E402
@@ -661,9 +661,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-kenh-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
-os.environ["JAVIS_SESSIONS_DB"] = str(Path(_TMP) / "conv.db")
+_TMP = tempfile.mkdtemp(prefix="unimate-kenh-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
+os.environ["UNIMATE_SESSIONS_DB"] = str(Path(_TMP) / "conv.db")
 
 import sessions  # noqa: E402
 
@@ -714,7 +714,7 @@ print("\nFAIL:" if fails else "\nOK - sessions_kenh_cong_su", fails or "")
 sys.exit(1 if fails else 0)
 ```
 
-Lưu ý: `main.get_store()` phải trỏ cùng DB với `sessions.get_store()` (env `JAVIS_SESSIONS_DB` đặt trước import). Nếu `_agents_dir("brain")` trỏ vào brain thật của máy thì đổi test sang tạo brain tạm: đặt `os.environ["JAVIS_BRAINS_DIR"]` hay biến tương đương mà `_brain_root` đọc (grep `def _brain_root` để biết biến env), ĐẶT TRƯỚC `import main`. Không được ghi file vào brain thật của máy.
+Lưu ý: `main.get_store()` phải trỏ cùng DB với `sessions.get_store()` (env `UNIMATE_SESSIONS_DB` đặt trước import). Nếu `_agents_dir("brain")` trỏ vào brain thật của máy thì đổi test sang tạo brain tạm: đặt `os.environ["UNIMATE_BRAINS_DIR"]` hay biến tương đương mà `_brain_root` đọc (grep `def _brain_root` để biết biến env), ĐẶT TRƯỚC `import main`. Không được ghi file vào brain thật của máy.
 
 - [ ] **Step 2: Chạy test, phải đỏ**
 
@@ -1107,12 +1107,12 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 **Interfaces:**
 - Consumes: `workflow_chat.persona_cua_phien` (Task 4), `_workflow_agent_helpers` (có sẵn), `_log_agent_run`, `_ghi_bai_hoc`/`_boc_bai_hoc` (có sẵn)
-- Produces: `_agent_chat_prompt(brain, slug) -> str` (ném `FileNotFoundError` nếu trợ lý không có file); `_ket_luot_agent(brain, slug, user_message, final_text) -> str` (bóc JAVIS_LESSON, ghi bộ nhớ + nhật ký, trả text sạch)
+- Produces: `_agent_chat_prompt(brain, slug) -> str` (ném `FileNotFoundError` nếu trợ lý không có file); `_ket_luot_agent(brain, slug, user_message, final_text) -> str` (bóc UNIMATE_LESSON, ghi bộ nhớ + nhật ký, trả text sạch)
 
 - [ ] **Step 1: Viết test đỏ**
 
 ```python
-"""Chat với một trợ lý ở trang Cộng sự: system prompt là prompt của trợ lý, không phải Javis.
+"""Chat với một trợ lý ở trang Cộng sự: system prompt là prompt của trợ lý, không phải UNI MATE.
 
     python tests/run.py agent_chat_prompt
 
@@ -1126,7 +1126,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-agchat-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-agchat-")
 
 import main  # noqa: E402
 
@@ -1145,17 +1145,17 @@ ag_dir = main._agents_dir("brain"); ag_dir.mkdir(parents=True, exist_ok=True)
                                        encoding="utf-8")
 
 p = main._agent_chat_prompt("brain", "nguoi-viet")
-check("prompt la cua tro ly", "Bạn là agent **Người viết**" in p and "Viết súc tích." in p and "JAVIS_LESSON" in p)
+check("prompt la cua tro ly", "Bạn là agent **Người viết**" in p and "Viết súc tích." in p and "UNIMATE_LESSON" in p)
 check("prompt noi ro dang chat truc tiep", "trò chuyện trực tiếp" in p)
-check("prompt KHONG keo CLAUDE.md cua Javis", "SWAPPABLE BRAIN" not in p and "# === LỚP AGENTIC" not in p)
+check("prompt KHONG keo CLAUDE.md cua UNI MATE", "SWAPPABLE BRAIN" not in p and "# === LỚP AGENTIC" not in p)
 try:
     main._agent_chat_prompt("brain", "khong-co")
     check("tro ly khong co -> FileNotFoundError", False)
 except FileNotFoundError:
     check("tro ly khong co -> FileNotFoundError", True)
 
-sach = main._ket_luot_agent("brain", "nguoi-viet", "viết giúp", "Bài đây.\nJAVIS_LESSON: chủ thích câu ngắn")
-check("ket luot boc JAVIS_LESSON", sach.strip() == "Bài đây.")
+sach = main._ket_luot_agent("brain", "nguoi-viet", "viết giúp", "Bài đây.\nUNIMATE_LESSON: chủ thích câu ngắn")
+check("ket luot boc UNIMATE_LESSON", sach.strip() == "Bài đây.")
 mem = (main._brain_memory_dir("brain") / "agents" / "nguoi-viet" / "MEMORY.md")
 check("bai hoc vao bo nho agent", mem.exists() and "chủ thích câu ngắn" in mem.read_text(encoding="utf-8"))
 runs = list((main._brain_memory_dir("brain") / "agents" / "nguoi-viet" / "runs").glob("*.md"))
@@ -1187,21 +1187,21 @@ def _agent_chat_prompt(brain, slug) -> str:
     """System prompt khi CHỦ chat trực tiếp với một trợ lý ở trang Cộng sự.
 
     Là ĐÚNG prompt mà workflow dùng cho trợ lý đó (vai, thân file, kỹ năng, bộ nhớ riêng, luật
-    JAVIS_LESSON), cộng một câu nói rõ đây là trò chuyện chứ không phải một bước quy trình.
+    UNIMATE_LESSON), cộng một câu nói rõ đây là trò chuyện chứ không phải một bước quy trình.
     Cố ý KHÔNG nối CLAUDE.md, bộ nhớ của chủ hay khối kênh: người dùng đang muốn nói chuyện với
-    "Người viết", không phải với Javis đội mũ Người viết.
+    "Người viết", không phải với UNI MATE đội mũ Người viết.
     """
     if not (_agents_dir(brain) / f"{slug}.md").exists():
         raise FileNotFoundError(slug)
     _mk, _agent_sysprompt, _log, _learn = _workflow_agent_helpers(brain, None)
     _name, sysprompt, _model, _prov = _agent_sysprompt(slug)
-    return (sysprompt + "\n\n# Kênh: bạn đang trò chuyện trực tiếp với chủ trên dashboard Javis "
+    return (sysprompt + "\n\n# Kênh: bạn đang trò chuyện trực tiếp với chủ trên dashboard UNI MATE "
             "(trang Cộng sự). Trả lời như đang nói chuyện, theo ngôn ngữ chủ đang dùng; "
             "không cần báo cáo dạng nhiệm vụ trừ khi được giao việc cụ thể.")
 
 
 def _ket_luot_agent(brain, slug, user_message, final_text) -> str:
-    """Cuối một lượt chat với trợ lý: bóc JAVIS_LESSON vào bộ nhớ trợ lý, ghi nhật ký chạy của
+    """Cuối một lượt chat với trợ lý: bóc UNIMATE_LESSON vào bộ nhớ trợ lý, ghi nhật ký chạy của
     trợ lý (memory/agents/<slug>/runs), trả về text SẠCH để lưu phiên và hiện lên chat."""
     _mk, _agent_sysprompt, _log, _learn = _workflow_agent_helpers(brain, None)
     sach = _learn(slug, final_text or "")
@@ -1239,7 +1239,7 @@ Thêm `import workflow_chat` ở khối import đầu main.py (cạnh `import ch
                             session_id=conv_sid or ""
                         ) + channel_context.build_channel_block(
                             "dashboard", {"session_id": conv_sid}, telegram_running=bool(_TG_BOT),
-                            port=_javis_port(), brain_root=_brain_root(brain),
+                            port=_unimate_port(), brain_root=_brain_root(brain),
                         )
                 return sysprompt
 ```
@@ -1306,9 +1306,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-wfturn-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
-os.environ["JAVIS_SESSIONS_DB"] = str(Path(_TMP) / "conv.db")
+_TMP = tempfile.mkdtemp(prefix="unimate-wfturn-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
+os.environ["UNIMATE_SESSIONS_DB"] = str(Path(_TMP) / "conv.db")
 
 import main  # noqa: E402
 import workflow_runs  # noqa: E402
@@ -1566,23 +1566,23 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 ---
 
-### Task 7: Plugin `javis-workflow` + dòng "lần chạy gần nhất" trong system prompt
+### Task 7: Plugin `unimate-workflow` + dòng "lần chạy gần nhất" trong system prompt
 
 **Files:**
-- Create: `system/plugins/javis-workflow/plugin.yaml`, `system/plugins/javis-workflow/plugin.py`
-- Modify: `server/main.py` `_javis_capability_summary` (:9024)
-- Test: `tests/python/test_javis_workflow_plugin.py`
+- Create: `system/plugins/unimate-workflow/plugin.yaml`, `system/plugins/unimate-workflow/plugin.py`
+- Modify: `server/main.py` `_unimate_capability_summary` (:9024)
+- Test: `tests/python/test_unimate_workflow_plugin.py`
 
 **Interfaces:**
 - Consumes: `workflow_runs.get_store()` (Task 1)
-- Produces: tool `javis_workflow` (op `runs` [slug?, limit?], op `show` [id]); hàm `_dong_lan_chay_gan_nhat(brain) -> str` trong main.py
+- Produces: tool `unimate_workflow` (op `runs` [slug?, limit?], op `show` [id]); hàm `_dong_lan_chay_gan_nhat(brain) -> str` trong main.py
 
 - [ ] **Step 1: Viết test đỏ**
 
 ```python
-"""Plugin javis-workflow: Javis tra được lịch sử chạy quy trình từ mọi engine.
+"""Plugin unimate-workflow: UNI MATE tra được lịch sử chạy quy trình từ mọi engine.
 
-    python tests/run.py javis_workflow_plugin
+    python tests/run.py unimate_workflow_plugin
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -1592,7 +1592,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-wfplug-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-wfplug-")
 
 import workflow_runs  # noqa: E402
 import plugins_host  # noqa: E402
@@ -1607,15 +1607,15 @@ def check(name, cond):
 
 
 spec = importlib.util.spec_from_file_location(
-    "javis_workflow_plugin", ROOT / "system" / "plugins" / "javis-workflow" / "plugin.py")
+    "unimate_workflow_plugin", ROOT / "system" / "plugins" / "unimate-workflow" / "plugin.py")
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 
-VAULT = tempfile.mkdtemp(prefix="javis-vault-")
+VAULT = tempfile.mkdtemp(prefix="unimate-vault-")
 B = str(Path(VAULT).resolve())
-ctx = plugins_host.PluginContext("javis-workflow", "bundled", ROOT / "system/plugins/javis-workflow", VAULT)
+ctx = plugins_host.PluginContext("unimate-workflow", "bundled", ROOT / "system/plugins/unimate-workflow", VAULT)
 m.register(ctx)
 tool = ctx._tools[0]
-check("dang ky tool javis_workflow readonly", tool["name"] == "javis_workflow" and tool["min_mode"] == "readonly")
+check("dang ky tool unimate_workflow readonly", tool["name"] == "unimate_workflow" and tool["min_mode"] == "readonly")
 
 st = workflow_runs.get_store()
 r1 = st.bat_dau(brain=B, slug="viet-bai", name="Viết bài", input="A", source="web", session_id="s")
@@ -1634,19 +1634,19 @@ out = asyncio.run(h({"op": "show", "id": r1}, ctx))
 check("show co dau vao, buoc, ket qua", "A" in out and "Người viết" in out and "BÀI A" in out)
 check("show id la -> loi ro", "ERROR" in asyncio.run(h({"op": "show", "id": "xxx"}, ctx)))
 check("op la -> loi ro", "ERROR" in asyncio.run(h({"op": "bay"}, ctx)))
-ctx2 = plugins_host.PluginContext("javis-workflow", "bundled", ROOT / "system/plugins/javis-workflow", None)
+ctx2 = plugins_host.PluginContext("unimate-workflow", "bundled", ROOT / "system/plugins/unimate-workflow", None)
 check("khong co vault_root -> loi ro", "ERROR" in asyncio.run(h({"op": "runs"}, ctx2)))
 
 # Dòng trong system prompt
 import main  # noqa: E402
 d = main._dong_lan_chay_gan_nhat(B)
-check("dong lan chay gan nhat", d.startswith("Lần chạy quy trình gần nhất: Bản tin") and "lỗi" in d and "javis_workflow" in d)
+check("dong lan chay gan nhat", d.startswith("Lần chạy quy trình gần nhất: Bản tin") and "lỗi" in d and "unimate_workflow" in d)
 check("brain chua chay -> rong", main._dong_lan_chay_gan_nhat("/khong-co") == "")
 src = (SERVER / "main.py").read_text(encoding="utf-8")
-than = src[src.index("def _javis_capability_summary("):src.index("def _skill_router_block(")]
+than = src[src.index("def _unimate_capability_summary("):src.index("def _skill_router_block(")]
 check("capability summary goi dong lan chay", "_dong_lan_chay_gan_nhat(" in than)
 
-print("\nFAIL:" if fails else "\nOK - javis_workflow_plugin", fails or "")
+print("\nFAIL:" if fails else "\nOK - unimate_workflow_plugin", fails or "")
 sys.exit(1 if fails else 0)
 ```
 
@@ -1654,35 +1654,35 @@ Trong `_dong_lan_chay_gan_nhat(B)`, test truyền `B` là đường dẫn tuyệ
 
 - [ ] **Step 2: Chạy test, phải đỏ**
 
-Run: `python tests/run.py javis_workflow_plugin`
+Run: `python tests/run.py unimate_workflow_plugin`
 Expected: FileNotFoundError plugin.py
 
 - [ ] **Step 3: Viết plugin**
 
-`system/plugins/javis-workflow/plugin.yaml`:
+`system/plugins/unimate-workflow/plugin.yaml`:
 
 ```yaml
 name: Lịch sử quy trình
-slug: javis-workflow
+slug: unimate-workflow
 version: 1.0.0
-description: Xem các lần chạy quy trình gần đây và kết quả từng lần, ngay từ chat. Trước tool này, chạy quy trình xong là kết quả mất, hỏi "quy trình chạy gần nhất ra sao" Javis không có gì để tra.
-author: Javis (bundled)
+description: Xem các lần chạy quy trình gần đây và kết quả từng lần, ngay từ chat. Trước tool này, chạy quy trình xong là kết quả mất, hỏi "quy trình chạy gần nhất ra sao" UNI MATE không có gì để tra.
+author: UNI MATE (bundled)
 enabled: true
 min_mode: readonly
 tools:
-  - javis_workflow
+  - unimate_workflow
 hooks: []
 ```
 
-`system/plugins/javis-workflow/plugin.py`:
+`system/plugins/unimate-workflow/plugin.py`:
 
 ```python
-"""Plugin bundled: tool `javis_workflow` - đọc lịch sử chạy quy trình, từ MỌI engine.
+"""Plugin bundled: tool `unimate_workflow` - đọc lịch sử chạy quy trình, từ MỌI engine.
 
 Vì sao tồn tại: kho `workflow_runs` (server/workflow_runs.py) ghi mọi lần chạy quy trình, nhưng
-bộ não chính không có đường nào tới nó. Người dùng hỏi "quy trình vừa chạy ra sao" là Javis
+bộ não chính không có đường nào tới nó. Người dùng hỏi "quy trình vừa chạy ra sao" là UNI MATE
 trả lời trống, đúng lỗi chủ dự án báo 2026-09-15. Tool này chỉ ĐỌC (min_mode readonly), nên
-chạy được cả ở chế độ suggest. Muốn chạy quy trình thì giao việc Kanban (javis_task, route
+chạy được cả ở chế độ suggest. Muốn chạy quy trình thì giao việc Kanban (unimate_task, route
 wf:<slug>) hoặc vào trang Cộng sự.
 
 Khoá brain: kho ghi `_brain_key` = đường dẫn tuyệt đối đã resolve của brain, nên ở đây cũng
@@ -1764,11 +1764,11 @@ async def _chay(args, ctx) -> str:
 
 def register(ctx):
     ctx.register_tool(
-        "javis_workflow",
+        "unimate_workflow",
         "Lịch sử chạy quy trình (workflow). op=runs: các lần chạy gần nhất, mới trước, lọc theo "
         "slug nếu có, limit mặc định 10. op=show: một lần chạy đầy đủ (đầu vào, từng bước, kết quả) "
         "theo id. Dùng khi người dùng hỏi quy trình vừa chạy ra sao, kết quả lần trước, hay quy "
-        "trình nào đang chờ duyệt. Chỉ đọc; muốn chạy quy trình thì dùng javis_task với route "
+        "trình nào đang chờ duyệt. Chỉ đọc; muốn chạy quy trình thì dùng unimate_task với route "
         "wf:<slug> hoặc trang Cộng sự.",
         _chay,
         schema={
@@ -1788,12 +1788,12 @@ def register(ctx):
 
 - [ ] **Step 4: Dòng trong system prompt**
 
-Trong main.py, ngay trên `_javis_capability_summary`:
+Trong main.py, ngay trên `_unimate_capability_summary`:
 
 ```python
 def _dong_lan_chay_gan_nhat(brain) -> str:
     """Một dòng cho system prompt: lần chạy quy trình gần nhất của brain, rỗng nếu chưa có.
-    Nhờ dòng này, hỏi "quy trình chạy gần nhất ra sao" ở khung chat chính là Javis biết ngay
+    Nhờ dòng này, hỏi "quy trình chạy gần nhất ra sao" ở khung chat chính là UNI MATE biết ngay
     có gì để tra và tra bằng tool nào."""
     try:
         import workflow_runs
@@ -1809,10 +1809,10 @@ def _dong_lan_chay_gan_nhat(brain) -> str:
     except Exception:
         luc = "?"
     return (f"Lần chạy quy trình gần nhất: {r['name']} lúc {luc} ({r['nhan']}). "
-            "Chi tiết hay các lần khác: tool javis_workflow (op=runs, op=show).")
+            "Chi tiết hay các lần khác: tool unimate_workflow (op=runs, op=show).")
 ```
 
-Trong `_javis_capability_summary`, sau khối `if c["workflows"]:`:
+Trong `_unimate_capability_summary`, sau khối `if c["workflows"]:`:
 
 ```python
     _lc = _dong_lan_chay_gan_nhat(brain)
@@ -1822,14 +1822,14 @@ Trong `_javis_capability_summary`, sau khối `if c["workflows"]:`:
 
 - [ ] **Step 5: Chạy test**
 
-Run: `python tests/run.py javis_workflow_plugin` rồi `python tests/run.py plugins_host`
+Run: `python tests/run.py unimate_workflow_plugin` rồi `python tests/run.py plugins_host`
 Expected: xanh.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add system/plugins/javis-workflow server/main.py tests/python/test_javis_workflow_plugin.py
-git commit -m "Tool javis_workflow + dòng lần chạy gần nhất trong system prompt
+git add system/plugins/unimate-workflow server/main.py tests/python/test_unimate_workflow_plugin.py
+git commit -m "Tool unimate_workflow + dòng lần chạy gần nhất trong system prompt
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ```
@@ -1896,17 +1896,17 @@ PAGES = (
 ```js
   // Trang Cộng sự: dựng bởi workspace.js, mượn khung chat như trang Trò chuyện.
   function renderWorkspace(el) {
-    if (!window.JavisWorkspace) { el.innerHTML = placeholder("workspace", window.t("cs.mod_not_ready", { ten: "workspace.js" })); return; }
+    if (!window.UniMateWorkspace) { el.innerHTML = placeholder("workspace", window.t("cs.mod_not_ready", { ten: "workspace.js" })); return; }
     _injectChatCss();
     if (_chatSlots.length) _returnChatNodes();
     document.body.classList.add("on-chat");
-    window.JavisWorkspace.render(el, { borrow: _borrowChatNodes });
+    window.UniMateWorkspace.render(el, { borrow: _borrowChatNodes });
     _pageLeave = _returnChatNodes;
   }
 ```
 
 - `packs.js:191-193`: `trang: "workspace"` cho `agent` và `workflow`.
-- `chatbots.js:699`: `window.JavisNav.go("workspace")`.
+- `chatbots.js:699`: `window.UniMateNav.go("workspace")`.
 - Grep toàn `dashboard/*.js` và `server/*.py` cho `"agents"`/`"workflows"` dùng như ID TRANG (không phải đường dẫn API `/agents`): còn chỗ nào thì đổi.
 
 - [ ] **Step 5: Từ điển**
@@ -1943,13 +1943,13 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `dashboard/workspace.js`
 - Modify: `dashboard/index.html` (thêm `<script src="/static/workspace.js?v=1">` NGAY SAU `studio.js`, TRƯỚC `console.js`)
 - Modify: `dashboard/app.js` (chuỗi `else if (data.type === "system")` ~:678: thêm nhánh `wf_event`)
-- Modify: `dashboard/studio.js` (`editAgent(a)` :541, `editWorkflow(w)` :380, `window.JavisStudio` :76)
+- Modify: `dashboard/studio.js` (`editAgent(a)` :541, `editWorkflow(w)` :380, `window.UniMateStudio` :76)
 - Modify: `dashboard/i18n/vi.json`, `en.json` (khoá `ws.*`)
 - Test: `tests/js/test_workspace.js`
 
 **Interfaces:**
-- Consumes: `POST /sessions/new`, `GET /sessions?channel=`, `GET /agents` (`last_chat_at`), `GET /workflows` (`last_run_at`), `GET /workflows/runs`, `window.JavisSessions.open/new/current/brain`, `window.JavisWsSend(obj)`, `window.JavisPacks.moKho(kind, fromPage, label)`, `window.JavisStudio.editAgent(a, opts)` / `editWorkflow(w, opts)`
-- Produces: `window.JavisWorkspace = { render(el, {borrow}), onWfEvent(frame), state() }`; khung WS gửi `{"action":"wf_resume", session_id, task_id, node, code, brain}`
+- Consumes: `POST /sessions/new`, `GET /sessions?channel=`, `GET /agents` (`last_chat_at`), `GET /workflows` (`last_run_at`), `GET /workflows/runs`, `window.UniMateSessions.open/new/current/brain`, `window.UniMateWsSend(obj)`, `window.UniMatePacks.moKho(kind, fromPage, label)`, `window.UniMateStudio.editAgent(a, opts)` / `editWorkflow(w, opts)`
+- Produces: `window.UniMateWorkspace = { render(el, {borrow}), onWfEvent(frame), state() }`; khung WS gửi `{"action":"wf_resume", session_id, task_id, node, code, brain}`
 
 - [ ] **Step 1: Sửa studio.js để trình sửa vẽ được vào host bất kỳ**
 
@@ -1962,7 +1962,7 @@ Trong `editAgent(a)` đổi chữ ký thành `editAgent(a, opts)`; `opts = opts 
 
 `editWorkflow(w)` -> `editWorkflow(w, opts)`: sau lưu `editor.classList.remove("open"); if (opts && opts.onSaved) opts.onSaved(); else loadWorkflows();`. Modal `#studioEditor` vẫn dùng (nó nằm trong index.html toàn cục).
 
-`window.JavisStudio` thêm `editAgent, editWorkflow, exportItem`.
+`window.UniMateStudio` thêm `editAgent, editWorkflow, exportItem`.
 
 - [ ] **Step 2: app.js chuyển khung `wf_event`**
 
@@ -1972,7 +1972,7 @@ Trong chuỗi `if/else` xử lý `data.type` (gần dòng 678), thêm TRƯỚC n
   } else if (data.type === "wf_event") {
     // Tiến độ từng bước của một lần chạy quy trình (trang Cộng sự vẽ ở cột phải). Khung chat
     // không vẽ gì: chip trạng thái đã đi bằng khung status riêng.
-    try { if (window.JavisWorkspace) window.JavisWorkspace.onWfEvent(data); } catch (e) {}
+    try { if (window.UniMateWorkspace) window.UniMateWorkspace.onWfEvent(data); } catch (e) {}
 ```
 
 - [ ] **Step 3: Viết test JS đỏ**
@@ -1984,7 +1984,7 @@ Trong chuỗi `if/else` xử lý `data.type` (gần dòng 678), thêm TRƯỚC n
 
        node tests/js/test_workspace.js
 
-   Chạy dưới node với DOM giả tối thiểu: workspace.js phơi phần thuần qua window.JavisWorkspace. */
+   Chạy dưới node với DOM giả tối thiểu: workspace.js phơi phần thuần qua window.UniMateWorkspace. */
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..", "..");
@@ -1993,7 +1993,7 @@ global.window = { t: (k) => k, ic: () => "", addEventListener() {}, matchMedia: 
 global.document = { getElementById: () => null, createElement: () => ({ classList: { add() {}, remove() {} }, appendChild() {} }), body: { classList: { add() {}, remove() {} } } };
 global.localStorage = { getItem: () => null, setItem() {} };
 require(path.join(root, "dashboard", "workspace.js"));
-const W = window.JavisWorkspace;
+const W = window.UniMateWorkspace;
 
 let fails = [];
 function check(name, cond) { console.log((cond ? "ok   " : "FAIL ") + name); if (!cond) fails.push(name); }
@@ -2001,7 +2001,7 @@ function check(name, cond) { console.log((cond ? "ok   " : "FAIL ") + name); if 
 // Sắp xếp: mốc gần nhất lên đầu, chưa có mốc xếp sau theo tên
 const wfs = [{ slug: "a", name: "Bản tin", last_run_at: 0 }, { slug: "b", name: "Viết bài", last_run_at: 50 }, { slug: "c", name: "Ads", last_run_at: 99 }, { slug: "d", name: "Zalo", last_run_at: 0 }];
 check("xep quy trinh theo lan chay gan nhat", W.sapXep(wfs, "last_run_at").map(x => x.slug).join(",") === "c,b,a,d");
-const ags = [{ slug: "x", name: "Người viết", last_chat_at: 0 }, { slug: "y", name: "Javis", last_chat_at: 3 }];
+const ags = [{ slug: "x", name: "Người viết", last_chat_at: 0 }, { slug: "y", name: "UNI MATE", last_chat_at: 3 }];
 check("xep tro ly theo lan chat gan nhat", W.sapXep(ags, "last_chat_at").map(x => x.slug).join(",") === "y,x");
 
 // Lọc: tìm không dấu + nhóm
@@ -2028,12 +2028,12 @@ check("phan tram", W.phanTram(W.tienDoMoi(4)) === 0 && W.phanTram(st) === 100);
 
 // Dây nối
 const app = fs.readFileSync(path.join(root, "dashboard", "app.js"), "utf8");
-check("app.js chuyen wf_event sang JavisWorkspace", /data\.type === "wf_event"/.test(app) && /JavisWorkspace\.onWfEvent\(/.test(app));
+check("app.js chuyen wf_event sang UniMateWorkspace", /data\.type === "wf_event"/.test(app) && /UniMateWorkspace\.onWfEvent\(/.test(app));
 const html = fs.readFileSync(path.join(root, "dashboard", "index.html"), "utf8");
 check("index.html nap workspace.js sau studio.js, truoc console.js",
   html.indexOf("studio.js") < html.indexOf("workspace.js") && html.indexOf("workspace.js") < html.indexOf("console.js"));
 const con = fs.readFileSync(path.join(root, "dashboard", "console.js"), "utf8");
-check("console.js co renderWorkspace muon khung chat", /function renderWorkspace\(el\)/.test(con) && /JavisWorkspace\.render\(el, \{ borrow: _borrowChatNodes \}\)/.test(con));
+check("console.js co renderWorkspace muon khung chat", /function renderWorkspace\(el\)/.test(con) && /UniMateWorkspace\.render\(el, \{ borrow: _borrowChatNodes \}\)/.test(con));
 const studio = fs.readFileSync(path.join(root, "dashboard", "studio.js"), "utf8");
 check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/.test(studio) && /opts\.host/.test(studio) && /opts\.onSaved/.test(studio));
 
@@ -2063,7 +2063,7 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
   var ic = function (n, o) { return (window.ic ? window.ic(n, o) : ""); };
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]; }); }
   function khongDau(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase(); }
-  function brain() { try { return window.JavisSessions ? window.JavisSessions.brain() : "brain"; } catch (e) { return "brain"; } }
+  function brain() { try { return window.UniMateSessions ? window.UniMateSessions.brain() : "brain"; } catch (e) { return "brain"; } }
   async function api(url, opt) { var r = await fetch(url, opt); return r.json(); }
   function fd(o) { var f = new FormData(); Object.keys(o).forEach(function (k) { f.append(k, o[k]); }); return f; }
 
@@ -2132,7 +2132,7 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
           '<select class="ws-group" id="wsGroup"></select>' +
           '<div class="ws-list" id="wsList"></div>' +
           '<div class="ws-left-foot"><button type="button" class="ws-btn" id="wsNew">' + ic("plus") + ' ' + esc(t("ws.new_item")) + '</button>' +
-          '<button type="button" class="ws-btn" id="wsStore">' + ic("package") + ' Javis Store</button></div>' +
+          '<button type="button" class="ws-btn" id="wsStore">' + ic("package") + ' UNI MATE Store</button></div>' +
         '</aside>' +
         '<div class="ws-main">' +
           '<div class="ws-bar">' +
@@ -2150,14 +2150,14 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
     el.querySelector("#wsSearch").oninput = function (e) { S.q = e.target.value; veDanhSach(); };
     el.querySelector("#wsGroup").onchange = function (e) { S.nhom = e.target.value; veDanhSach(); };
     el.querySelector("#wsNew").onclick = taoMoi;
-    el.querySelector("#wsStore").onclick = function () { if (window.JavisPacks && window.JavisPacks.moKho) window.JavisPacks.moKho(S.loai, "workspace", t("page.workspace.label")); };
+    el.querySelector("#wsStore").onclick = function () { if (window.UniMatePacks && window.UniMatePacks.moKho) window.UniMatePacks.moKho(S.loai, "workspace", t("page.workspace.label")); };
     el.querySelector("#wsNewChat").onclick = function () { var x = dangChon(); if (x) moPhien(x, true); };
     el.querySelector("#wsLeftBtn").onclick = function () { el.querySelector("#wsPage").classList.toggle("left-open"); };
     el.querySelector("#wsRightBtn").onclick = function () { el.querySelector("#wsPage").classList.toggle("right-open"); };
-    try { var l = localStorage.getItem("javis_ws_loai"); if (l === "agent" || l === "workflow") S.loai = l; S.chon.agent = localStorage.getItem("javis_ws_agent"); S.chon.workflow = localStorage.getItem("javis_ws_workflow"); } catch (e) {}
+    try { var l = localStorage.getItem("unimate_ws_loai"); if (l === "agent" || l === "workflow") S.loai = l; S.chon.agent = localStorage.getItem("unimate_ws_agent"); S.chon.workflow = localStorage.getItem("unimate_ws_workflow"); } catch (e) {}
     taiDanhSach().then(function () { veTrai(); chonMacDinh(); });
   }
-  function luuChon() { try { localStorage.setItem("javis_ws_loai", S.loai); if (S.chon.agent) localStorage.setItem("javis_ws_agent", S.chon.agent); if (S.chon.workflow) localStorage.setItem("javis_ws_workflow", S.chon.workflow); } catch (e) {} }
+  function luuChon() { try { localStorage.setItem("unimate_ws_loai", S.loai); if (S.chon.agent) localStorage.setItem("unimate_ws_agent", S.chon.agent); if (S.chon.workflow) localStorage.setItem("unimate_ws_workflow", S.chon.workflow); } catch (e) {} }
 
   function veTrai() {
     var el = S.el; if (!el) return;
@@ -2202,7 +2202,7 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
       id = n.id;
     }
     S.sessionCuaPhien[id] = item.slug;
-    if (window.JavisSessions) window.JavisSessions.open(id);
+    if (window.UniMateSessions) window.UniMateSessions.open(id);
     if (S.loai === "workflow") taiLichSu(item);
   }
   function veLoi(msg) { var el = S.el && S.el.querySelector("#wsIdentity"); if (el) el.innerHTML += '<small class="ws-err">' + esc(msg) + '</small>'; }
@@ -2224,10 +2224,10 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
         '<div class="ws-acts"><button type="button" class="ws-btn" id="wsExport">' + esc(t("studio.export")) + '</button>' +
         '<button type="button" class="ws-btn danger" id="wsDel">' + esc(t("common.delete")) + '</button></div>' +
         '<div class="ws-rtitle">' + esc(t("ws.recent_chats")) + '</div><div class="ws-sess" id="wsSess"></div>';
-      if (window.JavisStudio && window.JavisStudio.editAgent) {
-        window.JavisStudio.editAgent(item, { host: host.querySelector("#wsAgentForm"), onSaved: async function () { await taiDanhSach(); veTrai(); veGiua(dangChon()); } });
+      if (window.UniMateStudio && window.UniMateStudio.editAgent) {
+        window.UniMateStudio.editAgent(item, { host: host.querySelector("#wsAgentForm"), onSaved: async function () { await taiDanhSach(); veTrai(); veGiua(dangChon()); } });
       }
-      host.querySelector("#wsExport").onclick = function () { window.JavisStudio && window.JavisStudio.exportItem("agent", item.slug); };
+      host.querySelector("#wsExport").onclick = function () { window.UniMateStudio && window.UniMateStudio.exportItem("agent", item.slug); };
       host.querySelector("#wsDel").onclick = async function () {
         if (!confirm(t("studio.del_ag", { ten: item.name }))) return;
         await api("/agents/delete", { method: "POST", body: fd({ slug: item.slug, brain: brain() }) });
@@ -2245,8 +2245,8 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
         '<button type="button" class="ws-btn danger" id="wsDel">' + esc(t("common.delete")) + '</button></div>' +
         '<div class="ws-rtitle">' + esc(t("ws.run_history")) + '</div><div class="ws-runs" id="wsRuns"></div>';
       veBuoc(item, td);
-      host.querySelector("#wsEditWf").onclick = function () { window.JavisStudio && window.JavisStudio.editWorkflow(item, { onSaved: async function () { await taiDanhSach(); veTrai(); vePhai(dangChon()); } }); };
-      host.querySelector("#wsExport").onclick = function () { window.JavisStudio && window.JavisStudio.exportItem("workflow", item.slug); };
+      host.querySelector("#wsEditWf").onclick = function () { window.UniMateStudio && window.UniMateStudio.editWorkflow(item, { onSaved: async function () { await taiDanhSach(); veTrai(); vePhai(dangChon()); } }); };
+      host.querySelector("#wsExport").onclick = function () { window.UniMateStudio && window.UniMateStudio.exportItem("workflow", item.slug); };
       host.querySelector("#wsDel").onclick = async function () {
         if (!confirm(t("studio.del_wf", { ten: item.name }))) return;
         await api("/workflows/delete", { method: "POST", body: fd({ slug: item.slug, brain: brain() }) });
@@ -2256,7 +2256,7 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
   }
   function tenAgent(slug) { var a = S.agents.find(function (x) { return x.slug === slug; }); return a ? a.name : slug; }
   function tienDoHienTai(item) {
-    var sid = window.JavisSessions ? window.JavisSessions.current() : null;
+    var sid = window.UniMateSessions ? window.UniMateSessions.current() : null;
     if (sid && S.tienDo[sid]) return S.tienDo[sid];
     var td = tienDoMoi((item.steps || []).length);
     td.buoc.forEach(function (b, i) { b.agent = tenAgent((item.steps[i] || {}).agent); });
@@ -2282,9 +2282,9 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
     var ap = host.querySelector("#wsApprove");
     if (ap) ap.onclick = function () {
       ap.disabled = true;
-      var sid = window.JavisSessions ? window.JavisSessions.current() : null;
-      if (!sid || !window.JavisWsSend) return;
-      window.JavisWsSend({ action: "wf_resume", session_id: sid, task_id: td.cho_duyet.task_id, node: td.cho_duyet.node, code: td.cho_duyet.code, brain: brain() });
+      var sid = window.UniMateSessions ? window.UniMateSessions.current() : null;
+      if (!sid || !window.UniMateWsSend) return;
+      window.UniMateWsSend({ action: "wf_resume", session_id: sid, task_id: td.cho_duyet.task_id, node: td.cho_duyet.node, code: td.cho_duyet.code, brain: brain() });
       td.cho_duyet = null; td.trang_thai = "dang"; veBuoc(item, td);
     };
     var stt = S.el.querySelector("#wsWfStatus"); if (stt) stt.textContent = nhanTienDo(td);
@@ -2301,7 +2301,7 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
         '<span>' + esc(d.toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })) + '</span>' +
         '<span class="ws-run-st">' + esc(x.nhan) + '</span><small>' + esc(x.input || "").slice(0, 60) + '</small></button>';
     }).join("");
-    host.querySelectorAll("[data-sid]").forEach(function (b) { b.onclick = function () { if (b.dataset.sid && window.JavisSessions) window.JavisSessions.open(b.dataset.sid); }; });
+    host.querySelectorAll("[data-sid]").forEach(function (b) { b.onclick = function () { if (b.dataset.sid && window.UniMateSessions) window.UniMateSessions.open(b.dataset.sid); }; });
   }
   async function taiPhienGanDay(item) {
     var host = S.el && S.el.querySelector("#wsSess"); if (!host) return;
@@ -2309,7 +2309,7 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
     var ds = r.sessions || [];
     if (!ds.length) { host.innerHTML = '<div class="ws-empty">' + esc(t("ws.no_chats")) + '</div>'; return; }
     host.innerHTML = ds.map(function (s) { return '<button type="button" class="ws-run" data-sid="' + esc(s.id) + '"><strong>' + esc(s.title || s.preview || t("ws.untitled")) + '</strong></button>'; }).join("");
-    host.querySelectorAll("[data-sid]").forEach(function (b) { b.onclick = function () { window.JavisSessions && window.JavisSessions.open(b.dataset.sid); }; });
+    host.querySelectorAll("[data-sid]").forEach(function (b) { b.onclick = function () { window.UniMateSessions && window.UniMateSessions.open(b.dataset.sid); }; });
   }
 
   // ---------- sự kiện quy trình từ WebSocket ----------
@@ -2318,23 +2318,23 @@ Run: `node tests/js/test_workspace.js` -> FAIL (module chưa có).
     var item = dangChon();
     if (!S.tienDo[sid]) { var n = (item && S.loai === "workflow" && S.sessionCuaPhien[sid] === item.slug) ? (item.steps || []).length : Number(ev.steps || 0); S.tienDo[sid] = tienDoMoi(n); }
     apDung(S.tienDo[sid], ev);
-    var cur = window.JavisSessions ? window.JavisSessions.current() : null;
+    var cur = window.UniMateSessions ? window.UniMateSessions.current() : null;
     if (item && S.loai === "workflow" && cur === sid) { veBuoc(item, S.tienDo[sid]); if (ev.type === "done" || ev.type === "error" || ev.type === "wait_user") { taiLichSu(item); taiDanhSach().then(veTrai); } }
   }
 
   // ---------- tạo mới ----------
   function taoMoi() {
-    if (!window.JavisStudio) return;
+    if (!window.UniMateStudio) return;
     var sau = async function () { await taiDanhSach(); veTrai(); chonMacDinh(); };
-    if (S.loai === "agent") window.JavisStudio.editAgent(null, { onSaved: sau });
-    else window.JavisStudio.editWorkflow(null, { onSaved: sau });
+    if (S.loai === "agent") window.UniMateStudio.editAgent(null, { onSaved: sau });
+    else window.UniMateStudio.editWorkflow(null, { onSaved: sau });
   }
 
-  window.JavisWorkspace = { render: render, onWfEvent: onWfEvent, sapXep: sapXep, loc: loc, tienDoMoi: tienDoMoi, apDung: apDung, phanTram: phanTram, state: function () { return S; } };
+  window.UniMateWorkspace = { render: render, onWfEvent: onWfEvent, sapXep: sapXep, loc: loc, tienDoMoi: tienDoMoi, apDung: apDung, phanTram: phanTram, state: function () { return S; } };
 })();
 ```
 
-Khi `editAgent(null, {onSaved})` không có `host` thì mở modal như cũ (tạo mới). Kiểm `window.JavisSessions.current()` tồn tại (app.js:1084 có `current`).
+Khi `editAgent(null, {onSaved})` không có `host` thì mở modal như cũ (tạo mới). Kiểm `window.UniMateSessions.current()` tồn tại (app.js:1084 có `current`).
 
 - [ ] **Step 5: CSS**
 
@@ -2354,7 +2354,7 @@ vi.json:
   "ws.new_workflow": "Tạo quy trình",
   "ws.toggle_list": "Ẩn/hiện danh sách",
   "ws.toggle_panel": "Ẩn/hiện cột phải",
-  "ws.empty": "Chưa có mục phù hợp. Tạo mới hoặc tìm trong Javis Store.",
+  "ws.empty": "Chưa có mục phù hợp. Tạo mới hoặc tìm trong UNI MATE Store.",
   "ws.pick_one": "Chọn một cộng sự ở cột trái",
   "ws.wf_sub": "Quy trình · {n} bước",
   "ws.ph_agent": "Nhắn cho {ten}...",
@@ -2380,7 +2380,7 @@ vi.json:
   "ws.step_n": "Bước {n}",
 ```
 
-en.json: bản dịch tương ứng (Agents, Workflows, Search partners..., All groups, New, New agent, New workflow, Toggle list, Toggle panel, Nothing matches. Create one or browse Javis Store., Pick a partner on the left, Workflow · {n} steps, Message {ten}..., Describe the result you want; each message is one run..., Could not open conversation, Agent settings, Recent chats, No chats yet, (untitled), Progress, Edit steps, Run history, No runs yet. Send a message to run., Running · Step {a}/{b}, Completed, Stopped on error, Waiting for approval, Ready, Waiting, In progress..., Done, Error, Step {n}).
+en.json: bản dịch tương ứng (Agents, Workflows, Search partners..., All groups, New, New agent, New workflow, Toggle list, Toggle panel, Nothing matches. Create one or browse UNI MATE Store., Pick a partner on the left, Workflow · {n} steps, Message {ten}..., Describe the result you want; each message is one run..., Could not open conversation, Agent settings, Recent chats, No chats yet, (untitled), Progress, Edit steps, Run history, No runs yet. Send a message to run., Running · Step {a}/{b}, Completed, Stopped on error, Waiting for approval, Ready, Waiting, In progress..., Done, Error, Step {n}).
 
 - [ ] **Step 7: index.html**
 
@@ -2391,14 +2391,14 @@ Sau dòng `studio.js?v=30` thêm `<script src="/static/workspace.js?v=1"></scrip
 Run: `node tests/js/test_workspace.js`, `node tests/js/test_ui_actions.js`, `node tests/js/test_i18n.mjs`, `node tests/js/test_studio_chon_model_agent.js`
 Expected: xanh.
 
-Khởi động server cục bộ (memory: port 7777, start-javis.bat, kill trực tiếp + đường dẫn tuyệt đối) rồi mở `http://localhost:7777`, vào Cộng sự:
+Khởi động server cục bộ (memory: port 7777, start-unimate.bat, kill trực tiếp + đường dẫn tuyệt đối) rồi mở `http://localhost:7777`, vào Cộng sự:
 1. Tab Trợ lý: chọn một trợ lý, gửi "chào bạn, bạn là ai?" -> câu trả lời theo vai trợ lý. F5 -> hội thoại còn.
 2. Cột phải sửa vai trò, Lưu -> header đổi.
 3. Tab Quy trình: chọn quy trình mẫu (bấm Tạo mẫu ở trang Kỹ năng/Studio seed nếu chưa có: `POST /studio/seed`), gửi đầu vào -> chip "Bước 1/2..." hiện, cột phải sáng từng bước, tin kết quả "Lần chạy #1 · ..." xuất hiện. F5 giữa chừng -> vẫn thấy chạy tiếp.
 4. Gửi tin thứ hai "ngắn lại một nửa" -> tin "Lần chạy #2".
 5. Lịch sử chạy có 2 dòng; bấm dòng -> mở đúng phiên.
 6. Quay lại tab Quy trình: quy trình vừa chạy nằm đầu danh sách.
-7. Trang Trò chuyện: thanh lịch sử KHÔNG có phiên cộng sự. Hỏi Javis "quy trình chạy gần nhất ra sao?" -> trả lời có tên quy trình và kết quả (qua tool javis_workflow).
+7. Trang Trò chuyện: thanh lịch sử KHÔNG có phiên cộng sự. Hỏi Uni "quy trình chạy gần nhất ra sao?" -> trả lời có tên quy trình và kết quả (qua tool unimate_workflow).
 8. Nói/gõ ở chat chính "mở trang trợ lý" -> tới Cộng sự.
 9. Thu cửa sổ xuống 400px: hai cột thành ngăn kéo, khung chat dùng được.
 
@@ -2418,12 +2418,12 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 ### Task 10: Tài liệu, CHANGELOG, VERSION, PR và merge
 
 **Files:**
-- Modify: `docs/07-agents-va-workflows.md` (mục "Mở ở đâu trong Javis" và cách chạy), `docs/en/07-agents-and-workflows.md`
+- Modify: `docs/07-agents-va-workflows.md` (mục "Mở ở đâu trong UNI MATE" và cách chạy), `docs/en/07-agents-and-workflows.md`
 - Modify: `CHANGELOG.md`, `VERSION`
 
 - [ ] **Step 1: Docs**
 
-Trong `docs/07-agents-va-workflows.md`: mục "Mở ở đâu" đổi thành nhóm Năng lực có mục **Cộng sự** với hai tab Trợ lý | Quy trình; thêm mục "Trò chuyện với một trợ lý" (chọn ở cột trái, chat ở giữa, cài đặt ở cột phải, mỗi trợ lý có nhiều hội thoại); mục "Chạy quy trình" viết lại: gửi một tin là một lần chạy, tiến độ ở cột phải, kết quả về chat, tin sau nhớ kết quả trước, lịch sử chạy ở cột phải và Javis tra được bằng câu hỏi ở khung chat chính. Sửa câu "bấm ▶ Chạy trực tiếp ở trang Workflows" thành "gửi tin ở trang Cộng sự". Bản tiếng Anh sửa tương ứng.
+Trong `docs/07-agents-va-workflows.md`: mục "Mở ở đâu" đổi thành nhóm Năng lực có mục **Cộng sự** với hai tab Trợ lý | Quy trình; thêm mục "Trò chuyện với một trợ lý" (chọn ở cột trái, chat ở giữa, cài đặt ở cột phải, mỗi trợ lý có nhiều hội thoại); mục "Chạy quy trình" viết lại: gửi một tin là một lần chạy, tiến độ ở cột phải, kết quả về chat, tin sau nhớ kết quả trước, lịch sử chạy ở cột phải và UNI MATE tra được bằng câu hỏi ở khung chat chính. Sửa câu "bấm ▶ Chạy trực tiếp ở trang Workflows" thành "gửi tin ở trang Cộng sự". Bản tiếng Anh sửa tương ứng.
 
 - [ ] **Step 2: CHANGELOG + VERSION**
 
@@ -2434,7 +2434,7 @@ Trong `docs/07-agents-va-workflows.md`: mục "Mở ở đâu" đổi thành nh�
 ### Thêm mới
 - **Trang Cộng sự thay cho hai trang Trợ lý và Quy trình.** Chọn một trợ lý là chat được ngay với đúng vai đó, mỗi trợ lý có hội thoại riêng và cài đặt nằm ở cột phải.
 - **Quy trình chạy ngay trong khung chat.** Gửi một tin là một lần chạy, tiến độ từng bước hiện ở cột phải, kết quả về chat và tin sau vẫn nhớ kết quả trước để bạn góp ý tiếp.
-- **Lịch sử chạy được lưu lại.** Cột phải liệt kê các lần chạy gần nhất, bấm vào là mở lại; hỏi Javis "quy trình chạy gần nhất ra sao" ở khung chat chính là có câu trả lời thật. Quy trình vừa chạy tự lên đầu danh sách.
+- **Lịch sử chạy được lưu lại.** Cột phải liệt kê các lần chạy gần nhất, bấm vào là mở lại; hỏi Uni "quy trình chạy gần nhất ra sao" ở khung chat chính là có câu trả lời thật. Quy trình vừa chạy tự lên đầu danh sách.
 ```
 
 - [ ] **Step 3: Chạy toàn bộ test**
@@ -2456,7 +2456,7 @@ Plan: docs/superpowers/plans/2026-09-15-cong-su-workspace.md
 
 - Trang `workspace` (Cộng sự) thay `agents` + `workflows`; ba cột, mượn khung chat của app.
 - Phiên kênh `agent:<slug>` dùng prompt của trợ lý; phiên `workflow:<slug>` biến mỗi tin thành một lần chạy `execute_workflow`, kết quả về chat, kể cả lỗi và chờ duyệt.
-- Kho `workflow_runs.sqlite3` ghi mọi lần chạy (Cộng sự, Kanban); `GET /workflows/runs`; tool `javis_workflow`; dòng "lần chạy gần nhất" trong system prompt.
+- Kho `workflow_runs.sqlite3` ghi mọi lần chạy (Cộng sự, Kanban); `GET /workflows/runs`; tool `unimate_workflow`; dòng "lần chạy gần nhất" trong system prompt.
 - `POST /sessions/new`, `GET /sessions?channel=`; thanh lịch sử chat chính bỏ phiên cộng sự.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
@@ -2473,13 +2473,13 @@ Chờ CI xanh (dùng ccd_pr để xem), rồi merge squash vào main theo luật
 **Spec coverage:**
 - §3 giao diện ba cột, ngăn kéo màn hẹp, Store, Tạo mới, sắp xếp: Task 9 (+ Task 8 đăng ký trang).
 - §4 phiên theo kênh, `POST /sessions/new`, lọc kênh, ghim model: Task 3.
-- §5 chat với trợ lý, JAVIS_LESSON, nhật ký, lỗi khi trợ lý mất: Task 5.
+- §5 chat với trợ lý, UNIMATE_LESSON, nhật ký, lỗi khi trợ lý mất: Task 5.
 - §6 lượt quy trình, status/wf_event/stream, tin xong/lỗi/chờ duyệt, nối kết quả trước, wf_resume: Task 4 + 6.
 - §7 kho lịch sử, bọc `execute_workflow`, `source`, API, `last_run_at`/`last_chat_at`: Task 1 + 2 (+3).
-- §8 plugin `javis_workflow`, dòng system prompt: Task 7.
+- §8 plugin `unimate_workflow`, dòng system prompt: Task 7.
 - §9 kiểm thử: mỗi task có test; kiểm tay ở Task 9 Step 8.
 - §11 docs, CHANGELOG, VERSION: Task 10.
 
-**Type consistency:** `execute_workflow(..., source=)` (Task 2) được Task 6 gọi đúng tên tham số; `workflow_chat.chay` trả các khoá `trang_thai/ket_qua/so_buoc/loi/wait/run_id` (Task 4) được `_luot_quy_trinh` (Task 6) đọc đúng; `gan_nhat` trả `output_tom_tat` (Task 1) được plugin (Task 7) và workspace.js (Task 9, dùng `input`, `nhan`, `session_id`, `started_at`, `status`) đọc đúng; `JavisStudio.editAgent(a, {host,onSaved})` (Task 9 Step 1) khớp cách gọi trong workspace.js.
+**Type consistency:** `execute_workflow(..., source=)` (Task 2) được Task 6 gọi đúng tên tham số; `workflow_chat.chay` trả các khoá `trang_thai/ket_qua/so_buoc/loi/wait/run_id` (Task 4) được `_luot_quy_trinh` (Task 6) đọc đúng; `gan_nhat` trả `output_tom_tat` (Task 1) được plugin (Task 7) và workspace.js (Task 9, dùng `input`, `nhan`, `session_id`, `started_at`, `status`) đọc đúng; `UniMateStudio.editAgent(a, {host,onSaved})` (Task 9 Step 1) khớp cách gọi trong workspace.js.
 
 **Placeholder scan:** không còn "TBD"; các bước "đọc rồi sao y" (Task 6 Step 4 phần `finally`, Task 8 Step 4 grep id trang) là chỉ dẫn cụ thể về nơi đọc và việc làm.

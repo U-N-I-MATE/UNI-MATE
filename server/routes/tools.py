@@ -1,6 +1,6 @@
-"""Trang Công cụ: phần "công cụ tuỳ chọn" - thứ Javis dùng được nhưng không nhét sẵn vào bản cài.
+"""Trang Công cụ: phần "công cụ tuỳ chọn" - thứ UNI MATE dùng được nhưng không nhét sẵn vào bản cài.
 
-Hiện chỉ có một mục: trình duyệt cho Javis tự kiểm thử giao diện. Lý do tách thành một tầng
+Hiện chỉ có một mục: trình duyệt cho UNI MATE tự kiểm thử giao diện. Lý do tách thành một tầng
 riêng thay vì nhét thẳng vào ảnh nằm ở `server/optional_tools.py`.
 
 Xác thực: theo đúng luật của trang Gói (`routes/packs.py`). Cài một công cụ là tải mã lạ về máy
@@ -42,7 +42,7 @@ def register(app, deps: ToolsDeps):
     # Dọn thư viện playwright mà model ChatGPT Web (gỡ ở 0.64.20) để lại. Chạy ở thread riêng:
     # xoá cả trăm MB file nhỏ mất vài giây, không được bắt server chờ lúc khởi động.
     threading.Thread(target=optional_tools.don_thu_vien_cu, daemon=True,
-                     name="javis-don-pylibs").start()
+                     name="unimate-don-pylibs").start()
 
     @app.on_event("startup")
     async def _auto_install_browser_on_start():

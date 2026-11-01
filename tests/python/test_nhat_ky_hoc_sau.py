@@ -17,7 +17,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-hoclog-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-hoclog-"))
 
 fails = []
 
@@ -34,8 +34,8 @@ from starlette.testclient import TestClient  # noqa: E402
 # 30 ngày nhật ký, mỗi ngày 2 mục -> 60 mục. Bản cũ (3 file) chỉ thấy được 6.
 from pathlib import Path  # noqa: E402
 
-VAULT = Path(tempfile.mkdtemp(prefix="javis-hocvault-")) / "brain"
-log_dir = VAULT / "Javis" / "learn-log"
+VAULT = Path(tempfile.mkdtemp(prefix="unimate-hocvault-")) / "brain"
+log_dir = VAULT / "UNI MATE" / "learn-log"
 log_dir.mkdir(parents=True)
 for ngay in range(1, 31):
     (log_dir / f"2026-07-{ngay:02d}.md").write_text(
@@ -75,7 +75,7 @@ ma, e0 = lay(0)
 check("limit 0 hay âm thì kẹp về mức tối thiểu, không trả rỗng khó hiểu", len(e0) >= 1, len(e0))
 
 # Brain chưa từng học thì không được nổ.
-trong = Path(tempfile.mkdtemp(prefix="javis-hocrong-"))
+trong = Path(tempfile.mkdtemp(prefix="unimate-hocrong-"))
 main.learn_feature.deps.brain_root = lambda brain="brain": str(trong)
 ma, e = lay(50)
 check("brain chưa có nhật ký thì trả rỗng êm", ma == 200 and e == [], (ma, e))

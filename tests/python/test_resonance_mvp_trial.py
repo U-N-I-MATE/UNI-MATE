@@ -15,8 +15,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m5-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m5-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -33,8 +33,8 @@ def check(name, cond):
 FIX = json.loads((Path(ROOT) / "tests" / "fixtures" / "resonance" / "mvp_cases.json").read_text(encoding="utf-8"))
 CASES = {c["id"]: c for c in FIX["cases"]}
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-m5-")).resolve())
-(Path(BRAIN) / "Javis").mkdir(parents=True)
-P = RS.Principal("agent", "javis", BRAIN)
+(Path(BRAIN) / "UNI MATE").mkdir(parents=True)
+P = RS.Principal("agent", "unimate", BRAIN)
 OWNER = RS.Principal("owner", "owner", BRAIN)
 store = RS.GoalStore()
 import _resonance_agent as RA  # noqa: E402  - A1: Cộng hưởng bật theo agent, không theo brain
@@ -605,7 +605,7 @@ _k2 = store.clear_transient_block(P, g_kx.id)
 check("vòng 2 (kho): gỡ cờ tạm KHÔNG đụng chốt guard hay trạng thái chờ người dùng duyệt",
       _k1 is False and _k2 is False and store.run_state(P, g_kx.id)["block_reason"] == "human_confirmation")
 
-# ═══════════════════════ Trần tổng lượt gọi cho pilot (JAVIS_RESONANCE_CALL_CEILING) ═══════════════════════
+# ═══════════════════════ Trần tổng lượt gọi cho pilot (UNIMATE_RESONANCE_CALL_CEILING) ═══════════════════════
 import sqlite3 as _sq  # noqa: E402
 
 
@@ -616,8 +616,8 @@ def _total_calls():
     return v
 
 
-check("không đặt JAVIS_RESONANCE_CALL_CEILING: không có trần chung (mặc định, hành vi cũ)", RS.call_ceiling() is None)
-os.environ["JAVIS_RESONANCE_CALL_CEILING"] = str(_total_calls() + 1)
+check("không đặt UNIMATE_RESONANCE_CALL_CEILING: không có trần chung (mặc định, hành vi cũ)", RS.call_ceiling() is None)
+os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = str(_total_calls() + 1)
 g_c1, g_c2 = make_goal(), make_goal()
 (Path(BRAIN) / "Inbox" / "viec-tu-bien-ban.md").unlink(missing_ok=True)
 e_c1 = Engine({})
@@ -640,9 +640,9 @@ res_c4 = asyncio.run(R.compare_methods(g_c5.id, "work.v1", "work.checklist.v1", 
 check("trần chặn cả phép thử trước khi gọi (không tạo phép thử, không gọi model)",
       store.get(P, g_c5.id).status == "active" and res_c4["created"] is False and not e_c4.prompts
       and store.experiments(P, g_c5.id) == [] and calls_of(g_c5) == 0)
-os.environ["JAVIS_RESONANCE_CALL_CEILING"] = "không-phải-số"
+os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = "không-phải-số"
 check("giá trị trần hỏng thì chặn hết (0), không phải bỏ trần", RS.call_ceiling() == 0)
-del os.environ["JAVIS_RESONANCE_CALL_CEILING"]
+del os.environ["UNIMATE_RESONANCE_CALL_CEILING"]
 
 # ═══════════════════════ A1, review tích hợp P1-3: phép thử ghim quyền trợ lý ═══════════════════════
 # a) Tắt ngay TRƯỚC giao dịch giữ lượt thử, sau khi cổng ngoài đã qua (chen giữa bằng wrapper quanh hàm kho thật).

@@ -60,7 +60,7 @@
 .sn-chan button:hover { background: var(--btn-fill-hover, var(--surface-2)); }
 
 /* Hình minh hoạ trang GitHub: luôn tối như GitHub tối, để giống đúng thứ người dùng sẽ thấy
-   hơn là giống giao diện Javis. */
+   hơn là giống giao diện UNI MATE. */
 .sn-gh { margin-top: 12px; padding: 12px; border-radius: 12px; background: #0d1117; border: 1px solid #30363d;
   color: #e6edf3; font: 15px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
 .sn-gh-ten { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 15px; color: #9198a1; }
@@ -86,7 +86,7 @@
 @keyframes snTro { 0%, 100% { transform: translate(6px, 6px); } 50% { transform: translate(0, 0); } }
 @keyframes snCham { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(.75); opacity: .6; } }
 
-/* Linh vật: ngôi sao cam của logo Javis (logo.svg), màu cố định như logo ở cả hai tông */
+/* Linh vật: ngôi sao cam của logo UNI MATE (logo.svg), màu cố định như logo ở cả hai tông */
 .sn-sao { width: 100%; height: 100%; overflow: visible; }
 .sn-hinh { fill: #FD6100; }
 .sn-vien { fill: none; stroke: #FBBA9C; stroke-width: 6.5; stroke-linejoin: round; }
@@ -137,7 +137,7 @@
   .rail.collapsed .rail-foot .rf-star-chu { display: none; }
 }
 
-/* Thẻ "Ủng hộ Javis" trên trang Cập nhật */
+/* Thẻ "Ủng hộ UNI MATE" trên trang Cập nhật */
 .sn-ho { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
 .sn-ho .sn-lv { width: 56px; height: 56px; }
 .sn-ho-chu { flex: 1 1 auto; min-width: 0; }

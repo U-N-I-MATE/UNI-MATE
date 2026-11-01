@@ -1,4 +1,4 @@
-# Goal cải tiến Javis — kết thúc ở M2 engineering và bàn giao Claude Opus 5.5
+# Goal cải tiến UNI MATE — kết thúc ở M2 engineering và bàn giao Claude Opus 5.5
 
 **Quyết định chủ ngày24/10/2026, mục18, thay thế điều kiện hoàn thành M0–M8
 và mọi lệnh tiếp tục toàn bộ cũ bên dưới.** Goal hiện tại chỉ hoàn thành khi
@@ -14,14 +14,14 @@ Tài liệu này là chỉ dẫn cho một Goal sẽ được chủ phát lệnh
 ## 1. Lệnh khởi động lịch sử — phạm vi đã được mục18 thay thế
 
 ```text
-/goal Hoàn thành cải tiến agent và skill Javis từ M0 đến M8 theo toàn bộ chỉ dẫn tại D:\Project\Javis-OS\docs\superpowers\AGENT-SKILL-IMPROVEMENT-GOAL.md. Tự lập và thực hiện kế hoạch, kiểm thử, review, sửa lỗi, tạo PR và tích hợp theo quy ước repo; tiếp tục qua các mốc đủ điều kiện mà không hỏi lại xác nhận thông thường. Chỉ hoàn thành khi có bằng chứng đạt đầy đủ các điều kiện trong file; nếu còn gate nghiệp vụ, dữ liệu, quyền hoặc thời gian quan sát thật chưa đạt thì báo chính xác phần bị chặn và tiếp tục mọi phần độc lập còn làm được.
+/goal Hoàn thành cải tiến agent và skill UNI MATE từ M0 đến M8 theo toàn bộ chỉ dẫn tại D:\Project\UNI-MATE\docs\superpowers\AGENT-SKILL-IMPROVEMENT-GOAL.md. Tự lập và thực hiện kế hoạch, kiểm thử, review, sửa lỗi, tạo PR và tích hợp theo quy ước repo; tiếp tục qua các mốc đủ điều kiện mà không hỏi lại xác nhận thông thường. Chỉ hoàn thành khi có bằng chứng đạt đầy đủ các điều kiện trong file; nếu còn gate nghiệp vụ, dữ liệu, quyền hoặc thời gian quan sát thật chưa đạt thì báo chính xác phần bị chặn và tiếp tục mọi phần độc lập còn làm được.
 ```
 
 Đây là lệnh nhập trong Codex hỗ trợ `/goal`, không phải lệnh chạy PowerShell. Chỉ cần phát một lần; mọi lần tiếp tục phải đọc hồ sơ tiến độ và làm tiếp từ điểm chưa hoàn tất.
 
 ## 2. Mục tiêu xuyên suốt
 
-Đưa chức năng **Cải tiến có kiểm chứng** của Javis từ spec thành sản phẩm thực thi được, bao gồm toàn bộ M0–M8: nền revision/guard/nghiệm thu, sandbox và case, thử sửa skill có đối chứng, qualification/canary/rollback, skill routing và adapter engine, cải tiến agent có phạm vi, bundle agent–skill–helper, Team và thư viện kinh nghiệm thích nghi.
+Đưa chức năng **Cải tiến có kiểm chứng** của UNI MATE từ spec thành sản phẩm thực thi được, bao gồm toàn bộ M0–M8: nền revision/guard/nghiệm thu, sandbox và case, thử sửa skill có đối chứng, qualification/canary/rollback, skill routing và adapter engine, cải tiến agent có phạm vi, bundle agent–skill–helper, Team và thư viện kinh nghiệm thích nghi.
 
 Không kết thúc ở viết kế hoạch, demo giao diện, scaffold module, test giả hoặc chỉ MVP M0–M3. Hoàn thành kỹ thuật, hiệu quả nghiệp vụ và đủ điều kiện rollout là ba loại bằng chứng khác nhau, phải theo dõi riêng cho từng mốc.
 
@@ -32,7 +32,7 @@ Nguồn chuẩn:
 3. `AGENTS.md` nếu có, `CLAUDE.md`/`AGENT.md` áp dụng, `ARCHITECTURE.md` trên main mới và `docs/quy-uoc-dev.md`.
 4. Mã nguồn hiện tại và bằng chứng test/pilot thật. Tài liệu tên hàm/số dòng cũ là điểm dò, không thay mã mới.
 
-Nền nghiên cứu là Javis 0.284.0, `a02e45fcd7c58bb3fde4eac3a850cb87c618621c`. Lúc thực hiện phải lấy main mới nhất, ghi snapshot mới và làm gap analysis trước khi code. Không triển khai lại phần main đã có và đạt.
+Nền nghiên cứu là UNI MATE 0.284.0, `a02e45fcd7c58bb3fde4eac3a850cb87c618621c`. Lúc thực hiện phải lấy main mới nhất, ghi snapshot mới và làm gap analysis trước khi code. Không triển khai lại phần main đã có và đạt.
 
 Nếu source trên main khác spec, giữ mục tiêu và bất biến; ghi quyết định điều chỉnh interface theo mã thật. Không lặng lẽ hạ phạm vi, bỏ gate hoặc sửa tiêu chí đạt để công việc dễ kết thúc. Xung đột có ảnh hưởng ý định/chất lượng/quyền phải báo chủ, trong khi tiếp tục phần độc lập đã được phép.
 
@@ -54,7 +54,7 @@ Không dừng để xin lại những quyền đã có trong Goal này. Chỉ h�
 
 ## 4. Khởi tạo và bảo toàn công việc hiện có
 
-1. Kiểm tra nhánh, git status, worktrees, PR và VERSION. Checkout chính `D:\Project\Javis-OS` có thể cũ và có nhiều thay đổi của người khác; không reset, clean, đổi nhánh hoặc ghi đè chúng.
+1. Kiểm tra nhánh, git status, worktrees, PR và VERSION. Checkout chính `D:\Project\UNI-MATE` có thể cũ và có nhiều thay đổi của người khác; không reset, clean, đổi nhánh hoặc ghi đè chúng.
 2. Đọc các file nguồn chuẩn ngay tại vị trí hiện có. Spec có thể là file chưa commit; sao chép đúng những tài liệu cần dùng vào worktree triển khai, ghi hash nguồn. Không mang cả thay đổi chưa commit không liên quan vào nhánh mới.
 3. Ưu tiên worktree đang phù hợp thuộc cùng công việc; nếu chưa có thì tạo từ main mới nhất. Không đụng worktree của chat khác.
 4. Kiểm các chức năng/phụ thuộc đã phát hành. Tạo bảng `existing -> missing -> evidence -> milestone`; phần đã đạt có bằng chứng thì ghi reused, không viết lại.
@@ -253,7 +253,7 @@ Giữ hash nguồn gốc, toàn bộ lineage và bằng chứng cũ; ghi hash m�
    là `1cfe254e8d25b15f37048c3730134686abe60335`. Nếu cần nguồn mới, pin SHA riêng
    và ghi chênh lệch liên quan; không âm thầm đổi snapshot chuẩn.
 2. Trước mỗi thành phần mới, đối chiếu upstream có mục tiêu, ghi bảng ngắn:
-   chức năng Javis cần → file/hàm/SHA upstream → dùng nguyên / adapter / viết
+   chức năng UNI MATE cần → file/hàm/SHA upstream → dùng nguyên / adapter / viết
    riêng → lý do và test hợp đồng cần. Chỉ đọc dependency trực tiếp đủ quyết
    định, không audit lại toàn repo hoặc mở đợt refactor lớn.
 3. Ưu tiên prompt Propose/Compose/Reflection và ranh giới evidence trong
@@ -263,23 +263,23 @@ Giữ hash nguồn gốc, toàn bộ lineage và bằng chứng cũ; ghi hash m�
    Compose, recipe/library và bundle còn thiếu phải kiểm upstream trước.
 4. Chọn import/dependency pin hoặc vendor một phần có nguồn gốc rõ và adapter
    hẹp theo tổng công tích hợp/bảo trì. Kiểm dependency, side effect, ownership
-   và interface thật; không tạo runtime, usage ledger hay executor trùng Javis.
-5. Không thay phần Javis đã hoàn thiện chỉ để tăng tỷ lệ reuse. Chỉ đổi khi có
+   và interface thật; không tạo runtime, usage ledger hay executor trùng UNI MATE.
+5. Không thay phần UNI MATE đã hoàn thiện chỉ để tăng tỷ lệ reuse. Chỉ đổi khi có
    lỗi hoặc lợi ích cụ thể đủ bù chi phí, có phạm vi/bằng chứng. Không hứa phần
    trăm tiết kiệm chưa đo; không thêm hồ sơ/review hình thức.
 6. Khi thực sự lấy code, giữ Apache-2.0, copyright/attribution và NOTICE nếu
    áp dụng; ghi SHA và sửa đổi trong nguồn/manifest. Kiểm riêng giấy phép của
    dependency/third_party/dataset được lấy; không tự copy benchmark/dataset.
-7. Không lấy policy upstream trái hợp đồng Javis: `selection_pool` snapshot
-   chuẩn chỉ chọn finals và loại baseline; Javis luôn giữ baseline trong so
+7. Không lấy policy upstream trái hợp đồng UNI MATE: `selection_pool` snapshot
+   chuẩn chỉ chọn finals và loại baseline; UNI MATE luôn giữ baseline trong so
    sánh/quyết định, candidate thua hoặc inconclusive thì giữ bản cũ. Khả năng
    sửa system prompt/guardrails/plugins của upstream không cấp quyền sửa luật
-   chủ, quyền hay model của Javis. Prompt không thay host enforcement.
+   chủ, quyền hay model của UNI MATE. Prompt không thay host enforcement.
 8. Giữ mọi gate source/owner/grant/scope, protected content, holdout kín,
    lineage/config/version, native isolation/effective view, cancellation/crash/
    cleanup/concurrency/recovery, usage/unknown, migration/old-reader, atomic
    apply/revert, review độc lập và full CI trên commit cuối. Test upstream
-   không thay kiểm adapter/Javis; chỉ lặp regression theo ảnh hưởng thực tế.
+   không thay kiểm adapter/UniMate; chỉ lặp regression theo ảnh hưởng thực tế.
 9. Giữ mục13: Giai đoạn1 hoàn thiện code M0–M8 với kiểm kỹ thuật, mô phỏng và
    localhost fake provider; thử model/tài khoản/nghiệp vụ, pilot và live canary
    vẫn ở Giai đoạn2. Reuse không cho phép thử thật hoặc rollout sớm.
@@ -396,7 +396,7 @@ bỏ ownership đang chạy. Áp dụng từ đơn vị phù hợp gần nhất 
 1. **Compose trước:** pin `1cfe254e8d25b15f37048c3730134686abe60335`; đối chiếu
    `core/prompts.py:aggregate/compose_round`, chỗ gọi trong `core/recursion.py`
    và dependency trực tiếp. Ưu tiên import/vendor phần implementation thật dùng
-   được, adapter hẹp vào input/evidence/runner/patch hoặc bundle validator Javis;
+   được, adapter hẹp vào input/evidence/runner/patch hoặc bundle validator UNI MATE;
    được trích phần độc lập nếu cả module kéo executor/benchmark không cần. Không
    chỉ viết lại lời mô tả rồi gọi dùng trực tiếp. Giữ surface được chủ cho phép,
    tuning data và giới hạn candidate/repair/compose. Compose tạo candidate/bundle
@@ -405,20 +405,20 @@ bỏ ownership đang chạy. Áp dụng từ đơn vị phù hợp gần nhất 
    liên quan, ưu tiên cấu trúc/serialization/index/entry trực tiếp qua adapter
    brain/scope/evidence/revision. `rmtree/copy/write` và mutable index chỉ chạm
    root riêng đã kiểm/thuộc quyền. Dùng snapshot/index dẫn xuất thì nguồn chuẩn
-   Javis vẫn bất biến, encrypted, có quyền/retention/revocation/trace links. Không
+   UNI MATE vẫn bất biến, encrypted, có quyền/retention/revocation/trace links. Không
    tạo filesystem canonical/authority song song hay nạp cả thư viện mọi scope.
    Hàm không giữ nguyên được cần ghi xung đột thật và tận dụng phần còn phù hợp.
 3. **Điều phối sau hai phần trên:** so `run_parallel/run_sequential/_run_stage`,
    BenchmarkAdapter/RunView/Proposer với ExperimentService/Trial/Operation. Tính
    đủ dependency, synchronous ThreadPoolExecutor/filesystem lifetime, cancellation,
    lease/restart/replay, ledger/usage, consumer migration/qualification/test/review.
-   Nếu thay toàn lõi tăng công, giữ owner/state machine Javis và lấy thuật toán
+   Nếu thay toàn lõi tăng công, giữ owner/state machine UNI MATE và lấy thuật toán
    độc lập; không giữ hai executor/ledger authoritative trùng nhau.
 4. Mỗi đơn vị ghi bảng ngắn trước code: file/hàm/SHA, phần nguyên/vendor/adapter,
-   phần Javis giữ, consumer, tổng công/lợi ích và test/gate. Không phân tích vô hạn
+   phần UNI MATE giữ, consumer, tổng công/lợi ích và test/gate. Không phân tích vô hạn
    làm chậm tích hợp hiện tại. Sớm làm lát cắt fixture chạy được để kiểm adapter;
    scaffold không được tính tích hợp.
-5. Tận dụng source/test upstream kèm kiểm contract/adapter/hành vi Javis có ý
+5. Tận dụng source/test upstream kèm kiểm contract/adapter/hành vi UNI MATE có ý
    nghĩa. Giữ license/copyright/NOTICE/provenance/modifications; không tự lấy
    benchmark/dataset/third_party ngoài nhu cầu và giấy phép.
 6. Baseline luôn trong quyết định, thua/inconclusive giữ bản cũ; không lấy
@@ -479,7 +479,7 @@ Không tạo Goal mới, không đánh dấu complete ngay lúc nhận quyết �
 
 Chủ đã cho phép thay scope và bàn giao, không hỏi lại xác nhận thông thường.
 Đổi coding assistant sang Claude Opus5.5 không đổi engine/model/reasoning của
-Javis và không cấp quyền thử thật/deploy/restart/activation. API Goal hiện có
+UNI MATE và không cấp quyền thử thật/deploy/restart/activation. API Goal hiện có
 chỉ create/get/update-status, không có objective-update; giữ một Goal ACTIVE,
 dùng mục18 và checkpoint làm scope có hiệu lực, không tạo Goal thay thế.
 

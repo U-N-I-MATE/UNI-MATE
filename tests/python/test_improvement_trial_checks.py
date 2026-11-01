@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="improvement-trial-checks-"))
-for key, name in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
+for key, name in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
                   "BRAIN_PATH": "brain", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(TEST_ROOT / name)
 

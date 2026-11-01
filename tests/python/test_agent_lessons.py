@@ -5,8 +5,8 @@
 Kho thật (resonance.sqlite3 tạm). Phần đi qua main.py dùng engine GIẢ: hàm dựng engine thật bị thay bằng hàm ném lỗi ngay,
 nên test không bao giờ gọi model thật.
 - phạm vi: lượt nhóm nạp `team:<id>` + `*`, chat riêng nạp `dm:<agent_key>` + `*`, không bao giờ phạm vi khác;
-- JAVIS_LESSON: lượt nhóm ghi `team:<id>` (nguồn self, gắn lượt/việc), chat riêng ghi `dm:<agent_key>` (không vào MEMORY.md);
-  JAVIS_RULE vẫn vào "Luật chủ dặn";
+- UNIMATE_LESSON: lượt nhóm ghi `team:<id>` (nguồn self, gắn lượt/việc), chat riêng ghi `dm:<agent_key>` (không vào MEMORY.md);
+  UNIMATE_RULE vẫn vào "Luật chủ dặn";
 - thu hồi giữ lịch sử; nâng lên `*` chỉ do chủ hay tự rà soát có bằng chứng ≥ 2 ngữ cảnh; khôi phục;
 - bài học cũ trong MEMORY.md đọc được để giao diện ghi "bài học cũ chưa có phạm vi".
 """
@@ -16,9 +16,9 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-lessons-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-TEMP = Path(tempfile.mkdtemp(prefix="javis-lessons-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-lessons-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-lessons-w-"))
 
 import agent_lessons as AL  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -125,7 +125,7 @@ mem = ("# Ghi chú của chủ\n- Khách quen tên Ba.\n\n## Luật chủ dặn\
        "## Bài học (tự học)\n- Bài học cũ một.\n- Bài học cũ hai.\n")
 check("bài học cũ trong MEMORY.md đọc được (chỉ mục tự học, không luật chủ)",
       AL.legacy_lessons(mem) == ["Bài học cũ một.", "Bài học cũ hai."])
-check("tách JAVIS_LESSON khỏi văn bản", AL.split_lessons("Xong.\nJAVIS_LESSON: A\nJAVIS_LESSON: B\n") == (["A", "B"], "Xong."))
+check("tách UNIMATE_LESSON khỏi văn bản", AL.split_lessons("Xong.\nUNIMATE_LESSON: A\nUNIMATE_LESSON: B\n") == (["A", "B"], "Xong."))
 
 # ═════ góp ý của đồng đội: giao một lần, bằng chứng không bao giờ hiện ═════
 f1 = AL.record_peer_feedback(st, team_id="A", receiver_key=K, author_key=K2, author_role="teammate", message_id=5,
@@ -163,17 +163,17 @@ memf = Path(brain, "memory", "agents", "viet", "MEMORY.md")
 memf.parent.mkdir(parents=True)
 memf.write_text("## Bài học (tự học)\n- Bài học cũ trộn nhóm.\n", encoding="utf-8")
 out = main._ket_luot_agent(brain, "viet", "Viết giúp anh đoạn mở bài",
-                           "Đây là đoạn mở.\nJAVIS_LESSON: Chủ thích mở bài bằng câu hỏi.\n", conv_sid="")
+                           "Đây là đoạn mở.\nUNIMATE_LESSON: Chủ thích mở bài bằng câu hỏi.\n", conv_sid="")
 gs = main._resonance_store()
 key = main._dm_agent_key(brain, "viet")
-check("chat riêng: output đã bóc JAVIS_LESSON", "JAVIS_LESSON" not in out and "Đây là đoạn mở." in out)
-check("chat riêng: JAVIS_LESSON vào agent_lessons phạm vi dm:<agent_key> (đổi so với MEMORY.md)",
+check("chat riêng: output đã bóc UNIMATE_LESSON", "UNIMATE_LESSON" not in out and "Đây là đoạn mở." in out)
+check("chat riêng: UNIMATE_LESSON vào agent_lessons phạm vi dm:<agent_key> (đổi so với MEMORY.md)",
       [r["text"] for r in AL.lessons(gs, key, scope=f"dm:{key}")] == ["Chủ thích mở bài bằng câu hỏi."]
       and AL.lessons(gs, key, scope=f"dm:{key}")[0]["source"] == "self")
 check("chat riêng: MEMORY.md không nhận bài học mới, bài học cũ giữ nguyên",
       memf.read_text(encoding="utf-8") == "## Bài học (tự học)\n- Bài học cũ trộn nhóm.\n")
-main._ket_luot_agent(brain, "viet", "Từ giờ luôn ký tên cuối thư", "Dạ.\nJAVIS_RULE: Luôn ký tên cuối thư.\n")
-check("JAVIS_RULE không đổi: vào mục Luật chủ dặn của MEMORY.md",
+main._ket_luot_agent(brain, "viet", "Từ giờ luôn ký tên cuối thư", "Dạ.\nUNIMATE_RULE: Luôn ký tên cuối thư.\n")
+check("UNIMATE_RULE không đổi: vào mục Luật chủ dặn của MEMORY.md",
       "Luôn ký tên cuối thư." in memf.read_text(encoding="utf-8")
       and "Luôn ký tên cuối thư." not in [r["text"] for r in AL.lessons(gs, key)])
 AL.add(gs, agent_key=key, scope="team:Z", kind="method", text="Bài học riêng nhóm Z.", source="self")
@@ -189,7 +189,7 @@ team = {"brain_id": main._brain_key(brain), "team_id": "Z", "session_id": "s-z"}
 class FakeEng:
     def query(self, prompt):
         async def gen():
-            yield {"type": "final", "content": "Kết quả nhóm.\nJAVIS_LESSON: Nhóm Z cần bảng tóm tắt.\n"}
+            yield {"type": "final", "content": "Kết quả nhóm.\nUNIMATE_LESSON: Nhóm Z cần bảng tóm tắt.\n"}
         return gen()
 
 

@@ -3,7 +3,7 @@
     python tests/run.py resonance_mvp_core -v
 
 Không gọi model thật: engine giả cho đường framer. Bộ não quyết định tạo hay nối mục tiêu bằng
-tool `javis_goal` ngay trong lượt chat; route_request chỉ ĐỌC những gì lượt đó đã thật sự làm
+tool `unimate_goal` ngay trong lượt chat; route_request chỉ ĐỌC những gì lượt đó đã thật sự làm
 (sự kiện trong kho mục tiêu, việc Kanban đã giao), không gọi thêm model, không dò từ khoá.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -16,8 +16,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m2-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m2-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -45,7 +45,7 @@ def raises(exc, fn):
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a-")).resolve())
 OTHER = str(Path(tempfile.mkdtemp(prefix="brain-b-")).resolve())
 OWNER = RS.Principal(kind="owner", id="owner", brain_id=BRAIN)
-JAVIS = RS.Principal(kind="agent", id="javis", brain_id=BRAIN)
+UNI MATE = RS.Principal(kind="agent", id="unimate", brain_id=BRAIN)
 STRANGER = RS.Principal(kind="owner", id="owner", brain_id=OTHER)
 
 USER_TEXT = ("Mỗi sáng gom giúp anh các việc đang dở thành một ghi chú trong Dashboard, "
@@ -129,14 +129,14 @@ check("test_user_unsure_discovers: ghi lại giả định thay cho câu hỏi",
 it = store.add_intent(OWNER, session_id="s1", message_id=11, text=USER_TEXT, constraints=("không xoá ghi chú cũ",))
 check("intent giữ nguyên lời người dùng", it["text"] == USER_TEXT and it["constraints"] == ["không xoá ghi chú cũ"])
 frame = R.validate_proposal(proposal(constraints=["không xoá ghi chú cũ"]), USER_TEXT)
-g, created = store.create(JAVIS, it["id"], frame, idempotency_key="msg:s1:11", session_id="s1",
-                          output_root=str(Path(BRAIN) / "Javis" / "resonance" / "x"), budget_calls=6)
+g, created = store.create(UNI MATE, it["id"], frame, idempotency_key="msg:s1:11", session_id="s1",
+                          output_root=str(Path(BRAIN) / "UNI MATE" / "resonance" / "x"), budget_calls=6)
 check("tạo mục tiêu: revision 1, active, không cần duyệt", created and g.revision == 1 and g.status == "active")
 check("tạo mục tiêu: GoalRecord mang khung SMART", g.understanding.startswith("Một ghi chú")
       and len(g.criteria) == 2 and g.horizon["kind"] == "deadline")
 
 # test_persistent_request_creates_once
-g2, created2 = store.create(JAVIS, it["id"], frame, idempotency_key="msg:s1:11", session_id="s1",
+g2, created2 = store.create(UNI MATE, it["id"], frame, idempotency_key="msg:s1:11", session_id="s1",
                             output_root="khac", budget_calls=99)
 check("test_persistent_request_creates_once: cùng tin nhắn không tạo mục tiêu thứ hai",
       not created2 and g2.id == g.id and g2.budget_calls == 6)
@@ -155,15 +155,15 @@ store.set_paused(OWNER, g.id, True)
 store.add_calls_used(OWNER, g.id, 2)
 fr2 = R.validate_proposal(proposal(understanding="Ghi chú tổng hợp có cả lịch tuần",
                                    constraints=["không xoá ghi chú cũ"]), USER_TEXT)
-g3 = store.revise(JAVIS, g.id, 1, fr2, reason="anh nói thêm lịch tuần", intent_id=it["id"])
+g3 = store.revise(UNI MATE, g.id, 1, fr2, reason="anh nói thêm lịch tuần", intent_id=it["id"])
 check("revise: lên revision 2 với cách hiểu mới", g3.revision == 2 and "lịch tuần" in g3.understanding)
 check("revise: giữ pause, ngân sách, số lượt đã dùng", g3.paused is True and g3.budget_calls == 6 and g3.calls_used == 2)
 check("revise: revision cũ còn nguyên", store.get_revision(OWNER, g.id, 1)["understanding"].startswith("Một ghi chú"))
 check("revise: expected_revision cũ thì xung đột, không đổi gì",
-      raises(RS.ConflictError, lambda: store.revise(JAVIS, g.id, 1, fr2, reason="x"))
+      raises(RS.ConflictError, lambda: store.revise(UNI MATE, g.id, 1, fr2, reason="x"))
       and store.get(OWNER, g.id).revision == 2)
 check("revise: agent không được bỏ ràng buộc người dùng đã nêu",
-      raises(R.GoalRejected, lambda: store.revise(JAVIS, g.id, 2, R.validate_proposal(proposal(), USER_TEXT),
+      raises(R.GoalRejected, lambda: store.revise(UNI MATE, g.id, 2, R.validate_proposal(proposal(), USER_TEXT),
                                                   reason="bỏ ràng buộc")))
 check("revise: sự kiện reframe ghi diff", any(e["kind"] == "reframe" and "understanding" in e["payload"].get("diff", {})
                                              for e in store.events(OWNER, g.id)))
@@ -181,7 +181,7 @@ check("outbox có goal.created và goal.revised", [o["kind"] for o in ob if o["g
 # giao dịch: lỗi giữa chừng không để lại mục tiêu nửa vời
 n_before = len(store.list_open(OWNER))
 check("tạo với intent không tồn tại bị từ chối", raises(RS.ScopeError, lambda: store.create(
-    JAVIS, "in_khong_co", frame, idempotency_key="msg:s1:99", session_id="s1", output_root="x")))
+    UNI MATE, "in_khong_co", frame, idempotency_key="msg:s1:99", session_id="s1", output_root="x")))
 check("không để lại mục tiêu nửa vời", len(store.list_open(OWNER)) == n_before)
 
 # ───────────────────────────── route_request ─────────────────────────────
@@ -240,13 +240,13 @@ def deps_with(engine, calls=3, info=None):
 
 
 def ctx(msg_id, text, **kw):
-    c = {"principal": JAVIS, "brain_root": BRAIN, "session_id": "s2", "message_id": msg_id, "user_text": text,
+    c = {"principal": UNI MATE, "brain_root": BRAIN, "session_id": "s2", "message_id": msg_id, "user_text": text,
          "constraints": [], "budget_calls": 4}
     c.update(kw)
     return c
 
 
-# Đề xuất từ chính bộ não (tool javis_goal): KHÔNG gọi model thêm
+# Đề xuất từ chính bộ não (tool unimate_goal): KHÔNG gọi model thêm
 eng0 = FakeEngine([])
 dp0 = deps_with(eng0)
 gp = asyncio.run(R.form_goal("msg:s2:1", ctx(1, USER_TEXT, proposal=proposal()), dp0))
@@ -288,10 +288,10 @@ check("ràng buộc của người dùng luôn nằm trong mục tiêu", "không
 
 # ───────────────────────────── công tắc theo brain ─────────────────────────────
 check("Resonance mặc định tắt", R.enabled_for(BRAIN) is False)
-(Path(BRAIN) / "Javis").mkdir(parents=True, exist_ok=True)
-(Path(BRAIN) / "Javis" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
-check("bật bằng Javis/resonance.json của đúng brain", R.enabled_for(BRAIN) is True and R.enabled_for(OTHER) is False)
-(Path(BRAIN) / "Javis" / "resonance.json").write_text("{hỏng", encoding="utf-8")
+(Path(BRAIN) / "UNI MATE").mkdir(parents=True, exist_ok=True)
+(Path(BRAIN) / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+check("bật bằng UniMate/resonance.json của đúng brain", R.enabled_for(BRAIN) is True and R.enabled_for(OTHER) is False)
+(Path(BRAIN) / "UNI MATE" / "resonance.json").write_text("{hỏng", encoding="utf-8")
 check("file công tắc hỏng thì coi như tắt", R.enabled_for(BRAIN) is False)
 
 # kho mở lại vẫn còn dữ liệu (bền qua restart)

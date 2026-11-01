@@ -1,11 +1,11 @@
-"""Năng lực MẶC ĐỊNH của Javis phải gỡ được, và gỡ phải nghĩa là IM chứ không phải tự do.
+"""Năng lực MẶC ĐỊNH của UNI MATE phải gỡ được, và gỡ phải nghĩa là IM chứ không phải tự do.
 
     python tests/run.py loi_go_duoc
 
 Không cần pytest, không chạm mạng, không đụng `core-off.json` thật.
 
 Bối cảnh: chủ dự án chốt 2026-09-03 rằng đích đến là "bao giờ có kho thì xoá bớt, để lại đúng
-cấu trúc mặc định của Javis, còn lại người dùng tự chọn cài thêm plugin, skill hay kết nối", và
+cấu trúc mặc định của UNI MATE, còn lại người dùng tự chọn cài thêm plugin, skill hay kết nối", và
 bây giờ thì "tạm thời vẫn giữ những gì có trong kho nhưng code lại để đúng cấu trúc có thể gỡ
 được". Nên bản này làm LỚP GỠ, không di trú dữ liệu: `system/mcp-catalog.json` không bị sửa một
 byte nào, còn danh sách đã gỡ nằm ở `STATE_DIR/core-off.json`.
@@ -74,7 +74,7 @@ with tempfile.TemporaryDirectory() as td:
             check("loại lạ phải bị từ chối", True)
 
         # File hỏng -> coi như CHƯA GỠ GÌ. Suy biến phải nghiêng về "thấy đủ năng lực" chứ
-        # không phải "Javis đột nhiên trống rỗng".
+        # không phải "UNI MATE đột nhiên trống rỗng".
         core_off.STORE.write_text("{ khong phai json", encoding="utf-8")
         core_off._cache.update(sig=None, data={})
         check("file hỏng thì coi như chưa gỡ gì, KHÔNG phải gỡ hết",
@@ -131,7 +131,7 @@ with tempfile.TemporaryDirectory() as td:
 
             mc = {o["id"]: o for o in mcp_store.orphans()}
             check("orphans() nêu đúng cái lạ", set(mc) == {"c-la"})
-            check("và nói rõ nó KHÔNG có trong kho (phải cài từ Javis Store, không phải cài lại)",
+            check("và nói rõ nó KHÔNG có trong kho (phải cài từ UNI MATE Store, không phải cài lại)",
                   mc["c-la"]["co_trong_kho"] is False)
 
             # Gỡ composio -> kết nối theo nó thành mồ côi và phải IM.
@@ -204,8 +204,8 @@ check("và có băng báo kết nối đang dừng vì thiếu dịch vụ", "ba
 # Kết nối mồ côi vì khuôn đã dọn sang kho (0.55.36 dọn 16 cái) phải được chỉ ĐÚNG đường về.
 # Câu cũ xui người dùng nâng cấp app hoặc bỏ kết nối đi. Từ nay câu đó vừa sai (nâng cấp
 # không mọc lại khuôn nữa) vừa nguy hiểm (bỏ kết nối là vứt luôn credential đã đấu).
-check("mồ côi vì khuôn ra kho thì chỉ sang Javis Store, không xui xoá kết nối",
-      "Javis Store" in src_js and "data-mocoi" in src_js)
+check("mồ côi vì khuôn ra kho thì chỉ sang UNI MATE Store, không xui xoá kết nối",
+      "UNI MATE Store" in src_js and "data-mocoi" in src_js)
 check("CANARY: không còn xui người dùng xoá kết nối để chữa mồ côi",
       "cập nhật app, hoặc xoá kết nối" not in src_js)
 check("thẻ 'Tự thêm' không có nút gỡ", 'con.id === "custom" ? ""' in src_js)
@@ -264,7 +264,7 @@ check("và có hàm thay thế được định nghĩa thật",
 # ============================================================
 # Từ 0.55.31 kho hiển thị gộp: connector đi kèm app nằm cùng lưới với gói tải từ kho, đánh dấu
 # sẵn "Đã cài trên máy". Nếu không thế thì tab Kết nối của kho trống trơn cho tới khi ai đó
-# phát hành gói connector, mà người dùng thì chỉ muốn một chỗ để nhìn Javis nối được với gì.
+# phát hành gói connector, mà người dùng thì chỉ muốn một chỗ để nhìn UNI MATE nối được với gì.
 #
 # Lỗi THẬT ở bản dựng đầu: khoá loại gõ "connector" số ít trong khi `core_off.LOAI` là
 # "connectors" số nhiều. `da_go` trả rỗng hoàn toàn im lặng, nên MỌI connector mãi mãi hiện là

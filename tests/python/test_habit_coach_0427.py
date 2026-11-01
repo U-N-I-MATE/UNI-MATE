@@ -65,7 +65,7 @@ check("the prompt asks for Vietnamese with bạn/mình", "Vietnamese" in p and "
 check("the prompt itself has no long dash", "—" not in p and "–" not in p)
 
 # ---- refresh, tick, check, GET ----
-brain = Path(tempfile.mkdtemp(prefix="javis-coach-"))
+brain = Path(tempfile.mkdtemp(prefix="unimate-coach-"))
 
 
 def atomic_write(path, text):
@@ -149,7 +149,7 @@ check("the time window and calendar fill the tool's own argument names",
 ws = {"name": "get_events", "inputSchema": {"properties": {"user_google_email": {}, "time_min": {}, "time_max": {}},
                                             "required": ["user_google_email"]}}
 check("workspace-mcp gets the email from its connection", gcal_read.build_args(ws, "a", "b", {"env": {"USER_GOOGLE_EMAIL": "x@y.z"}})["user_google_email"] == "x@y.z")
-check("a required argument Javis cannot fill: the tool is not called", gcal_read.build_args(ws, "a", "b", {}) is None)
+check("a required argument UNI MATE cannot fill: the tool is not called", gcal_read.build_args(ws, "a", "b", {}) is None)
 
 j = json.dumps({"items": [
     {"id": "e1", "summary": "Họp nhà cung cấp", "start": {"dateTime": "2026-10-31T09:00:00+07:00"}, "end": {"dateTime": "2026-10-31T10:00:00+07:00"},

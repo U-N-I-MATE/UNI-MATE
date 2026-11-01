@@ -62,7 +62,7 @@ function cardsHtml(lang) {
 
 const css = ["style.css", "console.css"].map((f) => "file://" + path.join(ROOT, "dashboard", f));
 let fails = 0;
-const browser = await pw.chromium.launch({ executablePath: process.env.JAVIS_PILOT_BROWSER ||
+const browser = await pw.chromium.launch({ executablePath: process.env.UNIMATE_PILOT_BROWSER ||
   (fs.existsSync("/opt/pw-browsers/chromium") ? "/opt/pw-browsers/chromium" : undefined) });
 for (const lang of ["vi", "en"]) {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });

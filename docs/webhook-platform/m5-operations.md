@@ -47,7 +47,7 @@ one.
   the owner's Retry the next day is safe. Other branches of the event still run. A refusal is not an incident (no
   triage, which may use a model). `ai_per_day: 0` means the hook's own AI branch never calls a model. Tool actions
   through the hub are outside this budget: a tool that itself uses a model (for example image generation) counts
-  against nothing here. The budget counts runs, not tokens or money. Javis does not see the cost of a run on a
+  against nothing here. The budget counts runs, not tokens or money. UNI MATE does not see the cost of a run on a
   subscription plan.
 
 ## Circuit breaker

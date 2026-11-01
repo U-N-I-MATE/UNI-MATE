@@ -2,13 +2,13 @@
 
 *[Tiếng Việt](../21-viec-kanban.md) · **English***
 
-The **Work** page is where you hand over a goal and let Javis do it in the background, without sitting and watching the chat box. You write one sentence describing what needs finishing, the AI normalises it into a specification, picks the worker type, claims the job and runs it; when it is done, the result is sent to whoever handed it over.
+The **Work** page is where you hand over a goal and let UNI MATE do it in the background, without sitting and watching the chat box. You write one sentence describing what needs finishing, the AI normalises it into a specification, picks the worker type, claims the job and runs it; when it is done, the result is sent to whoever handed it over.
 
 The easiest thing to misunderstand: this is **not a drag-and-drop Trello board**. You do not drag cards and you do not run each card by hand. This screen is for **watching the queue and handling exceptions**, while the dispatcher does the running.
 
 ## What this feature is
 
-Javis treats the work queue as a runtime for the AI. A job goes through this lifecycle:
+UNI MATE treats the work queue as a runtime for the AI. A job goes through this lifecycle:
 
 1. **You hand over a goal** (from the Work page, by saying it in chat, or proposed by the Self-learning page).
 2. **The AI specifies it (triage)**: a short run of the background model reads the raw goal and returns JSON with a clear intent, a **capability** (`files`, `research`, `mcp-read`, `code`, `external-write`), an **execution_mode** (`suggest`, `auto`, `full`) and a list of **completion conditions**. This step executes nothing.
@@ -27,7 +27,7 @@ Do not confuse three similarly named things:
 | **Recurring jobs** | Loops on a cycle and reminders at a fixed time | [Recurring jobs and reminders](08-recurring-jobs.md) |
 | `- [ ]` checkboxes in notes | Tasks you tick yourself in a markdown file | [Tasks and Dataview in notes](19-tasks-and-dataview.md) |
 
-## Where to open it in Javis
+## Where to open it in UNI MATE
 
 On the left navigation rail, open the **Work** group then click **Work**. The page title is **Work (Kanban)** with the subtitle "The AI specifies, dispatches and runs background tasks".
 
@@ -60,15 +60,15 @@ A mode change takes effect immediately, with no restart.
 
 Click **+ Hand over a goal** in the right corner to open the form (click again to close). The form has:
 
-- **Goal**: a short sentence stating what needs finishing. The placeholder suggests: "Analyse this week's best sellers and draft 3 posts". Left empty, Javis reports "Enter a title".
-- **Context and desired output**: a multi-line field, natural writing is fine. This is where you state the output you want (which file, where, how long, which source for the figures). Left empty, Javis reuses the Goal field.
+- **Goal**: a short sentence stating what needs finishing. The placeholder suggests: "Analyse this week's best sellers and draft 3 posts". Left empty, UNI MATE reports "Enter a title".
+- **Context and desired output**: a multi-line field, natural writing is fine. This is where you state the output you want (which file, where, how long, which source for the figures). Left empty, UNI MATE reuses the Goal field.
 - **Route**: choose **Let the AI pick the worker** (the default) to let the AI decide, or pick a **Workflow: `<name>`** entry to force the job through that workflow. The workflow list comes from the selected brain, see [Agents and Workflows](07-agents-and-workflows.md).
 - **Priority**: **🔺 High**, **🔼 Medium** (the default), **🔽 Low**. High-priority work is claimed first when the queue is busy.
 - **Exception**: the **Review the result after it runs** checkbox. It does NOT ask for approval before the job runs: the job still runs as soon as its turn comes. Ticked, a finished job does not close itself but stops at "Result awaiting review" so you read the result before it counts as done.
 
 Click **Hand to the AI** to create it, or **Cancel** to close the form.
 
-A small note on duplicate protection: if the board still has an unfinished job with the same title (matched after stripping diacritics and special characters), Javis returns that existing job rather than creating a copy.
+A small note on duplicate protection: if the board still has an unfinished job with the same title (matched after stripping diacritics and special characters), UNI MATE returns that existing job rather than creating a copy.
 
 ### Step 3: Read the board
 
@@ -128,25 +128,25 @@ You can answer in any of three places, all equal:
 
 - Type in the box right under the question in the web chat and press **Send**.
 - Type in the answer box on the job's card on the Work page and press **Send answer**.
-- Just reply in chat (Telegram or Zalo too), saying which job it is for. Javis passes the answer to the right job.
+- Just reply in chat (Telegram or Zalo too), saying which job it is for. UNI MATE passes the answer to the right job.
 
 Once answered, the job goes back to the queue and carries on. The next run reads the question, your answer and what the previous run already finished, so it neither starts over nor asks again. Asking and answering does **not** use up another attempt. A job that asks several times keeps every round under **Questions and answers** in the detail drawer.
 
-**Remove from board** asks for confirmation first, explaining the task will be archived so no history is lost. A running job must be stopped with **Stop task** before it can be removed. If an action fails, Javis shows the server's error verbatim, or "Could not update the task".
+**Remove from board** asks for confirmation first, explaining the task will be archived so no history is lost. A running job must be stopped with **Stop task** before it can be removed. If an action fails, UNI MATE shows the server's error verbatim, or "Could not update the task".
 
 ### Running again never sends twice (since 0.238.0)
 
 A background job can run more than once: a temporary error is retried, a server restart mid-run puts the job back in the queue, or you press Retry. Each run used to start from scratch, so a Zalo message, a post or an order could go out twice.
 
-Javis now records every outside action of a job (sending, posting, creating an order through a connection or a plugin), keyed by the job, the tool and the exact content:
+UNI MATE now records every outside action of a job (sending, posting, creating an order through a connection or a plugin), keyed by the job, the tool and the exact content:
 
 - **Already done in an earlier run:** the rerun skips it, the worker gets the earlier result back and carries on with the rest.
-- **Not sure it went through** (the server stopped or the connection dropped right while sending): Javis does not send again on its own. The job stops and asks you, naming the action. Answer **"sent"** and Javis skips it; answer **"not sent"** and Javis does it again exactly once. Any answer that does not start with "not" or "resend" counts as sent, so a customer never gets a duplicate.
+- **Not sure it went through** (the server stopped or the connection dropped right while sending): UNI MATE does not send again on its own. The job stops and asks you, naming the action. Answer **"sent"** and UNI MATE skips it; answer **"not sent"** and UNI MATE does it again exactly once. Any answer that does not start with "not" or "resend" counts as sent, so a customer never gets a duplicate.
 - **The service returned a clear error** (wrong recipient, missing permission): treated as not sent, so the next run may try again.
 
 Ordinary chat is unchanged: the record only applies to background jobs on the Work board.
 
-Limits: the record lives in the Javis hub, so it only sees actions that go through the hub. Connectors tied to your Claude account (Gmail, Drive on claude.ai) and an engine's own shell commands bypass the hub and are not recorded. Grok Build and Antigravity CLI cannot yet carry the job id to the hub, so jobs running on those two engines do not have this protection yet.
+Limits: the record lives in the UNI MATE hub, so it only sees actions that go through the hub. Connectors tied to your Claude account (Gmail, Drive on claude.ai) and an engine's own shell commands bypass the hub and are not recorded. Grok Build and Antigravity CLI cannot yet carry the job id to the hub, so jobs running on those two engines do not have this protection yet.
 
 ## A job's states
 
@@ -194,7 +194,7 @@ A worker is a **headless** AI session: no screen, no asking you mid-run, no sign
 
 The most important rule: an `external-write` job (sending a message, publishing, creating an order, booking a calendar slot, changing anything outside) **only runs when the execution_mode is `full`**. Without that level, the job is blocked immediately with the reason that the task needs an outside action and only a mode=full worker may execute it. The specification step does not hand out `full` either: it only keeps `full` when your own wording in the goal clearly grants permission to act (phrases like "full power", "send it yourself", "publish it yourself", "no need to ask"). With no such permission it drops to `auto` so the kernel blocks it.
 
-In other words: by default Javis does **not** spend money, send messages or publish from the work queue. To let it, you have to say so plainly in the goal.
+In other words: by default UNI MATE does **not** spend money, send messages or publish from the work queue. To let it, you have to say so plainly in the goal.
 
 Beyond that, a worker also cannot see source repositories outside the brain, and cannot do anything requiring the owner to sign in (cookies, OTP, scanning a QR code, changing a password).
 
@@ -210,7 +210,7 @@ Every notice ends with a pointer to the Work page, because the full detail lives
 
 Who receives it and where:
 
-- **Handed over in the dashboard chat** → the result appears as a Javis message **in that very conversation**. The server writes it into the session history before pushing it, so closing the tab or refreshing and coming back still shows it. If you are viewing another conversation, the message sits in the original session and that session rises in the **History** list.
+- **Handed over in the dashboard chat** → the result appears as a UNI MATE message **in that very conversation**. The server writes it into the session history before pushing it, so closing the tab or refreshing and coming back still shows it. If you are viewing another conversation, the message sits in the original session and that session rises in the **History** list.
 - **Handed over from a Telegram chat** → reported to the person who wrote (the job carries their chat id).
 - **No clear owner** (created by hand outside chat) → reported to the **first Telegram ID** in the whitelist; with the bot off, that step is skipped and the job still runs normally. See [The Telegram channel](11-telegram.md).
 
@@ -244,29 +244,29 @@ The strip gathers all three sources: Kanban work, [loops and reminders](08-recur
 
 The strip re-asks the server every few seconds, and asks immediately whenever a chat turn ends or a background job reports back. With no work at all it hides entirely rather than taking space from the chat box.
 
-> Why it exists: before this version the chat box said nothing whatsoever about background work, so "Javis is running my job" and "Javis forgot" looked identical. Finding out meant thinking to open this page yourself, and nobody has a reason to think of that.
+> Why it exists: before this version the chat box said nothing whatsoever about background work, so "UNI MATE is running my job" and "UNI MATE forgot" looked identical. Finding out meant thinking to open this page yourself, and nobody has a reason to think of that.
 
-## Javis corrects itself when it promises emptily
+## UNI MATE corrects itself when it promises emptily
 
-Also since 0.25.2, at the end of each chat turn the server detects whether the answer promised to report back ("I will tell you as soon as I have results", "I will let you know when it is done", "give me a moment"), then compares that against the background work that actually exists. A promise with nothing running makes Javis append a correction line right under the answer, stating plainly that no report will arrive on its own and what you need to do next.
+Also since 0.25.2, at the end of each chat turn the server detects whether the answer promised to report back ("I will tell you as soon as I have results", "I will let you know when it is done", "give me a moment"), then compares that against the background work that actually exists. A promise with nothing running makes UNI MATE append a correction line right under the answer, stating plainly that no report will arrive on its own and what you need to do next.
 
-This is not censorship: it neither blocks nor edits the answer, it only adds the truth underneath. The reason is that an answer turn ends the moment Javis stops speaking, with no mechanism to wake it up to finish, so a promise without background work is a promise that will never arrive.
+This is not censorship: it neither blocks nor edits the answer, it only adds the truth underneath. The reason is that an answer turn ends the moment UNI MATE stops speaking, with no mechanism to wake it up to finish, so a promise without background work is a promise that will never arrive.
 
 ## Handing work over in words in chat
 
-You are not required to open this page. Saying it plainly in chat, something like "background job: review every Wiki note from this month then list the ones missing links", makes Javis create a job in the queue and attach the identity of whoever is speaking so the result comes back to the right place.
+You are not required to open this page. Saying it plainly in chat, something like "background job: review every Wiki note from this month then list the ones missing links", makes UNI MATE create a job in the queue and attach the identity of whoever is speaking so the result comes back to the right place.
 
-Javis is taught to pick the smallest tool that suffices, so it only creates a job when the job is **one-off and needs to run in the background or needs review**. A question it can answer now gets answered; work that repeats on a cycle or has a fixed time goes to [Recurring jobs and reminders](08-recurring-jobs.md).
+UNI MATE is taught to pick the smallest tool that suffices, so it only creates a job when the job is **one-off and needs to run in the background or needs review**. A question it can answer now gets answered; work that repeats on a cycle or has a fixed time goes to [Recurring jobs and reminders](08-recurring-jobs.md).
 
 Remember that work created through chat still sits in the queue of the brain you are chatting with, and still needs the **AI runs itself** mode to run on its own. If the board is **Off**, the job simply waits until you turn it on or click **Run a tick now**.
 
-Since 0.25.2 Javis **says so at hand-over time**: handing work into a board that is **Off** or in **Observe** makes it report that the job is queued rather than running, plus how to turn it on. Before that it always ended with "the job runs in the background, the result will come back on its own" regardless of the mode, a false promise Javis itself had no way to know was false. The background work strip in the chat box also turns yellow in exactly this situation.
+Since 0.25.2 UNI MATE **says so at hand-over time**: handing work into a board that is **Off** or in **Observe** makes it report that the job is queued rather than running, plus how to turn it on. Before that it always ended with "the job runs in the background, the result will come back on its own" regardless of the mode, a false promise UNI MATE itself had no way to know was false. The background work strip in the chat box also turns yellow in exactly this situation.
 
-This works on **every brain** since 0.17.1, through the `javis_task` tool. Before that only Claude Code and ChatGPT/Codex could hand work over from chat, because the only route was an HTTP call through a machine command that only those two engines could run. The API engines (OpenRouter, OpenAI, Anthropic, Gemini, Groq, Ollama) accepted the instruction then did nothing, and reported no error. If you ever met "I asked for a job and the board stayed empty", it was most likely this bug.
+This works on **every brain** since 0.17.1, through the `unimate_task` tool. Before that only Claude Code and ChatGPT/Codex could hand work over from chat, because the only route was an HTTP call through a machine command that only those two engines could run. The API engines (OpenRouter, OpenAI, Anthropic, Gemini, Groq, Ollama) accepted the instruction then did nothing, and reported no error. If you ever met "I asked for a job and the board stayed empty", it was most likely this bug.
 
 Two things that tool deliberately does **not** do:
 
-- **It cannot create `full`-level work.** The full level lets a job really act outside (creating orders, spending money, running ads, sending messages) and cannot be undone. Javis only creates `suggest` or `auto`; to get full you raise it yourself on this page, where you can see clearly what you are permitting.
+- **It cannot create `full`-level work.** The full level lets a job really act outside (creating orders, spending money, running ads, sending messages) and cannot be undone. UNI MATE only creates `suggest` or `auto`; to get full you raise it yourself on this page, where you can see clearly what you are permitting.
 - **It does not move columns, cancel work or approve work awaiting approval.** Those actions need you to see the board, so they stay on this page.
 
 ## Work proposed by the Self-learning page
@@ -284,17 +284,17 @@ Details in [Self-learning](22-self-learning.md).
 
 ## Where the board's data lives
 
-- **The main source**: the `kanban.sqlite3` file in Javis's state folder (the `JAVIS_STATE_DIR` variable, defaulting to the `server/` folder). It holds the lifecycle, the runs and the event log. It sits deliberately outside the brain so running work is not overwritten by git sync.
+- **The main source**: the `kanban.sqlite3` file in UNI MATE's state folder (the `UNIMATE_STATE_DIR` variable, defaulting to the `server/` folder). It holds the lifecycle, the runs and the event log. It sits deliberately outside the brain so running work is not overwritten by git sync.
 - **Record of outside actions** (since 0.238.0): `once_ledger.sqlite3` next to `kanban.sqlite3`, noting which actions of which job are done. Finished entries older than 30 days are removed.
-- **A readable copy**: `Javis/kanban.json` in the brain, rewritten every time the board changes. That file exists for backup and so older Javis builds can read it; editing it by hand changes nothing in the real queue.
-- An old board from earlier Javis versions is imported exactly once, and work stuck "running" under the old process is returned to the queue.
+- **A readable copy**: `UniMate/kanban.json` in the brain, rewritten every time the board changes. That file exists for backup and so older UNI MATE builds can read it; editing it by hand changes nothing in the real queue.
+- An old board from earlier UNI MATE versions is imported exactly once, and work stuck "running" under the old process is returned to the queue.
 - Work completed or cancelled over **3 days** ago is archived automatically so the board does not bloat.
 
 ## Technical limits
 
 | Parameter | Value |
 | --- | --- |
-| Workers running in parallel | 2 (change it with the `JAVIS_KANBAN_MAX_WORKERS` environment variable, clamped between 1 and 8, counted across all brains) |
+| Workers running in parallel | 2 (change it with the `UNIMATE_KANBAN_MAX_WORKERS` environment variable, clamped between 1 and 8, counted across all brains) |
 | The dispatcher's scan interval | 5 seconds, and woken immediately when new work arrives |
 | Task lease / heartbeat | 90 seconds / 20 seconds |
 | Time ceiling for the specification step | 3 minutes |
@@ -339,10 +339,10 @@ Those are two different things. That line says the server's dispatch process is 
 It means no job is in a ready state: the queue is empty, or work is waiting on dependencies, or 2 workers are already running. Look at the **Waiting** and **Workers running** KPIs to see which case you are in.
 
 **A job sits forever at "AI is specifying".**
-The specification step needs a background model run. If the background engine is not ready or is out of quota, the job returns to the queue and retries. Check the [Models and engines](10-models-and-engines.md) page and the [Usage](23-usage-and-cost.md) page. When the background model cannot be reached, Javis still has a fallback branch guessing the capability from keywords so the queue does not stall completely.
+The specification step needs a background model run. If the background engine is not ready or is out of quota, the job returns to the queue and retries. Check the [Models and engines](10-models-and-engines.md) page and the [Usage](23-usage-and-cost.md) page. When the background model cannot be reached, UNI MATE still has a fallback branch guessing the capability from keywords so the queue does not stall completely.
 
 **A job is blocked with the reason that the task needs an outside action and only a mode=full worker may execute it.**
-This is a safety rail, not a bug. Your job belongs to the group that sends messages, publishes, creates orders or changes something outside. If you genuinely want it done automatically, hand the job over again and state in the goal that you permit acting; if not, let Javis draft it and press send yourself.
+This is a safety rail, not a bug. Your job belongs to the group that sends messages, publishes, creates orders or changes something outside. If you genuinely want it done automatically, hand the job over again and state in the goal that you permit acting; if not, let UNI MATE draft it and press send yourself.
 
 **A job is blocked with a reason starting "The worker needs more information".**
 The worker found a missing decision where guessing would do harm. Since 0.235.0 you just answer the question on the card (or in chat) and the job carries on with that answer.
@@ -351,16 +351,16 @@ The worker found a missing decision where guessing would do harm. Since 0.235.0 
 A running job cannot change state. Click **Stop task** first, wait for the card to leave the **Active** panel, then act again.
 
 **A job finished but no report appeared anywhere.**
-Work handed over in web chat must carry the chat session id for the result to return to that box. Javis attaches it when you hand over in words in chat; work created by hand on this page or through a curl command has no session id and only goes to Telegram. If the Telegram message is silent: the bot is off, there is no chat id in the whitelist, or the job has no clear owner so the message went to the first Telegram ID rather than the account you had in mind. See [The Telegram channel](11-telegram.md).
+Work handed over in web chat must carry the chat session id for the result to return to that box. UNI MATE attaches it when you hand over in words in chat; work created by hand on this page or through a curl command has no session id and only goes to Telegram. If the Telegram message is silent: the bot is off, there is no chat id in the whitelist, or the job has no clear owner so the message went to the first Telegram ID rather than the account you had in mind. See [The Telegram channel](11-telegram.md).
 
-**Javis promised "I will wait for the jobs to finish then summarise" and never summarises.**
-That is an empty promise and has been banned since 0.9.289: a Javis answer turn ends the moment it stops speaking, with no mechanism to wake it up to summarise. Background work only pushes its **raw** result back into the chat box. For a summary, hand over one more job dedicated to summarising (with `deps` pointing at the earlier jobs), or send another message once the results are in.
+**UNI MATE promised "I will wait for the jobs to finish then summarise" and never summarises.**
+That is an empty promise and has been banned since 0.9.289: a UNI MATE answer turn ends the moment it stops speaking, with no mechanism to wake it up to summarise. Background work only pushes its **raw** result back into the chat box. For a summary, hand over one more job dedicated to summarising (with `deps` pointing at the earlier jobs), or send another message once the results are in.
 
 **The board is empty although there was work yesterday.**
 Three possibilities, in order of likelihood: you are standing in **another brain** (switch brains at the top of the dashboard), the work finished over 3 days ago and was archived, or someone called a cleanup endpoint.
 
 **Background work eats your whole quota.**
-Each job is a real AI session. Lower the parallel worker count with `JAVIS_KANBAN_MAX_WORKERS=1`, or set the mode to **Off** when you do not need it. Watch the consumption on the [Usage](23-usage-and-cost.md) page, which separates "Javis running by itself" from "You typing".
+Each job is a real AI session. Lower the parallel worker count with `UNIMATE_KANBAN_MAX_WORKERS=1`, or set the mode to **Off** when you do not need it. Watch the consumption on the [Usage](23-usage-and-cost.md) page, which separates "UNI MATE running by itself" from "You typing".
 
 ## Related
 
@@ -372,4 +372,4 @@ Each job is a real AI session. Lower the parallel worker count with `JAVIS_KANBA
 - [Connections and business data](09-connections-and-business-data.md) - the real data sources for `mcp-read` work.
 - [Usage: tokens and cost](23-usage-and-cost.md) - how much background work consumes.
 - [Tasks and Dataview in notes](19-tasks-and-dataview.md) - task checkboxes in markdown files, entirely different from this page.
-- [.env configuration](16-env-configuration.md) - `JAVIS_STATE_DIR`, `JAVIS_KANBAN_MAX_WORKERS`.
+- [.env configuration](16-env-configuration.md) - `UNIMATE_STATE_DIR`, `UNIMATE_KANBAN_MAX_WORKERS`.

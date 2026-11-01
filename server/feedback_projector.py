@@ -26,7 +26,7 @@ from typing import Any, Callable, Optional
 
 import reaction_values as RV
 
-log = logging.getLogger("javis.feedback_projector")
+log = logging.getLogger("unimate.feedback_projector")
 
 REVIEW_CODE = "reaction_review"
 A2_CODE = "feedback"
@@ -371,7 +371,7 @@ class FeedbackProjector:
             self._set_status(kind, row, row["id"], "received", "")
             return {"route": "agent_reaction", "source_ref": src}
         if not agent_key:
-            # Trang Trò chuyện chính (tác giả là Javis): lưu và hiện, không vào học hay phán xử của agent nào.
+            # Trang Trò chuyện chính (tác giả là UNI MATE): lưu và hiện, không vào học hay phán xử của agent nào.
             self._set_status(kind, row, row["id"], "received", "")
             return {"route": "none", "source_ref": src}
         ctx = self._context_of(kind, row, agent_key)
@@ -391,7 +391,7 @@ class FeedbackProjector:
                                  _chu("Mục tiêu đã kết thúc", "The goal has already ended"))
                 return {"route": "a2_closed", "source_ref": src, "goal_id": goal_id}
             import resonance_store as RS
-            res.add_reason_event(RS.Principal("agent", "javis", g["brain_id"]), goal_id, A2_CODE, src)
+            res.add_reason_event(RS.Principal("agent", "unimate", g["brain_id"]), goal_id, A2_CODE, src)
             self.record_pulse_signal(kind, row, agent_key, ctx)
             refs = {"route": "a2", "source_ref": src, "goal_id": goal_id, "agent_key": agent_key}
             self._sync_one(kind, row, refs)

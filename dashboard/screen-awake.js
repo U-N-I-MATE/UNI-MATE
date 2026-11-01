@@ -1,7 +1,7 @@
-/* screen-awake.js - giữ màn hình sáng trong lúc gọi Javis (0.65.22).
+/* screen-awake.js - giữ màn hình sáng trong lúc gọi Uni (0.65.22).
 
    Chủ dự án báo 01/10: trên iPhone (app mở từ màn hình chính), màn hình tự tắt giữa cuộc gọi là
-   Javis không nghe, không đáp, vì trình duyệt điện thoại tạm dừng trang và cắt mic khi khoá máy.
+   UNI MATE không nghe, không đáp, vì trình duyệt điện thoại tạm dừng trang và cắt mic khi khoá máy.
    Chủ chọn cách giữ màn hình sáng (Screen Wake Lock) suốt cuộc gọi. Trình duyệt tự nhả khoá khi
    trang bị ẩn (chuyển app, bấm nút nguồn), nên mở lại trang mà vẫn đang gọi thì xin lại.
    Máy không hỗ trợ thì thôi, không hỏi han gì: cuộc gọi vẫn chạy như trước.
@@ -52,5 +52,5 @@
 
   var api = { create: create };
   if (typeof module === "object" && module.exports) module.exports = api;
-  else root.JavisScreenAwake = create();
+  else root.UniMateScreenAwake = create();
 })(typeof window !== "undefined" ? window : globalThis);

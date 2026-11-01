@@ -33,8 +33,8 @@ import time
 from pathlib import Path
 
 # Hard-set before importing server modules: mcp_orphans writes STATE_DIR, npx_cache reads HOME.
-_TMP = Path(tempfile.mkdtemp(prefix="javis-cold-install-"))
-os.environ["JAVIS_STATE_DIR"] = str(_TMP / "state")
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-cold-install-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
 os.environ["HOME"] = str(_TMP / "home")
 for _d in ("state", "home"):
     (_TMP / _d).mkdir(parents=True, exist_ok=True)
@@ -96,8 +96,8 @@ async def scenario_warmup_and_chat_turn():
     marker = _TMP / "m1"
     marker.mkdir()
     c = conn(1, marker, 2.0)
-    os.environ["JAVIS_MCP_WARM_TIMEOUT"] = "15"
-    os.environ["JAVIS_MCP_DISCOVER_TIMEOUT"] = "0.4"
+    os.environ["UNIMATE_MCP_WARM_TIMEOUT"] = "15"
+    os.environ["UNIMATE_MCP_DISCOVER_TIMEOUT"] = "0.4"
     warm = asyncio.ensure_future(mcp_client.warm_pool([c]))
     await asyncio.sleep(0.3)
     skipped = set()
@@ -123,7 +123,7 @@ async def scenario_short_caps_only():
     marker = _TMP / "m2"
     marker.mkdir()
     c = conn(2, marker, 1.5)
-    os.environ["JAVIS_MCP_DISCOVER_TIMEOUT"] = "0.4"
+    os.environ["UNIMATE_MCP_DISCOVER_TIMEOUT"] = "0.4"
     names = []
     deadline = time.time() + 8
     while time.time() < deadline:
@@ -145,7 +145,7 @@ async def scenario_stuck_request_still_discarded():
     marker = _TMP / "m3"
     marker.mkdir()
     c = conn(3, marker, 0.0, "--hang-list")
-    os.environ["JAVIS_MCP_DISCOVER_TIMEOUT"] = "0.6"
+    os.environ["UNIMATE_MCP_DISCOVER_TIMEOUT"] = "0.6"
     spec = mcp_client._conn_spec(c)
     await mcp_client.pool._get(spec)[1].ensure_init()      # handshake done
     skipped = set()
@@ -166,7 +166,7 @@ async def scenario_handshake_still_bounded():
     marker = _TMP / "m4"
     marker.mkdir()
     c = conn(4, marker, 30.0)
-    os.environ["JAVIS_MCP_INIT_TIMEOUT"] = "1"
+    os.environ["UNIMATE_MCP_INIT_TIMEOUT"] = "1"
     spec = mcp_client._conn_spec(c)
     sess = mcp_client.pool._get(spec)[1]
     t0 = time.time()
@@ -191,7 +191,7 @@ async def scenario_handshake_still_bounded():
     await wait_until(lambda: len(markers(marker, "started")) == 2)
     check("the next attempt starts a fresh process", len(markers(marker, "started")) == 2,
           markers(marker, "started"))
-    os.environ.pop("JAVIS_MCP_INIT_TIMEOUT", None)
+    os.environ.pop("UNIMATE_MCP_INIT_TIMEOUT", None)
     await mcp_client.pool.close_all()
 
 
@@ -201,8 +201,8 @@ async def scenario_hung_at_startup_not_kept_forever():
     marker = _TMP / "m6"
     marker.mkdir()
     c = conn(6, marker, 60.0)
-    os.environ["JAVIS_MCP_INIT_TIMEOUT"] = "1"
-    os.environ["JAVIS_MCP_DISCOVER_TIMEOUT"] = "0.3"
+    os.environ["UNIMATE_MCP_INIT_TIMEOUT"] = "1"
+    os.environ["UNIMATE_MCP_DISCOVER_TIMEOUT"] = "0.3"
     spec = mcp_client._conn_spec(c)
     deadline = time.time() + 20
     while time.time() < deadline:
@@ -216,7 +216,7 @@ async def scenario_hung_at_startup_not_kept_forever():
           len(started) >= 2 and all(not alive(pid_of(p)) for p in started[:-1]), started)
     init_error = getattr(mcp_client.pool, "init_error", lambda spec: "")
     check("and health no longer calls it a first start", bool(init_error(spec)))
-    os.environ.pop("JAVIS_MCP_INIT_TIMEOUT", None)
+    os.environ.pop("UNIMATE_MCP_INIT_TIMEOUT", None)
     await mcp_client.pool.close_all()
 
 
@@ -346,7 +346,7 @@ async def main():
 
 
 asyncio.run(main())
-for k in ("JAVIS_MCP_WARM_TIMEOUT", "JAVIS_MCP_DISCOVER_TIMEOUT"):
+for k in ("UNIMATE_MCP_WARM_TIMEOUT", "UNIMATE_MCP_DISCOVER_TIMEOUT"):
     os.environ.pop(k, None)
 
 print()

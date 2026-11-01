@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans. One implementation owner; serial local app/native tests. Complete the preceding compose owner-panel review before starting code.
 
-**Goal:** Run the actual pinned Harness² Library entry/index/retain/forget implementation inside a checked disposable private snapshot, with a bounded procedure-only Javis adapter.
+**Goal:** Run the actual pinned Harness² Library entry/index/retain/forget implementation inside a checked disposable private snapshot, with a bounded procedure-only UNI MATE adapter.
 
-**Architecture:** Extract unchanged upstream Library definitions and only their tree/context dependencies into attributed modules. A Javis context manager allocates its own private temporary root, validates every path/content boundary before calling upstream filesystem methods, and returns bounded text projections. This component grants no source permission: canonical encrypted recipe records, scoped retrieval consent and actual improver/Operation/candidate dependency enforcement must be integrated in the next unit before any product input consumes it.
+**Architecture:** Extract unchanged upstream Library definitions and only their tree/context dependencies into attributed modules. A UNI MATE context manager allocates its own private temporary root, validates every path/content boundary before calling upstream filesystem methods, and returns bounded text projections. This component grants no source permission: canonical encrypted recipe records, scoped retrieval consent and actual improver/Operation/candidate dependency enforcement must be integrated in the next unit before any product input consumes it.
 
 **Tech Stack:** Existing Python standard library, private-directory/link checks, upstream pure tree/context/Library implementation; no package or executor installation.
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Work only in the existing managed checkout/branch; never modify D:\Project\Javis-OS. VERSION0.299.0 remains reserved.
+- Work only in the existing managed checkout/branch; never modify D:\Project\UNI-MATE. VERSION0.299.0 remains reserved.
 - Pin upstream1cfe254e8d25b15f37048c3730134686abe60335; preserve Apache-2.0/copyright and definition/source provenance. No benchmark, provider, dataset, scheduler or second executor/ledger.
 - Upstream rmtree/copy/write and mutable index may touch only a fresh checked root owned by this object. Never accept a caller-selected root, source path, entry path or SurfaceSpec.
 - Index and plaintext snapshot are disposable derived data; they are never canonical authority, grant, evidence grade, activation or business proof.
@@ -33,14 +33,14 @@
 
 | Source at pinned commit | Git blob | Actual reuse / narrow glue | Reason and consumer |
 |---|---|---|---|
-| harness2/core/library.py | 39e50684b4044e483a3c16a447958044d4b5e6de | Unchanged Library, has_experience, slug, domain_dir, _inventory, _field; change import wiring only | Actual add/EXPERIENCE/index/tree_of/retain/forget replaces a new Javis serializer; bounded private snapshot is sole consumer. Exclude root_for (caller-controlled run layout is unnecessary). |
+| harness2/core/library.py | 39e50684b4044e483a3c16a447958044d4b5e6de | Unchanged Library, has_experience, slug, domain_dir, _inventory, _field; change import wiring only | Actual add/EXPERIENCE/index/tree_of/retain/forget replaces a new UNI MATE serializer; bounded private snapshot is sole consumer. Exclude root_for (caller-controlled run layout is unnecessary). |
 | harness2/core/tree.py | c9bf1341226aac448f6ec82038cb6d3896799412 | Unchanged SurfaceSpec, _res, _rx, normalize_rel, is_allowed, _stub_paths, always_on_text plus exact required type/regex constants; read_tree/write_tree have three documented boundary-line adaptations | Actual Library dependency; read_tree uses p.relative_to(d).as_posix() and p.read_bytes().decode('utf-8'), write_tree's content write uses newline='\n'. This preserves forward-slash keys, strict UTF-8 and original procedure LF/CRLF on Windows. Closed paths and stronger host checks precede it. Exclude compile/hooks/validation/diff unrelated to this component. |
-| harness2/core/context.py | 72f2868b06c13e30c031cb91c0f04dcd80293ec9 | Unchanged GRADER_VERDICT_MARKERS, _MARKER_SCAN_SUFFIXES, assert_tree_has_no_grader_verdicts and required typing/Path imports | Actual Library.add tripwire. It is only a marker check; Javis authorization and private-evidence filtering remain separate required consumers. |
+| harness2/core/context.py | 72f2868b06c13e30c031cb91c0f04dcd80293ec9 | Unchanged GRADER_VERDICT_MARKERS, _MARKER_SCAN_SUFFIXES, assert_tree_has_no_grader_verdicts and required typing/Path imports | Actual Library.add tripwire. It is only a marker check; UNI MATE authorization and private-evidence filtering remain separate required consumers. |
 | tests/test_workflow.py | 2b7ebeb1816346f606922816a6f3609c64e8f8cc | Adapt the library-prefix/marker and NO_ENTRY cases at lines108–129,187–203 to the real extracted owner | Whole test imports DemoAdapter/schedule/provider execution unrelated to this component; preserve behavior through actual vendor calls, document adaptation rather than claim the full upstream suite ran. |
 
 Exact upstream bytes are already locally verified against Git blob identities in the preceding plan workspace under upstream-library-sources. Copy only these inputs into this plan's workspace when implementation begins; do not repeat the full upstream audit. Existing LICENSE is reused. Add definition-level raw and AST hashes plus import modifications to LIBRARY-PROVENANCE.json; never rewrite historical compose/proposer proof.
 
-Javis retains _private_directory, check_ancestry/is_link, canonical encrypted ImprovementStore/RevisionBlobs, source/grant/current checks and future operation ownership. Direct whole-package installation would pull unrelated benchmark/runtime/config behavior; a fresh serializer would duplicate the specific implementation the owner asked to reuse. The extraction adds three small dependency modules and one bounded adapter, with no migration or native footprint change until an actual native consumer is introduced. Do not classify these presently unconsumed modules as supported native capability.
+UNI MATE retains _private_directory, check_ancestry/is_link, canonical encrypted ImprovementStore/RevisionBlobs, source/grant/current checks and future operation ownership. Direct whole-package installation would pull unrelated benchmark/runtime/config behavior; a fresh serializer would duplicate the specific implementation the owner asked to reuse. The extraction adds three small dependency modules and one bounded adapter, with no migration or native footprint change until an actual native consumer is introduced. Do not classify these presently unconsumed modules as supported native capability.
 
 ### Task 1: Actual Library inside an owned private snapshot
 

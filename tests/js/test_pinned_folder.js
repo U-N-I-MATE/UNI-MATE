@@ -36,7 +36,7 @@ s.hold("brain/projects");
 check("pending pin is taken once", s.takePending() === "brain/projects" && s.takePending() === null);
 
 check("app.js claims the pending folder right after the pending model",
-  /JavisModelBar\.claimPending\(savedSessionId\)[\s\S]{0,300}JavisPinnedFolder\.claimPending\(savedSessionId\)/.test(app));
+  /UniMateModelBar\.claimPending\(savedSessionId\)[\s\S]{0,300}UniMatePinnedFolder\.claimPending\(savedSessionId\)/.test(app));
 check("composer-folder.js loads after composer-plus.js", html.indexOf("composer-plus.js") !== -1 && html.indexOf("composer-plus.js") < html.indexOf("composer-folder.js"));
 check("folder upload input is gone", html.indexOf('id="folderInput"') === -1 && plus.indexOf("folderInput") === -1);
 check("folder upload helpers are gone",
@@ -47,14 +47,14 @@ check("claiming without a session id keeps the held pin (found in the sandbox ch
 check("nothing held: claimPending returns null so the first message is not delayed", /if \(!p\) return null;/.test(src));
 // Review 0.158.0: the first turn could start before the /pin POST landed and run in the brain.
 check("app.js keeps the claim promise and sends the first turn only after it settles",
-  /_pinWait = window\.JavisPinnedFolder\.claimPending\(savedSessionId\)/.test(app)
+  /_pinWait = window\.UniMatePinnedFolder\.claimPending\(savedSessionId\)/.test(app)
   && /const _w = _pinWait; _pinWait = null;\s*if \(_w\) _w\.then\(_send, _send\); else _send\(\);/.test(app));
 check("if the socket drops while the first turn waits for the pin, the text goes back to the input with a notice",
   /const _send = \(\) => \{\s*if \(!ws \|\| ws\.readyState !== WebSocket\.OPEN\) \{[\s\S]{0,400}chatInput\.value = msg;[\s\S]{0,120}ghiChuThoang\(/.test(app));
-check("a failed claim clears the chip and says why in the composer", /apply\(null\);\s*if \(window\.JavisAttach\) window\.JavisAttach\.note\(/.test(src));
+check("a failed claim clears the chip and says why in the composer", /apply\(null\);\s*if \(window\.UniMateAttach\) window\.UniMateAttach\.note\(/.test(src));
 check("pin uses the one-call endpoint", src.indexOf('"/pin"') !== -1);
-check("pin fires javis:pinned-folder-changed", src.indexOf('"javis:pinned-folder-changed"') !== -1);
-check("browse row opens the shared folder picker", src.indexOf("JavisFolderPicker.open(") !== -1);
+check("pin fires unimate:pinned-folder-changed", src.indexOf('"unimate:pinned-folder-changed"') !== -1);
+check("browse row opens the shared folder picker", src.indexOf("UniMateFolderPicker.open(") !== -1);
 check("composer-plus supports panel items and opening one item", /item\.panel/.test(plus) && /openItem:/.test(plus));
 ["cp.pin_folder", "cp.pin_search_ph", "cp.pin_browse", "cp.pin_unpin", "cp.pin_outside", "cp.pin_gone", "cp.pin_failed", "cp.pin_empty"]
   .forEach(k => check("i18n key " + k + " in vi and en", !!vi[k] && !!en[k]));

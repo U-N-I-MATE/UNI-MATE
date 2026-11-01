@@ -21,7 +21,7 @@ const nav = { active: "home", settingsTab: "general" };
 const rendered = [];
 const ctx = {
   Alpine: { store: () => nav }, TRANG_GOP: { runtime: "usage" },
-  TRANG_CUOI_KEY: "javis_last_page", localStorage: { setItem() {} },
+  TRANG_CUOI_KEY: "unimate_last_page", localStorage: { setItem() {} },
   window: {}, document: { body: { classList: { toggle() {} } } },
   _pageLeave: null, renderPage: id => rendered.push([id, nav.settingsTab]),
   refreshModelUi() {}, parkQuickSet() {}, recomputeGraph() {}, _tabHoiThoaiCho: "",

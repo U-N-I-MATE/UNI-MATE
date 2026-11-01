@@ -1,5 +1,5 @@
 """
-learn.py - Engine TỰ HỌC của Javis (rewire sau lượt + auto-Wiki + skill + curator).
+learn.py - Engine TỰ HỌC của UNI MATE (rewire sau lượt + auto-Wiki + skill + curator).
 
 Triết lý an toàn (mạnh hơn cả kế hoạch gốc, theo review đối kháng):
   - FORK HỌC LÀ READ-ONLY. Nó chỉ Read/Glob/Grep/LS + trả về 1 MANIFEST JSON. Nó KHÔNG
@@ -94,7 +94,7 @@ def _yaml_scalar(value: str) -> str:
     return json.dumps("" if value is None else str(value), ensure_ascii=False)
 
 
-# Nhóm mặc định khi fork không nêu `group` (giống trang Studio và Javis/index.md - MỘT tên
+# Nhóm mặc định khi fork không nêu `group` (giống trang Studio và UniMate/index.md - MỘT tên
 # nhóm mặc định cho cả skill, agent lẫn workflow, để ba chỗ không hiểu khác nhau).
 NHOM_MAC_DINH = "Chung"
 
@@ -118,7 +118,7 @@ def _skill_frontmatter(name: str, desc: str, group: str, today: str) -> str:
     """
     return (f"---\nname: {_yaml_scalar(name)}\ndescription: {_yaml_scalar(desc)}\n"
             f"group: {_yaml_scalar(group)}\n"
-            f"origin: javis-learned\nstatus: active\ncreated: {today}\n---\n")
+            f"origin: unimate-learned\nstatus: active\ncreated: {today}\n---\n")
 
 
 # ============================================================
@@ -140,7 +140,7 @@ def _skill_frontmatter(name: str, desc: str, group: str, today: str) -> str:
 # Cộng thêm git-commit sẵn có nên vẫn hoàn tác được bằng một chạm.
 #
 # SKILL có thêm HAI rào nữa, vì hai đường hỏng dưới đây không tồn tại với agent/workflow:
-#   5. Skill HỆ THỐNG (javis-builder, ingest-source, query-wiki, lint-wiki, notes,
+#   5. Skill HỆ THỐNG (unimate-builder, ingest-source, query-wiki, lint-wiki, notes,
 #      html-to-webcake) là CẤM. Chúng do app ship và tự cập nhật theo bản mới; đụng vào một
 #      cái là nó thành bản của người dùng và app ngừng cập nhật đè lên - mất im lặng một
 #      năng lực mặc định. `system_sync.is_system_skill` là nguồn chuẩn duy nhất.
@@ -234,7 +234,7 @@ def append_history(body: str, reason: str, today: str, old_body: str = "") -> st
     return "\n".join(out).strip()
 
 
-# Mục do Javis quản trong THÂN agent: ngoài hai mục này là của chủ, chốt chặn
+# Mục do UNI MATE quản trong THÂN agent: ngoài hai mục này là của chủ, chốt chặn
 # agent_rules.missing_owner_lines bắt mọi lần ghi phải giữ nguyên.
 _AGENT_MANAGED = (_HISTORY_HEADER, agent_rules.LEARNED_ADDITIONS_HEADER)
 # Mục bài học trong bộ nhớ agent (main._BAI_HOC_HEADER), quay vòng 15 dòng nên được phép mất dòng.
@@ -414,7 +414,7 @@ class LearnDeps:
     stage_agent_procedure: Optional[Callable] = None
 
 
-ALLOWED_WRITE_PREFIXES = ["memory", "Memory", "Wiki", "skills", ".claude/skills", "Javis",
+ALLOWED_WRITE_PREFIXES = ["memory", "Memory", "Wiki", "skills", ".claude/skills", "UNI MATE",
                           "agents", "workflows"]
 
 
@@ -425,7 +425,7 @@ class LearnFeature:
         self.DEFAULT = {
             "enabled": True,                    # mặc định BẬT tự học ngay
             "mode": "auto",                     # dry-run | suggest | auto - mặc định tự ghi (không cần git)
-            # task=False: Javis KHÔNG tự suy ra việc nền từ hội thoại nữa. Chủ chốt 2026-07-28
+            # task=False: UNI MATE KHÔNG tự suy ra việc nền từ hội thoại nữa. Chủ chốt 2026-07-28
             # sau khi soi bảng thật: 28/28 việc là máy tự đẻ, phần lớn worker headless không
             # thể làm (cookie, gửi Zalo, chờ duyệt, repo ngoài brain) nên chết yểu. Việc chỉ
             # sinh khi được BẢO THẲNG trong chat (POST /kanban/task). Công tắc vẫn còn trong
@@ -544,7 +544,7 @@ class LearnFeature:
                 brains.append(brain)
                 cfg["brains"] = brains
                 self.write_config(cfg)
-            # 0.188.0: learning switched off for this brain (Javis Core > Memory) = nothing new is queued.
+            # 0.188.0: learning switched off for this brain (UNI MATE Core > Memory) = nothing new is queued.
             try:
                 import memory_control
                 if not memory_control.learning_enabled(self.deps.brain_memory_dir(brain)):
@@ -569,7 +569,7 @@ class LearnFeature:
 
     # ── enqueue_job (gọi khi một VIỆC NỀN Kanban chạy xong) ──
     # Vì sao cần: `enqueue` ở trên chỉ nghe được luồng CHAT (`_persist_turn`), nên mọi thứ
-    # Javis tự làm trong nền - việc chạy trót lọt, và nhất là việc VƯỚNG - đi qua mà không để
+    # UNI MATE tự làm trong nền - việc chạy trót lọt, và nhất là việc VƯỚNG - đi qua mà không để
     # lại bài học nào. Đó đúng là chỗ kinh nghiệm thực chiến sinh ra: một việc bị chặn vì
     # thiếu MCP, một quy trình phải làm đi làm lại, một cách làm vừa chạy thông.
     #
@@ -665,7 +665,7 @@ class LearnFeature:
         store = self.deps.sessions_store
         parts: List[str] = []
         seen = 0
-        # Việc nền đứng TRƯỚC hội thoại: nó là thứ Javis tự làm, và cũng là phần dễ bị cắt
+        # Việc nền đứng TRƯỚC hội thoại: nó là thứ UNI MATE tự làm, và cũng là phần dễ bị cắt
         # nhất nếu xếp sau (ngân sách 24k ký tự tiêu gần hết cho chat). Đã tính vào `seen` nên
         # không làm digest phình quá trần.
         for khoi in (jobs or [])[:self._JOB_MAX]:
@@ -678,7 +678,7 @@ class LearnFeature:
                 msgs = []
             tail = [m for m in msgs if m.get("role") in ("user", "assistant") and m.get("content")][-12:]
             for m in tail:
-                who = "NGƯỜI DÙNG" if m["role"] == "user" else "JAVIS(assistant)"
+                who = "NGƯỜI DÙNG" if m["role"] == "user" else "UNI MATE(assistant)"
                 txt = str(m["content"])[:3000]
                 parts.append(f"[{who}] {txt}")
                 seen += len(txt)
@@ -694,9 +694,9 @@ class LearnFeature:
                     r"^(\d+\s*[-_.]\s*)?wiki$", "Wiki"))
 
     def _cap_dir(self, brain: str, new_name: str, old_rel: str, create: bool = False) -> Path:
-        """Thư mục agents/ hoặc workflows/ - chuẩn PHẲNG ở gốc brain, fallback Javis/<x> cũ
+        """Thư mục agents/ hoặc workflows/ - chuẩn PHẲNG ở gốc brain, fallback UniMate/<x> cũ
         (đồng logic main._brain_sub, chép lại vì module này không import main). Ghi nhầm vào
-        Javis/ khi thư mục phẳng ĐÃ tồn tại là file biến mất khỏi app (sự cố 19/07, 16/08)."""
+        UniMate/ khi thư mục phẳng ĐÃ tồn tại là file biến mất khỏi app (sự cố 19/07, 16/08)."""
         root = Path(self.deps.brain_root(brain))
         new = root / new_name
         if new.is_dir():
@@ -717,7 +717,7 @@ class LearnFeature:
             return []
 
     def _cap_file(self, brain: str, new_name: str, old_rel: str, slug: str) -> Optional[Path]:
-        """File agent/workflow ĐANG CÓ của slug này (phẳng trước, rồi Javis/ cũ); None = chưa có.
+        """File agent/workflow ĐANG CÓ của slug này (phẳng trước, rồi UniMate/ cũ); None = chưa có.
 
         op=update phải ghi ĐÚNG file đang có: brain chưa migrate mà ghi bản sửa ra thư mục
         phẳng thì thành hai bản, app đọc bản cũ và chủ tưởng sửa không ăn."""
@@ -760,7 +760,7 @@ class LearnFeature:
     def _write_owner_rules(self, brain: str, slug: str, rules: List[str],
                            written_paths: List[str], root, rep: dict) -> None:
         """Luật CHỦ dặn mà fork nhận ra → mục Luật chủ dặn trong bộ nhớ agent, cùng chỗ với
-        JAVIS_RULE khi chủ dặn thẳng agent. Không trần, không bao giờ bị đẩy ra."""
+        UNIMATE_RULE khi chủ dặn thẳng agent. Không trần, không bao giờ bị đẩy ra."""
         fp = self.deps.brain_memory_dir(brain) / "agents" / slug / "MEMORY.md"
         try:
             text = fp.read_text(encoding="utf-8") if fp.exists() else ""
@@ -782,8 +782,8 @@ class LearnFeature:
     def _agent_lines(self, brain: str) -> str:
         """Agent hiện có, mỗi dòng 'slug (Tên): vai trò' - đủ để fork dedup và biết sửa cái nào."""
         out = []
-        for slug in self._cap_slugs(brain, "agents", "Javis/agents")[:30]:
-            fp = self._cap_file(brain, "agents", "Javis/agents", slug)
+        for slug in self._cap_slugs(brain, "agents", "UniMate/agents")[:30]:
+            fp = self._cap_file(brain, "agents", "UniMate/agents", slug)
             fm, _ = read_md(fp) if fp else ({}, "")
             khoa = " [chủ đã khoá]" if learn_locked(fm) else ""
             out.append(f"- {slug} ({fm.get('name') or slug}): {str(fm.get('role') or '')[:100]}{khoa}")
@@ -793,8 +793,8 @@ class LearnFeature:
         """Workflow hiện có KÈM các bước - fork phải thấy cấu trúc hiện tại mới đề xuất sửa
         được (chỉ đưa tên thì nó không biết bước nào thừa/thiếu, đành đẻ workflow mới)."""
         out = []
-        for slug in self._cap_slugs(brain, "workflows", "Javis/workflows")[:20]:
-            fp = self._cap_file(brain, "workflows", "Javis/workflows", slug)
+        for slug in self._cap_slugs(brain, "workflows", "UniMate/workflows")[:20]:
+            fp = self._cap_file(brain, "workflows", "UniMate/workflows", slug)
             fm, _ = read_md(fp) if fp else ({}, "")
             steps = fm.get("steps") if isinstance(fm.get("steps"), list) else []
             buoc = " | ".join(
@@ -987,20 +987,20 @@ class LearnFeature:
                 '"priority":1..3,"confidence":0..3}]')
 
         return (
-            "BẠN LÀ VÒNG HỌC READ-ONLY của Javis. TUYỆT ĐỐI KHÔNG ghi/sửa/xoá file, KHÔNG gọi tool ghi. "
+            "BẠN LÀ VÒNG HỌC READ-ONLY của UNI MATE. TUYỆT ĐỐI KHÔNG ghi/sửa/xoá file, KHÔNG gọi tool ghi. "
             "Chỉ ĐỌC (Read/Glob/Grep) để dedup rồi TRẢ VỀ 1 KHỐI JSON DUY NHẤT (không văn xuôi ngoài JSON).\n\n"
             "PHÂN LOẠI ĐA-NHÃN (1 đoạn có thể sinh nhiều loại):\n"
             "• fact (Memory) = sự thật BỀN về CHÍNH user/doanh nghiệp này (bỏ tên riêng thì mất nghĩa).\n"
             "• wiki = KHÁI NIỆM/framework/quy trình TÁI DÙNG (đúng cả với người khác).\n"
-            "• skill = quy trình nhiều bước Javis VỪA TỰ LÀM, có công thức lặp lại.\n"
+            "• skill = quy trình nhiều bước UNI MATE VỪA TỰ LÀM, có công thức lặp lại.\n"
             + ("• agent = VAI chuyên môn user nhờ đi nhờ lại hoặc yêu cầu rõ (vd 'viết email "
                "chăm khách', 'biên tập bài'), đáng đóng thành một vai có system prompt riêng.\n"
                if caps.get("agent") else "")
             + ("• workflow = CHUỖI từ 2 bước trở lên, nhiều vai nối nhau, user đã làm/nhờ lặp lại "
                "theo đúng trình tự đó.\n" if caps.get("workflow") else "")
-            + "• task = VIỆC NỀN cụ thể đáng giao Javis tự làm sau (yêu cầu lặp lại / việc bỏ dở / câu hỏi mở).\n\n"
+            + "• task = VIỆC NỀN cụ thể đáng giao UNI MATE tự làm sau (yêu cầu lặp lại / việc bỏ dở / câu hỏi mở).\n\n"
             "PROVENANCE (bắt buộc, chống bịa): 'user'=user khẳng định; 'source'=trích nguồn có tên; "
-            "'assistant'=CHÍNH JAVIS tự nói không nguồn. ⚠ Mục wiki provenance='assistant' sẽ BỊ LOẠI "
+            "'assistant'=CHÍNH UNI MATE tự nói không nguồn. ⚠ Mục wiki provenance='assistant' sẽ BỊ LOẠI "
             "(đẩy sang cần-xác-minh) → chỉ đưa vào wiki thứ user/nguồn khẳng định.\n"
             "DENSITY (wiki, 0-3): 0=nhắc thoáng, 3=được định nghĩa/giải thích có cấu trúc. Chỉ đưa density>=2.\n"
             "DEDUP: đọc INDEX dưới đây trước; nếu khái niệm ĐÃ CÓ → set same_as=tên trang (đừng tạo trùng); "
@@ -1039,7 +1039,7 @@ class LearnFeature:
                "(…-v2, …-moi, …-ban-sua).\n"
                "  11. KHÔNG update chỉ để chữ đẹp hơn: phải có BẰNG CHỨNG trong batch này "
                "rằng làm theo skill cũ đã ra kết quả sai hoặc thiếu. Không có thì để yên. "
-               "Skill hệ thống (javis-builder, ingest-source, query-wiki, lint-wiki, notes, "
+               "Skill hệ thống (unimate-builder, ingest-source, query-wiki, lint-wiki, notes, "
                "html-to-webcake) và skill ghi [chủ đã khoá] thì cấm đụng.\n\n"
                if caps.get("skill") else "")
             + ("TASK (chống spam backlog): worker nền là HEADLESS - chỉ đọc/ghi file TRONG brain này "
@@ -1155,7 +1155,7 @@ class LearnFeature:
             f"{s.get('description','')}"
             + (f" | lý do sửa: {str(s.get('reason') or '').strip()[:200]}" if is_update(s) else "")
             for s in skills)
-        prompt = ("Một vòng học đề xuất TẠO hoặc SỬA các SKILL sau (Javis tự quan sát từ việc đã "
+        prompt = ("Một vòng học đề xuất TẠO hoặc SỬA các SKILL sau (UNI MATE tự quan sát từ việc đã "
                   "làm). GIẢ ĐỊNH chúng SAI/thừa. Với mỗi slug, quyết định giữ hay bỏ.\n" + listing +
                   "\nBỎ một bản TẠO nếu quy trình không có thật, không đủ cụ thể, hoặc trùng skill "
                   "có sẵn. BỎ một bản SỬA nếu lý do không dẫn được ra bằng chứng skill cũ đã cho "
@@ -1183,7 +1183,7 @@ class LearnFeature:
         if wfs:
             listing += ("\n" if listing else "") + "\n".join(
                 _dong("workflow", w, f"{len(w.get('steps') or [])} bước") for w in wfs)
-        prompt = ("Một vòng học đề xuất TẠO hoặc SỬA các AGENT/WORKFLOW sau (Javis tự quan sát từ "
+        prompt = ("Một vòng học đề xuất TẠO hoặc SỬA các AGENT/WORKFLOW sau (UNI MATE tự quan sát từ "
                   "hội thoại). GIẢ ĐỊNH chúng SAI/thừa. Với mỗi slug, quyết định giữ hay bỏ.\n"
                   "  • Mục [TẠO]: chỉ giữ vai/chuỗi THẬT SỰ lặp lại, đủ cụ thể, không trùng cái "
                   "có sẵn trong agents/ và workflows/. Trùng một cái đã có mà lại đòi tạo mới → BỎ "
@@ -1274,7 +1274,7 @@ class LearnFeature:
                             except Exception:
                                 pass
                     fm = (f"---\ntype: {f.get('kind','fact')}\nprovenance: {f.get('provenance','user')}\n"
-                          f"origin: javis-learned\ncreated: {today}\nupdated: {today}\n---\n")
+                          f"origin: unimate-learned\ncreated: {today}\nupdated: {today}\n---\n")
                     self.deps.atomic_write_text(fp, fm + body + "\n")
                     written_paths.append(str(fp.relative_to(root)).replace("\\", "/"))
                     rep["facts"].append(slug)
@@ -1294,7 +1294,7 @@ class LearnFeature:
                     if not title or not body or int(w.get("density", 0)) < 2:
                         continue
                     if (w.get("provenance") == "assistant"):
-                        self._append_open_question(brain, wiki_dir, title, "provenance=assistant (Javis tự nói, cần xác minh)", written_paths, root)
+                        self._append_open_question(brain, wiki_dir, title, "provenance=assistant (UNI MATE tự nói, cần xác minh)", written_paths, root)
                         rep["blocked"].append(f"wiki '{title}': assistant-only → cần xác minh"); continue
                     if secret_hits(title + "\n" + body):
                         rep["blocked"].append(f"wiki '{title}': chứa secret"); continue
@@ -1348,7 +1348,7 @@ class LearnFeature:
                     if cu:
                         rep["blocked"].append(f"wiki '{title}': trùng [[{cu.stem}]] → bỏ qua")
                         continue
-                    fm = (f"---\ntype: wiki\nstatus: active\ntags: [wiki]\norigin: javis-learned\n"
+                    fm = (f"---\ntype: wiki\nstatus: active\ntags: [wiki]\norigin: unimate-learned\n"
                           f"created: {today}\nupdated: {today}\nsource: [[conversations/{today}]]\n---\n")
                     self.deps.atomic_write_text(fp, fm + body + "\n")
                     written_paths.append(str(fp.relative_to(root)).replace("\\", "/"))
@@ -1429,10 +1429,10 @@ class LearnFeature:
             # ---- AGENTS (tự học, cap mặc định TẮT) ----
             # op=create: vai MỚI, không bao giờ đè vai đã có.
             # op=update: SỬA vai đang có tại chỗ - xem khối "Sửa TẠI CHỖ" đầu file cho bốn rào.
-            # Ghi vào thư mục PHẲNG agents/ (fallback Javis/agents chỉ khi phẳng chưa có).
+            # Ghi vào thư mục PHẲNG agents/ (fallback UniMate/agents chỉ khi phẳng chưa có).
             written_agents: set = set()
             if caps.get("agent"):
-                ag_dir = self._cap_dir(brain, "agents", "Javis/agents", create=True)
+                ag_dir = self._cap_dir(brain, "agents", "UniMate/agents", create=True)
                 for a in (manifest.get("agents") or []):
                     slug = _slugify(a.get("slug") or a.get("name") or "")
                     body = (a.get("body") or "").strip()
@@ -1449,7 +1449,7 @@ class LearnFeature:
                         rep["blocked"].append(f"agent '{slug}': chứa secret"); continue
                     if injection_in_output(blob):
                         rep["blocked"].append(f"agent '{slug}': chứa câu injection"); continue
-                    old_fp = self._cap_file(brain, "agents", "Javis/agents", slug)
+                    old_fp = self._cap_file(brain, "agents", "UniMate/agents", slug)
                     old_fm, old_body = (read_md(old_fp) if (upd and old_fp) else ({}, ""))
                     if not upd:
                         if old_fp:
@@ -1518,7 +1518,7 @@ class LearnFeature:
                     else:
                         fm_data = {"type": "agent", "name": a.get("name") or slug, "slug": slug,
                                    "role": role, "group": _nhom(a), "skills": sk_ok, "model": "",
-                                   "origin": "javis-learned", "updated": today}
+                                   "origin": "unimate-learned", "updated": today}
                         new_body = body
                     fp = old_fp if (upd and old_fp) else (ag_dir / f"{slug}.md")
                     self.deps.atomic_write_text(fp, f"---\n{dump_fm(fm_data)}\n---\n{new_body}\n")
@@ -1532,9 +1532,9 @@ class LearnFeature:
             # op=create: tạo ở status "off" cho chủ xem trước. op=update: sửa tại chỗ, GIỮ
             # trạng thái bật/tắt và tên hiển thị của chủ (bốn rào ở khối "Sửa TẠI CHỖ" đầu file).
             if caps.get("workflow"):
-                wf_dir = self._cap_dir(brain, "workflows", "Javis/workflows", create=True)
-                ag_dir = self._cap_dir(brain, "agents", "Javis/agents")
-                legacy_ag = Path(root) / "Javis" / "agents"
+                wf_dir = self._cap_dir(brain, "workflows", "UniMate/workflows", create=True)
+                ag_dir = self._cap_dir(brain, "agents", "UniMate/agents")
+                legacy_ag = Path(root) / "UNI MATE" / "agents"
                 for w in (manifest.get("workflows") or []):
                     slug = _slugify(w.get("slug") or w.get("name") or "")
                     steps_in = w.get("steps") or []
@@ -1556,7 +1556,7 @@ class LearnFeature:
                         rep["blocked"].append(f"workflow '{slug}': chứa secret"); continue
                     if injection_in_output(blob):
                         rep["blocked"].append(f"workflow '{slug}': chứa câu injection"); continue
-                    old_fp = self._cap_file(brain, "workflows", "Javis/workflows", slug)
+                    old_fp = self._cap_file(brain, "workflows", "UniMate/workflows", slug)
                     upd = is_update(w)
                     old_fm, old_body = (read_md(old_fp) if (upd and old_fp) else ({}, ""))
                     if not upd:
@@ -1598,7 +1598,7 @@ class LearnFeature:
                         fm_data = {"type": "workflow", "name": w.get("name") or slug, "slug": slug,
                                    "status": "off", "description": w.get("description") or "",
                                    "group": _nhom(w), "steps": steps,
-                                   "origin": "javis-learned", "updated": today}
+                                   "origin": "unimate-learned", "updated": today}
                         new_body = (w.get("description") or "").strip()
                     fp = old_fp if (upd and old_fp) else (wf_dir / f"{slug}.md")
                     self.deps.atomic_write_text(fp, f"---\n{dump_fm(fm_data)}\n---\n\n{new_body}\n")
@@ -2004,7 +2004,7 @@ class LearnFeature:
         """Gỡ khỏi MEMORY.md những dòng mục lục KHÔNG CÒN GIÁ TRỊ. Trả {n, ly_do} hoặc None.
 
         Vì sao đây là việc đáng làm nhất trong "chống rác tri thức": MEMORY.md được nạp
-        TRƯỚC MỌI câu hỏi. Một fact đã bị thay thế mà còn nằm trong mục lục thì Javis vẫn
+        TRƯỚC MỌI câu hỏi. Một fact đã bị thay thế mà còn nằm trong mục lục thì UNI MATE vẫn
         đọc thông tin cũ mỗi lượt, và index vẫn tính vào trần ~150 dòng. Nhánh `supersedes`
         của learn đã biết ghi `superseded_by:` vào file cũ, nhưng CHƯA AI gỡ dòng mục lục
         của nó, nên tri thức "đã nghỉ hưu" ở lại vĩnh viễn.
@@ -2051,7 +2051,7 @@ class LearnFeature:
         """Lần CUỐI người dùng thật sự trò chuyện trên brain này (epoch), 0 = không rõ.
 
         Đọc <bộ nhớ>/conversations/ chứ KHÔNG đọc mtime cả thư mục: chính curator ghi
-        Javis/learn-log mỗi vòng, nên lấy mtime thư mục là brain nào cũng "vừa mới hoạt
+        UniMate/learn-log mỗi vòng, nên lấy mtime thư mục là brain nào cũng "vừa mới hoạt
         động" - curator tự nuôi lý do để chạy tiếp trên brain đã bỏ.
 
         Thử CẢ HAI cách viết vì brain cũ chưa migrate còn dùng `Memory/` hoa. Trước đây chỗ
@@ -2112,7 +2112,7 @@ class LearnFeature:
     # ── learn-log (người đọc) ──
     def _log(self, brain: str, kind: str, title: str, body: str) -> None:
         try:
-            d = Path(self.deps.brain_root(brain)) / "Javis" / "learn-log"
+            d = Path(self.deps.brain_root(brain)) / "UNI MATE" / "learn-log"
             d.mkdir(parents=True, exist_ok=True)
             now = _now_vn()
             with open(d / f"{now.strftime('%Y-%m-%d')}.md", "a", encoding="utf-8") as fh:
@@ -2192,7 +2192,7 @@ class LearnFeature:
 
         @router.get("/learn/review")
         async def learn_review(brain: str = Query("brain"), limit: int = Query(20)):
-            """Danh sách commit học gần nhất (cho panel 'Javis đã tự học gì') + trạng thái git."""
+            """Danh sách commit học gần nhất (cho panel 'UNI MATE đã tự học gì') + trạng thái git."""
             root = self.deps.brain_root(brain)
             return {"git_repo": git_brain.is_git_checkout(root),
                     "commits": git_brain.list_learn_commits(root, limit)}
@@ -2211,7 +2211,7 @@ class LearnFeature:
             được trong 3 ngày gần nhất - phân trang mà không có gì để lật. Vẫn có trần 60 file
             để một brain chạy lâu năm không kéo cả năm nhật ký lên chỉ vì ai đó gõ limit to.
             """
-            d = Path(self.deps.brain_root(brain)) / "Javis" / "learn-log"
+            d = Path(self.deps.brain_root(brain)) / "UNI MATE" / "learn-log"
             entries = []
             want = max(1, min(int(limit or 15), 500))
             if d.is_dir():

@@ -169,7 +169,7 @@ def _make_router() -> APIRouter:
         quét toàn vault vô hạn, 99% số lần trả lời "không có gì mới".
         Lưới an toàn: quét thưa _GRAPH_SPARSE_RESCAN giây/lần trong to_thread - bắt các thay
         đổi mà sự kiện không phủ (vault trên ổ mạng, sự kiện rơi khi burst quá lớn)."""
-        if cfgmod.gate_active() and not cfgmod.valid_session(ws.cookies.get("javis_session", "")):
+        if cfgmod.gate_active() and not cfgmod.valid_session(ws.cookies.get("unimate_session", "")):
             await ws.close(code=1008)
             return
         await ws.accept()

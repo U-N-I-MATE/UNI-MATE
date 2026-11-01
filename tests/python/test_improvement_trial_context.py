@@ -13,7 +13,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="improvement-trial-context-"))
-for key, name in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
+for key, name in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
                   "BRAIN_PATH": "brain", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(TEST_ROOT / name)
 
@@ -68,7 +68,7 @@ class TrialContextTests(unittest.TestCase):
         self.assertIsNotNone(first["identity"])
         self.assertNotIn("Keep the owner's rule", str(result["sources"]))
         self.assertEqual(self.owner.read_bytes(), self.owner_raw)
-        self.assertFalse((self.root / ".javis").exists())
+        self.assertFalse((self.root / ".unimate").exists())
 
     def test_same_plan_and_bytes_replay_deterministically_without_mutating_plan(self):
         sources = [self.source(), self.source("shared-memory", "memory/MEMORY.md")]

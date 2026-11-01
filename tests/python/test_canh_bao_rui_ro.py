@@ -68,7 +68,7 @@ check("mô tả thẻ google-keep cảnh báo token toàn quyền tài khoản",
 check("mô tả thẻ nói rõ KHÔNG phải OAuth giới hạn phạm vi",
       "oauth" in mota.lower() or "phạm vi" in mota.lower())
 
-# Javis chỉ LÀM được đúng Keep - đây là điểm trấn an, phải giữ đúng.
+# UNI MATE chỉ LÀM được đúng Keep - đây là điểm trấn an, phải giữ đúng.
 tm = keep.get("tool_meta") or {}
 tat_ca = (tm.get("read") or []) + (tm.get("write") or []) + (tm.get("danger") or [])
 check("google-keep vẫn chỉ khai tool Keep, không lan sang Gmail/Drive",

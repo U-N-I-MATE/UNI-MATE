@@ -24,10 +24,10 @@ import tempfile
 import time
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-wh-m2r-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
-os.environ["JAVIS_WH_NO_NETWORK"] = "1"
+STATE = Path(tempfile.mkdtemp(prefix="unimate-wh-m2r-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
+os.environ["UNIMATE_WH_NO_NETWORK"] = "1"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

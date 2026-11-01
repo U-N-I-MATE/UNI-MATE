@@ -20,9 +20,9 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-_STATE = Path(tempfile.mkdtemp(prefix="javis-res-handoff-"))
-os.environ["JAVIS_STATE_DIR"] = str(_STATE)
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+_STATE = Path(tempfile.mkdtemp(prefix="unimate-res-handoff-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_STATE)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 import claude_sdk_engine  # noqa: E402
 import luot_dang_chay  # noqa: E402
@@ -98,17 +98,17 @@ _n = {"mid": 0, "call": 0}
 
 def world(name):
     brain = Path(tempfile.mkdtemp(prefix=f"brain-{name}-")).resolve()
-    (brain / "Javis").mkdir(parents=True)
+    (brain / "UNI MATE").mkdir(parents=True)
     store = RS.GoalStore(_STATE / f"{name}.sqlite3")
     RA.enable(store, brain)       # A1: mục tiêu thuộc một trợ lý đang bật trong kho của thế giới này
-    return str(brain), store, RS.Principal("agent", "javis", str(brain))
+    return str(brain), store, RS.Principal("agent", "unimate", str(brain))
 
 
 def deps_for(brain, store, eng, clock):
     def _factory(system_prompt, tag):
         return eng, {"provider": "fake", "model": "fake-1", "text_only": True}
     return R.GoalDeps(engine_factory=_factory, budget=R.CallBudget(0), clock=clock, store=store,
-                      principal=RS.Principal("agent", "javis", brain), brain_root=brain, evidence=EVIDENCE,
+                      principal=RS.Principal("agent", "unimate", brain), brain_root=brain, evidence=EVIDENCE,
                       notify=_notes)
 
 
@@ -276,9 +276,9 @@ check("P1-1 shell chạy nền ở bất kỳ đâu trong lượt: cả lượt 
                + write_msgs(b, DELIV, A), A)[0] == "no_receipt")
 check("P1-1 Bash TRƯỚC Write (xem thư mục): Write sau vẫn là biên nhận",
       scenario("p11g", lambda b: tool_msgs("Bash", {"command": "ls"}) + write_msgs(b, DELIV, A), A)[0] == "adopted")
-check("P1-1 Write rồi ToolSearch, javis_goal (chỉ đọc hay lập mục tiêu, như pilot lần 3): vẫn tiếp nhận",
+check("P1-1 Write rồi ToolSearch, unimate_goal (chỉ đọc hay lập mục tiêu, như pilot lần 3): vẫn tiếp nhận",
       scenario("p11h", lambda b: write_msgs(b, DELIV, A) + tool_msgs("ToolSearch", {"query": "x"})
-               + tool_msgs("mcp__javis-plugins__javis_goal", {"op": "create"}), A)[0] == "adopted")
+               + tool_msgs("mcp__unimate-plugins__unimate_goal", {"op": "create"}), A)[0] == "adopted")
 check("P1-1 Write thành công, Write sau cùng file bị lỗi: bản thành công trước vẫn là biên nhận",
       scenario("p11i", lambda b: write_msgs(b, DELIV, A) + write_msgs(b, DELIV, A2, ok=False), A)[0] == "adopted")
 check("P1-1 Write thành công nhưng file bị sửa ngoài công cụ: không tiếp nhận",
@@ -293,11 +293,11 @@ check("vòng 2 P1-1 MCP mang đuôi Write (mcp__remote__Write) báo thành công
 check("vòng 2 P1-1 Write gốc rồi MCP lạ mang đuôi Read (mcp__untrusted__Read): Write mất hiệu lực",
       scenario("r2b", lambda b: write_msgs(b, DELIV, A)
                + tool_msgs("mcp__untrusted__Read", {"file_path": str(Path(b) / DELIV)}), A)[0] == "no_receipt")
-check("vòng 2 P1-1 đối chứng: Write gốc rồi đúng tool Javis đã biết (mcp__javis__javis_read_file): vẫn tiếp nhận",
+check("vòng 2 P1-1 đối chứng: Write gốc rồi đúng tool UNI MATE đã biết (mcp__unimate__unimate_read_file): vẫn tiếp nhận",
       scenario("r2c", lambda b: write_msgs(b, DELIV, A)
-               + tool_msgs("mcp__javis__javis_read_file", {"path": DELIV}), A)[0] == "adopted")
-check("P1-1 javis_write_file (chưa có kết quả ghi gắn đúng lời gọi): không lập biên nhận",
-      R.note_turn_event("msg:x:1", b, {"type": "tool_call", "name": "javis_write_file", "id": "c",
+               + tool_msgs("mcp__unimate__unimate_read_file", {"path": DELIV}), A)[0] == "adopted")
+check("P1-1 unimate_write_file (chưa có kết quả ghi gắn đúng lời gọi): không lập biên nhận",
+      R.note_turn_event("msg:x:1", b, {"type": "tool_call", "name": "unimate_write_file", "id": "c",
                                        "input": {"path": DELIV, "content": A}}) != "candidate")
 check("P1-1 Write ra ngoài brain: bỏ qua, không lập biên nhận",
       R.note_turn_event("msg:x:2", b, {"type": "tool_call", "name": "Write", "id": "c",

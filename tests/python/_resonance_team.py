@@ -1,6 +1,6 @@
 """Helper chung cho test Resonance A5 (đội một agent làm, một agent review). Kho SQLite thật, engine GIẢ có hai vai
 (phân theo lời dặn hệ thống của lượt: lượt review dùng `R.REVIEW_SYSTEM`), đồng hồ giả. Mục tiêu tạo qua `form_goal` thật
-(đúng đường của tool javis_goal và /goal-requests), chạy qua `R.tick` và `R.advance` thật. Không gọi model thật."""
+(đúng đường của tool unimate_goal và /goal-requests), chạy qua `R.tick` và `R.advance` thật. Không gọi model thật."""
 from __future__ import annotations
 
 import asyncio
@@ -88,7 +88,7 @@ class Team:
 
     def __init__(self, state: Path, name: str, pair: bool = True):
         self.brain = str(Path(tempfile.mkdtemp(prefix=f"brain-a5-{name}-")).resolve())
-        (Path(self.brain) / "Javis").mkdir(parents=True)
+        (Path(self.brain) / "UNI MATE").mkdir(parents=True)
         self.state = state
         self.name = name
         self.store = RS.GoalStore(state / f"{name}.sqlite3")
@@ -119,7 +119,7 @@ class Team:
 
     def deps(self):
         return R.GoalDeps(engine_factory=self.factory, budget=R.CallBudget(0), clock=self.clock, store=self.store,
-                          principal=RS.Principal("agent", "javis", self.brain), brain_root=self.brain, evidence=self.ev,
+                          principal=RS.Principal("agent", "unimate", self.brain), brain_root=self.brain, evidence=self.ev,
                           notify=_notes)
 
     def reopen(self):

@@ -1,10 +1,10 @@
-"""Groq siết BỐN chiều cùng lúc, và Javis từng gộp cả bốn vào một rọ.
+"""Groq siết BỐN chiều cùng lúc, và UNI MATE từng gộp cả bốn vào một rọ.
 
     python tests/run.py groq_bon_han_muc
 
 Câu chủ repo nhìn thấy trên màn hình (0.12.4):
 
-    "groq báo request quá lớn. Javis đã tự rút gọn ngữ cảnh và thử lại một lần nhưng vẫn
+    "groq báo request quá lớn. UNI MATE đã tự rút gọn ngữ cảnh và thử lại một lần nhưng vẫn
      không vừa. Lượt này cần khoảng 0 token, trong khi groq giới hạn 12,000 token mỗi phút."
 
 Ba thứ sai trong đúng một câu đó:
@@ -26,7 +26,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-groq4-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-groq4-")
 
 import adaptive_context_runtime as acr  # noqa: E402
 import config as cfg  # noqa: E402
@@ -109,7 +109,7 @@ check("[ngày] nói rõ là hạn mức theo NGÀY", "NGÀY" in _m)
 # Đây là chỗ bản trước chỉ sai đường cho người đang bí.
 check("CANARY: [ngày] nói THẲNG rút gọn không giúp gì", "không giúp gì" in _m)
 check("[ngày] chỉ ra lối ra có thật", "sang ngày" in _m and "Models" in _m)
-check("[ngày] KHÔNG bảo Javis đã tự rút gọn", "đã tự rút gọn" not in _m)
+check("[ngày] KHÔNG bảo UNI MATE đã tự rút gọn", "đã tự rút gọn" not in _m)
 
 _m = _noi(_groq("requests per minute (RPM)", 30, 30, 1))
 check("[lượt/phút] nói đúng đơn vị là số lượt", "số lượt mỗi phút" in _m)

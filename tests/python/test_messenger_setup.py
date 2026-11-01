@@ -20,7 +20,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-messenger-setup-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-messenger-setup-")
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -47,7 +47,7 @@ USER_SHORT = "EAAuser" + "s" * 60
 USER_LONG = "EAAuser" + "l" * 60
 PAGE_TOKEN = "EAApage" + "p" * 60
 OTHER_PAGE_TOKEN = "EAAother" + "o" * 60
-URL = "https://javis.example.com/messenger/webhook"
+URL = "https://unimate.example.com/messenger/webhook"
 ALL_SCOPES = ["pages_messaging", "pages_manage_metadata", "pages_read_engagement", "pages_show_list"]
 
 
@@ -217,7 +217,7 @@ real_connect = messenger_setup.connect
 messenger_setup.connect = fake_connect
 # Behind the HTTPS tunnel the server sees localhost plus the forwarded headers set by the proxy.
 client = TestClient(main.app, base_url="http://localhost",
-                    headers={"x-forwarded-proto": "https", "x-forwarded-host": "javis.example.com"})
+                    headers={"x-forwarded-proto": "https", "x-forwarded-host": "unimate.example.com"})
 body = {"page_id": PAGE, "app_id": APP, "app_secret": SECRET, "token": USER_SHORT, "label": ""}
 r = client.post("/messenger/connect", json=body)
 d = r.json()

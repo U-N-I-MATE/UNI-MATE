@@ -13,7 +13,7 @@ import localefmt
 
 SPEC = KenhSpec(
     id="messenger", nhan="Messenger", kind="bot", logo="messenger", mau="#0866FF",
-    lay_token=("Cần Javis có tên miền HTTPS. Ở developers.facebook.com tạo app, thêm sản phẩm Messenger, gắn "
+    lay_token=("Cần UNI MATE có tên miền HTTPS. Ở developers.facebook.com tạo app, thêm sản phẩm Messenger, gắn "
                "Fanpage, đặt webhook bằng địa chỉ và mã xác minh hiện bên dưới (tick messages và "
                "messaging_postbacks), rồi dán ba thứ cách nhau dấu cách: Page ID, Page access token, App secret. "
                "Chi tiết: docs/31-messenger.md."),
@@ -21,7 +21,7 @@ SPEC = KenhSpec(
              "trả lời được. Trả lời người ngoài cần app qua xét duyệt quyền pages_messaging của Meta."),
     nang_luc={"nhom": False, "gui_chu": True, "gui_file": True},
     en={
-        "lay_token": ("Javis needs an HTTPS domain. On developers.facebook.com create an app, add the Messenger "
+        "lay_token": ("UNI MATE needs an HTTPS domain. On developers.facebook.com create an app, add the Messenger "
                       "product, connect your Facebook Page, set the webhook with the address and verify token "
                       "shown below (tick messages and messaging_postbacks), then paste three things separated by "
                       "spaces: the Page ID, the Page access token, the App secret. Details: docs/en/31-messenger.md."),

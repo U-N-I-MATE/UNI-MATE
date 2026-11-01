@@ -1,5 +1,5 @@
 # ============================================================================
-# Javis OS - HOSTINGER VPS (Docker Manager). Tên miền + HTTPS qua Traefik có sẵn của Hostinger,
+# UNI MATE - HOSTINGER VPS (Docker Manager). Tên miền + HTTPS qua Traefik có sẵn của Hostinger,
 # hoặc qua Caddy đi kèm (service gateway) khi VPS không có Traefik (mẫu Ubuntu 26 trắng).
 #
 # File này LUÔN deploy được:
@@ -8,23 +8,23 @@
 #
 # CÁCH DÙNG:
 #   1) Docker Manager > Compose > URL > dán:
-#      https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+#      https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.hostinger.yml
 #   2) Ô Environment chỉ còn 4 trường hữu ích:
-#        DOMAIN_NAME, JAVIS_ADMIN_USER, JAVIS_ADMIN_PASSWORD, JAVIS_AUTO_UPDATE.
-#      (JAVIS_AUTO_UPDATE=true thì Javis TỰ cập nhật mỗi ngày, khỏi bấm nút. Bỏ trống thì
+#        DOMAIN_NAME, UNIMATE_ADMIN_USER, UNIMATE_ADMIN_PASSWORD, UNIMATE_AUTO_UPDATE.
+#      (UNIMATE_AUTO_UPDATE=true thì UNI MATE TỰ cập nhật mỗi ngày, khỏi bấm nút. Bỏ trống thì
 #       cập nhật bằng nút "Cập nhật ngay" trong app - xem service watchtower ở dưới.)
-#      (Thêm 2 trường CHỈ CẦN KHI cài bản Javis THỨ HAI trở đi trên cùng VPS - xem cuối file:
-#        JAVIS_NAME, JAVIS_HOST_PORT. Cài bản đầu thì bỏ trống cả hai.)
+#      (Thêm 2 trường CHỈ CẦN KHI cài bản UNI MATE THỨ HAI trở đi trên cùng VPS - xem cuối file:
+#        UNIMATE_NAME, UNIMATE_HOST_PORT. Cài bản đầu thì bỏ trống cả hai.)
 #      Đặt DOMAIN_NAME để có HTTPS:
-#        - Link miễn phí (KHÔNG cần mua tên miền):  DOMAIN_NAME=javis.<hostname-vps>.hstgr.cloud
-#          (hostname xem ở hPanel > VPS, vd: DOMAIN_NAME=javis.srv1782015.hstgr.cloud)
+#        - Link miễn phí (KHÔNG cần mua tên miền):  DOMAIN_NAME=unimate.<hostname-vps>.hstgr.cloud
+#          (hostname xem ở hPanel > VPS, vd: DOMAIN_NAME=unimate.srv1782015.hstgr.cloud)
 #        - Hoặc tên miền riêng:  DOMAIN_NAME=tenmien.com  (trỏ DNS A về IP VPS trước).
 #   3) Deploy > đợi 1-3 phút Traefik (hoặc gateway) cấp SSL > mở  https://<DOMAIN_NAME>.
 #
 # KHÔNG tìm thấy ô Environment? Bấm Manage > sửa .yaml, đổi hai dòng nhãn traefik.enable và ...rule thành:
 #      - traefik.enable=true
-#      - traefik.http.routers.javis.rule=Host(`javis.srv1782015.hstgr.cloud`)   (thay bằng hostname VPS của bạn).
-# Không biết hostname VPS? Mở Javis bằng http://<ip>:7777 > Cài đặt > Tên miền: Javis hiện sẵn dòng DOMAIN_NAME=...
+#      - traefik.http.routers.unimate.rule=Host(`unimate.srv1782015.hstgr.cloud`)   (thay bằng hostname VPS của bạn).
+# Không biết hostname VPS? Mở UNI MATE bằng http://<ip>:7777 > Cài đặt > Tên miền: UNI MATE hiện sẵn dòng DOMAIN_NAME=...
 #
 # GHI CHÚ:
 #   - Mấu chốt: KHÔNG khai báo networks - Traefik của Hostinger tự thấy container qua nhãn.
@@ -34,64 +34,64 @@
 #     ở dưới tự thấy cổng 80/443 trống và cấp HTTPS cho DOMAIN_NAME bằng Caddy. Cần Docker (hPanel cài sẵn khi
 #     mở Docker Manager, hoặc: curl -fsSL https://get.docker.com | sh) và mở cổng 80, 443 ở tường lửa.
 #   - VPS KHÔNG phải Hostinger: bỏ file này, dùng docker-compose.yml + docker-compose.https.yml (Caddy).
-#   - Image GHCR phải để PUBLIC (GitHub > Packages > javis-os > Package settings > Public).
+#   - Image GHCR phải để PUBLIC (GitHub > Packages > UNI-MATE > Package settings > Public).
 # ============================================================================
 services:
-  javis:
-    image: ghcr.io/blogminhquy/javis-os:latest
-    # Tên container + tên router/service Traefik đều lấy từ JAVIS_NAME. Bỏ trống = "javis" như cũ.
-    # Cài bản THỨ HAI trên cùng VPS thì đặt tên khác (vd javis-shop), nếu không Docker báo tên đã
+  unimate:
+    image: ghcr.io/u-n-i-mate/uni-mate:latest
+    # Tên container + tên router/service Traefik đều lấy từ UNIMATE_NAME. Bỏ trống = "unimate" như cũ.
+    # Cài bản THỨ HAI trên cùng VPS thì đặt tên khác (vd unimate-shop), nếu không Docker báo tên đã
     # dùng và Traefik có hai router trùng tên nên chỉ lái được về một bản.
-    container_name: ${JAVIS_NAME:-javis}
+    container_name: ${UNIMATE_NAME:-unimate}
     restart: unless-stopped
     pull_policy: always
     # Gắn target Hostinger bên trong lệnh chạy để KHÔNG biến nó thành một trường rác
     # trong ô Environment của Docker Manager.
-    command: ["sh", "-c", "JAVIS_DEPLOY_TARGET=hostinger exec python -m uvicorn main:app --app-dir server --host 0.0.0.0 --port 7777"]
+    command: ["sh", "-c", "UNIMATE_DEPLOY_TARGET=hostinger exec python -m uvicorn main:app --app-dir server --host 0.0.0.0 --port 7777"]
     environment:
       # Chỉ giữ các trường người cài thực sự cần. Cổng/đường dẫn/state/brain đã có
       # mặc định đúng trong Docker image, không cần hiện thành một loạt ô kỹ thuật.
       DOMAIN_NAME: ${DOMAIN_NAME:-localhost}
-      JAVIS_ADMIN_USER: ${JAVIS_ADMIN_USER:-admin}
-      JAVIS_ADMIN_PASSWORD: ${JAVIS_ADMIN_PASSWORD:-}
+      UNIMATE_ADMIN_USER: ${UNIMATE_ADMIN_USER:-admin}
+      UNIMATE_ADMIN_PASSWORD: ${UNIMATE_ADMIN_PASSWORD:-}
       # Chung một token với service watchtower bên dưới -> nút "Cập nhật ngay" gọi được nó.
       # ĐÓNG CỨNG chứ không lấy từ biến, có lý do: mỗi `${...}` trong file này đẻ thêm một ô
       # trong form Environment của Docker Manager, mà token này không ai cần đổi - cổng 8080 của
       # Watchtower không publish ra ngoài, chỉ container trong cùng stack gọi tới được.
       # Muốn token riêng thì dùng docker-compose.yml (bản VPS), nó nhận biến WATCHTOWER_TOKEN.
-      WATCHTOWER_TOKEN: javis-update
+      WATCHTOWER_TOKEN: unimate-update
     ports:
       # Đường vào dự phòng (nút Open / http://<ip>:7777). Bản thứ hai PHẢI đổi cổng này
-      # (JAVIS_HOST_PORT=7778) vì một cổng máy chủ chỉ một container giữ được.
-      - "${JAVIS_HOST_PORT:-7777}:7777"
+      # (UNIMATE_HOST_PORT=7778) vì một cổng máy chủ chỉ một container giữ được.
+      - "${UNIMATE_HOST_PORT:-7777}:7777"
     labels:
       # Guide (Documentation / Quick start) trong Docker Manager - trỏ docs GitHub.
-      - org.opencontainers.image.documentation=https://github.com/blogminhquy/javis-os/blob/main/docs/README.md
-      - org.opencontainers.image.source=https://github.com/blogminhquy/javis-os
-      - com.hostinger.documentation=https://github.com/blogminhquy/javis-os/blob/main/docs/README.md
-      - com.hostinger.quickstart=https://github.com/blogminhquy/javis-os/blob/main/QUICKSTART.md
-      # Router/service mang TÊN CỦA BẢN (JAVIS_NAME) chứ không đóng cứng "javis": Traefik đặt tên
+      - org.opencontainers.image.documentation=https://github.com/U-N-I-MATE/UNI-MATE/blob/main/docs/README.md
+      - org.opencontainers.image.source=https://github.com/U-N-I-MATE/UNI-MATE
+      - com.hostinger.documentation=https://github.com/U-N-I-MATE/UNI-MATE/blob/main/docs/README.md
+      - com.hostinger.quickstart=https://github.com/U-N-I-MATE/UNI-MATE/blob/main/QUICKSTART.md
+      # Router/service mang TÊN CỦA BẢN (UNIMATE_NAME) chứ không đóng cứng "unimate": Traefik đặt tên
       # router theo phạm vi toàn máy, hai bản cùng tên router là bản sau đè bản trước và một
-      # trong hai tên miền chết. Bỏ trống JAVIS_NAME thì vẫn ra "javis" y như trước.
+      # trong hai tên miền chết. Bỏ trống UNIMATE_NAME thì vẫn ra "unimate" y như trước.
       # Host = ${DOMAIN_NAME}. 0.302.0: CHƯA đặt DOMAIN_NAME thì hai nhãn dưới RỖNG thay vì Host(`localhost`).
       # Nút Open của hPanel mở đúng tên miền trong nhãn Host(...) cụ thể; bản cũ để "localhost" nên bấm Open là ra
       # localhost trên máy người bấm (chủ repo báo 24/10/2026). Không có Host cụ thể thì hPanel rơi về cổng đã publish,
       # tức http://<ip-vps>:7777. Nhãn traefik.enable rỗng làm Traefik bỏ qua container, nên cũng không còn route nào
       # cho "localhost". Cú pháp ":+" của compose: chỉ ra chữ khi DOMAIN_NAME có giá trị.
       - traefik.enable=${DOMAIN_NAME:+true}
-      - traefik.http.routers.${JAVIS_NAME:-javis}.rule=${DOMAIN_NAME:+Host(`}${DOMAIN_NAME:-}${DOMAIN_NAME:+`)}
-      - traefik.http.routers.${JAVIS_NAME:-javis}.entrypoints=websecure
-      - traefik.http.routers.${JAVIS_NAME:-javis}.tls.certresolver=letsencrypt
-      - traefik.http.routers.${JAVIS_NAME:-javis}.service=${JAVIS_NAME:-javis}
-      - traefik.http.services.${JAVIS_NAME:-javis}.loadbalancer.server.port=7777
+      - traefik.http.routers.${UNIMATE_NAME:-unimate}.rule=${DOMAIN_NAME:+Host(`}${DOMAIN_NAME:-}${DOMAIN_NAME:+`)}
+      - traefik.http.routers.${UNIMATE_NAME:-unimate}.entrypoints=websecure
+      - traefik.http.routers.${UNIMATE_NAME:-unimate}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${UNIMATE_NAME:-unimate}.service=${UNIMATE_NAME:-unimate}
+      - traefik.http.services.${UNIMATE_NAME:-unimate}.loadbalancer.server.port=7777
     volumes:
-      - javis-data:/data
-      - javis-brains:/brains
-      - claude-auth:/home/javis/.claude
-      - codex-auth:/home/javis/.codex
+      - unimate-data:/data
+      - unimate-brains:/brains
+      - claude-auth:/home/unimate/.claude
+      - codex-auth:/home/unimate/.codex
       - gateway-status:/gateway:ro   # 0.304.0: trạng thái service gateway bên dưới (chỉ đọc)
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request,os,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:'+os.getenv('JAVIS_PORT','7777')+'/health',timeout=4).status==200 else 1)"]
+      test: ["CMD", "python", "-c", "import urllib.request,os,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:'+os.getenv('UNIMATE_PORT','7777')+'/health',timeout=4).status==200 else 1)"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -113,43 +113,43 @@ services:
   # để bản v2 (sẽ bỏ các biến HTTP API kiểu cũ) không tự lọt vào làm chết nút lần nữa.
   # ĐỪNG vá bằng DOCKER_API_VERSION=1.40 trên image cũ: Docker còn nâng mức tối thiểu tiếp.
   #
-  # Điều KHÔNG đổi: container javis ở trên CHẠY BÌNH THƯỜNG dù Watchtower hỏng. Nó là một
+  # Điều KHÔNG đổi: container unimate ở trên CHẠY BÌNH THƯỜNG dù Watchtower hỏng. Nó là một
   # container RIÊNG, hỏng thì chỉ mất cái nút, không kéo theo app. Gặp "Partially running" thì
-  # mở log container `javis-watchtower`; không sửa được thì cập nhật bằng REDEPLOY y như trước,
+  # mở log container `unimate-watchtower`; không sửa được thì cập nhật bằng REDEPLOY y như trước,
   # trang Cập nhật trong app cũng tự nói ra điều đó.
   watchtower:
     image: ghcr.io/nicholas-fedor/watchtower:1
-    container_name: ${JAVIS_NAME:-javis}-watchtower
+    container_name: ${UNIMATE_NAME:-unimate}-watchtower
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       WATCHTOWER_HTTP_API_ENDPOINTS: update                 # nhận lệnh cập nhật từ nút bấm
-      WATCHTOWER_HTTP_API_TOKEN: javis-update               # khớp WATCHTOWER_TOKEN của app ở trên
+      WATCHTOWER_HTTP_API_TOKEN: unimate-update               # khớp WATCHTOWER_TOKEN của app ở trên
       # TỰ tìm bản mới rồi dựng lại, KHÔNG chờ ai bấm nút. Đây là ô Environment thứ TƯ, và là
       # `${...}` duy nhất được thêm vào file này - vì nó là một LỰA CHỌN của người cài, không
-      # phải mặc định kỹ thuật: bật lên là Javis tự khởi động lại bất cứ lúc nào có bản mới,
+      # phải mặc định kỹ thuật: bật lên là UNI MATE tự khởi động lại bất cứ lúc nào có bản mới,
       # cắt ngang việc nền và phiên chat đang chạy. Bỏ trống = tắt, cập nhật bằng nút bấm.
-      WATCHTOWER_HTTP_API_PERIODIC_POLLS: ${JAVIS_AUTO_UPDATE:-false}
+      WATCHTOWER_HTTP_API_PERIODIC_POLLS: ${UNIMATE_AUTO_UPDATE:-false}
       WATCHTOWER_POLL_INTERVAL: 86400                       # 24h, chỉ có tác dụng khi bật ở trên
       WATCHTOWER_CLEANUP: "true"                            # dọn image cũ sau khi update
     # KHÔNG gắn nhãn traefik.*: đây là container nội bộ, không có gì để mở ra Internet.
     labels:
       - traefik.enable=false
-    # Theo dõi ĐÚNG container của bản này. Ghi cứng "javis" thì trên VPS có hai bản, Watchtower
+    # Theo dõi ĐÚNG container của bản này. Ghi cứng "unimate" thì trên VPS có hai bản, Watchtower
     # của bản này sẽ đi cập nhật và restart container của bản kia.
-    command: ${JAVIS_NAME:-javis}
+    command: ${UNIMATE_NAME:-unimate}
 
   # ------------------------------------------------------------------------
   # HTTPS KHI VPS KHÔNG CÓ TRAEFIK CỦA HOSTINGER (0.300.0).
   #
   # Chủ repo hỏi 24/10/2026: mẫu "Ubuntu 24 + Docker" của Hostinger có sẵn Traefik giữ cổng 80/443 và cấp SSL qua
   # nhãn traefik.* ở trên, còn mẫu Ubuntu 26 trắng thì không có Traefik nào. Trước bản này, dán link compose lên máy
-  # Ubuntu 26 là Javis chạy nhưng DOMAIN_NAME không bao giờ có HTTPS (không ai đọc nhãn traefik.*), và muốn có thì
+  # Ubuntu 26 là UNI MATE chạy nhưng DOMAIN_NAME không bao giờ có HTTPS (không ai đọc nhãn traefik.*), và muốn có thì
   # phải biết tự ghép thêm file Caddy. Giờ MỘT link dùng được cho cả hai:
   #   - Có proxy khác đang giữ 80/443 (Traefik của Hostinger) -> gateway đứng yên, Traefik cấp SSL như trước.
   #   - Cổng 80/443 trống (Ubuntu 26, VPS trắng) -> gateway chạy Caddy, tự xin + tự gia hạn Let's Encrypt cho
-  #     DOMAIN_NAME rồi chuyển vào Javis ở cổng ${JAVIS_HOST_PORT:-7777} của máy.
+  #     DOMAIN_NAME rồi chuyển vào UNI MATE ở cổng ${UNIMATE_HOST_PORT:-7777} của máy.
   #   - Chưa đặt DOMAIN_NAME -> gateway đứng yên, vào bằng http://<ip>:7777 như cũ.
   #
   # Vì sao network_mode: host chứ không publish "80:80"/"443:443": publish cổng mà Traefik đang giữ thì Docker báo
@@ -158,35 +158,35 @@ services:
   # (gỡ Traefik đi là gateway tự nhận việc, không phải Redeploy).
   #
   # Caddy chỉ xin chứng chỉ cho ĐÚNG DOMAIN_NAME (không on-demand), nên kẻ trỏ DNS bừa vào IP không ép được nó xin
-  # cert lung tung. Không thêm ô nào vào form Environment: chỉ đọc DOMAIN_NAME và JAVIS_HOST_PORT đã có sẵn.
-  # Nhiều bản Javis trên một VPS KHÔNG có Traefik: gateway của bản đầu giữ 80/443, bản sau đứng yên -> bản sau dùng
+  # cert lung tung. Không thêm ô nào vào form Environment: chỉ đọc DOMAIN_NAME và UNIMATE_HOST_PORT đã có sẵn.
+  # Nhiều bản UNI MATE trên một VPS KHÔNG có Traefik: gateway của bản đầu giữ 80/443, bản sau đứng yên -> bản sau dùng
   # docker-compose.proxy.yml (proxy dùng chung), xem DEPLOY.md.
   gateway:
     image: caddy:2-alpine
-    container_name: ${JAVIS_NAME:-javis}-gateway
+    container_name: ${UNIMATE_NAME:-unimate}-gateway
     restart: unless-stopped
     network_mode: host
     # 0.302.0: the VPS's own hostname (srv<id>.hstgr.cloud) is visible here, so with DOMAIN_NAME empty the gateway
-    # still gets a link: javis.srv<id>.hstgr.cloud. Hostinger never tells a pasted compose that name at install time.
+    # still gets a link: unimate.srv<id>.hstgr.cloud. Hostinger never tells a pasted compose that name at install time.
     uts: host
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME:-localhost}
-      JAVIS_HOST_PORT: ${JAVIS_HOST_PORT:-7777}
-      JAVIS_NAME: ${JAVIS_NAME:-javis}
+      UNIMATE_HOST_PORT: ${UNIMATE_HOST_PORT:-7777}
+      UNIMATE_NAME: ${UNIMATE_NAME:-unimate}
     entrypoint:
       - /bin/sh
       - -c
       - |
         D="$${DOMAIN_NAME:-localhost}"
-        P="$${JAVIS_HOST_PORT:-7777}"
+        P="$${UNIMATE_HOST_PORT:-7777}"
         nghi() { while :; do sleep 3600; done; }
         S="/status/gateway.txt"
         ghi() { mkdir -p /status 2>/dev/null; printf 'state=%s\nnames=%s\n' "$$1" "$$2" > "$$S" 2>/dev/null || true; }
         # Chua dat DOMAIN_NAME: lay ten VPS Hostinger (srv<so>.hstgr.cloud) lam link. 0.304.0: KHONG doan qua DNS nua.
         # Ban 0.302.0 so dia chi bang getent, ma getent doc /etc/hosts cua VPS truoc (Ubuntu ghi ten may -> 127.0.1.1),
-        # nen Caddy xin cert cho srv<so>.hstgr.cloud con Javis lai cho javis.srv<so>.hstgr.cloud: lech nhau, khong ai
+        # nen Caddy xin cert cho srv<so>.hstgr.cloud con UNI MATE lai cho unimate.srv<so>.hstgr.cloud: lech nhau, khong ai
         # duoc chuyen sang https (chu repo bao 24/10/2026). Gio Caddy phuc vu CA HAI ten (<ten-ban>.<may> va, voi ban
-        # mac dinh, chinh ten may); ten nao DNS tro ve may thi co cert. Danh sach ghi vao $$S de Javis thu dung cac ten nay.
+        # mac dinh, chinh ten may); ten nao DNS tro ve may thi co cert. Danh sach ghi vao $$S de UNI MATE thu dung cac ten nay.
         if [ "$$D" = "localhost" ] || [ -z "$$D" ]; then
           M="$$( (hostname -f 2>/dev/null || hostname) | tr 'A-Z' 'a-z')"
           case "$$M" in
@@ -194,10 +194,10 @@ services:
             srv[0-9]*) case "$$M" in *.*) M="";; *) M="$$M.hstgr.cloud";; esac;;
             *) M="";;
           esac
-          N="$$(echo "$${JAVIS_NAME:-javis}" | tr 'A-Z' 'a-z' | tr -c 'a-z0-9-\n' '-')"
+          N="$$(echo "$${UNIMATE_NAME:-unimate}" | tr 'A-Z' 'a-z' | tr -c 'a-z0-9-\n' '-')"
           if [ -n "$$M" ]; then
             D="$$N.$$M"
-            [ "$$N" = "javis" ] && D="$$D $$M"
+            [ "$$N" = "unimate" ] && D="$$D $$M"
             echo "[gateway] Chua dat DOMAIN_NAME: dung link cua VPS $$D"
           fi
         fi
@@ -227,21 +227,21 @@ services:
     volumes:
       - gateway-data:/data       # chứng chỉ đã cấp - giữ qua Redeploy, không xin lại (tránh cạn rate-limit)
       - gateway-config:/config
-      # 0.304.0: gateway ghi nó đang làm gì (idle / busy / serving + các tên) vào đây; Javis đọc (chỉ đọc) để trang IP
+      # 0.304.0: gateway ghi nó đang làm gì (idle / busy / serving + các tên) vào đây; UNI MATE đọc (chỉ đọc) để trang IP
       # chuyển đúng sang tên Caddy đã xin cert, và Cài đặt > Tên miền nói rõ gateway đang ở bước nào.
       - gateway-status:/status
     labels:
       - traefik.enable=false
 
 # ============================================================================
-# NHIỀU BẢN JAVIS TRÊN CÙNG MỘT VPS HOSTINGER
+# NHIỀU BẢN UNI MATE TRÊN CÙNG MỘT VPS HOSTINGER
 #
 # Deploy compose này THÊM MỘT LẦN NỮA (stack mới trong Docker Manager), đổi CẢ BA:
-#   Stack 1:  DOMAIN_NAME=shop.srv1782015.hstgr.cloud    JAVIS_NAME=(trống)     JAVIS_HOST_PORT=(trống)
-#   Stack 2:  DOMAIN_NAME=canhan.srv1782015.hstgr.cloud  JAVIS_NAME=javis-canhan  JAVIS_HOST_PORT=7778
+#   Stack 1:  DOMAIN_NAME=shop.srv1782015.hstgr.cloud    UNIMATE_NAME=(trống)     UNIMATE_HOST_PORT=(trống)
+#   Stack 2:  DOMAIN_NAME=canhan.srv1782015.hstgr.cloud  UNIMATE_NAME=unimate-canhan  UNIMATE_HOST_PORT=7778
 #
-# Cả ba giá trị phải khác nhau giữa các stack. Trùng JAVIS_NAME -> Docker báo tên container đã
-# dùng; trùng JAVIS_HOST_PORT -> báo cổng đã bị chiếm; trùng DOMAIN_NAME -> hai bản giành nhau
+# Cả ba giá trị phải khác nhau giữa các stack. Trùng UNIMATE_NAME -> Docker báo tên container đã
+# dùng; trùng UNIMATE_HOST_PORT -> báo cổng đã bị chiếm; trùng DOMAIN_NAME -> hai bản giành nhau
 # một link. Wildcard DNS *.hstgr.cloud của Hostinger có sẵn nên tên miền phụ nào cũng trỏ được ngay.
 #
 # Mỗi stack có volume riêng, nên state / brain / tài khoản admin / token đăng nhập Claude đều
@@ -252,7 +252,7 @@ volumes:
   gateway-status:
   gateway-data:
   gateway-config:
-  javis-data:
-  javis-brains:
+  unimate-data:
+  unimate-brains:
   claude-auth:
   codex-auth:

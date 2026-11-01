@@ -31,7 +31,7 @@ class TaskSkillConsumerTests(unittest.TestCase):
 
     def handler(self):
         _, routes = mcp_hub._builtin_tools('full', self.brain)
-        return routes['javis_use_skill']['call']
+        return routes['unimate_use_skill']['call']
 
     @contextmanager
     def bound_here(self):
@@ -122,13 +122,13 @@ class TaskSkillConsumerTests(unittest.TestCase):
             self.path.write_bytes(self.original.replace(b'Bao cao du lieu', b'Frozen task description'))
             with self.bound_here() as scope:
                 tools, routes = await mcp_hub.discover_all(**options)
-                description = next(tool['description'] for tool in tools if tool['fn'] == 'javis_use_skill')
+                description = next(tool['description'] for tool in tools if tool['fn'] == 'unimate_use_skill')
                 self.assertIn('Frozen task description', description)
                 self.assertEqual(mcp_hub._cache, global_cache, 'private descriptor must never update global cache')
                 second_tools, second_routes = await mcp_hub.discover_all(**options)
                 self.assertIs(second_tools, tools); self.assertIs(second_routes, routes)
                 inventory, _ = mcp_hub.registry_inventory(**options)
-                self.assertIn('Frozen task description', next(t['description'] for t in inventory if t['fn'] == 'javis_use_skill'))
+                self.assertIn('Frozen task description', next(t['description'] for t in inventory if t['fn'] == 'unimate_use_skill'))
                 scope.close()
                 with self.assertRaises(self.m.ScopeUnavailable): await mcp_hub.discover_all(**options)
         with patch.object(mcp_hub, '_cache', {}), \

@@ -13,7 +13,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-capstest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-capstest-"))
 
 import skill_router  # noqa: E402
 import system_sync  # noqa: E402
@@ -54,7 +54,7 @@ check("KHÔNG bắt 'Dùng khi cần' (mở đầu hợp lệ, ngắn)",
       v("Dùng khi cần tạo ảnh minh hoạ phong cách flat 2D") is None)
 
 # ---- _meta_of fallback dùng chung trần ----
-tmp = Path(tempfile.mkdtemp(prefix="javis-capsbrain-"))
+tmp = Path(tempfile.mkdtemp(prefix="unimate-capsbrain-"))
 d = tmp / "skills" / "khong-co-desc"
 d.mkdir(parents=True)
 (d / "SKILL.md").write_text("---\nname: Không mô tả\n---\n" + ("y" * 400) + "\n",
@@ -78,14 +78,14 @@ def _region(path, start_marker, end_marker):
 
 
 hub = _region("mcp_hub.py", "metas = skill_router.list_enabled_meta(vault_root",
-              'add("javis_use_skill"')
+              'add("unimate_use_skill"')
 check("mcp_hub không còn literal [:60]", "[:60]" not in hub)
 check("mcp_hub không còn literal 20", "20" not in hub)
 check("mcp_hub dùng SKILL_DESC_MAX", "SKILL_DESC_MAX" in hub)
 check("mcp_hub cắt theo ngân sách", "cat_theo_ngan_sach" in hub)
 check("mcp_hub xếp theo ưu tiên trước khi cắt", "xep_theo_uu_tien" in hub)
 
-blk = _region("main.py", "def _skill_router_block", "@app.get(\"/javis/index\")")
+blk = _region("main.py", "def _skill_router_block", "@app.get(\"/unimate/index\")")
 check("main không còn literal [:100]", "[:100]" not in blk)
 check("main không còn literal 15", "15" not in blk)
 check("main dùng SKILL_DESC_MAX", "SKILL_DESC_MAX" in blk)
@@ -251,7 +251,7 @@ if callable(_fm_fn):
         ("dấu hai chấm (bug thật, 2/5 skill hệ thống dính)",
          "Khai thác tri thức", "Khai thác tri thức: tổng hợp, so sánh.", "AI"),
         ("hai chấm trong CẢ name/group (không chỉ description)",
-         "Bộ dựng: Javis", "Tạo năng lực cho Javis.", "Vận hành: nội bộ"),
+         "Bộ dựng: UNI MATE", "Tạo năng lực cho UNI MATE.", "Vận hành: nội bộ"),
         ("ký tự # (YAML hiểu là chú thích)",
          "Tạo ảnh", "Tạo ảnh #minhhoa theo mô tả.", "Nội dung"),
         ("gạch nối đầu dòng (YAML hiểu là list item)",
@@ -278,7 +278,7 @@ if callable(_fm_fn):
     # Trường của CHÚNG TA (không do model kiểm soát) vẫn phải đúng sau khi bọc nháy.
     _fm = _fm_fn("Tên", "Mô tả: có hai chấm.", "AI", "2026-07-17")
     _meta, _ = skill_router.split_frontmatter(_fm + "thân\n")
-    check("frontmatter giữ origin: javis-learned", _meta.get("origin") == "javis-learned")
+    check("frontmatter giữ origin: unimate-learned", _meta.get("origin") == "unimate-learned")
     check("frontmatter giữ status: active", _meta.get("status") == "active")
     check("frontmatter có created", bool(_meta.get("created")))
     # Thứ tự trường phải giữ nguyên (name, description, group, origin, status, created) để
@@ -292,7 +292,7 @@ if callable(_fm_fn):
     # check round-trip ở trên không còn chứng minh điều gì - và ta muốn biết ngay.
     _old_fm = ("---\nname: Khai thác tri thức\n"
                "description: Khai thác tri thức: tổng hợp, so sánh.\n"
-               "group: AI\norigin: javis-learned\nstatus: active\ncreated: 2026-07-17\n---\n")
+               "group: AI\norigin: unimate-learned\nstatus: active\ncreated: 2026-07-17\n---\n")
     _old_meta, _ = skill_router.split_frontmatter(_old_fm + "thân\n")
     check("CANARY: dạng CŨ (không bọc nháy) thật sự làm vỡ frontmatter -> check round-trip "
           "ở trên có quyền lực thật, không phải luôn-xanh",

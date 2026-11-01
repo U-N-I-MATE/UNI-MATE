@@ -4,7 +4,7 @@
 
    Người dùng báo 18/09 (KingHoang, qua chủ dự án): "Nghe được ok rồi. Nhưng CHỈ ĐƯỢC 1 LẦN.
    Làm tươi lại web thì lại không nghe được, phải RESET PERMISSION cho mic lại thì mới nghe
-   được tiếp." Và: "mặc dù cấu hình vẫn đang cấp quyền nhưng Javis không nghe được".
+   được tiếp." Và: "mặc dù cấu hình vẫn đang cấp quyền nhưng UNI MATE không nghe được".
 
    Nguyên nhân KHÔNG phải quyền. Trang thu mic bằng HAI đường độc lập: luồng getUserMedia (đo
    mức âm cho hiệu ứng phát sáng, ngắt lời, ghi âm Groq) và SpeechRecognition, thứ thu bằng
@@ -21,7 +21,7 @@
    Ba triệu chứng, một nguyên nhân: cuộc đua giữa hai đường thu mic.
 
    Chữa: trên điện thoại, lúc NGHE chỉ để SpeechRecognition giữ mic. Luồng getUserMedia chỉ
-   sống lúc Javis ĐỌC, là lúc nhận dạng đã bị abort, nên ngắt lời vẫn nguyên vẹn. */
+   sống lúc UNI MATE ĐỌC, là lúc nhận dạng đã bị abort, nên ngắt lời vẫn nguyên vẹn. */
 const fs = require("fs");
 const path = require("path");
 
@@ -74,7 +74,7 @@ function napVoice(SRGia, ua, getUserMedia) {
   const src = fs.readFileSync(path.join(ROOT, "dashboard", "voice.js"), "utf8");
   const AudioGia = function () { return { play: () => Promise.resolve(), setAttribute() {} }; };
   return new Function("window", "localStorage", "navigator", "document", "Audio",
-    src + "; return JavisVoice;")(win, win.localStorage, nav, doc, AudioGia);
+    src + "; return UniMateVoice;")(win, win.localStorage, nav, doc, AudioGia);
 }
 
 const cho = (ms) => new Promise(r => setTimeout(r, ms));
@@ -87,8 +87,8 @@ const UA_PC = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0 Saf
   {
     const { SRGia, d: sr } = nhanDangGia();
     const { getUserMedia, d: mic } = micGia();
-    const JavisVoice = napVoice(SRGia, UA_ANDROID, getUserMedia);
-    const v = new JavisVoice({});
+    const UniMateVoice = napVoice(SRGia, UA_ANDROID, getUserMedia);
+    const v = new UniMateVoice({});
     check("Android: nhận ra là điện thoại", v._laDiDong() === true);
     v.startListening();
     await cho(20);
@@ -105,12 +105,12 @@ const UA_PC = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0 Saf
       sr.soLanStart === 2 && mic.conSong() === 0, `start=${sr.soLanStart} song=${mic.conSong()}`);
   }
 
-  // ---- 2. Android: luồng mic ĐÃ mở (lúc Javis đọc) phải được TRẢ khi quay lại nghe ----
+  // ---- 2. Android: luồng mic ĐÃ mở (lúc UNI MATE đọc) phải được TRẢ khi quay lại nghe ----
   {
     const { SRGia } = nhanDangGia();
     const { getUserMedia, d: mic } = micGia();
-    const JavisVoice = napVoice(SRGia, UA_ANDROID, getUserMedia);
-    const v = new JavisVoice({});
+    const UniMateVoice = napVoice(SRGia, UA_ANDROID, getUserMedia);
+    const v = new UniMateVoice({});
     await v._startMicMeter();               // giả cảnh ngắt lời lúc đọc đã mở luồng mic
     check("Android: lúc đọc thì CÓ mở luồng mic (ngắt lời còn sống)",
       mic.conSong() === 1 && !!v.micStream);
@@ -124,8 +124,8 @@ const UA_PC = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0 Saf
   {
     const { SRGia } = nhanDangGia();
     const { getUserMedia, d: mic } = micGia();
-    const JavisVoice = napVoice(SRGia, UA_ANDROID, getUserMedia);
-    const v = new JavisVoice({});
+    const UniMateVoice = napVoice(SRGia, UA_ANDROID, getUserMedia);
+    const v = new UniMateVoice({});
     v.handsFree = true;
     v.bargeEnabled = true;
     v._giuTaiKhiDoc();                       // đúng thứ _speakNext gọi lúc bắt đầu đọc
@@ -147,10 +147,10 @@ const UA_PC = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0 Saf
         resolve({ getTracks: () => [t] });
       };
     });
-    const JavisVoice = napVoice(SRGia, UA_ANDROID, getUserMedia);
-    const v = new JavisVoice({});
+    const UniMateVoice = napVoice(SRGia, UA_ANDROID, getUserMedia);
+    const v = new UniMateVoice({});
     v.handsFree = true; v.bargeEnabled = true;
-    v._giuTaiKhiDoc();                       // Javis bắt đầu đọc -> xin mic, nhưng còn treo
+    v._giuTaiKhiDoc();                       // UNI MATE bắt đầu đọc -> xin mic, nhưng còn treo
     await cho(5);
     v.startListening();                      // đọc xong, quay lại nghe TRONG LÚC còn treo
     await cho(5);
@@ -165,8 +165,8 @@ const UA_PC = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0 Saf
   {
     const { SRGia } = nhanDangGia();
     const { getUserMedia, d: mic } = micGia();
-    const JavisVoice = napVoice(SRGia, UA_IPHONE, getUserMedia);
-    const v = new JavisVoice({});
+    const UniMateVoice = napVoice(SRGia, UA_IPHONE, getUserMedia);
+    const v = new UniMateVoice({});
     check("iPhone: nhận ra là điện thoại", v._laDiDong() === true);
     v.startListening();
     await cho(20);
@@ -177,8 +177,8 @@ const UA_PC = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0 Saf
   {
     const { SRGia, d: sr } = nhanDangGia();
     const { getUserMedia, d: mic } = micGia();
-    const JavisVoice = napVoice(SRGia, UA_PC, getUserMedia);
-    const v = new JavisVoice({});
+    const UniMateVoice = napVoice(SRGia, UA_PC, getUserMedia);
+    const v = new UniMateVoice({});
     check("PC: KHÔNG bị coi là điện thoại", v._laDiDong() === false);
     v.startListening();
     await cho(20);

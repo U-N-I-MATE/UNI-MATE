@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS only. Never modify/reset/clean D:/Project/Javis-OS; its .venv Python may execute with -B. VERSION0.299.0 unchanged; English code/comments/commits, existing bilingual UI untouched.
+- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE only. Never modify/reset/clean D:/Project/UNI-MATE; its .venv Python may execute with -B. VERSION0.299.0 unchanged; English code/comments/commits, existing bilingual UI untouched.
 - Goal18 ends current Goal at M2 engineering plus committed/integrated Claude Opus5.5 handoff. No M3–M8/recipe/Library expansion, new Goal, actual account/model/business/pilot/canary run, deploy/restart or activation.
 - Preserve existing dictionary/type/isinstance, supported-is-True/hash/error and authority/lease/current-source checks. Reject exactly explicit account_ready is False or domain == qualification through each existing unsupported branch; maps lacking both fields keep existing semantics. No caller readiness/permission escape.
 - Four production files plus one new test module only; no schema/profile seed list/registration/vendor/history/protected reservation-test change, no second executor/ledger. Native source footprint changes remain UNQUALIFIED; no inherited readiness.

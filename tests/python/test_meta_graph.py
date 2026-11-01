@@ -16,7 +16,7 @@ import tempfile
 import urllib.parse
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-metagraph-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-metagraph-"))
 
 _fails = []
 def check(n, c):
@@ -26,11 +26,11 @@ def check(n, c):
 
 # ---- 1. Connector: đã dọn sang kho ----
 # Khuôn connector `meta-ads-graph` rời `system/mcp-catalog.json` ở 0.55.36 và giờ sống trong gói
-# `javis.meta-ads-graph` của repo kho (blogminhquy/javis-store). Những assert về HÌNH DẠNG của nó
+# `unimate.meta-ads-graph` của repo kho (U-N-I-MATE/unimate-store). Những assert về HÌNH DẠNG của nó
 # (provider, scope, fields, default_perm, phân loại tool, chữ cảnh báo) đi theo dữ liệu sang đó:
 # `tools/kiem-tra.py` của repo kho chạy đúng các phép kiểm ấy trên mọi Pull Request.
 #
-# Giữ lại ở đây là giả vờ: dữ liệu đổi được trong kho mà KHÔNG cần bản Javis mới, nên một test
+# Giữ lại ở đây là giả vờ: dữ liệu đổi được trong kho mà KHÔNG cần bản UNI MATE mới, nên một test
 # ở repo này chỉ canh được bản chụp lúc dọn nhà chứ không canh được thứ người dùng thật sự cài.
 # Phần bên dưới - plugin đi kèm - vẫn là mã của app nên vẫn kiểm ở đây.
 

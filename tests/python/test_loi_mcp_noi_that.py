@@ -43,7 +43,7 @@ import mcp_client  # noqa: E402
 sess = mcp_client.McpStdioSession("echo")
 
 # Dựng đúng hình dạng stderr của vụ thật: traceback dài, dòng nguyên nhân ở cuối.
-DONG_CACHE = ('  File "/home/javis/.cache/uv/archive-v0/SAthnrr9ruwms05D/lib/python3.12/'
+DONG_CACHE = ('  File "/home/unimate/.cache/uv/archive-v0/SAthnrr9ruwms05D/lib/python3.12/'
               'site-packages/mcp_google_sheets/__init__.py", line 1, in <module>')
 DONG_NGUYEN_NHAN = "ModuleNotFoundError: No module named 'mcp.server.fastmcp'"
 for i in range(30):

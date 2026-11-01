@@ -10,14 +10,14 @@ Soi ra hai lỗi tách rời nhau, cả hai đều ở tầng THIẾT KẾ chứ
 
 1. NGÕ CỤT CÓ BẢO ĐẢM. Prompt của specifier dặn thẳng: việc cần thao tác ra ngoài thì để mức
    auto "để kernel chặn và xin quyền". Kernel chặn thật - nhưng chưa từng có đường nào để XIN.
-   `javis_task` cố ý từ chối tạo việc mức full, trang Việc không có ô đổi mức quyền, nên lối
+   `unimate_task` cố ý từ chối tạo việc mức full, trang Việc không có ô đổi mức quyền, nên lối
    thoát duy nhất là xoá. Nút "Thử lại" bày ngay đó thì chạy lại đúng nhánh chặn ấy, chặn lại
    y hệt, và kêu thêm một tiếng chuông nữa.
 
 2. NÓI MỘT ĐẰNG CHẠY MỘT NẺO. `prepared()` ghi đè execution_mode bằng thứ specifier trả về.
    Việc tạo mức `suggest` (chỉ đọc, đúng câu tool báo lại cho người dùng) lặng lẽ chạy ở mức
    `auto`; và specifier - cũng chỉ là một model - trả về chuỗi "full" là tự cấp cho mình mức
-   tháo sạch rào, đúng mức mà `javis_task` từ chối tạo và CLAUDE.md bắt phải do người tự đặt.
+   tháo sạch rào, đúng mức mà `unimate_task` từ chối tạo và CLAUDE.md bắt phải do người tự đặt.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -25,7 +25,7 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-viecnen-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-viecnen-"))
 
 from fastapi import FastAPI  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
@@ -80,7 +80,7 @@ check("trần rỗng/lạ vẫn rơi về auto, không thành full", _muc("", "f
 # ============================================================
 # 2. Dựng một bảng việc thật để thử endpoint
 # ============================================================
-_tmp = Path(tempfile.mkdtemp(prefix="javis-viecnen-brain-"))
+_tmp = Path(tempfile.mkdtemp(prefix="unimate-viecnen-brain-"))
 _brain = _tmp / "Brain Test"
 _brain.mkdir(parents=True)
 

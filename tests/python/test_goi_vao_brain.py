@@ -8,7 +8,7 @@ Vì sao ba thứ này cần một test riêng, tách khỏi connector và plugin
 nằm TRONG thư mục gói, gỡ là rmtree và không ai mất gì. Agent, workflow và skill thì sống trong
 BRAIN của người dùng, và brain là nơi họ SỬA.
 
-Nên toàn bộ test này xoay quanh đúng một câu hỏi: **có bao giờ Javis xoá hay ghi đè thứ người
+Nên toàn bộ test này xoay quanh đúng một câu hỏi: **có bao giờ UNI MATE xoá hay ghi đè thứ người
 dùng viết không.** Trả lời sai câu đó là loại lỗi tệ nhất một trình cài có thể gây ra - gói cài
 lại được trong ba giây, còn thứ họ viết thì không.
 
@@ -216,7 +216,7 @@ check("gói cộng đồng có cảnh báo riêng trên màn hình xác nhận",
       and "chưa qua " in _VI.get("store.inspect.community.body", "")
       and "kiểm duyệt" in _VI.get("store.inspect.community.body", ""))
 check("màn hình xác nhận nói rõ gói ghi gì vào bộ não", "vaultTom" in src_js)
-check("và nói rõ Javis giữ bản của bạn khi trùng tên",
+check("và nói rõ UNI MATE giữ bản của bạn khi trùng tên",
       'tw("store.inspect.vault_note")' in src_js
       and "giữ bản của bạn" in _VI.get("store.inspect.vault_note", ""))
 check("hộp gỡ nói rõ thứ giữ lại vì đã sửa",

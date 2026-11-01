@@ -1,4 +1,4 @@
-# Update triệt để cho Javis OS - Implementation Plan
+# Update triệt để cho UNI MATE - Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -14,10 +14,10 @@
 - Tiếng Việt cho comment + chuỗi hiển thị.
 - Test là script standalone chạy `cd server && .venv\Scripts\python.exe test_update.py` (KHÔNG pytest), theo khuôn `check(name, cond)` + `sys.exit(1)` khi có FAIL (xem `server/test_path_exists.py`).
 - Chạy test bằng `.venv` (python hệ thống thiếu lib).
-- `config.STATE_DIR = Path(os.getenv("JAVIS_STATE_DIR", <server dir>))`. Test set `JAVIS_STATE_DIR` sang temp TRƯỚC khi import module.
+- `config.STATE_DIR = Path(os.getenv("UNIMATE_STATE_DIR", <server dir>))`. Test set `UNIMATE_STATE_DIR` sang temp TRƯỚC khi import module.
 - App trong Docker KHÔNG có docker socket - không tự đổi/lùi image (giữ nguyên).
 - Không làm auto-update nền, không viết updater sidecar Docker.
-- Repo: `blogminhquy/javis-os`. Image GHCR: `ghcr.io/blogminhquy/javis-os`.
+- Repo: `U-N-I-MATE/UNI-MATE`. Image GHCR: `ghcr.io/u-n-i-mate/uni-mate`.
 - Xong toàn bộ + test xanh mới bump VERSION + CHANGELOG + commit + push origin/main.
 
 ---
@@ -59,7 +59,7 @@ Tạo `server/test_update.py`:
 """Test tầng cập nhật: update_state (thuần) + endpoint /update/status + updater dry-run.
 Chạy:  cd server && .venv\\Scripts\\python.exe test_update.py    (KHÔNG mạng)."""
 import os, sys, tempfile
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-update-test-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-update-test-")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 _fails = []
@@ -463,7 +463,7 @@ async def do_update():
     try:
         py = _sys.executable
         updater = str(PROJECT_ROOT / "server" / "updater.py")
-        port = os.getenv("JAVIS_PORT", "7777")
+        port = os.getenv("UNIMATE_PORT", "7777")
         args = [py, updater, "--old-sha", old_sha, "--old-version", cur,
                 "--target", latest or "", "--port", str(port)]
         if mode == "windows":
@@ -527,7 +527,7 @@ Expected: FAIL (updater.py chưa tồn tại → returncode != 0).
 
 ```python
 #!/usr/bin/env python
-"""Updater tách rời của Javis cho bản GIT checkout (Windows + native Linux). Server spawn DETACHED:
+"""Updater tách rời của UNI MATE cho bản GIT checkout (Windows + native Linux). Server spawn DETACHED:
 
     python updater.py --old-sha <sha> --old-version <v> --target <v> --port <p>
 
@@ -575,24 +575,24 @@ def venv_python():
 def has_systemd():
     try:
         r = subprocess.run(["systemctl", "list-unit-files"], capture_output=True, text=True)
-        return r.returncode == 0 and "javis.service" in (r.stdout or "")
+        return r.returncode == 0 and "unimate.service" in (r.stdout or "")
     except Exception:
         return False
 
 
 def stop_server():
     if os.name == "nt":
-        run(["cmd", "/c", str(ROOT / "stop-javis.bat")])
+        run(["cmd", "/c", str(ROOT / "stop-unimate.bat")])
     else:
-        subprocess.run(["systemctl", "stop", "javis"], capture_output=True, text=True)
+        subprocess.run(["systemctl", "stop", "unimate"], capture_output=True, text=True)
 
 
 def start_server():
     if os.name == "nt":
-        subprocess.Popen(["wscript.exe", "//nologo", str(ROOT / "start-javis.vbs")],
+        subprocess.Popen(["wscript.exe", "//nologo", str(ROOT / "start-unimate.vbs")],
                          cwd=str(ROOT), creationflags=0x00000008)  # DETACHED_PROCESS
     else:
-        subprocess.run(["systemctl", "start", "javis"], capture_output=True, text=True)
+        subprocess.run(["systemctl", "start", "unimate"], capture_output=True, text=True)
 
 
 def git_dirty():
@@ -630,7 +630,7 @@ def main():
     ap.add_argument("--old-sha", default="")
     ap.add_argument("--old-version", default="")
     ap.add_argument("--target", default="")
-    ap.add_argument("--port", default=os.getenv("JAVIS_PORT", "7777"))
+    ap.add_argument("--port", default=os.getenv("UNIMATE_PORT", "7777"))
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -645,9 +645,9 @@ def main():
                     "old_version": a.old_version, "target_version": target})
 
     if os.name != "nt" and not has_systemd():
-        log("Không thấy systemd service 'javis' → không tự khởi động lại được. Hãy restart tay.")
+        log("Không thấy systemd service 'unimate' → không tự khởi động lại được. Hãy restart tay.")
         us.write_state({"phase": "error", "result": "error",
-                        "error": "Không có systemd service 'javis' để tự khởi động lại.",
+                        "error": "Không có systemd service 'unimate' để tự khởi động lại.",
                         "finished_at": _now()})
         return 1
 
@@ -798,7 +798,7 @@ Trong `dashboard/console.js`, thay khối `<div class="cview-section"><h3>Phiên
       <div class="cview-section">
         <h3>Phiên bản</h3>
         <div class="gcard" style="max-width:640px">
-          <div class="gcard-top"><span class="gcard-name">Javis OS</span><span class="gcard-tag" id="ovVerTag">…</span></div>
+          <div class="gcard-top"><span class="gcard-name">UNI MATE</span><span class="gcard-tag" id="ovVerTag">…</span></div>
           <div class="gcard-meta" id="ovVerMeta">Đang kiểm tra bản mới…</div>
           <div id="ovVerChangelog" style="display:none;margin:8px 0;padding:8px 10px;border-left:3px solid var(--accent,#6aa);background:rgba(120,140,160,.08);border-radius:6px;font-size:13px;line-height:1.6"></div>
           <div class="js-actions">
@@ -909,7 +909,7 @@ Thay khối `if (verUpd) verUpd.onclick = async () => { ... };` (dòng 1411-1444
 
 ```javascript
     if (verUpd) verUpd.onclick = async () => {
-      if (!confirm("Cập nhật Javis lên bản mới nhất?\nApp sẽ tự khởi động lại. Nếu bản mới lỗi, hệ thống sẽ tự quay về bản cũ (bản git) hoặc hiện cách lùi (Docker).")) return;
+      if (!confirm("Cập nhật UNI MATE lên bản mới nhất?\nApp sẽ tự khởi động lại. Nếu bản mới lỗi, hệ thống sẽ tự quay về bản cũ (bản git) hoặc hiện cách lùi (Docker).")) return;
       const st = document.getElementById("ovVerStatus");
       const rb = document.getElementById("ovVerRollback");
       const oldCur = window._ovVerCur || "";
@@ -960,7 +960,7 @@ Thay khối `if (verUpd) verUpd.onclick = async () => { ... };` (dòng 1411-1444
               rb.style.display = "";
               rb.innerHTML = "<b>Cách lùi về bản cũ (Docker):</b><br>Pin tag phiên bản cũ rồi kéo lại:"
                 + "<br><code>docker compose pull && docker compose up -d</code>"
-                + (prev ? "<br>Hoặc sửa image thành <code>ghcr.io/blogminhquy/javis-os:" + esc(prev) + "</code> rồi Redeploy." : "");
+                + (prev ? "<br>Hoặc sửa image thành <code>ghcr.io/u-n-i-mate/uni-mate:" + esc(prev) + "</code> rồi Redeploy." : "");
             }
             verUpd.disabled = false; return;
           }

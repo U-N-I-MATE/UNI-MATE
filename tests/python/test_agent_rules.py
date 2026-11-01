@@ -4,8 +4,8 @@
 
 The owner told an agent "messages sent on Zalo must not use markdown". A few learning rounds
 later the rule was gone. These tests pin the three fixes:
-1. A rule the owner gives in chat (`JAVIS_RULE:`) lands in "## Luật chủ dặn", never evicted.
-2. `JAVIS_LESSON` keeps rotating through its 15-line window without touching owner rules.
+1. A rule the owner gives in chat (`UNIMATE_RULE:`) lands in "## Luật chủ dặn", never evicted.
+2. `UNIMATE_LESSON` keeps rotating through its 15-line window without touching owner rules.
 3. The guard refuses any write that drops a line the owner wrote.
 (The learn-engine side, op=update only adding rules, is in test_learn_agent_workflow.py.)
 """
@@ -15,7 +15,7 @@ import tempfile
 from pathlib import Path
 
 # T3 phần L: bài học chat riêng nay vào kho resonance tạm (không bao giờ đụng dữ liệu thật của máy).
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-agent-rules-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-agent-rules-")
 
 import agent_lessons  # noqa: E402
 import agent_rules  # noqa: E402
@@ -44,9 +44,9 @@ def test_merge_bullets_dedupes_and_caps_only_when_asked():
 
 
 def test_extract_rules_strips_marker_from_output():
-    rules, clean = agent_rules.extract_rules(f"Dạ em nhớ rồi.\nJAVIS_RULE: {ZALO_RULE}\n")
+    rules, clean = agent_rules.extract_rules(f"Dạ em nhớ rồi.\nUNIMATE_RULE: {ZALO_RULE}\n")
     assert rules == [ZALO_RULE]
-    assert "JAVIS_RULE" not in clean and "Dạ em nhớ rồi." in clean
+    assert "UNIMATE_RULE" not in clean and "Dạ em nhớ rồi." in clean
     assert agent_rules.extract_rules("không có gì") == ([], "không có gì")
 
 
@@ -56,7 +56,7 @@ def test_guard_catches_a_dropped_owner_line():
     rewritten = "Bạn là nhân viên.\n\n## Bổ sung (tự học)\n- mới"
     assert agent_rules.missing_owner_lines(old, rewritten, managed) == [
         "## Điều cấm", f"- {ZALO_RULE}"]
-    # Javis-managed lines may change freely; owner lines may move.
+    # UNI MATE-managed lines may change freely; owner lines may move.
     moved = f"## Điều cấm\n- {ZALO_RULE}\n\nBạn là nhân viên.\n\n## Bổ sung (tự học)\n- mới"
     assert agent_rules.missing_owner_lines(old, moved, managed) == []
 
@@ -81,7 +81,7 @@ def test_prompt_teaches_the_rule_marker():
         brain = _brain(td)
         _mk, sysprompt, _log, _learn = main._workflow_agent_helpers(brain, tools=None)
         _name, sp, _model, _prov = sysprompt("cham-khach")
-        assert "JAVIS_RULE" in sp and agent_rules.OWNER_RULES_HEADER in sp
+        assert "UNIMATE_RULE" in sp and agent_rules.OWNER_RULES_HEADER in sp
 
 
 def test_owner_rule_survives_many_lessons():
@@ -90,14 +90,14 @@ def test_owner_rule_survives_many_lessons():
         brain = _brain(td)
         out = main._ket_luot_agent(brain, "cham-khach",
                                    "Từ giờ nhắn Zalo đừng dùng markdown nhé",
-                                   f"Dạ em nhớ rồi.\nJAVIS_RULE: {ZALO_RULE}\n")
-        assert "JAVIS_RULE" not in out and "Dạ em nhớ rồi." in out
+                                   f"Dạ em nhớ rồi.\nUNIMATE_RULE: {ZALO_RULE}\n")
+        assert "UNIMATE_RULE" not in out and "Dạ em nhớ rồi." in out
         for i in range(30):
             main._ket_luot_agent(brain, "cham-khach", f"việc {i}",
-                                 f"xong {i}\nJAVIS_LESSON: Bài học số {i}\n")
+                                 f"xong {i}\nUNIMATE_LESSON: Bài học số {i}\n")
         text = _mem(brain).read_text(encoding="utf-8")
         assert f"- {ZALO_RULE}" in text, text
-        # T3 phần L (thiết kế 8.1): JAVIS_LESSON của chat riêng nay vào kho bài học phạm vi `dm:<agent_key>`, không vào
+        # T3 phần L (thiết kế 8.1): UNIMATE_LESSON của chat riêng nay vào kho bài học phạm vi `dm:<agent_key>`, không vào
         # MEMORY.md (bài học riêng không rò vào lượt nhóm). Luật chủ dặn vẫn ở MEMORY.md như trước.
         assert "Bài học số" not in text, "dm lessons no longer go to MEMORY.md"
         key = main._dm_agent_key(brain, "cham-khach")
@@ -109,12 +109,12 @@ def test_owner_rule_survives_many_lessons():
 
 
 def test_rule_without_owner_message_becomes_a_lesson():
-    """A workflow step has no owner talking to it, so its JAVIS_RULE is not trusted as one."""
+    """A workflow step has no owner talking to it, so its UNIMATE_RULE is not trusted as one."""
     with tempfile.TemporaryDirectory() as td:
         brain = _brain(td)
         _mk, _sp, _log, learn = main._workflow_agent_helpers(brain, tools=None)
-        out = learn("cham-khach", f"kết quả bước\nJAVIS_RULE: {ZALO_RULE}\n")
-        assert "JAVIS_RULE" not in out
+        out = learn("cham-khach", f"kết quả bước\nUNIMATE_RULE: {ZALO_RULE}\n")
+        assert "UNIMATE_RULE" not in out
         text = _mem(brain).read_text(encoding="utf-8")
         assert agent_rules.OWNER_RULES_HEADER not in text
         assert main._BAI_HOC_HEADER in text and ZALO_RULE in text

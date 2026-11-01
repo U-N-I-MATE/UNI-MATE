@@ -5,7 +5,7 @@
    Voice V1 spec mục 6. Bên thực hiện KHÔNG tin server tuyệt đối: trang lạ, đường dẫn tuyệt
    đối, `..`, scheme, mã việc lạ đều bị chặn ở đây dù plugin đã kiểm một lần. Danh sách trang
    phải khớp RAIL_ITEMS của console.js và PAGES của server/ui_targets.py (bảng dùng chung của
-   tool javis_ui lẫn đường tắt giọng nói), không thì "mở trang X" ở một đầu nhận mà đầu kia
+   tool unimate_ui lẫn đường tắt giọng nói), không thì "mở trang X" ở một đầu nhận mà đầu kia
    từ chối. */
 const fs = require("fs");
 const path = require("path");
@@ -70,17 +70,17 @@ check("GROUPS của ui-actions == RAIL_GROUPS của console.js", JSON.stringify(
 const gpm = plugin.match(/GROUPS = \(([\s\S]*?)\)/);
 const pgroups = gpm ? gpm[1].match(/"([a-z_]+)"/g).map(x => x.replace(/"/g, "")) : [];
 check("GROUPS của ui_targets.py == RAIL_GROUPS", JSON.stringify(grail) === JSON.stringify(pgroups));
-// Mở trang bằng lời PHẢI bung luôn nhóm chứa nó: JavisNav.go đi qua store Alpine (store.go
+// Mở trang bằng lời PHẢI bung luôn nhóm chứa nó: UniMateNav.go đi qua store Alpine (store.go
 // mới có dòng `this.openGroup = gl`), gọi thẳng navigateTo thì thanh bên vẫn gập.
-check("JavisNav.go đi qua store Alpine để bung nhóm", /go\(id\) \{ const s = _navStore\(\);/.test(consoleJs));
-check("console.js xuất JavisNav.openGroup và setCollapsed",
+check("UniMateNav.go đi qua store Alpine để bung nhóm", /go\(id\) \{ const s = _navStore\(\);/.test(consoleJs));
+check("console.js xuất UniMateNav.openGroup và setCollapsed",
   /openGroup\(groupId\)/.test(consoleJs) && /setCollapsed\(thu\)/.test(consoleJs));
 
-// Dây nối: app.js chuyển frame ui_action sang JavisUiActions, tasks.js xuất JavisTasks.show (0.426.0, việc Kanban
+// Dây nối: app.js chuyển frame ui_action sang UniMateUiActions, tasks.js xuất UniMateTasks.show (0.426.0, việc Kanban
 // nằm ở trang Nhiệm vụ), server có nhánh ui_result.
-check("app.js xử lý frame ui_action", /data\.type === "ui_action"/.test(app) && /JavisUiActions\.handle\(/.test(app));
-check("tasks.js xuất JavisTasks.show và ready", /window\.JavisTasks = \{[^}]*show: show, ready:/.test(tasksJs));
-check("open_task mở trang Nhiệm vụ rồi gọi JavisTasks.show", /JavisNav\.go\("tasks"\)/.test(src) && /await nv\.show\(v\.target\)/.test(src));
+check("app.js xử lý frame ui_action", /data\.type === "ui_action"/.test(app) && /UniMateUiActions\.handle\(/.test(app));
+check("tasks.js xuất UniMateTasks.show và ready", /window\.UniMateTasks = \{[^}]*show: show, ready:/.test(tasksJs));
+check("open_task mở trang Nhiệm vụ rồi gọi UniMateTasks.show", /UniMateNav\.go\("tasks"\)/.test(src) && /await nv\.show\(v\.target\)/.test(src));
 check("main.py có nhánh ui_result", /action == "ui_result"/.test(main));
 
 if (fails.length) { console.log("\nFAIL:", fails.length, fails); process.exit(1); }

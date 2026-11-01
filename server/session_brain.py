@@ -2,7 +2,7 @@
 
 Vì sao cần: mọi engine Claude đều chạy với cwd = gốc project (CLAUDE_CWD), không phải
 thư mục brain - cả chat lẫn Telegram. Log thô của Claude Code chỉ ghi `cwd`, nên trang
-Token gộp hết mọi phiên vào MỘT dự án ("Javis-OS" khi chạy ở máy, "app" khi chạy trong
+Token gộp hết mọi phiên vào MỘT dự án ("UNI-MATE" khi chạy ở máy, "app" khi chạy trong
 Docker) dù thật ra mỗi phiên làm việc trên một brain khác nhau.
 
 Đổi cwd sang thư mục brain thì sửa được nhãn nhưng phá chỗ khác (dò .claude/skills,

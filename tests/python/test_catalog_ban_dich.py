@@ -14,7 +14,7 @@ import re
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-cat-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-cat-"))
 import catalog_i18n  # noqa: E402
 import localefmt  # noqa: E402
 import mcp_catalog  # noqa: E402

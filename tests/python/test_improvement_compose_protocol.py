@@ -224,7 +224,7 @@ class ComposeProtocolTests(unittest.TestCase):
         license_raw = (ROOT / 'third_party/harness2/LICENSE').read_bytes()
         self.assertEqual(hashlib.sha1(b'blob ' + str(len(license_raw)).encode() + b'\0' + license_raw).hexdigest(),
                          manifest['license_git_blob'])
-        with self.assertRaises(TypeError): vendor._SURFACE_TEXTS['other'] = vendor._SURFACE_TEXTS['javis_body']
+        with self.assertRaises(TypeError): vendor._SURFACE_TEXTS['other'] = vendor._SURFACE_TEXTS['unimate_body']
 
 
 if __name__ == '__main__': unittest.main()

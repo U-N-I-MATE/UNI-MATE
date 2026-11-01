@@ -1,4 +1,4 @@
-"""Javis đang chạy Ở ĐÂU - dùng chung cho updater và các tính năng cần biết "cùng máy hay không".
+"""UNI MATE đang chạy Ở ĐÂU - dùng chung cho updater và các tính năng cần biết "cùng máy hay không".
 
 Tách khỏi main.py vì `ollama_local.py` cần hai hàm này, mà main.py thì import ollama_local -
 để nguyên là một vòng import. Repo này đã có 3 vòng đang phải phá bằng mẹo import-trong-hàm
@@ -16,31 +16,31 @@ import sys
 
 
 def deploy_mode() -> str:
-    """docker | windows | native - quyết định cách cập nhật, VÀ quyết định Javis có đứng
+    """docker | windows | native - quyết định cách cập nhật, VÀ quyết định UNI MATE có đứng
     trên cùng máy vật lý với thứ nó đang nói chuyện hay không."""
-    if os.path.exists("/.dockerenv") or os.getenv("JAVIS_STATE_DIR", "").startswith("/data"):
+    if os.path.exists("/.dockerenv") or os.getenv("UNIMATE_STATE_DIR", "").startswith("/data"):
         return "docker"
     if os.name == "nt":
         return "windows"
     return "native"
 
 
-OFFICIAL_IMAGE = "ghcr.io/blogminhquy/javis-os"
+OFFICIAL_IMAGE = "ghcr.io/u-n-i-mate/uni-mate"
 
 
 def image_source() -> str:
-    """Where this Docker image is published, stamped by the release workflow (Dockerfile ARG JAVIS_IMAGE_SOURCE).
+    """Where this Docker image is published, stamped by the release workflow (Dockerfile ARG UNIMATE_IMAGE_SOURCE).
     Empty for an image built anywhere else: a pull or Watchtower can never bring a new version for it."""
-    return os.getenv("JAVIS_IMAGE_SOURCE", "").strip()
+    return os.getenv("UNIMATE_IMAGE_SOURCE", "").strip()
 
 
 def docker_gateway() -> str:
     """IP của MÁY CHỦ nhìn từ trong container ("" nếu không đọc được / không ở trong Docker).
 
     Vì sao phải DÒ chứ không viết cứng 172.17.0.1: con số đó là cổng của mạng bridge MẶC ĐỊNH
-    (docker0), chỉ đúng khi chạy `docker run` trần. Javis lại được cài bằng docker-compose, mà
+    (docker0), chỉ đúng khi chạy `docker run` trần. UNI MATE lại được cài bằng docker-compose, mà
     compose dựng một mạng RIÊNG cho từng project - dải cấp phát bắt đầu từ 172.18.0.0/16 trở
-    đi vì 172.17 đã bị docker0 chiếm. Nên với gần như mọi người cài Javis theo hướng dẫn,
+    đi vì 172.17 đã bị docker0 chiếm. Nên với gần như mọi người cài UNI MATE theo hướng dẫn,
     172.17.0.1 là một địa chỉ SAI, điền vào là không nối được.
 
     Cổng mặc định trong bảng định tuyến của container CHÍNH LÀ máy chủ trên mạng bridge đó,

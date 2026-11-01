@@ -23,9 +23,9 @@ import tempfile
 from pathlib import Path
 
 # BRAINS_DIR and STATE_DIR must point at temp folders BEFORE main is imported (read at import).
-_STATE = tempfile.mkdtemp(prefix="javis-rem-noloop-state-")
-_BRAINS = tempfile.mkdtemp(prefix="javis-rem-noloop-brains-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-rem-noloop-state-")
+_BRAINS = tempfile.mkdtemp(prefix="unimate-rem-noloop-brains-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 os.environ["BRAINS_DIR"] = _BRAINS
 
 import main  # noqa: E402
@@ -54,7 +54,7 @@ feature.deps.send_file = None
 
 
 def status_of(brain, rid):
-    data = json.loads((Path(brain) / "Javis" / "reminders.json").read_text(encoding="utf-8"))
+    data = json.loads((Path(brain) / "UNI MATE" / "reminders.json").read_text(encoding="utf-8"))
     return next(r for r in data["reminders"] if r["id"] == rid)["status"]
 
 
@@ -70,12 +70,12 @@ def make_due(brain, text):
 
 # A brain inside BRAINS_DIR with no loop folder at all.
 no_loop = Path(_BRAINS) / "TEST-NoLoop"
-(no_loop / "Javis").mkdir(parents=True)
+(no_loop / "UNI MATE").mkdir(parents=True)
 check("setup: the loop-free brain has no loop", not main.loop_feature.list_loops(str(no_loop)))
 
 # A brain folder outside BRAINS_DIR, also with no loop.
-outside = Path(tempfile.mkdtemp(prefix="javis-rem-noloop-outside-"))
-(outside / "Javis").mkdir(parents=True)
+outside = Path(tempfile.mkdtemp(prefix="unimate-rem-noloop-outside-"))
+(outside / "UNI MATE").mkdir(parents=True)
 
 rid_in = make_due(str(no_loop), "call the supplier")
 rid_out = make_due(str(outside), "pay the rent")

@@ -18,7 +18,7 @@ class Element {
   querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
 }
 const source = fs.readFileSync(new URL("../../dashboard/improvement-candidates.js", import.meta.url), "utf8");
-const raw = '\ufefftitle\r\nViệt 😀\r\n<script>attack()</script>\n[JAVIS_RULE:x] ![x](javascript:attack())';
+const raw = '\ufefftitle\r\nViệt 😀\r\n<script>attack()</script>\n[UNIMATE_RULE:x] ![x](javascript:attack())';
 const hash = s => createHash("sha256").update(s).digest("hex");
 const exact = text => ({ text, hash: hash(text), byte_size: Buffer.byteLength(text) });
 const candidate = { candidate_id: "candidate-one", experiment_id: "experiment-one", base_revision_id: "revision-one", target_id: "target-one", base_generation: 1,
@@ -89,7 +89,7 @@ async function fixture(lang = "en", withExperiments = false) {
   vm.createContext(ctx);
   if(withExperiments)vm.runInContext(fs.readFileSync(new URL('../../dashboard/improvement-experiments.js',import.meta.url),'utf8'),ctx);
   vm.runInContext(source, ctx);
-  await ctx.window.JavisImprovementCandidates.open({brain:"brain-one",slug:"test-skill"});
+  await ctx.window.UniMateImprovementCandidates.open({brain:"brain-one",slug:"test-skill"});
   const find = action => { const nodes = body.querySelectorAll(`[data-action="${action}"]`); assert.ok(nodes.length, `Missing action ${action}`); return nodes.at(-1); };
   return {ctx,body,calls,find,intervals,setBrain:b=>{brain=b;},setRows:r=>{rows=r;},defer:p=>{deferred=p;},corrupt:()=>{corrupt=true;},failStage:()=>{failStage=true;},pages:()=>{pages=true;},failAfterStage:()=>{failAfterStage=true;}};
 }
@@ -101,7 +101,7 @@ for (const lang of ["vi","en"]) {
   assert.ok(f.find("after-facts").textContent.includes(hash(raw + "\nnew")));
   await f.find("authorize").onclick();
   assert.equal(f.find("authorize").disabled, true, "Historical approval must refresh revoked current metadata");
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 for(const lang of ['vi','en']) {
   const f=await fixture(lang,true);
@@ -128,17 +128,17 @@ for(const lang of ['vi','en']) {
   assert.equal(f.body.querySelector('[data-action="compose-input-ref"]'),null);
   await changed;release();await pending;
   assert.equal(f.body.querySelector('[data-action="compose-input-ref"]'),null,'Old preview cannot enter new context');
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   const f=await fixture(); f.pages();
-  await f.ctx.window.JavisImprovementCandidates.open({brain:"brain-one",slug:"test-skill"});
+  await f.ctx.window.UniMateImprovementCandidates.open({brain:"brain-one",slug:"test-skill"});
   await f.find("capture").onclick(); await f.find("capture").onclick();
   const captures=f.calls.filter(x=>x.url.startsWith("/improvement-targets/capture"));
   assert.equal(captures.length,2);
   assert.notEqual(JSON.parse(captures[0].body).event_key,JSON.parse(captures[1].body).event_key,"A completed capture must not replay forever for a new explicit intent");
   assert.equal(f.body.querySelectorAll('[data-action="more-contexts"]').length,1,"Reload replaces prior pagination control");
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   const f=await fixture(); await f.find("load-baseline").onclick(); f.failAfterStage();
@@ -146,11 +146,11 @@ for(const lang of ['vi','en']) {
   f.find("failure_signature").value="Missing row"; f.find("expected_behavior").value="All rows"; f.find("possible_regressions").value="Double count";
   await f.find("stage").onclick();
   assert.equal(f.find("stage").disabled,true,"Acknowledged staging must stay disabled when only metadata refresh fails");
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   const f = await fixture('en',true); let sameSkill = true;
-  await f.ctx.window.JavisImprovementCandidates.open({brain:"brain-one",slug:"test-skill",isCurrent:()=>sameSkill});
+  await f.ctx.window.UniMateImprovementCandidates.open({brain:"brain-one",slug:"test-skill",isCurrent:()=>sameSkill});
   let resolve; f.defer(new Promise(r=>{resolve=r;}));
   const pending = f.find("review-candidate-one").onclick();
   sameSkill=false; f.intervals.forEach(fn=>fn()); resolve(); await pending;
@@ -161,16 +161,16 @@ for(const lang of ['vi','en']) {
   const f = await fixture(); f.setRows([{...candidate,base_generation:2}]);
   await f.find("review-candidate-one").onclick();
   assert.equal(f.body.querySelector('[data-action="authorize"]'), null, "Changed target generation cannot authorize");
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   const f = await fixture();
-  await f.ctx.window.JavisImprovementCandidates.openArtifact({brain:"brain-one",trialId:"trial-one",attempt:1});
+  await f.ctx.window.UniMateImprovementCandidates.openArtifact({brain:"brain-one",trialId:"trial-one",attempt:1});
   assert.equal(f.find("artifact-text").textContent, raw);
   assert.equal(f.find("fixture-0-text").textContent, raw);
   assert.ok(f.find("fixture-0-metadata").textContent.includes("Asia/Saigon"));
   assert.ok(f.find("fixture-0-metadata").textContent.includes("2026-10-23"));
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   const f = await fixture('en',true);
@@ -178,13 +178,13 @@ for(const lang of ['vi','en']) {
   const pending = f.find("review-candidate-one").onclick();
   f.setBrain("brain-two"); f.intervals.forEach(fn=>fn()); resolve(); await pending;
   assert.ok(!f.body.querySelector('[data-action="authorize"]') || f.find("authorize").disabled, "Stale brain cannot authorize");
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   const f = await fixture(); f.corrupt(); await f.find("review-candidate-one").onclick();
   assert.equal(f.body.querySelector('[data-action="authorize"]'), null, "Hash mismatch must be unavailable");
   assert.ok(f.find("status").textContent.length);
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   const f = await fixture(); await f.find("load-baseline").onclick();
@@ -203,7 +203,7 @@ for(const lang of ['vi','en']) {
   assert.equal(JSON.parse(staged.body).patch.start, Buffer.byteLength('\ufefftitle\r\n'));
   const writes = f.calls.filter(x=>x.url.startsWith("/improvement-candidates?") && x.method === "POST");
   assert.equal(writes.length,2); assert.equal(JSON.parse(writes[0].body).event_key,JSON.parse(writes[1].body).event_key,"Unknown write retry must keep its event key");
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 for (const lang of ["vi","en"]) {
   // M2E: an exact-diff authority offers apply to one assistant chat; revert uses the server generation.
@@ -222,7 +222,7 @@ for (const lang of ["vi","en"]) {
   const revert = f.calls.find(x=>x.url.startsWith(`/improvement-activations/${id}/revert`));
   assert.equal(JSON.parse(revert.body).expected_generation, 1);
   assert.equal(f.body.querySelector(`[data-action="revert-${id}"]`), null, "A reverted pointer offers no second revert");
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   // M3: a canary share sends allocation_pct; an owner grant posts a 10% auto-scope for the same assistant.
@@ -238,7 +238,7 @@ for (const lang of ["vi","en"]) {
   const grant = f.calls.find(x=>x.url.startsWith("/improvement-auto-scopes?") && x.method === "POST");
   assert.deepEqual({...JSON.parse(grant.body), event_key: undefined}, {target_id:"target-one", agent_slug:"ke-toan", allocation_pct:10, event_key: undefined});
   assert.ok(f.find("revoke-grant-ias_" + "2".repeat(32)));
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   // M4: sample lines become closed cases; an eligible description can be applied to the main chat.
@@ -252,7 +252,7 @@ for (const lang of ["vi","en"]) {
   assert.deepEqual(sent.cases, [{kind:"positive", expected:"test-skill", query:"reconcile codes"}, {kind:"negative", expected:"", query:"weather today"}]);
   await f.find("routing-apply").onclick();
   assert.ok(f.find("routing-overlay-iro_" + "4".repeat(32)));
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 for (const lang of ["vi", "en"]) {
   // M5: the exact procedure text needs the owner's confirmation box, then reaches only the ticked surfaces.
@@ -274,7 +274,7 @@ for (const lang of ["vi", "en"]) {
   assert.equal(f.find("procedure-confirm").checked, false);
   await f.find("procedure-revert-" + overlay).onclick();
   assert.ok(f.calls.some(x => x.url.startsWith(`/improvement-agent-overlays/${overlay}/revert`)));
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   // M6: the reviewed exact candidate and the new procedure go out as one bundle, private chat only.
@@ -296,17 +296,17 @@ for (const lang of ["vi", "en"]) {
   assert.equal(sent.owner_confirmed, true);
   await f.find("bundle-revert-iba_" + "7".repeat(32)).onclick();
   assert.ok(f.calls.some(x => x.url.startsWith("/improvement-agent-bundles/iba_" + "7".repeat(32) + "/revert")));
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
-  // Automatic learning: the brain-wide list shows what Javis changed on its own, and undo reverts it.
+  // Automatic learning: the brain-wide list shows what UNI MATE changed on its own, and undo reverts it.
   const f = await fixture();
   assert.ok(f.find("auto-stats").textContent.includes("2"));
   assert.ok(f.find("auto-run-alr_" + "1".repeat(16)).children[0].textContent.includes("bao-gia"));
   await f.find("auto-undo-alr_" + "1".repeat(16)).onclick();
   assert.ok(f.calls.some(x => x.url.startsWith("/auto-learning/alr_" + "1".repeat(16) + "/undo") && x.method === "POST"));
   assert.throws(() => f.find("auto-undo-alr_" + "1".repeat(16)), /Missing action/);  // undone: no second undo
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   // Self-learning: start, read the verdict, apply the chosen text.
@@ -318,7 +318,7 @@ for (const lang of ["vi", "en"]) {
   await f.find("loop-apply").onclick();
   assert.ok(f.calls.some(x => x.url.startsWith("/improvement-loops/ilr_" + "9".repeat(24) + "/apply")));
   assert.ok(f.find("loop-applied"));
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   // M8: the pause button shows the live count and empties it in one call.
@@ -328,7 +328,7 @@ for (const lang of ["vi", "en"]) {
   assert.ok(f.calls.some(x => x.url.startsWith("/improvement-governance/suspend-all")));
   assert.ok(f.find("governance-count").textContent.includes("0"));
   assert.equal(f.find("governance-pause").disabled, true);
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 {
   // A region authority alone is not an exact approved diff: no apply control.
@@ -336,6 +336,6 @@ for (const lang of ["vi", "en"]) {
   f.setRows([{...candidate, edit_authority:{authority_id:"authority-three", kind:"editable_region", generation:1, status:"active"}}]);
   await f.find("review-candidate-one").onclick();
   assert.equal(f.body.querySelector('[data-action="apply-candidate"]'), null);
-  f.ctx.window.JavisImprovementCandidates.close();
+  f.ctx.window.UniMateImprovementCandidates.close();
 }
 console.log("OK: exact inert vi/en review, revoked replay, brain race, corrupt hash and UTF-8/CRLF selection");

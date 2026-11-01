@@ -1,9 +1,9 @@
-"""Máy đã chạy Javis từ trước nâng cấp lên: mức tiết kiệm phải chạy được ngay.
+"""Máy đã chạy UNI MATE từ trước nâng cấp lên: mức tiết kiệm phải chạy được ngay.
 
     python tests/run.py cauhinh_cu_khong_ket
 
 Vì sao có file này. Chủ repo bật mức tiết kiệm trên gói ChatGPT rồi chat, mà dòng dưới câu
-trả lời vẫn ghi "Đầy đủ". Máy anh cài Javis từ trước, và đó chính là cả vấn đề:
+trả lời vẫn ghi "Đầy đủ". Máy anh cài UNI MATE từ trước, và đó chính là cả vấn đề:
 
   - `write_settings` ghi lại TOÀN BỘ config đã trộn, nên mặc định của ngày hôm đó bị đóng
     băng vào settings.json ngay lần đầu người dùng bấm bất cứ thứ gì.
@@ -29,9 +29,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-# PHẢI ghi file trước khi import config: config đọc JAVIS_STATE_DIR lúc nạp module.
-_STATE = Path(tempfile.mkdtemp(prefix="javis-cu-"))
-os.environ["JAVIS_STATE_DIR"] = str(_STATE)
+# PHẢI ghi file trước khi import config: config đọc UNIMATE_STATE_DIR lúc nạp module.
+_STATE = Path(tempfile.mkdtemp(prefix="unimate-cu-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_STATE)
 (_STATE / "settings.json").write_text(json.dumps({
     "model": {"main": {"provider": "openai-oauth", "model": "gpt-5.6-luna"}},
     "context_runtime": {
@@ -58,7 +58,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-BRAIN = Path(tempfile.mkdtemp(prefix="javis-cu-brain-"))
+BRAIN = Path(tempfile.mkdtemp(prefix="unimate-cu-brain-"))
 (BRAIN / "Memory" / "facts").mkdir(parents=True, exist_ok=True)
 (BRAIN / "Memory" / "MEMORY.md").write_text("- [user] Chu ho nuoc mam\n", encoding="utf-8")
 (BRAIN / "Memory" / "facts" / "a.md").write_text(
@@ -103,8 +103,8 @@ _r = asyncio.run(main.runtime_preset_set(level="saving"))
 check("bấm mức Tối ưu thì mode sang canary", _r.get("mode") == "canary")
 
 _ke = main._get_adaptive_context().prepare(
-    None, "javis tiet kiem token the nao", BRAIN, "s-cu",
-    [{"role": "user", "content": "javis tiet kiem token the nao", "id": 1}],
+    None, "unimate tiet kiem token the nao", BRAIN, "s-cu",
+    [{"role": "user", "content": "unimate tiet kiem token the nao", "id": 1}],
     "dashboard", "openai-oauth", "gpt-5.6-luna", "oauth", lambda a, b: "BO LUAT DAI " * 60)
 check("CANARY: máy cài từ trước, bấm Tối ưu trên gói ChatGPT là tiết kiệm thật",
       _ke.action == "use" and _ke.reason == "compiled")
@@ -114,8 +114,8 @@ if _ke.action != "use":
         print(f"        {_n}: assigned={_v.get('assigned')} reason={_v.get('reason')}")
 
 _ke_cli = main._get_adaptive_context().prepare(
-    None, "javis tiet kiem token the nao", BRAIN, "s-cu-cli",
-    [{"role": "user", "content": "javis tiet kiem token the nao", "id": 1}],
+    None, "unimate tiet kiem token the nao", BRAIN, "s-cu-cli",
+    [{"role": "user", "content": "unimate tiet kiem token the nao", "id": 1}],
     "dashboard", "anthropic-cli", "opus", "cli", lambda a, b: "BO LUAT DAI " * 60)
 check("gói Claude Code trên máy cũ cũng vậy", _ke_cli.action == "use")
 

@@ -1,26 +1,26 @@
 <!-- translated-from: QUICKSTART.en.md sha256:2f4928f341af -->
-# Javis OS - Быстрый старт
+# UNI MATE - Быстрый старт
 
 *[English](../../../QUICKSTART.en.md) · [Tiếng Việt](../../../QUICKSTART.md) · [简体中文](../zh/QUICKSTART.md) · [Español](../es/QUICKSTART.md) · [日本語](../ja/QUICKSTART.md) · [हिन्दी](../hi/QUICKSTART.md) · [Português](../pt-BR/QUICKSTART.md) · [한국어](../ko/QUICKSTART.md) · **Русский** · [Deutsch](../de/QUICKSTART.md) · [Français](../fr/QUICKSTART.md) · [Bahasa Indonesia](../id/QUICKSTART.md)*
 
 > Это автоматический перевод английского руководства по быстрому старту.
 
-Запустите Javis OS за несколько минут. Полные руководства: [docs/en/](../../../docs/en/README.md).
+Запустите UNI MATE за несколько минут. Полные руководства: [docs/en/](../../../docs/en/README.md).
 
 ## Вариант 1 - VPS на Hostinger (Docker Manager, в один клик)
 
-> 🛒 **Ещё нет VPS?** [Возьмите VPS на Hostinger здесь](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager там встроен, поэтому Javis ставится в один клик. Когда VPS будет готов, вернитесь к шагам ниже.
+> 🛒 **Ещё нет VPS?** [Возьмите VPS на Hostinger здесь](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager там встроен, поэтому UNI MATE ставится в один клик. Когда VPS будет готов, вернитесь к шагам ниже.
 
 1. hPanel → VPS → **Docker Manager** → **Compose** → **Compose from URL**.
 2. Вставьте этот URL:
    ```
-   https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+   https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.hostinger.yml
    ```
 3. (Необязательно, для HTTPS + домена) задайте в поле **Environment**:
    ```
-   DOMAIN_NAME=javis.<vps-hostname>.hstgr.cloud
+   DOMAIN_NAME=unimate.<vps-hostname>.hstgr.cloud
    ```
-   (Hostname смотрите в hPanel → VPS, например `javis.srv1782015.hstgr.cloud`.)
+   (Hostname смотрите в hPanel → VPS, например `unimate.srv1782015.hstgr.cloud`.)
 4. **Deploy**. Подождите 1-3 минуты. Откройте приложение кнопкой **Open** (или по адресу `https://<DOMAIN_NAME>`).
 5. При первом запуске экран попросит создать аккаунт администратора. После этого один раз войдите в Claude Code в терминале контейнера: `claude auth login --claudeai`.
 
@@ -39,7 +39,7 @@ docker compose -f docker-compose.yml up -d
 
 1. Установите Python 3.12 + Node 22.
 2. В папке проекта один раз запустите `setup.bat`: он создаст .venv, установит зависимости и сам поставит два CLI-движка (Claude Code, Codex).
-3. `start-javis.bat` для запуска в фоне (`stop-javis.bat` для остановки).
+3. `start-unimate.bat` для запуска в фоне (`stop-unimate.bat` для остановки).
 4. Откройте http://localhost:7777.
 
 ## Когда всё запущено

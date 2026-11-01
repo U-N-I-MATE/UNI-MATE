@@ -17,9 +17,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="trial-selection-"))
-for key, child in {"JAVIS_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
+for key, child in {"UNIMATE_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
                    "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources",
-                   "JAVIS_SESSIONS_DB": "state/sessions.sqlite3"}.items():
+                   "UNIMATE_SESSIONS_DB": "state/sessions.sqlite3"}.items():
     os.environ[key] = str(TEST_ROOT / child)
 
 import improvement_claude as native
@@ -334,8 +334,8 @@ class SDKResolverTests(unittest.TestCase):
         self.old = self.executable("old")
         self.extra = self.executable(".local/bin")
         self.addCleanup(patch.stopall)
-        patch.dict(os.environ, {"JAVIS_STATE_DIR": str(self.state), "JAVIS_CLAUDE_CLI": "",
-            "JAVIS_CLAUDE_BIN": str(self.old), "PATH": str(self.current.parent), "PATHEXT": ".EXE",
+        patch.dict(os.environ, {"UNIMATE_STATE_DIR": str(self.state), "UNIMATE_CLAUDE_CLI": "",
+            "UNIMATE_CLAUDE_BIN": str(self.old), "PATH": str(self.current.parent), "PATHEXT": ".EXE",
             "HOME": str(self.root), "USERPROFILE": str(self.root), "APPDATA": str(self.root / "appdata"),
             "LOCALAPPDATA": str(self.root / "local"), "ProgramFiles": str(self.root / "programs"),
             "ProgramFiles(x86)": str(self.root / "programs86"), "ProgramData": str(self.root / "programdata"),
@@ -378,11 +378,11 @@ class SDKResolverTests(unittest.TestCase):
         self.assertEqual(self.ordinary_branch(), self.current)
 
     def test_sdk_override_wins_and_invalid_override_never_falls_back(self):
-        os.environ["JAVIS_CLAUDE_CLI"] = "  " + str(self.old) + "  "
+        os.environ["UNIMATE_CLAUDE_CLI"] = "  " + str(self.old) + "  "
         self.assertEqual(self.resolve(), self.old)
         self.assertEqual(self.ordinary_branch(), self.old)
         for value in (str(self.root / "missing.exe"), "relative.exe", str(self.root / "_bundled" / "claude.exe")):
-            os.environ["JAVIS_CLAUDE_CLI"] = value
+            os.environ["UNIMATE_CLAUDE_CLI"] = value
             with self.assertRaises(ValueError):
                 self.resolve()
 
@@ -493,9 +493,9 @@ class SDKResolverTests(unittest.TestCase):
 
     def test_loaded_cache_and_environment_change_between_passes_is_rejected(self):
         original = selection._discovery_guard
-        for mutate in (lambda: os.environ.__setitem__("JAVIS_CLAUDE_CLI", str(self.current)),
+        for mutate in (lambda: os.environ.__setitem__("UNIMATE_CLAUDE_CLI", str(self.current)),
                        lambda: self.cli._BIN_NHO.__setitem__("data", {"claude": str(self.current)})):
-            os.environ["JAVIS_CLAUDE_CLI"] = ""
+            os.environ["UNIMATE_CLAUDE_CLI"] = ""
             os.environ["PATH"] = str(self.root / "empty")
             self.extra.unlink(missing_ok=True)
             self.cli._BIN_NHO["data"] = {"claude": str(self.old)}

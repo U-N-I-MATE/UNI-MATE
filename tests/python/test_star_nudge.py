@@ -19,7 +19,7 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-star-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-star-")
 
 import star_nudge as sn  # noqa: E402
 
@@ -89,7 +89,7 @@ check("trạng thái hỏng đọc ra trung tính", sn.trang_thai({"state": "x",
       and sn.trang_thai("rác")["later_until"] == 0.0)
 
 # ── 4. Số sao: đọc GitHub, nhớ 1 ngày, lỗi nhớ 1 giờ ─────────────────────────────────────────
-d = Path(tempfile.mkdtemp(prefix="javis-star-cache-"))
+d = Path(tempfile.mkdtemp(prefix="unimate-star-cache-"))
 f = d / "github_stars.json"
 goi = []
 
@@ -152,7 +152,7 @@ def ghi_cfg(patch):
     return cfg
 
 
-sdir = Path(tempfile.mkdtemp(prefix="javis-star-state-"))
+sdir = Path(tempfile.mkdtemp(prefix="unimate-star-state-"))
 # Số sao đã nhớ, ghi đúng lúc này: route không bao giờ gọi GitHub thật trong test (một mốc thời gian ở
 # tương lai bị coi là hỏng và hỏi lại mạng, đã từng làm test này đọc 287 sao thật thay vì 286).
 import time  # noqa: E402

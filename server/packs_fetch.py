@@ -3,11 +3,11 @@
 Vì sao có một file riêng cho việc "tải một tệp"
 -----------------------------------------------
 Vì đây là chỗ SERVER TỰ ĐI GỌI một địa chỉ, và địa chỉ đó không phải do server nghĩ ra. Đó là
-định nghĩa của SSRF. Javis chạy trên máy của người dùng hoặc trên VPS của họ, tức nó đang đứng
+định nghĩa của SSRF. UNI MATE chạy trên máy của người dùng hoặc trên VPS của họ, tức nó đang đứng
 SẴN BÊN TRONG vành đai mạng: một request đi ra từ đây tới `127.0.0.1` hay `10.0.0.5` chạm được
 những thứ mà người ngoài không chạm tới.
 
-Rất cụ thể với Javis: `mcp_hub` đặt hub ở `http://127.0.0.1:7777/hub/mcp`, và hub cầm toàn bộ
+Rất cụ thể với UNI MATE: `mcp_hub` đặt hub ở `http://127.0.0.1:7777/hub/mcp`, và hub cầm toàn bộ
 khoá của người dùng. Trên máy ảo đám mây thì `169.254.169.254` trả về credential của chính máy
 đó. Không rào thì "cài gói từ link" thành một cái loa đọc hộ.
 
@@ -96,7 +96,7 @@ async def tai(url: str, *, header: dict = None, tran: int = MAX_TAI) -> bytes:
     import httpx
 
     hien = str(url or "").strip()
-    hd = {"User-Agent": "Javis-OS pack fetcher", **header_xac_thuc(hien), **(header or {})}
+    hd = {"User-Agent": "UNI-MATE pack fetcher", **header_xac_thuc(hien), **(header or {})}
     async with httpx.AsyncClient(follow_redirects=False,
                                  timeout=httpx.Timeout(TIMEOUT_TONG, connect=TIMEOUT_KET_NOI)) as cl:
         for _ in range(MAX_CHUYEN_HUONG + 1):

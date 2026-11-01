@@ -280,5 +280,5 @@
     const ready=load().catch(failure);
     return {ready,dispose};
   }
-  window.JavisImprovementExperiments={mount};
+  window.UniMateImprovementExperiments={mount};
 })();

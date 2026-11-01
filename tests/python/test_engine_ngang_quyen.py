@@ -1,4 +1,4 @@
-"""Regression: Javis là AI agentic ĐỔI ĐƯỢC BỘ NÃO, không phải sản phẩm của Claude.
+"""Regression: UNI MATE là AI agentic ĐỔI ĐƯỢC BỘ NÃO, không phải sản phẩm của Claude.
 
 Hai lỗi thật khách báo ở 0.9.270:
 
@@ -6,9 +6,9 @@ Hai lỗi thật khách báo ở 0.9.270:
    claude mất đăng nhập" treo mãi. _engines nằm trong RAM và trước đây không ai dọn, nên
    đèn thắp hồi Claude còn là Main Model không bao giờ tắt.
 
-2. Hỏi Javis thì nó tự nhận "không có Claude Code thì chỉ chat chơi thôi, không điều phối,
+2. Hỏi Uni thì nó tự nhận "không có Claude Code thì chỉ chat chơi thôi, không điều phối,
    không làm task được". Sai: từ 0.9 cả bốn provider API đều đi qua _api_stream_mcp - có
-   MCP Javis, tool file brain và skill. Chỉ lệnh máy (Bash) là riêng của hai engine CLI.
+   MCP UNI MATE, tool file brain và skill. Chỉ lệnh máy (Bash) là riêng của hai engine CLI.
    Nguồn của lời nói sai đó là chính system prompt + các nhãn "chat thuần (không MCP)"
    rải trên giao diện.
 
@@ -53,7 +53,7 @@ try:
 
     # 0.47.4: việc nền KHÔNG còn được soi đèn, kể cả khi đặt rõ là Claude. Từ 0.43.3 việc
     # nền có _FallbackChain (Claude chết thì tự chạy bằng bộ não chat) nên "việc nền chưa
-    # đăng nhập" không còn nghĩa là "Javis chưa dùng được" - mà banner đọc đúng nghĩa đen
+    # đăng nhập" không còn nghĩa là "UNI MATE chưa dùng được" - mà banner đọc đúng nghĩa đen
     # như vậy, và đã hai lần bắt oan máy Main Codex trong một ngày (27/08).
     _fake_settings("openrouter", "anthropic-cli")
     check("Việc nền đặt rõ là Claude → vẫn KHÔNG soi đèn (banner chỉ nói về Main Model)",
@@ -113,7 +113,7 @@ DOC10 = (ROOT / "docs" / "10-models-va-engine.md").read_text(encoding="utf-8")
 DOC01 = (ROOT / "docs" / "01-bat-dau-thiet-lap.md").read_text(encoding="utf-8")
 
 # "chat thuần" chỉ còn được phép xuất hiện khi đang KỂ LẠI rằng nhãn cũ đã sai. Ở giao
-# diện và system prompt thì cấm tiệt - đó là chỗ người dùng và chính Javis đọc để hiểu
+# diện và system prompt thì cấm tiệt - đó là chỗ người dùng và chính UNI MATE đọc để hiểu
 # mình làm được gì.
 for name, text in (("system prompt (CLAUDE.md)", CLAUDE_MD),
                    ("dashboard/console.js", CONSOLE_JS),
@@ -123,12 +123,12 @@ for name, text in (("system prompt (CLAUDE.md)", CLAUDE_MD),
     # CLAUDE.md nay là tiếng Anh (0.50.0) nên canh thêm biến thể tiếng Anh của cùng nhãn.
     check(f'{name} không còn nhãn "chat-only"', "chat-only" not in text.lower())
 
-check("nhãn kiểu của provider API là 'MCP Javis', không phải 'chat'",
-      '"MCP Javis"' in CONSOLE_JS and re.search(r'p\.kind === "cli" \? "MCP/skill" : "chat"', CONSOLE_JS) is None)
+check("nhãn kiểu của provider API là 'MCP UNI MATE', không phải 'chat'",
+      '"MCP UNI MATE"' in CONSOLE_JS and re.search(r'p\.kind === "cli" \? "MCP/skill" : "chat"', CONSOLE_JS) is None)
 _vi_i18n_api = (ROOT / "dashboard" / "i18n" / "vi.json").read_text(encoding="utf-8")
 # 0.351.0: the Main Model box gave way to the usage order (its top card is MAIN); each card still names its kind.
-check("thẻ trong thứ tự dùng vẫn ghi kiểu MCP Javis cho provider API",
-      '"MCP Javis"' in CONSOLE_JS and '"models.h_order"' in _vi_i18n_api)
+check("thẻ trong thứ tự dùng vẫn ghi kiểu MCP UNI MATE cho provider API",
+      '"MCP UNI MATE"' in CONSOLE_JS and '"models.h_order"' in _vi_i18n_api)
 
 # Gemini từng bị sót khỏi MCP_PROVIDERS nên trang Kết nối báo nhầm "chưa hỗ trợ gọi công cụ"
 # dù _api_stream_mcp đã phục vụ nó. Danh sách trên UI phải khớp danh sách thật ở server.
@@ -148,27 +148,27 @@ check(f"CANARY: UI liệt kê ĐÚNG danh sách của server + Claude Code "
       f"(UI: {sorted(_ui_set)} | server: {sorted(_srv_set)})",
       _ui_set == _srv_set | {"anthropic-cli"})
 
-# System prompt: Javis phải tự biết mình đổi được bộ não và không được tự hạ thấp.
-check("system prompt gọi Javis là AI agentic đổi được bộ não",
+# System prompt: UNI MATE phải tự biết mình đổi được bộ não và không được tự hạ thấp.
+check("system prompt gọi Uni là AI agentic đổi được bộ não",
       "SWAPPABLE BRAIN" in CLAUDE_MD)
 check("system prompt nói rõ MỌI bộ não dùng chung một bộ đồ nghề",
       "EVERY brain gets the same toolkit" in CLAUDE_MD)
-check("system prompt cấm Javis tự nhận 'chỉ chat được'",
+check("system prompt cấm UNI MATE tự nhận 'chỉ chat được'",
       "can only chat" in CLAUDE_MD and "factually wrong" in CLAUDE_MD)
 check("system prompt nêu đúng khác biệt duy nhất là lệnh máy",
       "shell commands" in CLAUDE_MD)
 
 # Tài liệu giới thiệu: bán "đổi được model", không bán "chạy trên Claude".
 check("README mở đầu bằng AI agentic đổi được bộ não",
-      "đổi được bộ não" in README.split("## Javis là gì?")[0])
-check("README nêu triết lý năng lực nằm ở Javis chứ không ở model",
-      "năng lực nằm ở Javis, không nằm ở model" in README)
+      "đổi được bộ não" in README.split("## UNI MATE là gì?")[0])
+check("README nêu triết lý năng lực nằm ở UNI MATE chứ không ở model",
+      "năng lực nằm ở UNI MATE, không nằm ở model" in README)
 check("doc Models nêu đổi model không mất chức năng",
-      "đổi model KHÔNG làm Javis mất chức năng" in DOC10.replace("**", ""))
+      "đổi model KHÔNG làm UNI MATE mất chức năng" in DOC10.replace("**", ""))
 check("doc Models có cột riêng cho lệnh máy để nói rõ khác biệt",
       "Chạy lệnh máy (Bash)" in DOC10)
 check("doc Bắt đầu nói rõ chọn provider nào cũng đủ chức năng",
-      "Chọn cái nào cũng ra một Javis đủ chức năng" in DOC01)
+      "Chọn cái nào cũng ra một UNI MATE đủ chức năng" in DOC01)
 
 
 if fails:

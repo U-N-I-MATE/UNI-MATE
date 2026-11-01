@@ -45,12 +45,12 @@ global.window = {
   t: (k) => k,
   getComputedStyle: (e) => ({ overflowY: e._oy || "auto" }),
   scrollTo: (x) => { global.window.daCuonTaiLieu = x.top; },
-  JavisWsSend: (o) => GUI.push(o),
-  JavisSessions: { current: () => "" },
+  UniMateWsSend: (o) => GUI.push(o),
+  UniMateSessions: { current: () => "" },
 };
 
 const A = require(path.join(ROOT, "dashboard", "ui-actions.js"));
-const UI = global.window.JavisUiActions;
+const UI = global.window.UniMateUiActions;
 
 async function cuon(target) {
   GUI = [];

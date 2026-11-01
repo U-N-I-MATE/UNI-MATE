@@ -8,7 +8,7 @@ vào ô Environment. Chúng cắt MỌI dòng có dấu `=` tại dấu `=` đ�
 biến. Dòng chú thích cũng bị cắt như thường, nên:
 
     # ==========================================   ->  tên biến là "#"
-    # JAVIS_HOST=127.0.0.1                         ->  tên biến là "# JAVIS_HOST"
+    # UNIMATE_HOST=127.0.0.1                         ->  tên biến là "# UNIMATE_HOST"
     # Mặc định: bind KHÔNG phải loopback -> tự bật  ->  cắt ở dấu "=" giữa câu
 
 Bản `env.example` trước có 25 dòng chú thích chứa dấu `=`; ba dòng `# ===` trùng tên nên gộp
@@ -87,9 +87,9 @@ check(f"trình quét ngây thơ KHÔNG sinh tên biến sai nào (sai: {_ten_xau
 check("và nó vẫn đọc ra đủ các biến thật", len(_ten) == len([d for d in _dong if d.strip()]))
 
 # Bản CŨ phải làm phép thử này đỏ, nếu không thì phép thử không chứng minh được gì.
-_ban_cu = "# ==========================\n# JAVIS_HOST=127.0.0.1\nWORKSPACE_NAME=Javis OS\n"
+_ban_cu = "# ==========================\n# UNIMATE_HOST=127.0.0.1\nWORKSPACE_NAME=UNI MATE\n"
 check("CANARY: mô phỏng bắt được đúng kiểu hỏng của bản cũ",
-      [t for t in _quet_ngay_tho(_ban_cu) if not _TEN_HOP_LE.match(t)] == ["# ", "# JAVIS_HOST"])
+      [t for t in _quet_ngay_tho(_ban_cu) if not _TEN_HOP_LE.match(t)] == ["# ", "# UNIMATE_HOST"])
 
 
 # ============================================================
@@ -98,20 +98,20 @@ check("CANARY: mô phỏng bắt được đúng kiểu hỏng của bản cũ",
 #
 # Vì sao không liệt kê lại mọi biến trong file mẫu: `install.sh` chép nguyên file này thành
 # `.env`, và Docker Compose đọc `.env` để thay ${...}. Một biến nằm trong đó là nó ĐƯỢC ĐẶT
-# THẬT, ghi đè giá trị mà Docker tự chọn. Đặt sẵn `JAVIS_HOST=127.0.0.1` là container nghe
+# THẬT, ghi đè giá trị mà Docker tự chọn. Đặt sẵn `UNIMATE_HOST=127.0.0.1` là container nghe
 # loopback rồi không ai vào được - đúng cảnh mà dòng mẫu đã-comment sinh ra để tránh, và là
 # lý do cả khối cũ phải comment. Bỏ chú thích đi thì cách duy nhất còn đúng là KHÔNG liệt kê
 # chúng nữa, chỉ giữ những biến mà đặt tường minh cũng ra đúng mặc định.
 
 _bien = dict(d.split("=", 1) for d in _dong if d.strip())
-_CAM = ("JAVIS_HOST", "JAVIS_PORT", "JAVIS_STATE_DIR", "BRAINS_DIR", "BRAIN_PATH",
-        "OBSIDIAN_VAULT_PATH", "CLAUDE_CWD", "JAVIS_REQUIRE_LOGIN", "JAVIS_SECURE_COOKIE")
+_CAM = ("UNIMATE_HOST", "UNIMATE_PORT", "UNIMATE_STATE_DIR", "BRAINS_DIR", "BRAIN_PATH",
+        "OBSIDIAN_VAULT_PATH", "CLAUDE_CWD", "UNIMATE_REQUIRE_LOGIN", "UNIMATE_SECURE_COOKIE")
 for _c in _CAM:
     check(f"KHÔNG đặt sẵn {_c} (đặt tường minh là ghi đè thứ Docker tự chọn)",
           _c not in _bien)
 
 check("không đặt sẵn mật khẩu quản trị nào (install.sh tự sinh rồi ghi vào .env)",
-      "JAVIS_ADMIN_PASSWORD" not in _bien)
+      "UNIMATE_ADMIN_PASSWORD" not in _bien)
 check("vẫn còn các biến hiển thị cơ bản",
       "WORKSPACE_NAME" in _bien and "USER_NAME" in _bien)
 check("vẫn còn cấu hình giọng đọc", "TTS_VOICE" in _bien and "TTS_RATE" in _bien)
@@ -129,11 +129,11 @@ check("tài liệu tra cứu biến môi trường (EN) vẫn còn", _doc_en.is_
 _vi = _doc_vi.read_text(encoding="utf-8") if _doc_vi.is_file() else ""
 # Mỗi biến từng được giải thích trong khối chú thích cũ phải tìm được ở tài liệu, kẻo lần dọn
 # này là xoá mất kiến thức chứ không phải chuyển chỗ.
-for _b in ("JAVIS_HOST", "JAVIS_PORT", "JAVIS_REQUIRE_LOGIN", "JAVIS_ADMIN_USER",
-           "JAVIS_ADMIN_PASSWORD", "JAVIS_SETUP_2FA", "JAVIS_SECURE_COOKIE",
-           "JAVIS_ALLOWED_HOSTS", "WATCHTOWER_TOKEN", "JAVIS_AUTO_UPDATE",
-           "JAVIS_AUTO_UPDATE_INTERVAL", "CLAUDE_CWD", "BRAINS_DIR", "OBSIDIAN_VAULT_PATH",
-           "BRAIN_PATH", "JAVIS_STATE_DIR", "JAVIS_ENABLE_USER_PLUGINS"):
+for _b in ("UNIMATE_HOST", "UNIMATE_PORT", "UNIMATE_REQUIRE_LOGIN", "UNIMATE_ADMIN_USER",
+           "UNIMATE_ADMIN_PASSWORD", "UNIMATE_SETUP_2FA", "UNIMATE_SECURE_COOKIE",
+           "UNIMATE_ALLOWED_HOSTS", "WATCHTOWER_TOKEN", "UNIMATE_AUTO_UPDATE",
+           "UNIMATE_AUTO_UPDATE_INTERVAL", "CLAUDE_CWD", "BRAINS_DIR", "OBSIDIAN_VAULT_PATH",
+           "BRAIN_PATH", "UNIMATE_STATE_DIR", "UNIMATE_ENABLE_USER_PLUGINS"):
     check(f"{_b} vẫn được giải thích trong docs/16-cau-hinh-env.md", _b in _vi)
 
 check("README chỉ đúng chỗ tra cứu đầy đủ",

@@ -1,18 +1,18 @@
 """CHƯA CHẠY. Kịch bản đo nhóm chat thích nghi TRÊN VPS (T4, 0.170.0), chỉ ĐỌC, chuẩn bị sẵn để chạy khi chủ dự án cho phép.
 
 TRẠNG THÁI: chưa chạy lần nào. Không ai được chạy script này khi chưa có lệnh duyệt trực tiếp của chủ dự án (GOAL mục 10, 13).
-Script KHÔNG tự kết nối tới VPS nào: người vận hành đăng nhập VPS theo cách thường lệ, chép script vào trong container Javis
-rồi chạy ở ĐÓ, trỏ tới chính Javis trong container (mặc định http://127.0.0.1:8080).
+Script KHÔNG tự kết nối tới VPS nào: người vận hành đăng nhập VPS theo cách thường lệ, chép script vào trong container UNI MATE
+rồi chạy ở ĐÓ, trỏ tới chính UNI MATE trong container (mặc định http://127.0.0.1:8080).
 
     python team_adaptive_vps_measure.py --owner-approved "<mã duyệt hay link tin duyệt>" \\
         --base-url http://127.0.0.1:8080 --state-dir /app/state --brain "<tên brain>" --out vps-t4.json
 
 Chỉ đọc:
 - HTTP: chỉ GET (danh sách nhóm, trang nhóm, trang tin, khung nhịp của trợ lý, /health). Không POST, không thả reaction,
-  không gửi tin, không bật tắt gì, không gọi model. Phiên đăng nhập lấy từ biến môi trường JAVIS_MEASURE_COOKIE (chuỗi
+  không gửi tin, không bật tắt gì, không gọi model. Phiên đăng nhập lấy từ biến môi trường UNIMATE_MEASURE_COOKIE (chuỗi
   Cookie của trình duyệt đã đăng nhập), không ghi ra file kết quả.
 - SQLite: mở `mode=ro` (URI chỉ đọc), chỉ đếm dòng và kích thước file; không ghi, không VACUUM, không tạo chỉ mục.
-- Header `Server-Timing` (app;dur=) tách thời gian Javis xử lý khỏi thời gian đi qua proxy.
+- Header `Server-Timing` (app;dur=) tách thời gian UNI MATE xử lý khỏi thời gian đi qua proxy.
 
 Kết quả là JSON: máy, phiên bản, số dòng các kho, p50/p95 từng route (thời gian vòng và Server-Timing), độ trễ `/health` khi
 có tải đọc đồng thời (đại diện cho event loop bị giữ). So với docs/dev/team-chat-t4-bench.md (máy local, engine giả).
@@ -127,7 +127,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="CHƯA CHẠY: đo chỉ đọc trên VPS, cần chủ dự án duyệt")
     ap.add_argument("--owner-approved", default="", help="mã hay link tin duyệt của chủ dự án (bắt buộc)")
     ap.add_argument("--base-url", default="http://127.0.0.1:8080")
-    ap.add_argument("--state-dir", default=os.environ.get("JAVIS_STATE_DIR", ""))
+    ap.add_argument("--state-dir", default=os.environ.get("UNIMATE_STATE_DIR", ""))
     ap.add_argument("--brain", default="brain")
     ap.add_argument("--runs", type=int, default=20)
     ap.add_argument("--readers", type=int, default=4, help="số luồng GET đồng thời khi đo /health có tải")
@@ -139,9 +139,9 @@ def main(argv=None) -> int:
         return 2
     host = urllib.parse.urlparse(a.base_url).hostname or ""
     if host not in ("127.0.0.1", "localhost", "::1"):
-        print("DỪNG: chỉ đo Javis ngay trong container (127.0.0.1); không đo qua mạng.", file=sys.stderr)
+        print("DỪNG: chỉ đo UNI MATE ngay trong container (127.0.0.1); không đo qua mạng.", file=sys.stderr)
         return 2
-    cookie = os.environ.get("JAVIS_MEASURE_COOKIE", "")
+    cookie = os.environ.get("UNIMATE_MEASURE_COOKIE", "")
     q = {"brain": a.brain}
     report = {"kind": "t4_vps_readonly", "approved_by": a.owner_approved.strip()[:200],
               "date": time.strftime("%Y-%m-%d %H:%M:%S"),

@@ -43,7 +43,7 @@ check("trim: tail mở đầu bằng user", out[2]["role"] == "user")
 check("trim: không mutate input", len(msgs) == 22)
 
 # ---- 2. Migration DB cũ (chưa có cột compact) ----
-tmp = Path(tempfile.mkdtemp(prefix="javis-compacttest-"))
+tmp = Path(tempfile.mkdtemp(prefix="unimate-compacttest-"))
 old_db = tmp / "old.db"
 conn = sqlite3.connect(str(old_db))
 conn.executescript("""
@@ -132,7 +132,7 @@ async def main():
 
 async def prepare_tests():
     """prepare_history: KHÔNG bỏ câm ngữ cảnh (bug đổi engine Claude→API mất trí nhớ)."""
-    tmp2 = Path(tempfile.mkdtemp(prefix="javis-prep-"))
+    tmp2 = Path(tempfile.mkdtemp(prefix="unimate-prep-"))
     head = [{"role": "system", "content": "SYS"}]
 
     # (a) Phiên vừa đổi từ Claude CLI sang API: có 30 message trong store, CHƯA có tóm tắt

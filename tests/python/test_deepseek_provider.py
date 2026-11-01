@@ -25,7 +25,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from _paths import ROOT, SERVER  # noqa: E402,F401  - puts server/ on sys.path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-deepseek-test-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-deepseek-test-"))
 
 import aux_engine  # noqa: E402
 import config as cfgmod  # noqa: E402
@@ -156,7 +156,7 @@ class _Fake(BaseHTTPRequestHandler):
         first = has_tools and not any(m.get("role") == "tool" for m in body["messages"])
         msg = ({"role": "assistant", "content": "",
                 "tool_calls": [{"id": "c1", "type": "function",
-                                "function": {"name": "javis_connections", "arguments": "{}"}}]}
+                                "function": {"name": "unimate_connections", "arguments": "{}"}}]}
                if first else {"role": "assistant", "content": "Đã gọi tool xong"})
         if _thinking(body):
             msg["reasoning_content"] = "nghĩ một chút"
@@ -168,7 +168,7 @@ _srv = HTTPServer(("127.0.0.1", 0), _Fake)
 threading.Thread(target=_srv.serve_forever, daemon=True).start()
 engine.DEEPSEEK_URL = f"http://127.0.0.1:{_srv.server_address[1]}/chat/completions"
 
-TOOLS = [{"fn": "javis_connections", "server": "javis", "name": "javis_connections",
+TOOLS = [{"fn": "unimate_connections", "server": "unimate", "name": "unimate_connections",
           "description": "liệt kê nguồn", "schema": {"type": "object", "properties": {}, "required": []}}]
 
 
@@ -176,7 +176,7 @@ async def _call(_args):
     return "Kết nối: POS, Lịch"
 
 
-ROUTE = {"javis_connections": {"call": _call}}
+ROUTE = {"unimate_connections": {"call": _call}}
 
 
 async def _collect(gen):
@@ -216,7 +216,7 @@ async def _run():
                                                        [{"role": "user", "content": "có nguồn nào"}],
                                                        "off", TOOLS, ROUTE))
     check("tool loop off: tool called", [e.get("name") for e in evs if e["type"] == "tool_call"]
-          == ["javis_connections"])
+          == ["unimate_connections"])
     check("tool loop off: final text", _text(evs) == "Đã gọi tool xong")
     check("tool loop off: EVERY request says thinking disabled",
           len(SEEN) == 2 and all(s["body"].get("thinking") == {"type": "disabled"} for s in SEEN))
@@ -234,8 +234,8 @@ async def _run():
     check("tool loop thinking: assistant tool-call message carries reasoning_content back",
           asst and asst[-1].get("reasoning_content") == "nghĩ một chút")
 
-    # Tool loop, thinking on, history from an earlier turn has no reasoning_content (Javis
-    # never stored it). DeepSeek says 400; Javis must drop to normal mode, not fail the turn.
+    # Tool loop, thinking on, history from an earlier turn has no reasoning_content (UNI MATE
+    # never stored it). DeepSeek says 400; UNI MATE must drop to normal mode, not fail the turn.
     SEEN.clear()
     history = [{"role": "user", "content": "chào"}, {"role": "assistant", "content": "Chào anh"},
                {"role": "user", "content": "có nguồn nào"}]
@@ -243,7 +243,7 @@ async def _run():
                                                        "high", TOOLS, ROUTE))
     check("old history: no error event", not [e for e in evs if e["type"] == "error"])
     check("old history: says it switched to normal mode",
-          any(e.get("name") == "javis_thinking_off" for e in evs if e["type"] == "tool_call"))
+          any(e.get("name") == "unimate_thinking_off" for e in evs if e["type"] == "tool_call"))
     check("old history: still answers with the tool result", _text(evs) == "Đã gọi tool xong")
     check("old history: requests after the 400 have thinking disabled",
           all(s["body"].get("thinking") == {"type": "disabled"} for s in SEEN[1:]))
@@ -261,7 +261,7 @@ async def _run():
 
     # Single forced-tool planner: thinking off regardless of the user's level.
     SEEN.clear()
-    spec = {"type": "function", "function": {"name": "javis_connections", "description": "x",
+    spec = {"type": "function", "function": {"name": "unimate_connections", "description": "x",
                                              "parameters": {"type": "object", "properties": {}}}}
     res = await engine.single_tool_plan("deepseek", "sk-test", "deepseek-flash",
                                         [{"role": "user", "content": "x"}], "high", spec)

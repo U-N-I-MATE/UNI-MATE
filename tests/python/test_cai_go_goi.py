@@ -42,7 +42,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-MF = ('format: javis-pack\nspec: 1\nid: {pid}\nversion: 1.0.0\n'
+MF = ('format: unimate-pack\nspec: 1\nid: {pid}\nversion: 1.0.0\n'
       'name: {{vi: "Gói thử", en: "Test pack"}}\ncompat: {{app: ">=0.1.0"}}\n'
       'provides:\n  connectors: [connectors/demo.yaml]\n')
 CON = ('id: {cid}\nname: Demo\nicon: assets/x.png\ncategory: Bán hàng\n'
@@ -56,7 +56,7 @@ def zip_goi(pid="acme.thu", cid="acme-thu-con", boc="", them=None, mf=None):
     b = io.BytesIO()
     tien = (boc + "/") if boc else ""
     with zipfile.ZipFile(b, "w") as z:
-        z.writestr(tien + "javis-pack.yaml", mf if mf is not None else MF.format(pid=pid))
+        z.writestr(tien + "unimate-pack.yaml", mf if mf is not None else MF.format(pid=pid))
         z.writestr(tien + "connectors/demo.yaml", CON.format(cid=cid))
         z.writestr(tien + "assets/x.png", b"\x89PNG\r\n")
         for ten, noi in (them or {}).items():
@@ -163,16 +163,16 @@ with tempfile.TemporaryDirectory() as td:
 
         cac_ca = [
             ("leo ra ngoài bằng ..",
-             zip_tho({"javis-pack.yaml": MF.format(pid="x"), "../../trom.txt": "x"}), "leo ra ngoài"),
+             zip_tho({"unimate-pack.yaml": MF.format(pid="x"), "../../trom.txt": "x"}), "leo ra ngoài"),
             ("đường dẫn tuyệt đối",
-             zip_tho({"javis-pack.yaml": MF.format(pid="x"), "/etc/passwd": "x"}), "tuyệt đối"),
+             zip_tho({"unimate-pack.yaml": MF.format(pid="x"), "/etc/passwd": "x"}), "tuyệt đối"),
             ("liên kết tượng trưng",
-             zip_tho({"javis-pack.yaml": MF.format(pid="x")},
+             zip_tho({"unimate-pack.yaml": MF.format(pid="x")},
                      symlink=("plugin.py", "../../.secret_key")), "liên kết tượng trưng"),
             ("mang theo tệp .env",
-             zip_tho({"javis-pack.yaml": MF.format(pid="x"), ".env": "SECRET=1"}), "không cho phép"),
+             zip_tho({"unimate-pack.yaml": MF.format(pid="x"), ".env": "SECRET=1"}), "không cho phép"),
             ("mang theo khoá riêng",
-             zip_tho({"javis-pack.yaml": MF.format(pid="x"), "khoa.pem": "x"}), "khoá riêng"),
+             zip_tho({"unimate-pack.yaml": MF.format(pid="x"), "khoa.pem": "x"}), "khoá riêng"),
             ("không phải zip", b"khong phai zip", "hợp lệ"),
         ]
         for ten, du_lieu, dau_hieu in cac_ca:
@@ -181,7 +181,7 @@ with tempfile.TemporaryDirectory() as td:
             check(f"   và không ghi gì vào kho: {ten}", not any(packs.PACKS_DIR.iterdir()))
 
         # Tỉ lệ nén bất thường: 2MB toàn 'A' nén lại rất nhỏ.
-        b = pack_install.soi(zip_tho({"javis-pack.yaml": MF.format(pid="x")}, ti_le=True), "bom.zip")
+        b = pack_install.soi(zip_tho({"unimate-pack.yaml": MF.format(pid="x")}, ti_le=True), "bom.zip")
         check("từ chối: tỉ lệ nén bất thường", not b["ok"] and "tỉ lệ" in b["error"])
 
         # Quá nhiều tệp.
@@ -190,16 +190,16 @@ with tempfile.TemporaryDirectory() as td:
 
         # Zip hợp lệ nhưng không có manifest.
         b = pack_install.soi(zip_tho({"doc.txt": "chao"}), "khong-manifest.zip")
-        check("từ chối: trong gói không có javis-pack.yaml",
-              not b["ok"] and "javis-pack.yaml" in b["error"])
+        check("từ chối: trong gói không có unimate-pack.yaml",
+              not b["ok"] and "unimate-pack.yaml" in b["error"])
 
         # Id không hợp lệ. Lưu ý: qua đường ZIP thì id lấy TỪ MANIFEST rồi đặt tên thư
         # mục theo nó, nên ca "id lệch tên thư mục" chỉ xảy ra với gói thả tay - đã có
         # test riêng canh chuyện đó.
-        b = pack_install.soi(zip_goi(mf='format: javis-pack\nspec: 1\nid: "Có Dấu"\n'), "id-xau.zip")
+        b = pack_install.soi(zip_goi(mf='format: unimate-pack\nspec: 1\nid: "Có Dấu"\n'), "id-xau.zip")
         check("từ chối id gói không hợp lệ", not b["ok"] and "id gói" in b["error"])
         b = pack_install.soi(zip_goi(mf="format: khong-phai\nspec: 1\nid: x\n"), "sai-format.zip")
-        check("từ chối tệp không phải gói Javis", not b["ok"] and "format" in b["error"])
+        check("từ chối tệp không phải gói UNI MATE", not b["ok"] and "format" in b["error"])
 
         # ─────────────── 4. Bậc code và chữ ký mã ───────────────
         du_ma = zip_goi(pid="acme.ma", cid="acme-ma-con",
@@ -307,10 +307,10 @@ check("CANARY: gói CÓ MÃ thì công tắc mặc định tắt (trừ khi lố
 check("nói thẳng gói chạy mã thật, không làm mềm",
       "store.inspect.code.title" in src_js
       and "chạy Python thật" in _VI.get("store.inspect.code.title", "")
-      and "máy chủ Javis" in _VI.get("store.inspect.code.title", ""))
+      and "máy chủ UNI MATE" in _VI.get("store.inspect.code.title", ""))
 
 src_c = (DASHBOARD / "console.js").read_text(encoding="utf-8")
-check("trang Gói đăng ký trong rail", '"packs"' in src_c and "JavisPacks" in src_c)
+check("trang Gói đăng ký trong rail", '"packs"' in src_c and "UniMatePacks" in src_c)
 for f in ("vi", "en"):
     d = json.loads((DASHBOARD / "i18n" / f"{f}.json").read_text(encoding="utf-8"))
     check(f"từ điển {f} có nhãn trang Gói", bool(d.get("page.packs.label")))

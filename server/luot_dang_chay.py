@@ -1,6 +1,6 @@
 """Sổ lượt chat ĐANG CHẠY theo brain: để tool giao việc biết người đang hỏi là ai (0.64.49).
 
-Vì sao cần: việc nền giao từ chat (tool `javis_task`) báo kết quả về đúng khung chat nhờ trường
+Vì sao cần: việc nền giao từ chat (tool `unimate_task`) báo kết quả về đúng khung chat nhờ trường
 `chat_id`. Trường đó trước đây hoàn toàn trông vào model tự chép từ khối "KÊNH HỘI THOẠI HIỆN
 TẠI". Model quên (chuyện thường với model nhỏ, hay khi lượt dài) là kết quả rơi về ID Telegram
 đầu tiên, máy chưa đấu Telegram thì mất hút. Audit 2026-09-24 ghi đây là lỗi số một khiến người
@@ -102,7 +102,7 @@ def dang_chay(chat_id: str, msg_id: int) -> bool:
 def loi_cua_luot(chat_id: str, msg_id: int, vault) -> "str | None":
     """Lời người dùng của ĐÚNG lượt (khung chat + id tin + brain), đọc theo khoá mà ngữ cảnh lượt (`turn_context`) mang
     tới; None khi lượt đó không còn trong sổ. Khác `doan_luot`: không đoán "lượt duy nhất của brain", nên hai lượt chạy
-    song song không đọc nhầm lời của nhau (Resonance A1, tool javis_goal)."""
+    song song không đọc nhầm lời của nhau (Resonance A1, tool unimate_goal)."""
     cid, mid, v = str(chat_id or "").strip(), int(msg_id or 0), _chuan(vault)
     if not cid or not mid:
         return None

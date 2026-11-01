@@ -18,10 +18,10 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-braindem-")
-os.environ.setdefault("JAVIS_STATE_DIR", _STATE)
-_BRAINS = tempfile.mkdtemp(prefix="javis-braindem-brains-")
-os.environ["BRAINS_DIR"] = _BRAINS       # main.py:432 đọc đúng tên này, KHÔNG có tiền tố JAVIS_
+_STATE = tempfile.mkdtemp(prefix="unimate-braindem-")
+os.environ.setdefault("UNIMATE_STATE_DIR", _STATE)
+_BRAINS = tempfile.mkdtemp(prefix="unimate-braindem-brains-")
+os.environ["BRAINS_DIR"] = _BRAINS       # main.py:432 đọc đúng tên này, KHÔNG có tiền tố UNIMATE_
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -43,7 +43,7 @@ BASE = Path(main.BRAINS_DIR)
 
 # CHỐT CHẶN - đừng gỡ. Test này TẠO brain giả, nên nếu BRAINS_DIR không phải thư mục tạm thì
 # nó sẽ đẻ rác vào kho brain THẬT của người dùng. Đã xảy ra một lần: đặt nhầm tên biến môi
-# trường (JAVIS_BRAINS_DIR thay vì BRAINS_DIR) làm 3019 file rác rơi vào brains/ thật.
+# trường (UNIMATE_BRAINS_DIR thay vì BRAINS_DIR) làm 3019 file rác rơi vào brains/ thật.
 # Chết ngay còn hơn ghi nhầm chỗ.
 if BASE.resolve() != Path(_BRAINS).resolve():
     print(f"FAIL BRAINS_DIR không trỏ vào thư mục tạm: {BASE}\n"
@@ -59,7 +59,7 @@ def dung_brain(ten, n_note, n_an=0, sau=0):
     for i in range(n_note):
         (d / "notes" / f"note-{i}.md").write_text(f"# ghi chú {i}\n", encoding="utf-8")
     for i in range(n_an):
-        # .claude/skills = bản mirror do CHÍNH Javis sinh ra, không phải note của user
+        # .claude/skills = bản mirror do CHÍNH UNI MATE sinh ra, không phải note của user
         p = d / ".claude" / "skills" / f"sk-{i}"
         p.mkdir(parents=True, exist_ok=True)
         (p / "SKILL.md").write_text("---\nname: x\n---\n", encoding="utf-8")
@@ -90,7 +90,7 @@ check("thư mục ẩn '.an-di' KHÔNG lọt vào danh sách brain", ".an-di" no
 check("đúng một brain được đánh dấu mặc định",
       sum(1 for b in r["brains"] if b["is_default"]) == 1)
 
-# ---- 1. Không đếm .md trong thư mục hệ thống (.claude/skills là mirror Javis tự sinh) ----
+# ---- 1. Không đếm .md trong thư mục hệ thống (.claude/skills là mirror UNI MATE tự sinh) ----
 check(f"Brain A đếm 12 note, KHÔNG cộng 5 file trong .claude (được {ten['Brain A']['notes']})",
       ten["Brain A"]["notes"] == 12)
 tat_ca = len(list((BASE / "Brain A").rglob("*.md")))

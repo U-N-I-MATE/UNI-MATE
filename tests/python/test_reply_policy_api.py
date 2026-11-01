@@ -16,8 +16,8 @@ import re
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-rp-api-")
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"       # xem test_workflow_runs_api.py
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-rp-api-")
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"       # xem test_workflow_runs_api.py
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -207,10 +207,10 @@ check("mã hạn mức cũ vẫn có nhãn để nhật ký cũ đọc được"
 check("không dùng em dash trong file test này", chr(0x2014) not in open(__file__, encoding="utf-8").read())
 # Góp ý sửa mã của vòng tự soát nối vào file trong brain CỦA BOT, không ghi đè lần trước.
 import tempfile as _tf  # noqa: E402
-_brain = _tf.mkdtemp(prefix="javis-rp-brain-")
+_brain = _tf.mkdtemp(prefix="unimate-rp-brain-")
 main._reply_policy_write_feedback({"id": "x", "name": "Bot Thử", "brain": _brain}, "luật A chặn tin B")
 main._reply_policy_write_feedback({"id": "x", "name": "Bot Thử", "brain": _brain}, "luật C chặn tin D")
-_gy = os.path.join(_brain, "Javis", "gop-y-bo-phan-xu.md")
+_gy = os.path.join(_brain, "UNI MATE", "gop-y-bo-phan-xu.md")
 _txt = open(_gy, encoding="utf-8").read() if os.path.exists(_gy) else ""
 check("góp ý ghi vào brain của bot, nối thêm chứ không ghi đè",
       "luật A" in _txt and "luật C" in _txt and _txt.count("# Góp ý") == 1 and "Bot Thử" in _txt, _txt[:200])
@@ -225,8 +225,8 @@ from claude_cli import CodexCLI as _Codex  # noqa: E402
 _base = _CliGia()
 _api = _ae._ApiAuxEngine(provider="openrouter", model="x")
 _cx = _Codex(cwd=_tf.mkdtemp())
-_cx.profile = "javis"
-_cx.extra_config = ['mcp_servers.javis.http_headers.X-Javis-Vault="/x"']
+_cx.profile = "unimate"
+_cx.extra_config = ['mcp_servers.unimate.http_headers.X-UniMate-Vault="/x"']
 
 
 class _AgyGia:

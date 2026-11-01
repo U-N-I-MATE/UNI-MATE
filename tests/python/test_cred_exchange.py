@@ -12,7 +12,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-credtest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-credtest-"))
 
 import cred_exchange  # noqa: E402
 import mcp_catalog  # noqa: E402
@@ -200,7 +200,7 @@ check("đầu-cuối: master_token được điền từ handler", _fields.get("
 _cid, _e2 = mcp_store.add_connection("google-keep", {"label": "thử", "fields": _fields})
 check("đầu-cuối: lưu được kết nối", bool(_cid) and not _e2)
 
-_store = _Path(os.environ["JAVIS_STATE_DIR"]) / "mcp_servers.json"
+_store = _Path(os.environ["UNIMATE_STATE_DIR"]) / "mcp_servers.json"
 _raw = _store.read_text(encoding="utf-8") if _store.exists() else ""
 check("BẢO MẬT đầu-cuối: chuỗi App Password KHÔNG có trong file lưu trên đĩa",
       bool(_raw) and _BI_MAT not in _raw)

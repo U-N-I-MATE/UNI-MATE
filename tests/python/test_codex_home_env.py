@@ -6,13 +6,13 @@ Customer report 2026-10-04 (Windows, 0.71.0): every ChatGPT turn died with
 "Codex lỗi (exit 1): WARNING: proceeding, even though we could not create PATH aliases: Could not
 find home directory". Codex finds home with `dirs::home_dir()`, which on Windows asks the user
 profile API and ignores USERPROFILE, so a broken or temporary profile leaves Codex blind while
-Javis (which reads USERPROFILE/HOME) still sees the ChatGPT sign-in. Javis now hands Codex an
+UNI MATE (which reads USERPROFILE/HOME) still sees the ChatGPT sign-in. UNI MATE now hands Codex an
 explicit CODEX_HOME on every spawn.
 
 Checks:
   1. codex_env sets CODEX_HOME to <home>/.codex and creates it (Codex canonicalizes it).
   2. A CODEX_HOME the user set is left alone.
-  3. Javis not knowing home either adds nothing.
+  3. UNI MATE not knowing home either adds nothing.
   4. CodexCLI.query really passes it: a fake Codex that fails exactly like the customer's
      without CODEX_HOME answers normally.
   5. The home-directory failure shows a plain-language message, raw Codex lines kept.
@@ -25,8 +25,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-TMP = Path(tempfile.mkdtemp(prefix="javis-codexhome-env-"))
-os.environ.setdefault("JAVIS_STATE_DIR", str(TMP / "state"))
+TMP = Path(tempfile.mkdtemp(prefix="unimate-codexhome-env-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", str(TMP / "state"))
 os.environ.pop("CODEX_HOME", None)
 HOME = TMP / "home"
 HOME.mkdir()
@@ -45,19 +45,19 @@ def check(name, cond, extra=""):
         _fails.append(name)
 
 
-# ---- 1. CODEX_HOME derived from Javis's home, folder created ----
+# ---- 1. CODEX_HOME derived from UNI MATE's home, folder created ----
 env = claude_cli.codex_env()
 check("codex_env sets CODEX_HOME = <home>/.codex", env.get("CODEX_HOME") == str(HOME / ".codex"), env.get("CODEX_HOME"))
 check("the folder exists so Codex can canonicalize it", (HOME / ".codex").is_dir())
 check("codex_env does not touch the server's own environment", "CODEX_HOME" not in os.environ)
-check("the rest of the environment is carried over", env.get("JAVIS_STATE_DIR") == os.environ["JAVIS_STATE_DIR"])
+check("the rest of the environment is carried over", env.get("UNIMATE_STATE_DIR") == os.environ["UNIMATE_STATE_DIR"])
 
 # ---- 2. user-set CODEX_HOME wins ----
 os.environ["CODEX_HOME"] = str(TMP / "custom")
 check("a CODEX_HOME the user set is kept", claude_cli.codex_env().get("CODEX_HOME") == str(TMP / "custom"))
 os.environ.pop("CODEX_HOME")
 
-# ---- 3. Javis does not know home either: add nothing ----
+# ---- 3. UNI MATE does not know home either: add nothing ----
 _orig_home = claude_cli._home_dir
 claude_cli._home_dir = lambda: Path("")
 check("unknown home adds no CODEX_HOME", "CODEX_HOME" not in claude_cli.codex_env())
@@ -94,7 +94,7 @@ errs = [e for e in evs if e.get("type") == "error"]
 check("Codex answers when Windows hides home (CODEX_HOME passed)",
       final.get("content") == "home=" + str(HOME / ".codex") and not errs, (final, errs))
 
-# Same fake Codex, but Javis cannot find home either: the error must be readable.
+# Same fake Codex, but UNI MATE cannot find home either: the error must be readable.
 claude_cli._home_dir = lambda: Path("")
 evs = run_turn()
 claude_cli._home_dir = _orig_home

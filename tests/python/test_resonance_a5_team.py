@@ -3,7 +3,7 @@
     python tests/run.py resonance_a5_team -v
 
 Kho SQLite thật, engine GIẢ hai vai (lượt review nhận `R.REVIEW_SYSTEM`), đồng hồ giả. Mục tiêu tạo qua `form_goal` thật
-(đường của tool javis_goal và /goal-requests; T31, T32 đi qua chính plugin và chính route), chạy qua `R.advance` thật
+(đường của tool unimate_goal và /goal-requests; T31, T32 đi qua chính plugin và chính route), chạy qua `R.advance` thật
 (cổng, scheduler, kho). Không gọi model thật. Tên ca theo ma trận nghiệm thu mục 15 của
 docs/superpowers/specs/2026-10-11-resonance-a5-maker-reviewer-design.md. Mỗi ca kiểm: trạng thái và lý do, lượt (maker,
 reviewer, tổng), số lần engine giả được gọi, và kết quả nào được phép dùng.
@@ -19,9 +19,9 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-_STATE = Path(tempfile.mkdtemp(prefix="javis-res-a5-"))
-os.environ["JAVIS_STATE_DIR"] = str(_STATE)
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+_STATE = Path(tempfile.mkdtemp(prefix="unimate-res-a5-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_STATE)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 import resonance as R  # noqa: E402
 import resonance_heartbeat as HB  # noqa: E402
@@ -137,8 +137,8 @@ check("T4 tin goal.review_exhausted (loại phải gửi)", ("goal.review_exhaus
 check("T4 không tự nới: chạy thêm không gọi model", (t.run(g), t.work.queries, t.rev.queries)[1:] == (3, 3))
 
 # ═══════════ T31 tới T36: gắn đội trong giao dịch tạo (R1) ═══════════
-# T31: tạo qua CHÍNH tool javis_goal (plugin), trong lượt chat của agent làm, kho mặc định của host.
-_spec = importlib.util.spec_from_file_location("javis_goal_plugin", str(Path(ROOT) / "system" / "plugins" / "javis-goal"
+# T31: tạo qua CHÍNH tool unimate_goal (plugin), trong lượt chat của agent làm, kho mặc định của host.
+_spec = importlib.util.spec_from_file_location("unimate_goal_plugin", str(Path(ROOT) / "system" / "plugins" / "unimate-goal"
                                                                           / "plugin.py"))
 PLUG = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(PLUG)
@@ -161,14 +161,14 @@ def _no_assign(*a, **k):
 RS.GoalStore.assign_goal = _no_assign
 mid, ref = t.next()
 with RA.turn(t.ag(), t.sid, mid, T.USER, t.brain, slug=T.MAKER, store=t.store):
-    out = asyncio.run(PLUG.javis_goal({"op": "create", **t.proposal()}, _Ctx(t.brain)))
+    out = asyncio.run(PLUG.unimate_goal({"op": "create", **t.proposal()}, _Ctx(t.brain)))
 RS.GoalStore.assign_goal = orig_assign
 g = t.store.find_by_key(t.owner, ref)
 tm = t.team(g)
 created = [e for e in t.store.events(t.owner, g.id) if e["kind"] in ("created", "team_attached")]
-# 0.142.0: bỏ người review cố định. Đường thật (tool javis_goal mở kho mặc định của host, không bật cờ của test) KHÔNG
+# 0.142.0: bỏ người review cố định. Đường thật (tool unimate_goal mở kho mặc định của host, không bật cờ của test) KHÔNG
 # gắn đội nữa, kể cả khi trợ lý còn một cặp làm/review cũ trong kho.
-check("T31 (0.142.0) tool javis_goal: mục tiêu mới KHÔNG có đội dù có cặp cũ, không lấy ngân sách đội 8, chỉ một sự kiện tạo",
+check("T31 (0.142.0) tool unimate_goal: mục tiêu mới KHÔNG có đội dù có cặp cũ, không lấy ngân sách đội 8, chỉ một sự kiện tạo",
       "Đã lập mục tiêu" in out and tm is None and t.g(g).budget_calls != 8
       and [e["kind"] for e in created] == ["created"], (out[:200], tm, created))
 try:

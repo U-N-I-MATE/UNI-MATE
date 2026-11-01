@@ -12,7 +12,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-fastapi-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-fastapi-"))
 import engine  # noqa: E402
 import fast_mode  # noqa: E402
 

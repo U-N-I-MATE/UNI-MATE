@@ -23,7 +23,7 @@ class QualificationEnvironmentTests(unittest.TestCase):
             result = self.m.dummy_environment(self.base, endpoint=self.endpoint)
             checked = self.m.validate_dummy_environment(result)
         self.assertEqual(self.base, before)
-        self.assertEqual(result, {**before, 'ANTHROPIC_API_KEY': 'javis-native-qualification-dummy', 'ANTHROPIC_BASE_URL': self.endpoint})
+        self.assertEqual(result, {**before, 'ANTHROPIC_API_KEY': 'unimate-native-qualification-dummy', 'ANTHROPIC_BASE_URL': self.endpoint})
         self.assertEqual(checked, result); self.assertIsNot(checked, result)
         checked['HOME'] = 'caller-mutation'
         self.assertNotEqual(result['HOME'], checked['HOME'])
@@ -44,7 +44,7 @@ class QualificationEnvironmentTests(unittest.TestCase):
 
     def test_base_rejects_secrets_auth_proxy_mode_knobs_and_malformed_fixed_values(self):
         for name in ('ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'CLAUDE_CONFIG_DIR', 'HTTP_PROXY', 'HTTPS_PROXY',
-                'ALL_PROXY', 'NO_PROXY', 'JAVIS_NATIVE_QUALIFICATION', 'PYTHONPATH'):
+                'ALL_PROXY', 'NO_PROXY', 'UNIMATE_NATIVE_QUALIFICATION', 'PYTHONPATH'):
             with self.subTest(name=name), self.assertRaises(ValueError): self.m.dummy_environment({**self.base, name: 'foreign'}, endpoint=self.endpoint)
         for changes in ({'ENABLE_TOOL_SEARCH': 'true'}, {'DISABLE_TELEMETRY': True}, {'HOME': ''}, {'TMP': 'bad\x00path'}):
             with self.subTest(changes=changes), self.assertRaises(ValueError): self.m.dummy_environment({**self.base, **changes}, endpoint=self.endpoint)

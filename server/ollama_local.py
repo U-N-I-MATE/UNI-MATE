@@ -2,21 +2,21 @@
 
 VÌ SAO MODULE NÀY KHÔNG GIỐNG grok_cli/antigravity_cli
 --------------------------------------------------------
-Với Grok Build hay Antigravity, Javis biết "đã cài chưa" bằng `shutil.which(<binary>)`, và
-điều đó ĐÚNG vì chính tiến trình Javis là thứ sẽ gọi cái binary đó để chat - hai bên chắc
+Với Grok Build hay Antigravity, UNI MATE biết "đã cài chưa" bằng `shutil.which(<binary>)`, và
+điều đó ĐÚNG vì chính tiến trình UNI MATE là thứ sẽ gọi cái binary đó để chat - hai bên chắc
 chắn cùng một máy.
 
 Ollama thì không. Nó nói chuyện qua HTTP, nên máy chạy Ollama có thể là:
-  - chính máy chạy Javis (bản native trên máy để bàn),
-  - hoặc một máy KHÁC hẳn (Javis trong Docker/VPS, Ollama ở máy nhà, nối qua LAN/Tailscale).
+  - chính máy chạy UNI MATE (bản native trên máy để bàn),
+  - hoặc một máy KHÁC hẳn (UNI MATE trong Docker/VPS, Ollama ở máy nhà, nối qua LAN/Tailscale).
 
 Cả module này xoay quanh việc KHÔNG giả định trường hợp thứ nhất:
-  - "đã sẵn sàng" = gọi được `GET /api/tags`, KHÔNG phải "có binary ollama trên máy Javis";
-  - quản lý model qua HTTP API, KHÔNG shell ra `ollama pull` (lệnh đó chỉ chạy trên máy Javis,
+  - "đã sẵn sàng" = gọi được `GET /api/tags`, KHÔNG phải "có binary ollama trên máy UNI MATE";
+  - quản lý model qua HTTP API, KHÔNG shell ra `ollama pull` (lệnh đó chỉ chạy trên máy UNI MATE,
     tức sai máy trong phần lớn trường hợp);
   - đọc RAM/GPU chỉ khi CHẮC CHẮN cùng máy (xem `same_host`), còn lại hỏi người dùng.
 
-Đây cũng là lý do bản demo đầu tiên phải bỏ nút "Cài Ollama tự động": Javis trong container
+Đây cũng là lý do bản demo đầu tiên phải bỏ nút "Cài Ollama tự động": UNI MATE trong container
 không có quyền, và cũng không có đường, chạy một lệnh cài trên máy vật lý của người dùng.
 """
 from __future__ import annotations
@@ -56,7 +56,7 @@ def chuan_hoa_endpoint(raw: str) -> str:
 
     Đây là ô NGƯỜI DÙNG NHẬP mà SERVER sẽ tự đi gọi, nên nó là một bề mặt SSRF: không rào thì
     một địa chỉ như `file://` hay `http://169.254.169.254` (metadata của máy ảo đám mây) biến
-    Javis thành cái loa đọc hộ. Rào ở đây, một chỗ, thay vì tin vào từng chỗ gọi.
+    UNI MATE thành cái loa đọc hộ. Rào ở đây, một chỗ, thay vì tin vào từng chỗ gọi.
     """
     u = (raw or "").strip().rstrip("/")
     if not u:
@@ -86,7 +86,7 @@ def chuan_hoa_endpoint(raw: str) -> str:
         raise LoiEndpoint(localefmt.chu("Chỉ nhập địa chỉ máy chủ, không kèm đường dẫn (vd http://127.0.0.1:11434)",
                                        "Enter only the server address, without a path (e.g. http://127.0.0.1:11434)"))
     # Gõ thiếu CỔNG thì thêm cổng mặc định của Ollama, đừng để rơi về 80. Vụ thật 02/09: chủ
-    # repo gõ mỗi IP máy chủ, Javis hiểu thành cổng 80, đi trúng web server của chính VPS đó và
+    # repo gõ mỗi IP máy chủ, UNI MATE hiểu thành cổng 80, đi trúng web server của chính VPS đó và
     # nhận 301 - một mã lỗi không nói lên điều gì về Ollama cả. Cổng 80 gần như không bao giờ
     # là Ollama, còn 11434 thì luôn luôn, nên đoán ở đây là đoán đúng.
     #
@@ -113,9 +113,9 @@ def la_ip_cong_khai(endpoint: str) -> bool:
 
 
 def same_host(endpoint: str) -> bool:
-    """Máy chạy Ollama có CHẮC CHẮN là máy chạy Javis không?
+    """Máy chạy Ollama có CHẮC CHẮN là máy chạy UNI MATE không?
 
-    Phải đúng CẢ HAI: địa chỉ trỏ về chính mình, VÀ Javis không nằm trong container. Thiếu vế
+    Phải đúng CẢ HAI: địa chỉ trỏ về chính mình, VÀ UNI MATE không nằm trong container. Thiếu vế
     sau thì `127.0.0.1` bên trong Docker lại bị hiểu là máy người dùng - đúng cái nhầm khiến
     tính năng này bị hoãn ngay từ đầu.
     """
@@ -286,7 +286,7 @@ async def pull_stream(endpoint: str, model: str, key: str | None = None):
 
 # ── Đọc cấu hình máy ────────────────────────────────────────────────────────────
 # Chỉ có nghĩa khi same_host() True. Ollama KHÔNG có endpoint nào trả về RAM/GPU của máy nó
-# đang chạy, nên với một địa chỉ ở xa thì Javis không có đường nào biết - phải hỏi người dùng.
+# đang chạy, nên với một địa chỉ ở xa thì UNI MATE không có đường nào biết - phải hỏi người dùng.
 
 def _chay(cmd: list) -> str:
     """Chạy một lệnh đọc thông tin, trả stdout hoặc "" nếu máy không có lệnh đó."""
@@ -303,9 +303,9 @@ def _chay(cmd: list) -> str:
 def _ram_gb() -> float:
     """Tổng RAM máy, tính GB. 0.0 = KHÔNG đọc được (người gọi phải hỏi người dùng).
 
-    psutil KHÔNG phải dependency của Javis, nên đừng trông vào nó: cả ba đường dưới đây đều
+    psutil KHÔNG phải dependency của UNI MATE, nên đừng trông vào nó: cả ba đường dưới đây đều
     là thư viện chuẩn. Thiếu đường Windows là máy Windows luôn trả 0 - mà "máy cá nhân cài
-    Javis" thì Windows là trường hợp thường gặp nhất.
+    UNI MATE" thì Windows là trường hợp thường gặp nhất.
     """
     try:
         import psutil
@@ -388,7 +388,7 @@ def la_apple_silicon() -> bool:
 
 
 def detect_specs() -> dict:
-    """Cấu hình máy ĐANG CHẠY JAVIS. Người gọi phải tự kiểm same_host() trước.
+    """Cấu hình máy ĐANG CHẠY UNI MATE. Người gọi phải tự kiểm same_host() trước.
 
     ĐỌC HỤT RAM THÌ source = "unknown", KHÔNG phải "auto". Khác biệt này quyết định: "auto"
     nghĩa là con số đáng tin, nên phần gợi ý im lặng dùng nó. Máy 64GB mà đọc hụt thành 0 rồi

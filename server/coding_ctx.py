@@ -139,7 +139,7 @@ class CodingToolContext:
         """Một dòng mô tả cho prompt. Rỗng khi không phải phiên coding.
 
         Ngắn là có chủ ý: engine Web không có system role, nên mọi chữ ở đây nằm trong chính
-        tin nhắn đầu và cạnh tranh chỗ với system prompt của Javis.
+        tin nhắn đầu và cạnh tranh chỗ với system prompt của UNI MATE.
         """
         if not self.active:
             return ""

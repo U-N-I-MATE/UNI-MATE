@@ -26,7 +26,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-messenger-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-messenger-")
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -86,7 +86,7 @@ s = channels.spec("messenger")
 check("messenger is in the channel registry", s is not None and s.kind == "bot")
 check("messenger can carry a dedicated bot, no groups, sends text and files",
       s and s.nl("bot") and not s.nl("nhom") and s.nl("gui_chu") and s.nl("gui_file")
-      and s.nl("tra_loi_tu_javis"), s and s.nang_luc)
+      and s.nl("tra_loi_tu_unimate"), s and s.nang_luc)
 ui = {k["id"]: k for k in channels.cho_giao_dien()}
 check("UI entry carries the webhook path", ui.get("messenger", {}).get("webhook") == "/messenger/webhook",
       ui.get("messenger"))

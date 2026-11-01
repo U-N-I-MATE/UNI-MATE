@@ -18,7 +18,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-pvault-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-pvault-"))
 
 import plugins_host  # noqa: E402
 import image_gen     # noqa: E402
@@ -32,7 +32,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-_BRAIN = tempfile.mkdtemp(prefix="javis-brain-that-")
+_BRAIN = tempfile.mkdtemp(prefix="unimate-brain-that-")
 
 # ---- 1. Tiền đề của bug: _resolve_vault rơi về Brain Default khi vault rỗng ----
 # Nếu assert này đỏ thì bug đã được sửa ở nơi khác và test cần viết lại.
@@ -93,24 +93,24 @@ def _spy_plugin_tools(mode, vault_root=None, *, scope_vault=True):
 plugins_host.plugin_tools = _spy_plugin_tools
 try:
     # Engine dựng với cwd = một thư mục KHÔNG phải brain (mô phỏng đúng CLAUDE_CWD của chat:
-    # gốc project, không có Javis/ ở gốc) - đây chính là hiện trường của Critical.
-    _cwd_khong_phai_brain = str(ROOT)   # gốc project, không có Javis/
-    check("tiền đề: cwd mô phỏng KHÔNG phải một brain (không có Javis/ ở gốc)",
-          not (Path(_cwd_khong_phai_brain) / "Javis").is_dir())
+    # gốc project, không có UniMate/ ở gốc) - đây chính là hiện trường của Critical.
+    _cwd_khong_phai_brain = str(ROOT)   # gốc project, không có UniMate/
+    check("tiền đề: cwd mô phỏng KHÔNG phải một brain (không có UniMate/ ở gốc)",
+          not (Path(_cwd_khong_phai_brain) / "UNI MATE").is_dir())
 
     eng = claude_sdk_engine.ClaudeSDK(cwd=_cwd_khong_phai_brain)
-    eng.javis_vault = _BRAIN   # _apply_mcp (main.py) đặt tường minh - KHÔNG suy từ cwd
+    eng.unimate_vault = _BRAIN   # _apply_mcp (main.py) đặt tường minh - KHÔNG suy từ cwd
     eng._plugins_server()
-    check("hành vi: plugin_tools nhận đúng brain đã đặt qua javis_vault (không None)",
+    check("hành vi: plugin_tools nhận đúng brain đã đặt qua unimate_vault (không None)",
           _seen.get("vault_root") == _BRAIN)
 
-    # ---- Hồi quy CHÍNH cho Critical: cwd không phải brain + chưa đặt javis_vault ----
+    # ---- Hồi quy CHÍNH cho Critical: cwd không phải brain + chưa đặt unimate_vault ----
     # (vd engine mới dựng, _apply_mcp chưa chạy) -> vault_root PHẢI là None, không được suy
     # ngầm từ cwd ra bất kỳ giá trị nào khác - đúng hành vi "chưa biết brain" thay vì "đoán sai".
     eng2 = claude_sdk_engine.ClaudeSDK(cwd=_cwd_khong_phai_brain)
     _seen.clear()
     eng2._plugins_server()
-    check("hồi quy: chưa đặt javis_vault -> vault_root None (không suy mù từ cwd)",
+    check("hồi quy: chưa đặt unimate_vault -> vault_root None (không suy mù từ cwd)",
           _seen.get("vault_root") is None)
 
     check("hành vi: scope_vault vẫn False (không nạp plugin riêng-của-vault)",

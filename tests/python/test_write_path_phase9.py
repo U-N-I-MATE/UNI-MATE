@@ -626,7 +626,7 @@ def test_proposal_offers_buttons_whose_label_carries_the_code(tmp_path, monkeypa
     text, _model = asyncio.run(main._execute_write_proposal(
         plan, "groq", "secret", "m", "off", ws, "session-nut", trace))
 
-    block = _re.search(r"<!--\s*JAVIS_ASK:\s*([\s\S]*?)\s*-->", text)
+    block = _re.search(r"<!--\s*UNIMATE_ASK:\s*([\s\S]*?)\s*-->", text)
     assert block, "phải có khối nút bấm"
     ask = _json.loads(block.group(1))
     labels = [o["label"] for o in ask["options"]]
@@ -650,7 +650,7 @@ def test_button_block_is_stripped_before_the_turn_is_stored():
     import main
 
     source = inspect.getsource(main._persist_turn)
-    assert "JAVIS_ASK" in source, "vẫn phải bóc khối trước khi lưu"
+    assert "UNIMATE_ASK" in source, "vẫn phải bóc khối trước khi lưu"
 
 
 def test_typed_confirmation_still_works_for_channels_without_buttons(tmp_path):
@@ -708,7 +708,7 @@ def test_a_proposal_without_a_code_is_refused_not_shown_as_a_dead_button(tmp_pat
     text, _model = asyncio.run(main._execute_write_proposal(
         plan, "groq", "secret", "m", "off", WS(), "session-nomã", trace))
 
-    assert "JAVIS_ASK" not in text, "không được bày nút không bấm được"
+    assert "UNIMATE_ASK" not in text, "không được bày nút không bấm được"
     assert "không tạo được mã duyệt" in text
     assert not calls, "và tuyệt đối không chạm tool"
 
@@ -748,12 +748,12 @@ def test_the_code_survives_block_stripping_so_a_reload_is_not_a_dead_end(tmp_pat
     text, _model = asyncio.run(main._execute_write_proposal(
         plan, "groq", "secret", "m", "off", WS(), "session-f5", trace))
 
-    block = _re.search(r"<!--\s*JAVIS_ASK:\s*([\s\S]*?)\s*-->", text)
+    block = _re.search(r"<!--\s*UNIMATE_ASK:\s*([\s\S]*?)\s*-->", text)
     code = _json.loads(block.group(1))["options"][0]["label"].split()[-1]
 
     # Đúng phép bóc mà bản lưu dùng.
-    stored = _re.sub(r"<!--\s*JAVIS_ASK:[\s\S]*?-->", "", text).strip()
-    assert "JAVIS_ASK" not in stored
+    stored = _re.sub(r"<!--\s*UNIMATE_ASK:[\s\S]*?-->", "", text).strip()
+    assert "UNIMATE_ASK" not in stored
     assert code in stored, "mã phải còn trong phần chữ, không chỉ trong khối nút"
     # Và gõ lại đúng câu đó vẫn duyệt được.
     assert canary.pending_for("session-f5", f"XAC NHAN {code}").action == "execute"

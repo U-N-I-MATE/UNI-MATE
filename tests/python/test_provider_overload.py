@@ -1,4 +1,4 @@
-"""A model overloaded on the provider's side reads as such, and Javis waits long enough between tries (0.335.0).
+"""A model overloaded on the provider's side reads as such, and UNI MATE waits long enough between tries (0.335.0).
 
     python tests/run.py provider_overload      (no network)
 
@@ -12,7 +12,7 @@ import asyncio
 import os
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-overload-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-overload-")
 
 import engine  # noqa: E402
 

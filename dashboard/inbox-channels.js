@@ -159,7 +159,7 @@
 
   function chatRows(a) {
     if (_chatsFor !== a.account_key) return '<div class="ht-empty small">' + esc(t("common.loading")) + '</div>';
-    var V = window.JavisInboxV5;
+    var V = window.UniMateInboxV5;
     if (!_chats.length) return '<div class="ht-empty small">' + esc(t(_chatQ ? "ht.khong_khop" : "ib.kn_no_chats")) + '</div>';
     return _chats.map(function (c) {
       var ten = c.title || c.customer_name || c.external_chat_id;
@@ -378,5 +378,5 @@
   // Number on the Channels tab: nicks and Pages that need something (an error, or no bot and none was declined).
   function jobs(list) { return (list || []).filter(needsWork).length; }
 
-  window.JavisInboxChannels = { render: render, jobs: jobs, paint: paint, openInfo: openInfo };
+  window.UniMateInboxChannels = { render: render, jobs: jobs, paint: paint, openInfo: openInfo };
 })();

@@ -15,7 +15,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-seed-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-seed-"))
 import brain_seed_i18n as bs  # noqa: E402
 import localefmt  # noqa: E402
 import meta_tools  # noqa: E402
@@ -40,7 +40,7 @@ def _hang_so(ten):
 
 
 for ten, goc in (("dashboard", _hang_so("DASHBOARD_SEED")), ("memory", _hang_so("MEMORY_SEED")),
-                 ("javis_readme", _hang_so("JAVIS_README")),
+                 ("unimate_readme", _hang_so("UNIMATE_README")),
                  ("wiki_index", meta_tools._WIKI_INDEX), ("wiki_log", meta_tools._WIKI_LOG),
                  ("open_questions", meta_tools._OPEN_QUESTIONS), ("session_handoff", meta_tools._SESSION_HANDOFF)):
     check(f"bản tiếng Việt của '{ten}' giống từng ký tự hằng số gốc", bs.HAT_GIONG[ten]["vi"] == goc)
@@ -77,7 +77,7 @@ check("mã rác thì không làm gì", bs.doi_ngon_ngu(root, "") == [] and bs.do
 
 # Phần gắn vào server: tạo file theo chon(), chốt ngôn ngữ thì đổi, learn.py nhận dòng giữ chỗ.
 _main_src = (SERVER / "main.py").read_text(encoding="utf-8")
-for hs in ("MEMORY_SEED", "JAVIS_README", "DASHBOARD_SEED"):
+for hs in ("MEMORY_SEED", "UNIMATE_README", "DASHBOARD_SEED"):
     check(f"main.py ghi {hs} qua brain_seed_i18n.chon()", f"brain_seed_i18n.chon({hs})" in _main_src)
 check("lưu ui_lang thì đổi ngôn ngữ file hạt giống của mọi brain",
       re.search(r'lc\["ui_lang"\] = [^\n]*\n(?:[^\n]*\n){0,6}?\s*_doi_ngon_ngu_hat_giong\(lc\["ui_lang"\]\)', _main_src))

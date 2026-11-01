@@ -1,4 +1,4 @@
-"""Plugin desktop-apps: mở / đóng / liệt kê app trên máy chạy Javis.
+"""Plugin desktop-apps: mở / đóng / liệt kê app trên máy chạy UNI MATE.
 
     python tests/run.py desktop_apps
 
@@ -20,7 +20,7 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-dapps-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-dapps-")
 
 import plugins_host  # noqa: E402
 import deploy_info  # noqa: E402
@@ -79,7 +79,7 @@ m.time.sleep = lambda s: None   # đóng lịch sự có chờ 1,5 giây - bỏ 
 
 
 class Ctx:
-    vault_root = str(Path(tempfile.mkdtemp(prefix="javis-brain-")))
+    vault_root = str(Path(tempfile.mkdtemp(prefix="unimate-brain-")))
 
 
 ctx = Ctx()
@@ -150,7 +150,7 @@ out = m._open({"name": "chrome"}, ctx)
 check("không đưa lên được (app nằm khay) -> rơi về mở như cũ", len(calls["launch"]) == n_truoc + 1)
 state["running"] = list(RUNNING)
 out = m._open({"name": "photoshop"}, ctx)
-check("mở app không có: ERROR [failed] + gợi ý gọi list", out.startswith("ERROR: [failed]") and "javis_app_list" in out)
+check("mở app không có: ERROR [failed] + gợi ý gọi list", out.startswith("ERROR: [failed]") and "unimate_app_list" in out)
 out = m._open({"name": "zallo app"}, ctx)
 check("tên gần giống mà không chắc: [ask], không mở bừa", out.startswith("[ask]") and "Zalo" in out)
 n_truoc = len(calls["launch"])
@@ -194,9 +194,9 @@ check("đóng: khớp theo tiêu đề cửa sổ tiếng Việt", img == "subli
 img, why = m.resolve_close("explorer", RUNNING)
 check("đóng: explorer là hệ thống -> chặn", img == "" and "hệ thống" in why)
 img, why = m.resolve_close("python", RUNNING)
-check("đóng: python (chính Javis) -> chặn", img == "")
+check("đóng: python (chính UNI MATE) -> chặn", img == "")
 img, why = m.resolve_close("photoshop", RUNNING)
-check("đóng: không chạy -> lý do nêu javis_app_list", img == "" and "javis_app_list" in why)
+check("đóng: không chạy -> lý do nêu unimate_app_list", img == "" and "unimate_app_list" in why)
 
 out = m._close({"name": "chrome"}, ctx)
 check("đóng lịch sự: gọi _kill force=False", calls["kill"][-1] == ("chrome.exe", False))
@@ -237,11 +237,11 @@ desc = {x["slug"]: x for x in plugins_host.describe(None)}
 check("manifest: có slug desktop-apps, enabled", desc.get("desktop-apps", {}).get("enabled") is True)
 check("manifest: nạp không lỗi", desc.get("desktop-apps", {}).get("loaded") is True and not desc["desktop-apps"]["error"])
 tools, route = plugins_host.plugin_tools("full", None)
-mm = {t["fn"]: route[t["fn"]]["required_mode"] for t in tools if t["fn"].startswith("javis_app_")}
+mm = {t["fn"]: route[t["fn"]]["required_mode"] for t in tools if t["fn"].startswith("unimate_app_")}
 check("mức quyền: list readonly, open safe, close full",
-      mm == {"javis_app_list": "readonly", "javis_app_open": "safe", "javis_app_close": "full"})
+      mm == {"unimate_app_list": "readonly", "unimate_app_open": "safe", "unimate_app_close": "full"})
 tools_s, route_s = plugins_host.plugin_tools("suggest", None)
-res = asyncio.run(route_s["javis_app_open"]["call"]({"name": "chrome"}))
+res = asyncio.run(route_s["unimate_app_open"]["call"]({"name": "chrome"}))
 check("chế độ suggest: mở app bị chặn bằng code", res.startswith("ERROR") and "mức quyền" in res)
 
 if _fails:

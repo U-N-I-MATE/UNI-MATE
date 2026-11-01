@@ -22,7 +22,7 @@ import task_store  # noqa: E402
 import team_runner as TR  # noqa: E402
 import team_store  # noqa: E402
 
-TEMP = Path(tempfile.mkdtemp(prefix="javis-judge-world-"))
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-judge-world-"))
 _n = [0]
 
 fails: list = []

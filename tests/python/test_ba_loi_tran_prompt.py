@@ -18,7 +18,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-baloi-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-baloi-"))
 
 import compaction  # noqa: E402
 import plugins_host  # noqa: E402
@@ -82,7 +82,7 @@ check("AGY_BOOTSTRAP không bị hạ quá tay", compaction.AGY_BOOTSTRAP_MAX_CH
       f"[hiện {compaction.AGY_BOOTSTRAP_MAX_CHARS:,}]")
 
 # Env vẫn ghi đè được, và vẫn bị kẹp sàn 20.000 như trước.
-check("AGY_BOOTSTRAP đọc được từ env", "JAVIS_AGY_BOOTSTRAP_MAX_CHARS" in
+check("AGY_BOOTSTRAP đọc được từ env", "UNIMATE_AGY_BOOTSTRAP_MAX_CHARS" in
       open(os.path.join(SERVER, "compaction.py"), encoding="utf-8").read())
 
 
@@ -119,8 +119,8 @@ async def _base(args):
 _hoan = _vá_hook({"pre_tool_call": [lambda **kw: {"deny": "ghi sai thư mục"}]})
 try:
     _da_chay.clear()
-    goi = plugins_host.wrap_with_hooks("javis_write_file", _base, "full", None)
-    ra = _chay(goi({"path": "Javis/agents/x.md"}))
+    goi = plugins_host.wrap_with_hooks("unimate_write_file", _base, "full", None)
+    ra = _chay(goi({"path": "UniMate/agents/x.md"}))
     check("hook deny thì tool KHÔNG chạy", _da_chay == [], f"[đã chạy {len(_da_chay)} lần]")
     check("hook deny thì model nhận đúng lý do", "ghi sai thư mục" in ra, f"[{ra[:80]}]")
     check("câu báo nói được làm gì tiếp", "làm lại" in ra.lower() or "đừng gọi lại" in ra.lower())
@@ -131,8 +131,8 @@ finally:
 _hoan = _vá_hook({"pre_tool_call": [lambda **kw: {"args": {"path": "agents/x.md"}}]})
 try:
     _da_chay.clear()
-    goi = plugins_host.wrap_with_hooks("javis_write_file", _base, "full", None)
-    ra = _chay(goi({"path": "Javis/agents/x.md"}))
+    goi = plugins_host.wrap_with_hooks("unimate_write_file", _base, "full", None)
+    ra = _chay(goi({"path": "UniMate/agents/x.md"}))
     check("hook sửa được tham số", _da_chay == [{"path": "agents/x.md"}], f"[{_da_chay}]")
     check("sửa tham số xong tool vẫn chạy", ra == "ĐÃ CHẠY")
 finally:
@@ -146,7 +146,7 @@ def _hong(**kw):
 _hoan = _vá_hook({"pre_tool_call": [_hong]})
 try:
     _da_chay.clear()
-    goi = plugins_host.wrap_with_hooks("javis_read_file", _base, "full", None)
+    goi = plugins_host.wrap_with_hooks("unimate_read_file", _base, "full", None)
     ra = _chay(goi({"path": "a.md"}))
     check("hook hỏng KHÔNG khoá được tool (fail-open)", ra == "ĐÃ CHẠY" and len(_da_chay) == 1)
 finally:
@@ -156,7 +156,7 @@ finally:
 _hoan = _vá_hook({"pre_tool_call": [lambda **kw: None]})
 try:
     _da_chay.clear()
-    goi = plugins_host.wrap_with_hooks("javis_read_file", _base, "full", None)
+    goi = plugins_host.wrap_with_hooks("unimate_read_file", _base, "full", None)
     ra = _chay(goi({"path": "a.md"}))
     check("hook trả None thì không đổi gì", ra == "ĐÃ CHẠY" and len(_da_chay) == 1)
 finally:
@@ -179,7 +179,7 @@ def _h2(**kw):
 _hoan = _vá_hook({"pre_tool_call": [_h1, _h2]})
 try:
     _da_chay.clear()
-    goi = plugins_host.wrap_with_hooks("javis_write_file", _base, "full", None)
+    goi = plugins_host.wrap_with_hooks("unimate_write_file", _base, "full", None)
     _chay(goi({"path": "x"}))
     check("deny đầu tiên thắng, hook sau không chạy", _da_goi == ["h1"], f"[{_da_goi}]")
 finally:
@@ -192,7 +192,7 @@ _hoan = _vá_hook({
     "post_tool_call": [lambda **kw: _thay.append(kw.get("denied"))],
 })
 try:
-    goi = plugins_host.wrap_with_hooks("javis_write_file", _base, "full", None)
+    goi = plugins_host.wrap_with_hooks("unimate_write_file", _base, "full", None)
     _chay(goi({"path": "x"}))
     check("lời gọi bị chặn vẫn vào post_tool_call kèm cờ denied", _thay == [True], f"[{_thay}]")
 finally:

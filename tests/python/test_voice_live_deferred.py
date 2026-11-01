@@ -3,7 +3,7 @@
     python tests/run.py voice_live_deferred
 
 Gemini 3.1 Flash Live cannot run a tool in the background: until the tool answers, the model says
-nothing and hears nothing useful. ask_javis runs a whole brain turn (5 to 60 seconds), so the call
+nothing and hears nothing useful. ask_unimate runs a whole brain turn (5 to 60 seconds), so the call
 froze. Now the route answers the call at once (DEFERRED_ACK) and delivers the brain's result later,
 waiting for a pause first. Gemini 2.5 (NON_BLOCKING) and the other providers are unchanged.
 """
@@ -46,7 +46,7 @@ class GeminiProviderTests(unittest.TestCase):
 
     def test_prompts_carry_no_sample_filler(self):
         # A quoted sample is what the model repeats word for word, in the sample's language.
-        self.assertNotIn("để mình xem", voice_live.ASK_JAVIS_TOOL["description"])
+        self.assertNotIn("để mình xem", voice_live.ASK_UNIMATE_TOOL["description"])
         self.assertIn("MỘT câu", voice_live.SYSTEM_PROMPT)
 
 
@@ -56,7 +56,7 @@ class DeferredRouteTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
     async def test_call_is_answered_at_once_and_result_arrives_late(self):
         async def script(prov, h):
             prov.quiet = False   # the person is still talking when the result is ready
-            await prov.q.put({"type": "tool_call", "id": "g1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "g1", "name": "ask_unimate",
                               "args": {"request": "doanh thu hôm nay"}})
             await h.until(lambda: prov.results, "the tool call is answered before the brain runs")
             self.assertEqual(prov.results[0], ("g1", voice_live.DEFERRED_ACK))
@@ -75,10 +75,10 @@ class DeferredRouteTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
 
     async def test_progress_question_answers_the_call_itself(self):
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "g1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "g1", "name": "ask_unimate",
                               "args": {"request": "tổng hợp email tuần này"}})
             await h.until(lambda: len(h.asks) == 1, "the brain runs")
-            await prov.q.put({"type": "tool_call", "id": "g2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "g2", "name": "ask_unimate",
                               "args": {"request": "xong chưa em"}})
             await h.until(lambda: any(c == "g2" for c, _ in prov.acks), "the progress call gets its own answer")
             self.assertEqual(prov.status_calls, [], "a deferring provider must not leave g2 unanswered")

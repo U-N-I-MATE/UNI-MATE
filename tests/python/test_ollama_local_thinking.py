@@ -3,8 +3,8 @@
     python tests/run.py ollama_local_thinking      (NO network, NO Ollama: httpx MockTransport)
 
 Reported 2026-10-11 by the Mac mini user (qwen3 on Ollama, with a patch tested on the machine):
-  1. qwen3 thinks BY DEFAULT. Javis sent no thinking switch to Ollama (Local), with or without tools, so a CSV row count spent
-     the whole turn thinking (69 s) and Javis said "Ollama (Local) returned nothing"; a rerun was still thinking after 5 min.
+  1. qwen3 thinks BY DEFAULT. UNI MATE sent no thinking switch to Ollama (Local), with or without tools, so a CSV row count spent
+     the whole turn thinking (69 s) and UNI MATE said "Ollama (Local) returned nothing"; a rerun was still thinking after 5 min.
   2. The Effort button is shared by every model: "Medium" for Claude made the local model ramble, "Off" for the local model
      took thinking away from Claude.
   3. A turn that only thought said "returned nothing", which points at a broken connection instead of the real cause.
@@ -17,7 +17,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-ollama-think-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-ollama-think-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -82,7 +82,7 @@ class _Client(_RealClient):
 
 engine.httpx.AsyncClient = _Client
 MSGS = [{"role": "user", "content": "file khách có bao nhiêu dòng?"}]
-TOOLS = [{"fn": "javis_read_file", "description": "đọc file", "schema": {"type": "object", "properties": {}}}]
+TOOLS = [{"fn": "unimate_read_file", "description": "đọc file", "schema": {"type": "object", "properties": {}}}]
 
 
 def stream(reasoning):

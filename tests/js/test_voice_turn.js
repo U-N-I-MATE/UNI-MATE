@@ -38,7 +38,7 @@ check("interim mới tính lại ms (bounce)", a.find(x => x.type === "arm_endpo
 check("normalize: bỏ dấu câu, thường hoá", T.normalize("  Khoan, ĐÃ! ") === "khoan đã");
 check("isWaitPhrase: 'khoan'", T.isWaitPhrase("khoan"));
 check("isWaitPhrase: 'Khoan đã nhé'", T.isWaitPhrase("Khoan đã nhé"));
-check("isWaitPhrase: 'Javis ơi, đợi anh chút'", T.isWaitPhrase("Javis ơi, đợi anh chút"));
+check("isWaitPhrase: 'Uni ơi, đợi anh chút'", T.isWaitPhrase("Uni ơi, đợi anh chút"));
 check("isWaitPhrase: 'để mình nghĩ đã'", T.isWaitPhrase("để mình nghĩ đã"));
 check("isWaitPhrase: 'hold on'", T.isWaitPhrase("hold on"));
 check("isWaitPhrase: câu dài 'khoan, mở chrome' KHÔNG phải cụm chờ", !T.isWaitPhrase("khoan, mở chrome"));
@@ -55,7 +55,7 @@ check("rồi gửi bình thường", has(a, "commit") && w.state === "processing
 const w2 = new T.VoiceTurn();
 w2.micOn(); w2.ttsStart();
 a = w2.endpoint("từ từ");
-check("CHỜ khi Javis đang đọc: dừng đọc + chờ", has(a, "stop_tts") && has(a, "hold") && w2.state === "waiting_for_user");
+check("CHỜ khi UNI MATE đang đọc: dừng đọc + chờ", has(a, "stop_tts") && has(a, "hold") && w2.state === "waiting_for_user");
 a = w2.waitTimeout();
 check("hết 90 giây chờ -> về listening", w2.state === "listening");
 
@@ -69,7 +69,7 @@ check("isStopPhrase V3: 'thôi dừng việc đó lại' KHÔNG phải DỪNG", 
 check("endpointing V3: kết bằng 'ừm' -> chờ dài", v.delayFor("cho anh xem doanh thu ừm") === 2200);
 check("endpointing V3: kết bằng 'kiểu' -> chờ dài", v.delayFor("anh muốn nó kiểu") === 2200);
 check("endpointing V3: 'vậy à' là câu hỏi xong -> chờ ngắn", v.delayFor("hôm nay lỗ vậy à") === 800);
-check("chỉ gọi Javis -> chờ thêm để nghe phần yêu cầu", v.delayFor("Javis ơi") === 2200);
+check("chỉ gọi Uni -> chờ thêm để nghe phần yêu cầu", v.delayFor("Uni ơi") === 2200);
 
 // ---- 3. Cụm DỪNG ----
 check("isStopPhrase: 'thôi'", T.isStopPhrase("thôi"));
@@ -83,7 +83,7 @@ check("DỪNG khi đang đọc: stop_tts, không commit", has(a, "stop_tts") && 
 const s2 = new T.VoiceTurn();
 s2.micOn(); s2.turnStart();
 a = s2.endpoint("dừng lại");
-// 0.65.28: trong cuộc gọi, lượt chỉ dừng khi bấm lại nút mic. "dừng lại" làm Javis im, lượt viết nốt.
+// 0.65.28: trong cuộc gọi, lượt chỉ dừng khi bấm lại nút mic. "dừng lại" làm UNI MATE im, lượt viết nốt.
 check("DỪNG khi đang xử lý: chỉ stop_tts, KHÔNG stop_turn, không commit",
   has(a, "stop_tts") && !has(a, "stop_turn") && !has(a, "commit") && s2.processing === true);
 
@@ -158,8 +158,8 @@ a = r.wsDown();
 check("mất WS: reconnecting đè lên processing", r.state === "reconnecting");
 a = r.wsUp();
 check("WS về: trở lại processing", r.state === "processing");
-a = r.toolCall("javis_ui");
-check("tool_call: state processing kèm tool", r.state === "processing" && a[a.length - 1].tool === "javis_ui");
+a = r.toolCall("unimate_ui");
+check("tool_call: state processing kèm tool", r.state === "processing" && a[a.length - 1].tool === "unimate_ui");
 a = r.turnDone();
 check("turn_done: về listening, tool xoá", r.state === "listening" && r.tool === "");
 a = r.errorMic("not-allowed");

@@ -1,6 +1,6 @@
 """Regression (field report 0.270, code 25): a plan limit that names a CLOCK time.
 
-Claude on the Pro plan prints "You've hit your limit · resets 1:50am (Asia/Bangkok)". Javis only
+Claude on the Pro plan prints "You've hit your limit · resets 1:50am (Asia/Bangkok)". UNI MATE only
 read delays ("resets in 2 hours"), so the card said the provider did not say when it reopens and
 no automatic retry was scheduled. The clock time is now read in the tz in parentheses (zoneinfo),
 or in local time without one, and the NEXT occurrence of that time is the reset.

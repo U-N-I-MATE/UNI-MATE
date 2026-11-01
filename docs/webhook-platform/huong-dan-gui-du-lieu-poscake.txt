@@ -1,4 +1,4 @@
-HƯỚNG DẪN GỬI DỮ LIỆU POSCAKE THẬT CHO JAVIS (để đóng mục §16.6 và §17)
+HƯỚNG DẪN GỬI DỮ LIỆU POSCAKE THẬT CHO UNI MATE (để đóng mục §16.6 và §17)
 
 Mục đích: lấy vài lần POSCake gửi webhook thật, che thông tin khách, rồi gửi cho em. Em dùng chúng để kiểm bộ lọc và luồng gửi sang Apps Script, plugin Zalo đúng như đơn thật, không cần đụng tới khách thật.
 
@@ -12,7 +12,7 @@ CÁCH 1 (dễ nhất): bắt dữ liệu bằng webhook.site
 
 2. Vào POSCake, phần cài đặt webhook của shop (thường nằm trong Cấu hình hoặc Tích hợp).
    - THÊM địa chỉ webhook.site ở bước 1 làm một địa chỉ nhận mới.
-   - KHÔNG xoá địa chỉ Javis đang chạy, để shop vẫn hoạt động bình thường.
+   - KHÔNG xoá địa chỉ UNI MATE đang chạy, để shop vẫn hoạt động bình thường.
    - Chọn các loại sự kiện về đơn hàng mà anh đang dùng (tạo đơn, đổi trạng thái, thanh toán, huỷ...).
 
 3. Tạo đơn thử: 3-5 đơn cho mỗi loại sự kiện.
@@ -40,9 +40,9 @@ CÁCH 1 (dễ nhất): bắt dữ liệu bằng webhook.site
 Lưu ý: webhook.site là dịch vụ bên ngoài, dữ liệu đi qua máy chủ của họ. Vì vậy chỉ dùng đơn thử, không dùng đơn của khách thật.
 
 
-CÁCH 2: anh đã có bản Javis mới trên máy staging
+CÁCH 2: anh đã có bản UNI MATE mới trên máy staging
 
-Nếu anh dựng bản Javis 0.274.0 (commit 346707cf) trên một máy staging riêng, không phải máy đang bán hàng, thì không cần webhook.site:
+Nếu anh dựng bản UNI MATE 0.274.0 (commit 346707cf) trên một máy staging riêng, không phải máy đang bán hàng, thì không cần webhook.site:
 - Trỏ POSCake tới webhook của bản staging, tạo đơn thử như bước 3.
 - Mở trang Webhook, phần Sự kiện, chọn từng sự kiện, bấm xem để lấy mã sự kiện (ev_...).
 - Chạy lệnh trong docs/webhook-platform/staging-pilot-pack.md, mục "Capture": công cụ tự che thông tin khách và tạo file mẫu.

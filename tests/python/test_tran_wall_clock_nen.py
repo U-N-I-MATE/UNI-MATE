@@ -10,7 +10,7 @@ có thể chạy 30-60 phút.
 
 Trần này là LƯỚI ĐỠ chống fork treo vô hạn chứ không phải quản chi phí (fork đơ có
 idle-timeout riêng bắt sớm hơn), nên nó phải đặt theo việc dài nhất hợp lệ. Nay cả ba nơi
-dùng chung aux_engine.bg_max_wall_s(): mặc định 3600s, env JAVIS_BG_MAX_WALL_S đổi được.
+dùng chung aux_engine.bg_max_wall_s(): mặc định 3600s, env UNIMATE_BG_MAX_WALL_S đổi được.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
@@ -29,15 +29,15 @@ def check(ten, cond, them=""):
 import aux_engine  # noqa: E402
 
 # ---- 1. Helper: mặc định + env override + chống giá trị rác ----
-os.environ.pop("JAVIS_BG_MAX_WALL_S", None)
+os.environ.pop("UNIMATE_BG_MAX_WALL_S", None)
 check("mặc định 3600s (1 giờ) - đủ cho việc nền 30-60 phút",
       aux_engine.bg_max_wall_s() == 3600)
-os.environ["JAVIS_BG_MAX_WALL_S"] = "7200"
-check("env JAVIS_BG_MAX_WALL_S đổi được trần", aux_engine.bg_max_wall_s() == 7200)
+os.environ["UNIMATE_BG_MAX_WALL_S"] = "7200"
+check("env UNIMATE_BG_MAX_WALL_S đổi được trần", aux_engine.bg_max_wall_s() == 7200)
 for rac in ("abc", "-5", "0", ""):
-    os.environ["JAVIS_BG_MAX_WALL_S"] = rac
+    os.environ["UNIMATE_BG_MAX_WALL_S"] = rac
     check(f"giá trị rác {rac!r} rơi về mặc định", aux_engine.bg_max_wall_s() == 3600)
-os.environ.pop("JAVIS_BG_MAX_WALL_S", None)
+os.environ.pop("UNIMATE_BG_MAX_WALL_S", None)
 
 # ---- 2. Cả ba nơi chạy nền dùng CHUNG helper, không còn số cứng ----
 for f, mo_ta in (("reminders.py", "nhắc hẹn/cron"), ("tasks.py", "việc Kanban"),

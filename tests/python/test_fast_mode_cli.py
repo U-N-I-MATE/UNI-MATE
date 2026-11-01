@@ -8,7 +8,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-fastcli-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-fastcli-"))
 import fast_mode  # noqa: E402
 import codex_models  # noqa: E402
 import main as srv  # noqa: E402
@@ -54,7 +54,7 @@ check("background Claude Code runs (never touched by _cli_fast) send fastMode fa
       json.loads(getattr(e2._options(), "settings", None) or "{}").get("fastMode") is False,
       getattr(e2._options(), "settings", None))
 
-# The SDK passes Claude Code's init data through; Javis remembers the real Fast mode state.
+# The SDK passes Claude Code's init data through; UNI MATE remembers the real Fast mode state.
 from claude_agent_sdk import SystemMessage  # noqa: E402
 map_message(SystemMessage(subtype="init", data={"session_id": "x", "fast_mode_state": "cooldown",
                                                 "fast_mode_disabled_reason": "rate limit"}))
@@ -94,8 +94,8 @@ class _Base:
     cwd = "."
     tag = "loop"
     system_prompt = "x"
-    javis_vault = None
-    javis_mode = "auto"
+    unimate_vault = None
+    unimate_mode = "auto"
 
 
 bg = aux_engine._build_codex({"model": "gpt-x"}, _Base(), "auto", "loop")

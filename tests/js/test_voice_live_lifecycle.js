@@ -35,8 +35,8 @@ function harness() {
   function microphone() { const track = {stopped: false, stop() { this.stopped = true; }}; return {track, getTracks: () => [track]}; }
   // The server sends `ready` once the provider is up; without it start() waits 25 s (a fake timer here), so the old
   // harness never got past its first case and node exited quietly with code 0 (fixed 0.339.0).
-  async function connect(tag = '') { const promise = box.window.JavisVoiceLive.start(options(tag)); const mic = microphone(); requests.at(-1).resolve(mic); await tick(); sockets.at(-1).open(); await tick(); sockets.at(-1).onmessage({data: JSON.stringify({type: 'ready'})}); assert.equal(await promise, true); return mic; }
-  return {api: box.window.JavisVoiceLive, options, microphone, requests, sockets, contexts, timers, events, connect};
+  async function connect(tag = '') { const promise = box.window.UniMateVoiceLive.start(options(tag)); const mic = microphone(); requests.at(-1).resolve(mic); await tick(); sockets.at(-1).open(); await tick(); sockets.at(-1).onmessage({data: JSON.stringify({type: 'ready'})}); assert.equal(await promise, true); return mic; }
+  return {api: box.window.UniMateVoiceLive, options, microphone, requests, sockets, contexts, timers, events, connect};
 }
 
 const cases = [

@@ -13,12 +13,12 @@
     "server/improvement_operation_adapter.py": "3be10b51ab3182b8f21269320530c03e1d2c39e03ee62c1603806f5ebecec18a"
   },
   "test_commands": [
-    "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_owned_verification.py -v",
-    "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_trial_runner.py TrialRunnerTests.test_cancelled_verification_retains_execution_until_thread_settles -v",
-    "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_operation_runner.py OperationRunnerTests.test_cancelled_verification_retains_execution_until_thread_settles -v",
-    "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_trial_runner.py -v",
-    "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_operation_runner.py -v",
-    "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_claude.py -v"
+    "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_owned_verification.py -v",
+    "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_trial_runner.py TrialRunnerTests.test_cancelled_verification_retains_execution_until_thread_settles -v",
+    "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_operation_runner.py OperationRunnerTests.test_cancelled_verification_retains_execution_until_thread_settles -v",
+    "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_trial_runner.py -v",
+    "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_operation_runner.py -v",
+    "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B tests/python/test_improvement_claude.py -v"
   ],
   "author_runs": [
     {

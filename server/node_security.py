@@ -1,8 +1,8 @@
 """Warn the owner when this machine's Node.js misses the latest Node.js security release.
 
-Javis runs Claude Code, Codex and every npx-based MCP server on the machine's own Node.js, so a
+UNI MATE runs Claude Code, Codex and every npx-based MCP server on the machine's own Node.js, so a
 Node.js vulnerability reaches all of them. The Docker image pins a patched release; a native or
-Windows install uses whatever Node.js the owner installed, and Javis cannot upgrade it for them
+Windows install uses whatever Node.js the owner installed, and UNI MATE cannot upgrade it for them
 (that needs sudo, Homebrew or winget). So this module compares `node --version` with the first
 patched release of each supported line and builds ONE News item that says what to do.
 
@@ -75,23 +75,23 @@ def node_version():
 def _fix_steps(mode: str) -> str:
     if mode == "docker":
         return localefmt.chu(
-            "Cập nhật Javis lên bản mới nhất (trang Cài đặt, mục Cập nhật, hoặc chạy ./update.sh trên VPS). "
+            "Cập nhật UNI MATE lên bản mới nhất (trang Cài đặt, mục Cập nhật, hoặc chạy ./update.sh trên VPS). "
             "Ảnh Docker mới đã có Node.js 22.23.4.",
-            "Update Javis to the latest version (Settings, Updates, or ./update.sh on the VPS). "
+            "Update UNI MATE to the latest version (Settings, Updates, or ./update.sh on the VPS). "
             "The new Docker image ships Node.js 22.23.4.")
     if mode == "windows":
         return localefmt.chu(
             "Mở PowerShell và chạy: winget upgrade OpenJS.NodeJS.LTS (hoặc tải bản LTS ở nodejs.org). "
-            "Xong thì khởi động lại Javis.",
+            "Xong thì khởi động lại UNI MATE.",
             "Open PowerShell and run: winget upgrade OpenJS.NodeJS.LTS (or download the LTS from nodejs.org). "
-            "Then restart Javis.")
+            "Then restart UNI MATE.")
     return localefmt.chu(
         "Cài Node.js 22.23.4, 24.22.1, 26.12.1 hoặc mới hơn, ví dụ: brew upgrade node (Mac), "
         "sudo apt-get install --only-upgrade nodejs (Ubuntu dùng NodeSource), nvm install 22 (nvm). "
-        "Hoặc chạy lại install.sh. Xong thì khởi động lại Javis.",
+        "Hoặc chạy lại install.sh. Xong thì khởi động lại UNI MATE.",
         "Install Node.js 22.23.4, 24.22.1, 26.12.1 or newer, for example: brew upgrade node (Mac), "
         "sudo apt-get install --only-upgrade nodejs (Ubuntu with NodeSource), nvm install 22 (nvm). "
-        "Or run install.sh again. Then restart Javis.")
+        "Or run install.sh again. Then restart UNI MATE.")
 
 
 def notice(version, mode: str):

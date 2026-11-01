@@ -1,6 +1,6 @@
 # Nhóm chat 0.142.0: hết im lặng, tạo nhóm kiểu Zalo, tab Công việc, Auto
 
-Ngày 14/10/2026. Nhánh `claude/compassionate-wozniak-z5umfl`, PR [#651](https://github.com/blogminhquy/javis-os/pull/651).
+Ngày 14/10/2026. Nhánh `claude/compassionate-wozniak-z5umfl`, PR [#651](https://github.com/U-N-I-MATE/UNI-MATE/pull/651).
 Nền: `main` `063750a` (0.141.0). Số phiên bản giữ chỗ ngay đầu nhánh (commit đầu, PR nháp mang số 0.142.0).
 
 **Đánh số lại khi phát hành:** trong lúc làm, `main` lên 0.145.0 (#652, #653 đang mở giữ 0.143.0, 0.144.0), nên bản này
@@ -30,7 +30,7 @@ Hai lỗi chồng nhau:
 | Mục | Thay đổi | File chính |
 |---|---|---|
 | Hợp đồng engine | `team_engine.py`: model của trợ lý, thiếu hay chưa cấu hình được thì model chính (ghi chú trên tin vì sao). Không dùng model việc nền, không chuỗi dự phòng, không nâng quyền | `server/team_engine.py`, `main._team_engine_for` |
-| Codex chỉ chữ | Không profile `-p`, `mcp_servers={}`, `web_search="disabled"`, tắt công cụ native bằng `features.*=false`, LUÔN `--sandbox read-only` (kể cả `JAVIS_CODEX_SANDBOX=off`) | `team_engine.codex_text_only` |
+| Codex chỉ chữ | Không profile `-p`, `mcp_servers={}`, `web_search="disabled"`, tắt công cụ native bằng `features.*=false`, LUÔN `--sandbox read-only` (kể cả `UNIMATE_CODEX_SANDBOX=off`) | `team_engine.codex_text_only` |
 | Grok, Antigravity | Chưa có cơ chế chỉ chữ được kiểm: báo lý do, không chạy thay bằng provider khác | `team_engine.build` |
 | Kết cục lượt trả lời | Bảng `team_replies` (queued, running/answering, done, error + lý do), gói WS `team_replies`, trang tin kèm `replies`, Thử lại bằng CAS `error -> queued`, khởi động lại đổi lượt dở thành `error/restart` | `team_store.py`, `team_runner.py`, `team_api.py`, `teams.js` |
 | Việc nền bị chặn | Thêm tin hệ thống ngay trong khung chat (ngoài hộp thư) | `team_runner._block` |
@@ -62,7 +62,7 @@ Chạy `codex exec` thật trỏ vào một máy chủ Responses giả trên má
 - **Auto:** mục tiêu của trợ lý (`goal_agents`) và mục tiêu cũ trợ lý đang là người review. Mã lý do `review_removed`,
   `paused` hiện bằng lời thường.
 - **Hàng chờ trung thực:** brain tắt "AI tự vận hành" thì việc giao trực tiếp ghi rõ chỉ nằm chờ; chân tab nêu trần
-  việc nền chạy cùng lúc (`JAVIS_KANBAN_MAX_WORKERS`).
+  việc nền chạy cùng lúc (`UNIMATE_KANBAN_MAX_WORKERS`).
 - Việc Kanban giao cho trợ lý chạy với vai của trợ lý (lời nhắc như ở quy trình, nối vào lời nhắc hệ thống). Engine,
   quyền và trần của Kanban giữ nguyên. Đọc tab không tạo gì; chat thường không tự tạo việc.
 
@@ -94,7 +94,7 @@ Chạy một lần khi mở kho (dòng `review_migrations`), chép trước `res
 
 **Test cũ cập nhật theo thiết kế mới** (ghi rõ vì sao trong từng file): `test_team_t1_review.py` (điểm thay engine),
 `test_teams_ui.js`, `test_workspace.js`, `test_tab_thu_muc.js`, `test_team_t0_toggle.js`, `test_resonance_a5_ui.js`,
-`test_resonance_a5_api.py` (route đặt reviewer trả 410), `test_resonance_a5_team.py` (T31: đường `javis_goal` thật không
+`test_resonance_a5_api.py` (route đặt reviewer trả 410), `test_resonance_a5_team.py` (T31: đường `unimate_goal` thật không
 gắn đội), `test_resonance_a5_rollback.py` và helper `_resonance_team.py` (bật lại việc gắn đội để dựng kho thời A5).
 
 **Kết quả trên container:** `tests/run.py --js` 187/187. `tests/run.py --py` 503/512 lần đầu; 9 file đỏ đều không do
@@ -167,7 +167,7 @@ thiếu và sai sửa trên cùng nhánh, giữ số 0.142.0. Mục đã Đạt 
 | 1. Tin của AI không phải lệnh mới của chủ | Thiếu | Cùng đoạn trên: chỉ tin "Chủ nhóm" là yêu cầu | như trên |
 | 1. Ghi rõ thay đổi hợp đồng T1/R3 | Thiếu ở tài liệu thiết kế | Ghi chú dưới R3 | `docs/dev/team-chat-t1.md` |
 | 1. Grok/Antigravity | Sai so với biên bản (báo lỗi thay vì model chính) | Chạy model chính, ghi chú trên tin | `team_engine.text_only_supported`, test mục 5 |
-| 2. Timeout | Thiếu: lượt treo nằm "đang trả lời" mãi | Trần `JAVIS_TEAM_TURN_TIMEOUT` (600 giây), lỗi `timeout` có Thử lại; giết đúng tiến trình engine của lượt trước khi nhả khoá bận | `team_runner._turn`, `main._team_engine_for.run` (tag theo lượt) |
+| 2. Timeout | Thiếu: lượt treo nằm "đang trả lời" mãi | Trần `UNIMATE_TEAM_TURN_TIMEOUT` (600 giây), lỗi `timeout` có Thử lại; giết đúng tiến trình engine của lượt trước khi nhả khoá bận | `team_runner._turn`, `main._team_engine_for.run` (tag theo lượt) |
 | 2. Lỗi đăng nhập, model | Sai: chung một nhãn, chỉ có Thử lại | Lý do `auth`; nút Mở trang Models, Đổi model của trợ lý | `replyActions` (`teams.js`) |
 | 2. Thiếu điều phối | Sai: tin không có dòng kết cục | Dòng `__leader__` lý do `no_leader`, nút Chọn điều phối; Thử lại giao đúng một lượt cho điều phối hiện tại | `team_runner.retry_reply`, test mục 3 |
 | 2. Hết lượt, tạm dừng, điều phối rời | Sai: chỉ Thử lại | Mở giới hạn của nhóm, Chạy lại nhóm, Chọn điều phối; nhóm tạm dừng chưa có điều phối vẫn có dòng | như trên |
@@ -196,7 +196,7 @@ thiếu và sai sửa trên cùng nhánh, giữ số 0.142.0. Mục đã Đạt 
 | 8. Kiểm chứng là việc riêng, liên kết rõ | Thiếu | Kiểu "Kiểm chứng" trong Giao việc, bắt buộc tiêu chí, liên kết mục được kiểm, chặn tự kiểm việc của mình; nút "Giao kiểm chứng" trên thẻ | `agent_jobs.resolve_link`, `/agents/{slug}/jobs/verify-targets` |
 | 8. Test migration đủ trạng thái | Thiếu | `review_changes`, đang chạy, bị chặn lý do khác, chưa bắt đầu, thất bại | `test_review_removed_0142.py` |
 | 9. Còn chữ "Cộng hưởng", "trưởng nhóm" trên giao diện | Sai | "Auto" ở cài đặt và tin hệ thống; "trưởng nhóm" thành "điều phối" trong giao diện nhóm (vi/en) | i18n, `team_runner.py`, `index.html` |
-| 9. Đồng bộ Auto với trang Nhóm; badge việc tách Auto | Thiếu | Trang Nhóm nghe `javis:resonance-agents-changed`; huy hiệu việc (đang làm, cần bạn) riêng trên thẻ | `teams.js`, `workspace.js`, `/agents/jobs/counts` |
+| 9. Đồng bộ Auto với trang Nhóm; badge việc tách Auto | Thiếu | Trang Nhóm nghe `unimate:resonance-agents-changed`; huy hiệu việc (đang làm, cần bạn) riêng trên thẻ | `teams.js`, `workspace.js`, `/agents/jobs/counts` |
 | Ảnh 01 (khung chat im) | Đạt sau sửa | Smoke thật bên dưới | `smoke-0142/1366-error-row.png` |
 | Ảnh 02, 04, 07 (form phẳng; luồng Zalo) | Đạt sau sửa | | `smoke-0142/1366-picker.png`, `375-picker.png`, `1366-add-members.png` |
 | Ảnh 03, 05, 06 (thông tin nhóm Zalo) | Đạt trong phạm vi | Panel có người tạo, điều phối, thành viên, Thêm, ghim, trạng thái, quyền; link mời, bình chọn, xoá lịch sử ngoài phạm vi goal | `smoke-0142/1366-team-panel.png` |
@@ -222,12 +222,12 @@ Không có lỗi chặn. Đã sửa, mỗi mục có test:
 ### Smoke với provider thật (sandbox cổng 7788, state và brain tạm, không Zalo, Telegram hay khách)
 
 Cấu hình như máy thật trong audit: model chính và model việc nền đều OpenAI OAuth (Codex CLI 0.160.0 trên máy),
-`gpt-6.1-sol`. Javis Vũ Zalo đặt riêng Codex `gpt-6.1-sol`, lời nhắc có luật chatbot Zalo "im lặng khi không được gọi";
+`gpt-6.1-sol`. Uni Vũ Zalo đặt riêng Codex `gpt-6.1-sol`, lời nhắc có luật chatbot Zalo "im lặng khi không được gọi";
 Coach không đặt model (theo model chính); hai trợ lý cùng tên One đặt Claude `haiku`.
 
 Năm lần gọi model, dừng ở đó:
 
-1. Tin thường: Javis Vũ Zalo (điều phối) trả lời sau 10 giây bằng `openai-oauth gpt-6.1-sol`, không im theo luật chatbot.
+1. Tin thường: Uni Vũ Zalo (điều phối) trả lời sau 10 giây bằng `openai-oauth gpt-6.1-sol`, không im theo luật chatbot.
 2. @One chọn bản A bằng phím mũi tên: đúng bản A trả lời (`anthropic-cli haiku`).
 3. Giao việc ngắn cho Coach: chạy bằng model chính Codex, kết quả về nhóm, hiện ở tab Công việc ngăn Đã xong sau tải lại;
    Mở đưa về đúng nhóm.
@@ -250,7 +250,7 @@ có nền gần trong suốt (`--surface-1`, lỗi có sẵn); thanh lọc theo 
 ### Hạn chế còn lại
 
 - Kanban từ chat riêng và lượt nhóm chưa chung khoá bận với việc giao từ tab Công việc; trần chung vẫn là
-  `JAVIS_KANBAN_MAX_WORKERS` và khoá bận của nhóm.
+  `UNIMATE_KANBAN_MAX_WORKERS` và khoá bận của nhóm.
 - Việc Kanban chưa có route ưu tiên nên tab Công việc chỉ có Ưu tiên cho việc nhóm. Lần chạy quy trình (`wf:`) chưa có
   định danh trợ lý nên chưa vào tab.
 - Ảnh nhóm chưa đổi được (ghép từ ảnh trợ lý), nên không có nút đổi ảnh. Link mời, bình chọn, nhiều tài khoản ngoài phạm vi.
@@ -270,11 +270,11 @@ Chủ repo yêu cầu (14/10/2026, kèm ảnh danh sách chat có giờ):
 - **Giờ nhắn gần nhất** trên thẻ trợ lý, cùng hàng tên (hôm nay giờ:phút, hôm qua "Hôm qua", xa hơn ngày/tháng). Dữ liệu là
   `last_chat_at` sẵn có của `/agents` (cũng là thứ tự danh sách); nay chỉ tính phiên đã có tin, vì bấm vào trợ lý là trang
   tạo sẵn một phiên trống. Xong một lượt chat thì giờ trên thẻ đổi ngay.
-- **Cột phải mặc định ẩn** ở màn rộng; nút góc phải hiện lại và lựa chọn được nhớ (`javis_ws_right`). Mở Cài đặt để xác nhận
+- **Cột phải mặc định ẩn** ở màn rộng; nút góc phải hiện lại và lựa chọn được nhớ (`unimate_ws_right`). Mở Cài đặt để xác nhận
   trợ lý vẫn tự hiện cột mà không ghi đè lựa chọn. Màn hẹp giữ ngăn kéo như cũ.
 - **Cột danh sách rộng hơn** (mặc định `clamp(240px, 24vw, 320px)` thay 210-260px) và **kéo được** ở đường biên, cả cột phải;
   có tay kéo bàn phím (mũi tên trái/phải 16px), nhấp đúp về mặc định, chặn 220-560px (trái) và 280-640px (phải), không quá
-  45%/50% bề ngang trang; nhớ qua `javis_ws_left_w`, `javis_ws_right_w`.
+  45%/50% bề ngang trang; nhớ qua `unimate_ws_left_w`, `unimate_ws_right_w`.
 - **Cột phải ẩn thì chữ rộng ra:** bong bóng trả lời giãn tới `min(120ch, 100%)` thay vì 72 ký tự.
 
 Đo trên trình duyệt: 1366 cột trái 320px, kéo thêm 80px được 400px và còn sau tải lại; cột phải hiện, kéo 350 thành 430px;
@@ -298,7 +298,7 @@ lượt. Khởi động lại server sandbox thật (tắt theo cổng): server 
 | Important | Nút "Vị trí file" ở trang Cộng sự bấm không ra gì (tab Thư mục đã bỏ) | Mở trang Tệp tin và soi file trong cây |
 | Important | Dòng trạng thái của người đã rời nhóm hiện mã thay vì tên | Tra sổ tác giả |
 | Minor | @ người đã rời nhóm: tin không ai trả lời và câu báo bị lọc mất (chứa mã có `_`) | Câu báo bằng tên; khung soạn chỉ lọc mã |
-| Minor | Trần 10 phút áp cả bước của việc nhóm (trước không có trần) | Trả lời chat 10 phút, bước việc nhóm 60 phút (`JAVIS_TEAM_STEP_TIMEOUT`) |
+| Minor | Trần 10 phút áp cả bước của việc nhóm (trước không có trần) | Trả lời chat 10 phút, bước việc nhóm 60 phút (`UNIMATE_TEAM_STEP_TIMEOUT`) |
 | Minor | Việc giao báo về phiên đã lưu trữ hay phiên trống | Ưu tiên phiên chưa lưu trữ đã có tin |
 | Minor | Chạy tay việc Kanban khi trợ lý đang bận trả `ok:false` không lý do | Câu lý do vi/en |
 | Minor | Hộp chọn mất focus sau khi chọn, Escape không đóng; tab Công việc vẫn hỏi server sau khi rời tab; Thử lại có thể kẹt; lưu Cài đặt thu cột phải dù chủ chọn hiện; laptop 1061-1240px mất bề rộng cũ của cột phải; kéo hai cột có thể bóp khung chat còn ~100px | Sửa từng mục; khung chat luôn còn ít nhất 360px |

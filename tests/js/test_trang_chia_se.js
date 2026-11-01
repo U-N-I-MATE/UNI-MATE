@@ -148,7 +148,7 @@ async function chay(items, opts) {
   const win = {
     prompt: (opts && opts.prompt) || (() => null),
     isSecureContext: false,
-    JavisPager: (box, arr, per, ve, trong, opts) => pagerThat(box, arr, per, ve, trong, opts, win),
+    UniMatePager: (box, arr, per, ve, trong, opts) => pagerThat(box, arr, per, ve, trong, opts, win),
     t: t,
   };
   await new Function("el", "_renderGen", "ic", "t", "esc", "fetch", "location",

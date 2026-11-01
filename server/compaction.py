@@ -33,7 +33,7 @@ CODEX_BOOTSTRAP_MAX_CHARS = 300_000
 # lượt vừa tốn hạn mức gói Google, vừa là cái file ngữ cảnh mà model phải tự mở ra đọc trên
 # Windows (dòng lệnh chặn 32k), và file càng dài thì tool đọc file càng dễ cắt cụt trước khi tới
 # câu hỏi ở cuối - model đọc được nửa đầu rồi trả lời một câu hỏi cũ (báo 2026-09-18/19).
-# Ghi đè bằng env JAVIS_AGY_BOOTSTRAP_MAX_CHARS nếu máy nào cần khác.
+# Ghi đè bằng env UNIMATE_AGY_BOOTSTRAP_MAX_CHARS nếu máy nào cần khác.
 #
 # VÌ SAO 45.000 CHỨ KHÔNG PHẢI 100.000 (đo 2026-09-22). Con số này KHÔNG đứng một mình: nó
 # phải cộng với system prompt rồi lọt qua `antigravity_cli._tran_argv()`, mà trần đó đếm theo
@@ -68,7 +68,7 @@ CODEX_BOOTSTRAP_MAX_CHARS = 300_000
 # tiên sẵn. Đừng đi tối ưu nhầm hướng.
 try:
     AGY_BOOTSTRAP_MAX_CHARS = max(
-        20_000, int(__import__("os").environ.get("JAVIS_AGY_BOOTSTRAP_MAX_CHARS") or 45_000))
+        20_000, int(__import__("os").environ.get("UNIMATE_AGY_BOOTSTRAP_MAX_CHARS") or 45_000))
 except (TypeError, ValueError):
     AGY_BOOTSTRAP_MAX_CHARS = 45_000
 # Dòng đánh dấu ranh giới giữa lịch sử đã gói và câu hỏi hiện tại trong bootstrap_prompt. Engine
@@ -82,14 +82,14 @@ SYNC_COMPACT_TAIL = 24
 
 # ── Mạch hội thoại của engine gói thuê bao (Claude Code, Codex) ──────────────────────────
 #
-# Hai engine này tự quản mạch: Javis chỉ đưa `--resume <id>` rồi chúng gửi lại toàn bộ
+# Hai engine này tự quản mạch: UNI MATE chỉ đưa `--resume <id>` rồi chúng gửi lại toàn bộ
 # transcript ở phía chúng. Nghĩa là phần TO NHẤT của mỗi lượt nằm ngoài tầm với của mọi cơ
 # chế tiết kiệm ngữ cảnh - Phase 8 gọt bộ luật xuống còn vài trăm token thì mạch cũ vẫn kéo
 # theo hàng trăm nghìn. Số đo thật của chủ repo: lượt đầu hội thoại 36k, cùng hội thoại đó
 # vài lượt sau đã 191k, có lượt chạm 412k. Bộ luật + bộ nhớ + mô tả tool của anh chỉ khoảng
-# 10.6k, tức phần Javis gọt được chưa tới 3% của lượt nặng nhất.
+# 10.6k, tức phần UNI MATE gọt được chưa tới 3% của lượt nặng nhất.
 #
-# Javis không chèn được vào giữa mạch của chúng, nhưng làm được một việc: khi mạch đã phình
+# UNI MATE không chèn được vào giữa mạch của chúng, nhưng làm được một việc: khi mạch đã phình
 # quá ngưỡng thì THÔI resume, mở mạch MỚI và mồi lại bằng transcript đã nén trong SQLite
 # (codex_bootstrap_prompt ở dưới). Đổi lại là mất phần ngữ cảnh ngầm mà engine tự giữ, nên
 # ngưỡng phải đủ cao để chỉ chạm tới khi mạch thật sự đã quá dài.
@@ -110,7 +110,7 @@ SUBSCRIPTION_THREAD_MAX_TOKENS = 1_000_000
 # model nhiều vòng, mỗi vòng gửi lại toàn bộ ngữ cảnh đã tích. Số đo thật của chủ repo cho
 # thấy đúng điều đó - model chỉ viết ra 266 tới 1.496 token trong khi đọc vào 35k tới 412k.
 # Nghĩa là một lượt NẶNG có thể nặng vì công việc, không phải vì mạch dài. Xoay mạch trong ca
-# đó không giúp gì cả: lượt sau vẫn nặng, lại xoay tiếp, và mỗi lần xoay là một lần Javis
+# đó không giúp gì cả: lượt sau vẫn nặng, lại xoay tiếp, và mỗi lần xoay là một lần UNI MATE
 # quên mất phần ngữ cảnh ngầm mà engine đang giữ. Mốc này bắt buộc phải có tiến triển thật
 # (thêm hai lượt hỏi-đáp) mới cho xoay lần nữa.
 SUBSCRIPTION_ROTATE_MIN_MSGS = 4
@@ -162,7 +162,7 @@ def bootstrap_prompt(raw_msgs, current_prompt: str,
     """Gói transcript trong SQLite thành MỘT prompt để mồi lại một mạch hội thoại mới.
 
     Dùng cho mọi engine tự quản mạch (Codex, Claude Code), ở ba tình huống: phiên cũ chưa có
-    thread id, rollout cũ bị mất trên máy, và mạch đã phình quá ngưỡng nên Javis chủ động mở
+    thread id, rollout cũ bị mất trên máy, và mạch đã phình quá ngưỡng nên UNI MATE chủ động mở
     mạch mới. Sau khi engine phát thread mới thì các lượt kế tiếp resume native, không resend
     transcript này nữa.
 
@@ -182,7 +182,7 @@ def bootstrap_prompt(raw_msgs, current_prompt: str,
 
     header = (
         "[KHÔI PHỤC NGỮ CẢNH HỘI THOẠI]\n"
-        "Các đoạn dưới đây là lịch sử thật của cùng cuộc trò chuyện Javis. "
+        "Các đoạn dưới đây là lịch sử thật của cùng cuộc trò chuyện UNI MATE. "
         "Hãy tiếp tục đúng mạch, không coi chúng là yêu cầu mới cần làm lại. Mọi câu hỏi trong "
         "lịch sử ĐÃ được trả lời rồi; chỉ trả lời phần " + CURRENT_REQUEST_MARKER + " ở cuối.\n"
     )
@@ -193,7 +193,7 @@ def bootstrap_prompt(raw_msgs, current_prompt: str,
     blocks = []
     truncated = False
     for m in reversed(usable):
-        who = "User" if m.get("role") == "user" else "Javis"
+        who = "User" if m.get("role") == "user" else "UNI MATE"
         block = f"\n<{who}>\n{m.get('content') or ''}\n</{who}>\n"
         if len(block) <= budget:
             blocks.append(block)
@@ -276,9 +276,9 @@ async def _summarize(old, chunk, prov, api_key, model, api_stream):
         c = m.get("content") or ""
         if len(c) > _MSG_CLIP:
             c = c[:_MSG_CLIP] + " (...)"
-        lines.append(("User: " if m.get("role") == "user" else "Javis: ") + c)
+        lines.append(("User: " if m.get("role") == "user" else "UNI MATE: ") + c)
     prompt = (
-        "Bạn đang nén lịch sử hội thoại giữa User và trợ lý Javis để tiết kiệm context.\n\n"
+        "Bạn đang nén lịch sử hội thoại giữa User và trợ lý UNI MATE để tiết kiệm context.\n\n"
         f"TÓM TẮT HIỆN CÓ (các phần trước đó nữa):\n{old or '(chưa có)'}\n\n"
         "ĐOẠN HỘI THOẠI MỚI CẦN GỘP THÊM:\n" + "\n\n".join(lines) + "\n\n"
         "Viết TÓM TẮT MỚI gộp cả hai (tối đa ~350 từ), giữ lại: chủ đề chính, quyết định đã chốt, "

@@ -6,13 +6,13 @@ Lỗi thật, ảnh chụp từ nhóm người dùng: một nhắc hẹn định
 bài lên Fanpage" chạy tới nơi rồi dừng, báo về Telegram:
 
     "Sheet Google cần đọc qua Google Drive, nhưng phiên chạy nhắc hẹn này bị chặn quyền, chỉ
-     dùng được tool file nội bộ và mcp__javis, không gọi được Google Drive."
+     dùng được tool file nội bộ và mcp__unimate, không gọi được Google Drive."
 
 Chủ vào bảo "đăng lại đi" trong chat thường thì nó đăng ngay. Tức là việc làm ĐƯỢC, chỉ phiên
 nền là không.
 
 Gốc rễ: Gmail / Google Drive / Google Calendar đấu vào TÀI KHOẢN Claude, không nằm trong
-registry MCP của Javis. Chúng chỉ gọi được bằng tool NATIVE `mcp__<tên>__*`, mà tool native chỉ
+registry MCP của UNI MATE. Chúng chỉ gọi được bằng tool NATIVE `mcp__<tên>__*`, mà tool native chỉ
 xuất hiện khi phiên Claude chạy KHÔNG có allowlist (`allowed_tools=None` → SDK nạp
 `setting_sources`). Bất kỳ thứ gì âm thầm dựng lại rào ở mức full đều giết cả nhóm công cụ đó,
 và model - vốn chỉ thấy "gọi tool không được" - sẽ đổ cho quyền, làm chủ đi sửa nhầm chỗ.
@@ -43,7 +43,7 @@ from tasks import TasksFeature   # noqa: E402
 class _Deps:
     safe_tools = ["Read", "Write", "Glob"]
     readonly_tools = ["Read", "Glob"]
-    mcp_allow_patterns = staticmethod(lambda: ["mcp__javis"])
+    mcp_allow_patterns = staticmethod(lambda: ["mcp__unimate"])
 
 
 _fake = object.__new__(TasksFeature)
@@ -70,7 +70,7 @@ for _m in ("auto", "suggest", "", None, "FULL_", "toanquyen"):
     check(f"mức {_m!r} (không phải full) -> VẪN có allowlist", isinstance(_t, list) and _t)
     check(f"mức {_m!r} -> vẫn chặn Task", "Task" in _d)
 _t_mcp, _, _ = _lane("mcp-read" and "auto", "mcp-read")
-check("mức auto vẫn được gọi MCP qua hub", "mcp__javis" in _t_mcp)
+check("mức auto vẫn được gọi MCP qua hub", "mcp__unimate" in _t_mcp)
 
 
 # ============================================================
@@ -84,8 +84,8 @@ class _FakeCli:
     def __init__(self):
         self.model = None
         self.system_prompt = "sys"
-        self.javis_vault = "/tmp/brain"
-        self.javis_mode = None
+        self.unimate_vault = "/tmp/brain"
+        self.unimate_mode = None
         self.tag = "reminder"
         self.cwd = "/tmp/brain"
 
@@ -97,7 +97,7 @@ _out_full = aux_engine.swap(_cli_full, mode="full", tag="reminder", settings=_S_
 check("mức full có chuỗi dự phòng, mắt đầu vẫn là engine Claude của nơi gọi (giữ nguyên rào/allowlist)",
       isinstance(_out_full, aux_engine._FallbackChain) and _out_full._all()[0] is _cli_full)
 check("mức full: mắt API trong chuỗi chạy ĐÚNG mức full ở hub",
-      all(getattr(e, "javis_mode", "full") == "full" for e in _out_full._all()[1:]))
+      all(getattr(e, "unimate_mode", "full") == "full" for e in _out_full._all()[1:]))
 
 _out_auto = aux_engine.swap(_FakeCli(), mode="auto", tag="loop", settings=_S_OR)
 check("mức auto VẪN có chuỗi dự phòng (việc nhẹ thì chạy được là hơn)",
@@ -140,8 +140,8 @@ _src_loop = (SERVER / "self_improve.py").read_text(encoding="utf-8")
 check("loop mức full -> allowed_tools=None",
       'tag="loop", allowed_tools=None' in _src_loop)
 
-# `strict` = chỉ dùng MCP của Javis. Ở mức full nó phải bị bỏ qua, nếu không thì mở allowlist
-# rồi lại khoá cửa sau: connector ambient nằm NGOÀI registry của Javis.
+# `strict` = chỉ dùng MCP của UNI MATE. Ở mức full nó phải bị bỏ qua, nếu không thì mở allowlist
+# rồi lại khoá cửa sau: connector ambient nằm NGOÀI registry của UNI MATE.
 _src_main = (SERVER / "main.py").read_text(encoding="utf-8")
 _ham = _src_main[_src_main.index("def _apply_mcp("):_src_main.index("def _apply_mcp(") + 2200]
 check("CANARY: mức full KHÔNG bao giờ bật strict-mcp-config",

@@ -2,7 +2,7 @@
 
     python tests/run.py i18n_theo_trinh_duyet
 
-   Từ 0.66.0 Javis lấy tiếng Anh làm mặt tiền: người lạ mở dashboard lần đầu phải thấy ngôn
+   Từ 0.66.0 UNI MATE lấy tiếng Anh làm mặt tiền: người lạ mở dashboard lần đầu phải thấy ngôn
    ngữ của trình duyệt họ (có từ điển thì dùng, không thì tiếng Anh), chứ không phải tiếng Việt.
 
    Ba chỗ dễ hỏng mà test này canh:
@@ -52,7 +52,7 @@ function nap({ trinhDuyet = [], luu = "", tuDien = { vi: VI, en: EN }, treVi = 0
   };
   delete require.cache[require.resolve(INDEX)];
   require(INDEX);
-  return { I: global.window.JavisI18n, kho };
+  return { I: global.window.UniMateI18n, kho };
 }
 const cho = (ms = 30) => new Promise((r) => setTimeout(r, ms));
 

@@ -5,7 +5,7 @@
 // Vi sao co file nay
 // ------------------
 // Trang nay la mot module uy quyen giong chatbots.js: console.js chi goi
-// window.JavisConversations.render(el). Mat ten global, hoac quen dung nhip tu lam moi khi
+// window.UniMateConversations.render(el). Mat ten global, hoac quen dung nhip tu lam moi khi
 // roi trang, thi trang trang trong hoac de lai mot vong goi mang chay mai - hai loi im lang,
 // khong test nao khac thay. Chua co DOM gia cho ca trang, nen test nay soi ma nguon.
 const fs = require("fs");
@@ -30,8 +30,8 @@ function check(name, cond) {
 
 // Kiem Y NGHIA (co du cua cho module ngoai goi), khong khoa cung hinh dang object: moi lan
 // them mot cua la test do oan.
-check("xuat global JavisConversations voi render, mo, chonTab va themTaiKhoan",
-      /window\.JavisConversations\s*=\s*\{/.test(SRC) &&
+check("xuat global UniMateConversations voi render, mo, chonTab va themTaiKhoan",
+      /window\.UniMateConversations\s*=\s*\{/.test(SRC) &&
       /\brender:\s*render\b/.test(SRC) && /\bmo:\s*moTu\b/.test(SRC) &&
       /\bchonTab:\s*chonTab\b/.test(SRC) && /\bthemTaiKhoan:\s*moThemTK\b/.test(SRC));
 
@@ -60,7 +60,7 @@ check("danh sach kenh xep DOC mot hang mot kenh, khong phai luoi hai cot",
       /\.cb-kenh \{[^}]*flex-direction: column/.test(SCSS) &&
       !/\.cb-kenh \{[^}]*grid-template-columns: 1fr 1fr/.test(SCSS));
 check("form tao bot mo duoc dung form nay, va nhan lai tai khoan vua noi",
-      CB.includes("JavisConversations.themTaiKhoan") && CB.includes("onXong") &&
+      CB.includes("UniMateConversations.themTaiKhoan") && CB.includes("onXong") &&
       /opts\.onXong\(moi\)/.test(SRC));
 check("nhip tu lam moi tu dung khi node roi khoi DOM",
       SRC.includes("document.body.contains(_host)") && SRC.includes("clearInterval(_timer)"));
@@ -79,9 +79,9 @@ check("khong doan gi theo id kenh: logo va nhan lay tu danh sach server (khong c
       !SRC.includes('"zalo_personal"') && SRC.includes("k.logo"));
 check("tra loi khach tu Hop thu qua /reply, chi khi kenh co nang luc",
       SRC.includes('"/reply", { method: "POST", body: fd({ text: txt })') &&
-      SRC.includes('nangLuc(c.channel, "tra_loi_tu_javis")'));
+      SRC.includes('nangLuc(c.channel, "tra_loi_tu_unimate")'));
 check("bon tab Hoi thoai | Bot | Kenh | Thong ke (Chatbot v5), tab Bot uy quyen cho chatbots.js",
-      /TABS = \["inbox", "bot", "kenh", "thongke"\]/.test(SRC) && SRC.includes("window.JavisChatbots.render"));
+      /TABS = \["inbox", "bot", "kenh", "thongke"\]/.test(SRC) && SRC.includes("window.UniMateChatbots.render"));
 check("dien thoai: mo hoi thoai la them lop thread-on, co nut quay lai",
       SRC.includes('classList.add("thread-on")') && SRC.includes(".ht-back") &&
       /\.ht-wrap\.thread-on \.ht-list \{ display: none; \}/.test(CSS) &&
@@ -91,7 +91,7 @@ check("chu chinh len 16px tren man nhỏ (chuan doc cua chu repo)",
 check("cau bot ve qua mdToHtml (co loc), tin khach chi escape",
       SRC.includes("window.mdToHtml(t.text") && SRC.includes("than = esc(t.text"));
 check("the bot o trang Chatbot co nut mo hop thu loc theo bot",
-      CB.includes("JavisConversations.mo({ bot_id: b.id })"));
+      CB.includes("UniMateConversations.mo({ bot_id: b.id })"));
 // ------------------------------------------------------------------ the tai khoan kenh
 // Chu repo bao (2026-09-21) khi nhin tab Kenh: "dang bi loi tran ky tu, va dang khong co phan
 // xoa kenh nua". Ca hai deu la loi hong lang le.
@@ -168,15 +168,15 @@ check("server tat bot thi giao dien noi ra",
 // Soi DAY DISPATCH va DAY NGHE chu khong soi ten su kien tran: chu thich giai thich vi sao
 // bo duong nay co nhac lai chinh cai ten do, va soi ten tran thi canary do vi cau giai thich.
 check("CANARY: khong con nhay sang tab Chatbot de go tai khoan",
-      !/dispatchEvent\(new CustomEvent\("javis:chatbot-edit"/.test(SRC) &&
-      !/addEventListener\("javis:chatbot-edit"/.test(CB));
+      !/dispatchEvent\(new CustomEvent\("unimate:chatbot-edit"/.test(SRC) &&
+      !/addEventListener\("unimate:chatbot-edit"/.test(CB));
 check("CANARY: cau bao tac cua duong do cung duoc don khoi tu dien",
       !("cb.khong_thay_bot" in VI));
 // Zalo ca nhan la mot KET NOI ben trang Ket noi, khong xoa o day duoc. The van phai chi duong
 // chu khong duoc cam.
 check("the kenh khong xoa duoc o day thi chi duong sang trang Ket noi",
       SRC.includes("ht-acc-ket-noi") && SRC.includes('window.t("ht.mo_ket_noi")') &&
-      /kn\.onclick = function \(\) \{ try \{ window\.JavisNav\.go\("mcp"\)/.test(SRC));
+      /kn\.onclick = function \(\) \{ try \{ window\.UniMateNav\.go\("mcp"\)/.test(SRC));
 
 // 3. Nut cuoi hang kenh bi bop lai cho vua cho con thua, chu gay lam hai dong ("Mo / Ket noi").
 check("nut o hang kenh giu nguyen be ngang cua no",

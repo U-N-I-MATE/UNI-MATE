@@ -2,7 +2,7 @@
 
     python tests/run.py viec_nen_giong
 
-Chủ dự án báo 15/09: giao hai việc, Javis nói "đang chạy nền, kết quả sẽ tự hiện", rồi không
+Chủ dự án báo 15/09: giao hai việc, UNI MATE nói "đang chạy nền, kết quả sẽ tự hiện", rồi không
 bao giờ có gì hiện ra. Hỏi lại thì nó vẫn báo "đang chạy" vì sổ việc chưa bao giờ được gạch tên.
 
 Gốc: `asyncio.create_task(_voice_bg_task(...))` THẢ TRÔI, không gán vào đâu. asyncio chỉ giữ
@@ -21,7 +21,7 @@ import os
 import re
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-bgtask-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-bgtask-"))
 
 import voice_brain as vb  # noqa: E402
 
@@ -100,7 +100,7 @@ check("has_pending_work thấy nó (hết bị dán nhầm cảnh báo hứa su�
       bs.has_pending_work(v) is True)
 
 # ---- 5. Vòng đời thẻ: tạo đang chạy -> đóng, và điều phối KHÔNG được nhặt lên chạy lại ----
-kho = TaskStore(__import__("pathlib").Path(os.environ["JAVIS_STATE_DIR"]) / "kanban-thu.sqlite3")
+kho = TaskStore(__import__("pathlib").Path(os.environ["UNIMATE_STATE_DIR"]) / "kanban-thu.sqlite3")
 ROOT_THU = "/brain/thu"
 tid = kho.enqueue(ROOT_THU, title="tổng hợp việc hôm nay", intent="tổng hợp việc hôm nay",
                   status="running", created_by="voice", chat_id="web:abc")
@@ -141,7 +141,7 @@ check("khởi động lại thì dọn thẻ mồ côi, không để kẹt 'đan
 
 # ---- 7. "Dừng việc nền đi" là LỆNH, không phải một việc mới (0.57.21) ----
 # Chủ dự án 15/09 gặp vòng lặp cười ra nước mắt: bảo "tạm dừng cái việc tìm kiếm ngầm đi nhé"
-# thì Javis dạ vâng rồi GIAO THÊM một việc nền mang nội dung "dừng việc nền đang chạy"; nói
+# thì UNI MATE dạ vâng rồi GIAO THÊM một việc nền mang nội dung "dừng việc nền đang chạy"; nói
 # lần nữa lại đẻ thêm một việc nữa. Gốc: luật của bộ não giọng bảo "cần hành động thì giao bộ
 # não chính", mà dừng việc nghe đúng là một hành động.
 LENH = [

@@ -59,7 +59,7 @@ check("không em dash trong chuỗi mới", keys.every(function (k) { return (vi
 // ───────────── toggleAgent: chỉ báo thành công khi server xác nhận; luôn phát sự kiện để tải trạng thái thật ─────────────
 const events = [];
 global.window = { dispatchEvent: function (e) { events.push(e.type); },
-  JavisSessions: { brain: function () { return "brain"; } } };
+  UniMateSessions: { brain: function () { return "brain"; } } };
 global.CustomEvent = function (type) { this.type = type; };
 let reply = { status: 200, body: { ok: true, agent: { slug: "viet-bai", enabled: true, status: "active" } } };
 const sent = [];
@@ -72,17 +72,17 @@ global.fetch = function (url, init) {
   check("200: ok, gửi đúng route và thân, không kèm session_id", r.ok
         && sent[0][0].indexOf("/resonance/agents/toggle?brain=brain") === 0 && sent[0][1].slug === "viet-bai"
         && sent[0][1].enabled === true && !("session_id" in sent[0][1]), JSON.stringify(sent));
-  check("200: phát sự kiện tải lại", events.indexOf("javis:resonance-agents-changed") >= 0);
+  check("200: phát sự kiện tải lại", events.indexOf("unimate:resonance-agents-changed") >= 0);
   events.length = 0;
   reply = { status: 409, body: { ok: false, error: "cần xác nhận" } };
   r = await RA.toggleAgent("viet-bai", true);
   check("409: không ok, mang lỗi của server, VẪN phát sự kiện để tải trạng thái thật", !r.ok
-        && r.error === "cần xác nhận" && events.indexOf("javis:resonance-agents-changed") >= 0);
+        && r.error === "cần xác nhận" && events.indexOf("unimate:resonance-agents-changed") >= 0);
   events.length = 0;
   global.fetch = function () { return Promise.reject(new Error("mạng")); };
   r = await RA.toggleAgent("viet-bai", false);
   check("rớt mạng: không ok, không ném lỗi, vẫn phát sự kiện", !r.ok && typeof r.error === "string" && r.error
-        && events.indexOf("javis:resonance-agents-changed") >= 0);
+        && events.indexOf("unimate:resonance-agents-changed") >= 0);
 
   const WS = fs.readFileSync(path.join(ROOT, "dashboard", "workspace.js"), "utf8").replace(/\s+/g, " ");
   check("trang Cộng sự đọc /resonance/agents bằng MỘT request riêng (không theo từng dòng); lỗi không làm hỏng danh sách",
@@ -90,13 +90,13 @@ global.fetch = function (url, init) {
         && /api\("\/resonance\/agents\?brain=" \+ encodeURIComponent\(b0\)\)\.catch\(function \(\) \{ return null; \}\)/.test(WS));
   check("dòng trợ lý vẽ công tắc qua rowToggleHtml, nối dây ws-rs-toggle và ws-rs-confirm",
         WS.includes("rowToggleHtml(") && WS.includes(".ws-rs-toggle") && WS.includes(".ws-rs-confirm") && WS.includes("toggleAgent("));
-  check("trang Cộng sự nghe sự kiện đồng bộ", WS.includes("javis:resonance-agents-changed"));
+  check("trang Cộng sự nghe sự kiện đồng bộ", WS.includes("unimate:resonance-agents-changed"));
   const APP = fs.readFileSync(path.join(ROOT, "dashboard", "app.js"), "latin1");
   check("app.js đổi gói WS resonance_agents thành sự kiện", APP.includes('"resonance_agents"')
-        && APP.includes("javis:resonance-agents-changed"));
+        && APP.includes("unimate:resonance-agents-changed"));
   const SRC = fs.readFileSync(path.join(ROOT, "dashboard", "resonance-agent.js"), "utf8");
   check("trang Cài đặt không còn trình nghe công tắc cũ, có nút sang trang Cộng sự",
-        !SRC.includes("rsa-set-toggle") && SRC.includes('JavisNav.go("workspace")'));
+        !SRC.includes("rsa-set-toggle") && SRC.includes('UniMateNav.go("workspace")'));
   const CSS = fs.readFileSync(path.join(ROOT, "dashboard", "console.css"), "utf8");
   check("CSS có .ws-rs và luật [hidden] riêng", CSS.includes(".ws-rs{") && CSS.includes(".ws-rs[hidden]"));
 
@@ -109,8 +109,8 @@ global.fetch = function (url, init) {
   check("chỉ phần chữ và công tắc bấm được (không cả dải rộng)", /\.ws-rs\{display:inline-flex/.test(CSS));
   check("không có ký tự em dash nguyên văn trong file test này",
         !fs.readFileSync(__filename, "utf8").includes(String.fromCharCode(0x2014)));
-  check("xác nhận ở bảng bên phải phát sự kiện trong tab", /agents\/confirm[\s\S]{0,400}javis:resonance-agents-changed/.test(SRC));
-  check("nút Quản lý mở đúng tab Trợ lý", SRC.includes('JavisWorkspace.openTab("agent")'));
+  check("xác nhận ở bảng bên phải phát sự kiện trong tab", /agents\/confirm[\s\S]{0,400}unimate:resonance-agents-changed/.test(SRC));
+  check("nút Quản lý mở đúng tab Trợ lý", SRC.includes('UniMateWorkspace.openTab("agent")'));
 
   // Hàm thuần của workspace.js chạy dưới node với DOM giả tối thiểu (như test_workspace.js).
   global.window = { t: function (k) { return k; }, ic: function () { return ""; }, addEventListener: function () {},
@@ -121,7 +121,7 @@ global.fetch = function (url, init) {
   global.localStorage = { getItem: function () { return null; }, setItem: function () {} };
   delete require.cache[require.resolve(path.join(ROOT, "dashboard", "workspace.js"))];
   require(path.join(ROOT, "dashboard", "workspace.js"));
-  const W = window.JavisWorkspace;
+  const W = window.UniMateWorkspace;
   check("resonanceMap: dữ liệu tốt thì dựng bản đồ theo slug", W.resonanceMap &&
         W.resonanceMap({ agents: [{ slug: "a", enabled: true }] }, {}).a.enabled === true);
   check("Minor 2: đọc lại hỏng thì GIỮ bản đồ cũ, không xoá hết công tắc",

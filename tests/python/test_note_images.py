@@ -22,7 +22,7 @@ import sys
 import tempfile
 import time
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-note-images-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-note-images-"))
 
 import media_gc  # noqa: E402
 

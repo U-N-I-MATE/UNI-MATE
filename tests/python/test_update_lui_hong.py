@@ -20,7 +20,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-lui-test-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-lui-test-")
 
 import update_state as us   # noqa: E402
 import updater              # noqa: E402

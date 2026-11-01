@@ -18,16 +18,16 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-reminder-controls-state-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-reminder-controls-state-")
 
 import once_ledger  # noqa: E402
 import reminders  # noqa: E402
 
-once_ledger.configure(Path(tempfile.mkdtemp(prefix="javis-reminder-controls-ledger-")) / "ledger.sqlite3")
+once_ledger.configure(Path(tempfile.mkdtemp(prefix="unimate-reminder-controls-ledger-")) / "ledger.sqlite3")
 
 fails = []
 sent = []
-brain = Path(tempfile.mkdtemp(prefix="javis-reminder-controls-brain-"))
+brain = Path(tempfile.mkdtemp(prefix="unimate-reminder-controls-brain-"))
 
 
 def check(name, cond):
@@ -62,7 +62,7 @@ B = str(brain)
 
 
 def stored(rid):
-    data = json.loads((brain / "Javis" / "reminders.json").read_text(encoding="utf-8"))
+    data = json.loads((brain / "UNI MATE" / "reminders.json").read_text(encoding="utf-8"))
     return next(r for r in data["reminders"] if r["id"] == rid)
 
 

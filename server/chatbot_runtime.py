@@ -2,12 +2,12 @@
 
 Ba thứ module này chịu trách nhiệm, và cả ba đều là chỗ dễ hỏng im lặng:
 
-1. **VÒNG ĐỜI.** Bật/tắt phải có tác dụng NGAY, không đòi khởi động lại Javis. Bot chăm sóc
+1. **VÒNG ĐỜI.** Bật/tắt phải có tác dụng NGAY, không đòi khởi động lại UNI MATE. Bot chăm sóc
    khách nói bậy một câu thì phải tắt được trong ba giây. Nên bật = tạo task, tắt = huỷ task,
    sửa token = huỷ RỒI mới tạo lại (đảo thứ tự là có lúc hai poller cùng sống trên một token,
    Telegram trả 409 và CẢ HAI cùng chết).
 
-2. **PROMPT.** Bot KHÔNG dùng system prompt của Javis - prompt đó dạy cách điều phối, ghi
+2. **PROMPT.** Bot KHÔNG dùng system prompt của UNI MATE - prompt đó dạy cách điều phối, ghi
    vault, giao việc, toàn thứ bot khách hàng không được làm. Nó dùng prompt của chính Agent nó
    trỏ tới, cộng luật trả lời khách.
 
@@ -82,7 +82,7 @@ def _poller_dau(bot_id: str):
     return None
 # (bot_id, chat_id) -> số lượt BÍ LIÊN TIẾP. Trả lời được một câu là về 0.
 _BI_LIEN_TIEP: Dict[tuple, int] = {}
-# bot_id đã có một mẩu thư "bot đang lỗi" trong chuông thông báo của Javis và chưa chạy lại được
+# bot_id đã có một mẩu thư "bot đang lỗi" trong chuông thông báo của UNI MATE và chưa chạy lại được
 # lượt nào. Một mẩu cho mỗi đợt hỏng: engine hết lượt thì mọi lượt đều gãy, báo hết là biến chuông
 # thành log lỗi.
 #
@@ -111,7 +111,7 @@ _DA_BAO_NHOM: set = set()
 # gọi bot gần như luôn là chủ hoặc người của chủ đang thử, và thứ họ nhận được là một con bot
 # "hỏng". Một câu, một lần mỗi nhóm, là đủ để biến một lỗi không thể chẩn đoán thành một việc
 # bấm một nút là xong.
-CAU_NHOM_CHUA_BAT = ("Em chưa được bật cho nhóm này ạ. Chủ bot mở trang Chatbot của Javis, "
+CAU_NHOM_CHUA_BAT = ("Em chưa được bật cho nhóm này ạ. Chủ bot mở trang Chatbot của UNI MATE, "
                      "ở thẻ của em sẽ thấy nhóm này đang chờ, bấm **Cho phép** một cái là em "
                      "trả lời được ngay.")
 
@@ -121,7 +121,7 @@ CAU_NHOM_CHUA_BAT = ("Em chưa được bật cho nhóm này ạ. Chủ bot mở
 # phút ạ", rồi đổi sang "Anh chị đợi em chút xíu để em kiểm tra lại ạ.". Chủ repo bỏ hẳn ngày
 # 15/10/2026 (ảnh chụp Zalo: hết token là khách nhận câu "đợi em kiểm tra" mà không ai kiểm tra gì
 # cả): trục trặc kỹ thuật là việc của chủ, khách không cần biết. Chủ được báo ở chuông thông báo
-# của Javis (`_bao_hop_thu`), lỗi gốc nằm trong nhật ký bot. Hằng số giữ lại chỉ để test và tài liệu cũ còn tham chiếu được; không đường nào gửi nó.
+# của UNI MATE (`_bao_hop_thu`), lỗi gốc nằm trong nhật ký bot. Hằng số giữ lại chỉ để test và tài liệu cũ còn tham chiếu được; không đường nào gửi nó.
 CAU_LUOT_HONG = "Anh chị đợi em chút xíu để em kiểm tra lại ạ."
 
 # Bí bao nhiêu lượt liên tiếp thì mới gọi người thật.
@@ -145,7 +145,7 @@ def wire(*, answer, brain_root, read_agent, session_probe=None, session_undo=Non
     đang nói để đọc ngữ cảnh, rồi gỡ dấu vết của lượt nháp khỏi bộ nhớ (xem `manual_answer`). Thiếu thì bản nháp vẫn chạy, chỉ
     không có ngữ cảnh lưu trong kho và không tự dọn.
 
-    `notify(text) -> awaitable` bỏ một mẩu thư vào chuông thông báo của Javis (lượt bot hỏng, xem `_bao_hop_thu`).
+    `notify(text) -> awaitable` bỏ một mẩu thư vào chuông thông báo của UNI MATE (lượt bot hỏng, xem `_bao_hop_thu`).
     Thiếu thì lượt hỏng chỉ còn trong nhật ký bot và báo người trực."""
     _deps["answer"] = answer
     _deps["notify"] = notify
@@ -158,7 +158,7 @@ def wire(*, answer, brain_root, read_agent, session_probe=None, session_undo=Non
 # ============================================================
 # Prompt của bot
 # ============================================================
-# Prompt của bot = prompt của chính Agent nó trỏ tới. Javis KHÔNG chèn luật của mình vào.
+# Prompt của bot = prompt của chính Agent nó trỏ tới. UNI MATE KHÔNG chèn luật của mình vào.
 #
 # Bản 0.19.0 tới 0.20.1 đều chèn một khối "luật bắt buộc" đứng trên mọi hướng dẫn khác. Sai từ
 # gốc: người dùng đã viết quy định trong file Agent rồi, khối kia chỉ đè lên và cãi nhau với
@@ -178,7 +178,7 @@ _CO_TAI_LIEU = """
 """
 
 # Chế độ "chỉ tài liệu" là lựa chọn CỦA NGƯỜI DÙNG trên trang Chatbot, không phải mặc định của
-# Javis. Ai bật nó là chủ động muốn bot im khi thiếu căn cứ (bot đọc giá, đọc chính sách), nên
+# UNI MATE. Ai bật nó là chủ động muốn bot im khi thiếu căn cứ (bot đọc giá, đọc chính sách), nên
 # ở đây mới có một câu chỉ dẫn - và chỉ ở đây.
 _KHONG_TAI_LIEU_CHAT = """
 ## Tài liệu trong brain của bạn
@@ -194,7 +194,7 @@ TÀI LIỆU, nên lượt này hãy nói bạn chưa có thông tin thay vì tr�
 _TU_MO_TAI_LIEU = """
 ## Tự tra tài liệu
 
-Bạn có công cụ javis_docs_search, javis_docs_list và javis_docs_read để tự tìm và mở tài liệu trong
+Bạn có công cụ unimate_docs_search, unimate_docs_list và unimate_docs_read để tự tìm và mở tài liệu trong
 brain của bạn. Phần tra sẵn chỉ khớp theo chữ nên hay sót khi khách dùng chữ khác tài liệu. Câu hỏi
 cần thông tin cụ thể mà phần tra sẵn không có thì PHẢI tự tìm trước (thử vài cách gọi khác, xem danh
 sách tài liệu), rồi mới trả lời theo tài liệu đã mở.{chat}
@@ -227,7 +227,7 @@ def engine_notice(text: str) -> str:
 # Zalo CÁ NHÂN của chủ (0.64.80). Khác Telegram/Zalo Bot ở chỗ người nhắn tới không chỉ là khách:
 # đây là nick chủ dùng hằng ngày nên bạn bè, người nhà, đồng nghiệp đều nhắn vào. Chủ đã chọn
 # (29/09) để bot TỰ QUYẾT có trả lời không thay vì bật công tắc từng người, nên quyết định đó phải
-# được nói cho model biết - và nó là chỉ dẫn duy nhất Javis thêm vào prompt bot, chỉ ở kênh này.
+# được nói cho model biết - và nó là chỉ dẫn duy nhất UNI MATE thêm vào prompt bot, chỉ ở kênh này.
 #
 # 0.172.0: đoạn này là MẶC ĐỊNH, không phải luật đè lên chủ. Bản cũ đứng SAU file Agent và ra lệnh
 # trống ("chuyện riêng tư thì KHÔNG trả lời"), nên nó thắng luật chủ đã viết: Agent của một trung tâm
@@ -236,7 +236,7 @@ def engine_notice(text: str) -> str:
 # thẳng file Agent thắng; bot không có Agent, hoặc Agent không nói gì về loại tin đó, vẫn im an toàn.
 IM_LANG = "[IM_LANG]"
 _CAU_ZALO_CA_NHAN = f"""
-## Kênh này là Zalo CÁ NHÂN của chủ (mặc định của Javis)
+## Kênh này là Zalo CÁ NHÂN của chủ (mặc định của UNI MATE)
 
 Bạn đang trả lời tin nhắn ở tài khoản Zalo cá nhân của chủ, và câu bạn gửi đi mang TÊN CHỦ.
 Người nhắn tới có thể là khách, nhưng cũng có thể là bạn bè, người nhà, đồng nghiệp của chủ.
@@ -269,7 +269,7 @@ hoặc lời nhờ giúp mà tài liệu ở trên trả lời được. Nếu l
 
 
 # Private 1-1 chat in "Tự đánh giá" mode (0.280.0, owner request 2026-10-22): a third outcome next to reply and
-# [IM_LANG]. On a hard question the bot used to guess or stall; now it stays quiet and the owner is told in the Javis
+# [IM_LANG]. On a hard question the bot used to guess or stall; now it stays quiet and the owner is told in the UNI MATE
 # bell, with the customer's words and the bot's one-line note, so they answer by hand from the Bot inbox. Stands BEFORE
 # the Agent file like the personal Zalo paragraph: the owner's own rules read later and win.
 BAO_CHU = "[BAO_CHU]"
@@ -288,7 +288,7 @@ Chủ đã bật chế độ Tự đánh giá cho bot này. Với tin nhắn ri�
 - Viết `{BAO_CHU}` rồi MỘT câu ngắn cho chủ (người nhắn cần gì, vì sao bạn không tự trả lời) khi tin
   là việc thật cần hồi đáp nhưng bạn KHÔNG trả lời chắc chắn được: hướng dẫn vai và tài liệu không có
   thông tin đó, hoặc việc phải để chủ tự quyết (giá riêng, giảm giá, khiếu nại, hoàn tiền, hẹn lịch,
-  cam kết thay chủ). Đừng đoán, đừng hứa. Người nhắn không nhận được chữ nào từ bạn; Javis báo cho chủ
+  cam kết thay chủ). Đừng đoán, đừng hứa. Người nhắn không nhận được chữ nào từ bạn; UNI MATE báo cho chủ
   để chủ trả lời tay.
 
 Hướng dẫn vai của chủ ở phần dưới LUÔN thắng đoạn này: hướng dẫn vai đã nói cách xử lý một loại tin
@@ -316,7 +316,7 @@ def is_silent_answer(dap: Any) -> bool:
 
 
 def _bao_chu_bell(cfg: dict, meta: dict, text: str, note: str) -> bool:
-    """Ring the Javis bell for an escalated message, at most once per chat per `BAO_CHU_BELL_GAP_S`.
+    """Ring the UNI MATE bell for an escalated message, at most once per chat per `BAO_CHU_BELL_GAP_S`.
     True when a bell went out. Every escalation is still in the bot log and the customer's words in the Bot inbox."""
     key = (str(cfg.get("id") or ""), str((meta or {}).get("chat_id") or ""))
     now = time.time()
@@ -340,7 +340,7 @@ def _bao_chu_bell(cfg: dict, meta: dict, text: str, note: str) -> bool:
 def build_bot_prompt(bot: dict) -> str:
     """System prompt của một lượt bot = ĐÚNG file Agent, cộng tài liệu đã tra sẵn.
 
-    Không thêm luật nào của Javis. Người dùng viết quy định trong file Agent; việc của hàm này
+    Không thêm luật nào của UNI MATE. Người dùng viết quy định trong file Agent; việc của hàm này
     là chuyển nguyên nó xuống, không phải bình luận thêm.
 
     Đọc Agent LÚC CHẠY chứ không chép vào bản ghi bot: sửa Agent ở trang Agents là bot đổi
@@ -377,7 +377,7 @@ def build_bot_prompt(bot: dict) -> str:
     else:
         phan.append("\nNGÔN NGỮ: trả lời bằng ĐÚNG ngôn ngữ khách đang nhắn.")
     # Kênh của LƯỢT này, do _make_answer_fn gắn vào. Chỉ Zalo cá nhân mới có thêm đoạn này, và nó đứng
-    # TRƯỚC file Agent: mặc định của Javis đọc trước, luật của chủ đọc sau và thắng (0.172.0).
+    # TRƯỚC file Agent: mặc định của UNI MATE đọc trước, luật của chủ đọc sau và thắng (0.172.0).
     if (bot or {}).get("_kenh_luot") == "zalo_personal":
         phan.append(_CAU_ZALO_CA_NHAN)
         # Zalo labels of THIS chat (0.281.0): who the sender is to the owner, which the bot could not know before (a
@@ -690,7 +690,7 @@ def _dang_khac(chat_id: str) -> str:
     """Dạng CÒN LẠI của cùng một nhóm Telegram, hoặc "" nếu không có dạng nào khác.
 
     Nhóm thường có id `-123`; nâng lên siêu nhóm thì Telegram đổi thành `-100123`. Việc nâng
-    cấp xảy ra ngoài tầm với của Javis (thêm quản trị viên, bật lịch sử cho thành viên mới,
+    cấp xảy ra ngoài tầm với của UNI MATE (thêm quản trị viên, bật lịch sử cho thành viên mới,
     nhóm đông lên) và không báo ai cả. Chủ khai id lúc còn là nhóm thường, hôm sau bot im -
     đúng kiểu hỏng mà không có manh mối nào để lần.
     """
@@ -1220,7 +1220,7 @@ def _make_event_fn(bot_id: str):
         cid = str((tt or {}).get("chat_id") or "")
         if loai in ("vao_nhom", "thay_nhom"):
             # `thay_nhom` = có tin bất kỳ về từ nhóm này. Nghe cả loại đó vì khi chế độ riêng
-            # tư của Telegram đang bật, tin nhắc tên KHÔNG chắc tới được Javis, còn lệnh `/...`
+            # tư của Telegram đang bật, tin nhắc tên KHÔNG chắc tới được UNI MATE, còn lệnh `/...`
             # thì luôn tới. Không có nhánh này thì người dùng gõ /id trong nhóm, quay lại
             # dashboard, và vẫn không thấy nhóm nào để bấm cho phép - ngõ cụt hoàn toàn.
             cfg = chatbot_store.get_bot(bot_id)
@@ -1257,7 +1257,7 @@ def _chan_doan_nhom(bot_id: str, chat: str, meta: dict) -> str:
     ra đúng một triệu chứng - "nhắn riêng thì được, trong nhóm tag tên thì im re":
 
       1. Nhóm chưa được chủ cho phép.
-      2. Chế độ riêng tư của Telegram còn bật, nên tin nhắc tên không tới được Javis.
+      2. Chế độ riêng tư của Telegram còn bật, nên tin nhắc tên không tới được UNI MATE.
       3. Bot chưa hỏi được danh tính của chính nó (getMe hỏng), nên không nhận ra tên mình.
 
     Người đứng trong nhóm không phân biệt được ba thứ đó, và ba thứ đó sửa khác nhau hoàn
@@ -1271,7 +1271,7 @@ def _chan_doan_nhom(bot_id: str, chat: str, meta: dict) -> str:
         return dong[0]
 
     if not _nhom_duoc_phep(cfg, chat):
-        dong.append("Nhóm này **chưa được bật** cho em. Chủ bot mở trang Chatbot của Javis, "
+        dong.append("Nhóm này **chưa được bật** cho em. Chủ bot mở trang Chatbot của UNI MATE, "
                     "thẻ của em sẽ thấy nhóm này đang chờ, bấm **Cho phép** một cái là xong.")
     else:
         dong.append("Nhóm này **đã được bật** cho em rồi ạ.")
@@ -1281,7 +1281,7 @@ def _chan_doan_nhom(bot_id: str, chat: str, meta: dict) -> str:
                     "nhận ra khi có người gọi tên em**. Chủ bot vào trang Chatbot tắt rồi bật "
                     "lại em giúp ạ.")
     elif tb is not None and not getattr(tb, "doc_moi_tin_nhom", False):
-        # Chế độ riêng tư chặn Ở PHÍA TELEGRAM, trước khi Javis nhìn thấy tin nào. Không nói ra
+        # Chế độ riêng tư chặn Ở PHÍA TELEGRAM, trước khi UNI MATE nhìn thấy tin nào. Không nói ra
         # thì chủ chỉnh trong dashboard cả buổi mà không đổi được gì.
         dong.append("Chế độ riêng tư của Telegram đang **BẬT** cho em. Trong nhóm, thứ chắc "
                     "chắn tới được em là **lệnh `/...`** và **tin trả lời thẳng vào tin của "
@@ -1308,7 +1308,7 @@ def _make_command_fn(bot_cfg: dict):
     async def _cmd_goc(cmd, arg, chat, meta=None):
         c = (cmd or "").lstrip("/").lower()
         if c in ("start", "help"):
-            # KHÔNG gắn "của cửa hàng" vào sau tên bot. Bot tên "Coach kỷ luật" mà Javis tự nối
+            # KHÔNG gắn "của cửa hàng" vào sau tên bot. Bot tên "Coach kỷ luật" mà UNI MATE tự nối
             # thành "Coach kỷ luật của cửa hàng" là áp nghề bán hàng cho một Agent huấn luyện -
             # đúng lỗi chủ repo đã bác ở 0.20.1, sót lại ở đây vì lệnh không đi qua prompt.
             return {"reply": f"Chào anh chị, em là {bot_cfg.get('name') or 'trợ lý'}. "
@@ -1339,7 +1339,7 @@ def _bao_nhan_vien(bot_cfg: dict, chat_id: str, ly_do: str) -> str:
 
 
 def _goi_chu(bot_cfg: dict, ai: str, ly_do: str) -> bool:
-    """Bỏ một mẩu thư "bot cần người thật" vào chuông thông báo của Javis. True nếu bỏ được.
+    """Bỏ một mẩu thư "bot cần người thật" vào chuông thông báo của UNI MATE. True nếu bỏ được.
 
     Thay cho tin Telegram gửi "người trực" (`handoff_to`) trước 0.171.2: chủ repo 16/10/2026 gom mọi
     cảnh báo của bot về một chỗ anh ấy thật sự xem."""
@@ -1450,7 +1450,7 @@ def ghi_tin_khach(cfg: dict, meta: dict, text: str) -> None:
 
 
 def _ghi_loi_tu_dong(bot_id: str, cfg: dict, meta: dict, text: str, loi: str) -> None:
-    """A Tự đánh giá turn failed (0.102.1): record it for the owner and ring the Javis bell once, send nothing.
+    """A Tự đánh giá turn failed (0.102.1): record it for the owner and ring the UNI MATE bell once, send nothing.
 
     Before, the failure went out as "Em đang gặp trục trặc kỹ thuật..." tagged to whoever had written in the group,
     though that person never asked the bot anything."""
@@ -1468,7 +1468,7 @@ def _ghi_loi_tu_dong(bot_id: str, cfg: dict, meta: dict, text: str, loi: str) ->
 
 
 def _bao_hop_thu(bot_id: str, cfg: dict, meta: dict, loi: str) -> None:
-    """Lượt bot hỏng: một mẩu thư vào chuông thông báo của Javis cho chủ, mỗi đợt hỏng một lần.
+    """Lượt bot hỏng: một mẩu thư vào chuông thông báo của UNI MATE cho chủ, mỗi đợt hỏng một lần.
 
     Khách không nhận gì (chủ repo 15/10/2026), nên đây là chỗ DUY NHẤT chủ biết khách vừa nhắn
     mà không được trả lời. Mẩu thư nói ai nhắn, ở đâu, lỗi gì và phải làm gì."""
@@ -1518,7 +1518,7 @@ def ghi_tin_bot(cfg: dict, meta: dict, text: str, loi: str = "", files=None) -> 
 
 async def _tra_tai_lieu(bot_id: str, cfg: dict, text: str, chat_id: str = "") -> dict:
     """Tra brain của bot cho MỘT câu hỏi. Quét đĩa + chấm điểm là việc CHẶN, đẩy sang thread để
-    không chẹn event loop (poller của các bot khác và của cả Javis đều chạy chung một loop).
+    không chẹn event loop (poller của các bot khác và của cả UNI MATE đều chạy chung một loop).
 
     `chat_id` (0.338.0): the chat of the message, from the channel, so that chat's scoped documents join the search
     (see `chatbot_grounding.scoped_docs`). "" searches the shared documents only."""
@@ -1716,7 +1716,7 @@ def _make_answer_fn(bot_id: str):
                 _ghi_loi_tu_dong(bot_id, cfg, meta, text, f"{type(e).__name__}: {e}")
                 return {"text": "", "files": [], "im_lang": True}
             # Same handling as a failed turn returned as a string below: nothing to the customer, the
-            # owner hears it in the Javis bell, the on-duty person as before.
+            # owner hears it in the UNI MATE bell, the on-duty person as before.
             out = f"{type(e).__name__}: {e}"
             nem_loi = True
         else:
@@ -1765,7 +1765,7 @@ def _make_answer_fn(bot_id: str):
         # tin nhắn và chọn không nhân danh chủ trả lời. Ghi vào nhật ký để chủ soi lại được, nhưng
         # không gửi gì, không vào Hộp thư như một câu bot nói, không tính vào bộ đếm bí/gọi người.
         # Bot chose to stay quiet AND hand the message to the owner (0.280.0): same as [IM_LANG] towards the customer,
-        # plus the Javis bell. Checked first: an answer holding both markers must still reach the owner.
+        # plus the UNI MATE bell. Checked first: an answer holding both markers must still reach the owner.
         note = None if loi_ky_thuat else escalation_note(dap)
         if note is not None:
             _rp_retract(rp_dec, "agent_silent")
@@ -2056,8 +2056,8 @@ def manual_done(conv: dict, msgs: list, text: str, meta: dict) -> dict:
 # ============================================================
 # Thử bot (0.78.0): chạy một tin giả qua đúng các bước thật, KHÔNG gửi, KHÔNG để lại dấu vết
 # ============================================================
-TRY_CHAT_ID = "javis-try"
-TRY_USER_ID = "javis-try-user"
+TRY_CHAT_ID = "unimate-try"
+TRY_USER_ID = "unimate-try-user"
 TRY_MAX_CHARS = 2000
 _TRY_BUSY: set = set()       # bot đang có một lượt thử chạy dở: không cho bấm chồng
 
@@ -2084,7 +2084,7 @@ class _ReadOnlyPolicyStore:
 
 def try_notes(cfg: dict, meta: dict, st: dict) -> list:
     """Ghi chú kèm kết quả thử mà chủ cần biết về KÊNH THẬT. Hiện chỉ có chế độ riêng tư của Telegram: lượt thử
-    chạy ngay trong Javis nên luôn "tới" được bot, còn ngoài nhóm Telegram thật tin đó bị chặn từ phía Telegram
+    chạy ngay trong UNI MATE nên luôn "tới" được bot, còn ngoài nhóm Telegram thật tin đó bị chặn từ phía Telegram
     nếu không phải lệnh hay tin trả lời thẳng vào bot. Không nói ra thì thử thấy bot trả lời mà nhóm thật vẫn im."""
     notes = []
     co_tg = any(isinstance(a, dict) and a.get("channel") == "telegram" for a in (cfg.get("accounts") or []))
@@ -2312,7 +2312,7 @@ def start_bot(bot_id: str) -> tuple[bool, str]:
             commands=LENH_KHACH,      # menu của khách, KHÔNG phải menu quản trị của chủ
             precheck_fn=_gan_tai_khoan(_make_precheck_fn(bot_id), aid, 1),
             event_fn=_make_event_fn(bot_id),         # vào nhóm / bị đá / nhóm đổi id khi nâng cấp
-            # Bot này nói chuyện với KHÁCH, nên không được để lộ một dòng trạng thái nào của Javis.
+            # Bot này nói chuyện với KHÁCH, nên không được để lộ một dòng trạng thái nào của UNI MATE.
             giau_trang_thai=True,
         )
         if kenh == "telegram":

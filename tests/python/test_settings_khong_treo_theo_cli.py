@@ -30,7 +30,7 @@ import tempfile
 import threading
 import time
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-treo-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-treo-"))
 
 import antigravity_cli  # noqa: E402
 import grok_cli         # noqa: E402

@@ -2,7 +2,7 @@
 
     python tests/run.py reply_policy_store      (KHÔNG mạng)
 
-Chủ dự án chạy nhiều bot lĩnh vực không liên quan (Javis Vũ, Nhi Mai, Ngọc Thu). Điều file này canh
+Chủ dự án chạy nhiều bot lĩnh vực không liên quan (Uni Vũ, Nhi Mai, Ngọc Thu). Điều file này canh
 nặng nhất: ca học ở bot này không bao giờ được tra ra ở bot kia, kể cả khi tin y hệt.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -10,7 +10,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-rp-store-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-rp-store-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -61,7 +61,7 @@ st.add_watch(d2, "A", "g1", NOW + 600, 5)
 check("hết hạn giờ thì cửa đóng", st.open_watches("A", "g1", NOW + 601) == [])
 
 # ---- ca, cách ly giữa bot, xếp hạng ----
-TEXT = "Javis báo lỗi cổng 7777 đang bị dùng thì làm sao"
+TEXT = "UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao"
 ca = st.add_case("A", "g1", TEXT, F0, "reply", "label:missed", "auto", 1.0, now=NOW)
 st.add_case("B", "g9", TEXT, F0, "silent", "label:intruded", "auto", 1.0, now=NOW)
 fa = rp.find_cases(st, "A", "g1", TEXT, F0, now=NOW)
@@ -193,7 +193,7 @@ s = st.stats("A")
 check("xoá bot: không còn dòng nào", s["decisions"] == 0 and s["cases"] == 0 and s["lessons"] == 0, s)
 check("xoá bot A không đụng bot B", st.count_cases("B") == 1)
 
-check("kho nằm trong thư mục state, không phải trong repo", str(st.db_path()).startswith(os.environ["JAVIS_STATE_DIR"]))
+check("kho nằm trong thư mục state, không phải trong repo", str(st.db_path()).startswith(os.environ["UNIMATE_STATE_DIR"]))
 
 print()
 if _fails:

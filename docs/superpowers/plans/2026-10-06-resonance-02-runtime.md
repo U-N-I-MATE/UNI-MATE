@@ -1,4 +1,4 @@
-# Javis Resonance Runtime Implementation Plan
+# UNI MATE Resonance Runtime Implementation Plan
 
 **Trạng thái sau phản biện vòng 2:** tham chiếu cho kiến trúc mở rộng. Bắt đầu bằng [MVP một agent](2026-10-06-resonance-00-mvp.md); các phần context, bằng chứng và quyền cần cho MVP được làm ở phạm vi hẹp. Nhóm, transport đa worker và undo tổng quát không phải điều kiện của mốc đầu. Không dựng hai scheduler hoặc hai kho goal khi mở rộng.
 
@@ -8,9 +8,9 @@
 
 **Architecture:** Goal service dùng executor/Kanban/workflow hiện có, bổ sung authorization theo goal và scheduler dựa trên sự kiện. Một mục tiêu có một chủ sở hữu lịch. Group runtime giữ leader epoch và phân công bằng hợp đồng con.
 
-**Tech Stack:** Python/FastAPI/SQLite, engine adapters và workflow graph của Javis, JavaScript dashboard. Dùng clock và executor giả trong test.
+**Tech Stack:** Python/FastAPI/SQLite, engine adapters và workflow graph của UNI MATE, JavaScript dashboard. Dùng clock và executor giả trong test.
 
-**Spec:** [Thiết kế tổng thể](../specs/2026-10-06-javis-resonance-design.md), mục 7 đến 10, 12 đến 17. Phụ thuộc [Foundation](2026-10-06-resonance-01-foundation.md).
+**Spec:** [Thiết kế tổng thể](../specs/2026-10-06-unimate-resonance-design.md), mục 7 đến 10, 12 đến 17. Phụ thuộc [Foundation](2026-10-06-resonance-01-foundation.md).
 
 ## Global Constraints
 
@@ -68,7 +68,7 @@
 
 - ActionReceipt(action_id, status, started_at, finished_at, evidence_ids, external_ref, error_code, invocation_ids); status succeeded/failed/uncertain/cancelled; định nghĩa trong resonance_contracts.py. Invocation id gắn đúng mỗi lần gọi và lần retry, không suy từ tên tool.
 - RunContextRegistry.issue(context: GoalRunContext, ttl: float) -> str; resolve(credential: str, now: float) -> GoalRunContext; revoke(run_id: str) -> None. Credential ngắn hạn gắn run/grant, cấp bởi host và kiểm tra lại generation trước effect; không log credential hoặc đưa vào nội dung chat.
-- Header X-Javis-Run mang credential tới Hub; X-Javis-Actor nếu có chỉ để chẩn đoán, không cấp quyền hoặc làm nguồn chuẩn quy công. Engine in-process dùng context đã resolve và reset ContextVar bằng token trong finally. Request legacy không có goal context giữ hành vi cũ và không được tự gán vào goal khác.
+- Header X-UniMate-Run mang credential tới Hub; X-UniMate-Actor nếu có chỉ để chẩn đoán, không cấp quyền hoặc làm nguồn chuẩn quy công. Engine in-process dùng context đã resolve và reset ContextVar bằng token trong finally. Request legacy không có goal context giữ hành vi cũ và không được tự gán vào goal khác.
 - GoalExecutor.execute(context: GoalRunContext, decision: Decision) -> ActionReceipt.
 - GoalExecutor.reconcile(context: GoalRunContext, action_id: str) -> ActionReceipt.
 - Thêm goal_context: GoalRunContext | None = None và effect_authorizer callback optional vào cuối chữ ký AgentRunner.run, WorkflowCanary.run/resume; giữ tương thích positional cũ.
@@ -80,7 +80,7 @@
 - [ ] Viết test backend CLI có native shell ngoài cổng quyền nhưng chưa có isolation không được nhận action cần bảo vệ phạm vi. Chỉ đổi backend khi có backend khác đáp ứng cùng grant; nếu không thì blocked với lý do, không giảm bảo vệ âm thầm.
 - [ ] Viết test crash sau external commit với receipt chưa ghi: có idempotency key thì reconcile/retry cùng key; không có bằng chứng xác nhận thì uncertain, không tạo effect lần hai.
 - [ ] Viết test reframe giữa enqueue và effect: revision cũ không phát thêm effect; effect đã gửi được đối soát và lưu dưới revision gốc. Kế hoạch mới chỉ chạy từ checkpoint hợp lệ, không nhân hành động hoặc tự tính kết quả cũ cho tiêu chí mới.
-- [ ] Viết test_context_cross_process_and_brain: hai run cùng actor và hai brain trùng slug gửi song song không trộn context; request lỗi/cancel reset ContextVar; giả X-Javis-Actor không nhận quyền hay công của người khác; credential hết hạn bị từ chối. Cache discovery được dùng lại không giữ run context cũ hoặc bọc ledger lặp.
+- [ ] Viết test_context_cross_process_and_brain: hai run cùng actor và hai brain trùng slug gửi song song không trộn context; request lỗi/cancel reset ContextVar; giả X-UniMate-Actor không nhận quyền hay công của người khác; credential hết hạn bị từ chối. Cache discovery được dùng lại không giữ run context cũ hoặc bọc ledger lặp.
 - [ ] Viết test_tool_error_content_not_success và test_multiplexed_effect_at_call: ERROR:/isError giữ lỗi, effect xét arguments thực tế dù metadata lúc list là read. Các read tạo bằng chứng đánh giá có receipt/provenance; không log toàn bộ payload nhạy cảm.
 - [ ] Viết test_call_route_receives_mapping bằng fake route: gọi mcp_client.call_route(route, fn, arguments), không truyền route[fn]; fake tool phải được gọi đúng một lần. Khi adapter thay đổi cách giữ kết quả cấu trúc, kiểm hồi quy client cũ nhận text.
 - [ ] Viết test_required_audit_failure: không lưu intent/reservation thì không effect; mất receipt sau effect dẫn tới uncertain và đối soát; lỗi telemetry phụ không làm chat thất bại. Kiểm crash/timeout thực tế, không chỉ chmod vì phép thử quyền có thể không gây lỗi trên Windows.

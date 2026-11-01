@@ -82,7 +82,7 @@ class RoutePinsTheSpokenLanguage(LiveRouteMixin, unittest.IsolatedAsyncioTestCas
     async def test_vietnamese_speech_english_handoff(self):
         async def script(prov, h):
             await prov.q.put({"type": "transcript", "role": "user", "text": VI, "final": True})
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": EN_HANDOFF}, "said": VI})
             await h.until(lambda: len(h.asks) == 1, "bộ não chính được gọi")
             self.assertEqual(h.langs, ["vi"])
@@ -95,7 +95,7 @@ class RoutePinsTheSpokenLanguage(LiveRouteMixin, unittest.IsolatedAsyncioTestCas
         async def script(prov, h):
             said = "Can you check the contract in the Drive link I sent"
             await prov.q.put({"type": "transcript", "role": "user", "text": said, "final": True})
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": EN_HANDOFF}})
             await h.until(lambda: len(h.asks) == 1, "bộ não chính được gọi")
             self.assertEqual(h.langs, ["en"], "không có `said` thì lấy câu đã chốt gần nhất")

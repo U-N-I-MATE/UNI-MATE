@@ -17,7 +17,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="improvement-worker-"))
-for key, name in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
+for key, name in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
                   "BRAIN_PATH": "brain", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(TEST_ROOT / name)
 
@@ -220,11 +220,11 @@ class WorkerProcessTests(unittest.TestCase):
                 guard.return_value.close.assert_called_once()
             return events
 
-        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "do-not-pass-host-secret", "X_JAVIS_TURN": "owner-turn"}):
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "do-not-pass-host-secret", "X_UNIMATE_TURN": "owner-turn"}):
             events = asyncio.run(run())
         self.assertEqual(acknowledgements, ["persisted"])
         self.assertNotIn("ANTHROPIC_API_KEY", environment)
-        self.assertNotIn("X_JAVIS_TURN", environment)
+        self.assertNotIn("X_UNIMATE_TURN", environment)
         self.assertEqual(next(e for e in events if e["type"] == "engine_event")["event"]["content"], "Exact result\r\n")
 
     def test_unbound_start_boundary_cannot_launch_a_worker(self):

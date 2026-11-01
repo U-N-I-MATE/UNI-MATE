@@ -3,7 +3,7 @@
     python tests/run.py locale
 
 Vì sao tách. Ngôn ngữ và locale hay bị gộp, nhưng chúng độc lập thật: một người đọc giao diện
-tiếng Anh, bảo Javis trả lời tiếng Anh, mà vẫn ngồi ở Việt Nam nên vẫn xài UTC+7 và VND. Gộp
+tiếng Anh, bảo UNI MATE trả lời tiếng Anh, mà vẫn ngồi ở Việt Nam nên vẫn xài UTC+7 và VND. Gộp
 hai thứ là ép họ chọn giữa "hiểu được chữ" và "xem đúng giờ".
 
 Trước tầng này, UTC+7 nằm nhúng cứng ở 16 chỗ dưới dạng `timezone(timedelta(hours=7))`. Không
@@ -125,7 +125,7 @@ check("ngôn ngữ chưa có bộ chữ cron thì rơi về tiếng Việt, KHÔ
 _GHIM = re.compile(r"timezone\(\s*timedelta\(\s*hours\s*=\s*7\s*\)\s*\)")
 MIEN_TRU = {
     "server/localefmt.py",                      # nơi khai mặc định - việc của nó
-    "system/plugins/javis-schedule/plugin.py",  # dự phòng khi chạy ngoài tiến trình server
+    "system/plugins/unimate-schedule/plugin.py",  # dự phòng khi chạy ngoài tiến trình server
     "system/plugins/datetime-vn/plugin.py",     # cùng lý do
 }
 vi_pham = []

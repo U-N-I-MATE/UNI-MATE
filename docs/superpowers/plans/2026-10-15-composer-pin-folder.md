@@ -6,7 +6,7 @@
 
 **Architecture:** The pin reuses the existing per-session folder binding in `coding_store` (the server already runs any session's turn in its bound folder). A new endpoint `POST /coding/session/{sid}/pin` registers and binds in one call; a new prompt block tells non-coding sessions where they are working. The composer side lives in a new `dashboard/composer-folder.js` that plugs into the "+" menu registry through a new generic `panel` item type.
 
-**Tech Stack:** FastAPI (server/main.py, server/routes/coding.py, server/coding_store.py), vanilla JS dashboard, node test scripts (`node tests/js/<file>.js`), Python test scripts (`python tests/python/<file>.py`, run with `D:/Project/Javis-OS/.venv/Scripts/python.exe` and `PYTHONUTF8=1`).
+**Tech Stack:** FastAPI (server/main.py, server/routes/coding.py, server/coding_store.py), vanilla JS dashboard, node test scripts (`node tests/js/<file>.js`), Python test scripts (`python tests/python/<file>.py`, run with `D:/Project/UNI-MATE/.venv/Scripts/python.exe` and `PYTHONUTF8=1`).
 
 **Spec:** docs/superpowers/specs/2026-10-15-composer-pin-folder-design.md
 
@@ -57,7 +57,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 import _paths  # noqa: F401  (adds server/ to sys.path)
 
 tmp_state = tempfile.mkdtemp(prefix="pin-state-")
-os.environ["JAVIS_STATE_DIR"] = tmp_state
+os.environ["UNIMATE_STATE_DIR"] = tmp_state
 import coding_store  # noqa: E402
 
 fails = []
@@ -121,7 +121,7 @@ Note: `main._khoi_coding` gains a second parameter `brain` in Step 3; the test c
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `PYTHONUTF8=1 D:/Project/Javis-OS/.venv/Scripts/python.exe tests/python/test_pinned_folder.py`
+Run: `PYTHONUTF8=1 D:/Project/UNI-MATE/.venv/Scripts/python.exe tests/python/test_pinned_folder.py`
 Expected: FAIL / AttributeError: module 'coding_store' has no attribute 'pinned_folder_prompt'
 
 - [ ] **Step 3: Implement**
@@ -262,7 +262,7 @@ Route table: run the repo's route table generator if one exists (`grep -rn "rout
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `PYTHONUTF8=1 D:/Project/Javis-OS/.venv/Scripts/python.exe tests/python/test_pinned_folder.py`
+Run: `PYTHONUTF8=1 D:/Project/UNI-MATE/.venv/Scripts/python.exe tests/python/test_pinned_folder.py`
 Expected: `OK - test_pinned_folder: all pass`. Also run every Python test that mentions `_khoi_coding`, `coding_store` or `route_table`: `grep -lE "_khoi_coding|coding_store|route_table" tests/python/*.py`; all green except the machine-known reds.
 
 - [ ] **Step 5: Commit**
@@ -279,7 +279,7 @@ git commit -m "Server: pinned working folder for normal chats (prompt block, /co
 **Files:**
 - Create: `dashboard/composer-folder.js`
 - Modify: `dashboard/composer-plus.js` (generic `panel` item support; remove folder upload helpers; English comments)
-- Modify: `dashboard/app.js` (remove `JavisAttach.queue`, `_hangDoi`, `_cho`; call `JavisPinnedFolder.claimPending(savedSessionId)` next to `JavisModelBar.claimPending`)
+- Modify: `dashboard/app.js` (remove `UniMateAttach.queue`, `_hangDoi`, `_cho`; call `UniMatePinnedFolder.claimPending(savedSessionId)` next to `UniMateModelBar.claimPending`)
 - Modify: `dashboard/index.html` (remove `#folderInput`; add `<script src="/static/composer-folder.js?v=1"></script>` right after composer-plus.js; bump composer-plus.js and app.js `?v=`)
 - Modify: `dashboard/style.css` (`.cp-pin` chip)
 - Modify: `dashboard/i18n/vi.json`, `dashboard/i18n/en.json`
@@ -287,9 +287,9 @@ git commit -m "Server: pinned working folder for normal chats (prompt block, /co
 
 **Interfaces:**
 - Consumes: `POST /coding/session/{sid}/pin`, `GET /coding/session/{sid}?brain=` (Task 1).
-- Produces: `window.JavisPinnedFolder = { claimPending(sid), current() -> folder|null, refresh() }`; event `javis:pinned-folder-changed` on `window` with `detail: {sid, folder}`.
+- Produces: `window.UniMatePinnedFolder = { claimPending(sid), current() -> folder|null, refresh() }`; event `unimate:pinned-folder-changed` on `window` with `detail: {sid, folder}`.
 - Produces (pure, node): `folderRows(items) -> [{name, path}]`, `chipLabel(name, max) -> string`, `createPinState() -> {request(sid), accept(seq, sid, data) -> bool, hold(path), takePending() -> path|null}`.
-- Produces in composer-plus: registry items may define `panel(container, api)` where `api = {close(), back(), brain()}`; `JavisComposerMenu.openItem(id)` opens an item directly.
+- Produces in composer-plus: registry items may define `panel(container, api)` where `api = {close(), back(), brain()}`; `UniMateComposerMenu.openItem(id)` opens an item directly.
 
 - [ ] **Step 1: Write the failing test** `tests/js/test_pinned_folder.js`
 
@@ -325,13 +325,13 @@ check("only the newest request for the open session is accepted", s.accept(a, "s
 s.hold("brain/projects");
 check("pending pin is taken once", s.takePending() === "brain/projects" && s.takePending() === null);
 
-check("app.js claims the pending folder where it claims the pending model", /JavisModelBar\.claimPending\(savedSessionId\)[\s\S]{0,300}JavisPinnedFolder\.claimPending\(savedSessionId\)/.test(app));
+check("app.js claims the pending folder where it claims the pending model", /UniMateModelBar\.claimPending\(savedSessionId\)[\s\S]{0,300}UniMatePinnedFolder\.claimPending\(savedSessionId\)/.test(app));
 check("composer-folder.js loads after composer-plus.js", html.indexOf("composer-plus.js") < html.indexOf("composer-folder.js"));
 check("folder upload input is gone", html.indexOf('id="folderInput"') === -1 && plus.indexOf("folderInput") === -1);
 check("folder upload helpers are gone", ["handleFolder", "pickFolderFiles", "runQueue"].every(n => plus.indexOf(n) === -1) && app.indexOf("queue: (files") === -1);
 check("pin uses the one-call endpoint", src.indexOf('"/pin"') !== -1);
-check("pin fires javis:pinned-folder-changed", src.indexOf('"javis:pinned-folder-changed"') !== -1);
-check("browse row opens the shared folder picker", src.indexOf("JavisFolderPicker.open(") !== -1);
+check("pin fires unimate:pinned-folder-changed", src.indexOf('"unimate:pinned-folder-changed"') !== -1);
+check("browse row opens the shared folder picker", src.indexOf("UniMateFolderPicker.open(") !== -1);
 check("composer-plus supports panel items", /item\.panel/.test(plus) && /openItem:/.test(plus));
 ["cp.pin_folder", "cp.pin_search_ph", "cp.pin_browse", "cp.pin_unpin", "cp.pin_outside", "cp.pin_gone", "cp.pin_failed", "cp.pin_empty"]
   .forEach(k => check("i18n key " + k + " in vi and en", !!vi[k] && !!en[k]));
@@ -377,19 +377,19 @@ and add:
   }
 ```
 
-- Export: `window.JavisComposerMenu = { register: reg.register, list: reg.list, open: open, close: close, isOpen: isOpen, openItem: openItem, icon: ICON };`
+- Export: `window.UniMateComposerMenu = { register: reg.register, list: reg.list, open: open, close: close, isOpen: isOpen, openItem: openItem, icon: ICON };`
 - Translate every Vietnamese comment in the file to English.
 
 3b. `dashboard/app.js` (byte-safe edit, assert each anchor occurs once):
 - Remove the `queue: (files, note) => {...},` member and restore `upload: (f) => uploadFile(f),`.
 - Remove the `_hangDoi` and `_cho` lines from `uploadFile` (restore `attachNote = "";` before `renderChips();` and drop both `if (att._cho) ...` lines).
-- After `try { if (window.JavisModelBar) window.JavisModelBar.claimPending(savedSessionId); } catch (e) {}` add:
+- After `try { if (window.UniMateModelBar) window.UniMateModelBar.claimPending(savedSessionId); } catch (e) {}` add:
 
 ```js
-    try { if (window.JavisPinnedFolder) window.JavisPinnedFolder.claimPending(savedSessionId); } catch (e) {}
+    try { if (window.UniMatePinnedFolder) window.UniMatePinnedFolder.claimPending(savedSessionId); } catch (e) {}
 ```
 
-`claimPending` must bind synchronously-enough for the first turn: it sends the `/pin` request and the server stores the binding before the WebSocket turn reaches `_cwd_luot_chat`. To guarantee order, `claimPending` returns the fetch promise and app.js keeps sending as today; the turn's server side reads the binding when the turn starts, which is after the pin request in practice. Ruling allowed here: if the visual check shows a race, make `sendMessage` await `window.JavisPinnedFolder.claimPending(...)` (it is already async).
+`claimPending` must bind synchronously-enough for the first turn: it sends the `/pin` request and the server stores the binding before the WebSocket turn reaches `_cwd_luot_chat`. To guarantee order, `claimPending` returns the fetch promise and app.js keeps sending as today; the turn's server side reads the binding when the turn starts, which is after the pin request in practice. Ruling allowed here: if the visual check shows a race, make `sendMessage` await `window.UniMatePinnedFolder.claimPending(...)` (it is already async).
 
 3c. `dashboard/composer-folder.js` (new):
 
@@ -427,13 +427,13 @@ and add:
   var state = createPinState(), folder = null, inBrain = false;
   function tw(k, v) { return window.t ? window.t(k, v) : k; }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function brain() { try { return (window.JavisSessions && window.JavisSessions.brain()) || "brain"; } catch (e) { return "brain"; } }
-  function sid() { try { return (window.JavisSessions && window.JavisSessions.current()) || ""; } catch (e) { return ""; } }
+  function brain() { try { return (window.UniMateSessions && window.UniMateSessions.brain()) || "brain"; } catch (e) { return "brain"; } }
+  function sid() { try { return (window.UniMateSessions && window.UniMateSessions.current()) || ""; } catch (e) { return ""; } }
   function getJson(url, opt) { return fetch(url, Object.assign({ credentials: "same-origin" }, opt || {})).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._status = r.status; return j; }); }).catch(function () { return { ok: false, error: tw("cp.pin_failed") }; }); }
   function narrow() { return window.matchMedia && window.matchMedia("(max-width: 860px)").matches; }
 
   function announce() {
-    try { window.dispatchEvent(new CustomEvent("javis:pinned-folder-changed", { detail: { sid: sid(), folder: folder } })); } catch (e) {}
+    try { window.dispatchEvent(new CustomEvent("unimate:pinned-folder-changed", { detail: { sid: sid(), folder: folder } })); } catch (e) {}
   }
   function renderChip() {
     var host = document.getElementById("cpChips");
@@ -443,7 +443,7 @@ and add:
     if (!chip) {
       chip = document.createElement("button");
       chip.type = "button"; chip.id = "pinChip"; chip.className = "cp-pin";
-      chip.addEventListener("click", function (e) { e.stopPropagation(); if (window.JavisComposerMenu) window.JavisComposerMenu.openItem("folder"); });
+      chip.addEventListener("click", function (e) { e.stopPropagation(); if (window.UniMateComposerMenu) window.UniMateComposerMenu.openItem("folder"); });
       var fast = document.getElementById("fastBtn");
       host.insertBefore(chip, fast ? fast.nextSibling : null);
     }
@@ -451,7 +451,7 @@ and add:
     var tip = folder.path + (folder.exists ? "" : "\n" + tw("cp.pin_gone")) + (inBrain ? "" : "\n" + tw("cp.pin_outside"));
     chip.title = tip;
     chip.setAttribute("aria-label", tw("cp.pin_folder") + ": " + folder.name);
-    chip.innerHTML = (window.JavisComposerMenu ? window.JavisComposerMenu.icon.folder : "") + "<span>" + esc(chipLabel(folder.name, narrow() ? 10 : 18)) + "</span>";
+    chip.innerHTML = (window.UniMateComposerMenu ? window.UniMateComposerMenu.icon.folder : "") + "<span>" + esc(chipLabel(folder.name, narrow() ? 10 : 18)) + "</span>";
   }
   function apply(d) {
     folder = (d && d.folder) || null; inBrain = !!(d && d.in_brain);
@@ -488,7 +488,7 @@ and add:
   function panel(box, api) {
     var rowsHtml = function (list) {
       return list.map(function (r, i) {
-        return '<button type="button" class="cp-mi" data-pin="' + i + '">' + window.JavisComposerMenu.icon.folder +
+        return '<button type="button" class="cp-mi" data-pin="' + i + '">' + window.UniMateComposerMenu.icon.folder +
           '<span class="cp-mi-lbl">' + esc(r.name) + '</span><span class="cp-mi-hint">' + esc(r.path) + "</span></button>";
       }).join("");
     };
@@ -513,7 +513,7 @@ and add:
       if (b.dataset.unpin) { pin("").then(done); return; }
       if (b.dataset.browse) {
         api.close();
-        if (window.JavisFolderPicker) window.JavisFolderPicker.open({ tieuDe: tw("cp.pin_folder"), nhanDung: tw("cp.pin_folder"), demMd: false, brain: brain(),
+        if (window.UniMateFolderPicker) window.UniMateFolderPicker.open({ tieuDe: tw("cp.pin_folder"), nhanDung: tw("cp.pin_folder"), demMd: false, brain: brain(),
           chon: function (p) { return pin(p); } });
         return;
       }
@@ -525,16 +525,16 @@ and add:
   }
 
   function init() {
-    if (!window.JavisComposerMenu) return;
-    window.JavisComposerMenu.register({ id: "folder", order: 20, icon: window.JavisComposerMenu.icon.folder, label: "cp.pin_folder",
+    if (!window.UniMateComposerMenu) return;
+    window.UniMateComposerMenu.register({ id: "folder", order: 20, icon: window.UniMateComposerMenu.icon.folder, label: "cp.pin_folder",
       hint: function () { return folder ? folder.name : ""; }, panel: panel });
-    window.addEventListener("javis:sessions-changed", refresh);
+    window.addEventListener("unimate:sessions-changed", refresh);
     window.addEventListener("resize", renderChip);
     refresh();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 
-  window.JavisPinnedFolder = { claimPending: claimPending, current: function () { return folder; }, refresh: refresh };
+  window.UniMatePinnedFolder = { claimPending: claimPending, current: function () { return folder; }, refresh: refresh };
 })();
 ```
 
@@ -567,7 +567,7 @@ Note on `pin("")` (unpin) with no session: `sid()` empty means nothing is bound 
 | cp.pin_failed | Không ghim được thư mục này. | Could not pin this folder. |
 | cp.pin_empty | Không có thư mục nào | No folders |
 
-3f. `tests/js/test_menu_cong.js`: delete the folder queue checks (`handleFolder`, `pickFolderFiles`, `runQueue`, `JavisAttach.queue`, `_hangDoi`, `_cho`) and the `folder` id from the default-id list; rewrite all remaining check names and comments in English. `tests/js/test_khung_go.js`: remove any `folderInput` expectation, translate check names to English.
+3f. `tests/js/test_menu_cong.js`: delete the folder queue checks (`handleFolder`, `pickFolderFiles`, `runQueue`, `UniMateAttach.queue`, `_hangDoi`, `_cho`) and the `folder` id from the default-id list; rewrite all remaining check names and comments in English. `tests/js/test_khung_go.js`: remove any `folderInput` expectation, translate check names to English.
 
 - [ ] **Step 4: Run tests to verify they pass**
 
@@ -591,7 +591,7 @@ git commit -m "Composer: pin a working folder per conversation; drop the folder 
 - Test: `tests/js/test_trang_coding.js`
 
 **Interfaces:**
-- Consumes: event `javis:pinned-folder-changed` (Task 2).
+- Consumes: event `unimate:pinned-folder-changed` (Task 2).
 
 - [ ] **Step 1: Update the test first** (`tests/js/test_trang_coding.js`)
 
@@ -612,7 +612,7 @@ check("no folder: only the permission chip, no folder chip",
       && !/data-cd="(nhanh|worktree|diemhoi)"/.test(c); })());
 check("with a folder: no folder chip either (the composer chip owns it)",
   !M.chipHtml({ muc_quyen: "auto" }, { id: "1", ten: "x", duong_dan: "/x", la_git: true }).includes('data-cd="thumuc"'));
-check("the page refreshes its git chips when the composer pins or unpins", CD.indexOf('"javis:pinned-folder-changed"') !== -1);
+check("the page refreshes its git chips when the composer pins or unpins", CD.indexOf('"unimate:pinned-folder-changed"') !== -1);
 check("the folder picker of the Coding page is gone", !/moKhungThemThuMuc|menuThuMuc|chip_pick_folder/.test(CD));
 ```
 
@@ -632,8 +632,8 @@ Expected: FAIL on the new checks (folder chip still present, `coding.in_brain` s
 
 ```js
   function onPinned(e) { var d = (e && e.detail) || {}; if (active && d.sid && d.sid === sid()) taiRangBuoc(d.sid); }
-  // mount:   W.addEventListener("javis:pinned-folder-changed", onPinned);
-  // unmount: W.removeEventListener("javis:pinned-folder-changed", onPinned);
+  // mount:   W.addEventListener("unimate:pinned-folder-changed", onPinned);
+  // unmount: W.removeEventListener("unimate:pinned-folder-changed", onPinned);
 ```
 
 - Remove i18n keys that are now unused in every file: check each with `grep -rn "<key>" dashboard/*.js`; candidates `coding.in_brain`, `coding.chip_pick_folder`, `coding.add_folder`, `coding.detach_folder`, `coding.forget_folder`, `coding.forget_confirm`, `coding.add_err`, `coding.folder_main`, `coding.folder_gone`.
@@ -809,6 +809,6 @@ git commit -m "Agent Work tab: two compact dropdowns and a smaller type scale"
 - [ ] **Step 1: Reserve the version.** `git fetch origin && git show origin/main:VERSION && gh pr list --state open --json title --jq '.[].title'`; take the next number above both (0.154.0 unless claimed). Write `VERSION`.
 - [ ] **Step 2: CHANGELOG blocks** (vi in CHANGELOG.md, en in CHANGELOG.en.md, same `### Cải thiện` / `### Improved` group): pin working folder from "+" (chip next to the bolt, per conversation, brain folders first plus browse), Coding page uses the same chip, agent Work tab dropdowns and smaller text. Phone-screen friendly, no em dash.
 - [ ] **Step 3: Docs.** In docs/02 (vi/en) replace the "+" menu row's "attach a whole folder" with "pin a working folder", add the folder chip to the button table, and update the Coding docs section that describes picking a folder.
-- [ ] **Step 4: Visual check** on a sandbox server: `JAVIS_PORT=7788 D:/Project/Javis-OS/.venv/Scripts/python.exe server/main.py` from the worktree (background). Check: pin from the menu (brain folder, search, browse), chip shows and tooltip, unpin, pin on an empty chat then send (first turn runs in the folder: ask "pwd" on a CLI brain or read the turn's cwd in the log), Coding page has no folder chip and its git chips refresh after pinning a git folder, agent Work tab dropdowns at desktop and 375px, dark and light. Stop the sandbox and restore its state files exactly as before the run.
+- [ ] **Step 4: Visual check** on a sandbox server: `UNIMATE_PORT=7788 D:/Project/UNI-MATE/.venv/Scripts/python.exe server/main.py` from the worktree (background). Check: pin from the menu (brain folder, search, browse), chip shows and tooltip, unpin, pin on an empty chat then send (first turn runs in the folder: ask "pwd" on a CLI brain or read the turn's cwd in the log), Coding page has no folder chip and its git chips refresh after pinning a git folder, agent Work tab dropdowns at desktop and 375px, dark and light. Stop the sandbox and restore its state files exactly as before the run.
 - [ ] **Step 5: Full verification.** JS suite all green; Python: every file that greps for a changed file name or removed string, plus test_pinned_folder; known machine-reds only.
 - [ ] **Step 6: Commit, push, PR, auto-merge (rebase).** `git commit -am "0.154.0: pin a working folder from the composer, compact agent Work tab"`, `git push -u origin claude/composer-pin-folder`, `gh pr create` (English title and body ending with the Claude Code line), then enable auto-merge with rebase.

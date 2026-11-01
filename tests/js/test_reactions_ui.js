@@ -104,9 +104,9 @@ check("chip agent: nhãn đọc màn hình có ở vi và en", vi["react.agent_c
   const ls = {};
   const root = { addEventListener: function (n, f) { ls[n] = f; }, removeEventListener: function (n) { delete ls[n]; } };
   const bubble = { id: "b" };
-  const tgt = (isBtn) => ({ closest: function (sel) { if (sel === ".msg-javis[data-mid]") return bubble; return isBtn ? {} : null; } });
+  const tgt = (isBtn) => ({ closest: function (sel) { if (sel === ".msg-unimate[data-mid]") return bubble; return isBtn ? {} : null; } });
   let opened = null;
-  const off = JR.bindLongPress(root, ".msg-javis[data-mid]", function (el) { opened = el; });
+  const off = JR.bindLongPress(root, ".msg-unimate[data-mid]", function (el) { opened = el; });
   ls.pointerdown({ pointerType: "mouse", target: tgt(false), clientX: 0, clientY: 0 });
   check("nhấn giữ: chuột bỏ qua", timers.length === 0);
   ls.pointerdown({ pointerType: "touch", target: tgt(true), clientX: 0, clientY: 0 });
@@ -170,7 +170,7 @@ check("chưa có mã tin: không gắn, không có nút", CR.attach(noMid, { sid
       && noMid.children.length === 0);
 const live = fakeBubble();
 bubblesInDom.push(live);
-const entry = { role: "javis", text: "x" };
+const entry = { role: "unimate", text: "x" };
 CR.expect("s1", live, entry);
 check("turn_saved của phiên khác không đụng bong bóng", CR.onFrame({ type: "turn_saved", session_id: "s2", message_id: 5 }) === false
       && !live.dataset.mid);
@@ -187,7 +187,7 @@ check("bong bóng stream chưa đăng ký: lấy bong bóng của lượt từ g
       CR.onFrame({ type: "turn_saved", session_id: "s3", message_id: 7 }, { bubble: streamed }) === true && streamed.dataset.mid === "7");
 const hist = fakeBubble();
 bubblesInDom.push(hist);
-const hEntry = { role: "javis", mid: 123 };
+const hEntry = { role: "unimate", mid: 123 };
 CR.attach(hist, { sid: "s1", mid: 123, reaction: null, entry: hEntry });
 const other = fakeBubble();
 bubblesInDom.push(other);
@@ -249,7 +249,7 @@ check("bỏ hết reaction: emoji biến mất, nút Thích còn", !hist.row().i
   let clock = realNow();
   Date.now = function () { return clock; };
   const vb = fakeBubble(); bubblesInDom.push(vb);
-  const vEntry = { role: "javis", text: "giọng" };
+  const vEntry = { role: "unimate", text: "giọng" };
   check("P2-1 turn_saved tới TRƯỚC response (làn giọng): chưa có bong bóng thì giữ lại",
         CR.onFrame({ type: "turn_saved", session_id: "v1", message_id: 300, content_sha: "s300" }) === false);
   CR.expect("v1", vb, vEntry);
@@ -269,9 +269,9 @@ check("bỏ hết reaction: emoji biến mất, nút Thích còn", !hist.row().i
   const vb4 = fakeBubble(); bubblesInDom.push(vb4);
   CR.expect("v2", vb4, null);
   check("P2-1 mã giữ lại của lượt đã khép (phiên nền) không gán cho bong bóng mới", !vb4.dataset.mid);
-  const dEntry = { role: "javis", text: "bản sửa lại" };
+  const dEntry = { role: "unimate", text: "bản sửa lại" };
   CR.expect("v1", vb3, dEntry);
-  check("P2-1 hai khung response (JAVIS_LESSON): bong bóng đã có mã thì chỉ chép mã vào convo, không chờ thêm",
+  check("P2-1 hai khung response (UNIMATE_LESSON): bong bóng đã có mã thì chỉ chép mã vào convo, không chờ thêm",
         dEntry.mid === 301 && CR.onFrame({ type: "turn_saved", session_id: "v1", message_id: 302 }) === false && vb3.dataset.mid === "301");
   const pc = fakeBubble(), pd = fakeBubble(); bubblesInDom.push(pc, pd);
   CR.expect("v3", pc, null);
@@ -284,10 +284,10 @@ check("bỏ hết reaction: emoji biến mất, nút Thích còn", !hist.row().i
   // P2-2: refresh hỏi đủ số tin vừa dựng, gắn mã còn thiếu bằng cách khớp từ cuối lên, sửa reaction theo server.
   const r1 = fakeBubble(), r2 = fakeBubble(), r3 = fakeBubble(), r4 = fakeBubble();
   bubblesInDom.push(r1, r2, r3, r4);
-  const e2 = { role: "javis", mid: 81, text: "Hai", reaction: { value: "sad", status: "received" } };
+  const e2 = { role: "unimate", mid: 81, text: "Hai", reaction: { value: "sad", status: "received" } };
   CR.attach(r2, { sid: "rf", mid: 81, reaction: e2.reaction, entry: e2 });
-  const items = [{ el: r4, entry: { role: "javis", text: "Không khớp" } }, { el: r1, entry: { role: "javis", text: "Một\n\n<!-- JAVIS_VIEC: {} -->" } },
-    { el: r2, entry: e2 }, { el: r3, entry: { role: "javis", text: "  Ba " } }];
+  const items = [{ el: r4, entry: { role: "unimate", text: "Không khớp" } }, { el: r1, entry: { role: "unimate", text: "Một\n\n<!-- UNIMATE_VIEC: {} -->" } },
+    { el: r2, entry: e2 }, { el: r3, entry: { role: "unimate", text: "  Ba " } }];
   const srv = [{ id: 79, role: "user", content: "hỏi" }, { id: 80, role: "assistant", content: "Một", content_sha: "h80", reaction: null },
     { id: 81, role: "assistant", content: "Hai", reaction: { value: "sad", status: "adjusted", status_reason: "" } },
     { id: 82, role: "assistant", content: "Ba", reaction: { value: "like", status: "received" } }];
@@ -299,7 +299,7 @@ check("bỏ hết reaction: emoji biến mất, nút Thích còn", !hist.row().i
         && items[1].entry.mid === 80 && items[3].entry.mid === 82 && r3.row().includes('jr-rx-emoji">\u{1F44D}'));
   check("P2-2 không khớp nội dung thì không gán bừa", !r4.dataset.mid);
   check("P2-2 tin đã có mã nhận trạng thái mới của server (lưu, không vẽ nhãn)", !r2.row().includes(vi["react.status.adjusted"]) && e2.reaction.status === "adjusted");
-  const many = Array.from({ length: 150 }, () => ({ el: fakeBubble(), entry: { role: "javis", text: "x" } }));
+  const many = Array.from({ length: 150 }, () => ({ el: fakeBubble(), entry: { role: "unimate", text: "x" } }));
   await CR.refresh("rf", many);
   check("P2-2 trần 200 tin mỗi lần hỏi", /limit=200$/.test(gotUrl), gotUrl);
   let release;
@@ -310,10 +310,10 @@ check("bỏ hết reaction: emoji biến mất, nút Thích còn", !hist.row().i
   await pend;
   check("P3 kết quả refresh cũ hơn lần ghi mới (WS/POST) bị bỏ, không đè", r3.row().includes('jr-rx-emoji">\u{1F621}') && !r3.row().includes('jr-rx-emoji">\u{1F44D}'));
   check("P2-2 socket nối lại thì hỏi lại reaction của phiên đang mở",
-        /if \(_daChao\) \{ try \{ if \(window\.JavisChatReactions && savedSessionId\) window\.JavisChatReactions\.refresh\(savedSessionId\); \} catch \(e\) \{\} \}/.test(appJs));
+        /if \(_daChao\) \{ try \{ if \(window\.UniMateChatReactions && savedSessionId\) window\.UniMateChatReactions\.refresh\(savedSessionId\); \} catch \(e\) \{\} \}/.test(appJs));
   check("P2-2 F5 đưa danh sách câu trả lời vừa dựng cho refresh", appJs.includes("_traLoi.push({ el, entry: t });")
-        && appJs.includes("window.JavisChatReactions.refresh(savedSessionId, _traLoi)"));
-  check("P2-1 turn_done khép mục chờ của lượt", /window\.JavisChatReactions\.turnDone\(sid\)/.test(appJs));
+        && appJs.includes("window.UniMateChatReactions.refresh(savedSessionId, _traLoi)"));
+  check("P2-1 turn_done khép mục chờ của lượt", /window\.UniMateChatReactions\.turnDone\(sid\)/.test(appJs));
 
   // P3: Esc không lọt ra phím Esc chung; lỗi cũ xoá khi host xác nhận; i18n; focus; nhấn giữ; chữ ẩn cho trình đọc màn hình.
   live._jr.open = true;
@@ -324,11 +324,11 @@ check("bỏ hết reaction: emoji biến mất, nút Thích còn", !hist.row().i
   live._jr.error = { text: "cũ", retry: true };
   CR.onFrame({ type: "chat_reaction", session_id: "s1", message_id: 123, reaction: { value: "wow", status: "received" } });
   check("P3 gói chat_reaction xác nhận thì xoá dòng lỗi cũ", !live.row().includes("jr-react-err") && live._jr.error === null);
-  check("P3 đổi ngôn ngữ vẽ lại hàng reaction", chatJs.includes('window.addEventListener("javis:i18n", rerenderAll)'));
+  check("P3 đổi ngôn ngữ vẽ lại hàng reaction", chatJs.includes('window.addEventListener("unimate:i18n", rerenderAll)'));
   check("P3 Esc trả focus về nút Thích", /setOpen\(el, false\); focusBtn\(el\);/.test(chatJs));
   check("P3 bỏ đường rbrain không ai đặt", !chatJs.includes("rbrain"));
   // 0.266.0 (chủ repo): giữ tay trên câu trả lời lại là bôi chữ và nút Sao chép của điện thoại, không tắt menu của iOS nữa.
-  check("máy chạm: menu chạm giữ (Sao chép) của iOS còn trên câu trả lời", !/\.msg-javis\[data-mid\] \{ -webkit-touch-callout: none; \}/.test(css));
+  check("máy chạm: menu chạm giữ (Sao chép) của iOS còn trên câu trả lời", !/\.msg-unimate\[data-mid\] \{ -webkit-touch-callout: none; \}/.test(css));
   check("P3 nhấn giữ hạ cờ ở lần chạm sau (iOS không bắn contextmenu)", /var down = function \(e\) \{[\s\S]{0,200}held = false;\s*if \(e\.pointerType === "mouse"\) return;/.test(reactJs));
   check("P3 chữ ẩn cho trình đọc màn hình có CSS ở cả hai trang", css.includes(".jr-react-sr {")
         && fs.readFileSync(path.join(D, "console.css"), "utf8").includes(".tm-react-sr {"));
@@ -336,38 +336,38 @@ check("bỏ hết reaction: emoji biến mất, nút Thích còn", !hist.row().i
   // ───────────── chỗ nối ─────────────
   check("app.js: lịch sử gắn mã tin (m.id), content_sha và reaction vào bong bóng trả lời",
         /function veTinDaLuu\(m, brainCua, sidCua\)/.test(appJs)
-        && /JavisChatReactions\.attach\(el, \{ sid: sidCua, mid: m\.id, sha: m\.content_sha \|\| ""/.test(appJs)
+        && /UniMateChatReactions\.attach\(el, \{ sid: sidCua, mid: m\.id, sha: m\.content_sha \|\| ""/.test(appJs)
         && /mid: m\.id, sha: m\.content_sha \|\| "", reaction: m\.reaction \|\| null \};/.test(appJs));
   check("app.js: hai đường tải lịch sử truyền mã phiên", appJs.includes("veTinDaLuu(m, st.brain, st.sid)")
         && appJs.includes("veTinDaLuu(m, sess.brain, id)"));
   check("app.js: bong bóng vừa chốt chờ turn_saved, chỉ bong bóng trả lời",
-        /JavisChatReactions\.expect\(sid, msgEl, finalText\.trim\(\) \? convo\[convo\.length - 1\] : null\)/.test(appJs));
+        /UniMateChatReactions\.expect\(sid, msgEl, finalText\.trim\(\) \? convo\[convo\.length - 1\] : null\)/.test(appJs));
   check("app.js: gói turn_saved và chat_reaction đi vào chat-reactions, gợi ý là bong bóng của lượt",
-        /data\.type === "turn_saved" \|\| data\.type === "chat_reaction"\) \{[\s\S]{0,700}JavisChatReactions\.onFrame\(data, \{ bubble: t && t\.bubble \}\)/.test(appJs));
+        /data\.type === "turn_saved" \|\| data\.type === "chat_reaction"\) \{[\s\S]{0,700}UniMateChatReactions\.onFrame\(data, \{ bubble: t && t\.bubble \}\)/.test(appJs));
   check("app.js: F5 dựng lại hàng reaction từ convo và hỏi lại server",
-        /t\.mid != null && window\.JavisChatReactions(?: && !el\.classList\.contains\("msg-nho"\))?\) window\.JavisChatReactions\.attach\(el, \{ sid: savedSessionId, mid: t\.mid/.test(appJs)
-        && /JavisChatReactions\.refresh\(savedSessionId\)/.test(appJs));
-  check("app.js: init trên #chatArea, đổi reaction thì lưu convo", /JavisChatReactions\.init\(\{ root: chatArea, brain: currentBrainPath, onChange: persistSession \}\)/.test(appJs)
-        && appJs.indexOf("JavisChatReactions.init(") < appJs.lastIndexOf("restoreSession();"));
+        /t\.mid != null && window\.UniMateChatReactions(?: && !el\.classList\.contains\("msg-nho"\))?\) window\.UniMateChatReactions\.attach\(el, \{ sid: savedSessionId, mid: t\.mid/.test(appJs)
+        && /UniMateChatReactions\.refresh\(savedSessionId\)/.test(appJs));
+  check("app.js: init trên #chatArea, đổi reaction thì lưu convo", /UniMateChatReactions\.init\(\{ root: chatArea, brain: currentBrainPath, onChange: persistSession \}\)/.test(appJs)
+        && appJs.indexOf("UniMateChatReactions.init(") < appJs.lastIndexOf("restoreSession();"));
   check("app.js: chạm hàng reaction trên điện thoại không bật/tắt hàng nút của tin", appJs.includes('if (e.target.closest(".jr-chat")) return;'));
   check("app.js: bong bóng lỗi và tin push không gắn reaction (không có mã tin)",
-        !/function appendJavisError[\s\S]{0,400}JavisChatReactions/.test(appJs) && !/data\.type === "push"\) \{[\s\S]{0,600}JavisChatReactions/.test(appJs));
+        !/function appendUniMateError[\s\S]{0,400}UniMateChatReactions/.test(appJs) && !/data\.type === "push"\) \{[\s\S]{0,600}UniMateChatReactions/.test(appJs));
   check("app.js, teams.js, mobile-chat.js, chat-reactions.js không tự chứa emoji của bảng",
         [appJs, teamsJs, mobileJs, chatJs].every((s) => !/\u{1F44D}|\u{1F602}|\u{1F62E}|\u{1F622}|\u{1F621}/u.test(s)) &&
         [teamsJs, mobileJs, chatJs].every((s) => s.indexOf("❤") < 0));
-  check("chat-reactions.js và teams.js dùng module chung", chatJs.includes("window.JavisReactions") && teamsJs.includes("window.JavisReactions"));
+  check("chat-reactions.js và teams.js dùng module chung", chatJs.includes("window.UniMateReactions") && teamsJs.includes("window.UniMateReactions"));
   check("0.179 chat-reactions.js: long press goes through msg-press.js (survives iOS), answers and own messages",
-        /MP\.bind\(root, \{\s*selector: "\.msg-javis, \.msg-user"/.test(chatJs) && !chatJs.includes("JR.bindLongPress"));
+        /MP\.bind\(root, \{\s*selector: "\.msg-unimate, \.msg-user"/.test(chatJs) && !chatJs.includes("JR.bindLongPress"));
   const pos = (f) => indexHtml.indexOf("/static/" + f);
   check("index.html nạp reactions.js trước chat-reactions.js, app.js, teams.js, mobile-chat.js (có ?v=)",
         pos("reactions.js?v=") > 0 && pos("reactions.js") < pos("chat-reactions.js") && pos("chat-reactions.js") < pos("app.js")
         && napTruoc("reactions.js", ["teams.js", "mobile-chat.js"]));
   check("0.177 CSS: corner sits on the bubble's bottom-right edge, anchor as wide as the bubble",
-        /\.msg-javis > \.jr-chat \{ display: block; max-width: min\(72ch, 100%\); font-size: 16px; font-family: var\(--font-chat\);/.test(css)
+        /\.msg-unimate > \.jr-chat \{ display: block; max-width: min\(72ch, 100%\); font-size: 16px; font-family: var\(--font-chat\);/.test(css)
         && /\.jr-anchor \{ position: relative; height: 0; \}/.test(css) && /\.jr-rx \{ position: absolute; right: -6px; top: -16px;/.test(css));
   // 0.182.0: keyboard focus (:focus-visible) shows the pill; the focus a tap gives the button no longer does.
   check("0.177 CSS: latest answer always shows Like, others on hover; pill on hover, keyboard focus or long press",
-        css.includes(".msg-javis:not(:has(~ .msg-javis)) .jr-rx-btn") && /\.jr-rx:hover \.jr-rx-bar \{ visibility: visible; opacity: 1;/.test(css)
+        css.includes(".msg-unimate:not(:has(~ .msg-unimate)) .jr-rx-btn") && /\.jr-rx:hover \.jr-rx-bar \{ visibility: visible; opacity: 1;/.test(css)
         && css.includes(".jr-rx:has(:focus-visible) .jr-rx-bar, .jr-rx.is-open .jr-rx-bar { visibility: visible;"));
   check("0.179 CSS: the pill fades out only after 0.5 s and has a wide invisible hover margin",
         /\.jr-rx-bar \{[^}]*transition: opacity \.16s ease \.5s/.test(css) && /\.jr-rx-bar::before \{ content: ""; position: absolute; inset: -18px -22px -4px;/.test(css));
@@ -391,8 +391,8 @@ check("bỏ hết reaction: emoji biến mất, nút Thích còn", !hist.row().i
   const appSrc = require("fs").readFileSync(require("path").join(__dirname, "..", "..", "dashboard", "app.js"), "latin1");
   const pushAt = appSrc.indexOf('if (data.type === "push") {');
   const seg = pushAt >= 0 ? appSrc.slice(pushAt, pushAt + 4000) : "";
-  check("app.js: tin đẩy về có message_id thì gắn hàng cảm xúc qua JavisChatReactions.attach",
-    seg.includes("data.message_id != null") && seg.includes("window.JavisChatReactions.attach(el, { sid: data.session_id, mid: data.message_id"));
+  check("app.js: tin đẩy về có message_id thì gắn hàng cảm xúc qua UniMateChatReactions.attach",
+    seg.includes("data.message_id != null") && seg.includes("window.UniMateChatReactions.attach(el, { sid: data.session_id, mid: data.message_id"));
 }
 
 })().catch(function (e) { console.log("FAIL ném lỗi: " + (e && e.stack)); process.exit(1); });

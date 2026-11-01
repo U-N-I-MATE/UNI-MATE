@@ -133,7 +133,7 @@
   }
 
   function face(a, size) {
-    var A = typeof window !== "undefined" && window.JavisAvatar;
+    var A = typeof window !== "undefined" && window.UniMateAvatar;
     if (A && A.html && a && a.slug) {
       return '<span class="tmp-face" aria-hidden="true">' + A.html({ slug: a.slug, avatar: a.avatar || undefined }, size) + "</span>";
     }
@@ -269,6 +269,6 @@
     canSubmit: canSubmit, html: html, listHtml: listHtml, selectedHtml: selectedHtml, tagsHtml: tagsHtml,
     leaderHtml: leaderHtml, footerHtml: footerHtml, previewHtml: previewHtml, setLeader: setLeader, NO_TAG: NO_TAG,
     setStrings: function (o) { FALLBACK = o || {}; } };
-  if (typeof window !== "undefined") window.JavisTeamPicker = api;
+  if (typeof window !== "undefined") window.UniMateTeamPicker = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

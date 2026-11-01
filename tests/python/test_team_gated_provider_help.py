@@ -69,7 +69,7 @@ def test_gate_contract_unchanged():
 
 
 def test_official_docker_image_is_the_refused_case():
-    assert "ENV JAVIS_CODEX_SANDBOX=off" in (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    assert "ENV UNIMATE_CODEX_SANDBOX=off" in (ROOT / "Dockerfile").read_text(encoding="utf-8")
 
 
 if __name__ == "__main__":

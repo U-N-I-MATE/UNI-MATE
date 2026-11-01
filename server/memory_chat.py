@@ -1,9 +1,9 @@
 """Memory and lessons handled from chat (0.190.0).
 
 Owner, 16/10/2026, on the 0.187.0-0.188.0 settings: "Những phần đó người dùng không bao giờ dùng, thà nhắn tin bảo
-xóa sửa thu hồi rồi AI làm giúp còn tốt hơn." The memory list on the Javis Core card and the lesson lists on an
-assistant's settings column are gone from the screen; the person asks in chat and Javis does it with the
-`javis_memory` tool (system plugin `javis-memory`), on any engine.
+xóa sửa thu hồi rồi AI làm giúp còn tốt hơn." The memory list on the UNI MATE Core card and the lesson lists on an
+assistant's settings column are gone from the screen; the person asks in chat and UNI MATE does it with the
+`unimate_memory` tool (system plugin `unimate-memory`), on any engine.
 
 The rules stay where they were (`memory_control`, `agent_lessons`): a forgotten memory keeps only a fingerprint and is
 not learnt again, a revoked lesson is not re-learnt by the agent, and the learning switch is a file the model's own
@@ -118,7 +118,7 @@ def _op_forget(d: Deps, root: str, args: dict) -> str:
         return f"ERROR: không có ghi nhớ '{slug}'. Gọi op=list để xem slug đúng."
     except ValueError:
         return "ERROR: slug không hợp lệ."
-    return (f"Đã quên '{r['title']}'. Javis không tự học lại điều này từ chat cũ; lịch sử chat không bị xoá. "
+    return (f"Đã quên '{r['title']}'. UNI MATE không tự học lại điều này từ chat cũ; lịch sử chat không bị xoá. "
             "Brain có git hoặc bản sao lưu thì nội dung cũ vẫn còn trong đó.")
 
 

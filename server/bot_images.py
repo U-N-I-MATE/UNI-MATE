@@ -1,7 +1,7 @@
 """Images a dedicated bot sends with its reply (0.84.3).
 
 Before this, every bot turn returned `"files": []` (`main._bot_ket`), so no bot on any channel could send a picture,
-even though the Telegram, Slack and WhatsApp transports already knew how to send `files`. Javis deliberately does
+even though the Telegram, Slack and WhatsApp transports already knew how to send `files`. UNI MATE deliberately does
 NOT auto-attach files the turn produced (`main._bot_tra_loi_co_tool`): with a stranger steering the model, "the file
 that happened to appear" is a leak path.
 

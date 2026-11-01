@@ -22,9 +22,9 @@
     });
   }
   var ic = function (n) { return (typeof window !== "undefined" && window.ic) ? window.ic(n) : ""; };
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(tw("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(tw("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
 
@@ -133,7 +133,7 @@
       });
     }
 
-    // Sign-ins Javis may use (Login vault, 0.251.0). /logins needs a dashboard session; any error just hides the field.
+    // Sign-ins UNI MATE may use (Login vault, 0.251.0). /logins needs a dashboard session; any error just hides the field.
     (async function () {
       var d = await api("/logins");
       var list = (d && d.ok && d.logins || []).filter(function (x) { return x.allow_ai; });
@@ -164,6 +164,6 @@
   }
 
   var api_ = { mount: mount, watchHtml: watchHtml, formHtml: formHtml };
-  if (typeof window !== "undefined") window.JavisWebWatch = api_;
+  if (typeof window !== "undefined") window.UniMateWebWatch = api_;
   if (typeof module !== "undefined" && module.exports) module.exports = api_;
 })();

@@ -2,7 +2,7 @@
 
 Vì sao có file này
 ==================
-Chủ repo báo (2026-08-06), kèm ảnh chụp: Javis đáp "Em đang dò code để xem trong nhóm bot có
+Chủ repo báo (2026-08-06), kèm ảnh chụp: UNI MATE đáp "Em đang dò code để xem trong nhóm bot có
 lọc tin nhắn hay không, có kết quả em báo ngay" - rồi im lặng vĩnh viễn. Không có báo cáo nào
 về, và người dùng cũng KHÔNG có cách nào biết là có agent nào đang chạy thật hay không.
 
@@ -12,7 +12,7 @@ Ba gốc rễ tách bạch, file này lo hai cái đầu:
    "báo ngay". Prompt đã cấm kiểu hứa "em sẽ đợi các agent chạy xong rồi tổng hợp", nhưng câu
    trên KHÔNG rơi vào mẫu đó - nó hứa theo kiểu "đang làm, xong báo". Chặn bằng prompt là trò
    đuổi bắt chữ, nên ở đây ta kiểm chứng bằng SỰ THẬT: lượt vừa rồi có tạo được việc nền nào
-   không. Không có mà vẫn hứa thì Javis tự nói ra điều đó ngay dưới câu trả lời, thay vì để
+   không. Không có mà vẫn hứa thì UNI MATE tự nói ra điều đó ngay dưới câu trả lời, thay vì để
    người dùng ngồi đợi một báo cáo không bao giờ tới.
 
 2. **Không thấy gì đang chạy.** Việc nền có thật thì cũng không hiện ở đâu trong khung chat.
@@ -20,7 +20,7 @@ Ba gốc rễ tách bạch, file này lo hai cái đầu:
    loop, nhắc hẹn) để dashboard vẽ thành một dải trạng thái sống.
 
 3. (Ngoài file này) **Điều phối mặc định TẮT** nên việc giao từ chat nằm im mãi - xem
-   `tasks.TaskRunner._dispatch` và plugin `javis-task`.
+   `tasks.TaskRunner._dispatch` và plugin `unimate-task`.
 
 Nguyên tắc: file này KHÔNG chặn, KHÔNG sửa câu trả lời của model. Nó chỉ nói thêm sự thật.
 """
@@ -67,7 +67,7 @@ def _norm(value: str) -> str:
 _CODE_FENCE = re.compile(r"```.*?```", re.S)
 _INLINE_CODE = re.compile(r"`[^`\n]*`")
 
-# Mẫu lời hứa "sẽ báo lại sau". Cố ý viết hẹp: bắt nhầm một câu vô hại thì Javis tự dán một
+# Mẫu lời hứa "sẽ báo lại sau". Cố ý viết hẹp: bắt nhầm một câu vô hại thì UNI MATE tự dán một
 # dòng cảnh báo thừa dưới câu trả lời đúng - phiền, và làm người dùng mất tin vào dòng đó.
 # Mẫu lời hứa ĐÃ DỜI sang server/lexicon/<mã>.py (tập PROMISE), một bộ mỗi ngôn ngữ.
 # Cùng lý do với các cổng khác: một luật an toàn có hai bản thì bản bị quên là bản
@@ -78,7 +78,7 @@ def _mau_loi_hua(lang: str = "", _text_goc: str = ""):
     """Mẫu lời hứa cho ngôn ngữ của CÂU TRẢ LỜI.
 
     Không có bộ từ vựng thì trả HỢP của mọi bộ đang có, chứ không trả rỗng. Đây là cổng BẮT
-    LỖI: bắt nhầm thì Javis tự dán thừa một dòng đính chính (phiền), còn bỏ sót thì luật
+    LỖI: bắt nhầm thì UNI MATE tự dán thừa một dòng đính chính (phiền), còn bỏ sót thì luật
     "KHÔNG hứa em sẽ báo lại" trong CLAUDE.md mất hiệu lực mà không ai biết.
     """
     lex = lexicon.get(lang_registry.chuan_hoa(lang) or lang_mod.detect(_text_goc or "")[0])
@@ -112,7 +112,7 @@ def detect_promise(text: str, lang: str = "") -> str:
 def promise_note(orchestration: str = "") -> str:
     """Dòng sự thật dán dưới câu trả lời có hứa mà KHÔNG có việc nền nào.
 
-    Viết ở ngôi Javis, bằng lời nói, không bảng và không em dash (luật CLAUDE.md).
+    Viết ở ngôi UNI MATE, bằng lời nói, không bảng và không em dash (luật CLAUDE.md).
 
     NGẮN CÓ CHỦ Ý (chủ repo báo 2026-09-15: "thi thoảng nó thông báo lỗi này không hiểu gì
     luôn"). Bản cũ dài ba đoạn, giải thích cả cơ chế "lượt trả lời đóng lại khi nói xong" -
@@ -176,7 +176,7 @@ def _reminder_item(rem: dict, chat_id: str) -> dict:
 
 
 def _job_item(job: dict, chat_id: str) -> dict:
-    """Tiến trình chạy nền mà Javis đang theo dõi (tien_trinh_nen). Luôn là "running": chỉ việc
+    """Tiến trình chạy nền mà UNI MATE đang theo dõi (tien_trinh_nen). Luôn là "running": chỉ việc
     còn sống mới được đưa vào đây, và nó chắc chắn sẽ tự báo về khung chat khi xong."""
     return {
         "kind": "job",

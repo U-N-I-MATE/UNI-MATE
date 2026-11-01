@@ -29,7 +29,7 @@ import tempfile
 import threading
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-synctest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-synctest-"))
 
 import system_sync  # noqa: E402
 
@@ -60,7 +60,7 @@ def _mk_brain(prefix):
 
 
 # ---- copy đệ quy ----
-_ROOT, _SK, _MIR = _mk_brain("javis-mirror-")
+_ROOT, _SK, _MIR = _mk_brain("unimate-mirror-")
 system_sync.mirror_skills(_ROOT)
 check("mirror có SKILL.md", (_MIR / "SKILL.md").is_file())
 check("mirror có references/chi-tiet.md", (_MIR / "references" / "chi-tiet.md").is_file())
@@ -149,7 +149,7 @@ check(f"không đổi gì -> KHÔNG còn đọc-và-băm SKILL.md (đếm đư�
       len(_reads) == 0)
 
 # ---- hai luồng đồng thời trên cùng root -> không treo ----
-_R2, _SK2, _MIR2 = _mk_brain("javis-mirrorpar-")
+_R2, _SK2, _MIR2 = _mk_brain("unimate-mirrorpar-")
 _done = []
 
 
@@ -175,7 +175,7 @@ check("4 luồng đồng thời -> mirror vẫn đúng", (_MIR2 / "references" /
 # nên cache chắc chắn trống -> "cây đã đổi" với MỌI luồng), giữ T2 đứng tại _mirror_lock
 # (patch tạm hàm này) cho tới khi T1 chạy xong TOÀN BỘ (join thật, không đoán), rồi mới thả
 # T2 ra xin khoá. Skill chỉ 1 file nên đếm copy2 = đếm số LƯỢT copy: đúng phải ra 1, bug ra 2.
-_R3 = Path(tempfile.mkdtemp(prefix="javis-mirrorrace-"))
+_R3 = Path(tempfile.mkdtemp(prefix="unimate-mirrorrace-"))
 _sk3 = _R3 / "skills" / "chi-1-file"
 _sk3.mkdir(parents=True)
 (_sk3 / "SKILL.md").write_text("---\nname: Chỉ 1 file\ndescription: Test đua khoá.\n---\nthân\n",
@@ -233,7 +233,7 @@ check(f"re-check trong khoá: luồng tới sau khi luồng trước XONG -> kh�
 # đang GIỮ khoá), rồi mới thả B chạy. Có khoá: B trượt acquire(blocking=False) -> về luôn, B
 # copy 0 lần. Không khoá: B chui thẳng vào vòng copy (re-check vẫn thấy cache cũ vì A chưa kịp
 # ghi) -> B copy đè lên A. Không sleep, chỉ Event.
-_R4 = Path(tempfile.mkdtemp(prefix="javis-mirrorlock-"))
+_R4 = Path(tempfile.mkdtemp(prefix="unimate-mirrorlock-"))
 _sk4 = _R4 / "skills" / "chi-1-file"
 _sk4.mkdir(parents=True)
 (_sk4 / "SKILL.md").write_text("---\nname: Chỉ 1 file\ndescription: Test khoá.\n---\nthân\n",
@@ -293,7 +293,7 @@ check(f"khoá: B KHÔNG copy đè khi A đang copy dở (B copy {_lock_copies['B
 # tính lại: ta vừa chép nội dung CŨ nhưng cache lại ghi chữ ký MỚI -> cache nói dối -> tầng 1
 # thoát vĩnh viễn -> mirror kẹt ở bản cũ mãi. Ép bằng hook copy2: chép xong file đầu tiên thì
 # ghi đè nguồn bằng nội dung mới, đúng như một ghi ngoài xen vào giữa lượt.
-_R5 = Path(tempfile.mkdtemp(prefix="javis-mirrormid-"))
+_R5 = Path(tempfile.mkdtemp(prefix="unimate-mirrormid-"))
 _sk5 = _R5 / "skills" / "skill-x"
 _sk5.mkdir(parents=True)
 _src5 = _sk5 / "SKILL.md"
@@ -326,7 +326,7 @@ check("nguồn đổi GIỮA CHỪNG lượt copy -> lượt sau vẫn bắt k�
 # ---- 1 skill copy LỖI -> KHÔNG cache thành công, lượt sau phải THỬ LẠI ----
 # Lỗi tạm thời (AV quét / handle đang mở trên Windows - đúng hazard mà chính comment trong
 # _mirror_signature cảnh báo) không được biến thành "skill vắng mặt vĩnh viễn tới khi restart".
-_R6 = Path(tempfile.mkdtemp(prefix="javis-mirrorerr-"))
+_R6 = Path(tempfile.mkdtemp(prefix="unimate-mirrorerr-"))
 for _n in ("skill-a", "skill-b"):
     _d6 = _R6 / "skills" / _n
     _d6.mkdir(parents=True)
@@ -361,7 +361,7 @@ check("skill copy lỗi -> lượt sau THỬ LẠI (không bị cache là đã x
 # CẢ BRAIN: đo thật trên brain 27 skill/135 file là 161ms/lượt (so 18ms khi tầng 1 ăn) - tệ hơn
 # cả bản ~52ms mà task này sinh ra để giết, tức là làm hỏng đúng mục đích của chính mình.
 # Đúng phải là: vẫn cache chữ ký, nhưng nhớ RIÊNG slug nào lỗi và lượt sau chỉ thử lại nó.
-_R7 = Path(tempfile.mkdtemp(prefix="javis-mirrorperm-"))
+_R7 = Path(tempfile.mkdtemp(prefix="unimate-mirrorperm-"))
 for _n in ("skill-hong", "skill-lanh"):
     _d7 = _R7 / "skills" / _n
     (_d7 / "references").mkdir(parents=True)
@@ -409,7 +409,7 @@ check(f"skill hỏng vĩnh viễn: vẫn được thử lại đều (thử {len
 # khi vá - đã kiểm bằng tay, xem báo cáo b4-final-fix-report.md.
 _DISABLE_CALLS_MIRROR = True   # main.py bản đã vá: nhánh tắt CÓ gọi lại mirror_skills
 
-_R8 = Path(tempfile.mkdtemp(prefix="javis-mirrortoggle-"))
+_R8 = Path(tempfile.mkdtemp(prefix="unimate-mirrortoggle-"))
 _slug8 = "bat-tat"
 _sk8 = _R8 / "skills" / _slug8
 _sk8.mkdir(parents=True)
@@ -488,7 +488,7 @@ shutil.rmtree(_R8, ignore_errors=True)
 # mới tinh, KHÔNG gì khác tạo ra .claude/skills (migrate_brain đi CHIỀU NGƯỢC LẠI - dời
 # .claude/skills -> skills/), nên slug nằm ở cả hai phía chỉ có thể do vòng copy sinh ra.
 def _kiem_sync_brain_khong_deadlock():
-    root = Path(tempfile.mkdtemp(prefix="javis-syncbrain-deadlock-"))
+    root = Path(tempfile.mkdtemp(prefix="unimate-syncbrain-deadlock-"))
     ket_qua = {}
 
     def _chay():

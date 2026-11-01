@@ -11,7 +11,7 @@ và đó là lý do chính chúng sửa code chính xác.
 Thiết kế học từ Hermes Agent (github.com/NousResearch/hermes-agent, giấy phép MIT):
 `tools/fuzzy_match.py` (chuỗi chiến lược khớp mờ), `tools/file_tools.py` (đọc có số dòng,
 lỗi dạy được model), `tools/file_operations_lint.py` (chỉ báo lỗi do lần sửa sinh ra),
-`tools/file_tools_write_guards.py` (chặn ghi đè file chưa đọc). Viết lại theo kiểu Javis,
+`tools/file_tools_write_guards.py` (chặn ghi đè file chưa đọc). Viết lại theo kiểu UNI MATE,
 không chép nguyên khối.
 
 Module này KHÔNG biết gì về hub, quyền hay đường dẫn an toàn: nó nhận đường dẫn ĐÃ được
@@ -41,7 +41,7 @@ import winproc         # lệnh con chạy câm trên Windows (không nháy cử
 # Đọc theo đoạn
 # ---------------------------------------------------------------------------------------
 # Mỗi lần đọc tối đa 2000 dòng (giống Hermes) và 50.000 ký tự. Hermes để 100.000, nhưng vòng tool
-# của Javis cắt mọi kết quả ở `engine.CAT_KET_QUA_CODING` (60.000) trong phiên Coding: một trang
+# của UNI MATE cắt mọi kết quả ở `engine.CAT_KET_QUA_CODING` (60.000) trong phiên Coding: một trang
 # dài hơn sẽ bị cắt mất khúc giữa. Trang 50.000 thì lọt nguyên, và model đọc tiếp bằng offset.
 DOC_DONG_MAC_DINH = 2000
 DOC_KY_TU_TOI_DA = 50_000
@@ -143,21 +143,21 @@ def chan_ghi_de(sid: str, p: Path) -> str:
     if not rec:
         return (f"ERROR: chưa ghi đè '{p.name}' vì phiên này chưa đọc file đó. Ghi đè mù là cách "
                 f"nhanh nhất làm mất code người khác vừa viết. Sửa vài chỗ thì dùng "
-                f"javis_edit_file; thật sự cần viết lại cả file thì đọc trọn nó bằng "
-                f"javis_read_file trước rồi ghi.")
+                f"unimate_edit_file; thật sự cần viết lại cả file thì đọc trọn nó bằng "
+                f"unimate_read_file trước rồi ghi.")
     if rec.get("mtime") != _mtime_ns(p):
         return (f"ERROR: chưa ghi đè '{p.name}' vì file đã đổi kể từ lần phiên này đọc nó (có "
                 f"thể người dùng vừa sửa tay, hoặc một lệnh vừa ghi vào). Đọc lại file rồi mới "
-                f"quyết định, hoặc dùng javis_edit_file để chỉ sửa đúng đoạn cần.")
+                f"quyết định, hoặc dùng unimate_edit_file để chỉ sửa đúng đoạn cần.")
     if int(rec.get("toi") or 0) < int(rec.get("tong") or 0):
         return (f"ERROR: chưa ghi đè '{p.name}' vì phiên này mới đọc tới dòng {rec.get('toi')} "
                 f"trên {rec.get('tong')}. Ghi đè cả file khi chưa thấy hết là xoá mất phần "
-                f"chưa đọc. Đọc nốt bằng offset, hoặc dùng javis_edit_file.")
+                f"chưa đọc. Đọc nốt bằng offset, hoặc dùng unimate_edit_file.")
     return ""
 
 
 def giong_output_doc(content: str) -> bool:
-    """Nội dung có phải là output "N|..." của javis_read_file dán lại không."""
+    """Nội dung có phải là output "N|..." của unimate_read_file dán lại không."""
     dong = [x for x in str(content or "").split("\n") if x.strip()][:8]
     if len(dong) < 3:
         return False
@@ -450,7 +450,7 @@ def thay_the(content: str, old: str, new: str, replace_all: bool = False) -> dic
         goi_y = _goi_y_gan_nhat(content, old)
         return {"ok": False, "loi": ("Không tìm thấy old_string trong file. Kiểm tra lại từng ký tự "
                                      "(thụt lề, dấu nháy, khoảng trắng), hoặc đọc lại đúng đoạn đó bằng "
-                                     "javis_read_file với offset rồi chép nguyên văn."
+                                     "unimate_read_file với offset rồi chép nguyên văn."
                                      + (f"\n{goi_y}" if goi_y else ""))}
     # old_string nằm trọn trong new_string và new_string đã có trong file ở đúng các chỗ đó: đây
     # là sửa đã áp rồi (ví dụ thêm một dòng sau một dòng có sẵn). Áp lại là nhân đôi dòng thêm.
@@ -753,8 +753,8 @@ def sua_file(p: Path, old: str, new: str, replace_all: bool = False, sid: str = 
     p = Path(p)
     ten = ten_hien_thi or p.name
     if not p.is_file():
-        return (f"ERROR: không có file '{ten}'. Tạo file mới thì dùng javis_write_file, "
-                f"javis_edit_file chỉ sửa file đã có.")
+        return (f"ERROR: không có file '{ten}'. Tạo file mới thì dùng unimate_write_file, "
+                f"unimate_edit_file chỉ sửa file đã có.")
     try:
         if p.stat().st_size > 5_000_000:
             return f"ERROR: '{ten}' lớn hơn 5 MB, không sửa bằng tool này."
@@ -770,7 +770,7 @@ def sua_file(p: Path, old: str, new: str, replace_all: bool = False, sid: str = 
                   bool(replace_all))
     if not kq["ok"]:
         n = _dem_hong(sid, p, True)
-        them = ("\nĐã hỏng 3 lần liên tiếp trên file này: đọc lại file (javis_read_file) rồi chép "
+        them = ("\nĐã hỏng 3 lần liên tiếp trên file này: đọc lại file (unimate_read_file) rồi chép "
                 "old_string NGUYÊN VĂN từ output đó." if n >= 3 else "")
         return f"ERROR: {kq['loi']}{them}"
     _dem_hong(sid, p, False)
@@ -779,7 +779,7 @@ def sua_file(p: Path, old: str, new: str, replace_all: bool = False, sid: str = 
     sau = kq["content"]
     ghi = sau.replace("\n", "\r\n") if crlf else sau
     try:
-        tmp = p.with_name(f".{p.name}.javis-{os.getpid()}-{int(time.time() * 1000)}.tmp")
+        tmp = p.with_name(f".{p.name}.unimate-{os.getpid()}-{int(time.time() * 1000)}.tmp")
         with open(tmp, "w", encoding="utf-8", newline="") as f:
             f.write(ghi)
         try:

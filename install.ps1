@@ -1,5 +1,5 @@
 # ============================================================
-# JAVIS OS - CAI MOT LAN TREN WINDOWS
+# UNI MATE - CAI MOT LAN TREN WINDOWS
 #
 #   powershell -ExecutionPolicy Bypass -File install.ps1
 #
@@ -16,8 +16,8 @@
 #   2. Cai CLI xong ma PATH cua PHIEN HIEN TAI chua co -> buoc tong ket bao "chua cai" cho
 #      mot CLI vua cai xong. Refresh-Path doc lai PATH tu registry sau moi lan cai.
 #
-# QUAN TRONG: Javis doc PATH LUC NO BAT. Cai them CLI sau khi server dang chay thi phai
-# khoi dong lai Javis moi thay (stop-javis.bat roi start-javis.vbs).
+# QUAN TRONG: UNI MATE doc PATH LUC NO BAT. Cai them CLI sau khi server dang chay thi phai
+# khoi dong lai UNI MATE moi thay (stop-unimate.bat roi start-unimate.vbs).
 #
 # KHONG dung ky tu co dau trong file .ps1: PowerShell tren Windows doc file khong BOM bang
 # ANSI codepage, chu co dau se thanh rac ngay tren man hinh nguoi dung.
@@ -51,7 +51,7 @@ function Have($cmd) { return [bool](Get-Command $cmd -ErrorAction SilentlyContin
 
 Line ""
 Line " =========================================="
-Line "  JAVIS OS - cai dat tren Windows"
+Line "  UNI MATE - cai dat tren Windows"
 Line " =========================================="
 
 # ---------------------------------------------------------------- [1] Python
@@ -176,34 +176,34 @@ foreach ($it in @(
 }
 Line ""
 Line "  Dang nhap tung bo nao NGAY TRONG trang Models cua dashboard - khong can go lenh."
-Line "  Cai them CLI sau nay thi phai KHOI DONG LAI Javis (stop-javis.bat roi start-javis.vbs),"
+Line "  Cai them CLI sau nay thi phai KHOI DONG LAI UNI MATE (stop-unimate.bat roi start-unimate.vbs),"
 Line "  vi tien trinh dang chay giu PATH cua luc no bat."
 Line ""
 
 # ---------------------------------------------------------------- [5b] tu khoi dong
-# 0.306.0, chu repo 24/10/2026: "mac dinh cai javis tren win hoac mac thi cai khoi dong cung trinh duyet".
-# Dang nhap may la Javis tu chay nen roi tu mo dashboard. Tat: -NoAutostart, javis-autostart.bat uninstall,
+# 0.306.0, chu repo 24/10/2026: "mac dinh cai unimate tren win hoac mac thi cai khoi dong cung trinh duyet".
+# Dang nhap may la UNI MATE tu chay nen roi tu mo dashboard. Tat: -NoAutostart, unimate-autostart.bat uninstall,
 # hoac nut trong trang Cai dat.
 if (-not $NoAutostart) {
-  $as = Join-Path $Root "javis-autostart.ps1"
+  $as = Join-Path $Root "unimate-autostart.ps1"
   if (Test-Path $as) {
     & powershell -NoProfile -ExecutionPolicy Bypass -File $as install | Out-Null
-    if ($LASTEXITCODE -eq 0) { Ok "Tu khoi dong cung Windows: BAT (dang nhap may la Javis tu mo)" }
-    else { Warn "Chua bat duoc tu khoi dong. Bat sau: javis-autostart.bat install" }
+    if ($LASTEXITCODE -eq 0) { Ok "Tu khoi dong cung Windows: BAT (dang nhap may la UNI MATE tu mo)" }
+    else { Warn "Chua bat duoc tu khoi dong. Bat sau: unimate-autostart.bat install" }
   }
 }
 
 # ---------------------------------------------------------------- [6] bat server
 if ($NoStart) {
-  Line "  Cai xong. Bat server: start-javis.vbs (chay nen) hoac setup.bat (hien cua so)."
+  Line "  Cai xong. Bat server: start-unimate.vbs (chay nen) hoac setup.bat (hien cua so)."
   exit 0
 }
-Step 6 "Bat Javis"
-$vbs = Join-Path $Root "start-javis.vbs"
+Step 6 "Bat UNI MATE"
+$vbs = Join-Path $Root "start-unimate.vbs"
 if (Test-Path $vbs) {
   # /open: cho server len roi mo dashboard luon (0.306.0).
   Start-Process "wscript.exe" -ArgumentList "//nologo `"$vbs`" /open" -WorkingDirectory $Root
-  Ok "Server dang chay nen, dashboard se tu mo. Log: server\javis.log"
+  Ok "Server dang chay nen, dashboard se tu mo. Log: server\unimate.log"
 } else {
   Start-Process $vpy -ArgumentList "main.py" -WorkingDirectory (Join-Path $Root "server")
   Ok "Server dang chay"

@@ -12,7 +12,7 @@ A) Device-code (mặc định, hợp VPS headless): spec pin từ source chính 
 
 B) Browser OAuth (Authorization Code + PKCE) - CHO WORKSPACE CHẶN device-code. Đúng luồng
    `codex login` mặc định: mở /oauth/authorize trên trình duyệt, đăng nhập, OpenAI redirect
-   kèm ?code=...&state=... về http://localhost:1455/auth/callback. Vì Javis có thể chạy trên
+   kèm ?code=...&state=... về http://localhost:1455/auth/callback. Vì UNI MATE có thể chạy trên
    VPS (trình duyệt ở máy user, không tới được server), ta dùng kiểu "dán lại URL callback":
    user copy URL redirect (dù trang localhost không tải được) rồi dán vào, server tách code +
    đổi token. Không cần server tự bind cổng localhost nên chạy được cả local lẫn headless.
@@ -24,14 +24,14 @@ có thể vỡ khi OpenAI đổi. Token lưu trong settings.json (gitignored).
 
 LUẬT MỘT NGUỒN SỰ THẬT (0.59.34). `~/.codex/auth.json` do CHÍNH Codex CLI giữ, và Codex tự
 xoay refresh_token khi cần. OpenAI HUỶ refresh_token cũ ngay khi nó được dùng, nên hai bên
-cùng ôm một mã là bên xoay sau cầm mã đã chết. Bản trước để Javis ghi đè file đó vô điều
+cùng ôm một mã là bên xoay sau cầm mã đã chết. Bản trước để UNI MATE ghi đè file đó vô điều
 kiện ở MỖI lượt chat và tự refresh bằng bản sao trong settings.json, nên phân kỳ là chuyện
-sớm muộn: Javis refresh hỏng, `valid_creds` trả lại token hết hạn, rồi cặp token chết đó
+sớm muộn: UNI MATE refresh hỏng, `valid_creds` trả lại token hết hạn, rồi cặp token chết đó
 được ghi đè lên bộ đang tốt của Codex - cả hai bên cùng phải đăng nhập lại. Đúng câu lỗi
 "your refresh token was already used" của vụ 30/07 (xem 0.9.x và test_connect_health).
 
 Nay: ĐỌC đĩa trước khi ghi. Mã trên đĩa mới hơn thì KÉO VỀ chứ không đè; đĩa là tài khoản
-khác (máy tự `codex login`) thì KHÔNG đụng vào; refresh hỏng thì KHÔNG ghi gì cả. Javis vẫn
+khác (máy tự `codex login`) thì KHÔNG đụng vào; refresh hỏng thì KHÔNG ghi gì cả. UNI MATE vẫn
 tự refresh khi nó là bên duy nhất giữ mã, vì tạo ảnh và giọng nói cũng ăn token này và
 không đi qua Codex CLI.
 """
@@ -61,7 +61,7 @@ REDIRECT_URI = AUTH_BASE + "/deviceauth/callback"
 BROWSER_REDIRECT_URI = "http://localhost:1455/auth/callback"
 BROWSER_SCOPE = "openid profile email offline_access"
 VERIFY_URL = AUTH_BASE + "/codex/device"
-UA = "javis-os/0.3 (+device-auth)"
+UA = "UNI-MATE/0.3 (+device-auth)"
 
 # Phiên device đang chờ (1 admin nên giữ in-memory là đủ).
 _pending = {}
@@ -103,7 +103,7 @@ def doc_codex_auth():
 def _han_cua(access_token):
     """Mốc hết hạn của một access token nhặt từ đĩa: đọc claim `exp` của chính JWT đó.
 
-    Không đọc được thì tin DÈ DẶT (5 phút). Đoán dài quá là lượt sau Javis gọi API bằng token
+    Không đọc được thì tin DÈ DẶT (5 phút). Đoán dài quá là lượt sau UNI MATE gọi API bằng token
     đã chết rồi tưởng mình bị mất phiên; đoán ngắn chỉ tốn thêm một lần refresh.
     """
     try:
@@ -116,19 +116,19 @@ def _han_cua(access_token):
 
 
 def _cung_tai_khoan(dtok, o):
-    """Bộ token trên đĩa có cùng tài khoản với bộ Javis đang giữ không?
+    """Bộ token trên đĩa có cùng tài khoản với bộ UNI MATE đang giữ không?
 
-    Máy có thể đã tự `codex login` bằng tài khoản KHÁC. Bộ đó không phải của Javis: không kéo
+    Máy có thể đã tự `codex login` bằng tài khoản KHÁC. Bộ đó không phải của UNI MATE: không kéo
     về, và tuyệt đối không ghi đè lên. Bên nào không khai tài khoản thì coi như khớp, giữ
-    nguyên hành vi cũ cho đường thường (file do chính Javis ghi luôn có account_id).
+    nguyên hành vi cũ cho đường thường (file do chính UNI MATE ghi luôn có account_id).
     """
     a = (dtok.get("account_id") or "").strip()
     b = (o.get("account_id") or "").strip()
     return not a or not b or a == b
 
 
-def _la_token_cua_javis(dtok, o):
-    """File trên đĩa có đúng là bộ token Javis đã bắc cầu sang không?
+def _la_token_cua_unimate(dtok, o):
+    """File trên đĩa có đúng là bộ token UNI MATE đã bắc cầu sang không?
 
     Phải khớp DƯƠNG ít nhất một trường. Chưa từng kết nối (o rỗng) thì không trường nào khớp
     nên trả False - đó là điều ta muốn, vì lúc ấy file kia là phiên người dùng tự tạo.
@@ -416,7 +416,7 @@ def valid_creds():
 
     Kèm cờ ``stale=True`` khi refresh HỎNG và ta đành trả lại token cũ. Nơi gọi dùng cờ đó để
     KHÔNG ghi bộ token đã chết đè lên ~/.codex/auth.json. Thiếu cờ này thì một lần refresh
-    trượt là Javis tự tay bẻ luôn phiên Codex CLI đang tốt trên máy.
+    trượt là UNI MATE tự tay bẻ luôn phiên Codex CLI đang tốt trên máy.
     """
     o = cfgmod.read_settings()["model"].get("openai_oauth") or {}
     if not o.get("access_token") and not o.get("refresh_token"):
@@ -465,7 +465,7 @@ def write_codex_auth():
     """
     o = cfgmod.read_settings()["model"].get("openai_oauth") or {}
     if not (o.get("access_token") or o.get("refresh_token")):
-        return False          # Javis chưa kết nối: phiên trên đĩa là của máy, không đụng vào
+        return False          # UNI MATE chưa kết nối: phiên trên đĩa là của máy, không đụng vào
     dtok = doc_codex_auth()
     drt = (dtok.get("refresh_token") or "").strip()
     if drt:
@@ -543,7 +543,7 @@ def _list_models_backend(creds):
 
 
 def list_models(creds):
-    """Lấy model LIVE từ chính Codex, không ghim version model trong Javis.
+    """Lấy model LIVE từ chính Codex, không ghim version model trong UNI MATE.
 
     Nguồn chính là ``codex app-server`` / ``model/list``: cùng catalog và cùng
     quyền account mà model picker chính thức của Codex dùng. Endpoint backend
@@ -551,7 +551,7 @@ def list_models(creds):
     """
     if not creds or not creds.get("access_token"):
         return None
-    # Javis có luồng OAuth riêng; bắc cầu token sang kho Codex trước để
+    # UNI MATE có luồng OAuth riêng; bắc cầu token sang kho Codex trước để
     # app-server nhìn đúng account ngay cả khi user chưa từng chạy `codex login`.
     write_codex_auth()
     live = codex_models.list_models()
@@ -566,9 +566,9 @@ def disconnect():
     # Dọn luôn bộ token đã bắc cầu sang Codex, không thì "Ngắt kết nối" chỉ xoá nửa trong
     # settings còn file trên đĩa vẫn đăng nhập - `codex exec` chạy tiếp bằng tài khoản người
     # dùng tưởng đã ngắt. CHỈ xoá khi file đúng là của phiên này: máy có thể đã `codex login`
-    # riêng, và xoá nhầm là người dùng mất phiên họ tự tạo mà Javis không dựng lại được.
+    # riêng, và xoá nhầm là người dùng mất phiên họ tự tạo mà UNI MATE không dựng lại được.
     dtok = doc_codex_auth()
-    if dtok and _la_token_cua_javis(dtok, o):
+    if dtok and _la_token_cua_unimate(dtok, o):
         try:
             _codex_auth_path().unlink()
         except Exception:

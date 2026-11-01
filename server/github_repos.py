@@ -1,7 +1,7 @@
 """GitHub connection and the repos a brain works on (spec docs/dev/2026-10-github-trong-chat-spec.md, phase G1).
 
 What lives here:
-  1. The ONE GitHub connection of this Javis (section 5.1). It is built into the core: the Connections page always
+  1. The ONE GitHub connection of this UNI MATE (section 5.1). It is built into the core: the Connections page always
      shows it, no Store pack, no MCP. The token is stored encrypted (`secrets_store`), or the connection points at the
      brain-backup token (`settings.backup.token`) after a check, so a person who already set up backup has nothing to
      paste twice. One connection per install rather than per brain: the backup token is per install too, and a second
@@ -10,14 +10,14 @@ What lives here:
      (`STATE_DIR/repos/<brain>/<owner>/<repo>`, section 4.3): the brain is synced to GitHub and indexed, so code inside
      it would leak into the brain backup and flood search.
   3. Attaching repos to a conversation. Each attached repo gets a worktree of its own for that conversation, on a new
-     branch `javis/<session>`, so two conversations never edit the same files (section 6). The coding_store binding is
+     branch `unimate/<session>`, so two conversations never edit the same files (section 6). The coding_store binding is
      the single source of truth for which folders a conversation works in; this module only adds GitHub repos to it.
   4. The two ways to let go of a repo (section 5.3): detach from one chat (the clone stays) and remove from the brain
      (the local clone and its worktrees are deleted, GitHub is never touched). Removal refuses while work could be lost.
 
 Git authentication never goes through argv or the remote URL: the token rides in `GIT_CONFIG_*` environment variables
-as an HTTP header, only for Javis's own git calls. The clone's `origin` stays the clean https URL, and a model running
-shell commands in the worktree has no credential to push with (section 4.1: the model never pushes, Javis does).
+as an HTTP header, only for UNI MATE's own git calls. The clone's `origin` stays the clean https URL, and a model running
+shell commands in the worktree has no credential to push with (section 4.1: the model never pushes, UNI MATE does).
 
 Stdlib plus httpx (through github_api), no FastAPI, no main import.
 """
@@ -90,7 +90,7 @@ def backup_token() -> str:
 
 
 def token() -> str:
-    """The token Javis uses for GitHub, or "" when not connected."""
+    """The token UNI MATE uses for GitHub, or "" when not connected."""
     conn = _read_conn()
     if conn.get("source") == "backup":
         return backup_token()
@@ -365,8 +365,8 @@ def branches(full_name: str) -> Dict[str, Any]:
     gh = GitHub(tok)
     try:
         default = str((gh.repo(fn) or {}).get("default_branch") or "main")
-        # Javis's own working branches (javis/...) are where chats push, never a base to start from.
-        names = sorted({b for b in gh.branches(fn) if not b.startswith("javis/")} - {default}, key=str.lower)
+        # UNI MATE's own working branches (unimate/...) are where chats push, never a base to start from.
+        names = sorted({b for b in gh.branches(fn) if not b.startswith("unimate/")} - {default}, key=str.lower)
     except GitHubError as e:
         raise RepoError(_c(f"Không lấy được danh sách nhánh: {e}", f"Could not list branches: {e}"))
     return {"default": default, "items": [default] + names}
@@ -439,7 +439,7 @@ def ensure_clone(brain: str, brain_root: str, full_name: str) -> Dict[str, Any]:
                 auth=True, timeout=CLONE_TIMEOUT)
         if not rec:
             rec = {"id": uuid.uuid4().hex[:12], "brain": brain, "added_at": _now()}
-        # Merge methods the repo allows, in Javis's order of preference (spec 11.1: follow the repo's settings).
+        # Merge methods the repo allows, in UNI MATE's order of preference (spec 11.1: follow the repo's settings).
         allowed = [m for m, k in (("squash", "allow_squash_merge"), ("merge", "allow_merge_commit"),
                                   ("rebase", "allow_rebase_merge")) if meta.get(k, True)]
         rec.update({"full_name": full_name, "path": str(dest), "default_branch": default_branch,
@@ -460,7 +460,7 @@ def _sid8(sid: str) -> str:
 
 
 def session_branch(sid: str) -> str:
-    return f"javis/{_sid8(sid)}"
+    return f"unimate/{_sid8(sid)}"
 
 
 def _worktree_dir(rec: Dict[str, Any], sid: str) -> Path:
@@ -468,7 +468,7 @@ def _worktree_dir(rec: Dict[str, Any], sid: str) -> Path:
 
 
 def ensure_worktree(sid: str, rec: Dict[str, Any]) -> Dict[str, str]:
-    """This conversation's worktree of the repo, created on `javis/<session>` from origin's default branch."""
+    """This conversation's worktree of the repo, created on `unimate/<session>` from origin's default branch."""
     existing = coding_store.worktree_thu_muc(sid, rec["folder_id"])
     if existing and Path(existing).is_dir():
         return {"worktree": existing, "branch": coding_store.nhanh_hien_tai(existing)}
@@ -490,7 +490,7 @@ def ensure_worktree(sid: str, rec: Dict[str, Any]) -> Dict[str, str]:
             args = ["worktree", "add", str(dest), branch] if have else ["worktree", "add", "-b", branch, str(dest), base]
             git(args, clone)
             # The branch tracks nothing yet; the first push sets its upstream.
-            git(["config", f"branch.{branch}.javisBase", base_name], clone, check=False)
+            git(["config", f"branch.{branch}.unimateBase", base_name], clone, check=False)
     coding_store.dat_worktree_thu_muc(sid, rec["folder_id"], str(dest))
     return {"worktree": str(dest), "branch": branch}
 
@@ -677,7 +677,7 @@ def set_base(sid: str, brain: str, full_name: str, base: str) -> Dict[str, Any]:
         git(["fetch", "origin", f"+refs/heads/{base}:refs/remotes/origin/{base}"], wt, auth=True, timeout=300)
         cur = coding_store.nhanh_hien_tai(wt) or session_branch(sid)
         git(["checkout", "-q", "-B", cur, f"origin/{base}"], wt)
-        git(["config", f"branch.{cur}.javisBase", base], wt, check=False)
+        git(["config", f"branch.{cur}.unimateBase", base], wt, check=False)
     _set_session_base(sid, fn, "" if base == (repo.get("default_branch") or "main") else base)
     return session_view(sid, brain)
 
@@ -712,14 +712,14 @@ def prompt_block(sid: str, brain: str = "") -> str:
         lines.append(f"- {r['full_name']}: sửa trong {r['worktree']} (nhánh {r['branch'] or session_branch(sid)}, "
                      f"tách từ {r.get('base_branch') or r['default_branch'] or 'main'})")
     lines.append("Chỉ sửa trong các thư mục trên, KHÔNG sửa bản clone gốc. KHÔNG tự `git push`, không tự merge, "
-                 "không đổi remote: việc đẩy lên GitHub do Javis làm.")
+                 "không đổi remote: việc đẩy lên GitHub do UNI MATE làm.")
     lines.append("Trước khi kết thúc lượt có sửa code: tự chạy test và lint của repo. Sửa lỗi thì viết hoặc chạy một "
                  "test TÁI HIỆN lỗi trước (đỏ), sửa, rồi chạy lại đúng test đó cho xanh. KHÔNG bỏ qua, xoá hay nới "
-                 "test, không sửa workflow CI để cho xanh. Sau mỗi lượt Javis tự chạy bộ kiểm tra của repo; xanh thì Javis "
-                 "tự commit, đẩy lên nhánh của cuộc này, mở PR và theo dõi CI. CI đỏ thì Javis mở một lượt sửa "
+                 "test, không sửa workflow CI để cho xanh. Sau mỗi lượt UNI MATE tự chạy bộ kiểm tra của repo; xanh thì UNI MATE "
+                 "tự commit, đẩy lên nhánh của cuộc này, mở PR và theo dõi CI. CI đỏ thì UNI MATE mở một lượt sửa "
                  "kèm log, tối đa 3 vòng.")
     # Spec 7.1: the repo's own rules reach every engine, not only the ones that read CLAUDE.md natively.
-    # Spec 13.1: plus the lessons Javis wrote down for this repo after real failures (kept in the brain).
+    # Spec 13.1: plus the lessons UNI MATE wrote down for this repo after real failures (kept in the brain).
     try:
         import github_gate
         import github_work

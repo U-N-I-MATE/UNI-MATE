@@ -25,7 +25,7 @@ import skill_router as SR
 import turn_context as TC
 
 _CONSTRUCT = object()
-_CURRENT = contextvars.ContextVar('javis_owned_task_skill_scope', default=None)
+_CURRENT = contextvars.ContextVar('unimate_owned_task_skill_scope', default=None)
 _SCOPE = 'ordinary_task_skill_scope'
 _ASSET = 'ordinary_task_skill_asset'
 _HEADER_BYTES = 16384

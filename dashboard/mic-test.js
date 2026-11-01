@@ -4,7 +4,7 @@
    shutter all pass and the call simply hears nothing. Only a person speaking can settle that: the
    meter moves for 5 seconds and the peak is reported, with a hint when it stayed near zero. The
    mic is opened with the same options as a call (echo cancellation, noise suppression, gain), so
-   what the meter shows is what Javis hears.
+   what the meter shows is what UNI MATE hears.
 
    Pure helpers (level, verdict) are exported for node tests; the button wiring runs only in a page. */
 (function () {
@@ -31,7 +31,7 @@
   var api = { level: level, verdict: verdict, TEST_MS: TEST_MS };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (typeof window === "undefined" || typeof document === "undefined") return;
-  window.JavisMicTest = api;
+  window.UniMateMicTest = api;
 
   var t = function (k, p) { try { return window.t ? window.t(k, p) : k; } catch (e) { return k; } };
   var running = false;

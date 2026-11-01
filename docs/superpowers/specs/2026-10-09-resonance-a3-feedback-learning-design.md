@@ -32,7 +32,7 @@ A3 có hai làn học tách riêng, vì hai loại thay đổi có thước đo 
 - Dùng đầu ra của phép thử làm sản phẩm của mục tiêu (mục 14, D5).
 - Tự sinh cách làm mới hay mẫu trình bày mới. Mọi lựa chọn là mục khai báo sẵn trong code.
 - Bản tin gộp theo ngày (digest). "Ít làm phiền" trong A3 chỉ là tắt chuông cho loại tin không bắt buộc.
-- Cơ chế `JAVIS_LESSON` hiện có (trợ lý tự ghi bài học vào `memory/agents/<slug>/MEMORY.md`) không đổi và không dùng cho A3: bài học ở đó không có phạm vi, bằng chứng hay đường thu hồi theo luật A3.
+- Cơ chế `UNIMATE_LESSON` hiện có (trợ lý tự ghi bài học vào `memory/agents/<slug>/MEMORY.md`) không đổi và không dùng cho A3: bài học ở đó không có phạm vi, bằng chứng hay đường thu hồi theo luật A3.
 
 ## 2. Hiện trạng và khoảng trống (mã tại `83bff6bc`)
 
@@ -74,7 +74,7 @@ Mỗi tín hiệu A3 ghi: tin nhắn nguồn, người phản hồi đã đượ
 | Mục tiêu, revision | `goal_id` từ biên nhận; `revision` từ payload outbox của tin đó (revision lúc báo, không phải revision hiện tại) | như M4 (CAS revision hiện tại) |
 | Sản phẩm | `content_sha` của nội dung tin lúc bấm | `artifact_ref` (M4, đã có) |
 
-**Chỉ tin báo do host ghi mới nhận reaction.** Tin hợp lệ khi có dòng `report_receipts` trỏ tới đúng `message_id`, `role` là `assistant`, khoá dạng `outbox:<id>`, và mục tiêu thuộc một trợ lý (`goal_agents`). Lời chat thường, câu trả lời của model, hay một khối `JAVIS_RESONANCE` do model tự viết đều không có biên nhận, nên bị từ chối (400). Đây là cách A3 giữ chat thường ngoài vòng học: không có nguồn hợp lệ thì không có tín hiệu.
+**Chỉ tin báo do host ghi mới nhận reaction.** Tin hợp lệ khi có dòng `report_receipts` trỏ tới đúng `message_id`, `role` là `assistant`, khoá dạng `outbox:<id>`, và mục tiêu thuộc một trợ lý (`goal_agents`). Lời chat thường, câu trả lời của model, hay một khối `UNIMATE_RESONANCE` do model tự viết đều không có biên nhận, nên bị từ chối (400). Đây là cách A3 giữ chat thường ngoài vòng học: không có nguồn hợp lệ thì không có tín hiệu.
 
 ### 3.3 Thay thế, thu hồi, gửi lại, khởi động lại
 
@@ -212,7 +212,7 @@ Host dựng bộ từ hồ sơ của chính mục tiêu, không ai phải nhập
 
 Ví dụ: bế tắc sau 3 lượt việc thì cần hạn mức ít nhất 9 (và phần khám phá ít nhất 4, tức hạn mức ít nhất 8). Mục tiêu mặc định 6 lượt luôn ghi `skipped/budget`. A3 không bao giờ xin thêm hay tự nâng hạn mức.
 
-**Giữ chỗ lượt làm sản phẩm:** giao dịch `begin_experiment` giữ cùng lúc `trial_cost` lượt khám phá (như M5) **và** một lượt làm sản phẩm. Lượt làm sản phẩm ghi ở bảng mới `call_holds` (mục 7.1), được cộng vào `calls_used` ngay lúc giữ, nên trần mục tiêu và trần chung `JAVIS_RESONANCE_CALL_CEILING` đã tính nó. Nó không cộng vào `explore_used`. Phép thử không áp dụng thì lượt giữ được trả lại trong giao dịch `finish_experiment`.
+**Giữ chỗ lượt làm sản phẩm:** giao dịch `begin_experiment` giữ cùng lúc `trial_cost` lượt khám phá (như M5) **và** một lượt làm sản phẩm. Lượt làm sản phẩm ghi ở bảng mới `call_holds` (mục 7.1), được cộng vào `calls_used` ngay lúc giữ, nên trần mục tiêu và trần chung `UNIMATE_RESONANCE_CALL_CEILING` đã tính nó. Nó không cộng vào `explore_used`. Phép thử không áp dụng thì lượt giữ được trả lại trong giao dịch `finish_experiment`.
 
 **Chính sách `heartbeat.v2`** (tăng `POLICY_VERSION`; `wake_log` cũ giữ phiên bản của nó) thêm hai mã sự kiện:
 
@@ -424,7 +424,7 @@ Hằng có phiên bản, không phải ô cài đặt. Đổi mặc định thì
 | Owner thu hồi | Lần dựng tin kế tiếp dùng mặc định | `revert_method` và trả lượt giữ cùng giao dịch |
 | Lần thức bị huỷ trước engine | Không liên quan | Lượt giữ về `held`, lý do trở lại chờ, không trả bộ đếm hai lần (mục 6.8) |
 | Sửa cách hiểu | Không ảnh hưởng | Bài học `out_of_scope`, trả lượt giữ, cách làm về mặc định (mục 6.7) |
-| Trần chung `JAVIS_RESONANCE_CALL_CEILING` | Không liên quan | Kiểm trong giao dịch giữ chỗ (M5, không đổi) |
+| Trần chung `UNIMATE_RESONANCE_CALL_CEILING` | Không liên quan | Kiểm trong giao dịch giữ chỗ (M5, không đổi) |
 
 ## 10. API
 
@@ -437,11 +437,11 @@ Mọi route mới đi qua `_ctx(brain)` và principal owner như M4; agent khôn
 | `POST /resonance/lessons/{id}/decision?brain=` | `action` (`apply` / `dismiss` / `revoke`), `expected_status`, `expected_updated_at` | Bài học sau quyết định, kèm cấu hình có hiệu lực hiện tại | 409 trạng thái đã đổi (ví dụ Bỏ qua khi phép thử đã áp dụng: trả `status='active'` để giao diện đổi sang Thu hồi), hay cấu hình nền đã đổi (đề xuất thành `stale`); 400 hành động không hợp với làn hay trạng thái (`apply` chỉ cho làn P `proposed`; `dismiss` cho `proposed`/`trial_pending`/`trialing`; `revoke` cho `active`). `apply` đòi `expected_status` và `expected_updated_at`; `dismiss` chỉ đòi trạng thái hiện tại thuộc tập cho phép |
 | `GET /goals/{id}` (đã có) | | Thêm khối `learning`: bài học làn M của revision hiện tại (trạng thái, lý do, phép thử, nút quay lại) | |
 
-`POST /goals/{id}/feedback` nhận thêm `source_ref` không bắt buộc (mục 3.2). Không có route nào cho model tạo, áp dụng hay thu hồi bài học; tool `javis_goal` không đổi.
+`POST /goals/{id}/feedback` nhận thêm `source_ref` không bắt buộc (mục 3.2). Không có route nào cho model tạo, áp dụng hay thu hồi bài học; tool `unimate_goal` không đổi.
 
 ## 11. Giao diện
 
-- **Tin báo trong khung chat** (`chat-resonance.js`): dưới thẻ của tin có biên nhận, một hàng nhỏ 👍 / 👎. Bấm 👎 mở ba chip lý do. Hiện giá trị hiện tại; bấm lại đúng giá trị là thu hồi. Không hiện trên tin thường. Sau khi bấm, nếu vừa có đề xuất thì hiện một dòng "Javis có một gợi ý cách báo, xem ở trang trợ lý".
+- **Tin báo trong khung chat** (`chat-resonance.js`): dưới thẻ của tin có biên nhận, một hàng nhỏ 👍 / 👎. Bấm 👎 mở ba chip lý do. Hiện giá trị hiện tại; bấm lại đúng giá trị là thu hồi. Không hiện trên tin thường. Sau khi bấm, nếu vừa có đề xuất thì hiện một dòng "UNI MATE có một gợi ý cách báo, xem ở trang trợ lý".
 - **Trang trợ lý** (`resonance-agent.js`, phần Cộng hưởng của A1): mục **Bài học** một cột (luật trang cài đặt xếp một cột):
   - Đề xuất làn P: câu cũ và câu mới cạnh nhau (xếp dọc trên điện thoại), số tin làm căn cứ, nút Áp dụng / Bỏ qua.
   - Bài học đang áp dụng: phạm vi, nguồn, ngày, nút Thu hồi.
@@ -469,7 +469,7 @@ Mọi ca chạy trong khung thế giới giả của A2 (`World`, `reopen()` đ�
 | G2b | Sai brain: tin thuộc phiên của brain B, gọi bằng brain A | 404; không có dòng |
 | G2c | Sai revision: phản hồi M4 với `expected_revision` cũ | 409; không ghi (khoá lại hành vi M4) |
 | G2d | Sai hash: "Đạt yêu cầu" với `artifact_ref` cũ | 409; không ghi |
-| G2e | Không phải tin báo: reaction trên câu trả lời chat thường, và trên tin có khối `JAVIS_RESONANCE` do model tự viết (không biên nhận) | 400; bộ học không thấy |
+| G2e | Không phải tin báo: reaction trên câu trả lời chat thường, và trên tin có khối `UNIMATE_RESONANCE` do model tự viết (không biên nhận) | 400; bộ học không thấy |
 | G3a | Gửi 10 request `down/too_long` trên cùng một tin, mỗi request một nonce mới (API đặt giá trị, không tự đảo) | Một dòng `reactions`, `seq` 10, 10 dòng log, giá trị cuối `down/too_long`; bộ học đếm 1 tin; không đề xuất |
 | G3d | Luật bấm lại của giao diện: bấm 👎 Dài quá, bấm lại đúng nút đó, bấm lần ba | Test JS: request lần hai mang `value='none'`, lần ba mang lại `down/too_long`; phía kho: giá trị cuối `down/too_long`, `seq` 3 |
 | G3b | Gửi lại cùng `nonce` | Không dòng log mới; trả cùng `seq` |
@@ -543,7 +543,7 @@ Mỗi ca R4 tới R6 kiểm đủ năm thứ: trạng thái và `gen` của lư�
 
 | ID | Kịch bản | Kiểm |
 |---|---|---|
-| R4a | Trần chung đúng 8 (`JAVIS_RESONANCE_CALL_CEILING=8`); góp ý cùng revision tới trước `FOLLOWUP` | Lượt sửa nhận lượt giữ trong một giao dịch (mức tăng ròng 0, không bị trần chặn); `calls_used` = 8; engine 1 lượt; lượt giữ `used`; lý do `method_followup` `superseded`; `FOLLOWUP` không chạy thêm |
+| R4a | Trần chung đúng 8 (`UNIMATE_RESONANCE_CALL_CEILING=8`); góp ý cùng revision tới trước `FOLLOWUP` | Lượt sửa nhận lượt giữ trong một giao dịch (mức tăng ròng 0, không bị trần chặn); `calls_used` = 8; engine 1 lượt; lượt giữ `used`; lý do `method_followup` `superseded`; `FOLLOWUP` không chạy thêm |
 | R4b | Cùng trần 8; sửa cách hiểu (revision mới) rồi góp ý trên revision mới | Lượt giữ đã `released` khi `revise` (`calls_used` = 7); lượt của revision mới giữ lượt mới như thường (7 → 8, vừa trần); không mượn lượt giữ của revision cũ |
 | R4c | Lượt giữ đã `used`; góp ý tiếp theo khi trần 8 và `calls_used` 8 | Lượt mới bị trần chặn như A2 hiện nay (0 lượt model); không mượn lại lượt giữ đã dùng |
 | R4d | Cổng ngoài giao dịch: sau áp dụng `left` = 1, đúng bằng lượt dự phòng | `decide` không đòi phần dư trên lượt dự phòng cho `FOLLOWUP` (lượt đã giữ sẵn): chạy đúng 1 lượt bằng lượt giữ; sau đó `left` vẫn 1, lượt dự phòng còn nguyên |
@@ -654,7 +654,7 @@ Hành vi, quyền, ngân sách và chuẩn bằng chứng giữ đúng thiết k
 | I10 | Lỗi file hệ thống sau khi giữ chỗ | Không nói | Giao dịch giữ chỗ tách khỏi bước tạo thư mục phép thử. Thư mục lỗi sau commit thì phép thử được chốt `inconclusive/stopped` (hoàn mọi lượt đã giữ); chốt cũng lỗi thì phép thử còn `running` và hẹn `trial_recovery` được giữ (chỉ chốt hẹn khi không còn phép thử `running`). Lỗi trước commit ghi `storage_error`, không ghi nhầm là lỗi quyền | Review mã vòng 2, P2-1 |
 | I11 | Ghim quyền trợ lý của phép thử | Không nói | Đọc sổ đăng ký agent (`_agent_intent`) chạy ở luồng phụ như mọi bước kho khác | Review mã vòng 2, P2-2 |
 | I12 | Phiên của hàng phản hồi | I3: bộ ba (phiên, khoá báo cáo, mục tiêu) | Trang gửi phiên TRỐNG; server tra biên nhận theo khoá báo cáo và mục tiêu, chỉ dùng khi có đúng một biên nhận. Phiên ghi rõ thì vẫn kiểm chặt như cũ (sai phiên 400) | Soi giao diện trên sandbox: lúc vẽ tin, phiên "đang mở" ở trang Cộng sự có thể chưa có hay còn là phiên của trợ lý trước, server từ chối và hàng phản hồi biến mất. Khoá `outbox:<id>` chỉ thuộc một tin, nên bỏ phiên không nới quyền: brain, vai, khối thẻ vẫn kiểm |
-| I13 | Mục Bài học sau khi phản hồi | Mục 11: dòng "xem ở trang trợ lý" | Phản hồi ghi xong thì trang chat phát sự kiện `javis:resonance-lessons`; ngăn trợ lý đang mở tải lại mục Bài học | Soi giao diện: không tải lại thì ngăn trợ lý vẫn ghi "Chưa có bài học" tới khi F5 |
+| I13 | Mục Bài học sau khi phản hồi | Mục 11: dòng "xem ở trang trợ lý" | Phản hồi ghi xong thì trang chat phát sự kiện `unimate:resonance-lessons`; ngăn trợ lý đang mở tải lại mục Bài học | Soi giao diện: không tải lại thì ngăn trợ lý vẫn ghi "Chưa có bài học" tới khi F5 |
 | I14 | Hiển thị mục Bài học | Mục 11 | Câu xem trước bỏ cú pháp liên kết markdown; bài học cách làm hiện nhãn dịch (`to_label`) và cách hiểu của mục tiêu (`goal_label`); phép thử đang chờ có khối riêng kèm nút Bỏ qua; ghi chú xung đột 409 giữ qua lần tải lại | Soi giao diện: trước đó hiện `[Inbox/p.md](Inbox/p.md)`, mã `work.checklist.v1`, và ghi chú 409 mất ngay khi danh sách vẽ lại |
 | I15 | Thời gian chờ sau Thu hồi | Mục 5.3: chỉ Bỏ qua chặn đề xuất lại | `learning.v2`: kho đưa cả bài học `revoked` của làn trình bày vào danh sách chặn; `P_REVOKE_COOLDOWN_S` 14 ngày | Soi giao diện (ảnh d06) thấy phản hồi cũ đề xuất lại đúng thay đổi vừa thu hồi; review khuyến nghị dùng chung quy tắc 14 ngày, chủ dự án chốt |
 

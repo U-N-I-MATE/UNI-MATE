@@ -2,7 +2,7 @@
 
        node tests/js/test_pet_chan_dung_hai_mat.js
 
-   chanDung() vẽ mọi khuôn mặt KHÔNG cử động của Javis: ô chọn hình dáng và ô chọn cỡ mắt ở
+   chanDung() vẽ mọi khuôn mặt KHÔNG cử động của UNI MATE: ô chọn hình dáng và ô chọn cỡ mắt ở
    trang Linh vật, dấu ấn thay logo trên thanh bên, avatar trợ lý. Một chỗ sai là sai cả bốn.
 
    Vì sao phải CHẠY THẬT chứ không dò mã nguồn: 0.59.30 làm tròn khoảng cách hai mắt bằng
@@ -66,7 +66,7 @@ global.CustomEvent = function () {};
 global.FormData = function () { this.append = function () {}; };
 
 require(path.join(root, "dashboard", "pet.js"));
-const P = window.JavisPet;
+const P = window.UniMatePet;
 check("pet.js nạp được với DOM giả", !!P && typeof P.previewSvg === "function");
 
 // Đọc từng con mắt trong một chân dung: trả về [{cx, cy, rx, ry}, ...].

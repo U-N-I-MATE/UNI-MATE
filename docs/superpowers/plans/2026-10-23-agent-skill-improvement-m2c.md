@@ -217,7 +217,7 @@ with TrialWorkspace; keep distinct actual operation attempt lifetime locks.
 - [x] No ambient hooks/plugins/skills/native Read/Bash/web/connectors; only actual
   preloaded fixture capability and immutable role input. No arbitrary evaluator
   code/script/registry from a model or HTTP body.
-- [x] Actual isolated proposer/reviewer output containing JAVIS_LESSON, memory
+- [x] Actual isolated proposer/reviewer output containing UNIMATE_LESSON, memory
   instructions and job suggestions produces zero production conversation/lesson/
   job effects, including cancellation/recovery. Trusted origin metadata alone
   from Task3 is not evidence of this runtime exclusion. Shared display persistence

@@ -3,7 +3,7 @@
 Vì sao có file này
 ==================
 Voice V1 (docs/dev/2026-10-voice-call-spec.md, phụ lục A6) cho model mở trang, mở file, mở việc trên
-dashboard bằng tool `javis_ui`. Tool chạy ở server, còn thứ cần bấm nằm trong trình duyệt, nên
+dashboard bằng tool `unimate_ui`. Tool chạy ở server, còn thứ cần bấm nằm trong trình duyệt, nên
 phải có một đường đi qua WebSocket `/ws` sẵn có và một chỗ ĐỢI trình duyệt trả lời: model cần
 biết "đã mở" hay "không có tab nào đang mở" ngay trong lượt, không phải đoán.
 
@@ -15,7 +15,7 @@ biết "đã mở" hay "không có tab nào đang mở" ngay trong lượt, khô
     vòng nhận WS -> resolve(id, ok, detail) -> future của request() có kết quả
 
 Không import `main`: main GẮN runtime vào đây lúc khởi động (`attach`), plugin thì import
-module này. Giống cách `javis-task` import `tasks` và gọi `tasks.current()`.
+module này. Giống cách `unimate-task` import `tasks` và gọi `tasks.current()`.
 
 Hết giờ 4 giây: dashboard là JS chạy trong tab, tab bị treo hay đã đóng nửa chừng thì không
 ai đáp; tool không được phép treo lượt chat theo.

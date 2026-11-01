@@ -3,7 +3,7 @@
  * Owner, 2026-10-29: "a wide diagram shows tiny on the phone and cannot be zoomed". The page viewport turns pinch zoom
  * off (index.html, user-scalable=no), so every viewer that shows something bigger than its box needs its own zoom.
  *
- *   var pz = window.JavisPanZoom.attach(box, content, { w: 1200, h: 400 });
+ *   var pz = window.UniMatePanZoom.attach(box, content, { w: 1200, h: 400 });
  *   pz.fit(); pz.zoomBy(1.25); pz.destroy();
  *
  * `box` is the visible frame, `content` the element moved and scaled inside it (an <svg> or <img>), `w`/`h` its natural
@@ -203,6 +203,6 @@
   }
 
   var api = { attach: attach, svgSize: svgSize, fitState: fitState, zoomAt: zoomAt, pinchStep: pinchStep, clampState: clampState };
-  if (typeof window !== "undefined") window.JavisPanZoom = api;
+  if (typeof window !== "undefined") window.UniMatePanZoom = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

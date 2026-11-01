@@ -17,7 +17,7 @@ Hệ quả có HAI mặt, mặt thứ hai mới đáng sợ:
      `Form(None)` mà hàm hiểu None là "đừng đụng tới trường này" thì một cú "xoá trắng ô
      này" biến thành "giữ nguyên" - không lỗi, không log, người dùng tưởng đã xoá.
 
-ĐÃ SOI TOÀN BỘ khi nâng (16/09), và kết luận là mặt thứ hai KHÔNG chạm Javis hôm nay: cả chín
+ĐÃ SOI TOÀN BỘ khi nâng (16/09), và kết luận là mặt thứ hai KHÔNG chạm UNI MATE hôm nay: cả chín
 chỗ dashboard gửi ô rỗng (`content`, `due`, `endpoint`, `path` của mkdir, `provider`/`model`/
 `brain` của sessions/model, `lang` của /stt, `id` của thu hồi token) đều rơi vào field khai
 `Form("")`, mà mặc định "" thì nhận "" hay nhận mặc định cũng như nhau. Riêng `id` của thu hồi
@@ -32,7 +32,7 @@ import os
 import re
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-formrong-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-formrong-"))
 
 from fastapi import FastAPI, Form   # noqa: E402
 from fastapi.testclient import TestClient   # noqa: E402
@@ -46,7 +46,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-# ---- 1. Luật của fastapi, đo trên một app tí hon cho khỏi lẫn với logic của Javis ----
+# ---- 1. Luật của fastapi, đo trên một app tí hon cho khỏi lẫn với logic của UNI MATE ----
 _app = FastAPI()
 
 

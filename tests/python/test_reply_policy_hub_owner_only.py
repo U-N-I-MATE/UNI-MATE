@@ -11,7 +11,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-rp-hub-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-rp-hub-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -34,11 +34,11 @@ def run(c):
     return asyncio.run(c)
 
 
-VAULT = tempfile.mkdtemp(prefix="javis-rp-vault-")
+VAULT = tempfile.mkdtemp(prefix="unimate-rp-vault-")
 OWN = mcp_hub.OWNER_ONLY_TOOLS
-check("both judge tools are owner-only", {"javis_reply_policy", "javis_reply_policy_tune"} <= OWN)
+check("both judge tools are owner-only", {"unimate_reply_policy", "unimate_reply_policy_tune"} <= OWN)
 # 0.173.0: the team-chat tool (creates/deletes teams, writes assistant files) is owner-only too.
-check("javis_team is owner-only", "javis_team" in OWN)
+check("unimate_team is owner-only", "unimate_team" in OWN)
 
 
 def names(tools):
@@ -46,7 +46,7 @@ def names(tools):
 
 
 # ---- discover_all ----
-# With few tools the hub lists them all; with many it hides them behind javis_search_tools/javis_run_tool. Check
+# With few tools the hub lists them all; with many it hides them behind unimate_search_tools/unimate_run_tool. Check
 # the plain list first (lazy forced off), then the lazy tier separately below.
 _lazy_on = mcp_hub._lazy_on
 mcp_hub._lazy_on = lambda n, chars: False
@@ -54,27 +54,27 @@ tools, route = run(mcp_hub.discover_all("full", vault_root=VAULT, force_refresh=
 check("the owner's session sees both tools", OWN <= names(tools) and OWN <= set(route), sorted(names(tools)))
 tools_b, route_b = run(mcp_hub.discover_all("full", vault_root=VAULT, force_refresh=True, for_bot=True))
 check("a bot session sees neither", not (OWN & names(tools_b)) and not (OWN & set(route_b)))
-check("a bot still gets the rest of the plugin tools", "javis_task" in names(tools_b) or "javis_task" in route_b
+check("a bot still gets the rest of the plugin tools", "unimate_task" in names(tools_b) or "unimate_task" in route_b
       or mcp_hub._LAZY_RUN in route_b)
 tools_o, _ = run(mcp_hub.discover_all("full", vault_root=VAULT))
 check("the cache keeps owner and bot lists apart", OWN <= names(tools_o))
 
-# lazy tier: the bot's javis_run_tool must not dispatch them either
+# lazy tier: the bot's unimate_run_tool must not dispatch them either
 _tl, route_lb = run(mcp_hub.discover_all("full", vault_root=VAULT, force_refresh=True, for_bot=True, force_lazy=True))
-out = run(route_lb[mcp_hub._LAZY_RUN]["call"]({"name": "javis_reply_policy", "args": {"op": "bots"}}))
+out = run(route_lb[mcp_hub._LAZY_RUN]["call"]({"name": "unimate_reply_policy", "args": {"op": "bots"}}))
 check("lazy run on a bot cannot reach the judge tool", str(out).startswith("ERROR"), out)
 _tl, route_lo = run(mcp_hub.discover_all("full", vault_root=VAULT, force_refresh=True, force_lazy=True))
-out = run(route_lo[mcp_hub._LAZY_RUN]["call"]({"name": "javis_reply_policy", "args": {"op": "bots"}}))
+out = run(route_lo[mcp_hub._LAZY_RUN]["call"]({"name": "unimate_reply_policy", "args": {"op": "bots"}}))
 check("lazy run for the owner reaches it", not str(out).startswith("ERROR"), out)
 
 # ---- Claude Code config for a bot ----
 mcp_hub._has_connections = lambda: True
 p_owner = mcp_hub.claude_config_path("full", vault_root=VAULT)
 p_bot = mcp_hub.claude_config_path("full", vault_root=VAULT, bot=True)
-h_owner = json.loads(Path(p_owner).read_text(encoding="utf-8"))["mcpServers"]["javis"]["headers"]
-h_bot = json.loads(Path(p_bot).read_text(encoding="utf-8"))["mcpServers"]["javis"]["headers"]
+h_owner = json.loads(Path(p_owner).read_text(encoding="utf-8"))["mcpServers"]["unimate"]["headers"]
+h_bot = json.loads(Path(p_bot).read_text(encoding="utf-8"))["mcpServers"]["unimate"]["headers"]
 check("bot config is a separate file", p_owner != p_bot)
-check("bot config carries X-Javis-Bot, the owner's does not", h_bot.get("X-Javis-Bot") == "1" and "X-Javis-Bot" not in h_owner)
+check("bot config carries X-UniMate-Bot, the owner's does not", h_bot.get("X-UniMate-Bot") == "1" and "X-UniMate-Bot" not in h_owner)
 
 
 # ---- the HTTP hub honours the header ----
@@ -101,24 +101,24 @@ def http_call(headers, name, arguments):
     return json.loads(resp.body)["result"]["content"][0]["text"]
 
 
-base = {"X-Javis-Mode": "full", "X-Javis-Vault": VAULT}
+base = {"X-UniMate-Mode": "full", "X-UniMate-Vault": VAULT}
 check("hub over HTTP lists them for the owner", OWN <= http_tools(base))
-check("hub over HTTP hides them for a bot", not (OWN & http_tools(dict(base, **{"X-Javis-Bot": "1"}))))
+check("hub over HTTP hides them for a bot", not (OWN & http_tools(dict(base, **{"X-UniMate-Bot": "1"}))))
 check("hub over HTTP refuses a bot's direct call",
-      "ERROR" in http_call(dict(base, **{"X-Javis-Bot": "1"}), "javis_reply_policy", {"op": "bots"}))
+      "ERROR" in http_call(dict(base, **{"X-UniMate-Bot": "1"}), "unimate_reply_policy", {"op": "bots"}))
 
 # ---- the plugin itself ----
-spec = importlib.util.spec_from_file_location("javis_reply_policy_plugin",
-                                              ROOT / "system" / "plugins" / "javis-reply-policy" / "plugin.py")
+spec = importlib.util.spec_from_file_location("unimate_reply_policy_plugin",
+                                              ROOT / "system" / "plugins" / "unimate-reply-policy" / "plugin.py")
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
-ctx = plugins_host.PluginContext("javis-reply-policy", "bundled", ROOT / "system/plugins/javis-reply-policy", VAULT)
+ctx = plugins_host.PluginContext("unimate-reply-policy", "bundled", ROOT / "system/plugins/unimate-reply-policy", VAULT)
 m.register(ctx)
 by = {t["name"]: t for t in ctx._tools}
 check("read tool is readonly, tune tool is safe",
-      by["javis_reply_policy"]["min_mode"] == "readonly" and by["javis_reply_policy_tune"]["min_mode"] == "safe")
-m._bots = lambda: [{"id": "A", "name": "Javis Vũ", "channel": "zalo"}, {"id": "B", "name": "Nhi Mai", "channel": "zalo"}]
-R, T = by["javis_reply_policy"]["handler"], by["javis_reply_policy_tune"]["handler"]
+      by["unimate_reply_policy"]["min_mode"] == "readonly" and by["unimate_reply_policy_tune"]["min_mode"] == "safe")
+m._bots = lambda: [{"id": "A", "name": "Uni Vũ", "channel": "zalo"}, {"id": "B", "name": "Nhi Mai", "channel": "zalo"}]
+R, T = by["unimate_reply_policy"]["handler"], by["unimate_reply_policy_tune"]["handler"]
 
 import time  # noqa: E402
 now = time.time()
@@ -128,8 +128,8 @@ d1 = st.log_decision({"bot_id": "A", "chat_id": "g1", "ts": now - 600, "text": "
 st.log_decision({"bot_id": "B", "chat_id": "g2", "ts": now - 500, "text": "bí mật của bot B", "verdict": "silent",
                  "silence_code": "judge_silent", "candidate": True}, now - 500)
 
-check("bots lists both with numbers", "Javis Vũ" in run(R({"op": "bots"}, ctx)) and "Nhi Mai" in run(R({"op": "bots"}, ctx)))
-rep = run(R({"op": "report", "bot": "javis vu"}, ctx))
+check("bots lists both with numbers", "Uni Vũ" in run(R({"op": "bots"}, ctx)) and "Nhi Mai" in run(R({"op": "bots"}, ctx)))
+rep = run(R({"op": "report", "bot": "uni vu"}, ctx))
 check("report by name without diacritics, own data only", "lịch học" in rep and "bí mật" not in rep, rep[:200])
 dec = run(R({"op": "decisions", "bot": "A", "code": "addressed_other"}, ctx))
 check("decisions filter by code, fenced as data", f"#{d1}" in dec and "<chat_data>" in dec)

@@ -1,7 +1,7 @@
 """limit_resume.py - Tự chạy lại lượt chat khi gói thuê bao mở lại hạn mức.
 
 Cảnh cụ thể nó giải: Claude Code, Codex, Grok Build hay Antigravity báo "hết lượt, mở lại
-lúc 13:01". Trước module này Javis chỉ dịch câu đó ra tiếng Việt rồi dừng. Người dùng phải
+lúc 13:01". Trước module này Uni chỉ dịch câu đó ra tiếng Việt rồi dừng. Người dùng phải
 tự nhớ giờ, tự quay lại, tự bấm "Gửi lại". Trên VPS hoặc trên điện thoại thì thường là quên,
 và câu hỏi nằm đó không có câu trả lời.
 
@@ -15,7 +15,7 @@ Ba ranh giới có chủ ý:
   - Chỉ chạy lại khi BIẾT mốc reset. Không biết thì thẻ chỉ có nút "Chạy lại ngay"; đoán
     một con giờ rồi gọi lại nhà cung cấp mỗi mười phút là đốt hạn mức của lần sau.
   - Tối đa MAX_ATTEMPTS lần tự chạy lại cho một câu hỏi. Mốc reset mà nhà cung cấp nói ra
-    thỉnh thoảng sai (cửa sổ tuần chưa mở); không có trần thì Javis đợi mãi và người dùng
+    thỉnh thoảng sai (cửa sổ tuần chưa mở); không có trần thì UNI MATE đợi mãi và người dùng
     không biết vì sao câu hỏi vẫn treo.
   - Sổ này nằm trong bộ nhớ tiến trình. Khởi động lại máy chủ là mất mục chờ; chấp nhận
     được vì closure chạy lại gắn với vòng đời tiến trình, và câu báo hết lượt đã được lưu

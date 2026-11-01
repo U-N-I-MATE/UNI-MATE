@@ -30,12 +30,12 @@ function catHam(ten) {
   const j = APP.indexOf("\n}\n", i);
   return APP.slice(i, j + 3);
 }
-// The XHR with progress and the stall watch moved to chat-upload.js (JavisUpload.send), shared with the Team chat. The
+// The XHR with progress and the stall watch moved to chat-upload.js (UniMateUpload.send), shared with the Team chat. The
 // checks below run it with the old option names mapped to the new ones.
 const U = require(path.join(ROOT, "dashboard", "chat-upload.js"));
 const guiUpload = (fd, on, o) => U.send(fd, on, o ? { XHR: o.XHR, clock: o.dongHo, stallMs: o.ketMs, waitMs: o.choMs } : undefined);
-check("app.js uses the shared upload", /function guiUpload\(fd, onTien, opt\) \{ return window\.JavisUpload\.send\(fd, onTien, opt\); \}/.test(APP)
-  && /const TAI_THU_LAI = window\.JavisUpload\.RETRIES;/.test(APP) && U.RETRIES === 2 && U.STALL_MS === 30000 && U.SERVER_WAIT_MS === 90000);
+check("app.js uses the shared upload", /function guiUpload\(fd, onTien, opt\) \{ return window\.UniMateUpload\.send\(fd, onTien, opt\); \}/.test(APP)
+  && /const TAI_THU_LAI = window\.UniMateUpload\.RETRIES;/.test(APP) && U.RETRIES === 2 && U.STALL_MS === 30000 && U.SERVER_WAIT_MS === 90000);
 
 // Đồng hồ giả: tick(ms) đẩy thời gian và chạy bộ canh.
 function dongHoGia() {

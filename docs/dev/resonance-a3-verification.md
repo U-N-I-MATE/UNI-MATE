@@ -74,7 +74,7 @@ python tests/run.py route_table version_khop_changelog
 | R1e | Test M5 cũ (`test_resonance_mvp_trial*.py`) đạt nguyên |
 | R2a tới R2f | `a3_learning`; R2a thêm ở `a3_api` |
 | R3a tới R3i2 | `a3_learning` |
-| R4a tới R4d | `a3_learning` (`JAVIS_RESONANCE_CALL_CEILING=8`); R4d trong R3a (lượt sản phẩm chạy khi `left` đúng bằng lượt dự phòng) |
+| R4a tới R4d | `a3_learning` (`UNIMATE_RESONANCE_CALL_CEILING=8`); R4d trong R3a (lượt sản phẩm chạy khi `left` đúng bằng lượt dự phòng) |
 | R5a, R5b, R5c | `a3_learning`, qua đường huỷ thật: huỷ lần thức đúng lúc pha chuẩn bị đang chạy |
 | R5d, R5e | `a3_learning` |
 | R6a tới R6d | `a3_rollback`, mã 0.88.1 thật |
@@ -157,7 +157,7 @@ Năm lỗi giao diện tìm ra và đã sửa, gộp thành bốn dòng (I12 t�
 | Hàng phản hồi không hiện ở trang Cộng sự (GET 400 vì phiên trống, rồi vì phiên của trợ lý trước) | Trang gửi phiên trống; server tra biên nhận theo khoá báo cáo và mục tiêu | UI1 (API): GET và POST theo bộ ba phiên trống; vẫn chặt với phiên sai, brain khác, khoá không có biên nhận. UI4 (JS) |
 | Xem trước hiện markdown thô, bài học cách làm hiện mã `work.checklist.v1` | `plainMd`, `to_label`, `goal_label`; phép thử đang chờ có khối riêng với nút Bỏ qua | UI2 (API và JS) |
 | Ghi chú xung đột 409 mất ngay khi danh sách vẽ lại | Giữ ghi chú qua một lần vẽ | UI3 (JS) |
-| Mục Bài học không tải lại sau phản hồi | Sự kiện `javis:resonance-lessons` | UI5 (JS) |
+| Mục Bài học không tải lại sau phản hồi | Sự kiện `unimate:resonance-lessons` | UI5 (JS) |
 
 Mười kiểm mới (4 Python, 6 JS) đều đỏ trên mã `b33f3e3b` và xanh trên mã đã sửa.
 
@@ -165,7 +165,7 @@ Mười kiểm mới (4 Python, 6 JS) đều đỏ trên mã `b33f3e3b` và xanh
 
 `tests/python/test_resonance_a3_pilot.py`, sửa gói pilot theo review `224a109a` (ba P2). Không đặt biến thì bỏ qua.
 
-- **Hai lớp trần.** Trần kho `JAVIS_RESONANCE_CALL_CEILING=8` đếm cả 3 lượt giả gieo bế tắc. Cổng lượt thật riêng ở biên gọi engine: tối đa 5, ghi sổ xuống đĩa trước mỗi lời gọi, không đặt lại, không hoàn.
+- **Hai lớp trần.** Trần kho `UNIMATE_RESONANCE_CALL_CEILING=8` đếm cả 3 lượt giả gieo bế tắc. Cổng lượt thật riêng ở biên gọi engine: tối đa 5, ghi sổ xuống đĩa trước mỗi lời gọi, không đặt lại, không hoàn.
 - **Dừng ngay khi lỗi.** Lượt lỗi, hết giờ, bị huỷ, đầu ra hỏng hay token sắp hết hạn thì cổng đóng; mọi lời gọi sau bị từ chối trước engine (host thấy engine chưa sẵn sàng, không tính lượt). Tiến trình chết giữa lời gọi thì dòng `reserved` vẫn tính.
 - **Luật M5 giữ nguyên.** Nhánh áp dụng chỉ khi `eligible` (hơn ở tập thử, không kém ở đâu, không unknown). Nhãn nhánh giữ nguyên nguyên nhân: `rejected/no_improvement`, `rejected/regression`, `inconclusive/unknown`, `technical_failed (...)`.
 

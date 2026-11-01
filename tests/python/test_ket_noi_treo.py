@@ -100,7 +100,7 @@ check("a page whose send raises does not stop the others", got == [1, 2], got)
 
 # ═════ loop_watch ═════
 loop_watch.BLOCK_S = 0.3
-state = tempfile.mkdtemp(prefix="javis-loopwatch-")
+state = tempfile.mkdtemp(prefix="unimate-loopwatch-")
 
 
 def frozen_here():

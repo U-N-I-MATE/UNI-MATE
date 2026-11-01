@@ -2,7 +2,7 @@
        node tests/js/test_html_to_webcake.js
    Khong can trinh duyet, khong cham mang, khong can npm install.
 
-   VI SAO CO FILE NAY: skill nay tung bi go khoi Javis vi hong (cay con khong bao gio toi brain),
+   VI SAO CO FILE NAY: skill nay tung bi go khoi UNI MATE vi hong (cay con khong bao gio toi brain),
    va phan "doc HTML" truoc day KHONG CO - agent phai tu nhin roi go spec bang tay, nen ban dung
    ra lech mau/co chu/thu tu so voi trang goc. Bo test nay khoa lai dung nhung cho tung sai that:
 

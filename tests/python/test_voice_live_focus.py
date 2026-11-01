@@ -14,10 +14,10 @@ import sessions
 class LiveFocusTests(unittest.IsolatedAsyncioTestCase):
     async def test_gpt_wake_text_is_the_tool_request(self):
         provider = vl.GPTLive('unused')
-        await provider.send_text('Javis tìm thông tin dự án Alpha')
+        await provider.send_text('UNI MATE tìm thông tin dự án Alpha')
         events = provider.translate({'type': 'session.delegation.created',
                                      'delegation': {'target': 'client', 'id': 'task'}})
-        self.assertEqual(events[-1]['args']['request'], 'Javis tìm thông tin dự án Alpha')
+        self.assertEqual(events[-1]['args']['request'], 'UNI MATE tìm thông tin dự án Alpha')
 
     async def test_focus_close_persists_final_reply_without_provider_turn_done(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -71,9 +71,9 @@ class LiveFocusTests(unittest.IsolatedAsyncioTestCase):
         async def send(message):
             sent.append(message)
         provider._send = send
-        await provider.send_text('Javis, nói tiếp nhé')
+        await provider.send_text('UNI MATE, nói tiếp nhé')
         self.assertEqual([m['type'] for m in sent], ['conversation.item.create', 'response.create'])
-        self.assertEqual(sent[0]['item']['content'][0]['text'], 'Javis, nói tiếp nhé')
+        self.assertEqual(sent[0]['item']['content'][0]['text'], 'UNI MATE, nói tiếp nhé')
 
     async def test_restore_does_not_create_response_or_repeat_the_last_request(self):
         history = [{'role': 'user', 'content': 'tên dự án là Alpha'},

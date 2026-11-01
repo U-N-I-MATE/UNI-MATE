@@ -1,4 +1,4 @@
-# Kiểm chứng Javis Resonance MVP
+# Kiểm chứng UNI MATE Resonance MVP
 
 Báo cáo này ghi những gì đã chạy thật cho từng mốc của [kế hoạch MVP](../superpowers/plans/2026-10-06-resonance-00-mvp.md). Mỗi mục tách rõ phần chạy với engine giả và phần chạy với engine thật. Điều gì chưa kiểm được thì ghi là chưa kiểm.
 
@@ -13,13 +13,13 @@ Báo cáo này ghi những gì đã chạy thật cho từng mốc của [kế h
 | Commit pilot cuối | `ba404185a0ef066b3a6d2922a5ebe5c38235a131` (sạch, không có thay đổi chưa commit trong `server/`) |
 | Head khi viết báo cáo | `5162dfab`: commit sau pilot chỉ sửa thư mục tạm của engine giả trong test, không đổi đường chạy pilot |
 | Máy | Windows 11 Pro 10.0.26200 |
-| Python | 3.12.10, `.venv` của checkout gốc `D:\Project\Javis-OS` |
+| Python | 3.12.10, `.venv` của checkout gốc `D:\Project\UNI-MATE` |
 | Claude Code CLI | `~/.local/bin/claude`, đăng nhập bằng gói thuê bao |
 | Engine việc nền đang chọn | `anthropic-cli`, model `sonnet` |
 | Bộ não chính | `anthropic-cli`, model `claude-opus-5-5` |
 | Key OpenRouter | có trong cài đặt thật (không chép sang pilot, xem Giới hạn) |
 
-Checkout gốc `D:\Project\Javis-OS` đang ở nhánh cũ `codex/restore-chat-colors`, chậm hơn main 121 commit. Toàn bộ khảo sát dưới đây đọc mã trên nhánh M1, tức là main 0.83.2.
+Checkout gốc `D:\Project\UNI-MATE` đang ở nhánh cũ `codex/restore-chat-colors`, chậm hơn main 121 commit. Toàn bộ khảo sát dưới đây đọc mã trên nhánh M1, tức là main 0.83.2.
 
 ### Các điểm tích hợp đã dò trên mã thật
 
@@ -53,7 +53,7 @@ Checkout gốc `D:\Project\Javis-OS` đang ở nhánh cũ `codex/restore-chat-co
 | Mục | Lỗi | Sửa | Test chứng minh |
 |---|---|---|---|
 | P1-1 | `ResultMessage(is_error=True)` có chữ đi qua `map_message` thành `final` thường, receipt ghi `succeeded` | `map_message` thêm `is_error`, `subtype` vào `final`; `run_once` coi đó là `engine_result_error` | `ResultMessage` thật của SDK qua `map_message` thật: lượt lỗi `failed`, không file, giữ usage, tính 1 lượt; lượt `success` vẫn `succeeded` |
-| P1-2 | Bộ chọn nhận Codex, Grok và khai `text_only=true` dù chúng còn công cụ native; với `JAVIS_CODEX_SANDBOX=off` Codex còn bỏ cả sandbox | Chỉ nhận Claude có `allowed_tools` hoặc engine API có `no_tools`; còn lại chặn trước khi gọi | Codex dựng bằng `aux_engine.swap` và `_build_codex` thật (cả `auto` và `off`, xác nhận `sandbox is None` ở `off`), Grok bằng `_build_grok` thật: đều bị chặn, `text_only=false`, `run_once` không tốn lượt. Claude thiếu `allowed_tools` cũng bị chặn |
+| P1-2 | Bộ chọn nhận Codex, Grok và khai `text_only=true` dù chúng còn công cụ native; với `UNIMATE_CODEX_SANDBOX=off` Codex còn bỏ cả sandbox | Chỉ nhận Claude có `allowed_tools` hoặc engine API có `no_tools`; còn lại chặn trước khi gọi | Codex dựng bằng `aux_engine.swap` và `_build_codex` thật (cả `auto` và `off`, xác nhận `sandbox is None` ở `off`), Grok bằng `_build_grok` thật: đều bị chặn, `text_only=false`, `run_once` không tốn lượt. Claude thiếu `allowed_tools` cũng bị chặn |
 | P2-1 | Usage của Grok (`input_tokens`/`output_tokens`) ra 0; `final` chỉ có `cost_usd` bị bịa token bằng 0 | Chuẩn hoá tên khoá theo engine; trường thiếu để vắng | `GrokCLI._usage` thật cho 9028/54; `final` chỉ có cost cho đúng `{"cost_usd": 0.02}`; `final` trống số liệu cho `None` |
 | P2-2 | Đầu ra quá 200.000 ký tự bị cắt âm thầm mà vẫn `succeeded` | Trả `output_too_large`, không ghi file | 200.000 ký tự cộng `IMPORTANT_TAIL`: `failed`, không file, giữ usage |
 | Báo cáo | Pilot chỉ ghi hash "khớp", test pilot chưa tự tính lại hash | Nhánh pilot tự tính SHA-256 trên byte đọc từ đĩa và kiểm cấu trúc đầu ra; xuất bằng chứng có prompt, đầu ra, hash, commit, bỏ đường dẫn cá nhân | [`resonance-mvp-m1-pilot.json`](resonance-mvp-m1-pilot.json) |
@@ -110,11 +110,11 @@ python tests/run.py sdk_engine claude_ket_thuc_luot aux_engine aux_fallback tao_
 Lệnh chạy, với hai đường dẫn đặt theo máy:
 
 ```
-JAVIS_RESONANCE_PILOT=1 JAVIS_RESONANCE_PILOT_SETTINGS=D:/Project/Javis-OS/server/settings.json JAVIS_RESONANCE_PILOT_CALLS=1 python tests/python/test_resonance_mvp_integration.py
+UNIMATE_RESONANCE_PILOT=1 UNIMATE_RESONANCE_PILOT_SETTINGS=D:/Project/UNI-MATE/server/settings.json UNIMATE_RESONANCE_PILOT_CALLS=1 python tests/python/test_resonance_mvp_integration.py
 ```
 
 - **Đầu vào:** một danh sách việc mô phỏng ghi rõ là không có thật, yêu cầu một ghi chú Markdown có tiêu đề `# Việc đang dở` và đúng ba gạch đầu dòng. Prompt nguyên văn nằm trong file bằng chứng.
-- **State:** `JAVIS_STATE_DIR` là thư mục tạm. Settings tạm chỉ chứa khối chọn engine (`auxiliary`, `main`, `engine`, `claude_model`), không có khoá nào. Không ghi gì vào state thật.
+- **State:** `UNIMATE_STATE_DIR` là thư mục tạm. Settings tạm chỉ chứa khối chọn engine (`auxiliary`, `main`, `engine`, `claude_model`), không có khoá nào. Không ghi gì vào state thật.
 - **Hạn mức:** đã chạy ba lần, tổng cộng 3 lượt gọi model trên trần 5 lượt được cho phép. Mỗi lần dùng đúng 1 lượt; lượt chạy lại cùng id không gọi model.
 
 | | Lần 1 | Lần 2 | Lần 3, code sau review |
@@ -194,9 +194,9 @@ Một lượt chạy giữa chừng (sau commit `ba404185`) có `test_ignore_fil
 
 ### Quyết định thiết kế cần người review soát
 
-1. **Bộ não tự quyết định có lập mục tiêu hay không, ngay trong lượt chat, bằng tool `javis_goal`.**
+1. **Bộ não tự quyết định có lập mục tiêu hay không, ngay trong lượt chat, bằng tool `unimate_goal`.**
    - Spec mục 4.0 yêu cầu "tận dụng bộ định tuyến hội thoại hiện có" và "không gọi thêm một model cho mọi tin nhắn". Dò mã 0.83.2 cho thấy chưa có bộ định tuyến bốn nhánh nào.
-   - Thứ gần nhất là cách bộ não đã tự quyết giao việc nền bằng tool `javis_task` (Kanban) và `javis_schedule` (nhắc hẹn, loop). Nên `javis_goal` đi đúng mẫu đó: một plugin bundled, không thêm lượt gọi model, không dò từ khoá.
+   - Thứ gần nhất là cách bộ não đã tự quyết giao việc nền bằng tool `unimate_task` (Kanban) và `unimate_schedule` (nhắc hẹn, loop). Nên `unimate_goal` đi đúng mẫu đó: một plugin bundled, không thêm lượt gọi model, không dò từ khoá.
    - Đổi lại, chất lượng quyết định phụ thuộc vào bộ não đọc mô tả tool. Pilot thật để đo điều này thuộc M3.
 2. **Host kiểm đề xuất theo SMART** (`resonance.validate_proposal`):
    - **R:** `relevant_quote` phải trích đúng một đoạn trong lời người dùng (so khớp bỏ hoa thường và khoảng trắng). Đây là chốt chặn mục tiêu do agent tự nghĩ ra.
@@ -209,15 +209,15 @@ Một lượt chạy giữa chừng (sau commit `ba404185`) có `test_ignore_fil
    - Có sự kiện `created` của đúng tin nhắn này thì là `create_goal`; sự kiện `reframe` thì là `continue_goal`.
    - Có việc Kanban mới của đúng khung chat này, tạo trong lượt, thì là `task_now`. Còn lại là `answer_now`.
    - Có mục tiêu đang mở KHÔNG đủ để nối tin mới vào nó. Đây là lỗi bản review trước đã bắt ở phụ lục cũ.
-   - Không đoán tên tool từ luồng sự kiện (tên khác nhau theo engine, và chế độ lazy giấu tên thật sau `javis_run_tool`); đọc thẳng kho mục tiêu và kho Kanban.
+   - Không đoán tên tool từ luồng sự kiện (tên khác nhau theo engine, và chế độ lazy giấu tên thật sau `unimate_run_tool`); đọc thẳng kho mục tiêu và kho Kanban.
 4. **Khoá chống trùng là id tin nhắn người dùng trong kho phiên.**
    - Trước M2, id này bị bỏ ngay sau `append_message`. Giờ `main.py` giữ lại cho cả tin gõ lẫn tin giọng nói (`message_id` của phiếu nhận giọng nói), và truyền xuống sổ lượt đang chạy (`luot_dang_chay`) cùng lời người dùng.
    - Tool chạy qua hub, có khi ở tiến trình khác, nên đọc sổ đó để biết đúng tin nào. Không chắc (hai khung chat cùng chạy trên một brain, hoặc kênh chưa truyền id tin như Telegram) thì tool từ chối, không đoán.
 5. **Tool chỉ hiện ở brain đã bật.**
    - `plugins_host.register_tool` nhận thêm `visible_fn(vault_root)`; `plugin_tools` giấu tool khi hàm trả False. `check_fn` có sẵn chỉ chặn lúc gọi nhưng tool vẫn hiện, không đủ.
-   - Công tắc là `<brain>/Javis/resonance.json` có `{"enabled": true}`. Mặc định tắt, file hỏng coi như tắt. Giao diện bật tắt thuộc M4.
-   - Chỉ mục năng lực (dòng trong system prompt và `Javis/index.md`) cũng chỉ liệt kê tool đang hiện với brain đó; trước sửa, chỉ mục đọc manifest và vẫn kể `javis_goal` ở brain chưa bật.
-6. **System prompt có thêm đúng một dòng gợi ý `javis_goal`, chỉ ở brain đã bật.** `CLAUDE.md` còn đúng 1 ký tự ngân sách nên không đụng tới; brain chưa bật không dài thêm chữ nào.
+   - Công tắc là `<brain>/UniMate/resonance.json` có `{"enabled": true}`. Mặc định tắt, file hỏng coi như tắt. Giao diện bật tắt thuộc M4.
+   - Chỉ mục năng lực (dòng trong system prompt và `UniMate/index.md`) cũng chỉ liệt kê tool đang hiện với brain đó; trước sửa, chỉ mục đọc manifest và vẫn kể `unimate_goal` ở brain chưa bật.
+6. **System prompt có thêm đúng một dòng gợi ý `unimate_goal`, chỉ ở brain đã bật.** `CLAUDE.md` còn đúng 1 ký tự ngân sách nên không đụng tới; brain chưa bật không dài thêm chữ nào.
 7. **M2 chỉ LƯU mục tiêu.** Kết quả tool dặn bộ não rằng chưa có gì tự thực hiện hay tự báo cáo, để nó không hứa suông (đúng luật "không hứa sẽ làm rồi báo lại" của `CLAUDE.md`).
 
 ### Thay đổi
@@ -226,7 +226,7 @@ Một lượt chạy giữa chừng (sau commit `ba404185`) có `test_ignore_fil
 |---|---|
 | `server/resonance_store.py` (mới) | `GoalStore` trên `resonance.sqlite3`: bảng `intents`, `goals`, `goal_revisions`, `goal_events`, `outbox`. Mọi thao tác qua `Principal` đúng brain. Tạo và sửa ghi sự kiện cùng outbox trong một giao dịch `BEGIN IMMEDIATE`. `revise` cần `expected_revision`, giữ pause, ngân sách, số lượt đã dùng. Chỉ người dùng đổi được pause |
 | `server/resonance.py` | `GoalRecord` thêm khung SMART và trạng thái (giữ nguyên sáu trường của M1). `GoalRejected`, `RouteDecision`, `enabled_for`, `validate_proposal`, `route_request`, `route_after_turn`, `message_ref`, `framer_prompt`, `form_goal`. Phần gọi engine của `run_once` tách thành `GoalDeps._ask` dùng chung với bộ lập mục tiêu, hành vi M1 không đổi |
-| `system/plugins/javis-goal/` (mới) | Tool `javis_goal`: `create`, `update`, `list` |
+| `system/plugins/unimate-goal/` (mới) | Tool `unimate_goal`: `create`, `update`, `list` |
 | `server/plugins_host.py` | `visible_fn` cho tool plugin |
 | `server/luot_dang_chay.py` | `bat_dau` nhận `msg_id`, `user_text`; thêm `doan_luot`. Gọi kiểu cũ vẫn chạy |
 | `server/main.py` | Giữ id tin người dùng; truyền vào `run_turn`; `_resonance_after_turn` ghi runtime event `resonance.route`; dòng gợi ý system prompt; chỉ mục năng lực lọc tool đang giấu |
@@ -261,12 +261,12 @@ Kiểm thêm:
 - **Kho:** chống trùng theo tin nhắn; brain khác không đọc, sửa, liệt kê được; `expected_revision` cũ thì xung đột và không đổi gì; revision cũ còn nguyên; pause, ngân sách, số lượt đã dùng giữ qua revision; không bỏ được ràng buộc của người dùng; outbox có `goal.created` và `goal.revised`; tạo với bản ghi ý định không tồn tại thì không để lại mục tiêu nửa vời; mở lại kho vẫn còn dữ liệu.
 - **`form_goal`:** có đề xuất của bộ não thì không gọi model, không tốn lượt; không có đề xuất thì bộ lập mục tiêu gọi đúng một lượt chỉ chữ, lời người dùng nằm trong rào như dữ liệu; trả rác thì từ chối và vẫn tính một lượt; engine bị chặn thì trả lại lượt.
 - **Plugin qua `plugins_host` thật:** brain chưa bật không thấy tool, bật ở brain này không làm brain khác thấy; tạo, tạo lặp, đề xuất sai luật (không để lại mục tiêu), cập nhật lên revision 2 và route `continue_goal`, cập nhật lặp bị xung đột, mục tiêu không tồn tại, `list`; hai khung chat cùng chạy và lượt không có id tin thì từ chối; tắt lại thì tool biến mất và gọi bằng tham chiếu cũ cũng bị từ chối.
-- **`main.py`:** brain tắt thì không làm gì, không tạo file kho, prompt không nhắc `javis_goal`; brain bật thì có dòng gợi ý (dưới 450 ký tự); bộ não gọi tool trong lượt rồi `main` phân nhánh `create_goal`, mục tiêu đúng brain theo `_brain_key`, vùng đầu ra nằm trong brain; việc Kanban của đúng khung chat trong lượt là `task_now`, việc tạo trước lượt không tính; kho lỗi thì nuốt, không làm hỏng lượt chat.
+- **`main.py`:** brain tắt thì không làm gì, không tạo file kho, prompt không nhắc `unimate_goal`; brain bật thì có dòng gợi ý (dưới 450 ký tự); bộ não gọi tool trong lượt rồi `main` phân nhánh `create_goal`, mục tiêu đúng brain theo `_brain_key`, vùng đầu ra nằm trong brain; việc Kanban của đúng khung chat trong lượt là `task_now`, việc tạo trước lượt không tính; kho lỗi thì nuốt, không làm hỏng lượt chat.
 
 ### Lỗi tự gây trong lúc làm, đã sửa
 
-- **Canary giọng nói.** `test_voice_ten_javis.py` đọc mã nguồn `main.py`, tìm đúng dòng `store.append_message(conv_sid, "user", user_message)` để chắc tên nghe nhầm được sửa trước khi lưu. Em bọc dòng đó trong `int(... or 0)` nên canary đỏ ở lượt chạy toàn bộ đầu tiên. Sửa mã cho khớp canary (commit `f6fd4841`), không sửa canary.
-- **Chỉ mục năng lực.** Test `main` bắt được `javis_goal` vẫn hiện trong system prompt của brain chưa bật, qua dòng "Plugins đang chạy". Đã lọc theo tool thật sự hiện.
+- **Canary giọng nói.** `test_voice_ten_unimate.py` đọc mã nguồn `main.py`, tìm đúng dòng `store.append_message(conv_sid, "user", user_message)` để chắc tên nghe nhầm được sửa trước khi lưu. Em bọc dòng đó trong `int(... or 0)` nên canary đỏ ở lượt chạy toàn bộ đầu tiên. Sửa mã cho khớp canary (commit `f6fd4841`), không sửa canary.
+- **Chỉ mục năng lực.** Test `main` bắt được `unimate_goal` vẫn hiện trong system prompt của brain chưa bật, qua dòng "Plugins đang chạy". Đã lọc theo tool thật sự hiện.
 
 ### Sửa theo review PR #567
 
@@ -329,14 +329,14 @@ Chạy lại `PR-567-M2-round4-checks.py`: hai PASS qua; assertion REPRO P2-1 kh
 
 ### Giới hạn và những gì chưa kiểm
 
-1. **Chưa gọi model thật ở M2.** Chưa đo bộ não thật có gọi `javis_goal` đúng lúc hay không, và có điền đề xuất qua được luật SMART hay không. Pilot thật một mục tiêu là việc của M3 theo kế hoạch.
+1. **Chưa gọi model thật ở M2.** Chưa đo bộ não thật có gọi `unimate_goal` đúng lúc hay không, và có điền đề xuất qua được luật SMART hay không. Pilot thật một mục tiêu là việc của M3 theo kế hoạch.
 2. **Chỉ khung chat web.** Telegram và Zalo chưa truyền id tin, nên tool từ chối lập mục tiêu ở đó. (Bản đầu còn sót làn giọng nói, lượt chạy lại sau hạn mức và phiên quy trình; đã sửa theo review, xem mục dưới.)
 3. **Chưa có guard trong mô hình dữ liệu.** Kế hoạch nói đổi cách hiểu giữ "quyền, ngân sách, guard, pause". M2 giữ ngân sách, số lượt đã dùng, pause; guard đến cùng M3.
 4. **Bản ghi ý định có thể mồ côi ở đường tạo.** Đường cập nhật đã ghi ý định cùng transaction với revision (vòng review 2). Đường tạo vẫn ghi ý định trước `create`: hai lượt cùng một tin chen nhau thì ý định của lượt thua còn lại. Bảng chỉ ghi thêm, không gây sai.
 5. **`reminders_created` chưa được nối.** Hàm phân nhánh nhận số nhắc hẹn tạo trong lượt, nhưng `main` mới đếm việc Kanban. Lượt chỉ đặt nhắc hẹn hiện được ghi là `answer_now`.
 6. **Nhánh phân xong mới chỉ được ghi vào runtime event.** M4 dùng nó để vẽ thẻ "Em đang hướng tới".
 7. **Không chạy test JS.** M2 không đổi file JS nào.
-8. **Không phải mọi đường giọng nói đều hỗ trợ Resonance.** Việc nền do làn nhanh giao (V3, `JAVIS_ASK_MAIN`), là đường giao việc bình thường của làn nhanh, không gọi `run_turn` và không đăng ký lượt kèm id tin, nên tool từ chối. Chỉ hai nhánh giọng nói chuyển về `run_turn` (giữ câu gốc, rơi về bộ não chính) mang id. Nếu pilot M3 có giao việc bằng giọng nói thì phải truyền nguồn yêu cầu đáng tin qua đường việc nền trước.
+8. **Không phải mọi đường giọng nói đều hỗ trợ Resonance.** Việc nền do làn nhanh giao (V3, `UNIMATE_ASK_MAIN`), là đường giao việc bình thường của làn nhanh, không gọi `run_turn` và không đăng ký lượt kèm id tin, nên tool từ chối. Chỉ hai nhánh giọng nói chuyển về `run_turn` (giữ câu gốc, rơi về bộ não chính) mang id. Nếu pilot M3 có giao việc bằng giọng nói thì phải truyền nguồn yêu cầu đáng tin qua đường việc nền trước.
 9. **Đường truyền id kiểm bằng hàm thật với dịch vụ giả.** Chưa chạy end-to-end với model, micro, HTTP/WebSocket thật hay chờ hạn mức thật.
 10. **Chưa đổi hay bỏ được chỉ dẫn người dùng đã nêu.** Hạn chót, chỉ tiêu, ràng buộc đã lưu chỉ thêm được, không đổi hay bỏ được bằng chat ở M2; tool báo rõ phần chưa áp dụng. Đường sửa có thẩm quyền để M4. Không dùng giới hạn này để bỏ qua lệnh dừng hay thu hồi quyền khi có runtime thực thi.
 11. **Kiểm `params` theo từng evaluator chưa làm.** Hiện chỉ kiểm là object rồi sao chép; việc của M3.
@@ -359,7 +359,7 @@ Lượt vòng 4: 15 file đỏ sẵn ở mục M1 cộng `test_hoi_thoai_nhom.py
 
 Danh sách 15 file đỏ trùng đúng danh sách đỏ sẵn ở mục M1. `test_project_khung.py` tiếp tục xanh trên nhánh, như ở M1.
 
-Lượt chạy toàn bộ đầu tiên của M2 (commit `66328b61`) có `test_voice_ten_javis.py` đỏ do M2 gây ra, đã sửa ở `f6fd4841` như ghi ở mục Lỗi tự gây.
+Lượt chạy toàn bộ đầu tiên của M2 (commit `66328b61`) có `test_voice_ten_unimate.py` đỏ do M2 gây ra, đã sửa ở `f6fd4841` như ghi ở mục Lỗi tự gây.
 
 ## M3: thực thi, bằng chứng và lịch nhỏ (06/10/2026)
 
@@ -374,7 +374,7 @@ Lượt chạy toàn bộ đầu tiên của M2 (commit `66328b61`) có `test_vo
 2. **Ghi ý định trước tác động.** `GoalStore.begin_action` ghi hành động `running` và giữ một lượt gọi model trong CÙNG giao dịch (`calls_used < budget_calls`), kèm lịch phục hồi tại lúc hết khoá. Không ghi được thì không dựng engine. Hết hạn mức thì blocked `budget`, không gọi.
 3. **Đối soát sau restart.** Hành động `running` mà khoá đã hết: có file đầu ra đúng `action_id` thì chốt succeeded (`reconciled: true`), không gọi model lại; không có thì `failed: interrupted` (model có thể đã được gọi nên vẫn tính vào hạn mức) và lượt sau dùng id MỚI. Hành động đăng sản phẩm đối soát bằng hash file đích.
 4. **Bằng chứng qua EvidenceStore thật.** `main._ResonanceEvidence` mở một turn runtime kênh `resonance` cho mỗi lần ghi, mã hoá, đọc lại qua `get_valid` (kiểm hạn và hash). Kho chưa có cơ chế ghim nên hạn lưu đặt 90 ngày. Không ghi được bằng chứng thì coi như CHƯA có bằng chứng và không xác nhận thành công. Mỗi lần đánh giá file trong brain cũng chụp nội dung vào kho (bỏ qua nếu cùng hash).
-5. **Đặt sản phẩm vào brain có rào.** Đầu ra của model nằm trong vùng làm việc `Javis/resonance/outputs/<goal>`; host đăng bản đó vào đường dẫn tiêu chí `artifact_contract` đầu tiên khai `path`, khi và chỉ khi: đường dẫn nằm trong brain sau resolve; đuôi `.md` hoặc `.txt`; KHÔNG nằm ở chỗ Javis tự chạy hay tự nạp (thư mục ẩn, `Javis/`, `agents/`, `skills/`, `workflows/`, `plugins/`, `memory/`, file `CLAUDE.md`/`AGENTS.md`/`GEMINI.md`/`MEMORY.md`); file chưa có, hoặc có nhưng hash đúng bằng lần chính mục tiêu này đăng trước. File người dùng hay tác vụ khác đã sửa thì xung đột: giữ nguyên, ghi `publish_conflict`, báo người dùng. Kiểm lại công tắc brain NGAY TRƯỚC khi đăng.
+5. **Đặt sản phẩm vào brain có rào.** Đầu ra của model nằm trong vùng làm việc `UniMate/resonance/outputs/<goal>`; host đăng bản đó vào đường dẫn tiêu chí `artifact_contract` đầu tiên khai `path`, khi và chỉ khi: đường dẫn nằm trong brain sau resolve; đuôi `.md` hoặc `.txt`; KHÔNG nằm ở chỗ UNI MATE tự chạy hay tự nạp (thư mục ẩn, `UniMate/`, `agents/`, `skills/`, `workflows/`, `plugins/`, `memory/`, file `CLAUDE.md`/`AGENTS.md`/`GEMINI.md`/`MEMORY.md`); file chưa có, hoặc có nhưng hash đúng bằng lần chính mục tiêu này đăng trước. File người dùng hay tác vụ khác đã sửa thì xung đột: giữ nguyên, ghi `publish_conflict`, báo người dùng. Kiểm lại công tắc brain NGAY TRƯỚC khi đăng.
 6. **Kết luận.** `evaluate_artifact` trả met / not_met / unknown theo từng tiêu chí: thiếu file khai rõ là not_met; chưa có hoặc không đọc lại được bằng chứng là unknown; đường dẫn ra ngoài brain là unknown (lỗi evaluator); `human_confirmation` luôn unknown tới M4. Mục tiêu achieve chỉ thành `succeeded` khi MỌI tiêu chí met và `GoalStore.finish` so đúng revision đã đánh giá (CAS). Mục tiêu maintain đạt thì giữ active, hẹn xem lại. Chỉ còn tiêu chí người dùng thì chuyển `waiting`, không hẹn gọi model.
 7. **Lịch.** Bảng `wakeups` (một lịch `work` và một lịch `observe` mỗi mục tiêu). `main._resonance_tick` được scheduler 30 giây có sẵn khởi bằng `create_task` (cờ bận chống chồng nhịp); chưa có `resonance.sqlite3` thì thoát ngay. `tick` chỉ đọc lịch tới hạn bằng code và nhận mỗi lịch bằng CAS. `next_wake`: không có nguồn sự kiện thì xem lại trong khoảng 6 đến 24 giờ; chân trời `event` chưa có adapter nên cũng chỉ xem lại có giới hạn; chưa đạt sau một lượt thì làm lại sau 15 phút nếu còn hạn mức; lỗi engine lùi 1 giờ, 4 giờ, 24 giờ hoặc chờ mốc mở lại hạn mức gói (`limit_learner.parse_subscription_limit`); người dùng hẹn thì sửa lịch trực tiếp; reaction không đổi gì. Tạo và sửa mục tiêu ghi lịch `work` ngay trong giao dịch của chúng.
 8. **Guard.** Trường mới `guards` trong khung mục tiêu (tool nhận). Chỉ `artifact_contract` có adapter đọc: file khai phải còn và đạt điều kiện. Nguồn khác ghi unknown "chưa hỗ trợ nguồn ... (chưa có adapter đọc)". Lịch quan sát guard riêng (1 giờ), đọc bằng code, không gọi model. Guard nhảy thì blocked `guard`, xoá mọi lịch, báo người dùng, không tự mở lại khi bị đánh thức.
@@ -388,16 +388,16 @@ Lượt chạy toàn bộ đầu tiên của M2 (commit `66328b61`) có `test_vo
 
 `tests/python/test_resonance_mvp_run.py` (71 kiểm tra ở bản đầu, 92 sau sửa review), kho SQLite thật, engine giả theo hợp đồng sự kiện của aux_engine, cổng bằng chứng giả cùng hợp đồng với `_ResonanceEvidence`. Đủ các test Task M3 đặt tên: `done_is_not_success`, `missing_evidence_unknown`, `restart_does_not_repeat_effect`, `old_revision_cannot_finish`, `pause_and_revoke`, `audit_failure_before_effect`, `budget_reserved_before_call`, `limit_keeps_checkpoint`, `no_paid_provider_fallback`, `idle_does_not_call_model`, `guard_wakes_without_worker`, `no_source_uses_bounded_review`. Thêm: không ghi đè file người dùng đã sửa, chín đường dẫn bị cấm đăng, mục tiêu duy trì làm tiếp sau tin bổ sung (lời gửi model có cả lời gốc, tin mới và bản hiện có), báo một lần mỗi revision.
 
-`tests/python/test_resonance_mvp_main.py` thêm 10 kiểm tra (tổng 32): cổng bằng chứng ghi rồi đọc lại EvidenceStore THẬT, `_resonance_deps` dựng đúng principal và engine, và một mục tiêu đi trọn vòng trên host với engine giả: tool `javis_goal` tạo, `main._resonance_tick` làm ở nền, sản phẩm vào brain, mục tiêu thành công, báo về đúng `web:<phiên>` kèm link; nhịp sau không gọi engine.
+`tests/python/test_resonance_mvp_main.py` thêm 10 kiểm tra (tổng 32): cổng bằng chứng ghi rồi đọc lại EvidenceStore THẬT, `_resonance_deps` dựng đúng principal và engine, và một mục tiêu đi trọn vòng trên host với engine giả: tool `unimate_goal` tạo, `main._resonance_tick` làm ở nền, sản phẩm vào brain, mục tiêu thành công, báo về đúng `web:<phiên>` kèm link; nhịp sau không gọi engine.
 
 Phép thử đột biến (phá từng hành vi rồi chạy lại test, phải đỏ): bỏ kiểm xung đột khi đăng, bỏ trần hạn mức, bỏ kiểm pause, đối soát không xem file đầu ra, coi unknown là xong, `finish` không so revision, cắt chuỗi ý định, bỏ danh sách cấm đăng. Cả tám đều bị test bắt.
 
 ### Kết quả pilot thật
 
-`tests/python/test_resonance_mvp_pilot.py`, chỉ chạy khi `JAVIS_RESONANCE_PILOT=1`. Bằng chứng: `docs/dev/resonance-mvp-m3-pilot.json` (không có đường dẫn cá nhân).
+`tests/python/test_resonance_mvp_pilot.py`, chỉ chạy khi `UNIMATE_RESONANCE_PILOT=1`. Bằng chứng: `docs/dev/resonance-mvp-m3-pilot.json` (không có đường dẫn cá nhân).
 
 - **Commit:** `9f3dad13`, cây `server/` sạch. Sau đó có thêm thay đổi ở đường báo tin (`goal.maintained`) và danh sách cấm đăng; hai phần này được kiểm bằng engine giả, KHÔNG chạy lại pilot thật để giữ hạn mức.
-- **Môi trường:** `JAVIS_STATE_DIR` tạm, chỉ chép các ô chọn engine (`anthropic-cli` / `sonnet`), brain tạm với dữ liệu mô phỏng, kênh báo thay bằng bộ ghi lại.
+- **Môi trường:** `UNIMATE_STATE_DIR` tạm, chỉ chép các ô chọn engine (`anthropic-cli` / `sonnet`), brain tạm với dữ liệu mô phỏng, kênh báo thay bằng bộ ghi lại.
 - **Kịch bản:** mục tiêu duy trì "ghi chú `Inbox/viec-tuan.md` liệt kê việc đang dở" có guard "ghi chú cũ vẫn còn", hạn mức 3 lượt. Nhịp 1 qua `main._resonance_tick`; người dùng bổ sung "gia hạn tên miền"; giả lập khởi động lại (bỏ đối tượng kho, mở kho mới); nhịp 2; nhịp 3.
 - **Kết quả:** 2 lượt gọi model thật (6,0 và 5,0 giây), cả hai receipt succeeded, đúng provider đã chọn, 0 lần gọi công cụ, hash khớp file trên đĩa. Hai lần đăng sản phẩm succeeded (lần 2 ghi đè được vì đúng hash lần 1 của chính mục tiêu). Cả hai revision host kiểm met. Nhịp 3 không gọi thêm. Dùng 2/3 lượt. Bằng chứng revision 2 đọc lại được từ EvidenceStore thật, hash khớp. Ghi chú cũ còn nguyên, không có em dash.
 - **Usage engine báo:** khoảng 18,1 nghìn và 18,5 nghìn token vào, khoảng 300 token ra mỗi lượt; `cost_usd` là con số SDK tự tính trên gói thuê bao, không phải hoá đơn.
@@ -407,7 +407,7 @@ Phép thử đột biến (phá từng hành vi rồi chạy lại test, phải 
 
 - **Mất ngữ cảnh khi làm tiếp.** Sau tin bổ sung, ý định của revision là tin bổ sung đó, nên bước làm tiếp chỉ đưa tin mới cho model, mất lời giao gốc và bản đã làm. Phát hiện khi thiết kế pilot; sửa ở `9f3dad13`.
 - **Mục tiêu duy trì im lặng.** Phát hiện ở pilot; sửa ở `a71b124e`.
-- **Sản phẩm có thể tạo file cấu hình Javis.** Tự soát diff thấy đường dẫn do model khai có thể tạo `Javis/loops/*.md`, `agents/*.md`, `skills/*/SKILL.md`, `memory/...` hay `CLAUDE.md`, tức tự mở rộng quyền. Thêm danh sách cấm ở `_publish`.
+- **Sản phẩm có thể tạo file cấu hình UNI MATE.** Tự soát diff thấy đường dẫn do model khai có thể tạo `UniMate/loops/*.md`, `agents/*.md`, `skills/*/SKILL.md`, `memory/...` hay `CLAUDE.md`, tức tự mở rộng quyền. Thêm danh sách cấm ở `_publish`.
 - **Hai lỗi trong test của chính em:** chân trời `maintain` làm mục tiêu thành maintain nên không "thành công" (đúng thiết kế, sửa test); `tick` chung xử lý cả mục tiêu khác đang tới hạn (sửa test đếm theo mục tiêu).
 
 ### Sửa theo review PR #570
@@ -473,9 +473,9 @@ Lượt sau review: 15 file đỏ sẵn ở mục M1 cộng `test_project_khung.
 3. **Mọi phản hồi gắn revision (CAS).** Thẻ cũ gửi revision cũ thì 409 kèm trạng thái mới để thẻ vẽ lại. Cùng `idempotency_key` thì không ghi lần hai; khoá định danh MỘT lần bấm, nên gửi lại đúng lần bấm đó là trùng còn lần bấm mới luôn được ghi.
 4. **"Chưa đúng ý"** dừng tác động tiếp theo của revision đó (`waiting / fit_rejected`, kiểm trong `_gate`), không phải lệnh dừng toàn bộ: revision mới (người dùng nói rõ hơn, bộ não cập nhật) mở lại bình thường. "Tiếp tục" không vượt được nó.
 5. **Lệnh tạm dừng, tiếp tục, huỷ luôn có hiệu lực**, không đòi khớp revision (can thiệp của người dùng, spec 2.3); revision người dùng đang nhìn vẫn được ghi. "Tiếp tục" mở lại guard đã nhảy chỉ khi guard hiện đã clear. Xem thẻ và các lệnh này không đòi công tắc bật; chỉ phản hồi và lập mục tiêu mới đòi.
-6. **Đường có thẩm quyền để bỏ chỉ dẫn của người dùng** (việc M2, M3 hẹn cho M4): thẻ liệt kê hạn chót, chỉ tiêu, ràng buộc và guard với nút "Bỏ"; lệnh `drop_directive` chỉ owner, đòi đúng revision, tạo revision mới ghi nguồn là người dùng và quan hệ `replace`, bỏ cả khỏi danh sách ràng buộc người dùng của kho, mở chặn nếu bỏ đúng guard đang chặn. Bộ não vẫn không làm được qua `javis_goal`; lời báo phần chưa áp dụng và mô tả tool nay chỉ người dùng tới nút này. Đổi hạn sang ngày khác vẫn là hai bước: bỏ hạn cũ trên thẻ, rồi nói hạn mới trong chat để bộ não thêm.
-7. **Báo cáo không lặp sau sự cố.** Tin báo mang khối `JAVIS_RESONANCE` có khoá `outbox:<id>`. `drain_outbox` hỏi kho tin nhắn khoá đó đã có chưa (`main._resonance_reported`): tiến trình chết giữa lúc lưu tin và lúc đánh dấu outbox thì nhịp sau chỉ đánh dấu, không gửi lần hai. `push_to_chat`, `_gui_qua_kenh`, `_notify_owner` thêm tham số tuỳ chọn `card`, chỉ nhận đúng khuôn khối đó; các chỗ gọi cũ không đổi.
-8. **Khối thẻ chỉ mang id.** Thẻ đọc trạng thái sống qua `GET /goals/{id}`, nên F5, mở lại hội thoại cũ hay kết nối lại đều vẽ đúng tình trạng hiện tại. Tên khối là `JAVIS_RESONANCE`, khác `JAVIS_GOAL` của lệnh `/goal` đã có.
+6. **Đường có thẩm quyền để bỏ chỉ dẫn của người dùng** (việc M2, M3 hẹn cho M4): thẻ liệt kê hạn chót, chỉ tiêu, ràng buộc và guard với nút "Bỏ"; lệnh `drop_directive` chỉ owner, đòi đúng revision, tạo revision mới ghi nguồn là người dùng và quan hệ `replace`, bỏ cả khỏi danh sách ràng buộc người dùng của kho, mở chặn nếu bỏ đúng guard đang chặn. Bộ não vẫn không làm được qua `unimate_goal`; lời báo phần chưa áp dụng và mô tả tool nay chỉ người dùng tới nút này. Đổi hạn sang ngày khác vẫn là hai bước: bỏ hạn cũ trên thẻ, rồi nói hạn mới trong chat để bộ não thêm.
+7. **Báo cáo không lặp sau sự cố.** Tin báo mang khối `UNIMATE_RESONANCE` có khoá `outbox:<id>`. `drain_outbox` hỏi kho tin nhắn khoá đó đã có chưa (`main._resonance_reported`): tiến trình chết giữa lúc lưu tin và lúc đánh dấu outbox thì nhịp sau chỉ đánh dấu, không gửi lần hai. `push_to_chat`, `_gui_qua_kenh`, `_notify_owner` thêm tham số tuỳ chọn `card`, chỉ nhận đúng khuôn khối đó; các chỗ gọi cũ không đổi.
+8. **Khối thẻ chỉ mang id.** Thẻ đọc trạng thái sống qua `GET /goals/{id}`, nên F5, mở lại hội thoại cũ hay kết nối lại đều vẽ đúng tình trạng hiện tại. Tên khối là `UNIMATE_RESONANCE`, khác `UNIMATE_GOAL` của lệnh `/goal` đã có.
 9. **Một mục tiêu nhiều tin.** Mục tiêu có thể xuất hiện ở tin lúc lập, lúc báo tiến triển, lúc xong. Mọi thẻ của cùng mục tiêu vẽ từ một trạng thái; chỉ thẻ mới nhất đầy đủ và có nút, thẻ cũ là một dòng tình trạng.
 10. **Chờ người dùng duyệt** nay đòi có sản phẩm của ĐÚNG revision hiện tại. Trước đó revision mới mà file khai vẫn đạt nhờ bản của revision cũ sẽ chờ xác nhận trong khi không có bản nào để gắn nút.
 11. **Công tắc theo brain** trên trang Cài đặt nhanh ("Hệ thống cộng hưởng (thử nghiệm)", mặc định tắt), qua `GET/POST /resonance/settings`.
@@ -491,7 +491,7 @@ Lượt sau review: 15 file đỏ sẵn ở mục M1 cộng `test_project_khung.
 
 ### Kiểm giao diện thật
 
-Server sandbox của worktree (cổng 7788, `JAVIS_STATE_DIR` và `BRAINS_DIR` tạm, engine việc nền đặt là một provider bộ chọn chỉ chữ chặn sẵn nên KHÔNG có lượt gọi model nào), trình duyệt trong app, khung hẹp cỡ điện thoại:
+Server sandbox của worktree (cổng 7788, `UNIMATE_STATE_DIR` và `BRAINS_DIR` tạm, engine việc nền đặt là một provider bộ chọn chỉ chữ chặn sẵn nên KHÔNG có lượt gọi model nào), trình duyệt trong app, khung hẹp cỡ điện thoại:
 
 - Thẻ hiện đủ cách hiểu, tình trạng, tiêu chí (Đạt / Chưa biết), sản phẩm, giả định, hạn mức, nút; không tràn ngang.
 - Bấm chuột "Đúng ý": ghi nhận, thẻ hiện "Bạn đã xác nhận cách hiểu này". Bàn phím: focus "Đạt yêu cầu" rồi Enter: ghi nhận; nhịp lập lịch sau đó đánh giá lại và kết luận "Đã đạt" mà không gọi model; có tin báo hoàn thành.
@@ -502,7 +502,7 @@ Server sandbox của worktree (cổng 7788, `JAVIS_STATE_DIR` và `BRAINS_DIR` t
 
 Ba điều lần kiểm này làm lộ ra, đã sửa ở `a2cf6cc7`: thẻ vẫn ghi "Chưa biết" ngay sau khi bấm "Đạt yêu cầu" (nay đọc xác nhận sống theo đúng luật đánh giá và báo đã ghi nhận); nhiều thẻ của cùng mục tiêu hiện trạng thái mâu thuẫn (nay vẽ chung, thẻ cũ thu gọn); "Lần làm tiếp" vẫn hiện khi đang tạm dừng (nay ẩn). Một cú bấm chuột bằng toạ độ tính trong lúc trang còn đang cuộn đã trượt khỏi nút; bấm lại theo ảnh chụp thì đúng, ghi lại để phân biệt với lỗi.
 
-Đường dẫn rất dài trên Windows: ở thư mục sandbox đầu tiên (đường dẫn tạm rất sâu), ghi đầu ra vào `Javis/resonance/outputs/<mục tiêu>/<hành động>.md` vượt giới hạn 260 ký tự và lượt làm kết thúc `write_failed` (host báo lỗi đúng, không giả thành công). Brain ở đường dẫn thường không gặp; brain đặt rất sâu thì có thể gặp.
+Đường dẫn rất dài trên Windows: ở thư mục sandbox đầu tiên (đường dẫn tạm rất sâu), ghi đầu ra vào `UniMate/resonance/outputs/<mục tiêu>/<hành động>.md` vượt giới hạn 260 ký tự và lượt làm kết thúc `write_failed` (host báo lỗi đúng, không giả thành công). Brain ở đường dẫn thường không gặp; brain đặt rất sâu thì có thể gặp.
 
 Không chạy pilot model thật cho M4: phần mới là API, kho và giao diện, kiểm được tất định; đường gọi model không đổi từ M3.
 
@@ -524,7 +524,7 @@ Review vòng 2 xác nhận năm lỗi vòng 1 đã sửa, và tìm ra một lỗ
 
 **Sửa:** bằng chứng "đã gửi" là biên nhận do host ghi, không phải nội dung tin. `push_to_chat` gặp thẻ mang khoá báo cáo thì ghi một dòng `report_receipts(session_id, report_key, goal_id, message_id)` trong CÙNG giao dịch SQLite với tin báo cáo (`SessionStore.append_message(..., report=...)`), nên không có trạng thái tin đã lưu mà thiếu biên nhận. `main._resonance_reported` chỉ nhận biên nhận đúng phiên, đúng khoá, đúng mục tiêu (`SessionStore.report_receipt`), rồi đối chiếu lại khối thẻ trong tin. Tra theo khoá chính nên vẫn không giới hạn độ sâu. Bỏ `find_message_containing`.
 
-Vì sao không chỉ phân tích khối `JAVIS_RESONANCE` trong các tin ứng viên như gợi ý tối thiểu của review: tin assistant do model sinh được lưu thô ở nhiều chỗ (`main.py` lượt chat thường, kết quả việc nền), nên một khối hợp lệ do model tự viết ra (ví dụ chép lại tin cũ khi người dùng hỏi) cũng sẽ nuốt mất báo cáo thật. Chỉ host mới ghi được biên nhận.
+Vì sao không chỉ phân tích khối `UNIMATE_RESONANCE` trong các tin ứng viên như gợi ý tối thiểu của review: tin assistant do model sinh được lưu thô ở nhiều chỗ (`main.py` lượt chat thường, kết quả việc nền), nên một khối hợp lệ do model tự viết ra (ví dụ chép lại tin cũ khi người dùng hỏi) cũng sẽ nuốt mất báo cáo thật. Chỉ host mới ghi được biên nhận.
 
 **Hệ quả cho script vòng 2 của người review:** hai ca PASS "recent persisted report is recognized" và "not replayed after 300 later messages" dựng tin "đã gửi" bằng `SessionStore.append_message` thô, tức đúng hình dạng một khối model tự viết; sau bản sửa, tin như thế cố ý KHÔNG còn được tính là đã gửi, nên script vòng 2 chạy nguyên văn dừng ở dòng 255. Không dùng chuyện assertion cũ hỏng làm bằng chứng. Thay vào đó dựng `exports/reviews/PR-575-M4-round3-expected-checks.py` từ script vòng 2 với đúng ba chỗ đổi: tin "đã gửi" đi qua `push_to_chat` thật; REPRO thành kỳ vọng (không tính là đã gửi, notify gọi một lần, báo cáo thật lưu một lần, outbox được đánh dấu); thêm ca âm (khối hợp lệ do model viết, khối hỏng, khoá khác, báo cáo thật của mục tiêu khác cùng khoá) và ca chuỗi trùng đứng trước tin thật cộng 320 tin sau. Kết quả: 15/15 PASS trên bản sửa; trên head cũ `ae1afff3` đỏ đúng ở ca lời chat trích JSON.
 
@@ -625,9 +625,9 @@ Review vòng 2 xác nhận ba lỗi P1 đã sửa, và tìm ra một lỗi P2 do
 
 ### Pilot thật
 
-`tests/python/test_resonance_mvp_trial_pilot.py`, chỉ chạy khi `JAVIS_RESONANCE_PILOT=1`. Bằng chứng: [`resonance-mvp-m5-pilot.json`](resonance-mvp-m5-pilot.json) (JSON thoát ký tự, không có đường dẫn cá nhân).
+`tests/python/test_resonance_mvp_trial_pilot.py`, chỉ chạy khi `UNIMATE_RESONANCE_PILOT=1`. Bằng chứng: [`resonance-mvp-m5-pilot.json`](resonance-mvp-m5-pilot.json) (JSON thoát ký tự, không có đường dẫn cá nhân).
 
-- **Commit:** `6d54e859`, cây `server/` sạch. **Môi trường:** `JAVIS_STATE_DIR` tạm, chỉ chép các ô chọn engine, brain tạm, dữ liệu mô phỏng; engine việc nền đang chọn `anthropic-cli` / `sonnet` qua `main._resonance_engine` (chỉ chữ, không chuỗi dự phòng), bằng chứng qua `main._RESONANCE_EVIDENCE`.
+- **Commit:** `6d54e859`, cây `server/` sạch. **Môi trường:** `UNIMATE_STATE_DIR` tạm, chỉ chép các ô chọn engine, brain tạm, dữ liệu mô phỏng; engine việc nền đang chọn `anthropic-cli` / `sonnet` qua `main._resonance_engine` (chỉ chữ, không chuỗi dự phòng), bằng chứng qua `main._RESONANCE_EVIDENCE`.
 - **Kịch bản:** mục tiêu "biên bản họp thành danh sách việc", hạn mức 8 (phần khám phá 4). Phép thử `work.v1` so với `work.brief.v1` trên t1 (tập thử), h1 và h2 (giữ riêng; h2 chỉ người chấm được).
 - **Kết quả host:** 4 lượt gọi model thật, 24,4 giây tổng; cả 4 receipt succeeded, đúng provider đã chọn, 0 lần gọi công cụ, hash khớp file trên đĩa; bằng chứng đọc lại được từ EvidenceStore thật; không đăng gì vào brain; dùng đúng 4/8 lượt, 4/4 phần khám phá.
 - **Kết quả chấm:**
@@ -655,7 +655,7 @@ Review vòng 2 xác nhận ba lỗi P1 đã sửa, và tìm ra một lỗi P2 do
 
 | Điều kiện (cuối plan 00-mvp) | Tình trạng | Căn cứ |
 |---|---|---|
-| Một yêu cầu cần theo đuổi đi hết vòng trên host thật: tự hình thành mục tiêu, hành động có receipt, kiểm chứng, tiếp tục sau gián đoạn, trả kết quả đúng phiên | **Đạt trong phạm vi kịch bản** (kỹ thuật và nội dung) | Pilot đầu-cuối lần 5 (08/10/2026, commit `0b6a4542`, [`resonance-mvp-e2e-pilot-5.json`](resonance-mvp-e2e-pilot-5.json)): qua đường chat thật, bộ não Opus TỰ tìm `javis_goal` qua ToolSearch và lập đúng một mục tiêu achieve từ lời giao tự nhiên; bản đầu và bản sửa do bộ não viết trong lượt được host tiếp nhận bằng biên nhận ghi; mục tiêu giữ nguyên qua khởi động lại; góp ý nối vào cùng mục tiêu (revision 2); tin báo về đúng phiên có biên nhận; xác nhận qua API (mô phỏng) thì mục tiêu đạt. 2 lượt Opus, 0 lượt Sonnet. Một mẫu, chưa chứng minh định tuyến ổn định. Đường việc nền sửa bản trên model thật chưa được dùng trong lần này (pilot M3 đã đo riêng). Nội dung hai bản đã được người review duyệt đạt (hậu kiểm, đối chiếu đúng hash, xem [hồ sơ pilot](resonance-mvp-e2e-pilot-plan.md), mục "Nghiệm thu nội dung lần 5"). |
+| Một yêu cầu cần theo đuổi đi hết vòng trên host thật: tự hình thành mục tiêu, hành động có receipt, kiểm chứng, tiếp tục sau gián đoạn, trả kết quả đúng phiên | **Đạt trong phạm vi kịch bản** (kỹ thuật và nội dung) | Pilot đầu-cuối lần 5 (08/10/2026, commit `0b6a4542`, [`resonance-mvp-e2e-pilot-5.json`](resonance-mvp-e2e-pilot-5.json)): qua đường chat thật, bộ não Opus TỰ tìm `unimate_goal` qua ToolSearch và lập đúng một mục tiêu achieve từ lời giao tự nhiên; bản đầu và bản sửa do bộ não viết trong lượt được host tiếp nhận bằng biên nhận ghi; mục tiêu giữ nguyên qua khởi động lại; góp ý nối vào cùng mục tiêu (revision 2); tin báo về đúng phiên có biên nhận; xác nhận qua API (mô phỏng) thì mục tiêu đạt. 2 lượt Opus, 0 lượt Sonnet. Một mẫu, chưa chứng minh định tuyến ổn định. Đường việc nền sửa bản trên model thật chưa được dùng trong lần này (pilot M3 đã đo riêng). Nội dung hai bản đã được người review duyệt đạt (hậu kiểm, đối chiếu đúng hash, xem [hồ sơ pilot](resonance-mvp-e2e-pilot-plan.md), mục "Nghiệm thu nội dung lần 5"). |
 | Chat thường không tạo việc nền; không bắt điền SMART hay xác nhận mọi mục tiêu | Đạt với engine giả | M2: phân luồng sau lượt, không gọi thêm model; chưa đo trên bộ não thật. |
 | Goal-fit và outcome tách; biết nói chưa đủ bằng chứng; xác nhận con người không bị bỏ phí hay dùng sai phạm vi | Đạt | M3, M4 và ba vòng review M4. |
 | Một thay đổi phương pháp được thử trên cùng thước đo, chỉ áp dụng khi đủ căn cứ trong quyền; usage và hạn mức được ghi, dừng được | Đạt, có giới hạn | M5: engine giả đủ các nhánh; pilot thật cho nhánh không áp dụng. Chưa có lần áp dụng (eligible) nào trên model thật. |
@@ -663,7 +663,7 @@ Review vòng 2 xác nhận ba lỗi P1 đã sửa, và tìm ra một lỗi P2 do
 
 **Tổng kết hiện tại (08/10/2026):** pilot đầu-cuối lần 5 đạt kỹ thuật và nội dung trong phạm vi kịch bản; chờ kiểm tích hợp trên `main` trước khi phát hành. Phạm vi: một mẫu thực tế đi hết vòng, xác nhận cuối là mô phỏng qua API, lần này không chạy Sonnet (đường việc nền sửa bản trên model thật có bằng chứng riêng ở pilot M3). Chưa phải thống kê độ ổn định định tuyến.
 
-**Lịch sử (giữ nguyên, không còn là trạng thái hiện tại):** Review mã M5 đạt ở vòng 3 (`d38d033a`); MVP CHƯA hoàn tất. Kịch bản pilot đầu-cuối qua đường chat thật cho điều kiện thứ nhất và hạn mức đề xuất ở [`resonance-mvp-e2e-pilot-plan.md`](resonance-mvp-e2e-pilot-plan.md); bộ chạy `tests/python/test_resonance_mvp_e2e_pilot.py` đã qua chế độ `dry` (14/14, 0 lượt gọi model). Chế độ `real` đã chạy MỘT lần (lần 1) theo hạn mức người dùng duyệt: bộ não chọn `javis_task` (đúng luật định tuyến hiện hành cho việc nền một lần có duyệt) chứ không lập mục tiêu, pilot dừng ở 1/3 lượt engine cấp host; phương thức xác thực của lần đó chưa được xác minh độc lập. Sau review e2e: trần tính cả bộ lập mục tiêu (sổ `call_ledger`), cổng xác thực và soát settings trước khi gửi tin, mọi điều kiện nghiệm thu là lỗi cứng, kịch bản đổi sang loại duy trì; lần chạy 2 chờ người dùng duyệt. Điều kiện thứ nhất vẫn chưa đạt.
+**Lịch sử (giữ nguyên, không còn là trạng thái hiện tại):** Review mã M5 đạt ở vòng 3 (`d38d033a`); MVP CHƯA hoàn tất. Kịch bản pilot đầu-cuối qua đường chat thật cho điều kiện thứ nhất và hạn mức đề xuất ở [`resonance-mvp-e2e-pilot-plan.md`](resonance-mvp-e2e-pilot-plan.md); bộ chạy `tests/python/test_resonance_mvp_e2e_pilot.py` đã qua chế độ `dry` (14/14, 0 lượt gọi model). Chế độ `real` đã chạy MỘT lần (lần 1) theo hạn mức người dùng duyệt: bộ não chọn `unimate_task` (đúng luật định tuyến hiện hành cho việc nền một lần có duyệt) chứ không lập mục tiêu, pilot dừng ở 1/3 lượt engine cấp host; phương thức xác thực của lần đó chưa được xác minh độc lập. Sau review e2e: trần tính cả bộ lập mục tiêu (sổ `call_ledger`), cổng xác thực và soát settings trước khi gửi tin, mọi điều kiện nghiệm thu là lỗi cứng, kịch bản đổi sang loại duy trì; lần chạy 2 chờ người dùng duyệt. Điều kiện thứ nhất vẫn chưa đạt.
 
 ### Toàn bộ test
 
@@ -674,4 +674,4 @@ Review vòng 2 xác nhận ba lỗi P1 đã sửa, và tìm ra một lỗi P2 do
 | Đỏ mới so với main | | không có | không có | không có |
 | JS (`tests/run.py --js`) | | 177/177 | 177/177 | 177/177 |
 
-15 file đỏ trùng đúng danh sách đỏ sẵn ở mục M1. Hai file mới của M5 (`test_resonance_mvp_trial.py`, `test_resonance_mvp_trial_pilot.py` ở chế độ bỏ qua khi không đặt `JAVIS_RESONANCE_PILOT=1`) đều xanh.
+15 file đỏ trùng đúng danh sách đỏ sẵn ở mục M1. Hai file mới của M5 (`test_resonance_mvp_trial.py`, `test_resonance_mvp_trial_pilot.py` ở chế độ bỏ qua khi không đặt `UNIMATE_RESONANCE_PILOT=1`) đều xanh.

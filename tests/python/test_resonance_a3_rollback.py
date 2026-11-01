@@ -22,9 +22,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a3rb-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a3rb-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 import resonance as R  # noqa: E402
 import resonance_heartbeat as HB  # noqa: E402
@@ -85,7 +85,7 @@ check("nạp đúng mã 0.88.1: chính sách heartbeat.v1, không biết lớp F
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a3rb-")).resolve())
 (Path(BRAIN) / "Inbox").mkdir(parents=True)
-P = RS.Principal("agent", "javis", BRAIN)
+P = RS.Principal("agent", "unimate", BRAIN)
 OWNER = RS.Principal("owner", "owner", BRAIN)
 T0 = 1_800_000_000.0
 DELIV = "Inbox/a3rb.md"
@@ -201,7 +201,7 @@ class Case:
         return self.store.method_lessons(P, self.gid)[-1]
 
 
-OP = OLD_S.Principal("agent", "javis", BRAIN)
+OP = OLD_S.Principal("agent", "unimate", BRAIN)
 OOWNER = OLD_S.Principal("owner", "owner", BRAIN)
 
 # ═══ R6a: mã cũ chạy nhịp tim, chốt lý do lạ mà không gọi model và không đụng lượt giữ; A3 dựng lại ═══

@@ -16,7 +16,7 @@
         từ trở lên) ở điểm đẹp gần nhất, để loa không im mãi khi model chậm. Loa đang bận thì
         không đẩy: chờ không mất gì cả, còn đẩy sớm là thêm một yêu cầu TTS vô ích.
    Khối mã ``` chưa khép thì giữ lại tới khi khép (đọc nửa khối mã là rác). Khối `<!-- ... -->`
-   (JAVIS_ASK) luôn ở cuối câu trả lời: gặp `<!--` là bỏ từ đó về sau.
+   (UNIMATE_ASK) luôn ở cuối câu trả lời: gặp `<!--` là bỏ từ đó về sau.
 
    Ghi chú: KHÔNG dùng ký tự em dash. */
 (function () {
@@ -210,6 +210,6 @@
 
   var api = { Chunker: Chunker, DEFAULTS: DEFAULTS, countWords: countWords, lastNiceCut: lastNiceCut,
               takeWords: takeWords, splitSentences: splitSentences };
-  if (typeof window !== "undefined") window.JavisVoiceChunker = api;
+  if (typeof window !== "undefined") window.UniMateVoiceChunker = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

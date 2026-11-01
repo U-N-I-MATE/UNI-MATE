@@ -20,7 +20,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-khoidong-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-khoidong-"))
 HERE = str(SERVER)
 sys.path.insert(0, HERE)
 
@@ -45,7 +45,7 @@ def check(name, cond):
 # nhiễu, và nêu đúng tên thư viện có lỗi. Phép đo tỉ lệ chỉ là còi báo cháy hạng hai.
 NANG_PHAI_LUOI = {
     "edge_tts": "TTS (giọng đọc) - 944ms, kéo theo cả aiohttp",
-    "aiohttp": "chỉ đi kèm edge_tts, không code nào của Javis dùng trực tiếp",
+    "aiohttp": "chỉ đi kèm edge_tts, không code nào của UNI MATE dùng trực tiếp",
     # 0.59.18: jsonschema ~50ms, chỉ hai hàm của capability_executor và một hàm của
     # readonly_orchestrator dùng, và cả ba chỉ chạy khi thật sự cấp/kiểm một capability lease.
     "jsonschema": "kiểm schema capability lease - ~50ms, chỉ dùng khi có lease",

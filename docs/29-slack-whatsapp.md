@@ -2,15 +2,15 @@
 
 ***Tiếng Việt** · [English](en/29-slack-whatsapp.md)*
 
-Từ 0.71.0 Javis nói chuyện được trên Slack và WhatsApp, theo đúng hai cách như Telegram và Zalo:
+Từ 0.71.0 UNI MATE nói chuyện được trên Slack và WhatsApp, theo đúng hai cách như Telegram và Zalo:
 
-- **Kênh điều khiển:** bạn chat với chính Javis (brain, công cụ, việc nền của bạn). Cài ở trang **Kênh Admin**.
+- **Kênh điều khiển:** bạn chat với chính UNI MATE (brain, công cụ, việc nền của bạn). Cài ở trang **Kênh Admin**.
 - **Bot khách hàng:** một agent chuyên trách trả lời khách hoặc đội nhóm, mọi cuộc chat vào hộp thư chung, tiếp quản được khi cần người thật. Cài ở trang **Chatbot**.
 
 | | Slack | WhatsApp |
 |---|---|---|
-| Javis kết nối thế nào | Socket Mode: Javis tự mở kết nối, **không cần tên miền** | Webhook: Meta gọi vào Javis, **cần tên miền HTTPS** |
-| Nhóm | Kênh (Javis trả lời khi được gọi tên, trong thread) | Chỉ chat riêng |
+| UNI MATE kết nối thế nào | Socket Mode: UNI MATE tự mở kết nối, **không cần tên miền** | Webhook: Meta gọi vào UNI MATE, **cần tên miền HTTPS** |
+| Nhóm | Kênh (UNI MATE trả lời khi được gọi tên, trong thread) | Chỉ chat riêng |
 | File | Ảnh và tài liệu, cả hai chiều | Ảnh và tài liệu, cả hai chiều |
 | Tin thoại | Chép thành chữ (cần key Groq ở trang Models) | Chép thành chữ (như trên) |
 | Nhắn trước | Lúc nào cũng được | Chỉ trong 24 giờ kể từ tin cuối của người đó |
@@ -26,10 +26,10 @@ Từ 0.71.0 Javis nói chuyện được trên Slack và WhatsApp, theo đúng h
 
 ```yaml
 display_information:
-  name: Javis
+  name: UNI MATE
 features:
   bot_user:
-    display_name: Javis
+    display_name: UNI MATE
     always_online: true
   app_home:
     messages_tab_enabled: true
@@ -62,11 +62,11 @@ settings:
 3. **Basic Information → App-Level Tokens → Generate Token and Scopes**: thêm scope `connections:write`, tạo, chép token bắt đầu bằng `xapp-`.
 4. **Install App → Install to Workspace**, rồi chép **Bot User OAuth Token** bắt đầu bằng `xoxb-`.
 
-### 2a. Kênh điều khiển (bạn chat với Javis)
+### 2a. Kênh điều khiển (bạn chat với UNI MATE)
 
 1. Trang **Kênh Admin** → tab **Slack**: dán bot token và app token, bấm **Lưu và bật kênh**.
 2. Mở Slack, tìm app trong mục **Apps**, nhắn một câu bất kỳ. Bạn sẽ hiện trên thẻ kèm mã 4 số; đối chiếu mã rồi bấm **Cho phép**. Danh sách để trống là cố ý: chưa ai chạm được vào brain của bạn cho tới khi bạn cho phép.
-3. Từ đó: nhắn riêng cho bot, hoặc gọi `@Javis` trong kênh đã mời bot vào (`/invite @Javis`); bot trả lời trong thread.
+3. Từ đó: nhắn riêng cho bot, hoặc gọi `@UNI MATE` trong kênh đã mời bot vào (`/invite @UNI MATE`); bot trả lời trong thread.
 
 Lệnh bot trên Slack bắt đầu bằng `!` thay cho `/`, vì Slack giữ `/` cho lệnh của chính nó: `!stop`, `!new`.
 
@@ -80,12 +80,12 @@ Lệnh bot trên Slack bắt đầu bằng `!` thay cho `/`, vì Slack giữ `/`
 
 ## WhatsApp
 
-WhatsApp chỉ chạy qua **WhatsApp Business Cloud API** chính thức của Meta. Javis không đăng nhập WhatsApp cá nhân (làm vậy là vi phạm điều khoản WhatsApp và số rất dễ bị khoá).
+WhatsApp chỉ chạy qua **WhatsApp Business Cloud API** chính thức của Meta. UNI MATE không đăng nhập WhatsApp cá nhân (làm vậy là vi phạm điều khoản WhatsApp và số rất dễ bị khoá).
 
 ### Trước khi bắt đầu
 
-- Javis phải truy cập được qua **HTTPS bằng tên miền** (VPS có tên miền, xem [DEPLOY.md](../DEPLOY.md)). Meta từ chối `http://` và địa chỉ IP.
-- Khi chưa đặt mật khẩu đăng nhập, tên miền phải là tên Javis biết (tên miền riêng, xem [15 - Thương hiệu và tên miền](15-thuong-hieu-ten-mien.md), hoặc `JAVIS_ALLOWED_HOSTS`), nếu không Javis trả Meta mã 403.
+- UNI MATE phải truy cập được qua **HTTPS bằng tên miền** (VPS có tên miền, xem [DEPLOY.md](../DEPLOY.md)). Meta từ chối `http://` và địa chỉ IP.
+- Khi chưa đặt mật khẩu đăng nhập, tên miền phải là tên UNI MATE biết (tên miền riêng, xem [15 - Thương hiệu và tên miền](15-thuong-hieu-ten-mien.md), hoặc `UNIMATE_ALLOWED_HOSTS`), nếu không UNI MATE trả Meta mã 403.
 - Meta có thể tính phí một số cuộc hội thoại; xem trang bảng giá hiện tại của họ.
 
 ### 1. Tạo app Meta (một lần)
@@ -93,7 +93,7 @@ WhatsApp chỉ chạy qua **WhatsApp Business Cloud API** chính thức của Me
 1. [developers.facebook.com](https://developers.facebook.com) → **My Apps → Create App** → loại **Business** → thêm sản phẩm **WhatsApp**.
 2. **WhatsApp → API Setup**: ghi lại **Phone number ID** (là một mã, không phải số điện thoại). Số thử nghiệm miễn phí chỉ nhắn được tối đa 5 số bạn xác minh ở đó; muốn chạy thật thì thêm số thật.
 3. **Access token vĩnh viễn**: Business Settings → **Users → System users** → thêm một người dùng hệ thống, gán app với toàn quyền, **Generate token** với `whatsapp_business_messaging` và `whatsapp_business_management`. (Token ở trang API Setup hết hạn sau 24 giờ.)
-4. **App settings → Basic**: hiện và chép **App secret**. Javis dùng nó để kiểm mọi lời gọi webhook có đúng là từ Meta.
+4. **App settings → Basic**: hiện và chép **App secret**. UNI MATE dùng nó để kiểm mọi lời gọi webhook có đúng là từ Meta.
 
 ### 2a. Kênh điều khiển
 
@@ -105,7 +105,7 @@ WhatsApp chỉ chạy qua **WhatsApp Business Cloud API** chính thức của Me
 
 1. Dùng một số khác (mỗi số thuộc về một bot).
 2. Trang **Chatbot** → **Tài khoản** → thêm tài khoản, kênh **WhatsApp**, dán ba giá trị **cách nhau dấu cách**: `<phone number id> <access token> <app secret>`.
-3. Webhook dùng chung Callback URL và Verify token ở trang Kênh Admin: một địa chỉ phục vụ mọi số, Javis tự chia tin theo số mà khách nhắn tới.
+3. Webhook dùng chung Callback URL và Verify token ở trang Kênh Admin: một địa chỉ phục vụ mọi số, UNI MATE tự chia tin theo số mà khách nhắn tới.
 
 ### Cửa sổ 24 giờ
 
@@ -122,7 +122,7 @@ WhatsApp chỉ cho doanh nghiệp nhắn tự do trong vòng **24 giờ** kể t
 |---|---|
 | Thẻ Slack báo `invalid_auth` | Bot token sai hoặc bị thu hồi. Cài lại app rồi chép token `xoxb-` mới. |
 | Thẻ Slack: app token bị từ chối | Token `xapp-` thiếu `connections:write`, hoặc chưa bật Socket Mode. |
-| Slack: không trả lời trong kênh | Mời bot vào (`/invite @Javis`) rồi gọi tên nó. |
+| Slack: không trả lời trong kênh | Mời bot vào (`/invite @UNI MATE`) rồi gọi tên nó. |
 | WhatsApp: Meta báo không xác minh được callback | Địa chỉ không phải HTTPS, tên miền chưa được phép, hoặc gõ sai verify token. |
 | WhatsApp: tin nhắn không tới đâu cả | Chưa đăng ký trường **messages**, hoặc Phone number ID là của số khác. |
 | WhatsApp lỗi 190 | Access token hết hạn: dùng token của System User, không dùng token 24 giờ. |

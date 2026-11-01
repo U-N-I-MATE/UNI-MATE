@@ -19,7 +19,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-zpkb-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-zpkb-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

@@ -1,4 +1,4 @@
-"""What Javis remembers, and the person's control over it (0.188.0, Javis Core spec sections 10, 12 and 13).
+"""What UNI MATE remembers, and the person's control over it (0.188.0, UNI MATE Core spec sections 10, 12 and 13).
 
 The brain's memory stays where it always was: `memory/MEMORY.md` (the index loaded before every turn) and one file
 per memory in `memory/facts/`. This module adds the controls the spec asks for, nothing parallel:
@@ -137,7 +137,7 @@ def set_learning(mem_dir: Path, on: bool) -> bool:
 LEARNING_OFF_NOTE = ("\n\n# === GHI NHỚ MỚI ĐANG TẮT ===\n"
                      "Người dùng đã tắt việc lưu ghi nhớ mới cho brain này. Vẫn dùng bộ nhớ đã có, nhưng KHÔNG tạo hay "
                      "sửa file trong memory/ và không thêm dòng vào MEMORY.md. Nếu người dùng nhờ nhớ điều gì, nói rõ "
-                     "việc ghi nhớ đang tắt và chỉ chỗ bật lại (Javis Core > Trí nhớ).")
+                     "việc ghi nhớ đang tắt và chỉ chỗ bật lại (UNI MATE Core > Trí nhớ).")
 
 
 # ── list / edit / forget ──────────────────────────────────────────────────────

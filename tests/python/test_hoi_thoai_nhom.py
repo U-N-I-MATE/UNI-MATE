@@ -36,7 +36,7 @@ def check(name, cond):
 
 
 def store():
-    return sessions.SessionStore(Path(tempfile.mkdtemp(prefix="javis-sess-")) / "c.db")
+    return sessions.SessionStore(Path(tempfile.mkdtemp(prefix="unimate-sess-")) / "c.db")
 
 
 # ============================================================
@@ -165,7 +165,7 @@ check("CANARY: lượt chat sau không thổi bay nhãn project",
 # ============================================================
 # 5. DB CŨ (chưa có cột mới) phải tự nâng cấp, không mất dữ liệu
 # ============================================================
-old = Path(tempfile.mkdtemp(prefix="javis-old-")) / "old.db"
+old = Path(tempfile.mkdtemp(prefix="unimate-old-")) / "old.db"
 con = sqlite3.connect(str(old))
 con.executescript("""
 CREATE TABLE sessions (id TEXT PRIMARY KEY, title TEXT, brain TEXT NOT NULL DEFAULT 'brain',

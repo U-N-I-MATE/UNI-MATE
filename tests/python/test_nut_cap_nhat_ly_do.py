@@ -27,7 +27,7 @@ nên mục 4 dưới đây canh chiều NGƯỢC LẠI với bản trước - đ
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import os, sys, asyncio, tempfile, re, io
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-nutcapnhat-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-nutcapnhat-")
 
 _fails = []
 def check(name, cond):
@@ -51,7 +51,7 @@ check("CANARY: không có token -> no_token (Hostinger, không bật được)",
 
 # Có token nhưng không nối được tới container: đây là VPS chạy `docker compose up -d` mà quên
 # `--profile update`. Trong test không có host "watchtower" nên nối là trượt - đúng tình huống.
-os.environ["WATCHTOWER_TOKEN"] = "javis-update"
+os.environ["WATCHTOWER_TOKEN"] = "unimate-update"
 check("CANARY: có token mà không nối được -> watchtower_off (bật được bằng 1 lệnh)",
       asyncio.run(main._watchtower_ly_do()) == "watchtower_off")
 
@@ -113,7 +113,7 @@ check("CANARY: nhánh watchtower_off chỉ ra ĐÚNG lệnh bật",
 check("nhánh no_token nói Hostinger dùng Redeploy",
       re.search(r'no_token[\s\S]{0,600}Redeploy', CON) is not None)
 # Chủ repo gõ đúng lệnh rồi vẫn lãnh "no configuration file provided: not found" - đứng sai thư
-# mục, vì tên thư mục tuỳ lúc clone (javis hay javis-os). Bảo người ta "chạy ở thư mục chứa file
+# mục, vì tên thư mục tuỳ lúc clone (unimate hay UNI-MATE). Bảo người ta "chạy ở thư mục chứa file
 # compose" là đúng nhưng vô dụng khi họ KHÔNG BIẾT nó nằm đâu. Docker biết, nên phải hỏi nó.
 check("CANARY: có cách TÌM thư mục compose, không chỉ bảo 'đúng thư mục'",
       "com.docker.compose.project.working_dir" in CON)
@@ -147,7 +147,7 @@ check("CANARY: Hostinger đặt WATCHTOWER_TOKEN cho app (thiếu là app tưở
 for _f, _t in (("docker-compose.yml", COMPOSE), ("docker-compose.hostinger.yml", HOST)):
     check(f"{_f}: có cửa bật tự cập nhật theo chu kỳ", "WATCHTOWER_HTTP_API_PERIODIC_POLLS" in _t)
     check(f"CANARY: {_f} để tự cập nhật TẮT mặc định",
-          "JAVIS_AUTO_UPDATE:-false" in _t)
+          "UNIMATE_AUTO_UPDATE:-false" in _t)
 
 # Tài liệu phải ghi cùng một lệnh - lệch nhau là người dùng gõ theo tài liệu rồi vẫn không có nút.
 # Lệnh `--profile update` nay là ĐƯỜNG LUI cho stack cũ, không còn là câu trả lời chính, nhưng
@@ -156,7 +156,7 @@ for f in ("DEPLOY.md", "docs/01-bat-dau-thiet-lap.md", "docs/17-khac-phuc-su-co.
     t = io.open(os.path.join(ROOT, f), encoding="utf-8").read()
     check(f"{f} ghi đúng lệnh bật Watchtower cho stack cũ",
           "docker compose --profile update up -d" in t)
-    check(f"{f} nói cách TỰ cập nhật khỏi bấm nút", "JAVIS_AUTO_UPDATE" in t)
+    check(f"{f} nói cách TỰ cập nhật khỏi bấm nút", "UNIMATE_AUTO_UPDATE" in t)
 
 _sc = io.open(os.path.join(ROOT, "docs", "17-khac-phuc-su-co.md"), encoding="utf-8").read()
 check("tài liệu sự cố có bảng phân biệt ba kiểu 'not found'",

@@ -13,15 +13,15 @@ thừa hưởng nguyên vẹn, không phải chép lại.
 
 Ba loại engine, khác nhau ở CÔNG CỤ có được - đây là chỗ phải cẩn thận:
 - anthropic-cli: Claude Code. Tool file native + Bash + MCP, chặn theo allowlist per-call.
-- openai-oauth: Codex CLI, cũng là agent thật (đọc/ghi file + MCP qua profile javis).
+- openai-oauth: Codex CLI, cũng là agent thật (đọc/ghi file + MCP qua profile unimate).
   Sandbox của Codex ánh xạ theo mode: suggest -> read-only, auto -> workspace-write,
   full -> toàn quyền. KHÔNG có allowlist per-call như Claude nên chỉ chặn ở tầng sandbox.
 - grok-cli: Grok Build CLI chạy bằng gói SuperGrok / X Premium+. Cũng agent thật (tool file +
   MCP hub qua .grok/config.toml trong brain). Mức quyền xuống thẳng cờ chặn của CLI:
   suggest -> chặn Write/Edit/Bash, auto -> chặn Bash, full -> không chặn ở tầng CLI.
 - api (openrouter/openai/gemini/anthropic-api): KHÔNG có tool native. Bù lại hub cấp
-  javis_read_file / javis_list_dir / javis_write_file / javis_use_skill + tool MCP, và
-  javis_write_file tự chặn khi mode là suggest (mcp_hub._builtin_tools). Không có Bash,
+  unimate_read_file / unimate_list_dir / unimate_write_file / unimate_use_skill + tool MCP, và
+  unimate_write_file tự chặn khi mode là suggest (mcp_hub._builtin_tools). Không có Bash,
   không có WebFetch - hẹp hơn Claude, nhưng đủ cho việc nền đọc/ghi ghi chú trong vault.
 
 Hợp đồng sự kiện giữ y như ClaudeSDK để nơi gọi không phải sửa: query() sinh dict
@@ -67,8 +67,8 @@ _KEY_FIELD = {
     "anthropic-compat": "anthropic_compat_key",
 }
 
-# mode của Javis -> sandbox của Codex CLI. Bản đồ thật nằm ở `claude_cli.codex_sandbox_cho_mode`
-# (nó còn đọc cờ JAVIS_CODEX_SANDBOX); giữ dict này để mã cũ đọc tên mức vẫn chạy.
+# mode của UNI MATE -> sandbox của Codex CLI. Bản đồ thật nằm ở `claude_cli.codex_sandbox_cho_mode`
+# (nó còn đọc cờ UNIMATE_CODEX_SANDBOX); giữ dict này để mã cũ đọc tên mức vẫn chạy.
 _CODEX_SANDBOX = {"suggest": "read-only", "auto": "workspace-write", "full": None}
 
 # ── Final "mất đăng nhập" phải bị coi là engine CHẾT, không phải kết quả ──────────────────
@@ -101,14 +101,14 @@ def final_loi_dang_nhap(text: str) -> bool:
 # ghi Google Sheet + gửi Telegram bị chặt ngang lúc đang ghi dở, result rỗng (báo 18/08).
 # Trần này là LƯỚI ĐỠ chống fork treo vô hạn, không phải công cụ quản chi phí - fork đơ
 # thật thì watchdog idle-timeout của engine bắt sớm hơn nhiều, nên đặt trần theo việc nền
-# DÀI NHẤT hợp lệ chứ không theo việc trung bình. Chỉnh qua env JAVIS_BG_MAX_WALL_S
+# DÀI NHẤT hợp lệ chứ không theo việc trung bình. Chỉnh qua env UNIMATE_BG_MAX_WALL_S
 # (giây; giá trị rác hoặc <= 0 thì về mặc định).
 BG_MAX_WALL_S_DEFAULT = 3600
 
 
 def bg_max_wall_s() -> int:
     try:
-        v = int(os.getenv("JAVIS_BG_MAX_WALL_S", "") or 0)
+        v = int(os.getenv("UNIMATE_BG_MAX_WALL_S", "") or 0)
         if v > 0:
             return v
     except (TypeError, ValueError):
@@ -285,7 +285,7 @@ def availability(spec: dict, settings: dict = None) -> tuple:
         try:
             import antigravity_cli as _a
             if not _a.find_antigravity_cli():
-                return False, "Chưa cài Antigravity CLI (`agy`) trên máy chạy Javis."
+                return False, "Chưa cài Antigravity CLI (`agy`) trên máy chạy UNI MATE."
             # Bản NỀN (đọc cache, làm mới bằng thread), KHÔNG phải auth_status(): hàm này chạy
             # ngay trong code async (học sau lượt chat, việc Kanban, nhắc hẹn, loop), mà
             # auth_status() hỏi thẳng `agy models` tới 80 giây. Cả app đứng theo: chủ repo đổi
@@ -338,7 +338,7 @@ class _ApiAuxEngine:
         self.account_id = account_id or ""
         self.system_prompt = system_prompt
         self.vault_root = vault_root
-        self.javis_mode = mode
+        self.unimate_mode = mode
         self.tag = tag
         self.reasoning = reasoning
         self.session_id = None      # engine API không có phiên nối tiếp - giữ cho đủ hợp đồng
@@ -383,7 +383,7 @@ class _ApiAuxEngine:
         # `no_tools` (strip_tools): text-only turn on untrusted input, so the hub is never asked for anything.
         if not getattr(self, "no_tools", False):
             try:
-                tools, route = await mcp_hub.discover_all(self.javis_mode or "full",
+                tools, route = await mcp_hub.discover_all(self.unimate_mode or "full",
                                                           vault_root=self.vault_root)
             except Exception as e:
                 print(f"[aux discover] {e}", file=sys.stderr)
@@ -396,8 +396,8 @@ class _ApiAuxEngine:
         # sai. Nói rõ THIẾU GÌ và VÌ SAO thì câu báo về mới dẫn đúng tới việc cần làm.
         sysprompt += (
             "\n\n[Sự thật hệ thống - năng lực của phiên này] Bạn đang chạy bằng engine API "
-            f"'{self.provider}', KHÔNG phải Claude Code. Bạn có: các tool qua MCP Hub của Javis "
-            "(gồm tool đọc/ghi file trong vault và mọi MCP người dùng đã đấu vào Javis). "
+            f"'{self.provider}', KHÔNG phải Claude Code. Bạn có: các tool qua MCP Hub của UNI MATE "
+            "(gồm tool đọc/ghi file trong vault và mọi MCP người dùng đã đấu vào UNI MATE). "
             "Bạn KHÔNG có: lệnh máy (Bash), tự mở URL (WebFetch/WebSearch), và KHÔNG có các "
             "connector gắn thẳng vào TÀI KHOẢN Claude - Gmail, Google Drive, Google Calendar "
             "gọi bằng tool native `mcp__<tên>__*` chỉ tồn tại trên engine Claude Code. "
@@ -717,8 +717,8 @@ def _build_api(spec, claude_cli_obj, mode, tag):
         provider=spec["provider"],
         model=spec.get("model") or "",
         system_prompt=getattr(claude_cli_obj, "system_prompt", None),
-        vault_root=getattr(claude_cli_obj, "javis_vault", None),
-        mode=mode or getattr(claude_cli_obj, "javis_mode", None) or "full",
+        vault_root=getattr(claude_cli_obj, "unimate_vault", None),
+        mode=mode or getattr(claude_cli_obj, "unimate_mode", None) or "full",
         tag=tag or getattr(claude_cli_obj, "tag", "aux"),
     )
 
@@ -730,21 +730,21 @@ def _build_codex(spec, claude_cli_obj, mode, tag, codex_profile=None):
                   model=spec.get("model") or None,
                   instructions=getattr(claude_cli_obj, "system_prompt", None))
     # Codex không có allowlist per-call như Claude → chặn ở tầng sandbox của chính nó.
-    # `codex_sandbox_cho_mode` còn đọc cờ JAVIS_CODEX_SANDBOX: trong Docker, bubblewrap không
+    # `codex_sandbox_cho_mode` còn đọc cờ UNIMATE_CODEX_SANDBOX: trong Docker, bubblewrap không
     # chạy nổi nên rào đó không phải "chặt hơn" mà là "chết hẳn", và cờ là đường thoát.
-    cc.sandbox = codex_sandbox_cho_mode(mode or getattr(claude_cli_obj, "javis_mode", None) or "full")
-    cc.vault_root = getattr(claude_cli_obj, "javis_vault", None)   # ảnh Codex vẽ về đúng brain
+    cc.sandbox = codex_sandbox_cho_mode(mode or getattr(claude_cli_obj, "unimate_mode", None) or "full")
+    cc.vault_root = getattr(claude_cli_obj, "unimate_vault", None)   # ảnh Codex vẽ về đúng brain
     if codex_profile:
         try:
-            cc.profile = codex_profile()   # profile javis = thấy MCP của Javis (POS, connector...)
+            cc.profile = codex_profile()   # profile unimate = thấy MCP của UNI MATE (POS, connector...)
         except Exception as e:
             print(f"[aux codex profile] {e}", file=sys.stderr)
     try:
         import mcp_hub
-        mcp_hub.dat_codex_vault(cc.extra_config, getattr(claude_cli_obj, "javis_vault", None))
+        mcp_hub.dat_codex_vault(cc.extra_config, getattr(claude_cli_obj, "unimate_vault", None))
         # The job's own level, not the profile's `full` (see mcp_hub.dat_codex_mode).
         mcp_hub.dat_codex_mode(cc.extra_config,
-                               mode or getattr(claude_cli_obj, "javis_mode", None) or "full")
+                               mode or getattr(claude_cli_obj, "unimate_mode", None) or "full")
     except Exception as e:
         print(f"[aux codex vault] {e}", file=sys.stderr)
     # Việc nền theo lịch: hub bắt buộc, không app ChatGPT - xem mcp_hub.CODEX_REQUIRED_KEY. Chat
@@ -795,16 +795,16 @@ def _build_grok(spec, claude_cli_obj, mode, tag):
 
     Entry MCP dựng bằng `grok_cli.hub_entry()` chứ KHÔNG viết tay: Grok đọc khoá `url`, còn
     `agy` đọc `serverUrl`. Chép nhầm khoá giữa hai engine là không có lấy một tool nào của
-    Javis mà không một câu lỗi nào - đúng thứ đã xảy ra với `agy` mấy bản liền.
+    UNI MATE mà không một câu lỗi nào - đúng thứ đã xảy ra với `agy` mấy bản liền.
     """
     import grok_cli as _g
-    muc = mode or getattr(claude_cli_obj, "javis_mode", None) or "full"
+    muc = mode or getattr(claude_cli_obj, "unimate_mode", None) or "full"
     gc = _g.GrokCLI(cwd=getattr(claude_cli_obj, "cwd", None),
                     tag=tag or getattr(claude_cli_obj, "tag", "aux"),
                     model=spec.get("model") or None,
                     instructions=getattr(claude_cli_obj, "system_prompt", None))
     gc.mode = muc
-    vault = getattr(claude_cli_obj, "javis_vault", None) or getattr(claude_cli_obj, "cwd", None)
+    vault = getattr(claude_cli_obj, "unimate_vault", None) or getattr(claude_cli_obj, "cwd", None)
     if vault:
         try:
             import mcp_hub
@@ -812,7 +812,7 @@ def _build_grok(spec, claude_cli_obj, mode, tag):
             if bool(cfgmod.read_settings().get("mcp", {}).get("hub", True)):
                 hub = _g.hub_entry(mcp_hub.hub_url(),
                                    {"Authorization": f"Bearer {mcp_hub.hub_token()}",
-                                    "X-Javis-Mode": muc, "X-Javis-Vault": str(vault)})
+                                    "X-UniMate-Mode": muc, "X-UniMate-Vault": str(vault)})
             _g.ghi_mcp_settings(vault, hub)
         except Exception as e:
             print(f"[aux grok mcp] {e}", file=sys.stderr)
@@ -829,18 +829,18 @@ def _build_antigravity(spec, claude_cli_obj, mode, tag):
       `antigravity_cli.co_quyen_cho_mode` - nó nói thẳng chuyện này, và rào tiền/đơn/đăng bài
       vẫn nằm ở MCP Hub chứ không ở CLI.
     - **Hình dạng entry MCP khác hẳn.** `agy` đọc khoá `serverUrl`, Grok đọc `url`. Chép nhầm
-      khoá là engine chạy trơn tru mà không có lấy một tool nào của Javis, không một tiếng
+      khoá là engine chạy trơn tru mà không có lấy một tool nào của UNI MATE, không một tiếng
       động - đúng thứ đã xảy ra mấy bản liền. Nên dựng entry bằng `antigravity_cli.hub_entry()`
       chứ không viết tay.
     """
     import antigravity_cli as _a
-    muc = mode or getattr(claude_cli_obj, "javis_mode", None) or "full"
+    muc = mode or getattr(claude_cli_obj, "unimate_mode", None) or "full"
     ac = _a.AntigravityCLI(cwd=getattr(claude_cli_obj, "cwd", None),
                            tag=tag or getattr(claude_cli_obj, "tag", "aux"),
                            model=spec.get("model") or None,
                            instructions=getattr(claude_cli_obj, "system_prompt", None))
     ac.mode = muc
-    vault = getattr(claude_cli_obj, "javis_vault", None) or getattr(claude_cli_obj, "cwd", None)
+    vault = getattr(claude_cli_obj, "unimate_vault", None) or getattr(claude_cli_obj, "cwd", None)
     if vault:
         try:
             import mcp_hub
@@ -848,7 +848,7 @@ def _build_antigravity(spec, claude_cli_obj, mode, tag):
             if bool(cfgmod.read_settings().get("mcp", {}).get("hub", True)):
                 hub = _a.hub_entry(mcp_hub.hub_url(),
                                    {"Authorization": f"Bearer {mcp_hub.hub_token()}",
-                                    "X-Javis-Mode": muc, "X-Javis-Vault": str(vault)})
+                                    "X-UniMate-Mode": muc, "X-UniMate-Vault": str(vault)})
             _a.ghi_mcp_settings(vault, hub)
         except Exception as e:
             print(f"[aux antigravity mcp] {e}", file=sys.stderr)
@@ -1003,8 +1003,8 @@ def _links_for_step(step: dict, cli, mode, tag, codex_profile, settings, claude_
                     else model_routing.usable_accounts(m, prov, field))
             mk = lambda key="", acc="": _ApiAuxEngine(   # noqa: E731
                 provider=prov, model=sp["model"], system_prompt=getattr(cli, "system_prompt", None),
-                vault_root=getattr(cli, "javis_vault", None),
-                mode=mode or getattr(cli, "javis_mode", None) or "full",
+                vault_root=getattr(cli, "unimate_vault", None),
+                mode=mode or getattr(cli, "unimate_mode", None) or "full",
                 tag=tag or getattr(cli, "tag", "aux"), reasoning=level if level in model_routing.LEVELS else "off",
                 api_key=key, account_id=acc)
             if len(accs) > 1:

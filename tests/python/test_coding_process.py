@@ -15,8 +15,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-process-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-process-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 
 import coding_terminal as ct  # noqa: E402
 
@@ -52,7 +52,7 @@ G = [str(WS.resolve())]
 
 # ---- 1. Bật, chờ, đọc log ----
 ra = ct.chay_nen("for i in 1 2 3; do echo nhip $i; sleep 0.2; done", "s1", G)
-check("bật nền trả mã proc_", "proc_" in ra and "javis_process" in ra)
+check("bật nền trả mã proc_", "proc_" in ra and "unimate_process" in ra)
 p1 = ma(ra)
 ra = ct.quan_ly("wait", "s1", p1, timeout=10)
 check("wait chờ tới khi xong, kèm mã thoát", "đã xong (exit=0)" in ra and "nhip 3" in ra)

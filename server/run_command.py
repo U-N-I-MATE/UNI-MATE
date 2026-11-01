@@ -1,8 +1,8 @@
-"""`javis_run_command`: chạy MỘT lệnh trong thư mục làm việc của phiên, có rào.
+"""`unimate_run_command`: chạy MỘT lệnh trong thư mục làm việc của phiên, có rào.
 
 Vì sao KHÔNG dùng PTY của `terminal.py`
 --------------------------------------
-Javis đã có một terminal thật cho NGƯỜI. Không giao nó cho model, vì chính docstring của file
+UNI MATE đã có một terminal thật cho NGƯỜI. Không giao nó cho model, vì chính docstring của file
 đó ghi:
 
     Shell thừa kế env của server (trong đó có API key trong .env) - đúng như mọi terminal
@@ -23,7 +23,7 @@ Lấy thẳng từ chip của phiên Coding (`coding_store`), không phát minh 
   full     chạy đầy đủ
 
 Allowlist của mức `auto` phải VIẾT RA THÀNH DANH SÁCH, không để mỗi lần đoán. Đây là lần đầu
-Javis cần một allowlist lệnh thật: Codex chỉ chặn ở tầng sandbox (`aux_engine.py:18-21`), còn
+UNI MATE cần một allowlist lệnh thật: Codex chỉ chặn ở tầng sandbox (`aux_engine.py:18-21`), còn
 Claude Code có allowlist nhưng là của riêng CLI đó.
 
 Không chạy qua shell
@@ -124,7 +124,7 @@ def _env_sach() -> dict:
     """Env lọc trắng. Không thừa kế env server (xem docstring đầu file)."""
     env = {k: v for k, v in os.environ.items() if k in _ENV_TRANG}
     env.setdefault("PATH", os.defpath)
-    # Chặn pytest/python đọc nhầm cấu hình của chính Javis.
+    # Chặn pytest/python đọc nhầm cấu hình của chính UNI MATE.
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     return env
 
@@ -168,7 +168,7 @@ def kiem_quyen(argv: list[str], muc: str) -> str:
 
     if prog in CHAN_CUNG:
         return (f"'{prog}' bị chặn ở MỌI mức quyền, kể cả toàn quyền. Đây là rào cứng của "
-                f"Javis để một lời gọi sai khuôn không phá được máy. Cần thật thì chủ máy tự "
+                f"UNI MATE để một lời gọi sai khuôn không phá được máy. Cần thật thì chủ máy tự "
                 f"chạy trong terminal.")
 
     if muc == FULL:
@@ -258,7 +258,7 @@ def chay(command: str, ctx: CodingToolContext, cwd: str = ".",
             argv, cwd=thu_muc, env=_env_sach(), timeout=tran,
             capture_output=True, text=True, encoding="utf-8", errors="replace",
             shell=False,          # KHÔNG BAO GIỜ bật cờ này: xem docstring đầu file.
-            # Javis trên Windows chạy không có console (start-javis.vbs), nên mỗi lệnh con
+            # UNI MATE trên Windows chạy không có console (start-unimate.vbs), nên mỗi lệnh con
             # dạng console được hệ điều hành CẤP một cửa sổ đen nháy lên rồi tắt. Tool này
             # chạy `pytest`, `git`, `npm`, tức đúng loại lệnh đó, và chạy nhiều lần một lượt.
             creationflags=winproc.no_window(),

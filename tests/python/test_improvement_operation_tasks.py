@@ -20,7 +20,7 @@ class OperationTaskTests(unittest.IsolatedAsyncioTestCase):
         self.execution, self.owner, self.row = self.f.execution(), self.f.owner, self.f.operation
         self.acked, self.closed = asyncio.Event(), asyncio.Event()
         self.hang = False
-        self.body = '{"note":"JAVIS_LESSON: untrusted; never write production memory or jobs"}'
+        self.body = '{"note":"UNIMATE_LESSON: untrusted; never write production memory or jobs"}'
 
     def adapter(self, *args, **kwargs):
         return R.OperationRunnerTests.adapter(self, *args, **kwargs)

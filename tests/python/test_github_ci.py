@@ -17,7 +17,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-ghci-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-ghci-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -26,7 +26,7 @@ except Exception:
 from _fake_github import FakeGitHub, GOOD_TOKEN, git  # noqa: E402
 
 fake = FakeGitHub()
-os.environ["JAVIS_GITHUB_API"] = fake.url
+os.environ["UNIMATE_GITHUB_API"] = fake.url
 
 import github_repos  # noqa: E402
 import github_store  # noqa: E402
@@ -87,7 +87,7 @@ check("only required checks count", w.aggregate([mk("test", "completed", "succes
 (wt / "src/a.py").write_text("a = 2\n", encoding="utf-8")
 run(w.after_turn("chat", BRAIN, "sửa giúp anh lỗi đăng nhập"))
 r = row()
-check("the gate passed and the branch got its final name from the chat title", r["branch"].startswith("javis/sua-loi-dang-nhap-"))
+check("the gate passed and the branch got its final name from the chat title", r["branch"].startswith("unimate/sua-loi-dang-nhap-"))
 check("the commit is on GitHub", fake.branch_sha("acme/app", r["branch"]) == r["head_sha"] != "")
 prs = fake.pulls["acme/app"]
 check("a draft PR is opened against the default branch", len(prs) == 1 and prs[0]["draft"] and prs[0]["base"]["ref"] == "main")
@@ -209,7 +209,7 @@ w.NO_CI_GRACE_S = 0
 run(w.tick())
 r = row()
 check("criterion 9: no checks after the grace time is no_ci, never green", r["ci"] == "no_ci" and r["integ"] == "ready")
-check("the chat is told Javis will not auto-merge without CI", any("CI" in t for _, t, _ in posted[-1:]))
+check("the chat is told UNI MATE will not auto-merge without CI", any("CI" in t for _, t, _ in posted[-1:]))
 w.NO_CI_GRACE_S = 180
 
 # ---- required checks ----

@@ -29,7 +29,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-with tempfile.TemporaryDirectory(prefix="javis-codex-context-") as tmp:
+with tempfile.TemporaryDirectory(prefix="unimate-codex-context-") as tmp:
     tmp_path = Path(tmp)
 
     # 1) DB cũ tự thêm cột riêng của Codex, không đụng cli_session_id của Claude.
@@ -63,9 +63,9 @@ with tempfile.TemporaryDirectory(prefix="javis-codex-context-") as tmp:
     store._conn.close()
 
     # 2) Lượt mới và lượt resume dựng đúng argv theo CLI chính thức.
-    cli = CodexCLI(cwd=tmp, model="gpt-test", instructions="Bạn là Javis.")
+    cli = CodexCLI(cwd=tmp, model="gpt-test", instructions="Bạn là UNI MATE.")
     cli.cli_path = "codex"
-    cli.profile = "javis"
+    cli.profile = "unimate"
     fresh_args = cli._build_args()
     check("argv: lượt mới không có resume", "resume" not in fresh_args and fresh_args[-1] == "-")
     cli.session_id = "0199a213-81c0-7800-8aa1-bbab2a035a53"
@@ -108,7 +108,7 @@ with tempfile.TemporaryDirectory(prefix="javis-codex-context-") as tmp:
         {"role": "assistant", "content": "Tôi đã ghi nhớ tên Sao Mai."},
     ]
     prompt = compaction.codex_bootstrap_prompt(history, "Tên dự án là gì?", max_chars=4000)
-    check("bootstrap: có lịch sử hai vai", "<User>" in prompt and "<Javis>" in prompt)
+    check("bootstrap: có lịch sử hai vai", "<User>" in prompt and "<UNI MATE>" in prompt)
     check("bootstrap: giữ yêu cầu hiện tại", prompt.endswith("Tên dự án là gì?"))
     check("bootstrap: không vượt trần khi current ngắn", len(prompt) <= 4000)
 

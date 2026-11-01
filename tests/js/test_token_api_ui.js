@@ -1,4 +1,4 @@
-/* Trang Cài đặt > Token API: chỗ DUY NHẤT tạo được credential cho Javis CLI.
+/* Trang Cài đặt > Token API: chỗ DUY NHẤT tạo được credential cho UNI MATE CLI.
 
        node tests/js/test_token_api_ui.js
 
@@ -53,7 +53,7 @@ check("bản thô lấy từ phản hồi lệnh TẠO", /esc\(r\.token \|\| ""\
 check("CANARY: nói thẳng là đóng trang thì không xem lại được",
   khoiTao.includes("cs.ac_tk_new_hd") && /không xem lại được/.test(VI["cs.ac_tk_new_hd"] || ""));
 check("có nút copy vì token dài, gõ tay là chép sai", /id="tkCopy"/.test(khoiTao));
-check("chỉ đường luôn cho người dùng dán vào máy kia", /javis login /.test(khoiTao));
+check("chỉ đường luôn cho người dùng dán vào máy kia", /unimate login /.test(khoiTao));
 
 // Danh sách token KHÔNG có bản thô - máy chủ chỉ trả tên, tiền tố, phạm vi, mốc dùng. UI mà
 // đọc t.token ở đây là hiện "undefined" cho mọi token cũ và người dùng tưởng token hỏng.
@@ -100,7 +100,7 @@ check("danh sách token có kiểu", /\.tk-row \{/.test(CSS));
 // ============================================================
 // 6. Tài liệu và CLI phải chỉ ĐÚNG trang
 // ============================================================
-// Lỗi thật, bắt được ngay ngày phát hành: cả tài liệu lẫn lời nhắc trong `javis login` đều ghi
+// Lỗi thật, bắt được ngay ngày phát hành: cả tài liệu lẫn lời nhắc trong `unimate login` đều ghi
 // "Cài đặt > Token API", trong khi mục đó do renderAccount() vẽ, tức là trang **Tài khoản**.
 // Người dùng vào Cài đặt, không thấy gì, và kết luận tính năng chưa có. Không một dòng lỗi nào
 // xuất hiện - đây đúng loại sai mà chỉ test mới bắt được, còn người thì đọc mãi vẫn trượt.
@@ -110,8 +110,8 @@ check("mục Token API do renderAccount vẽ (tức là trang Tài khoản)",
   && CON.indexOf('cs.ac_tk_head') < CON.indexOf("async function renderTokens("));
 
 const NOI = [
-  ["cli/javis_cli/client.py", "thông báo 401 của CLI"],
-  ["cli/javis_cli/commands.py", "lời nhắc lúc javis login"],
+  ["cli/unimate_cli/client.py", "thông báo 401 của CLI"],
+  ["cli/unimate_cli/commands.py", "lời nhắc lúc unimate login"],
   ["docs/24-cli-terminal.md", "tài liệu CLI"],
   ["docs/14-bao-mat-tai-khoan.md", "tài liệu bảo mật"],
   ["docs/17-khac-phuc-su-co.md", "tài liệu sự cố"],
@@ -128,7 +128,7 @@ check("tài liệu CLI chỉ đúng trang Tài khoản", /Tài khoản\s*(>|&gt;
 // ============================================================
 // 7. Có đường sang tài liệu, và đường đó phải còn thật
 // ============================================================
-// Người dùng cầm chuỗi `jvs_...` trong tay mà không biết bước kế tiếp là `pip install javis-cli`
+// Người dùng cầm chuỗi `jvs_...` trong tay mà không biết bước kế tiếp là `pip install unimate-cli`
 // thì token vừa tạo thành rác. Link chết cũng hỏng im lặng như vậy: đổi tên file tài liệu thì
 // trang vẫn vẽ ra bình thường, chỉ có người bấm mới lãnh 404. Nên soi cả hai đầu.
 const LINKS = [
@@ -141,7 +141,7 @@ for (const [f, ten] of LINKS) {
 }
 check("link mở tab mới, không cuốn người dùng ra khỏi dashboard",
   /24-cli-terminal\.md" target="_blank" rel="noopener"/.test(CON));
-check("lúc token vừa hiện thì chỉ luôn cách cài CLI", /pip install javis-cli/.test(khoiTao));
+check("lúc token vừa hiện thì chỉ luôn cách cài CLI", /pip install unimate-cli/.test(khoiTao));
 check("khối link có kiểu riêng", /\.tk-docs \{/.test(CSS));
 
 console.log("");

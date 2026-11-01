@@ -378,7 +378,7 @@ value. Full owner API wiring follows agent-skill-owner-trial-api-v1.md and remai
 
 `resolve_sdk_cli(actual_claude_cli, actual_claude_sdk_engine, state_root)` resolves the
 ordinary current SDK selection without invoking its mutable finder. It verifies imported
-module/callable identity against audited source, follows JAVIS_CLAUDE_CLI then current PATH/
+module/callable identity against audited source, follows UNIMATE_CLAUDE_CLI then current PATH/
 extra directories then the actual loaded-or-cold remembered cache, and resolves twice with
 native file identity checks. It reads a cold cache without warming it, never writes cache
 state and never invokes the CLI, authentication or settings decryption. Unsupported source,

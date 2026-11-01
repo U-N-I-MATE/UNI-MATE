@@ -4,7 +4,7 @@
 
 Không cần pytest, không chạm mạng (client HTTP giả), không đụng CSDL.
 
-Bệnh (chủ repo báo 2026-08-08): mỗi lượt hỏi, bot gửi tin "🤔 Javis đang xử lý…" rồi XOÁ nó
+Bệnh (chủ repo báo 2026-08-08): mỗi lượt hỏi, bot gửi tin "🤔 UNI MATE đang xử lý…" rồi XOÁ nó
 đi và gửi câu trả lời. Hai chỗ sai: người dùng thấy một tin nhấp nháy rồi biến mất (đọc như
 lỗi), và điện thoại nổ HAI thông báo mà cái đầu chỉ nói "đang xử lý".
 

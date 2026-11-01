@@ -6,7 +6,7 @@ import tempfile
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-mcp-oauth-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-mcp-oauth-")
 
 import main  # noqa: E402
 import mcp_store  # noqa: E402

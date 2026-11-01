@@ -9,8 +9,8 @@ KHÔNG thêm endpoint nào: trang Việc dùng thẳng /loops + /reminders đã 
 Phủ:
 - 4 path /automations* đã biến mất khỏi app.routes.
 - 3 helper registry + 2 lớp chiếu đã xoá (caller duy nhất của chúng là /automations GET).
-- caps: key 'automations' đã xoá, và _gather_capabilities/_render_javis_index còn chạy được
-  (nếu xoá helper mà để lại lời gọi thì rebuild_javis_index NameError MỖI tick scheduler).
+- caps: key 'automations' đã xoá, và _gather_capabilities/_render_unimate_index còn chạy được
+  (nếu xoá helper mà để lại lời gọi thì rebuild_unimate_index NameError MỖI tick scheduler).
 - Các endpoint THẬT mà trang Việc dựa vào vẫn còn sống.
 - /automations/sync đã xoá: nó ghi vào chính registry vừa xoá, và là engine call ít rào nhất.
 """
@@ -20,7 +20,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-jobstest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-jobstest-"))
 
 import main  # noqa: E402
 
@@ -50,7 +50,7 @@ check("helper: _automations_path đã xoá", not hasattr(main, "_automations_pat
 # tử), và comment mới ở đầu khối cũng nhắc nó để giải thích vì sao đã xoá. Assert trần sẽ
 # BẤT KHẢ THI dù code đã đúng.
 check("nguồn: không còn code dựng đường dẫn tới automations.json",
-      '"Javis" / "automations.json"' not in src)
+      '"UNI MATE" / "automations.json"' not in src)
 
 # ---- 2b. Hai lớp chiếu vào hình dạng Lịch giả cũng chết theo ----
 # Caller duy nhất của cả hai là /automations GET (main.py:3199). Chúng chiếu loop/nhắc hẹn
@@ -61,13 +61,13 @@ check("chiếu: pending_as_automations đã xoá",
 
 # ---- 3. caps sạch VÀ còn chạy được ----
 # Đây là assert quan trọng nhất của task: xoá _read_automations mà để lại lời gọi ở
-# _gather_capabilities:3352 → rebuild_javis_index (main.py:3650-3651) ném NameError mỗi tick.
+# _gather_capabilities:3352 → rebuild_unimate_index (main.py:3650-3651) ném NameError mỗi tick.
 caps = main._gather_capabilities("brain")
 check("caps: không còn key 'automations'", "automations" not in caps)
 check("caps: _gather_capabilities vẫn chạy (không NameError)", isinstance(caps, dict))
-check("caps: _render_javis_index vẫn chạy", isinstance(main._render_javis_index(caps), str))
+check("caps: _render_unimate_index vẫn chạy", isinstance(main._render_unimate_index(caps), str))
 check("caps: index không còn mục 'Lịch (automations)'",
-      "Lịch (automations)" not in main._render_javis_index(caps))
+      "Lịch (automations)" not in main._render_unimate_index(caps))
 
 # ---- 4. Endpoint THẬT mà trang Việc dựa vào phải còn sống ----
 # Xoá Lịch KHÔNG được kéo theo hai nguồn thật. Task 3 (UI) gọi đúng ba cái này; nếu task này

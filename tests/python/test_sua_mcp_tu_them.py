@@ -22,7 +22,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-_tmp = Path(tempfile.mkdtemp(prefix="javis-mcp-sua-"))
+_tmp = Path(tempfile.mkdtemp(prefix="unimate-mcp-sua-"))
 mcp_store.STORE = _tmp / "mcp_servers.json"
 mcp_store._LEGACY_STORE = _tmp / "khong-co.json"
 mcp_store.CONFIG = _tmp / ".mcp_config.json"

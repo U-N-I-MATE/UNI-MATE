@@ -420,7 +420,7 @@ button, input, select, textarea { font-family: inherit; }
 @media (pointer: coarse) { .noti-x { width: 34px; height: 34px; } .noti-x svg { width: 17px; height: 17px; } }
 /* "Show N read notices" / "Hide read notices" under the list. */
 .noti-read-toggle { display: block; margin: 8px auto 4px; font-size: 13px; }
-/* What Javis Core learned from "Not needed", shown once above the list after that card left it. */
+/* What UNI MATE Core learned from "Not needed", shown once above the list after that card left it. */
 .noti-flash { margin: 2px 4px 8px; padding: 9px 11px; border-radius: 9px; font-size: 13px; line-height: 1.5;
   color: var(--text2); background: var(--surface-2); }
 .noti-card h4 { margin: 8px 0 4px; color: var(--text); font-size: 14px; line-height: 1.35; }
@@ -476,7 +476,7 @@ button, input, select, textarea { font-family: inherit; }
 }
 /* 0.204.0: display above beat the hidden attribute, so an empty tab showed a "0" pill. */
 .noti-tab-count[hidden] { display: none; }
-/* 0.403.0: Javis Core as the notification commander. Filter tab, filtered notices, feedback row, filter view. */
+/* 0.403.0: UNI MATE Core as the notification commander. Filter tab, filtered notices, feedback row, filter view. */
 .noti-tab-filter { margin-left: auto; }
 .noti-why { display: inline-block; margin: 8px 8px 0 0; padding: 2px 7px; border-radius: 6px; font-size: 11px;
   color: var(--text3); background: var(--surface-2); }
@@ -1102,7 +1102,7 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 /* --red chứ không phải --danger: bảng màu không có token tên --danger, dùng nó là câu
    lệnh bị bỏ và chữ lỗi hiện y như chữ thường. */
 .fm-hint-loi { color: var(--red); }
-/* Ô đường dẫn của JavisFolderPicker: vừa BÁO đang đứng ở đâu, vừa nhận một đường dẫn dán vào
+/* Ô đường dẫn của UniMateFolderPicker: vừa BÁO đang đứng ở đâu, vừa nhận một đường dẫn dán vào
    rồi Enter. Nằm gọn trong khung .fm-path nên không tự vẽ viền hay nền riêng. 16px là cỡ tối
    thiểu: nhỏ hơn thì Safari trên iPhone tự phóng to cả trang khi con trỏ nhảy vào ô. */
 .fm-path .fp-go {
@@ -1138,31 +1138,31 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 }
 /* Bong bóng câu trả lời: giới hạn chiều dài dòng, nền nhẹ và nhịp chữ riêng để đoạn dài
    vẫn dễ quét. Khối mã và bảng có cơ chế cuộn riêng; khung hẹp tự co theo màn hình. */
-.msg-javis .bubble {
+.msg-unimate .bubble {
   background: var(--surface-1); border: 1px solid var(--hairline);
   padding: 16px 18px; border-radius: 3px 12px 12px 12px;
   line-height: 1.75; font-size: 16px; max-width: 72ch; font-family: var(--font-chat);
 }
-.msg-javis .bubble strong { color: var(--accent); font-weight: 600; }
-.msg-javis .bubble code { font-family: var(--mono); font-size: 13.5px; background: var(--surface-2); padding: 2px 5px; border-radius: 4px; color: var(--accent2-ink); }
+.msg-unimate .bubble strong { color: var(--accent); font-weight: 600; }
+.msg-unimate .bubble code { font-family: var(--mono); font-size: 13.5px; background: var(--surface-2); padding: 2px 5px; border-radius: 4px; color: var(--accent2-ink); }
 
 /* Link/URL dài trong tin nhắn: ngắt dòng theo khung thay vì tràn ra ngoài (vd link Google Docs
    dài không có khoảng trắng). Áp cho cả bubble và thẻ <a> bên trong. */
-.msg-javis .bubble, .msg-user .bubble { overflow-wrap: anywhere; }
-.msg-javis .bubble a, .msg-user .bubble a { overflow-wrap: anywhere; word-break: break-word; }
+.msg-unimate .bubble, .msg-user .bubble { overflow-wrap: anywhere; }
+.msg-unimate .bubble a, .msg-user .bubble a { overflow-wrap: anywhere; word-break: break-word; }
 /* Safari trên iPhone (0.64.46): chủ dự án báo dòng lệnh bash dài trong câu trả lời tràn ra lề
    phải. `overflow-wrap: anywhere` chỉ có từ Safari 15.4, nên lệnh trong dòng chữ (`code`) thêm
    `word-break: break-word` làm đường lùi. Khối lệnh và bong bóng không bao giờ được rộng hơn
    khung: khối lệnh đã có thanh cuộn ngang riêng, việc của nó là cuộn chứ không đẩy khung ra. */
-.msg-javis .bubble code, .msg-user .bubble code { word-break: break-word; }
-.msg-javis .bubble pre, .msg-javis .bubble .code-wrap { max-width: 100%; min-width: 0; }
-.msg-javis .bubble { max-width: min(72ch, 100%); }
+.msg-unimate .bubble code, .msg-user .bubble code { word-break: break-word; }
+.msg-unimate .bubble pre, .msg-unimate .bubble .code-wrap { max-width: 100%; min-width: 0; }
+.msg-unimate .bubble { max-width: min(72ch, 100%); }
 
 /* Hàng nút dưới mỗi tin: giờ gửi + gửi lại / sửa lại / sao chép.
    Ẩn sẵn, hiện khi rê chuột (máy tính) hoặc khi chạm vào tin (điện thoại, .acts-on).
    Hàng LUÔN chiếm chỗ nên hiện/ẩn không làm nhảy layout khung chat. */
-.msg-javis { display: block; }
-.msg-javis .bubble { min-width: 0; }
+.msg-unimate { display: block; }
+.msg-unimate .bubble { min-width: 0; }
 .msg-acts { display: flex; align-items: center; gap: 2px; height: 22px; margin-top: 2px;
   opacity: 0; transition: opacity 0.15s; }
 .msg-user .msg-acts { justify-content: flex-end; }
@@ -1170,7 +1170,7 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 .msg-time { color: var(--text3); font-size: 12px; margin-right: 4px; }
 /* 0.216.0: vuốt tin sang trái để trích dẫn (msg-swipe.js). Chỉ máy chạm: cuộn dọc vẫn của trình duyệt, chiều ngang để
    cho cú vuốt. Dấu trích dẫn hiện dần bên phải, đậm màu khi đã đủ xa để nhấc tay là trích. */
-@media (hover: none) { .msg-javis, .msg-user { touch-action: pan-y; } }
+@media (hover: none) { .msg-unimate, .msg-user { touch-action: pan-y; } }
 .msg.is-swiping { position: relative; }
 .msg-swipe-mark { position: absolute; right: 8px; top: 50%; width: 32px; height: 32px; margin-top: -16px; opacity: 0;
   display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--bg3);
@@ -1188,7 +1188,7 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
    bubble's bottom-right edge: the chosen emoji, or an outline thumbs-up that always shows on the latest answer and on hover
    for older ones. Pressing it likes; hovering it opens six native emoji in a floating pill; a long press does the same on a
    phone. No reasons, axis or comment panel any more. */
-.msg-javis > .jr-chat { display: block; max-width: min(72ch, 100%); font-size: 16px; font-family: var(--font-chat); min-width: 0; }
+.msg-unimate > .jr-chat { display: block; max-width: min(72ch, 100%); font-size: 16px; font-family: var(--font-chat); min-width: 0; }
 .jr-chat[hidden] { display: none; }
 .jr-anchor { position: relative; height: 0; }
 .jr-rx { position: absolute; right: -6px; top: -16px; z-index: 3; }
@@ -1199,7 +1199,7 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
   border-radius: 999px; border: 1px solid var(--border); background: var(--bg); color: var(--text3); cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .12); opacity: 0; transition: opacity .12s, transform .12s; }
 .jr-rx-btn svg, .jr-rx-btn .ic { width: 16px; height: 16px; }
-.jr-rx.has .jr-rx-btn, .msg-javis:not(:has(~ .msg-javis)) .jr-rx-btn, .msg-javis:hover .jr-rx-btn, .jr-rx-btn:focus-visible,
+.jr-rx.has .jr-rx-btn, .msg-unimate:not(:has(~ .msg-unimate)) .jr-rx-btn, .msg-unimate:hover .jr-rx-btn, .jr-rx-btn:focus-visible,
 .jr-rx.is-open .jr-rx-btn { opacity: 1; }
 .jr-rx-btn:hover { color: var(--accent); transform: scale(1.08); }
 .jr-chat.is-busy .jr-rx-btn { opacity: .6; pointer-events: none; }
@@ -1228,7 +1228,7 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 .jr-rx-pick[aria-pressed="true"] { background: var(--accent-wash); }
 @media (prefers-reduced-motion: reduce) { .jr-rx-pick, .jr-rx-btn { transition: none; } }
 /* The row of small buttons under the bubble starts below the corner, so the two never overlap. */
-.msg-javis > .jr-chat + .msg-acts { margin-top: 8px; }
+.msg-unimate > .jr-chat + .msg-acts { margin-top: 8px; }
 .jr-react-emoji { font-size: 18px; margin-right: 4px; }
 .jr-react-err { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-top: 18px; font-size: 16px;
   color: var(--danger, var(--text2)); }
@@ -1424,13 +1424,13 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 #chatMarks .cm-muc.cm-ghim .cm-so { display: inline-flex; }
 .cm-muc.cm-ghim .cm-so { display: inline-flex; vertical-align: -2px; color: var(--accent); }
 .cm-muc.cm-ghim .cm-so svg { width: 13px; height: 13px; }
-.msg-javis.cm-vua-nhay .bubble { animation: cmNhay 1.2s ease; }
+.msg-unimate.cm-vua-nhay .bubble { animation: cmNhay 1.2s ease; }
 /* The pin button appears once the answer is saved (it has a message id); while it streams there is nothing to pin. */
-.msg-javis:not([data-mid]) .msg-act[data-act="pin"] { display: none; }
+.msg-unimate:not([data-mid]) .msg-act[data-act="pin"] { display: none; }
 .msg-act svg { width: 14px; height: 14px; vertical-align: -2px; }
 .msg-act.on { color: var(--accent); }
 /* A pinned answer keeps its button row visible, so the filled pin says it is in the contents. */
-.msg-javis[data-pinned] .msg-acts { opacity: 1; }
+.msg-unimate[data-pinned] .msg-acts { opacity: 1; }
 
 /* Điện thoại: nút đứng TRÊN HÀNG NHÃN (JS cắm vào .panel-acts hoặc .chatpage-bar), không
    còn là lớp dính trong khung cuộn - xem ngoại lệ ở đầu chat-marks.js. Ở đó khối bọc phải là
@@ -1491,7 +1491,7 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 /* Bước mới nhất hiện ngay trên dòng tóm tắt lúc đang chạy (khối mặc định gấp, 0.64.44):
-   không phải bấm mở vẫn biết Javis đang làm gì. Cắt một dòng để không đẩy khung chat. */
+   không phải bấm mở vẫn biết UNI MATE đang làm gì. Cắt một dòng để không đẩy khung chat. */
 .steps-sum { max-width: 100%; min-width: 0; }
 .steps-sum-text { flex-shrink: 0; }
 .steps-sum-now {
@@ -1873,7 +1873,7 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 /* Dòng nhắc dưới các chip (file chưa tải lên được): chiếm trọn một hàng để không chen vào chip. */
 .attach-bar .attach-note { flex-basis: 100%; font-size: 13px; color: var(--warn-ink, #b45309); }
 /* Chip FILE ĐANG MỞ (ghim): phải nhìn ra ngay là khác đính kèm một lần - nó sống qua nhiều
-   lượt chat nên người dùng cần thấy "à, Javis vẫn đang làm việc trên file này". */
+   lượt chat nên người dùng cần thấy "à, UNI MATE vẫn đang làm việc trên file này". */
 .attach-chip.pinned {
   background: var(--accent-wash-2); border-color: var(--accent-line); max-width: 300px;
 }
@@ -2208,7 +2208,7 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 .mic-meter { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; margin: 2px 0 6px; }
 .mic-meter-bar { height: 100%; width: 0%; background: var(--accent); transition: width 80ms linear; }
 .mic-result { font-size: 16px; line-height: 1.5; color: var(--text2); min-height: 1.5em; margin-bottom: 8px; }
-/* Ô chọn kèm nút ngay bên phải (Giọng Javis + Nghe thử ở thẻ Giọng nói): cả cụm chiếm đúng chỗ
+/* Ô chọn kèm nút ngay bên phải (Giọng UNI MATE + Nghe thử ở thẻ Giọng nói): cả cụm chiếm đúng chỗ
    của một ô chọn trong hàng "nhãn trái, ô chọn phải". */
 .qs-field > .v2-voice-row { flex: 0 1 400px; min-width: 0; }
 .qs-block .opt-sub { font-size: 12.5px; line-height: 1.5; color: var(--text3); }
@@ -2540,38 +2540,38 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
    ============================================================ */
 
 /* Nhịp đọc của câu trả lời: tiêu đề lớn hơn thân bài, đoạn và danh sách có chỗ nghỉ mắt. */
-.msg-javis .bubble h1 { font-size: 20px; }
-.msg-javis .bubble h2 { font-size: 18px; }
-.msg-javis .bubble h3 { font-size: 16.5px; }
-.msg-javis .bubble h4, .msg-javis .bubble h5, .msg-javis .bubble h6 { font-size: 16px; }
-.msg-javis .bubble h1, .msg-javis .bubble h2, .msg-javis .bubble h3,
-.msg-javis .bubble h4, .msg-javis .bubble h5, .msg-javis .bubble h6 {
+.msg-unimate .bubble h1 { font-size: 20px; }
+.msg-unimate .bubble h2 { font-size: 18px; }
+.msg-unimate .bubble h3 { font-size: 16.5px; }
+.msg-unimate .bubble h4, .msg-unimate .bubble h5, .msg-unimate .bubble h6 { font-size: 16px; }
+.msg-unimate .bubble h1, .msg-unimate .bubble h2, .msg-unimate .bubble h3,
+.msg-unimate .bubble h4, .msg-unimate .bubble h5, .msg-unimate .bubble h6 {
   color: var(--text); font-weight: 600; margin: 22px 0 8px; line-height: 1.4; }
-.msg-javis .bubble h1:first-child, .msg-javis .bubble h2:first-child,
-.msg-javis .bubble h3:first-child, .msg-javis .bubble h4:first-child,
-.msg-javis .bubble h5:first-child, .msg-javis .bubble h6:first-child { margin-top: 0; }
-.msg-javis .bubble > :first-child { margin-top: 0; }
-.msg-javis .bubble > :last-child { margin-bottom: 0; }
-.msg-javis .bubble p { margin: 14px 0; }
-.msg-javis .bubble p:first-child { margin-top: 0; }
-.msg-javis .bubble p:last-child { margin-bottom: 0; }
-.msg-javis .bubble ul { padding-left: 22px; margin: 10px 0 16px; }
-.msg-javis .bubble ol { padding-left: 22px; margin: 10px 0 16px; }
-.msg-javis .bubble li { margin: 7px 0; line-height: 1.55; }
+.msg-unimate .bubble h1:first-child, .msg-unimate .bubble h2:first-child,
+.msg-unimate .bubble h3:first-child, .msg-unimate .bubble h4:first-child,
+.msg-unimate .bubble h5:first-child, .msg-unimate .bubble h6:first-child { margin-top: 0; }
+.msg-unimate .bubble > :first-child { margin-top: 0; }
+.msg-unimate .bubble > :last-child { margin-bottom: 0; }
+.msg-unimate .bubble p { margin: 14px 0; }
+.msg-unimate .bubble p:first-child { margin-top: 0; }
+.msg-unimate .bubble p:last-child { margin-bottom: 0; }
+.msg-unimate .bubble ul { padding-left: 22px; margin: 10px 0 16px; }
+.msg-unimate .bubble ol { padding-left: 22px; margin: 10px 0 16px; }
+.msg-unimate .bubble li { margin: 7px 0; line-height: 1.55; }
 /* Danh sách lồng nhau thì siết lại: nó vốn đã thuộc về mục cha, giãn bằng đoạn văn là gãy mạch. */
-.msg-javis .bubble ul ul, .msg-javis .bubble ul ol,
-.msg-javis .bubble ol ol, .msg-javis .bubble ol ul { margin: 4px 0; }
-.msg-javis .bubble li > p { margin: 4px 0; }
-.msg-javis .bubble blockquote { margin: 14px 0; padding: 8px 14px; color: var(--text2);
+.msg-unimate .bubble ul ul, .msg-unimate .bubble ul ol,
+.msg-unimate .bubble ol ol, .msg-unimate .bubble ol ul { margin: 4px 0; }
+.msg-unimate .bubble li > p { margin: 4px 0; }
+.msg-unimate .bubble blockquote { margin: 14px 0; padding: 8px 14px; color: var(--text2);
   border-left: 3px solid var(--accent); background: var(--surface-1); border-radius: 0 6px 6px 0; }
-.msg-javis .bubble blockquote p:last-child { margin-bottom: 0; }
-.msg-javis .bubble hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
-.msg-javis .bubble del { opacity: .65; }
-.msg-javis .bubble em { font-style: italic; }
-.msg-javis .bubble a { color: var(--link-ink); text-decoration: none; }
-.msg-javis .bubble a:hover { text-decoration: underline; }
-.msg-javis .bubble .task-item { list-style: none; margin-left: -16px; }
-.msg-javis .bubble .task-item input { margin-right: 6px; vertical-align: middle; }
+.msg-unimate .bubble blockquote p:last-child { margin-bottom: 0; }
+.msg-unimate .bubble hr { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+.msg-unimate .bubble del { opacity: .65; }
+.msg-unimate .bubble em { font-style: italic; }
+.msg-unimate .bubble a { color: var(--link-ink); text-decoration: none; }
+.msg-unimate .bubble a:hover { text-decoration: underline; }
+.msg-unimate .bubble .task-item { list-style: none; margin-left: -16px; }
+.msg-unimate .bubble .task-item input { margin-right: 6px; vertical-align: middle; }
 .chat-img { max-width: min(100%, 440px); border-radius: 8px; display: block; margin: 6px 0; cursor: zoom-in; }
 /* Anh da bi don khoi vung cache (media_gc) hoac bi xoa tay. Vien dut de nhin ra ngay day la
    cho trong chu khong phai mot the anh that. */
@@ -2853,7 +2853,7 @@ body.jv-artpanel-open { overflow: hidden; }
   background: var(--panel-solid); }
 .note-editor[hidden] { display: none; }
 .note-editor.ne-full { position: fixed; inset: 0; z-index: 1000;
-  /* VÙNG AN TOÀN (0.65.30, cùng bài với .jv-lb): mở Javis từ màn hình chính iPhone thì thanh
+  /* VÙNG AN TOÀN (0.65.30, cùng bài với .jv-lb): mở UNI MATE từ màn hình chính iPhone thì thanh
      trạng thái trong suốt (black-translucent) đè lên mép trên, nên thanh tên file + nút nằm lẫn
      dưới đồng hồ và vạch pin. Đệm ở chính lớp này; box-sizing border-box toàn cục nên inset:0
      vẫn phủ kín màn hình. Máy không có tai thỏ thì env() bằng 0, không đổi gì. */
@@ -2867,7 +2867,7 @@ body.jv-artpanel-open { overflow: hidden; }
    (chủ repo báo 27/08, ảnh chụp 'AGENTS.md' còn 'ENTS.md'). Nâng cả stacking context
    lên trong lúc phóng to là đủ, và 250 vẫn THẤP HƠN thông báo/panel artifact/modal
    (350, 390, 3200+) nên các lớp đó vẫn nổi lên trên đúng như trước.
-   Màn Javis (.hud) không cần luật này: .hud không có z-index nên .ne-full nằm thẳng
+   Màn UNI MATE (.hud) không cần luật này: .hud không có z-index nên .ne-full nằm thẳng
    ở tầng gốc và vốn đã phủ được rail. */
 body.ne-full-on .cview { z-index: 250; }
 /* flex-wrap: hàng nút (8 nút, không nút nào xuống dòng được) phải TỰ RỚT xuống dòng dưới khi
@@ -3577,7 +3577,7 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 .cb-src { font-size: 11.5px; color: var(--text3); margin-top: 5px;
           display: inline-flex; align-items: center; gap: 4px; }
 
-/* ===== Nhắc thêm Javis vào Màn hình chính (install-nudge.js) =====
+/* ===== Nhắc thêm UNI MATE vào Màn hình chính (install-nudge.js) =====
    Bảng trượt từ đáy chứ không phải hộp giữa màn: trên điện thoại đáy là chỗ ngón cái với
    tới, và nó không che mất nội dung người ta đang đọc ở nửa trên. */
 .inud-wrap { position: fixed; inset: 0; z-index: 3400; display: flex; align-items: flex-end; }
@@ -3611,7 +3611,7 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 .inud-cai:disabled { opacity: .6; cursor: default; }
 
 /* ===== Chip project + ngăn kéo Hướng dẫn / File / Link ==========================
-   Chip đứng ở thanh tiêu đề khung chat (màn Javis và trang Trò chuyện), ngăn kéo mở ra từ
+   Chip đứng ở thanh tiêu đề khung chat (màn UNI MATE và trang Trò chuyện), ngăn kéo mở ra từ
    chip. MỘT khung duy nhất cho cả hai bề ngang: rộng thì nó trượt vào từ phải, hẹp thì nó
    dâng lên từ đáy. Nhân đôi DOM cho hai bản là nhân đôi luôn số chỗ để quên khi sửa. */
 .proj-chip-host { display: inline-flex; min-width: 0; }
@@ -3629,7 +3629,7 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 /* Chấm báo "project này đã có nội dung" chỉ dùng ở bản hẹp, chỗ hai con số bị giấu đi. */
 .pc-dot { display: none; }
 /* Bản hẹp KHÔNG thu chip về một cái thư mục tròn nữa (chủ repo yêu cầu 01/09). Thanh tiêu đề
-   vừa bỏ chữ "Trò chuyện với Javis" nên đã có đất, mà một icon không tên thì phải bấm vào mới
+   vừa bỏ chữ "Trò chuyện với UNI MATE" nên đã có đất, mà một icon không tên thì phải bấm vào mới
    biết đang chat trong project nào - đúng câu hỏi chip sinh ra để trả lời. Chỉ bỏ hai con số
    file/link và siết bề ngang lại, còn TÊN thì giữ. */
 @media (max-width: 860px) {
@@ -3743,7 +3743,7 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 .pd-ghim.on { color: var(--accent); }
 .pd-go:hover { color: var(--red); }
 .pd-sao:hover { color: var(--accent); }
-/* Nháy dấu tích sau khi chép xong (window.JavisCopy trong copy-path.js đặt lớp này). Màu
+/* Nháy dấu tích sau khi chép xong (window.UniMateCopy trong copy-path.js đặt lớp này). Màu
    chứ không chỉ đổi icon: nút chỉ 26px, đổi icon không thôi thì liếc qua khó thấy. */
 .pd-row-act.da-chep, .ne-actions button.da-chep { color: var(--green); }
 .pd-row-act.chep-loi, .ne-actions button.chep-loi { color: var(--warn-ink); }
@@ -3983,12 +3983,12 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 .viec-head .viec-mo:hover { color: var(--text); border-color: var(--text3); }
 .viec-head .viec-mo svg { width: 16px; height: 16px; }
 /* Dòng "Đang làm nền: ..." dưới câu xác nhận của giọng nói. */
-.msg-javis .viec-giao {
+.msg-unimate .viec-giao {
   display: flex; align-items: center; gap: 8px; margin: 6px 0 0 4px; max-width: 72ch;
   font-family: var(--font); font-size: 16px; color: var(--text2);
 }
-.msg-javis .viec-giao svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--accent); }
-.msg-javis .viec-giao .viec-ten { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text); }
+.msg-unimate .viec-giao svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--accent); }
+.msg-unimate .viec-giao .viec-ten { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text); }
 
 /* ============================================================
    LINH VẬT (pet.js) - khuôn mặt nhỏ nép ở mép màn hình
@@ -4024,7 +4024,7 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 .pet-face { fill: var(--pet-face, #f28c28); }
 .pet-eyes { fill: var(--pet-eye, #201e1e); }
 .pet-line { fill: none; stroke: var(--pet-eye, #201e1e); stroke-width: 7; stroke-linecap: round; }
-/* Vành quỹ đạo: MỘT path có dash xoay. Chỉ thấy rõ khi Javis đang làm việc thật
+/* Vành quỹ đạo: MỘT path có dash xoay. Chỉ thấy rõ khi UNI MATE đang làm việc thật
    (thinking / speaking), lúc nghỉ thì mờ gần hết đúng như chủ dự án chốt. */
 .pet-ring {
   /* NÉT MẢNH. Bản 0.59.4 để 7 (và 13 lúc đang làm việc) cho dễ thấy, nhưng chủ dự án nhìn bản
@@ -4036,7 +4036,7 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
      `strokeDashoffset` lên chính thẻ này MỖI KHUNG HÌNH, và chuyển cảnh bị khởi động lại
      theo từng lần ghi - đo thật: sau 800ms nét mới bò tới 12,087px trên đường về 13px, nên
      đổi trạng thái xong nhìn vẫn như chưa đổi. Đổi tức thì cũng đúng ý hơn: người dùng cần
-     thấy NGAY là Javis vừa bắt đầu làm việc. */
+     thấy NGAY là UNI MATE vừa bắt đầu làm việc. */
   transition: opacity .3s ease;
   /* Phóng to hơn thân để vòng CHẠY BÊN NGOÀI chứ không nằm đè lên mép thân: dùng chung path
      với thân nên không phóng thì nét vẽ bị thân nuốt mất một nửa. 1,14 chứ không phải 1,1 -
@@ -4260,7 +4260,7 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 .cb-rp-pre { white-space: pre-wrap; font-size: 12.5px; background: var(--surface-3); border-radius: 8px;
   padding: 8px 10px; margin: 4px 0; }
 
-/* ===== Thanh gọi (call-bar.js, 0.65.18): bấm mic là gọi Javis ===== */
+/* ===== Thanh gọi (call-bar.js, 0.65.18): bấm mic là gọi Uni ===== */
 .call-bar { display: flex; align-items: center; gap: 10px; flex: none; margin: 0 0 8px; padding: 6px 8px 6px 12px;
   border: 1px solid var(--border); border-radius: 12px; background: var(--surface-1, rgba(127,127,127,.06)); font-size: 13px; }
 .call-bar[hidden] { display: none; }
@@ -4284,8 +4284,8 @@ div.cb-quyen > svg { flex: none; margin-top: 2px; }
 /* Nút mic khi đang gọi: thành nút Cúp máy đỏ. */
 .mic-big.in-call { background: #ef4444 !important; border-color: #ef4444 !important; color: #fff !important; }
 
-/* Resonance M4: thẻ "Javis đang hướng tới" (chat-resonance.js). Nằm trong bong bóng của tin mang khối
-   JAVIS_RESONANCE; trạng thái đọc sống qua GET /goals/{id}. Một cột, nút xuống dòng được trên điện thoại. */
+/* Resonance M4: thẻ "UNI MATE đang hướng tới" (chat-resonance.js). Nằm trong bong bóng của tin mang khối
+   UNIMATE_RESONANCE; trạng thái đọc sống qua GET /goals/{id}. Một cột, nút xuống dòng được trên điện thoại. */
 .rs-card {
   margin-top: 12px; padding: 12px 14px; border: 1px solid var(--hairline); border-left: 3px solid var(--accent);
   border-radius: 10px; background: var(--surface-1); font-family: var(--font); font-size: 15px; line-height: 1.45;
@@ -4509,7 +4509,7 @@ div.info-body > * { margin: 0; font-size: inherit; }
    select's background, and most selects here have a see-through one, so Windows draws the list white under light text.
    Every option gets a solid theme background and the theme's text colour, in both themes. */
 select option, select optgroup { background-color: var(--bg2); color: var(--text); }
-/* 0.206.0: a message sent while Javis works shows where it is (read by the running turn, or waiting to run next). */
+/* 0.206.0: a message sent while UNI MATE works shows where it is (read by the running turn, or waiting to run next). */
 .msg-user .steer-note { font-size: 12px; color: var(--text3); text-align: right; margin: 3px 4px 0; }
 
 /* Facebook Messenger card on the Connections page (0.311.0) */

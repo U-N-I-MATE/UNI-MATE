@@ -3,7 +3,7 @@
     python tests/run.py khoi_ngu_canh      (KHÔNG mạng)
 
 Chủ repo chụp màn hình (2026-08-12): hội thoại dài, mở thanh mốc hội thoại ra thì thấy hai chục
-dòng giống hệt nhau, dòng nào cũng bắt đầu bằng "[FILE ĐANG MỞ trong trình sửa của Javis: ..."
+dòng giống hệt nhau, dòng nào cũng bắt đầu bằng "[FILE ĐANG MỞ trong trình sửa của UNI MATE: ..."
 - không nhìn ra câu nào với câu nào. Chỉ mỗi dòng cuối (câu vừa gõ) là đọc được.
 
 Đúng cái chi tiết "chỉ dòng cuối đọc được" chỉ thẳng vào nguyên nhân: lúc GÕ, app.js dựng bong
@@ -35,7 +35,7 @@ def check(name, cond, them=""):
 
 
 # Nguyên văn hai khối mà app.js chèn (chép rút gọn từ dashboard/app.js).
-GHIM = ("[FILE ĐANG MỞ trong trình sửa của Javis: /home/user/brain/Wiki/checkout.md\n"
+GHIM = ("[FILE ĐANG MỞ trong trình sửa của UNI MATE: /home/user/brain/Wiki/checkout.md\n"
         "Đây là file người dùng ĐANG LÀM VIỆC TRÊN ĐÓ - coi như đầu vào của cuộc trò chuyện "
         "này. Đọc nó trước khi trả lời.]\n\n")
 DINH_KEM = ("[File đính kèm để ĐỌC (đường dẫn):\n- /home/user/brain/sources/bao-gia.pdf\n"
@@ -81,7 +81,7 @@ check("có hàm gỡ khối ngữ cảnh", "function chuNguoiGo(" in APP)
 # Chặn ở CỬA DUY NHẤT dựng bong bóng người dùng. Gỡ ở từng nơi gọi là chỗ thứ tư sinh sau sẽ
 # không ai nhớ gỡ - đúng cái bẫy mà chính khối ghim này đã rơi vào ở tầng server.
 _ham = APP[APP.index("function appendUserMessage("):]
-_ham = _ham[:_ham.index("function appendJavisMessage(")]
+_ham = _ham[:_ham.index("function appendUniMateMessage(")]
 check("CANARY: gỡ ngay đầu appendUserMessage - cửa duy nhất dựng bong bóng người dùng",
       _ham.index("chuNguoiGo(text)") < _ham.index("dataset.text"))
 check("CANARY: dataset.text cũng sạch - thanh mốc, gửi lại, sửa câu hỏi đều đọc ké nó",
@@ -91,7 +91,7 @@ check("CANARY: dataset.text cũng sạch - thanh mốc, gửi lại, sửa câu 
 check("lượt nạp hội thoại cũ ghi bản SẠCH vào convo (localStorage), không để lỗi sống qua F5",
       'return { role: "user", text: _sach' in APP)
 check("nhận cả hai loại khối",
-      "[FILE ĐANG MỞ trong trình sửa của Javis:" in APP and '"[File đính kèm"' in APP)
+      "[FILE ĐANG MỞ trong trình sửa của UNI MATE:" in APP and '"[File đính kèm"' in APP)
 
 # Hành vi THẬT của hàm, chạy bằng node nếu có; không có node thì đọc hợp đồng là đủ.
 import shutil          # noqa: E402
@@ -99,7 +99,7 @@ import subprocess      # noqa: E402
 import json as _json   # noqa: E402
 
 if shutil.which("node"):
-    _i, _j = APP.index("const _KHOI_NGU_CANH"), APP.index("window.JavisChuNguoiGo")
+    _i, _j = APP.index("const _KHOI_NGU_CANH"), APP.index("window.UniMateChuNguoiGo")
     _js = APP[_i:_j] + "\nconst ca = JSON.parse(process.argv[1]);" \
           "\nconsole.log(JSON.stringify(ca.map(chuNguoiGo)));"
     # Khối SKILL (chat-slash.js dựng khi người dùng gõ lệnh "/"). Khách báo 16/09: mẫu cũ
@@ -112,7 +112,7 @@ if shutil.which("node"):
     _cau_skill = ("vậy hãy tạo cho tôi 1 workflow riêng. Skill viet-bai-trang-chu-igaming sẽ "
                   "là skill chính.")
     _ca = [GHIM + CAU_THAT, GHIM + DINH_KEM + "tóm tắt giúp anh", DINH_KEM + "đọc giúp em",
-           "chào em", "[FILE ĐANG MỞ trong trình sửa của Javis: a.md chưa đóng khối",
+           "chào em", "[FILE ĐANG MỞ trong trình sửa của UNI MATE: a.md chưa đóng khối",
            "[ghi chú] nhớ mua sữa", "", SKILL + _cau_skill, GHIM + SKILL + "viết tiếp giúp anh"]
     _ra = _json.loads(subprocess.run(["node", "-e", _js, _json.dumps(_ca)],
                                      capture_output=True, text=True, timeout=30).stdout)

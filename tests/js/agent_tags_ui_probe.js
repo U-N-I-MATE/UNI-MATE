@@ -20,7 +20,7 @@ global.document = { getElementById: () => null,
                     body: { classList: { add() {}, remove() {} } } };
 global.localStorage = { getItem: () => null, setItem() {} };
 require(path.join(ROOT, "dashboard", "workspace.js"));
-const W = window.JavisWorkspace;
+const W = window.UniMateWorkspace;
 
 // Studio: bóc khối tag (từ TAG_NONE tới hết locTheoNhom) và chạy trong vm với đúng các phụ thuộc của nó.
 const SRC = fs.readFileSync(path.join(ROOT, "dashboard", "studio.js"), "utf8");

@@ -2,7 +2,7 @@
 
        node tests/js/test_workspace.js
 
-   Chạy dưới node với DOM giả tối thiểu: workspace.js phơi phần thuần qua window.JavisWorkspace. */
+   Chạy dưới node với DOM giả tối thiểu: workspace.js phơi phần thuần qua window.UniMateWorkspace. */
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..", "..");
@@ -14,7 +14,7 @@ global.window = { t: (k) => k, ic: () => "", addEventListener() {}, removeEventL
 global.document = { getElementById: () => null, createElement: () => ({ classList: { add() {}, remove() {} }, appendChild() {} }), body: { classList: { add() {}, remove() {} } } };
 global.localStorage = { getItem: () => null, setItem() {} };
 require(path.join(root, "dashboard", "workspace.js"));
-const W = window.JavisWorkspace;
+const W = window.UniMateWorkspace;
 
 let fails = [];
 function check(name, cond) { console.log((cond ? "ok   " : "FAIL ") + name); if (!cond) fails.push(name); }
@@ -22,7 +22,7 @@ function check(name, cond) { console.log((cond ? "ok   " : "FAIL ") + name); if 
 // Sắp xếp: mốc gần nhất lên đầu, chưa có mốc xếp sau theo tên
 const wfs = [{ slug: "a", name: "Bản tin", last_run_at: 0 }, { slug: "b", name: "Viết bài", last_run_at: 50 }, { slug: "c", name: "Ads", last_run_at: 99 }, { slug: "d", name: "Zalo", last_run_at: 0 }];
 check("xep quy trinh theo lan chay gan nhat", W.sapXep(wfs, "last_run_at").map(x => x.slug).join(",") === "c,b,a,d");
-const ags = [{ slug: "x", name: "Người viết", last_chat_at: 0 }, { slug: "y", name: "Javis", last_chat_at: 3 }];
+const ags = [{ slug: "x", name: "Người viết", last_chat_at: 0 }, { slug: "y", name: "UNI MATE", last_chat_at: 3 }];
 check("xep tro ly theo lan chat gan nhat", W.sapXep(ags, "last_chat_at").map(x => x.slug).join(",") === "y,x");
 
 // Lọc: tìm không dấu + nhóm
@@ -158,7 +158,7 @@ check("phan tram", W.phanTram(W.tienDoMoi(4)) === 0 && W.phanTram(st) === 100);
              // Khối trả khung chat về bộ não chính: roi() gọi vào nó.
              + src.slice(src.indexOf("  // ---------- trả khung chat về bộ não chính"),
                          src.indexOf("  // ---------- phiên ----------"))
-             + src.slice(src.indexOf("  function roi() {"), src.indexOf("\n  window.JavisWorkspace ="));
+             + src.slice(src.indexOf("  function roi() {"), src.indexOf("\n  window.UniMateWorkspace ="));
 
   const lop = () => ({ _c: {}, toggle(c, on) { this._c[c] = !!on; }, co(c) { return !!this._c[c]; } });
   const oGia = () => ({ innerHTML: "", textContent: "", value: "", hidden: true, dataset: {},
@@ -216,13 +216,13 @@ check("phan tram", W.phanTram(W.tienDoMoi(4)) === 0 && W.phanTram(st) === 100);
     localStorage: { getItem: (k) => (k in kho ? kho[k] : null), setItem(k, v) { kho[k] = String(v); } },
     document: { getElementById: () => null },
     // 0.195.0: the tag bar and picker markup are shared with the Teams page (tag-picker.js).
-    window: { JavisTagPicker: require(path.join(root, "dashboard", "tag-picker.js")),
-              JavisVaultPanel: { borrow(h) { goi.push("borrow"); ctx._into = h; return true; },
+    window: { UniMateTagPicker: require(path.join(root, "dashboard", "tag-picker.js")),
+              UniMateVaultPanel: { borrow(h) { goi.push("borrow"); ctx._into = h; return true; },
                                  giveBack() { goi.push("giveBack"); } },
               // Tab Công việc (0.142.0): ghi lại lần gắn để đo đúng trợ lý.
-              JavisAgentJobs: { mount(h, o) { goi.push("jobs:" + o.slug); ctx._jobsInto = h; return { destroy() {} }; } },
+              UniMateAgentJobs: { mount(h, o) { goi.push("jobs:" + o.slug); ctx._jobsInto = h; return { destroy() {} }; } },
               // Kho phiên giả: ghi lại lời gọi để đo việc trả khung chat lúc rời trang.
-              JavisSessions: { _cur: null, _goi: [],
+              UniMateSessions: { _cur: null, _goi: [],
                                current() { return this._cur; },
                                new() { this._goi.push("new"); this._cur = null; },
                                open(id) { this._goi.push("open:" + id); this._cur = id; } },
@@ -353,7 +353,7 @@ check("phan tram", W.phanTram(W.tienDoMoi(4)) === 0 && W.phanTram(st) === 100);
     goi[goi.length - 1] === "jobs:a" && ctx._jobsInto === nodes["#wsRightJobs"] && goi.indexOf("borrow") < 0, goi);
   check("khung Cong viec bat, khung Cai dat tat",
     panes[2].classList.co("on") && !panes[0].classList.co("on") && tabs[2].classList.co("active"));
-  check("nho tab dang dung", kho["javis_ws_rtab"] === "viec");
+  check("nho tab dang dung", kho["unimate_ws_rtab"] === "viec");
   ctx.chonTabPhai("cai");
   check("CANARY: quay ve tab Cai dat thi TRA cay Vault", goi[goi.length - 1] === "giveBack");
   // Tab LỊCH SỬ (0.59.3): tab thứ ba, và nó cũng KHÔNG được giữ cây Vault.
@@ -361,7 +361,7 @@ check("phan tram", W.phanTram(W.tienDoMoi(4)) === 0 && W.phanTram(st) === 100);
   check("co tab Lich su rieng, khong con nam duoi day khung Cai dat",
     panes[1].classList.co("on") && !panes[0].classList.co("on") && tabs[1].classList.co("active"));
   check("CANARY: sang tab Lich su cung TRA cay Vault", goi[goi.length - 1] === "giveBack");
-  check("nho tab Lich su", kho["javis_ws_rtab"] === "lichsu");
+  check("nho tab Lich su", kho["unimate_ws_rtab"] === "lichsu");
   ctx.chonTabPhai("tab-la-hoac");
   check("tab la thi lui ve Cai dat", ctx.S.tabPhai === "cai");
   ctx.chonTabPhai("viec");
@@ -527,7 +527,7 @@ check("phan tram", W.phanTram(W.tienDoMoi(4)) === 0 && W.phanTram(st) === 100);
 
 // Dây nối
 const app = fs.readFileSync(path.join(root, "dashboard", "app.js"), "utf8");
-check("app.js chuyen wf_event sang JavisWorkspace", /data\.type === "wf_event"/.test(app) && /JavisWorkspace\.onWfEvent\(/.test(app));
+check("app.js chuyen wf_event sang UniMateWorkspace", /data\.type === "wf_event"/.test(app) && /UniMateWorkspace\.onWfEvent\(/.test(app));
 const html = fs.readFileSync(path.join(root, "dashboard", "index.html"), "utf8");
 // Dò theo ĐƯỜNG DẪN "/static/<ten>.js" chứ không theo tên trần: tên trần còn nằm trong hàng
 // chục dòng chú thích ở nửa trên file, nên so vị trí kiểu đó là so nhầm với một chú thích.
@@ -535,7 +535,7 @@ const viTri = (ten) => html.indexOf('/static/' + ten + '.js');
 check("index.html nap workspace.js sau studio.js, truoc console.js",
   viTri("studio") > 0 && viTri("studio") < viTri("workspace") && viTri("workspace") < viTri("console"));
 const con = fs.readFileSync(path.join(root, "dashboard", "console.js"), "utf8");
-check("console.js co renderWorkspace muon khung chat", /function renderWorkspace\(el\)/.test(con) && /JavisWorkspace\.render\(el, \{ borrow: _borrowChatNodes \}\)/.test(con));
+check("console.js co renderWorkspace muon khung chat", /function renderWorkspace\(el\)/.test(con) && /UniMateWorkspace\.render\(el, \{ borrow: _borrowChatNodes \}\)/.test(con));
 const studio = fs.readFileSync(path.join(root, "dashboard", "studio.js"), "utf8");
 check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/.test(studio) && /opts\.host/.test(studio) && /opts\.onSaved/.test(studio));
 // Bảng chạy của Studio: bước đã báo lỗi thì TẮT vòng quay của chính nó. Trước đây chỉ
@@ -585,8 +585,8 @@ check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/
   const mainPy = fs.readFileSync(path.join(root, "server", "main.py"), "utf8");
   check("server ban wf_event stopped khi luot bi huy",
     /asyncio\.CancelledError[\s\S]{0,900}"event": \{"type": "stopped"\}/.test(mainPy));
-  check("app.js goi JavisWorkspace.onTurnDone o khung turn_done",
-    /data\.type === "turn_done"[\s\S]{0,900}JavisWorkspace\.onTurnDone\(sid\)/.test(app));
+  check("app.js goi UniMateWorkspace.onTurnDone o khung turn_done",
+    /data\.type === "turn_done"[\s\S]{0,900}UniMateWorkspace\.onTurnDone\(sid\)/.test(app));
 }
 
 // ============================================================
@@ -604,9 +604,9 @@ check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/
   check("server day ket qua nguoc ve khung goc (ca khi hong)",
     (mainPy.match(/_bao_ve_khung_goc\(/g) || []).length >= 4);
   check("link #cs= duoc ve thanh nut bam duoc trong chat", /class="jv-cs"/.test(render));
-  check("bam link #cs= mo dung cong su", /window\.JavisOpenCongSu\(cs\.getAttribute\("data-cs"\)\)/.test(render));
-  check("console.js co JavisOpenCongSu + deep-link #cs=",
-    /window\.JavisOpenCongSu = moCongSu/.test(con) && /\/\^#cs=\(\.\+\)\$\//.test(con));
+  check("bam link #cs= mo dung cong su", /window\.UniMateOpenCongSu\(cs\.getAttribute\("data-cs"\)\)/.test(render));
+  check("console.js co UniMateOpenCongSu + deep-link #cs=",
+    /window\.UniMateOpenCongSu = moCongSu/.test(con) && /\/\^#cs=\(\.\+\)\$\//.test(con));
 }
 
 // ============================================================
@@ -619,7 +619,7 @@ check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/
   const ws = fs.readFileSync(path.join(root, "dashboard", "workspace.js"), "utf8");
   const sess = fs.readFileSync(path.join(root, "dashboard", "sessions-ui.js"), "utf8");
   check("trang Cong su gan chinh cot lich su cua trang Tro chuyen",
-    /JavisChatSide\.mount\(host\.querySelector\("#wsSess"\), \{/.test(ws)
+    /UniMateChatSide\.mount\(host\.querySelector\("#wsSess"\), \{/.test(ws)
     && /kenh: kenh\(item\), chiHoiThoai: true/.test(ws));
   check("nut Hoi thoai moi o do mo dung KENH cua cong su",
     /onNew: function \(\) \{ var x = dangChon\(\); if \(x\) moPhien\(x, true\); \}/.test(ws));
@@ -746,7 +746,7 @@ check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/
 // ============================================================
 // Roi trang Cong su: TRA khung chat ve bo nao chinh (0.59.15)
 // ============================================================
-// Khung chat la node MUON: trang Cong su, trang Tro chuyen va man Javis dung CHUNG mot khung.
+// Khung chat la node MUON: trang Cong su, trang Tro chuyen va man UNI MATE dung CHUNG mot khung.
 // Roi trang ma khong lam gi thi doan chat voi tro ly con nam nguyen o hai cho kia, va
 // savedSessionId van la phien agent:<slug> nen tin go tiep BAY VAO PHIEN CUA TRO LY. Chu du an
 // bao 16/09: "2 chuc nang chat khac nhau, nguoi dung se hoi kho hieu".
@@ -764,7 +764,7 @@ check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/
                   current() { return this._cur; },
                   new() { this._goi.push("new"); this._cur = null; },
                   open(id) { this._goi.push("open:" + id); this._cur = id; } };
-    const c = { S: { sessionCuaPhien: sessionCuaPhien }, window: { JavisSessions: kho }, kho,
+    const c = { S: { sessionCuaPhien: sessionCuaPhien }, window: { UniMateSessions: kho }, kho,
                 docViTri: () => null };
     vm2.createContext(c); vm2.runInContext(doan2, c);
     return c;
@@ -829,7 +829,7 @@ check("studio.js editAgent nhan host + onSaved", /function editAgent\(a, opts\)/
     esc: (x) => String(x == null ? "" : x), t: (k) => k, avatar: (a, n) => '<i data-avatar="' + (a && a.slug) + '" data-n="' + n + '"></i>',
     agentOf: (sl) => ({ slug: sl }), kenh: () => "workflow:wf", dangChon: () => ({ slug: "wf" }),
     conDangXem: () => true, moPhien() {}, api: async () => ({ runs: [] }), brain: () => "b",
-    window: { JavisChatSide: { mount: (h, o) => goiMount.push(o), refresh: () => goiMount.push("refresh") } },
+    window: { UniMateChatSide: { mount: (h, o) => goiMount.push(o), refresh: () => goiMount.push("refresh") } },
   };
   vm3.createContext(ctx3); vm3.runInContext(doan3, ctx3);
 

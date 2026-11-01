@@ -4,10 +4,10 @@
 
 Chủ dự án 15/09: "về phần trình duyệt lên vps thì anh muốn có nút cài đặt ở trong phần plugin
 để khiến đây là 1 lựa chọn, và khởi đầu khi cài đặt hermes agent cũng đưa ra các lựa chọn có
-cài các tool hay không, anh nghĩ javis cũng nên như thế".
+cài các tool hay không, anh nghĩ unimate cũng nên như thế".
 
 Ràng buộc không lách được, và nó quyết định cách chia:
-  - Trong Docker, Javis chạy bằng user `javis` không phải root, mã nguồn để chỉ đọc. Nên phần
+  - Trong Docker, UNI MATE chạy bằng user `unimate` không phải root, mã nguồn để chỉ đọc. Nên phần
     cần `apt-get` (thư viện hệ thống cho Chromium) BẮT BUỘC nằm trong ảnh - Dockerfile lo, để
     riêng một lớp đo được. CI đo thật: 108 MB trên ảnh 1824 MB.
   - Bản thân trình duyệt thì KHÔNG vào ảnh: tải lúc chạy vào `STATE_DIR/browsers`, tức trên ổ
@@ -21,7 +21,7 @@ import os
 import re
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-congcu-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-congcu-"))
 
 import optional_tools as ct  # noqa: E402
 
@@ -49,11 +49,11 @@ he_thong = ct._chrome_he_thong()
 if he_thong:
     check("máy đã có trình duyệt -> báo sẵn sàng, KHÔNG mời tải",
           d["trang_thai"] == "san_sang" and he_thong in d["ly_do"])
-    check("không cho gỡ trình duyệt của HỆ THỐNG (Javis không đặt nó vào đó)", d["go_duoc"] is False)
+    check("không cho gỡ trình duyệt của HỆ THỐNG (UNI MATE không đặt nó vào đó)", d["go_duoc"] is False)
 else:
     check("máy chưa có gì -> mời cài", d["trang_thai"] == "chua_cai")
 
-# ---- 2. Gỡ: chỉ đụng bản Javis tự tải ----
+# ---- 2. Gỡ: chỉ đụng bản UNI MATE tự tải ----
 r = ct.go("browser")
 check("chưa tải gì mà bấm gỡ thì từ chối kèm lý do",
       r["ok"] is False and "để gỡ" in r["error"])
@@ -61,7 +61,7 @@ check("gỡ công cụ lạ cũng từ chối gọn", ct.go("khong-co-that").get
 
 # ---- 3. Nơi tải phải nằm trên ổ GẮN NGOÀI, không phải cache tạm ----
 check("tải vào STATE_DIR/browsers (sống qua mỗi lần cập nhật)",
-      ct.BROWSERS_DIR.name == "browsers" and str(ct.BROWSERS_DIR).startswith(os.environ["JAVIS_STATE_DIR"]))
+      ct.BROWSERS_DIR.name == "browsers" and str(ct.BROWSERS_DIR).startswith(os.environ["UNIMATE_STATE_DIR"]))
 check("dùng đúng biến môi trường Playwright hiểu", ct.ENV_BROWSERS_PATH == "PLAYWRIGHT_BROWSERS_PATH")
 check("có trần thời gian, không tải treo vô hạn", ct.TAI_TIMEOUT > 0)
 
@@ -73,7 +73,7 @@ check("giá trị mặc định là chrome hoặc chromium", md in ("chrome", "c
 if he_thong:
     check("máy có Chrome -> mặc định dùng chrome (khỏi tải gì)", md == "chrome")
 else:
-    check("máy không có gì -> mặc định chromium (bản Javis tải)", md == "chromium")
+    check("máy không có gì -> mặc định chromium (bản UNI MATE tải)", md == "chromium")
 env = ct.env_playwright()
 check("env luôn nói rõ dùng trình duyệt nào", env.get("PLAYWRIGHT_MCP_BROWSER") == md)
 check("chưa tải thì KHÔNG đặt đường dẫn kho trình duyệt (để Playwright tự lo)",
@@ -129,8 +129,8 @@ check("setup wizard no longer asks about the browser",
 import asyncio  # noqa: E402
 
 _orig = (ct.duong_dan_chrome, ct.shutil.which, ct._chay_tai)
-os.environ.pop("JAVIS_SKIP_BROWSER", None)
-os.environ.pop("JAVIS_BROWSER_DEPS", None)
+os.environ.pop("UNIMATE_SKIP_BROWSER", None)
+os.environ.pop("UNIMATE_BROWSER_DEPS", None)
 ct.REMOVED_MARKER.unlink(missing_ok=True)
 ct.duong_dan_chrome = lambda: ""
 ct.shutil.which = lambda name: "/usr/bin/npx" if name == "npx" else None
@@ -140,13 +140,13 @@ ct.duong_dan_chrome = lambda: "/opt/google/chrome/chrome"
 check("system Chrome present: no download", "already present" in ct.auto_install_skip_reason())
 ct.duong_dan_chrome = lambda: ""
 
-os.environ["JAVIS_SKIP_BROWSER"] = "1"
-check("JAVIS_SKIP_BROWSER turns it off", "JAVIS_SKIP_BROWSER" in ct.auto_install_skip_reason())
-os.environ.pop("JAVIS_SKIP_BROWSER")
+os.environ["UNIMATE_SKIP_BROWSER"] = "1"
+check("UNIMATE_SKIP_BROWSER turns it off", "UNIMATE_SKIP_BROWSER" in ct.auto_install_skip_reason())
+os.environ.pop("UNIMATE_SKIP_BROWSER")
 
-os.environ["JAVIS_BROWSER_DEPS"] = "0"
+os.environ["UNIMATE_BROWSER_DEPS"] = "0"
 check("image without the system libraries: no download", "libraries" in ct.auto_install_skip_reason())
-os.environ.pop("JAVIS_BROWSER_DEPS")
+os.environ.pop("UNIMATE_BROWSER_DEPS")
 
 ct.shutil.which = lambda name: None
 check("no npx: skipped quietly, the button explains", "npx" in ct.auto_install_skip_reason())
@@ -197,9 +197,9 @@ tr = open(os.path.join(ROOT, "server", "routes", "tools.py"), encoding="utf-8").
 check("download starts from a startup hook, never at import (tests import main.py)",
       '@app.on_event("startup")' in tr and "auto_install_browser(on_ready=_DEPS.lam_moi_hub)" in tr)
 check("Dockerfile tells the server when the image lacks the libraries",
-      "ENV JAVIS_BROWSER_DEPS=${WITH_BROWSER_DEPS}" in df)
+      "ENV UNIMATE_BROWSER_DEPS=${WITH_BROWSER_DEPS}" in df)
 pp = open(os.path.join(ROOT, "tests", "python", "_paths.py"), encoding="utf-8").read()
-check("tests never download a real browser", '_os.environ["JAVIS_SKIP_BROWSER"] = "1"' in pp)
+check("tests never download a real browser", '_os.environ["UNIMATE_SKIP_BROWSER"] = "1"' in pp)
 
 # ---- 10. Chữ hiện cho người dùng phải có dấu, và không có em dash ----
 import json  # noqa: E402

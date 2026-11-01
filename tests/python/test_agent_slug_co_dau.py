@@ -23,7 +23,7 @@ import tempfile
 import unicodedata
 from urllib.parse import quote
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-agslug-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-agslug-")
 import main  # noqa: E402
 import skill_router  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
@@ -42,7 +42,7 @@ def check(name, cond, detail=""):
         _fails.append(name)
 
 
-BRAIN = pathlib.Path(tempfile.mkdtemp(prefix="javis-brain-agslug-"))
+BRAIN = pathlib.Path(tempfile.mkdtemp(prefix="unimate-brain-agslug-"))
 AG = BRAIN / "agents"
 AG.mkdir(parents=True)
 
@@ -84,7 +84,7 @@ r = c.post("/workflows", data={"name": "Quy trình Bống", "steps": "[]", "brai
 check("quy trình mới đặt tên file không dấu", r.status_code == 200 and (BRAIN / "workflows" / "quy-trinh-bong.md").is_file(),
       (r.status_code, r.text[:120]))
 
-SEED = pathlib.Path(tempfile.mkdtemp(prefix="javis-brain-seed-"))
+SEED = pathlib.Path(tempfile.mkdtemp(prefix="unimate-brain-seed-"))
 r = c.post("/studio/seed", data={"brain": str(SEED)})
 check("bộ mẫu: trợ lý kiểm chứng khớp tên quy trình mẫu gọi (kiem-chung-vien)",
       (SEED / "agents" / "kiem-chung-vien.md").is_file(), sorted(p.name for p in (SEED / "agents").glob("*.md")))

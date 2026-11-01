@@ -18,9 +18,9 @@ import tempfile
 from contextlib import closing
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-pulse-host-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-TEMP = Path(tempfile.mkdtemp(prefix="javis-pulse-host-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-pulse-host-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-pulse-host-w-"))
 
 import agent_ledger as AL  # noqa: E402
 import agent_pulse as AP  # noqa: E402
@@ -206,7 +206,7 @@ run(tick_all(host))
 row = AP.row(st, k, ctx)
 check("hết hạn mức ngày: Chờ hạn mức, không gọi engine, không giữ chỗ", row["quota_wait"] == 1 and eng.calls == []
       and AL.CallLedger(st).rows() == [], row)
-os.environ["JAVIS_RESONANCE_CALL_CEILING"] = "1"
+os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = "1"
 st, (k,), clock, eng, box, host = world()
 ctx = f"dm:{k}"
 AP.ensure_row(st, k, ctx, at=T0)
@@ -215,7 +215,7 @@ clock.t = T0 + D + 1
 run(tick_all(host))
 check("trần chung: lượt tự phát chỉ tới floor(trần x 0.8) = 0, Chờ hạn mức, không gọi engine",
       AP.row(st, k, ctx)["quota_wait"] == 1 and eng.calls == [], AP.events(st, k, ctx, kinds=("quota",)))
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 # ═════ quét: enqueue khi có quyền, propose khi không; cơ hội tiêu thụ một lần ═════
 st, (k,), clock, eng, box, host = world(text='{"action": "enqueue", "source_ref": "task:t1", "title": "Cập nhật việc", '

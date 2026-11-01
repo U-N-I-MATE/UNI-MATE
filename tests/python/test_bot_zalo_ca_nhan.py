@@ -24,7 +24,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-zpbot-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-zpbot-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -233,7 +233,7 @@ check("prompt Zalo cá nhân có",
       "[IM_LANG]" in chatbot_runtime.build_bot_prompt(dict(_bot, _kenh_luot="zalo_personal")))
 
 # ============================================================
-# 0.172.0 (#666): the owner's role file beats Javis's personal-Zalo default
+# 0.172.0 (#666): the owner's role file beats UNI MATE's personal-Zalo default
 # ============================================================
 # The default paragraph used to sit AFTER the Agent file with a flat "private matters: do NOT answer", so it won over
 # what the owner wrote (a teacher's Agent said "a student sharing something personal still gets one short reply", yet

@@ -2,7 +2,7 @@
 
     python tests/run.py plan_limits
 
-Chủ repo 25/10 gửi ảnh "Plan usage limits" của Claude (phiên 9%, tuần 24%) và hỏi Javis có lấy
+Chủ repo 25/10 gửi ảnh "Plan usage limits" của Claude (phiên 9%, tuần 24%) và hỏi Uni có lấy
 được không. Claude Code tự phát `rate_limit_event` trong luồng, Codex phát
 `account/rateLimits/updated` và ghi `rate_limits` vào file rollout. Test này giữ ba đường đó.
 """
@@ -11,9 +11,9 @@ import json
 import os
 import tempfile
 
-_TMP = tempfile.mkdtemp(prefix="javis-pl-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
-os.environ["JAVIS_CODEX_SESSIONS_DIR"] = os.path.join(_TMP, "codex")
+_TMP = tempfile.mkdtemp(prefix="unimate-pl-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
+os.environ["UNIMATE_CODEX_SESSIONS_DIR"] = os.path.join(_TMP, "codex")
 
 import plan_limits as pl  # noqa: E402
 
@@ -83,7 +83,7 @@ x = pl.doc(now=NOW)["codex"]
 check("Codex: 5 giờ 41%", x["five_hour"]["pct"] == 41, x)
 check("Codex: tuần 12%", x["seven_day"]["pct"] == 12, x)
 
-# 6. Codex rollout: snake_case, dòng token_count cuối cùng thắng; dùng Codex ngoài Javis cũng thấy.
+# 6. Codex rollout: snake_case, dòng token_count cuối cùng thắng; dùng Codex ngoài UNI MATE cũng thấy.
 day = os.path.join(_TMP, "codex", "2026", "10", "25")
 os.makedirs(day)
 f = os.path.join(day, "rollout-2026-10-25T10-00-00-abc.jsonl")

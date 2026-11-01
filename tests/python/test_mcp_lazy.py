@@ -16,7 +16,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-lazytest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-lazytest-"))
 
 import config  # noqa: E402
 import mcp_hub  # noqa: E402
@@ -55,7 +55,7 @@ def _mcp_tool(fn, ns, name, desc, connector_id="pos", deny=False):
 
 
 def _builtin(fn, desc):
-    spec = {"fn": fn, "server": "javis", "name": fn, "description": desc,
+    spec = {"fn": fn, "server": "unimate", "name": fn, "description": desc,
             "schema": {"type": "object", "properties": {}}}
     ent = {"call": _guarded(fn)}   # KHÔNG 'conn' → luôn hiện
     return spec, ent
@@ -74,7 +74,7 @@ def _fixture():
     for spec, ent in data:
         tools.append(spec)
         route[spec["fn"]] = ent
-    for fn, desc in [("javis_connections", "Liệt kê nguồn"), ("javis_use_skill", "Nạp skill")]:
+    for fn, desc in [("unimate_connections", "Liệt kê nguồn"), ("unimate_use_skill", "Nạp skill")]:
         spec, ent = _builtin(fn, desc)
         tools.append(spec)
         route[fn] = ent
@@ -124,18 +124,18 @@ set_lazy({"lazy_tools": True})
 tools, route = _fixture()
 lt, lr = mcp_hub._apply_lazy(tools, route)
 lfns = {t["fn"] for t in lt}
-check("_apply_lazy bật: có javis_search_tools", mcp_hub._LAZY_SEARCH in lfns)
-check("_apply_lazy bật: có javis_run_tool", mcp_hub._LAZY_RUN in lfns)
-# Builtin KHÔNG còn được miễn: javis_connections và javis_use_skill đều phình theo số
+check("_apply_lazy bật: có unimate_search_tools", mcp_hub._LAZY_SEARCH in lfns)
+check("_apply_lazy bật: có unimate_run_tool", mcp_hub._LAZY_RUN in lfns)
+# Builtin KHÔNG còn được miễn: unimate_connections và unimate_use_skill đều phình theo số
 # nguồn/số skill người dùng cắm thêm, đúng số hạng O(N) mà tầng lazy sinh ra để chống.
 # Trước đây chúng lọt lưới vì pool suy ra từ "có conn hay không", mà builtin thì không có.
 check("_apply_lazy bật: builtin phình theo N cũng bị giấu",
-      "javis_connections" not in lfns and "javis_use_skill" not in lfns)
+      "unimate_connections" not in lfns and "unimate_use_skill" not in lfns)
 check("_apply_lazy bật: tool pool MCP bị giấu", not any(f.startswith(("pos__", "ads__")) for f in lfns))
 check("_apply_lazy bật: route lazy KHÔNG chứa tool pool", not any(f.startswith(("pos__", "ads__")) for f in lr))
 check("_apply_lazy bật: fixture không có tool hạt nhân → còn đúng 2 meta", len(lt) == 2)
 check("_apply_lazy bật: builtin bị giấu vẫn GỌI ĐƯỢC qua run",
-      "javis_use_skill" in lr or mcp_hub._LAZY_RUN in lr)
+      "unimate_use_skill" in lr or mcp_hub._LAZY_RUN in lr)
 search_spec = next(t for t in lt if t["fn"] == mcp_hub._LAZY_SEARCH)
 check("_apply_lazy: mô tả search nhúng thực đơn nguồn", "pos" in search_spec["description"] and "ads" in search_spec["description"])
 
@@ -339,11 +339,11 @@ check("tool ngoài nhóm hạt nhân vẫn bị giấu", "pos__pos_order" not in
 
 # Rào khoá hai chiều: tên trong CORE_TOOL_FNS phải là builtin CÓ THẬT. Gõ sai hoặc đổi tên
 # builtin mà quên sửa danh sách thì tool đó âm thầm rơi vào pool - hỏng câm, không ai biết.
-_vault = tempfile.mkdtemp(prefix="javis-corecheck-")
+_vault = tempfile.mkdtemp(prefix="unimate-corecheck-")
 os.makedirs(os.path.join(_vault, "skills"), exist_ok=True)
 _bt, _br = mcp_hub._builtin_tools("full", _vault)
 _real = {t["fn"] for t in _bt}
-# Một số builtin CHỈ tồn tại trong phiên có thư mục làm việc (`javis_run_command`, 0.64).
+# Một số builtin CHỈ tồn tại trong phiên có thư mục làm việc (`unimate_run_command`, 0.64).
 # Dựng thêm một bộ có workspace để rào hai chiều vẫn phủ được chúng: bỏ qua là mất đúng cái
 # bảo vệ chống gõ sai tên mà rào này sinh ra.
 import coding_ctx as _cc  # noqa: E402
@@ -379,8 +379,8 @@ _p = [{"fn": "x", "description": "y" * 500, "schema": {}}]
 check("_pool_chars đếm theo ký tự schema thật", mcp_hub._pool_chars(_p) > 500)
 check("_pool_chars không nổ với dữ liệu lạ", mcp_hub._pool_chars([{"fn": object()}]) == 0)
 
-# Skill bị giấu vẫn phải TÌM LẠI được, nếu không thì tiết kiệm token bằng cách làm hỏng Javis.
-_vs = tempfile.mkdtemp(prefix="javis-skillfind-")
+# Skill bị giấu vẫn phải TÌM LẠI được, nếu không thì tiết kiệm token bằng cách làm hỏng UNI MATE.
+_vs = tempfile.mkdtemp(prefix="unimate-skillfind-")
 for _slug, _desc in [("viet-email", "Soạn email bán hàng theo giọng thương hiệu")]:
     _d = os.path.join(_vs, "skills", _slug)
     os.makedirs(_d, exist_ok=True)
@@ -396,8 +396,8 @@ async def _skill_findable():
         names = [t["name"] for t in json.loads(raw).get("tools", [])]
     except (ValueError, TypeError):
         names = []
-    check("giấu javis_use_skill rồi vẫn tìm lại được bằng từ khoá skill",
-          "javis_use_skill" in names)
+    check("giấu unimate_use_skill rồi vẫn tìm lại được bằng từ khoá skill",
+          "unimate_use_skill" in names)
 
 
 asyncio.run(_skill_findable())
@@ -407,9 +407,9 @@ asyncio.run(_skill_findable())
 # THỰC ĐƠN PHẢI GỌI TÊN TỪNG PLUGIN
 #
 # Vụ thật 05/09/2026: người dùng cài gói TTS Dropship (20 tool), plugin nạp đủ, hub phục vụ
-# đủ, `javis_run_tool` gọi tới nơi. Nhưng lazy đang bật, và tool plugin không mang
-# `namespace` nên cả 20 tool rơi vào nhóm "javis" cùng builtin. Model đọc thực đơn chỉ thấy
-# đúng một dòng "javis (javis, 45 tool): skill của brain, danh sách nguồn đang đấu, tiện ích
+# đủ, `unimate_run_tool` gọi tới nơi. Nhưng lazy đang bật, và tool plugin không mang
+# `namespace` nên cả 20 tool rơi vào nhóm "unimate" cùng builtin. Model đọc thực đơn chỉ thấy
+# đúng một dòng "unimate (unimate, 45 tool): skill của brain, danh sách nguồn đang đấu, tiện ích
 # nội bộ" - KHÔNG một chữ nào nhắc TTS, dropship, sàn hay đơn hàng.
 #
 # Nó kết luận gói chưa kết nối và báo là không lên đơn được. Không có lỗi nào ở đâu cả: hub
@@ -420,28 +420,28 @@ asyncio.run(_skill_findable())
 # trong pool mà không ai biết đường tìm thì đúng bằng không có.
 # ============================================================
 _pl_tools = [
-    {"fn": "tts_create_order", "server": "javis", "namespace": "tts-dropship",
+    {"fn": "tts_create_order", "server": "unimate", "namespace": "tts-dropship",
      "label": "TTS Dropship", "group_desc": "Bán dropship trên sàn thitruongsi.com - lên đơn, "
                                             "theo dõi vận đơn, xem tiền về",
      "description": "TẠO ĐƠN HÀNG THẬT trên sàn", "schema": {"type": "object", "properties": {}}},
-    {"fn": "tts_orders", "server": "javis", "namespace": "tts-dropship",
+    {"fn": "tts_orders", "server": "unimate", "namespace": "tts-dropship",
      "label": "TTS Dropship", "group_desc": "Bán dropship trên sàn thitruongsi.com - lên đơn, "
                                             "theo dõi vận đơn, xem tiền về",
      "description": "Đọc đơn hàng", "schema": {"type": "object", "properties": {}}},
-    {"fn": "javis_use_skill", "server": "javis",
+    {"fn": "unimate_use_skill", "server": "unimate",
      "description": "Chạy skill của brain", "schema": {"type": "object", "properties": {}}},
 ]
 _menu = mcp_hub._connector_menu(_pl_tools)
-check("thực đơn GỌI TÊN plugin, không gộp hết vào 'javis'", "tts-dropship" in _menu)
+check("thực đơn GỌI TÊN plugin, không gộp hết vào 'unimate'", "tts-dropship" in _menu)
 check("thực đơn nêu tên hiển thị của plugin", "TTS Dropship" in _menu)
 check("thực đơn nói plugin đó LÀM GÌ (mô tả từ manifest)", "dropship" in _menu.lower())
 check("đếm đúng số tool của riêng plugin đó", "2 tool" in _menu)
-check("builtin vẫn ở nhóm javis với mô tả nội bộ",
-      "javis (" in _menu and "skill của brain" in _menu)
+check("builtin vẫn ở nhóm unimate với mô tả nội bộ",
+      "unimate (" in _menu and "skill của brain" in _menu)
 
 # Không có `group_desc` (plugin đời cũ) thì vẫn phải gọi tên nhóm, chỉ là thiếu mô tả - suy
 # biến nghiêng về "nói được tên" chứ không quay lại gộp chung.
-_menu2 = mcp_hub._connector_menu([{"fn": "x_a", "server": "javis", "namespace": "goi-cu",
+_menu2 = mcp_hub._connector_menu([{"fn": "x_a", "server": "unimate", "namespace": "goi-cu",
                                    "label": "Gói cũ", "description": "d",
                                    "schema": {}}])
 check("plugin thiếu mô tả vẫn hiện thành nhóm riêng", "goi-cu" in _menu2 and "Gói cũ" in _menu2)
@@ -454,7 +454,7 @@ def _plugin_gan_nhan():
     src = os.path.join(SERVER, "plugins_host.py")
     with open(src, encoding="utf-8") as fh:
         s = fh.read()
-    khoi = s.split('tools.append({"fn": fn, "server": "javis"')[-1][:400]
+    khoi = s.split('tools.append({"fn": fn, "server": "unimate"')[-1][:400]
     for truong in ('"namespace": lp.slug', '"label": lp.name', '"group_desc": lp.description'):
         check(f"plugin_tools gắn {truong}", truong in khoi)
     check("LoadedPlugin mang description của manifest",

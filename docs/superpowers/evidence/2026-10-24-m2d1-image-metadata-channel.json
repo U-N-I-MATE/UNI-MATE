@@ -9,7 +9,7 @@
     "tests/python/test_improvement_image_channel.py": "2df8f4fa77a2f69897559b7e8f66e8ca955d1d034a9c896fac6c336b52c18e3d"
   },
   "qualified83_profile_unchanged": "04c8c77baec04d04019752bc8abc2f9a5906e094ededfbdd56cfc3c712aef126",
-  "test_command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B -m unittest discover -s tests/python -p test_improvement_image_channel.py -v",
+  "test_command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B -m unittest discover -s tests/python -p test_improvement_image_channel.py -v",
   "author_runs": [
     {
       "stage": "missing_module_red",

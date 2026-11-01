@@ -1,4 +1,4 @@
-"""Việc chạy nền engine bỏ lại: Javis nhận theo dõi, xong tự báo, tự làm tiếp (0.64.66).
+"""Việc chạy nền engine bỏ lại: UNI MATE nhận theo dõi, xong tự báo, tự làm tiếp (0.64.66).
 
 Chủ repo báo 2026-09-27: "Đang render nền, xong mình ghép tiếng và gửi video" rồi im; video xong
 lúc 14:57, tới 16:14 hỏi "xong video chưa" mới biết. Test dựng lại đúng cơ chế bằng TIẾN TRÌNH
@@ -13,7 +13,7 @@ import time
 
 from _paths import ROOT, SERVER  # noqa: E402,F401
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-ttn-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-ttn-")
 import asyncio  # noqa: E402
 import subprocess  # noqa: E402
 
@@ -33,7 +33,7 @@ if os.name == "nt":
     print("BỎ QUA: Windows không có nhóm tiến trình, mọi hàm là no-op.")
     sys.exit(0)
 
-WD = tempfile.mkdtemp(prefix="javis-ttn-wd-")
+WD = tempfile.mkdtemp(prefix="unimate-ttn-wd-")
 
 
 def engine_bo_lai(lenh: str) -> int:

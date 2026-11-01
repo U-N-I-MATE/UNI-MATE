@@ -1,6 +1,6 @@
 """Slack gateway over Socket Mode (0.71.0).
 
-Why Socket Mode instead of the Events API webhook: Socket Mode makes Javis open the connection
+Why Socket Mode instead of the Events API webhook: Socket Mode makes UNI MATE open the connection
 OUT to Slack over a WebSocket, so it works on a laptop or behind NAT with no public URL, the
 same way Telegram and Zalo long-polling do. The Events API would need a public HTTPS endpoint
 and a signing secret for every install.
@@ -335,9 +335,9 @@ class SlackBot(HangLuot):
                 try:
                     kq = await self.stt_fn(data, name)
                 except Exception as e:
-                    kq = {"ok": False, "noi_voi_javis": stt.loi_thanh_dong("loi", f"{type(e).__name__}: {e}")}
+                    kq = {"ok": False, "noi_voi_unimate": stt.loi_thanh_dong("loi", f"{type(e).__name__}: {e}")}
                 notes.append(stt.khoi_thoai(kq.get("text"), "Slack") if (kq or {}).get("ok")
-                             else ((kq or {}).get("noi_voi_javis") or stt.loi_thanh_dong("loi")))
+                             else ((kq or {}).get("noi_voi_unimate") or stt.loi_thanh_dong("loi")))
                 continue
             chat = meta.get("chat_id", "")
             ddir = self.download_dir(chat) if callable(self.download_dir) else self.download_dir
@@ -375,11 +375,11 @@ class SlackBot(HangLuot):
                 # the message on with the flags and let the precheck say no.
         if self.chat_ids and meta["user_id"] not in self.chat_ids and chat not in self.chat_ids:
             await self._send(client, chat, localefmt.chu(
-                "Bạn không có quyền dùng bot Javis này.", "You are not allowed to use this Javis bot."))
+                "Bạn không có quyền dùng bot Uni này.", "You are not allowed to use this UNI MATE bot."))
             return
         text = self._strip_mention(ev.get("text"))
         # Slack claims every message that starts with "/" as a slash command and refuses it
-        # ("not a valid command") before Javis ever sees it. So "!stop", "!new"... stand in for
+        # ("not a valid command") before UNI MATE ever sees it. So "!stop", "!new"... stand in for
         # the bot commands the other channels type with a slash.
         if text.startswith("!") and len(text) > 1 and text[1].isalpha():
             text = "/" + text[1:]
@@ -442,7 +442,7 @@ class SlackBot(HangLuot):
             silent = bool(reply.get("im_lang"))
             reply = reply.get("text") or ""
         if status_ts:
-            # The status message becomes the tool trail: proof of what Javis touched, left in
+            # The status message becomes the tool trail: proof of what UNI MATE touched, left in
             # the conversation the same way Telegram leaves it.
             await self._api(client, "chat.update", channel=chat, ts=status_ts,
                             text=dong_vet(tools, time.monotonic() - t0))

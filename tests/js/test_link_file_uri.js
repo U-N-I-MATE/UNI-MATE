@@ -16,7 +16,7 @@
    phần sau nó (Docker /brains/<brain>/..., cài tay /home/x/brains/<brain>/..., Windows
    C:/.../<brain>/...). Không thấy tên brain → coi cả chuỗi là tương đối (model hay viết
    file:///wiki/x.md). Trỏ sang brain KHÁC → vẫn là link vault để cú bấm ra khung "không thấy
-   file" có gợi ý, thay vì tab mới 404. console.js gỡ lại lần nữa ở openVaultPath/JavisOpenNote
+   file" có gợi ý, thay vì tab mới 404. console.js gỡ lại lần nữa ở openVaultPath/UniMateOpenNote
    cho đường deep-link và chip file đang mở. */
 const fs = require("fs");
 const path = require("path");
@@ -51,7 +51,7 @@ check("khoảng trắng trần trong file:// cũng ra đúng",
 check("file://localhost/... cũng gỡ được",
   vaultPath("[x](file://localhost/brains/Brain%20Default/wiki/a.md)") === "wiki/a.md");
 check("cài tay: /home/x/brains/<brain>/... → lấy phần sau tên brain",
-  vaultPath("[x](file:///home/u/javis/brains/Brain%20Default/wiki/a.md)") === "wiki/a.md");
+  vaultPath("[x](file:///home/u/unimate/brains/Brain%20Default/wiki/a.md)") === "wiki/a.md");
 check("Windows: file:///C:/.../<brain>/... → lấy phần sau tên brain",
   vaultPath("[x](file:///C:/Users/q/brains/Brain%20Default/wiki/a.md)") === "wiki/a.md");
 check("file:///wiki/x.md (không có tên brain) → coi là tương đối",
@@ -86,13 +86,13 @@ check("isVaultRel loại file:", /isVaultRel[\s\S]{0,200}file:\|/.test(CR));
 // ============================================================
 // 4. console.js: deep-link và chip file đang mở cũng gỡ file://
 // ============================================================
-check("chat-render xuất JavisFileRef cho console.js gọi lại", /window\.JavisFileRef = appFileRef/.test(CR));
+check("chat-render xuất UniMateFileRef cho console.js gọi lại", /window\.UniMateFileRef = appFileRef/.test(CR));
 check("openVaultPath gỡ file:// trước khi ghép tiền tố trần",
   /function openVaultPath\(fullPath\) \{\s*fullPath = _goFileUri\(fullPath\);/.test(CONSOLE));
-check("JavisOpenNote gỡ file:// trước khi ghép tiền tố trần",
-  /window\.JavisOpenNote = function \(brainRel\) \{\s*brainRel = _goFileUri\(brainRel\);/.test(CONSOLE));
-check("_goFileUri gọi JavisFileRef, có đường lui khi chat-render chưa nạp",
-  /function _goFileUri\(p\)[\s\S]{0,400}window\.JavisFileRef[\s\S]{0,300}replace\(\/\^file:/.test(CONSOLE));
+check("UniMateOpenNote gỡ file:// trước khi ghép tiền tố trần",
+  /window\.UniMateOpenNote = function \(brainRel\) \{\s*brainRel = _goFileUri\(brainRel\);/.test(CONSOLE));
+check("_goFileUri gọi UniMateFileRef, có đường lui khi chat-render chưa nạp",
+  /function _goFileUri\(p\)[\s\S]{0,400}window\.UniMateFileRef[\s\S]{0,300}replace\(\/\^file:/.test(CONSOLE));
 
 console.log("");
 if (fails.length) { console.log(fails.length + " test HỎNG: " + fails.join(", ")); process.exit(1); }

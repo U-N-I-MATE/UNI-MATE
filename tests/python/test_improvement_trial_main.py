@@ -63,7 +63,7 @@ class MainTrialTests(unittest.TestCase):
                 patch.object(self.main, "_token_ok", return_value=False), \
                 patch.object(S, "dashboard_host", side_effect=AssertionError("No capture on denied request")):
             self.assertEqual(self.client.get("/improvement-trials/missing").status_code, 401)
-            response = self.client.post("/improvement-trials", cookies={"javis_session": "owner-cookie"},
+            response = self.client.post("/improvement-trials", cookies={"unimate_session": "owner-cookie"},
                 headers={"Origin": "https://foreign.example"}, json={"event_key": "csrf-denied-event"})
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json()["blocked"], "web_security")

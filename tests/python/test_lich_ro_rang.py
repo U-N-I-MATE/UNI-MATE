@@ -6,7 +6,7 @@
    thường không đọc được cron, và ngay cả người đọc được cũng không biết LẦN KẾ TIẾP là khi nào.
 2. Không sửa/xoá được lịch cron. Nhắc hẹn tạo xong là bất động: chỉ có Huỷ (giữ lại trong lịch
    sử) và Chuyển brain, muốn đổi giờ phải xoá rồi tạo lại.
-3. Tạo cron quá dễ. Javis dựng job "sáng nào cũng báo qua Telegram" trong khi Telegram còn chưa
+3. Tạo cron quá dễ. UNI MATE dựng job "sáng nào cũng báo qua Telegram" trong khi Telegram còn chưa
    đấu - job chạy đúng giờ rồi ném kết quả vào hư không, không ai được báo là thiếu gì.
 4. "Vòng lặp tự cải thiện" mọc lại sau mỗi lần xoá / trên mỗi bản fork mới.
 """
@@ -23,7 +23,7 @@ import self_improve  # noqa: E402
 
 # 0.426.0: reminders are shown and edited on the Tasks page (dashboard/tasks.js), the old Scheduled page left console.js.
 TASKS = (ROOT / "dashboard" / "tasks.js").read_text(encoding="utf-8")
-PLUGIN = (ROOT / "system" / "plugins" / "javis-schedule" / "plugin.py").read_text(encoding="utf-8")
+PLUGIN = (ROOT / "system" / "plugins" / "unimate-schedule" / "plugin.py").read_text(encoding="utf-8")
 
 fails = []
 
@@ -61,7 +61,7 @@ check("cron rác không làm vỡ chỗ hiển thị", cron_util.describe_cron("
 
 # ── Dựng feature nhắc hẹn tối giản (không mạng, không engine) ────────────────
 def make_feature(notify_ready=None):
-    brain = Path(tempfile.mkdtemp(prefix="javis-lich-brain-"))
+    brain = Path(tempfile.mkdtemp(prefix="unimate-lich-brain-"))
 
     async def fake_send(_chat, _text):
         return True, ""
@@ -144,8 +144,8 @@ check("user đồng ý thì tạo tiếp được bằng allow_no_channel",
       creates_ok(feat3, brain3, cron="0 7 * * *", mode="task", allow_no_channel=True))
 # Job script là loại giám sát: reminders.py cố ý IM LẶNG khi stdout rỗng, nên thiếu kênh báo
 # không phải lý do chặn - chặn nó là làm hỏng một tính năng đang đúng.
-(Path(brain3) / "Javis" / "scripts").mkdir(parents=True, exist_ok=True)
-(Path(brain3) / "Javis" / "scripts" / "ping.py").write_text("print('[SILENT]')\n", encoding="utf-8")
+(Path(brain3) / "UNI MATE" / "scripts").mkdir(parents=True, exist_ok=True)
+(Path(brain3) / "UNI MATE" / "scripts" / "ping.py").write_text("print('[SILENT]')\n", encoding="utf-8")
 check("job script KHÔNG bị chặn (giám sát im lặng là bình thường)",
       creates_ok(feat3, brain3, text="", mode="script", script="ping.py", delay_min=5))
 
@@ -171,8 +171,8 @@ check("thiếu dep kiểm tra thì không dựng rào (test/embed tối giản)"
 
 # ── 5. "Vòng lặp tự cải thiện" không được hồi sinh ──────────────────────────
 def make_loop_feature():
-    state = Path(tempfile.mkdtemp(prefix="javis-lich-state-"))
-    brain = Path(tempfile.mkdtemp(prefix="javis-lich-loopbrain-"))
+    state = Path(tempfile.mkdtemp(prefix="unimate-lich-state-"))
+    brain = Path(tempfile.mkdtemp(prefix="unimate-lich-loopbrain-"))
     deps = self_improve.LoopDeps(
         build_system_prompt=lambda _b: "",
         brain_root=lambda _b: str(brain),
@@ -242,7 +242,7 @@ check("form sửa được nhắc hẹn qua /reminders/update", '"/reminders/upd
 check("thiếu kênh báo thì hỏi lại chứ không im lặng",
       "r.can_force" in TASKS and 'tw("nv.f.force")' in TASKS)
 check("trang Nhiệm vụ cảnh báo khi chưa có kênh báo", "bad = nt.ok === false" in TASKS and 'tw("nv.nochan.go")' in TASKS)
-check("tool javis_schedule có op=update để sửa lịch bằng chat",
+check("tool unimate_schedule có op=update để sửa lịch bằng chat",
       '"update"' in PLUGIN and "_do_update" in PLUGIN)
 check("tool KHÔNG tự vượt rào thiếu kênh",
       "KHÔNG tự quyết hộ" in PLUGIN and "allow_no_channel" in PLUGIN)

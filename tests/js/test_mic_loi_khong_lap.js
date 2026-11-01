@@ -53,7 +53,7 @@ function napVoice(SRGia) {
   const doc = { addEventListener() {}, createElement: () => ({ play: () => Promise.resolve() }) };
   const src = fs.readFileSync(path.join(ROOT, "dashboard", "voice.js"), "utf8");
   return new Function("window", "localStorage", "navigator", "document",
-    src + "; return JavisVoice;")(win, win.localStorage,
+    src + "; return UniMateVoice;")(win, win.localStorage,
       { userAgent: "node", platform: "x", mediaDevices: null }, doc);
 }
 
@@ -62,9 +62,9 @@ const cho = (ms) => new Promise(r => setTimeout(r, ms));
 (async () => {
   for (const maLoi of ["not-allowed", "service-not-allowed", "audio-capture"]) {
     const { SRGia, d } = nhanDangGia(maLoi);
-    const JavisVoice = napVoice(SRGia);
+    const UniMateVoice = napVoice(SRGia);
     const loi = [];
-    const v = new JavisVoice({ onError: (e) => loi.push(e) });
+    const v = new UniMateVoice({ onError: (e) => loi.push(e) });
 
     v.startListening();
     await cho(60);          // du cho vai vong lap no ra neu con bug
@@ -84,8 +84,8 @@ const cho = (ms) => new Promise(r => setTimeout(r, ms));
   // duyet xong. Mot cai nut bam khong len la thu khong ai chan doan noi.
   {
     const { SRGia, d } = nhanDangGia("not-allowed");
-    const JavisVoice = napVoice(SRGia);
-    const v = new JavisVoice({ onError: () => {} });
+    const UniMateVoice = napVoice(SRGia);
+    const v = new UniMateVoice({ onError: () => {} });
     v.startListening();
     await cho(60);
     v.startListening();          // khong co co tuDong = nguoi dung bam
@@ -96,8 +96,8 @@ const cho = (ms) => new Promise(r => setTimeout(r, ms));
   // Loi thoang qua thi khong duoc coi la hong han - mat han kha nang tu hoi phuc.
   {
     const { SRGia, d } = nhanDangGia("network");
-    const JavisVoice = napVoice(SRGia);
-    const v = new JavisVoice({ onError: () => {} });
+    const UniMateVoice = napVoice(SRGia);
+    const v = new UniMateVoice({ onError: () => {} });
     v.startListening();
     await cho(60);
     check("loi mang KHONG bi coi la hong han", !v.micHong());

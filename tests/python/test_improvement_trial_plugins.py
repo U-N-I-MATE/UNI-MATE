@@ -14,7 +14,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 SCRATCH = Path(tempfile.mkdtemp(prefix="trial-plugins-"))
-for key, child in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "BRAIN_PATH": "brain",
+for key, child in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "BRAIN_PATH": "brain",
                    "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(SCRATCH / child)
 
@@ -44,8 +44,8 @@ class PluginProjectionTests(unittest.TestCase):
                                 (H, "_STATE_PATH", self.state / "plugins.json"),
                                 (packs, "PACKS_DIR", self.state / "packs"), (packs, "LEDGER", self.state / "packs.json")):
             self.stack.enter_context(patch.object(obj, key, value))
-        self.stack.enter_context(patch.dict(os.environ, {"JAVIS_ENABLE_USER_PLUGINS": "",
-            "JAVIS_ENABLE_VAULT_PLUGINS": "", "JAVIS_DISABLE_PACKS": ""}))
+        self.stack.enter_context(patch.dict(os.environ, {"UNIMATE_ENABLE_USER_PLUGINS": "",
+            "UNIMATE_ENABLE_VAULT_PLUGINS": "", "UNIMATE_DISABLE_PACKS": ""}))
         self.stack.enter_context(patch.object(H, "_cache", {}))
         self.stack.enter_context(patch.object(H, "_MANIFEST_CACHE", {}))
         self.stack.enter_context(patch.object(H, "_STATE_CACHE", {"sig": None, "data": None}))
@@ -57,7 +57,7 @@ class PluginProjectionTests(unittest.TestCase):
 
     def plugin(self, slug="alpha", *, source="bundled", enabled=True, tools=("demo_ping",), code=None, extra=""):
         base = {"bundled": self.bundled, "user": self.state / "plugins", "vault": self.brain / "plugins",
-                "legacy": self.brain / "Javis" / "plugins"}[source]
+                "legacy": self.brain / "UNI MATE" / "plugins"}[source]
         path = base / slug
         path.mkdir(parents=True, exist_ok=True)
         manifest = {"name": "Alpha", "description": "base description", "enabled": enabled,
@@ -147,7 +147,7 @@ class PluginProjectionTests(unittest.TestCase):
         self.warm()
         value = self.capture()
         self.assertEqual([(row["slug"], row["source"]) for row in value["plugins"]], [("alpha", "vault"), ("beta", "user")])
-        self.assertEqual(value["layout"], "Javis/plugins")
+        self.assertEqual(value["layout"], "UniMate/plugins")
         (self.brain / "plugins").mkdir()
         with self.assertRaisesRegex(ValueError, "runtime_stale"):
             self.capture()
@@ -175,7 +175,7 @@ class PluginProjectionTests(unittest.TestCase):
             self.capture()
 
     def test_duplicate_reserved_tools_use_first_visible_runtime_plugin(self):
-        self.plugin("alpha", tools=("demo_ping", "javis_read_file"))
+        self.plugin("alpha", tools=("demo_ping", "unimate_read_file"))
         self.plugin("beta", tools=("demo_ping", "other_tool"))
         self.warm()
         self.assertEqual(self.capture()["visible_tools"], ["demo_ping", "other_tool"])
@@ -205,7 +205,7 @@ class PluginProjectionTests(unittest.TestCase):
         actual = ROOT / "system" / "plugins"
         self.stack.enter_context(patch.object(H, "BUNDLED_DIR", actual))
         disabled = [directory.name for directory in actual.iterdir()
-                    if directory.is_dir() and directory.name not in ("datetime-vn", "javis-goal")]
+                    if directory.is_dir() and directory.name not in ("datetime-vn", "unimate-goal")]
         H._STATE_PATH.write_text(json.dumps({"disabled": disabled}), encoding="utf-8")
         # Another enabled agent makes the OUTSIDE-turn predicate true. The
         # selected ordinary owner turn must still hide Goal without consulting it.
@@ -216,7 +216,7 @@ class PluginProjectionTests(unittest.TestCase):
         enabled = store.agent_set_enabled(RS.Principal("owner", "owner-1", str(self.brain)), "another-agent", True)
         self.assertTrue(enabled["enabled"])
         self.warm()
-        module = sys.modules["javis_plugin_bundled_javis_goal"]
+        module = sys.modules["unimate_plugin_bundled_unimate_goal"]
         token = turn_context.bind(None)
         try:
             self.assertTrue(module._visible(str(self.brain)))
@@ -233,14 +233,14 @@ class PluginProjectionTests(unittest.TestCase):
         with patch.object(RS, "GoalStore", side_effect=AssertionError("capture constructed GoalStore")):
             value = self.capture()
         self.assertEqual(value["plugins"], expected)
-        self.assertNotIn("javis_goal", value["visible_tools"])
-        self.assertNotIn("javis-goal", [row["slug"] for row in value["plugins"]])
+        self.assertNotIn("unimate_goal", value["visible_tools"])
+        self.assertNotIn("unimate-goal", [row["slug"] for row in value["plugins"]])
         self.assertEqual(before, sorted(str(path) for path in self.state.rglob("*")))
 
     def test_edited_goal_callback_not_accepted_as_known_predicate(self):
         # Test a source+runtime coherent substitute: matching just name/path is insufficient.
-        path = self.plugin("javis-goal", tools=("javis_goal",), code=
-            "def _visible(root):\n    return True\ndef ping(a,c):\n    return 'ok'\ndef register(ctx):\n    ctx.register_tool('javis_goal','desc',ping,visible_fn=_visible)\n")
+        path = self.plugin("unimate-goal", tools=("unimate_goal",), code=
+            "def _visible(root):\n    return True\ndef ping(a,c):\n    return 'ok'\ndef register(ctx):\n    ctx.register_tool('unimate_goal','desc',ping,visible_fn=_visible)\n")
         H._load_all(str(self.brain))
         with patch.object(P, "_GOAL_FILE", path / "plugin.py"):
             with self.assertRaisesRegex(ValueError, "unsupported_plugin_visibility"):
@@ -325,7 +325,7 @@ class PluginProjectionTests(unittest.TestCase):
         self.plugin("beta", source="user", tools=("user_tool",))
         self.plugin("removed", tools=("removed_tool",))
         H._STATE_PATH.write_text('{"enabled":["alpha"],"removed":["removed"]}', encoding="utf-8")
-        os.environ["JAVIS_ENABLE_VAULT_PLUGINS"] = "off"
+        os.environ["UNIMATE_ENABLE_VAULT_PLUGINS"] = "off"
         self.warm()
         value = self.capture()
         rows = {row["slug"]: row for row in value["plugins"]}
@@ -334,7 +334,7 @@ class PluginProjectionTests(unittest.TestCase):
         self.assertFalse(rows["beta"]["loaded"])
         self.assertTrue(rows["beta"]["gated"])
         self.assertFalse(rows["removed"]["enabled"])
-        os.environ["JAVIS_ENABLE_USER_PLUGINS"] = "true"
+        os.environ["UNIMATE_ENABLE_USER_PLUGINS"] = "true"
         with self.assertRaisesRegex(ValueError, "runtime_stale"):
             self.capture()
         self.warm()

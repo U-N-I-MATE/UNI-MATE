@@ -12,9 +12,9 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-fix-jm-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-BR = Path(tempfile.mkdtemp(prefix="javis-fix-jm-brain-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-fix-jm-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+BR = Path(tempfile.mkdtemp(prefix="unimate-fix-jm-brain-"))
 (BR / "agents").mkdir()
 (BR / "agents" / "lan.md").write_text("---\nname: Lan\nrole: Trợ lý\n---\nBạn là Lan.\n", encoding="utf-8", newline="\n")
 
@@ -71,7 +71,7 @@ check("mode send vẫn gửi bản nháp của chính agent",
 import asyncio  # noqa: E402
 import threading  # noqa: E402
 
-check("_paths đặt chốt JAVIS_NO_REAL_TEAM_ENGINE=1", os.environ.get("JAVIS_NO_REAL_TEAM_ENGINE") == "1")
+check("_paths đặt chốt UNIMATE_NO_REAL_TEAM_ENGINE=1", os.environ.get("UNIMATE_NO_REAL_TEAM_ENGINE") == "1")
 main.team_engine.build = main._TEAM_ENGINE_BUILD_REAL      # như một test quên thay engine
 sandbox_built = []
 orig_sandbox = main._reply_policy_sandbox_engine
@@ -98,7 +98,7 @@ async def run_team():
 
 ex_t = asyncio.run(run_team())
 check("test quên thay team_engine.build: lượt nhóm dừng ở chốt (EngineUnavailable), không dựng engine, không mốc engine",
-      ex_t is not None and "JAVIS_NO_REAL_TEAM_ENGINE" in str(ex_t) and not sandbox_built and not started,
+      ex_t is not None and "UNIMATE_NO_REAL_TEAM_ENGINE" in str(ex_t) and not sandbox_built and not started,
       (ex_t, sandbox_built))
 main.team_engine.build = _no_real_engine
 main._reply_policy_sandbox_engine = orig_sandbox

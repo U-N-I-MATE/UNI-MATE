@@ -93,7 +93,7 @@ def _thu_muc_home(conn: dict) -> list[Path]:
         if _an_toan_de_xoa(p, HOME_DIR):
             ra.append(p)
         else:
-            # Người dùng trỏ home ra ngoài vùng Javis quản. Không đụng, nhưng phải NÓI RA
+            # Người dùng trỏ home ra ngoài vùng UNI MATE quản. Không đụng, nhưng phải NÓI RA
             # thay vì im lặng bỏ qua, kẻo họ tưởng đã xoá.
             print(f"[purge] bo qua home ngoai vung: {khai}", file=sys.stderr)
     cid = conn.get("connector_id") or ""

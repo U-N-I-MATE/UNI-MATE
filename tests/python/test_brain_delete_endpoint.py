@@ -3,7 +3,7 @@
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path (xem tests/python/_paths.py)
 import os, sys, asyncio, tempfile
 from pathlib import Path
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="jv-del-state-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="jv-del-state-"))
 import main  # noqa: E402
 import git_brain as gb  # noqa: E402
 

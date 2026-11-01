@@ -1,4 +1,4 @@
-"""0.199.0: a broken background run reaches Javis Core, which retries once or tells the owner.
+"""0.199.0: a broken background run reaches UNI MATE Core, which retries once or tells the owner.
 
 Covers: one incident per (source, ref) while open, a failed retry closing it as "needs you" with
 one message, person-only errors never retried even when the model says so, the model's last JSON
@@ -14,8 +14,8 @@ import os
 import tempfile
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-incidents-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
+STATE = Path(tempfile.mkdtemp(prefix="unimate-incidents-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
 
 import incident_desk as idk  # noqa: E402
 

@@ -12,10 +12,10 @@ import os
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-brain-filter-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-brain-filter-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 os.environ["BRAINS_DIR"] = str(Path(_STATE) / "brains")
-os.environ["JAVIS_SESSIONS_DB"] = str(Path(_STATE) / "sessions.db")
+os.environ["UNIMATE_SESSIONS_DB"] = str(Path(_STATE) / "sessions.db")
 
 import main  # noqa: E402
 import brain_ident  # noqa: E402

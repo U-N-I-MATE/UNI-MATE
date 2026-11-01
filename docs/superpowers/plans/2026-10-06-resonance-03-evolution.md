@@ -1,16 +1,16 @@
-# Javis Resonance Evolution Implementation Plan
+# UNI MATE Resonance Evolution Implementation Plan
 
 **Trạng thái sau phản biện vòng 2:** tham chiếu cho kiến trúc mở rộng. Phép thử phương pháp nhỏ được làm sớm trong [MVP một agent](2026-10-06-resonance-00-mvp.md); chưa cần toàn bộ ExperimentService, kho biến thể hoặc supervisor. C3 đến C5 chỉ mở sau khi vòng nhỏ đã chạy và có bằng chứng cần mở rộng; không tự sửa code ở MVP.
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (- [ ]) syntax for tracking. Đây là kế hoạch, không phải chỉ dẫn tự bắt đầu cập nhật Javis đang chạy.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (- [ ]) syntax for tracking. Đây là kế hoạch, không phải chỉ dẫn tự bắt đầu cập nhật UNI MATE đang chạy.
 
-**Goal:** Cho agent cải thiện khả năng hiểu nhu cầu, hình thành mục tiêu và thực hiện công việc bằng thử nghiệm có bằng chứng; sau đó mở rộng tới sửa code Javis với khả năng khôi phục thực tế.
+**Goal:** Cho agent cải thiện khả năng hiểu nhu cầu, hình thành mục tiêu và thực hiện công việc bằng thử nghiệm có bằng chứng; sau đó mở rộng tới sửa code UNI MATE với khả năng khôi phục thực tế.
 
 **Architecture:** Experiment service quản lý baseline/candidate, dữ liệu kiểm chứng và điều kiện áp dụng. Candidate chỉ có quyền của worker; supervisor độc lập giữ phép chấm, quyền áp dụng, bản phục hồi và nhật ký. Sửa phương pháp và sửa ứng dụng là hai đích áp dụng riêng.
 
 **Tech Stack:** Python, SQLite, runner hiện có, Git checkout cho code candidate, supervisor host và container worker ở chế độ live self-update. V1 không hỗ trợ tự cập nhật live nếu môi trường chưa có ranh giới worker/supervisor đã kiểm tra.
 
-**Spec:** [Thiết kế tổng thể](../specs/2026-10-06-javis-resonance-design.md), mục 10 đến 17. Phụ thuộc [Foundation](2026-10-06-resonance-01-foundation.md) và B1 đến B3 của [Runtime](2026-10-06-resonance-02-runtime.md).
+**Spec:** [Thiết kế tổng thể](../specs/2026-10-06-unimate-resonance-design.md), mục 10 đến 17. Phụ thuộc [Foundation](2026-10-06-resonance-01-foundation.md) và B1 đến B3 của [Runtime](2026-10-06-resonance-02-runtime.md).
 
 ## Global Constraints
 
@@ -81,7 +81,7 @@
 
 ## Task C3 Bài học và đánh giá định tính có nguồn
 
-**Files:** Create server/resonance_learning.py, server/resonance_eval_rubric.py, server/resonance_eval_human.py, tests/python/test_resonance_learning.py, tests/python/test_resonance_rubric.py. Modify server/main.py tại đường JAVIS_LESSON, server/resonance_evaluators.py, server/resonance_store.py.
+**Files:** Create server/resonance_learning.py, server/resonance_eval_rubric.py, server/resonance_eval_human.py, tests/python/test_resonance_learning.py, tests/python/test_resonance_rubric.py. Modify server/main.py tại đường UNIMATE_LESSON, server/resonance_evaluators.py, server/resonance_store.py.
 
 **Interfaces:**
 
@@ -96,7 +96,7 @@
 - [ ] Viết test lesson chỉ áp đúng scope, bị supersede không còn đưa vào prompt, không sửa vùng memory người dùng viết tay, không rò bài học qua brain.
 - [ ] Viết test rubric thiếu bằng chứng trả unknown; model confidence không được trình bày là xác suất; không có quyền xem dữ liệu thì evaluator không được đọc để chấm.
 - [ ] Chạy python tests/run.py resonance_learning resonance_rubric -v; xác nhận đỏ.
-- [ ] Implement provenance riêng cho lesson Resonance; bridge sang cơ chế bộ nhớ hiện có bằng id/hash để thu hồi bài học sinh tự động đúng dòng. Giữ hành vi JAVIS_LESSON legacy chưa thuộc Resonance.
+- [ ] Implement provenance riêng cho lesson Resonance; bridge sang cơ chế bộ nhớ hiện có bằng id/hash để thu hồi bài học sinh tự động đúng dòng. Giữ hành vi UNIMATE_LESSON legacy chưa thuộc Resonance.
 - [ ] Thêm các evaluator mới bằng registry, không sửa state machine. Human confirmation yêu cầu danh tính xác thực, không nhận câu tự báo của model là chữ ký người dùng.
 - [ ] Chạy test mới và python tests/run.py learn_agent_workflow agent_tu_boi_dap memory_hoa_thuong -v; review và commit.
 
@@ -121,7 +121,7 @@
 - [ ] Bảo vệ evaluator/receipt và nội dung hợp đồng ở phía supervisor. Cùng process/cùng quyền host chỉ được đánh dấu trusted-development, không phải chế độ live self-update được bảo vệ.
 - [ ] Chạy lại unit test và integration boundary trên host mục tiêu; ghi môi trường và kết quả. Review rồi commit.
 
-## Task C5 Candidate code và áp dụng phiên bản Javis
+## Task C5 Candidate code và áp dụng phiên bản UNI MATE
 
 **Files:** Create server/resonance_deployment.py, tests/python/test_resonance_deployment.py. Modify server/resonance_supervisor.py, server/resonance_experiments.py. Tái sử dụng server/updater.py và server/update_state.py qua adapter, chỉ sửa giao diện nếu kiểm thử chứng minh cần. Create docs/dev/resonance-recovery.md.
 

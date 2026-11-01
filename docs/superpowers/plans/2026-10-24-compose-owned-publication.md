@@ -6,7 +6,7 @@ neither the plan nor admission storage controls prove a native query is ready.
 
 Reuse the actual pinned compose_round vendor/closed parser, OperationExecution,
 OperationTasks and RoleWorkflow product readers. Upstream recursion._run_stage
-owns benchmark filesystem/retries/accounting; adapting the existing Javis owner
+owns benchmark filesystem/retries/accounting; adapting the existing UNI MATE owner
 avoids a second executor. No new account/model/ledger or whole repository refactor.
 
 1. Concrete ComposerService(RoleWorkflow), product kind compose only. Begin with

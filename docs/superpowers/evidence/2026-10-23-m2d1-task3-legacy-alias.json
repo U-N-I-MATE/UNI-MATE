@@ -17,7 +17,7 @@
   "results": [
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_legacy_tuning_alias.py",
         "-v"
       ],
@@ -30,7 +30,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_lineage.py",
         "-v"
       ],
@@ -43,7 +43,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_admission.py",
         "-v"
       ],
@@ -56,7 +56,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_execution.py",
         "-v"
       ],
@@ -69,7 +69,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_reservations.py",
         "ViewReservationTests.test_actual_v4_pair_reserves_existing_calls_links_and_cold_replay",
         "NativeFootprintTests",

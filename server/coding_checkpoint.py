@@ -70,8 +70,8 @@ def _git_env(ws: str, index: Path) -> Dict[str, str]:
     env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
     env.update({
         "GIT_DIR": str(KHO), "GIT_WORK_TREE": str(ws), "GIT_INDEX_FILE": str(index),
-        "GIT_AUTHOR_NAME": "Javis", "GIT_AUTHOR_EMAIL": "javis@localhost",
-        "GIT_COMMITTER_NAME": "Javis", "GIT_COMMITTER_EMAIL": "javis@localhost",
+        "GIT_AUTHOR_NAME": "UNI MATE", "GIT_AUTHOR_EMAIL": "unimate@localhost",
+        "GIT_COMMITTER_NAME": "UNI MATE", "GIT_COMMITTER_EMAIL": "unimate@localhost",
         "GIT_TERMINAL_PROMPT": "0", "GIT_CONFIG_NOSYSTEM": "1", "LC_ALL": "C",
     })
     return env
@@ -229,9 +229,9 @@ def tao(sid: str, ws: str, ly_do: str = "", luot: int = 0) -> dict:
                 raise LoiMoc(f"kho mốc đã quá {KHO_TOI_DA_MB} MB")
         idx = _index(ws)
         tree = _chup(ws, idx)
-        commit = _git(["commit-tree", tree, "-m", f"javis {sid} {ly_do}"[:200]], ws, idx).strip()
+        commit = _git(["commit-tree", tree, "-m", f"unimate {sid} {ly_do}"[:200]], ws, idx).strip()
         mid = time.strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:6]
-        ref = f"refs/javis/{_ma_ws(ws)}/{mid}"
+        ref = f"refs/unimate/{_ma_ws(ws)}/{mid}"
         _git(["update-ref", ref, commit], ws, idx)
         rec = {"id": mid, "ws": ws, "ref": ref, "commit": commit, "luc": time.time(),
                "luot": luot, "ly_do": str(ly_do or "")[:120]}

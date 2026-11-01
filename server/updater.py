@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Updater tách rời của Javis cho bản GIT checkout (Windows + systemd + launchd + nohup).
+"""Updater tách rời của UNI MATE cho bản GIT checkout (Windows + systemd + launchd + nohup).
 Server spawn DETACHED:
 
     python updater.py --old-sha <sha> --old-version <v> --target <v> --port <p> --server-pid <pid>
@@ -28,7 +28,7 @@ import winproc  # noqa: E402
 # Updater được server spawn DETACHED, tức nó chạy KHÔNG CÓ console. Trên Windows, một tiến trình
 # không console mà gọi chương trình console (git, pip, systemctl...) thì hệ điều hành tự cấp cho
 # đứa con một cửa sổ mới - người dùng thấy màn hình nháy đen liên tục suốt lượt cập nhật. Nên
-# mọi lời gọi dưới đây đều truyền cờ này. Hai chỗ CỐ Ý không truyền là lúc khởi động lại Javis,
+# mọi lời gọi dưới đây đều truyền cờ này. Hai chỗ CỐ Ý không truyền là lúc khởi động lại UNI MATE,
 # vì tiến trình đó phải sống lâu hơn updater.
 _CAM = winproc.no_window()
 
@@ -86,7 +86,7 @@ def has_systemd():
 
 def systemd_service_name(env_name=None, cgroup=None):
     """Resolve this installation's unit, including instances installed under a custom name."""
-    name = os.getenv("JAVIS_NAME", "") if env_name is None else env_name
+    name = os.getenv("UNIMATE_NAME", "") if env_name is None else env_name
     if name and re.fullmatch(r"[A-Za-z0-9._-]+", name):
         return name
     if cgroup is None:
@@ -95,10 +95,10 @@ def systemd_service_name(env_name=None, cgroup=None):
         except OSError:
             cgroup = ""
     match = re.search(r"(?:^|/)([A-Za-z0-9._-]+)\.service(?:/|$)", cgroup or "", re.MULTILINE)
-    return match.group(1) if match else "javis"
+    return match.group(1) if match else "unimate"
 
 
-LAUNCHD_LABEL = os.getenv("JAVIS_LAUNCHD_LABEL", "com.javis.os")
+LAUNCHD_LABEL = os.getenv("UNIMATE_LAUNCHD_LABEL", "com.unimate.os")
 
 
 def _launchd_target():
@@ -106,12 +106,12 @@ def _launchd_target():
 
 
 def has_launchd_job():
-    """Mac chạy Javis dưới launchd (job KeepAlive) thì restart PHẢI qua launchd.
+    """Mac chạy UNI MATE dưới launchd (job KeepAlive) thì restart PHẢI qua launchd.
 
     Bài học 14/08/2026: updater kill PID server -> launchd KeepAlive respawn ngay tức thì,
     trong khi updater cũng Popen một bản uvicorn của riêng nó -> hai tiến trình giành cổng
-    7777, javis.log đầy "[Errno 48] address already in use". Nhãn job đổi được qua env
-    JAVIS_LAUNCHD_LABEL (mặc định com.javis.os)."""
+    7777, unimate.log đầy "[Errno 48] address already in use". Nhãn job đổi được qua env
+    UNIMATE_LAUNCHD_LABEL (mặc định com.unimate.os)."""
     if sys.platform != "darwin":
         return False
     try:
@@ -193,7 +193,7 @@ def stop_server(mode, server_pid=0, port=""):
         # and installed; start_server swaps it by signal and systemd's Restart= brings up the new code.
         log("Không có quyền dừng service hệ thống: server cũ chạy tiếp tới bước khởi động lại.")
     elif mode == "windows":
-        run(["cmd", "/c", str(ROOT / "stop-javis.bat")])
+        run(["cmd", "/c", str(ROOT / "stop-unimate.bat")])
     elif mode == "systemd":
         subprocess.run(["systemctl", "stop", systemd_service_name()], capture_output=True, text=True,
                        creationflags=_CAM)
@@ -225,7 +225,7 @@ def start_server(mode, port=""):
             log(f"Khởi động lại {name}.service bằng tín hiệu (PID {p})…")
             _kill_pid(p, 30)
     elif mode == "windows":
-        subprocess.Popen(["wscript.exe", "//nologo", str(ROOT / "start-javis.vbs")],
+        subprocess.Popen(["wscript.exe", "//nologo", str(ROOT / "start-unimate.vbs")],
                          cwd=str(ROOT), creationflags=0x00000008)  # DETACHED_PROCESS
     elif mode == "systemd":
         subprocess.run(["systemctl", "start", systemd_service_name()], capture_output=True, text=True,
@@ -235,13 +235,13 @@ def start_server(mode, port=""):
         # không còn cửa cho hai tiến trình cùng bind cổng.
         run(["launchctl", "kickstart", "-k", _launchd_target()])
     else:  # nohup: chạy lại uvicorn nền y như install.sh (fallback không systemd)
-        host = os.getenv("JAVIS_HOST", "127.0.0.1")
-        logf = open(us.STATE_DIR / "javis.log", "a", encoding="utf-8")
-        subprocess.Popen(   # noqa: JAVIS_CONSOLE - server mới phải sống lâu hơn updater
+        host = os.getenv("UNIMATE_HOST", "127.0.0.1")
+        logf = open(us.STATE_DIR / "unimate.log", "a", encoding="utf-8")
+        subprocess.Popen(   # noqa: UNIMATE_CONSOLE - server mới phải sống lâu hơn updater
             [venv_python(), "-m", "uvicorn", "main:app", "--host", host, "--port", str(port or "7777")],
             cwd=str(ROOT / "server"), stdout=logf, stderr=subprocess.STDOUT,
             start_new_session=True,
-            env={**os.environ, "JAVIS_STATE_DIR": os.getenv("JAVIS_STATE_DIR", str(us.STATE_DIR))})
+            env={**os.environ, "UNIMATE_STATE_DIR": os.getenv("UNIMATE_STATE_DIR", str(us.STATE_DIR))})
 
 
 def git_dirty():
@@ -263,7 +263,7 @@ def stash_local_changes():
     if not (status.stdout or "").strip():
         return "", ""
     previous = _stash_head()
-    saved = run(["git", "stash", "push", "-m", "javis-auto-update"])
+    saved = run(["git", "stash", "push", "-m", "unimate-auto-update"])
     current = _stash_head()
     if saved.returncode != 0 or not current or current == previous:
         return "", _chu("Không cất được sửa đổi cục bộ; dừng cập nhật. Kiểm tra git stash list "
@@ -296,7 +296,7 @@ def drop_update_stash(stash_oid, restored):
 
 def release_source():
     """The same official release branch that /version checks in main.py."""
-    return "https://github.com/blogminhquy/javis-os.git", "main"
+    return "https://github.com/U-N-I-MATE/UNI-MATE.git", "main"
 
 
 def _clean_tracked_tree():
@@ -410,7 +410,7 @@ def pip_install():
     """Cài thư viện. Mã lỗi TRẢ VỀ CHO NƠI GỌI KIỂM - trước đây không ai kiểm.
 
     pip hỏng (mất mạng giữa chừng, một gói bị gỡ khỏi PyPI, xung đột phiên bản giữa hai bản
-    Javis) là một trong hai đường dẫn thẳng tới cảnh "cập nhật xong máy chết hẳn": server mới
+    UNI MATE) là một trong hai đường dẫn thẳng tới cảnh "cập nhật xong máy chết hẳn": server mới
     thiếu thư viện nên không lên, rồi đường lùi cũng chạy pip và cũng hỏng y hệt. Nuốt mã lỗi
     thì cả hai lần đều im lặng, và người dùng chỉ nhận được một câu chung chung."""
     r = run([venv_python(), "-m", "pip", "install", "-r", "requirements.txt", "-q"])
@@ -447,17 +447,17 @@ def poll_health(port, timeout_s=90):
 def _systemd_worker_command(a, service_name, user=False):
     """`user=True`: a unit of the user's own systemd manager, for a service running as a normal user, who may not
     create system units ("Interactive authentication required"). It lives outside the service's cgroup all the same."""
-    unit = f"javis-update-{os.getpid()}"
+    unit = f"unimate-update-{os.getpid()}"
     command = ["systemd-run", "--user"] if user else ["systemd-run"]
     command += ["--quiet", "--collect", f"--unit={unit}", "--property=Type=exec"]
     if not user:
         command += [f"--property=User={os.getuid()}", f"--property=Group={os.getgid()}"]
     command += [
         f"--working-directory={ROOT}",
-        f"--setenv=JAVIS_NAME={service_name}",
-        f"--setenv=JAVIS_PORT={a.port}",
-        f"--setenv=JAVIS_STATE_DIR={us.STATE_DIR}",
-        f"--setenv=JAVIS_HOST={os.getenv('JAVIS_HOST', '127.0.0.1')}",
+        f"--setenv=UNIMATE_NAME={service_name}",
+        f"--setenv=UNIMATE_PORT={a.port}",
+        f"--setenv=UNIMATE_STATE_DIR={us.STATE_DIR}",
+        f"--setenv=UNIMATE_HOST={os.getenv('UNIMATE_HOST', '127.0.0.1')}",
         f"--setenv=HOME={os.getenv('HOME', str(Path.home()))}",
         f"--setenv=PATH={os.getenv('PATH', '')}",
         sys.executable, str(Path(__file__).resolve()),
@@ -492,7 +492,7 @@ def _run_worker(command, env=None):
 
 
 def _launch_systemd_worker(a):
-    """Move the updater out of Javis's cgroup before stopping the systemd service."""
+    """Move the updater out of UNI MATE's cgroup before stopping the systemd service."""
     service_name = systemd_service_name()
     command = _systemd_worker_command(a, service_name)
     log(f"Tách updater khỏi {service_name}.service bằng systemd-run…")
@@ -501,7 +501,7 @@ def _launch_systemd_worker(a):
         return True
     log(f"  systemd-run: {error[:400]}")
     # A service running as a normal user (User= in the unit) may neither create system units nor stop its own
-    # service. Its own user manager can host the worker, which then restarts Javis by signal. Only Restart=always
+    # service. Its own user manager can host the worker, which then restarts UNI MATE by signal. Only Restart=always
     # brings the unit back after a SIGTERM: on-failure and friends count SIGTERM as a clean exit and leave it down.
     hint = ""
     if hasattr(os, "geteuid") and os.geteuid() != 0:
@@ -518,8 +518,8 @@ def _launch_systemd_worker(a):
             f"&& sudo systemctl restart {service_name}. Để nút Cập nhật chạy được: sudo loginctl enable-linger {user}.",
             f" Update by hand: cd {ROOT} && git pull --ff-only && .venv/bin/python -m pip install -r requirements.txt "
             f"&& sudo systemctl restart {service_name}. To make the Update button work: sudo loginctl enable-linger {user}.")
-    reason = _chu("Không chạy được updater độc lập; Javis vẫn được giữ nguyên. ",
-                  "Could not start an independent updater; Javis has been left running. ")
+    reason = _chu("Không chạy được updater độc lập; UNI MATE vẫn được giữ nguyên. ",
+                  "Could not start an independent updater; UNI MATE has been left running. ")
     if error:
         reason += error[:400]
     reason += hint
@@ -534,11 +534,11 @@ def main():
     ap.add_argument("--old-sha", default="")
     ap.add_argument("--old-version", default="")
     ap.add_argument("--target", default="")
-    ap.add_argument("--port", default=os.getenv("JAVIS_PORT", "7777"))
+    ap.add_argument("--port", default=os.getenv("UNIMATE_PORT", "7777"))
     ap.add_argument("--server-pid", type=int, default=0,
                     help="PID server đang chạy (để chế độ nohup kill đúng tiến trình)")
     ap.add_argument("--systemd-worker", action="store_true",
-                    help="Updater đã được tách khỏi cgroup của Javis")
+                    help="Updater đã được tách khỏi cgroup của UNI MATE")
     ap.add_argument("--restart-by-signal", action="store_true",
                     help="Worker under the user's systemd: restart the service by signal, not systemctl")
     ap.add_argument("--dry-run", action="store_true")
@@ -615,8 +615,8 @@ def main():
         # Merge đã hủy hoặc fetch thất bại; xác nhận server cũ thật sự lên lại.
         start_server(mode, a.port)
         them = "" if poll_health(a.port, 60) else _chu(
-            " Server cũ CŨNG chưa lên lại - mở Javis bằng tay để chạy tiếp.",
-            " The old server has NOT come back up either - start Javis by hand to continue.")
+            " Server cũ CŨNG chưa lên lại - mở UNI MATE bằng tay để chạy tiếp.",
+            " The old server has NOT come back up either - start UNI MATE by hand to continue.")
         ly_do = chan_doan_pull_hong(git_error, merge_aborted=tree_safe)
         log("Chẩn đoán: " + (ly_do or "(không nhận ra nguyên nhân quen thuộc)"))
         tho = (git_error or _chu("Không hợp nhất được bản phát hành", "Could not merge the release")).strip()
@@ -753,7 +753,7 @@ def main():
             return 1
         us.write_state({"phase": "done", "result": "rolled_back",
                         "error": _chu("Bản mới lỗi, đã tự quay về bản cũ.",
-                                      "The new version failed, so Javis rolled back to the old one."),
+                                      "The new version failed, so UNI MATE rolled back to the old one."),
                         "finished_at": _now()})
         return 0
 

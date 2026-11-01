@@ -1,7 +1,7 @@
 /* Font tự chứa (0.416.0): Be Vietnam Pro và Montserrat, giấy phép SIL Open Font License 1.1 (OFL.txt cạnh file này).
-   Lấy nguyên từ Google Fonts, chỉ giữ ba bộ chữ Javis dùng: latin, latin-ext, vietnamese. Trước đây trang gọi
+   Lấy nguyên từ Google Fonts, chỉ giữ ba bộ chữ UNI MATE dùng: latin, latin-ext, vietnamese. Trước đây trang gọi
    fonts.googleapis.com rồi fonts.gstatic.com lúc mở: hai tên miền ngoài, chặn việc vẽ chữ, và chết hẳn khi máy chạy
-   Javis không ra được Google. unicode-range giữ nguyên nên trình duyệt chỉ tải bộ chữ nó thật sự cần. */
+   UNI MATE không ra được Google. unicode-range giữ nguyên nên trình duyệt chỉ tải bộ chữ nó thật sự cần. */
 @font-face {
   font-family: 'Be Vietnam Pro';
   font-style: normal;

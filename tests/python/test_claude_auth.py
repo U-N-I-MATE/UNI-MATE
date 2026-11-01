@@ -2,7 +2,7 @@
 
     python tests/run.py claude_auth
 
-Vì sao file này tồn tại: 0.26.17 gỡ đường Javis tự đọc token đăng nhập Claude Code rồi gọi
+Vì sao file này tồn tại: 0.26.17 gỡ đường UNI MATE tự đọc token đăng nhập Claude Code rồi gọi
 thẳng api.anthropic.com (Anthropic cấm, đã có người bị khoá tài khoản). Chủ repo CHỦ Ý không
 tắt cứng đường chạy nền bằng gói subscription - đó là lựa chọn của người dùng. Đổi lại, hai
 thứ phải luôn đúng, và đó là những gì file này canh:
@@ -72,7 +72,7 @@ check("đã chuyển sang api_key -> im, kể cả khi việc nền vẫn là Cl
 _cb = claude_auth.canh_bao_neu_can(S())
 for _phai_co in ("cá nhân", "VPS", "khoá tài khoản", "API key"):
     check(f"cảnh báo nói rõ {_phai_co!r}", _phai_co in _cb)
-check("cảnh báo không dùng em dash (luật trình bày của Javis)", "—" not in _cb)
+check("cảnh báo không dùng em dash (luật trình bày của UNI MATE)", "—" not in _cb)
 check("câu ngắn cũng không dùng em dash", "—" not in claude_auth.CANH_BAO_NGAN)
 
 # ---- 4. Engine SDK thật sự có đọc chế độ này ----

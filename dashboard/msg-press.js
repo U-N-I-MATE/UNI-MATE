@@ -159,7 +159,7 @@
       if (!r || !r.width || r.bottom < 0 || r.top > window.innerHeight) return;
       var sheet = layer.querySelector(".mp-sheet");
       var f = frame(r.top, r.height, sheet ? sheet.offsetTop - 8 : window.innerHeight - 8);
-      // Wrapped in a box with the message's own classes so the bubble keeps its colours (.msg-javis .bubble ...).
+      // Wrapped in a box with the message's own classes so the bubble keeps its colours (.msg-unimate .bubble ...).
       var copy = document.createElement("div");
       copy.className = String(el.className).replace(/\bmp-target\b/, "") + " mp-lift";
       copy.setAttribute("aria-hidden", "true");
@@ -294,6 +294,6 @@
   }
 
   var api = { bind: bind, place: place, frame: frame, layerHtml: layerHtml, HOLD_MS: HOLD_MS };
-  if (typeof window !== "undefined") window.JavisMsgPress = api;
+  if (typeof window !== "undefined") window.UniMateMsgPress = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

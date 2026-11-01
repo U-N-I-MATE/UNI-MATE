@@ -1,6 +1,6 @@
 """Facebook Messenger gateway over the official Messenger Platform (Meta), 0.134.0.
 
-Same shape as `whatsapp_bot` because the platform works the same way: Javis cannot pull
+Same shape as `whatsapp_bot` because the platform works the same way: UNI MATE cannot pull
 messages, Meta POSTs every inbound message to a webhook. Two halves:
 
   - `MessengerBot`: the transport, same contract as `TelegramBot` (start/stop/status/send_text/
@@ -45,7 +45,7 @@ import stt
 from bot_gateway import HangLuot, dong_vet, parse_chat_ids, ten_tool
 from whatsapp_bot import verify_signature  # noqa: F401  - same Meta signature scheme, re-exported
 
-GRAPH_VERSION = os.getenv("JAVIS_MESSENGER_GRAPH_VERSION", os.getenv("JAVIS_WHATSAPP_GRAPH_VERSION", "v23.0"))
+GRAPH_VERSION = os.getenv("UNIMATE_MESSENGER_GRAPH_VERSION", os.getenv("UNIMATE_WHATSAPP_GRAPH_VERSION", "v23.0"))
 GRAPH = f"https://graph.facebook.com/{GRAPH_VERSION}"
 
 MAX_MSG = 1900               # Messenger allows 2000; keep a margin for multi-byte counting
@@ -326,9 +326,9 @@ class MessengerBot(HangLuot):
             try:
                 kq = await self.stt_fn(data, f"messenger_{int(time.time())}.mp4")
             except Exception as e:
-                kq = {"ok": False, "noi_voi_javis": stt.loi_thanh_dong("loi", f"{type(e).__name__}: {e}")}
+                kq = {"ok": False, "noi_voi_unimate": stt.loi_thanh_dong("loi", f"{type(e).__name__}: {e}")}
             if not (kq or {}).get("ok"):
-                return (kq or {}).get("noi_voi_javis") or stt.loi_thanh_dong("loi")
+                return (kq or {}).get("noi_voi_unimate") or stt.loi_thanh_dong("loi")
             return stt.khoi_thoai(kq.get("text"), "Messenger")
         ddir = self.download_dir(chat) if callable(self.download_dir) else self.download_dir
         d = Path(ddir) if ddir else Path("messenger-inbox")
@@ -390,7 +390,7 @@ class MessengerBot(HangLuot):
         }
         if self.chat_ids and chat not in self.chat_ids:
             await self._send(client, chat, localefmt.chu(
-                "Bạn không có quyền dùng bot Javis này.", "You are not allowed to use this Javis bot."))
+                "Bạn không có quyền dùng bot Uni này.", "You are not allowed to use this UNI MATE bot."))
             return
         text = await self._event_text(client, ev, chat)
         if not text:
@@ -473,9 +473,9 @@ class MessengerBot(HangLuot):
         # Subscribing needs pages_manage_metadata, which many Page tokens lack. A Page subscribed by
         # hand in the Meta app still delivers, so a failed subscribe is a warning, not a dead bot.
         self.loi_danh_tinh = "" if sub.get("ok") else localefmt.chu(
-            "Javis chưa tự gắn được Page vào webhook (" + sub.get("error", "") + "). Nếu Page đã được gắn tay "
+            "UNI MATE chưa tự gắn được Page vào webhook (" + sub.get("error", "") + "). Nếu Page đã được gắn tay "
             "trong app Meta (Messenger, Webhooks, Add Subscriptions) thì bot vẫn nghe; chưa thì gắn tay ở đó.",
-            "Javis could not subscribe the Page to the webhook (" + sub.get("error", "") + "). If the Page was "
+            "UNI MATE could not subscribe the Page to the webhook (" + sub.get("error", "") + "). If the Page was "
             "subscribed by hand in the Meta app (Messenger, Webhooks, Add Subscriptions) the bot still hears; "
             "otherwise subscribe it there.")
         self.bot_username = info.get("username", "")

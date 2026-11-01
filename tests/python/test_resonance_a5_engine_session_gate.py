@@ -6,7 +6,7 @@ Không gọi model, không cần Claude CLI hay đăng nhập. Kiểm hai chỗ 
 file Cộng hưởng nào:
 
 1. `claude_sdk_engine._mcp_servers`: phiên có `allowed_tools` giờ được nạp plugin tool khi danh sách nêu ĐÍCH DANH
-   `mcp__javis-plugins__<tên>`. Lượt việc nền A5 dựng bằng `main._resonance_engine` (thư mục trống, MCP rỗng strict,
+   `mcp__unimate-plugins__<tên>`. Lượt việc nền A5 dựng bằng `main._resonance_engine` (thư mục trống, MCP rỗng strict,
    `allowed_tools` là một tên canh gác không khớp công cụ nào, swap theo model việc nền, `strip_tools`,
    `pick_text_only_link`). Test dựng ĐÚNG đường đó cho system prompt của vai làm và vai review, thay
    `ClaudeSDKClient` bằng client giả để bắt `options` thật mà engine đưa cho SDK, rồi kiểm: không hub, không plugin,
@@ -26,8 +26,8 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-a5-engine-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-a5-engine-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 Path(_STATE, "settings.json").write_text(json.dumps({
     "model": {"auxiliary": {"provider": "anthropic-cli", "model": "sonnet"},
               "main": {"provider": "anthropic-cli", "model": "sonnet"}},
@@ -53,7 +53,7 @@ def check(name, cond, extra=""):
         fails.append(name)
 
 
-SENTINEL = "javis_reply_policy_khong_cong_cu"
+SENTINEL = "unimate_reply_policy_khong_cong_cu"
 captured = []
 
 
@@ -123,8 +123,8 @@ try:
         check(f"{role}: công cụ native bị cấm sẵn",
               set(main.BOT_CAM_NATIVE) <= set(opt.disallowed_tools or []), repr(opt.disallowed_tools))
         probe = (["Bash", "Write", "Edit", "Read", "WebFetch", "WebSearch", "Task", "Skill", "NotebookEdit",
-                  "mcp__javis__javis_goal", "mcp__javis__pos_order", f"mcp__javis-plugins__{plugin_names[0]}",
-                  plugin_names[0], "mcp__javis-plugins"] if plugin_names else ["Bash"])
+                  "mcp__unimate__unimate_goal", "mcp__unimate__pos_order", f"mcp__unimate-plugins__{plugin_names[0]}",
+                  plugin_names[0], "mcp__unimate-plugins"] if plugin_names else ["Bash"])
         denied = [n for n in probe if isinstance(asyncio.run(opt.can_use_tool(n, {}, None)), PermissionResultDeny)]
         check(f"{role}: cổng từ chối mọi lời gọi công cụ ({len(probe)} tên)", denied == probe,
               f"lọt: {sorted(set(probe) - set(denied))}")

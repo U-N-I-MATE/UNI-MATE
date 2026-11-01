@@ -138,7 +138,7 @@
   var timer = null;
 
   function send(obj) {
-    try { if (typeof window.JavisWsSend === "function") return window.JavisWsSend(obj); } catch (e) {}
+    try { if (typeof window.UniMateWsSend === "function") return window.UniMateWsSend(obj); } catch (e) {}
     return false;
   }
 
@@ -199,7 +199,7 @@
   }
   function armTimer() { if (!timer) timer = setInterval(tick, TICK_MS); }
 
-  // Gan the vao mot bong bong Javis (thuong la bong bong bao loi vua ve).
+  // Gan the vao mot bong bong UNI MATE (thuong la bong bong bao loi vua ve).
   function attach(msgEl, sid, limit) {
     if (!msgEl || !sid) return null;
     var bubble = msgEl.querySelector(".bubble") || msgEl;
@@ -271,7 +271,7 @@
     if (activeSid) renderFor(activeSid);
   }
 
-  // Phien vua mo (F5 hoac chon o Lich su): co muc cho thi gan the vao bong bong Javis cuoi.
+  // Phien vua mo (F5 hoac chon o Lich su): co muc cho thi gan the vao bong bong UNI MATE cuoi.
   // Cau "het luot" luon la tin cuoi cua phien khi con muc cho (gui tin moi la server huy muc).
   function renderFor(sid) {
     var info = pending[sid];
@@ -280,7 +280,7 @@
     if (!area) return null;
     var have = area.querySelector('.jv-resume[data-sid="' + sid + '"]');
     if (have) { cards[sid] = have; paint(sid); return have; }
-    var msgs = area.querySelectorAll(".msg.msg-javis");
+    var msgs = area.querySelectorAll(".msg.msg-unimate");
     var last = msgs.length ? msgs[msgs.length - 1] : null;
     if (!last) return null;
     return attach(last, sid, null);
@@ -291,6 +291,6 @@
     attach: attach, onFrame: onFrame, turnDone: turnDone, fromHello: fromHello, renderFor: renderFor,
     _pending: function () { return pending; },
   };
-  if (typeof window !== "undefined") window.JavisResume = api;
+  if (typeof window !== "undefined") window.UniMateResume = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

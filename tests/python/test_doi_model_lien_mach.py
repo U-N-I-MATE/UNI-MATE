@@ -3,7 +3,7 @@
 
     python tests/run.py doi_model
 
-Lỗi thật (người dùng báo 22/08/2026): đang chat, đổi sang model khác, Javis không nhớ đoạn
+Lỗi thật (người dùng báo 22/08/2026): đang chat, đổi sang model khác, UNI MATE không nhớ đoạn
 đang nói và trả lời một câu không liên quan.
 
 Nguyên nhân, hai lỗi chồng nhau, đều nằm ở chỗ VÔ HIỆU MẠCH NATIVE:
@@ -28,7 +28,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-mach-test-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-mach-test-"))
 
 from sessions import SessionStore  # noqa: E402
 

@@ -16,10 +16,10 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-tainote-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-tainote-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 os.environ["BRAINS_DIR"] = str(Path(_STATE) / "brains")
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -91,7 +91,7 @@ gb._file_cache.clear()
 gb._result_cache.clear()
 e3, d3 = gb.graph_with_etag([str(V)], include_orphans=True)
 check("sau khởi động lại: đọc từ bộ đệm trên đĩa, không đọc file", goi_doc == [] and e3 == e1, goi_doc)
-check("bộ đệm nằm trong JAVIS_STATE_DIR", any((Path(_STATE) / "cache" / "graph").glob("*.json")))
+check("bộ đệm nằm trong UNIMATE_STATE_DIR", any((Path(_STATE) / "cache" / "graph").glob("*.json")))
 
 # ---- 3. File đổi, thêm, xoá ----
 ghi(V / "wiki" / "C.md", "# C\n[[B]] mới thêm liên kết", mtime=time.time() + 5)

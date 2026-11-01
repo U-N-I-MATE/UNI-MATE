@@ -40,7 +40,7 @@ from io_offload import LoopMarker, call_hook, run_io, run_io_quiet
 # luồng phụ qua `run_io` (GOAL mục 10, quy ước R5 của T1): các hàm `_..._prepare` / `_..._finish` là phần ĐỒNG BỘ của một
 # lô, chỉ gọi từ luồng phụ; coroutine chỉ giữ phần chờ model.
 
-log = logging.getLogger("javis.agent_judge")
+log = logging.getLogger("unimate.agent_judge")
 
 POLICY_VERSION = "judge.v1"
 BASE_THRESHOLD = {"low": 0.75, "medium": 0.60, "high": 0.45}
@@ -75,17 +75,17 @@ class EngineUnavailable(RuntimeError):
     """Engine việc nền chưa dựng được: ném TRƯỚC khi gọi model, nên lượt được hoàn (không tính)."""
 
 
-# Chốt của bộ test (review T3 J P2-2): khi JAVIS_NO_REAL_JUDGE_ENGINE=1 (tests/run.py và tests/python/_paths.py đặt cho
+# Chốt của bộ test (review T3 J P2-2): khi UNIMATE_NO_REAL_JUDGE_ENGINE=1 (tests/run.py và tests/python/_paths.py đặt cho
 # MỌI test) thì `Judge` từ chối MỌI hàm hỏi model, kể cả hàm người gọi tiêm vào (`engine=`, `ctx["ask"]`), trừ hàm đã đánh
 # dấu rõ là engine giả của test (`mark_test_fake`). Chốt nằm ngay chỗ gọi model nên không có đường vòng nào qua được; biến
 # không đặt thì đường chạy y như cũ (chỉ thêm một phép so).
-NO_REAL_ENGINE_ENV = "JAVIS_NO_REAL_JUDGE_ENGINE"
-TEST_FAKE_ATTR = "javis_test_fake"
+NO_REAL_ENGINE_ENV = "UNIMATE_NO_REAL_JUDGE_ENGINE"
+TEST_FAKE_ATTR = "unimate_test_fake"
 
 
 def mark_test_fake(fn: Callable[..., Awaitable[str]]) -> Callable[..., Awaitable[str]]:
     """Bọc một engine phán xử GIẢ của test `async (prompt, purpose, started) -> str` và đánh dấu nó được phép chạy dưới
-    chốt JAVIS_NO_REAL_JUDGE_ENGINE. Chỉ test dùng; mã máy chủ không bao giờ đánh dấu engine thật."""
+    chốt UNIMATE_NO_REAL_JUDGE_ENGINE. Chỉ test dùng; mã máy chủ không bao giờ đánh dấu engine thật."""
     async def fake(prompt: str, purpose: str, started: Callable[[], Any]) -> str:
         return await fn(prompt, purpose, started)
     setattr(fake, TEST_FAKE_ATTR, True)

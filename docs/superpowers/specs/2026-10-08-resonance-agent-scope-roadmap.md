@@ -2,7 +2,7 @@
 
 Ngày chốt hướng: 08/10/2026. Mã đối chiếu: main `09f254d0e4d009451dc58cb2e97788631c5acc1a` (0.86.1). MVP Resonance đã phát hành trong 0.86.0, commit `438f8309`, PR #587.
 
-**Trạng thái tài liệu:** hướng sản phẩm theo yêu cầu mới của chủ dự án, kèm lộ trình và điều kiện nghiệm thu. Tiến độ cập nhật 12/10/2026: A1 đã phát hành 0.87.0 (mục 12), A2 đã phát hành 0.88.0 (mục 13); A3 đã phát hành 0.89.0 (`33a3c1aa`, PR #598, [thiết kế A3](2026-10-09-resonance-a3-feedback-learning-design.md), biên bản [resonance-a3-verification](../../dev/resonance-a3-verification.md)); A4 thiết kế chốt, mã đạt review vòng 5 (`5b5e3ef0`); smoke giao diện bằng engine giả xong, sửa một lỗi thẻ (`f6aeb6d1`); pilot thật một lần (2 lượt Claude Code Opus, 0 việc nền; kết quả gốc `technical_failed` do bộ chạy, đã khép bằng hậu kiểm; bản cuối đạt nội dung, bản đầu tự thêm ngày); **đã phát hành 0.96.0** (`d36ebb3e`, PR #604, 11/10/2026; CI `main` run 38146898745 và build image run 38146898746 thành công; image `ghcr.io/blogminhquy/javis-os:0.96.0`, digest `sha256:8f1751d2…`; VPS chưa kéo) ([thiết kế A4](2026-10-10-resonance-a4-handoff-grants-design.md), biên bản [resonance-a4-verification](../../dev/resonance-a4-verification.md)); A5 thiết kế chốt (vòng 3, `56f7ab50`), **mã đạt review vòng 2 tại `05e9b065`; pilot thật real-2 tại `33cec518` được reviewer chấp nhận trong phạm vi một mẫu `pass_first` (1 lượt làm, 1 lượt review, 0 chat; chưa chứng minh vòng sửa bằng model thật); đã phát hành 0.109.0 (`bfb1c29f`, PR #616, 13/10/2026; CI `main` run 38369853756 và build image run 38369852881 thành công; image `ghcr.io/blogminhquy/javis-os:0.109.0`, digest `sha256:3890f824…`; VPS chưa kéo)** ([thiết kế A5](2026-10-11-resonance-a5-maker-reviewer-design.md), biên bản [resonance-a5-verification](../../dev/resonance-a5-verification.md)). A1 tới A5 là nền Cộng hưởng đã hoàn thành phạm vi đã chốt; hạng mục tiếp theo là nhóm chat team ([thiết kế nhóm chat team](2026-10-13-team-chat-design.md), chờ review); tag tiếp tục riêng. Đây không phải lệnh chạy model, bật tính năng hoặc sửa hệ thống đang vận hành. Kế hoạch code chi tiết của từng PR được viết từ tài liệu này và mã mới nhất khi bắt đầu.
+**Trạng thái tài liệu:** hướng sản phẩm theo yêu cầu mới của chủ dự án, kèm lộ trình và điều kiện nghiệm thu. Tiến độ cập nhật 12/10/2026: A1 đã phát hành 0.87.0 (mục 12), A2 đã phát hành 0.88.0 (mục 13); A3 đã phát hành 0.89.0 (`33a3c1aa`, PR #598, [thiết kế A3](2026-10-09-resonance-a3-feedback-learning-design.md), biên bản [resonance-a3-verification](../../dev/resonance-a3-verification.md)); A4 thiết kế chốt, mã đạt review vòng 5 (`5b5e3ef0`); smoke giao diện bằng engine giả xong, sửa một lỗi thẻ (`f6aeb6d1`); pilot thật một lần (2 lượt Claude Code Opus, 0 việc nền; kết quả gốc `technical_failed` do bộ chạy, đã khép bằng hậu kiểm; bản cuối đạt nội dung, bản đầu tự thêm ngày); **đã phát hành 0.96.0** (`d36ebb3e`, PR #604, 11/10/2026; CI `main` run 38146898745 và build image run 38146898746 thành công; image `ghcr.io/u-n-i-mate/uni-mate:0.96.0`, digest `sha256:8f1751d2…`; VPS chưa kéo) ([thiết kế A4](2026-10-10-resonance-a4-handoff-grants-design.md), biên bản [resonance-a4-verification](../../dev/resonance-a4-verification.md)); A5 thiết kế chốt (vòng 3, `56f7ab50`), **mã đạt review vòng 2 tại `05e9b065`; pilot thật real-2 tại `33cec518` được reviewer chấp nhận trong phạm vi một mẫu `pass_first` (1 lượt làm, 1 lượt review, 0 chat; chưa chứng minh vòng sửa bằng model thật); đã phát hành 0.109.0 (`bfb1c29f`, PR #616, 13/10/2026; CI `main` run 38369853756 và build image run 38369852881 thành công; image `ghcr.io/u-n-i-mate/uni-mate:0.109.0`, digest `sha256:3890f824…`; VPS chưa kéo)** ([thiết kế A5](2026-10-11-resonance-a5-maker-reviewer-design.md), biên bản [resonance-a5-verification](../../dev/resonance-a5-verification.md)). A1 tới A5 là nền Cộng hưởng đã hoàn thành phạm vi đã chốt; hạng mục tiếp theo là nhóm chat team ([thiết kế nhóm chat team](2026-10-13-team-chat-design.md), chờ review); tag tiếp tục riêng. Đây không phải lệnh chạy model, bật tính năng hoặc sửa hệ thống đang vận hành. Kế hoạch code chi tiết của từng PR được viết từ tài liệu này và mã mới nhất khi bắt đầu.
 
 ## 1. Điều anh muốn và điều giữ lại
 
@@ -12,7 +12,7 @@ Ngày chốt hướng: 08/10/2026. Mã đối chiếu: main `09f254d0e4d009451dc
 - Luật nền ít và cố định; cách làm, lịch, bài học và cách trình bày được thay đổi trong phạm vi đó.
 - M1–M5 không làm lại: giữ kho mục tiêu, revision, receipt, bằng chứng, guard, hạn mức, bàn giao sản phẩm, thẻ và thử phương pháp.
 
-Phạm vi “toàn bộ tiến độ” trong đợt rà này là chương trình Resonance cùng các hệ agent/workflow/loop/học có liên quan trong Javis. Không phải kiểm toán mọi tính năng khác của Javis hay kiểm chứng lại toàn bộ suite.
+Phạm vi “toàn bộ tiến độ” trong đợt rà này là chương trình Resonance cùng các hệ agent/workflow/loop/học có liên quan trong UNI MATE. Không phải kiểm toán mọi tính năng khác của UNI MATE hay kiểm chứng lại toàn bộ suite.
 
 ## 2. Bốn bất biến làm khung chung
 
@@ -42,8 +42,8 @@ Brain là nơi dữ liệu và cấu hình chung; engine là bộ máy chạy; a
 ### Danh tính và cổng quyền
 
 - Bổ sung liên kết agent vào goal và sự kiện. Dùng danh tính bền vững trong brain; đổi tên hiển thị không chuyển quyền hoặc làm mất mục tiêu. Phải rà cách lưu agent hiện có trước khi chọn schema cụ thể.
-- Host phân giải agent từ phiên/đường dispatch đã xác thực. Áp cùng cổng ở tool, HTTP API, scheduler, bước tiếp nhận/đăng sản phẩm và phép thử phương pháp. Không chỉ ẩn `javis_goal` khỏi danh sách tool.
-- `Principal("agent", "javis", brain)` hiện tại không đủ làm danh tính riêng cho nhiều agent. `/goal-requests` cũng phải chuyển qua cổng agent, không được thành đường vòng từ chat thường.
+- Host phân giải agent từ phiên/đường dispatch đã xác thực. Áp cùng cổng ở tool, HTTP API, scheduler, bước tiếp nhận/đăng sản phẩm và phép thử phương pháp. Không chỉ ẩn `unimate_goal` khỏi danh sách tool.
+- `Principal("agent", "unimate", brain)` hiện tại không đủ làm danh tính riêng cho nhiều agent. `/goal-requests` cũng phải chuyển qua cổng agent, không được thành đường vòng từ chat thường.
 - Danh sách mục tiêu, phản hồi, revision và sản phẩm phải được lọc đúng agent/brain, kể cả hai brain trùng slug. Người dùng owner có đường quản lý mục tiêu theo quyền hiện có.
 
 ### Công tắc
@@ -61,7 +61,7 @@ Một công tắc **Cộng hưởng** trong cấu hình agent, mặc định t�
 
 ### Di chuyển dữ liệu cũ
 
-- `Javis/resonance.json` cũ là cờ theo brain; không được tự nhân nó thành “mọi agent đều bật”. Có thể giữ nó làm công tắc quản trị tổng trong giai đoạn chuyển đổi, nhưng UI phải nói rõ khi nó chặn agent.
+- `UniMate/resonance.json` cũ là cờ theo brain; không được tự nhân nó thành “mọi agent đều bật”. Có thể giữ nó làm công tắc quản trị tổng trong giai đoạn chuyển đổi, nhưng UI phải nói rõ khi nó chặn agent.
 - Goal cũ chưa có danh tính agent đáng tin cậy: giữ nguyên lịch sử, đưa vào danh sách chờ gán. Không tự gán theo tên gần giống hay phiên mới nhất. Owner gán một lần qua đường có kiểm quyền; sau đó mới đủ điều kiện chạy tiếp.
 - Goal mới chỉ thuộc agent; chat thường có thể hiển thị tiến độ đã được uỷ quyền, không được tự thành chủ thể thực thi.
 - Không xoá SQLite, bằng chứng hoặc mục tiêu đã nghiệm thu để “làm sạch” migration. Kiểm với bản sao dữ liệu cũ và đường khôi phục trước khi phát hành.
@@ -128,7 +128,7 @@ Vòng đích: **ghi phản hồi có nguồn → đề xuất thay đổi nhỏ 
 | A1 | Trang agent có công tắc Cộng hưởng, mục tiêu đúng chủ thể và tiến độ tối thiểu | Đạt review mã (`cc79deb2`), pilot A1-1 đạt kỹ thuật và nội dung trong một kịch bản. Đã phát hành 0.87.0 (`fdfec7c5`, PR #590). Biên bản: [resonance-a1-verification](../../dev/resonance-a1-verification.md) |
 | A2 | Agent thức vì lý do cụ thể, ngủ khi chờ, không gọi model vô ích | Thiết kế đạt (`cb11fc23`), mã đạt review (`b5975b7e`), review cuối đạt (`b80ae0ea`). Đã phát hành 0.88.0 (`c101d108`, PR #593); hiệu năng VPS chưa đo. Biên bản: [resonance-a2-verification](../../dev/resonance-a2-verification.md) |
 | A3 | Phản hồi dẫn tới điều chỉnh có kiểm chứng; không chạy theo emoji | Đã phát hành 0.89.0 (`33a3c1aa`, PR #598). Pilot làn M một lần (4 lượt Sonnet, hoà, không áp dụng). Biên bản: [resonance-a3-verification](../../dev/resonance-a3-verification.md) |
-| A4 | Các engine nộp sản phẩm theo cùng hợp đồng host | Đã phát hành 0.96.0 (`d36ebb3e`, PR #604). Pilot thật một mẫu Claude Code (2 lượt chat, 0 việc nền), khép bằng hậu kiểm; các engine khác chỉ kiểm bằng engine giả. Công cụ `javis_submit_deliverable` cho Claude, Codex, engine API; phạm vi do chủ dự án cho phép trên thẻ (không cấp từ lời chat). [Thiết kế A4](2026-10-10-resonance-a4-handoff-grants-design.md), [biên bản](../../dev/resonance-a4-verification.md) |
+| A4 | Các engine nộp sản phẩm theo cùng hợp đồng host | Đã phát hành 0.96.0 (`d36ebb3e`, PR #604). Pilot thật một mẫu Claude Code (2 lượt chat, 0 việc nền), khép bằng hậu kiểm; các engine khác chỉ kiểm bằng engine giả. Công cụ `unimate_submit_deliverable` cho Claude, Codex, engine API; phạm vi do chủ dự án cho phép trên thẻ (không cấp từ lời chat). [Thiết kế A4](2026-10-10-resonance-a4-handoff-grants-design.md), [biên bản](../../dev/resonance-a4-verification.md) |
 | A5 | Một agent làm, một agent review; báo rõ ai đang chờ ai | Đã phát hành 0.109.0 (`bfb1c29f`, PR #616). Pilot thật real-2 được chấp nhận trong phạm vi một mẫu `pass_first`; vòng sửa chưa chứng minh bằng model thật: [thiết kế A5](2026-10-11-resonance-a5-maker-reviewer-design.md), [hướng dẫn](../../dev/resonance-a5-team.md). Biên bản: [resonance-a5-verification](../../dev/resonance-a5-verification.md) |
 | Nhóm chat team | Nhiều nhóm; trưởng nhóm điều phối; @ giao việc; hàng đợi có Ưu tiên; công tắc Cộng hưởng trên dòng trợ lý; sáu reaction; trưởng nhóm Quyền giới hạn hay Toàn quyền | Thiết kế vòng 1 chờ review ([thiết kế nhóm chat team](2026-10-13-team-chat-design.md)); chưa có mã |
 
@@ -155,7 +155,7 @@ Ba kế hoạch cũ là tài liệu tham khảo; không thực thi nguyên tuầ
 
 Danh tính agent bền vững và rename/delete; kho lưu công tắc do host kiểm soát; schema/migration cho goal cũ; uỷ quyền từ chat/kênh ngoài; giới hạn quyền cho agent được nối tới khách hàng; vòng đời công việc đang chạy khi tắt. Đây là quyết định kỹ thuật cần đọc mã mới nhất, không phải câu hỏi bắt người dùng tự đặt mục tiêu.
 
-Nguồn audit và các khoảng trống bằng chứng: [Báo cáo tiến độ 08/10](../../dev/resonance-progress-audit-2026-10-08.md). Trang theo dõi: HTML (`exports/javis-resonance-tien-do.html`, ngoài git, chỉ có trên máy chủ dự án).
+Nguồn audit và các khoảng trống bằng chứng: [Báo cáo tiến độ 08/10](../../dev/resonance-progress-audit-2026-10-08.md). Trang theo dõi: HTML (`exports/unimate-resonance-tien-do.html`, ngoài git, chỉ có trên máy chủ dự án).
 
 ## 11. Cập nhật sau review đề xuất A1 (08/10/2026)
 

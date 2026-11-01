@@ -1,7 +1,7 @@
 /* code-hl.js - Tô màu cú pháp cho Ô SỬA CODE (textarea), dùng chung cho trình sửa đính
    (console.js) và khung sửa bung giữa màn hình (file-editor.js).
 
-   window.JavisCodeHL = { attach(textarea, lang), langFromPath(path), highlight(code, lang) }
+   window.UniMateCodeHL = { attach(textarea, lang), langFromPath(path), highlight(code, lang) }
 
    Cách làm: KHÔNG thay textarea bằng contenteditable (mất undo của trình duyệt, mất gõ
    tiếng Việt bằng bộ gõ ngoài, mất mọi phím tắt quen tay). Thay vào đó lồng một thẻ <pre>
@@ -177,7 +177,7 @@
   // luật chỉ nằm ở một chỗ. Chưa nạp được thì trả chữ trơ, không nổ.
   function hlChung(code, lang) {
     var f = null;
-    if (typeof window !== "undefined" && typeof window.JavisHighlight === "function") f = window.JavisHighlight;
+    if (typeof window !== "undefined" && typeof window.UniMateHighlight === "function") f = window.UniMateHighlight;
     if (!f) return esc(code);
     try { return f(code, lang); } catch (e) { return esc(code); }
   }
@@ -260,7 +260,7 @@
   }
 
   if (typeof window !== "undefined") {
-    window.JavisCodeHL = { attach: attach, langFromPath: langFromPath, highlight: highlight };
+    window.UniMateCodeHL = { attach: attach, langFromPath: langFromPath, highlight: highlight };
   }
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { langFromPath: langFromPath, highlight: highlight };

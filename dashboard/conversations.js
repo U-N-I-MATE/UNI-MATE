@@ -14,9 +14,9 @@
  * Luật sống còn của file này: KHÔNG đoán gì theo id kênh. Logo, nhãn, năng lực đều do server
  * trả trong danh sách kênh (`channels`); thêm kênh ở server là trang này vẽ được ngay.
  *
- * Trang này KHÔNG phải cái chuông (notifications.js / JavisInbox): chuông là hòm thư của CHỦ
+ * Trang này KHÔNG phải cái chuông (notifications.js / UniMateInbox): chuông là hòm thư của CHỦ
  * (kết quả việc nền), còn đây là hội thoại giữa KHÁCH và cửa hàng. Tiền tố riêng: .ht-*, ht.*,
- * window.JavisConversations. Ghi chú: KHÔNG dùng ký tự em dash. */
+ * window.UniMateConversations. Ghi chú: KHÔNG dùng ký tự em dash. */
 (function () {
   "use strict";
 
@@ -63,16 +63,16 @@
   var _host = null, _timer = null, _tab = "inbox";
   var _items = [], _stats = {}, _dauVet = "";
   var _kenhLoc = "", _botLoc = "", _q = "";
-  var _statusLoc = "", _typeLoc = "";   // bộ lọc (0.65.3), lưu ở trình duyệt qua JavisConvFilters
+  var _statusLoc = "", _typeLoc = "";   // bộ lọc (0.65.3), lưu ở trình duyệt qua UniMateConvFilters
   var _contactLoc = "";     // 2026-10-25: "1" = only chats where the customer left a phone number or email
   // Chatbot v5 (2026-10-28, docs/dev/2026-10-chatbot-v5-spec.md): who is handling the chat (the quick filters), the ticked
-  // channel accounts (the channel picker) and tags any/none (the Filter menu). Saved with the rest by JavisConvFilters.
+  // channel accounts (the channel picker) and tags any/none (the Filter menu). Saved with the rest by UniMateConvFilters.
   var _who = "you", _accs = [], _tagsAny = [], _tagsNone = [], _whoCounts = null;
   var _when = null, _lastBy = "", _pinned = "";   // when the last message came, who wrote it, pinned only (Filter menu)
   var _pick = false, _pickQ = "", _fm = false, _fmCat = "time";   // channel picker / Filter menu open, picker search, menu category
   var _wm = false;          // the "who" dropdown of the list is open
   // Info panel: closed until the owner opens it (owner, 2026-10-29: the chat gets the room), and remembered in this browser.
-  var INFO_KEY = "javis_ib_info";
+  var INFO_KEY = "unimate_ib_info";
   var _info = (function () { try { return localStorage.getItem(INFO_KEY) === "1"; } catch (e) { return false; } })();
   var _msheet = false;      // the phone's "who replies" sheet is open
   var _aiBusy = "";         // "ask" | "redo" | "send" | "now" while the A.I. writes or a draft goes out
@@ -96,7 +96,7 @@
   var _dangGui = false;
 
   var ic = function (n) { return window.ic ? window.ic(n) : ""; };
-  var LOC = function () { return (window.JavisI18n && JavisI18n.locale()) || "vi-VN"; };
+  var LOC = function () { return (window.UniMateI18n && UniMateI18n.locale()) || "vi-VN"; };
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -105,9 +105,9 @@
   }
   function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
   // (i) button (info-tip.js, 0.214.0): explanations sit behind it; without the helper (Node tests) they draw open.
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(window.t("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(window.t("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
   async function api(url, opts) {
@@ -175,7 +175,7 @@
       // The Conversations tab counts the chats that need you (Chatbot v5), not unread ones: unread is what the A.I. already handles.
       var canBan = t === "inbox" && _whoCounts ? (_whoCounts.you_total != null ? _whoCounts.you_total : _whoCounts.you) : 0;
       // The Channels tab counts the nicks and Pages that need something (an error, or no bot and none was declined).
-      if (t === "kenh" && window.JavisInboxChannels) canBan = window.JavisInboxChannels.jobs(_tk);
+      if (t === "kenh" && window.UniMateInboxChannels) canBan = window.UniMateInboxChannels.jobs(_tk);
       var chuaDoc = canBan ? '<span class="ht-badge" title="' + esc(window.t(t === "kenh" ? "ib.kn_jobs" : "ib.who_you")) + '">' + canBan + '</span>' : "";
       // Phones show the icon only (0.397.0), so the name is also the button's tooltip and its spoken label.
       var ten = window.t(NHAN[t][0]);
@@ -205,8 +205,8 @@
     closeRowMenu(false);
     body.innerHTML = "";
     if (_tab === "bot") return renderBot(body);
-    if (_tab === "kenh") return renderSub(body, window.JavisInboxChannels, "inbox-channels.js");
-    if (_tab === "thongke") return renderSub(body, window.JavisInboxStats, "inbox-stats.js");
+    if (_tab === "kenh") return renderSub(body, window.UniMateInboxChannels, "inbox-channels.js");
+    if (_tab === "thongke") return renderSub(body, window.UniMateInboxStats, "inbox-stats.js");
     return renderInbox(body);
   }
 
@@ -229,7 +229,7 @@
   function renderBot(body) {
     body.innerHTML = '<div class="ht-tab-bot"><div class="ht-bot-ds"></div></div>';
     var ds = body.querySelector(".ht-bot-ds");
-    var fn = window.JavisChatbots && window.JavisChatbots.render;
+    var fn = window.UniMateChatbots && window.UniMateChatbots.render;
     if (fn) { try { fn(ds); } catch (e) { ds.innerHTML = '<div class="ht-empty">' + esc(e.message) + '</div>'; } }
     else ds.innerHTML = '<div class="ht-empty">' + esc(window.t("cs.mod_not_ready", { ten: "chatbots.js" })) + '</div>';
   }
@@ -254,7 +254,7 @@
       addAccount: function () { moThemTK(); },
       openBot: function (id) {
         chonTab("bot");
-        try { document.dispatchEvent(new CustomEvent("javis:chatbot-open", { detail: { bot_id: id } })); } catch (e) { /* old browser */ }
+        try { document.dispatchEvent(new CustomEvent("unimate:chatbot-open", { detail: { bot_id: id } })); } catch (e) { /* old browser */ }
       },
       // Open one chat on the Conversations tab, every filter put aside so it is surely in the list.
       openChat: function (id) { _cho = {}; _chon = id; _msgs = []; _conv = null; _dauVetTin = ""; _vetMeta = ""; chonTab("inbox"); },
@@ -284,7 +284,7 @@
       if (!im) throw e;
       return false;
     }
-    if (_tab === "kenh" && window.JavisInboxChannels) window.JavisInboxChannels.paint();
+    if (_tab === "kenh" && window.UniMateInboxChannels) window.UniMateInboxChannels.paint();
     veTabs();
     return true;
   }
@@ -294,7 +294,7 @@
   // search box with the two-level Filter menu, the quick "who is handling it" filters and the active filters as chips.
   // The pure HTML builders live in inbox-v5.js; the drawing and the events are here.
   function renderInbox(body) {
-    var F = window.JavisConvFilters;
+    var F = window.UniMateConvFilters;
     if (_cho) {
       // Opened from elsewhere (a bot card, an account card): show exactly what was pointed at, whoever handles it. The
       // saved filters are put aside so they cannot hide the chat the owner wants to see.
@@ -381,12 +381,12 @@
     return { bot: _botLoc, status: _statusLoc, type: _typeLoc, channel: _kenhLoc, contact: _contactLoc,
              who: _who, accs: _accs, tagsAny: _tagsAny, tagsNone: _tagsNone, when: _when, lastBy: _lastBy, pinned: _pinned };
   }
-  function saveFilters() { if (window.JavisConvFilters) window.JavisConvFilters.save(filterState()); }
+  function saveFilters() { if (window.UniMateConvFilters) window.UniMateConvFilters.save(filterState()); }
   function onFilterChange() { saveFilters(); paintHead(); tai(); }
 
   function urlDanhSach(limit, offset) {
     return "/conversations?limit=" + limit + (offset ? "&offset=" + offset : "") +
-      "&q=" + encodeURIComponent(_q) + (window.JavisConvFilters ? window.JavisConvFilters.query(filterState()) : "");
+      "&q=" + encodeURIComponent(_q) + (window.UniMateConvFilters ? window.UniMateConvFilters.query(filterState()) : "");
   }
 
   // The channel accounts the picker offers: the ones of the open brain (`/channels/accounts`), each with its key.
@@ -396,7 +396,7 @@
 
   // The head of the list: picker summary, quick filters with counts, chips for the active filters, the Filter count.
   function paintHead() {
-    var V = window.JavisInboxV5, F = window.JavisConvFilters;
+    var V = window.UniMateInboxV5, F = window.UniMateConvFilters;
     if (!_host || !V) return;
     var accs = accList();
     var sum = V.pickerSummary(accs, _accs);
@@ -460,7 +460,7 @@
   }
 
   function paintPops() {
-    var V = window.JavisInboxV5, F = window.JavisConvFilters;
+    var V = window.UniMateInboxV5, F = window.UniMateConvFilters;
     if (!_host || !V) return;
     var pk = _host.querySelector(".ib-pk"), fm = _host.querySelector(".ib-fm"), wm = _host.querySelector(".ib-wm");
     var pb = _host.querySelector(".ib-picker"), fb = _host.querySelector(".ib-fbtn"), wb = _host.querySelector(".ib-whobtn");
@@ -552,7 +552,7 @@
       if (on) on.focus();
     } else if (b.classList.contains("ib-fm-cal")) {
       // Any days on the calendar (date-range.js); the Filter menu stays open under it.
-      if (window.JavisDateRange) window.JavisDateRange.open(b, _when, function (r) { _when = r; onFilterChange(); paintPops(); }, { all: true });
+      if (window.UniMateDateRange) window.UniMateDateRange.open(b, _when, function (r) { _when = r; onFilterChange(); paintPops(); }, { all: true });
     } else if (b.classList.contains("ib-fm-clear")) {
       clearMenuFilters();
       paintPops();
@@ -726,7 +726,7 @@
         return;
       }
       // The Filter menu emptied the list: one tap clears it, rather than pointing at channels.
-      var menuLoc = window.JavisConvFilters.activeCount(Object.assign(filterState(), { channel: "" })) > 0;
+      var menuLoc = window.UniMateConvFilters.activeCount(Object.assign(filterState(), { channel: "" })) > 0;
       box.innerHTML = '<div class="ht-empty">' + ic("messages-square") +
         '<b>' + esc(loc || _who ? window.t("ht.khong_khop") : window.t("ht.chua_co")) +
           (!coNguon && !menuLoc ? infoBtn() : "") + '</b>' +
@@ -741,7 +741,7 @@
       if (bo) bo.onclick = clearMenuFilters;
       return;
     }
-    var F = window.JavisConvFilters;
+    var F = window.UniMateConvFilters;
     // The redraw (5-second refresh, a menu action) must not drop the keyboard focus: note which row and which control
     // held it, put it back afterwards.
     var ae = document.activeElement, keep = null;
@@ -749,7 +749,7 @@
       var fr = ae.closest(".ht-item");
       if (fr) keep = { id: fr.dataset.id, sel: ae.classList.contains("ht-rmore") ? ".ht-rmore" : ae.classList.contains("ht-pin") ? ".ht-pin" : "" };
     }
-    var V = window.JavisInboxV5;
+    var V = window.UniMateInboxV5;
     var many = _accs.length !== 1;      // several nicks or Pages in view: each row names the one it came through
     box.innerHTML = _items.map(function (c) {
       var ten = c.title || c.customer_name || c.external_chat_id;
@@ -782,7 +782,7 @@
               ic("ellipsis") + '</span></span>' +
           '<span class="ht-item-sub">' +
             '<small>' + (pre ? '<span class="ib-pre">' + esc(pre) + ' </span>' : "") +
-              esc(window.JavisHtMedia ? window.JavisHtMedia.tomTat(c.last_message || "", window.t) : (c.last_message || "")) + '</small>' +
+              esc(window.UniMateHtMedia ? window.UniMateHtMedia.tomTat(c.last_message || "", window.t) : (c.last_message || "")) + '</small>' +
             // Messages in the whole conversation (0.148.0), grey; the red number is only the UNREAD ones (owner, 2026-10-28:
             // v5 dropped it and he reads it to see how far a chat has gone).
             (c.message_count ? '<span class="ht-count" title="' + esc(window.t("ht.so_tin_title", { count: c.message_count })) + '">' +
@@ -898,7 +898,7 @@
   }
 
   function paintRowMenu(focusFirst) {
-    var F = window.JavisConvFilters, c = _rm && rmItem(_rm.id);
+    var F = window.UniMateConvFilters, c = _rm && rmItem(_rm.id);
     if (!F || !c) return closeRowMenu(false);
     var phone = isPhone();
     var m = rmEl();
@@ -1249,10 +1249,10 @@
   function veThread() {
     var box = _host.querySelector(".ht-thread");
     if (!box) return;
-    var V = window.JavisInboxV5;
+    var V = window.UniMateInboxV5;
     var c = _conv || {};
     var ten = c.title || c.customer_name || c.external_chat_id;
-    var guiDuoc = nangLuc(c.channel, "tra_loi_tu_javis");
+    var guiDuoc = nangLuc(c.channel, "tra_loi_tu_unimate");
     var cuon = box.querySelector(".ht-msgs");
     var oDay = !cuon || (cuon.scrollHeight - cuon.scrollTop - cuon.clientHeight < 80);
     var tuDay = cuon ? cuon.scrollHeight - cuon.scrollTop : 0;      // đang đọc giữa chừng thì vẽ lại xong phải đứng đúng chỗ cũ (đo theo đáy)
@@ -1268,7 +1268,7 @@
     // on a narrow column) and the coloured bar under it only shows when the chat needs the owner. Otherwise the bar
     // carries what can be done (Allow, Let the A.I. answer here, Create an A.I.) as before.
     var calm = threeModes && who !== "you";
-    var F = window.JavisConvFilters;
+    var F = window.UniMateConvFilters;
     var tags = F && c.tags && c.tags.length ? F.tagChips(c.tags, 3) : "";
     var item = _items.filter(function (k) { return k.id === c.id; })[0] || {};
     var soTin = Number(c.message_count || item.message_count) || 0;
@@ -1318,7 +1318,7 @@
     if (mk) mk.onclick = function () { makeBot(c); };
     var why = box.querySelector(".ht-silent-why");
     if (why) why.onclick = function () {
-      if (window.JavisReplyPolicy) window.JavisReplyPolicy.openPanel({ id: c.bot_id, name: c.bot_name || "" });
+      if (window.UniMateReplyPolicy) window.UniMateReplyPolicy.openPanel({ id: c.bot_id, name: c.bot_name || "" });
     };
     var now = box.querySelector(".ib-silent-ask");
     if (now) now.onclick = function () { askNow(c); };
@@ -1342,9 +1342,9 @@
     if (ta) {
       ta.value = nhapDo;
       if (goDo) { ta.focus(); try { ta.setSelectionRange(nhapDo.length, nhapDo.length); } catch (e) { /* ignore */ } }
-      // Same Enter rule as the main chat (JavisActs.enterSends, owner 2026-10-29): on a phone Enter is a new line and the
+      // Same Enter rule as the main chat (UniMateActs.enterSends, owner 2026-10-29): on a phone Enter is a new line and the
       // Send button sends; on a computer Enter sends and Shift+Enter is a new line; an IME composition never sends.
-      var A = window.JavisActs, soan = A ? A.trackComposition(ta) : function () { return false; };
+      var A = window.UniMateActs, soan = A ? A.trackComposition(ta) : function () { return false; };
       ta.onkeydown = function (e) {
         var send = A ? A.enterSends(e, soan()) : e.key === "Enter" && !e.shiftKey && !e.isComposing;
         if (send) { e.preventDefault(); gui(c); }
@@ -1363,7 +1363,7 @@
   // The phone's "who replies" sheet: drawn inside the chat column, so the 5-second redraw keeps it as it is.
   function setSheet(on) {
     _msheet = !!on;
-    var V = window.JavisInboxV5, sh = _host && _host.querySelector(".ht-thread .ib-msheet");
+    var V = window.UniMateInboxV5, sh = _host && _host.querySelector(".ht-thread .ib-msheet");
     if (!sh || !V) return;
     sh.hidden = !_msheet;
     sh.innerHTML = _msheet ? V.modeSheetHtml(_conv || {}, ic) : "";
@@ -1458,7 +1458,7 @@
     var ob = p.querySelector(".ib-open-bot");
     if (ob) ob.onclick = function () {
       chonTab("bot");
-      try { document.dispatchEvent(new CustomEvent("javis:chatbot-open", { detail: { bot_id: c.bot_id } })); } catch (e) { /* old browser */ }
+      try { document.dispatchEvent(new CustomEvent("unimate:chatbot-open", { detail: { bot_id: c.bot_id } })); } catch (e) { /* old browser */ }
     };
     var mk = p.querySelector(".ib-make-bot");
     if (mk) mk.onclick = function () { makeBot(c); };
@@ -1525,7 +1525,7 @@
   function makeBot(c) {
     var a = _tk.filter(function (x) { return x.account_key === c.channel_account_id; })[0];
     chonTab("bot");
-    try { document.dispatchEvent(new CustomEvent("javis:chatbot-new", { detail: { account_id: a ? a.id : "" } })); } catch (e) { /* old browser */ }
+    try { document.dispatchEvent(new CustomEvent("unimate:chatbot-new", { detail: { account_id: a ? a.id : "" } })); } catch (e) { /* old browser */ }
   }
 
   // A line under the composer about the last action (an error, "the A.I. chose to stay silent").
@@ -1563,7 +1563,7 @@
   // tags on or off, makes a new one (name + colour from the fixed palette) and renames, recolours or deletes one. The
   // row redraws on its own, so ticking several tags keeps the picker open.
   function palette(cur) {
-    var F = window.JavisConvFilters;
+    var F = window.UniMateConvFilters;
     return '<span class="ht-sws" role="group" aria-label="' + esc(window.t("ht.tag_colors")) + '">' + (F ? F.TAG_COLORS : []).map(function (k, i) {
       return '<button type="button" class="ht-sw' + (k === cur ? " on" : "") + '" data-c="' + k + '" aria-pressed="' + (k === cur) +
         '" aria-label="' + esc(window.t("ht.tag_color", { n: i + 1 })) + '"></button>';
@@ -1571,7 +1571,7 @@
   }
 
   function tagPopHtml(on) {
-    var F = window.JavisConvFilters;
+    var F = window.UniMateConvFilters;
     var rows = _tags.map(function (g) {
       if (_tagEdit === g.id) {
         return '<div class="ht-tagpop-edit" data-id="' + g.id + '">' +
@@ -1606,7 +1606,7 @@
   var _tagEditColor = "", _tagNewText = "", _tagEditText = null;   // picker colour being edited, and what is typed (kept across redraws)
   // The tag chips beside the name in the chat head follow every change made in the Info panel (no thread redraw).
   function paintHeadTags() {
-    var h = _host && _host.querySelector(".ht-thread .ib-htags"), F = window.JavisConvFilters;
+    var h = _host && _host.querySelector(".ht-thread .ib-htags"), F = window.UniMateConvFilters;
     if (!h || !_conv || !F) return;
     var add = h.querySelector(".ib-htag-add");
     h.querySelectorAll(".ht-tag, .ht-tag-more").forEach(function (x) { x.remove(); });
@@ -1616,7 +1616,7 @@
   function veTagRow() {
     paintHeadTags();
     var row = _host && _host.querySelector(".ht-info .ht-tagrow");
-    var F = window.JavisConvFilters;
+    var F = window.UniMateConvFilters;
     if (!row || !_conv || !F) return;
     var c = _conv, on = {};
     (c.tags || []).forEach(function (g) { on[g.id] = true; });
@@ -1767,10 +1767,10 @@
   // (console.css hides the handle and ignores the width below 901px).
   var LIST_MIN_W = 260, LIST_MINI_W = 72;
   function attachListResize(body) {
-    var CR = window.JavisColResize, wrap = body.querySelector(".ht-wrap"), col = body.querySelector(".ht-listcol");
+    var CR = window.UniMateColResize, wrap = body.querySelector(".ht-wrap"), col = body.querySelector(".ht-listcol");
     if (!CR || !wrap || !col) return;
     var inner = wrap.querySelector(".ht-body");
-    var o = { host: wrap, varName: "--ht-list-w", key: "javis_ht_list_w", min: LIST_MIN_W, max: 560, edge: "right",
+    var o = { host: wrap, varName: "--ht-list-w", key: "unimate_ht_list_w", min: LIST_MIN_W, max: 560, edge: "right",
       label: "ht.resize_list", keep: 420, total: function () { return inner ? inner.clientWidth : 0; },
       snap: { below: CR.FOLD_AT(LIST_MIN_W), to: LIST_MINI_W, onSnap: function (on) {
         wrap.classList.toggle("ht-mini", !!on);
@@ -1872,7 +1872,7 @@
   function renderSilenceLine(c) {
     var s = _silence;
     if (!s || !c.bot_id) return "";
-    var RP = window.JavisReplyPolicy;
+    var RP = window.UniMateReplyPolicy;
     var lyDo = s.code ? (RP ? RP.codeLabel(s.code) : s.code) : (s.reason || "");
     if (!lyDo) return "";
     var diem = (s.score == null) ? "" : " (" + Number(s.score).toFixed(2) +
@@ -1888,7 +1888,7 @@
   // Ô trả lời khách: Gửi (gửi nguyên văn) và A.I. trả lời (chữ trong ô là lệnh cho A.I.). Nói rõ trước khi bấm gửi: gửi từ đây
   // là TIẾP QUẢN (bot đang trực sẽ im ở cuộc này), và với kênh tài khoản cá nhân thì tin đi dưới tên chính bạn.
   function veCompose(c) {
-    var V = window.JavisInboxV5, k = kenhCua(c.channel), t = window.t;
+    var V = window.UniMateInboxV5, k = kenhCua(c.channel), t = window.t;
     var laBot = !!c.bot_id;
     var draft = c.draft && String(c.draft.text || "").trim() ? c.draft : null;
     // On a personal account the message goes out under the owner's own name: the box says so in its placeholder
@@ -1896,7 +1896,7 @@
     // notes went (owner, 2026-10-28: a good UI needs no notes).
     var ten = k.kind === "account" ? accLabel(c) || k.nhan : "";
     // "Enter to send" in the placeholder is a computer's hint only: a phone's Enter is a new line.
-    var cham = !!(window.JavisActs && window.JavisActs.touchMain && window.JavisActs.touchMain());
+    var cham = !!(window.UniMateActs && window.UniMateActs.touchMain && window.UniMateActs.touchMain());
     var ph = ten ? t(laBot ? "ib.cin_ph_as_ai" : "ib.cin_ph_as", { ten: ten }) :
       t(laBot ? "ib.cin_ph_ai" : cham ? "ib.cin_ph_touch" : "ht.gui_ph");
     var busy = _aiBusy === "redo" || _aiBusy === "send" ? _aiBusy : "";
@@ -1950,10 +1950,10 @@
     // Owner, 2026-10-25: a photo the owner (or the bot) sends must show as a photo too, so they can check what went out;
     // it used to read "image https://...zdn.vn/....jpg". Any non-text message goes through the same parser.
     var wantMedia = t.sender_type === "customer" || (t.message_type && t.message_type !== "text");
-    var media = (wantMedia && window.JavisHtMedia) ? window.JavisHtMedia.phanTich(t, t.conversation_id) : null;
+    var media = (wantMedia && window.UniMateHtMedia) ? window.UniMateHtMedia.phanTich(t, t.conversation_id) : null;
     var coMedia = !!(media && (media.anh || media.file));
     if (coMedia) {
-      than = window.JavisHtMedia.html(media, esc, ic, window.t) + (media.chu ? '<div class="ht-chu-thich">' + esc(media.chu) + '</div>' : "");
+      than = window.UniMateHtMedia.html(media, esc, ic, window.t) + (media.chu ? '<div class="ht-chu-thich">' + esc(media.chu) + '</div>' : "");
     } else if (t.sender_type === "ai" && window.mdToHtml) {
       try { than = window.mdToHtml(t.text || "", ""); } catch (e) { than = esc(t.text || ""); }
     } else {
@@ -2024,7 +2024,7 @@
     var chips = [];
     if (nl.nhom) chips.push(ic("users") + " " + esc(window.t("ht.nl_nhom")));
     if (nl.gui_file) chips.push(ic("paperclip") + " " + esc(window.t("ht.nl_file")));
-    if (nl.tra_loi_tu_javis) chips.push(ic("send") + " " + esc(window.t("ht.nl_tra_loi")));
+    if (nl.tra_loi_tu_unimate) chips.push(ic("send") + " " + esc(window.t("ht.nl_tra_loi")));
     var ten = a.external_id ? (a.tien_to_ten || "") + a.external_id : "";
     // BRAIN hiện khi nó là thông tin MỚI, không phải lúc nào cũng hiện:
     //   - đang xem "mọi brain": mỗi thẻ phải tự nói nó thuộc về đâu;
@@ -2097,7 +2097,7 @@
     if (tb) tb.onclick = function () {
       // Đã đứng ở tab Bot rồi: không dựng lại tab (mất nhịp), chỉ mở form với kênh này tích sẵn.
       if (_tab !== "bot") chonTab("bot");
-      try { document.dispatchEvent(new CustomEvent("javis:chatbot-new", { detail: { account_id: a.id } })); } catch (e) {}
+      try { document.dispatchEvent(new CustomEvent("unimate:chatbot-new", { detail: { account_id: a.id } })); } catch (e) {}
     };
     var cb = c.querySelector(".ht-watch");
     if (cb) cb.onchange = async function () {
@@ -2115,7 +2115,7 @@
     var sua = c.querySelector(".ht-acc-sua");
     if (sua) sua.onclick = function () { moSuaTK(a); };
     var kn = c.querySelector(".ht-acc-ket-noi");
-    if (kn) kn.onclick = function () { try { window.JavisNav.go("mcp"); } catch (e) {} };
+    if (kn) kn.onclick = function () { try { window.UniMateNav.go("mcp"); } catch (e) {} };
     var xoa = c.querySelector(".ht-acc-xoa");
     if (xoa) xoa.onclick = function () { xoaTK(a); };
     return c;
@@ -2152,7 +2152,7 @@
   // để người dùng thấy đủ và biết kênh đó nối ở đâu), bước 2 dán token, kiểm, đặt tên.
   //
   // Hàm này là chỗ DUY NHẤT trong dashboard biết cách nối một tài khoản kênh. Form tạo bot
-  // (chatbots.js) gọi lại chính nó qua `JavisConversations.themTaiKhoan` thay vì chép một bản
+  // (chatbots.js) gọi lại chính nó qua `UniMateConversations.themTaiKhoan` thay vì chép một bản
   // thứ hai: trước 0.61.1 có hai form dán token song song, nên hướng dẫn riêng của từng kênh
   // bị nhân đôi và thêm một kênh mới là phải sửa cả hai nơi.
   //
@@ -2197,7 +2197,7 @@
     box.onmousedown = function (e) { if (e.target === box) dong(); };
     box.querySelector(".ht-close").onclick = dong;
     box.querySelectorAll(".ht-di-ket-noi").forEach(function (n) {
-      n.onclick = function () { dong(); try { window.JavisNav.go("mcp"); } catch (e) {} };
+      n.onclick = function () { dong(); try { window.UniMateNav.go("mcp"); } catch (e) {} };
     });
     function apKenh(id) {
       chon = id; uname = ""; meta = {};
@@ -2392,6 +2392,6 @@
     try { var s = window.Alpine && Alpine.store("nav"); if (s && s.go) s.go("conversations"); } catch (e) {}
   }
 
-  window.JavisConversations = { render: render, mo: moTu, chonTab: chonTab,
+  window.UniMateConversations = { render: render, mo: moTu, chonTab: chonTab,
                                themTaiKhoan: moThemTK, suaKenh: suaKenh, tenBrain: tenBrain, nhapTinCu: nhapTinCu };
 })();

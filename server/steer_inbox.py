@@ -1,8 +1,8 @@
-"""Send more while Javis is working (0.206.0).
+"""Send more while UNI MATE is working (0.206.0).
 
 Before this, a message typed while a turn was running was silently dropped by the dashboard (and refused by the
 server). Claude Code folds a message sent mid-turn into the work at its next step; Codex calls it "steer" (Enter) and
-also has "queue" (Tab, runs after). Javis does both, whatever brain is in use:
+also has "queue" (Tab, runs after). UNI MATE does both, whatever brain is in use:
 
 - A turn that can take input mid-way (Claude Code: after each tool call, through a PostToolUse hook; the API engines:
   before the next model round, appended to the last tool result) reads the pending messages at its next step.
@@ -23,7 +23,7 @@ from typing import Callable, Dict, List, Optional
 MAX_PENDING = 10
 MAX_CHARS = 8000
 
-_CURRENT: contextvars.ContextVar[str] = contextvars.ContextVar("javis_steer_sid", default="")
+_CURRENT: contextvars.ContextVar[str] = contextvars.ContextVar("unimate_steer_sid", default="")
 
 
 def note_for(texts: List[str]) -> str:
@@ -31,7 +31,7 @@ def note_for(texts: List[str]) -> str:
     if not texts:
         return ""
     body = "\n\n".join(f"<<<\n{t}\n>>>" for t in texts)
-    return ("\n\n[Javis] Người dùng vừa gửi thêm "
+    return ("\n\n[UNI MATE] Người dùng vừa gửi thêm "
             + ("một tin" if len(texts) == 1 else f"{len(texts)} tin")
             + " trong lúc bạn đang làm. Đây là lời của chính họ:\n" + body + "\n"
             "Nếu đó là sửa hướng hay bổ sung cho việc đang làm, áp dụng ngay từ bước kế tiếp. Nếu là một việc mới, "
@@ -43,9 +43,9 @@ def followup_prompt(texts: List[str]) -> str:
     """The message of the turn that runs the leftovers after a turn ended. Model prompt: Vietnamese."""
     body = "\n\n".join(texts)
     if len(texts) == 1:
-        return ("[Javis] Tin dưới đây người dùng gửi trong lúc lượt trước còn đang chạy; lượt trước đã xong. "
+        return ("[UNI MATE] Tin dưới đây người dùng gửi trong lúc lượt trước còn đang chạy; lượt trước đã xong. "
                 "Giờ làm theo tin này:\n\n" + body)
-    return (f"[Javis] {len(texts)} tin dưới đây người dùng gửi trong lúc lượt trước còn đang chạy; lượt trước đã xong. "
+    return (f"[UNI MATE] {len(texts)} tin dưới đây người dùng gửi trong lúc lượt trước còn đang chạy; lượt trước đã xong. "
             "Giờ làm theo các tin này, theo đúng thứ tự:\n\n" + body)
 
 

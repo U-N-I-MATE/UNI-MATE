@@ -16,14 +16,14 @@ The spec's names are read too: `type` (`http_forward`, with `redirect_profile: g
 `body_mode`, `retry_safety`. Without `actions` a hook has one delivery, `{"id": "main", "kind": "ai"}`.
 
 Each delivery has a DELIVERY ID that never changes for that (event, action, generation): `dlv_<hash>`. It is sent as
-`Idempotency-Key` and `X-Javis-Delivery`, with `X-Javis-Event-Id`, and inside the body (or, for an Apps Script web app
-that cannot read headers in doPost(e), in the query when the owner chose `delivery_ref: query`). Javis promises no
+`Idempotency-Key` and `X-UniMate-Delivery`, with `X-UniMate-Event-Id`, and inside the body (or, for an Apps Script web app
+that cannot read headers in doPost(e), in the query when the owner chose `delivery_ref: query`). UNI MATE promises no
 exactly-once delivery: it records what it knows and never re-sends blindly.
 
 Outcome of one delivery (`run_*` return `Outcome`):
     completed  the receiver confirmed it did the work (2xx; Apps Script receipt ok; plugin "completed")
     accepted   the receiver took it and finishes later on its own (202; plugin "accepted" with its job id): the
-               plugin keeps its own scheduling and waiting; Javis does not chase it
+               plugin keeps its own scheduling and waiting; UNI MATE does not chase it
     retry      certainly NOT done: the request never left (connect/DNS error) or the receiver said so (429), or the
                owner declared the receiver idempotent (`retry_safety`) and the answer was ambiguous
     unknown    it may have been done (timeout after sending, a 5xx, a dropped connection, a plugin that hung)
@@ -37,7 +37,7 @@ Safety:
     loopback, private, link-local, CGNAT, multicast and reserved ranges are refused unless `allow_private`;
     redirects are not followed (Apps Script: one GET to Google's echo host, whose address is checked too);
   - an action's level: http, apps_script and plugin handlers with `min_mode: full` need the hook at `full`;
-  - nothing here calls a model. `JAVIS_WH_NO_NETWORK=1` makes the default HTTP transport refuse every request (tests).
+  - nothing here calls a model. `UNIMATE_WH_NO_NETWORK=1` makes the default HTTP transport refuse every request (tests).
 """
 from __future__ import annotations
 
@@ -67,7 +67,7 @@ RETRY_SAFETY = ("manual_on_ambiguous", "idempotent", "at_least_once")
 _ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,31}$")
 _HEADER_RE = re.compile(r"^[A-Za-z0-9-]{1,64}$")
 _FORBIDDEN_HEADERS = {"host", "content-length", "cookie", "transfer-encoding", "connection", "idempotency-key",
-                      "x-javis-delivery", "x-javis-event-id"}
+                      "x-unimate-delivery", "x-unimate-event-id"}
 APPS_SCRIPT_HOSTS = ("script.google.com",)
 APPS_SCRIPT_ECHO_HOSTS = ("script.googleusercontent.com",)
 STATES = ("completed", "accepted", "retry", "unknown", "failed", "blocked", "waiting")
@@ -222,7 +222,7 @@ def validate(actions: Any) -> list:
             tool = str(a.get("tool") or "")
             if not re.match(r"^[A-Za-z][A-Za-z0-9_.-]{0,127}$", tool):
                 raise ActionError(f"action {aid}: needs `tool` (the tool's name as the hub lists it)")
-            if tool in ("javis_run_tool", "javis_search_tools"):
+            if tool in ("unimate_run_tool", "unimate_search_tools"):
                 raise ActionError(f"action {aid}: name the tool itself, not {tool}")
             args = a.get("args") or {}
             if not isinstance(args, dict) or len(args) > ARGS_MAX:
@@ -458,14 +458,14 @@ def _meta(ctx: dict) -> dict:
 
 
 def build_body(action: dict, ctx: dict) -> tuple:
-    """(bytes, content_type) of what is sent. `fields`: the mapped fields plus `_javis`; `event`: fields, the parsed
-    payload and `_javis`; `raw`: the original body unchanged (and its own content type)."""
+    """(bytes, content_type) of what is sent. `fields`: the mapped fields plus `_unimate`; `event`: fields, the parsed
+    payload and `_unimate`; `raw`: the original body unchanged (and its own content type)."""
     if action.get("body") == "raw":
         return bytes(ctx.get("body") or b""), str(ctx.get("content_type") or "application/octet-stream")
     doc = dict(ctx.get("fields") or {})
     if action.get("body") == "event":
         doc = {"fields": ctx.get("fields") or {}, "payload": ctx.get("payload")}
-    doc["_javis"] = _meta(ctx)
+    doc["_unimate"] = _meta(ctx)
     return json.dumps(doc, ensure_ascii=False, default=str).encode("utf-8"), "application/json"
 
 
@@ -477,11 +477,11 @@ def target_url(action: dict, ctx: dict) -> str:
     if action.get("delivery_ref") != "query":
         if not (test and action.get("kind") == "apps_script"):
             return action["url"]
-        q = {"javis_test": "1"}          # doPost reads no header: a test event must say so in the query
+        q = {"unimate_test": "1"}          # doPost reads no header: a test event must say so in the query
     else:
-        q = {"javis_delivery": ctx["delivery_id"], "javis_event": ctx["event_id"]}
+        q = {"unimate_delivery": ctx["delivery_id"], "unimate_event": ctx["event_id"]}
         if test:
-            q["javis_test"] = "1"
+            q["unimate_test"] = "1"
     u = urlsplit(action["url"])
     extra = urlencode(q)
     return urlunsplit((u.scheme, u.netloc, u.path, (u.query + "&" if u.query else "") + extra, u.fragment))
@@ -493,12 +493,12 @@ def _headers(action: dict, ctx: dict, content_type: str) -> dict:
     if "content-type" not in low:
         h["Content-Type"] = content_type
     if "user-agent" not in low:
-        h["User-Agent"] = "Javis-Webhook/1"
+        h["User-Agent"] = "UNI MATE-Webhook/1"
     h["Idempotency-Key"] = ctx["delivery_id"]
-    h["X-Javis-Delivery"] = ctx["delivery_id"]
-    h["X-Javis-Event-Id"] = ctx["event_id"]
+    h["X-UniMate-Delivery"] = ctx["delivery_id"]
+    h["X-UniMate-Event-Id"] = ctx["event_id"]
     if ctx.get("source") == "test":
-        h["X-Javis-Test"] = "1"          # a raw body cannot carry `_javis.test`: the receiver sees it here
+        h["X-UniMate-Test"] = "1"          # a raw body cannot carry `_unimate.test`: the receiver sees it here
     return h
 
 
@@ -617,9 +617,9 @@ def _call_release(h, delivery, ctx, did, slug=""):
 
 def default_transport(allow_private: bool = False, resolve: Optional[Callable] = None):
     import httpx
-    if os.environ.get("JAVIS_WH_NO_NETWORK") == "1":
+    if os.environ.get("UNIMATE_WH_NO_NETWORK") == "1":
         def refuse(request):
-            raise NoNetwork(f"network disabled (JAVIS_WH_NO_NETWORK): {request.url.host}")
+            raise NoNetwork(f"network disabled (UNIMATE_WH_NO_NETWORK): {request.url.host}")
         return httpx.MockTransport(refuse)
     # Pinned connections (no DNS rebinding), always: an explicit transport makes httpx ignore the *_PROXY variables,
     # so a proxy setting never routed these calls anyway and must not switch the pinning off.
@@ -737,7 +737,7 @@ async def run_apps_script(action: dict, ctx: dict, transport=None, resolve=None)
                     return Outcome("unknown", f"the receipt address was refused ({hop}): the script may have run",
                                    {"location": _short(loc)}, maybe_acted=True)
                 try:
-                    ecode, _, etext = await _send(cl, "GET", loc, headers={"User-Agent": "Javis-Webhook/1"})
+                    ecode, _, etext = await _send(cl, "GET", loc, headers={"User-Agent": "UNI MATE-Webhook/1"})
                 except (httpx.HTTPError, AddressRefused) as e:
                     return Outcome("unknown", f"the script ran but its receipt could not be read ({type(e).__name__})",
                                    maybe_acted=True)

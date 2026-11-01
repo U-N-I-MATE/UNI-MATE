@@ -1,4 +1,4 @@
-# Self-learning loop (Harness² sequential recursion with the Javis baseline rule)
+# Self-learning loop (Harness² sequential recursion with the UNI MATE baseline rule)
 
 Date 26/10/2026. Owner decision in chat 26/10: do part A (loop), part B (pilot preparation) and part C (real
 model runs to measure effect); users must not install anything extra.
@@ -17,7 +17,7 @@ extra is installed: the loop uses the brain the owner already selected.
 
 For t in 1..k: from the current version's tuning rollouts, two proposals (INV = how the work is done, DOM = the
 business procedure), each rolled out; then one composition over the round pool becomes the next current version.
-Javis rules kept where upstream differs: the baseline always stays a candidate and wins ties; a candidate equal to
+UNI MATE rules kept where upstream differs: the baseline always stays a candidate and wins ties; a candidate equal to
 the baseline is never chosen; the chosen version is judged once on sealed qualification cases, run as interleaved
 baseline/candidate pairs, two repeats each; engine errors drop the pair and too many fail the run; a sign test at
 p < 0.05 decides "helped"; any case the baseline got fully right and the candidate broke is a "regression" that

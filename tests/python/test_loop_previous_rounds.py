@@ -3,7 +3,7 @@
 A Suggest loop told "suggest exactly 1 new wiki page, do not repeat earlier rounds" suggested the
 same page on two runs one minute apart and wrote that it found no record of earlier rounds: each
 round runs in a fresh session and its prompt carried nothing from the loop's own log. Now the
-next round's prompt ends with a bounded tail of Javis/loop-log/ entries for that loop.
+next round's prompt ends with a bounded tail of UniMate/loop-log/ entries for that loop.
 
 No Claude CLI, SDK or network: the engine is a fake that records the prompt it receives.
 
@@ -15,7 +15,7 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-prevrounds-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-prevrounds-"))
 
 import self_improve  # noqa: E402
 
@@ -28,7 +28,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-_BRAIN = tempfile.mkdtemp(prefix="javis-prevrounds-brain-")
+_BRAIN = tempfile.mkdtemp(prefix="unimate-prevrounds-brain-")
 
 
 def _atomic_write(path, text):
@@ -43,7 +43,7 @@ deps = self_improve.LoopDeps(
     aux_model=lambda: None,
     atomic_write_text=_atomic_write,
     project_root=Path("."),
-    state_dir=Path(os.environ["JAVIS_STATE_DIR"]),
+    state_dir=Path(os.environ["UNIMATE_STATE_DIR"]),
     safe_tools=["Read", "Write", "Edit", "Glob", "Grep"],
     readonly_tools=["Read", "Glob", "Grep", "LS"],
 )
@@ -71,7 +71,7 @@ OTHER = "loop-khac"
 
 
 def _write_loop(slug, body):
-    d = Path(_BRAIN) / "Javis" / "loops"
+    d = Path(_BRAIN) / "UNI MATE" / "loops"
     d.mkdir(parents=True, exist_ok=True)
     (d / f"{slug}.md").write_text(
         f"---\nname: {slug}\ngoal: custom\nmode: suggest\nenabled: false\n---\n{body}\n", encoding="utf-8")
@@ -127,7 +127,7 @@ check("newest round is in the tail", "Đề xuất số 7" in block)
 
 # 5. No log on disk: fall back to the state's last summary.
 import shutil  # noqa: E402
-shutil.rmtree(Path(_BRAIN) / "Javis" / "loop-log")
+shutil.rmtree(Path(_BRAIN) / "UNI MATE" / "loop-log")
 fb = feat._previous_rounds_block("brain", SLUG)
 check("without a log, the state's last summary is used", "Đề xuất số 7" in fb)
 

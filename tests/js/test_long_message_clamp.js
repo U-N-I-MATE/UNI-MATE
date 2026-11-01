@@ -53,8 +53,8 @@ check("Team: only the owner's own words count, not the quoted message", !/clamp-
 h = T.messageHtml({ id: 5, author_kind: "owner", content: lines(12), meta: {} }, { members: [], unclamped: { 5: true } });
 check("Team: messageHtml passes the remembered open state", /class="tm-text utext"/.test(h) && !/utext clamped/.test(h));
 
-check("main chat uses the shared rule and button", /const isLong = window\.JavisActs\.isLongText\(text\);/.test(app)
-  && /window\.JavisActs\.clampButtonHtml\(false\)/.test(app) && !/u\.classList\.toggle\("clamped"\)/.test(app));
+check("main chat uses the shared rule and button", /const isLong = window\.UniMateActs\.isLongText\(text\);/.test(app)
+  && /window\.UniMateActs\.clampButtonHtml\(false\)/.test(app) && !/u\.classList\.toggle\("clamped"\)/.test(app));
 check("Team remembers the state when Show more is pressed, and forgets it on a team switch",
   /S\.unclamped\[cm\.getAttribute\("data-mid"\)\] = cu\.classList\.contains\("clamped"\);/.test(teamsJs)
   && /S\.unclamped = \{\};/.test(teamsJs));

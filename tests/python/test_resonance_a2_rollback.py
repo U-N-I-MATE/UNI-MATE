@@ -21,8 +21,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a2rb-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a2rb-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -131,7 +131,7 @@ def make(mod_r, store, agent, mid, path):
 
 
 def store_principal(store):
-    return (OLD_S if isinstance(store, OLD_S.GoalStore) else RS).Principal("agent", "javis", BRAIN)
+    return (OLD_S if isinstance(store, OLD_S.GoalStore) else RS).Principal("agent", "unimate", BRAIN)
 
 
 def deps(mod_r, store, eng, clock):
@@ -151,7 +151,7 @@ check("0.87 tạo mục tiêu trên kho của chính nó (đối chứng)", bool
 a2 = RS.GoalStore(DB)
 bak = DB.with_name(DB.name + ".pre-a2.bak")
 check("mở bằng A2: có bản sao .pre-a2.bak", bak.is_file())
-P = RS.Principal("agent", "javis", BRAIN)
+P = RS.Principal("agent", "unimate", BRAIN)
 check("mở bằng A2: mục tiêu của 0.87 có lý do created dựng từ goal_events",
       any(r["code"] == "created" for r in a2.reasons(P, g_old.id)))
 eng = Engine()

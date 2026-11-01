@@ -13,7 +13,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-routing-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-routing-"))
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

@@ -1,14 +1,14 @@
-"""Emoji reactions on personal Zalo (0.334.0, javis-zalo 1.7.0), END TO END: fake MCP, fake models, real bot.
+"""Emoji reactions on personal Zalo (0.334.0, unimate-zalo 1.7.0), END TO END: fake MCP, fake models, real bot.
 
     python tests/run.py zalo_reactions      (no network)
 
-Owner 2026-10-26: "khách hàng đọc được emoji reaction trên zalo và javis thả được reaction vào", then "Khách chỉ thả
+Owner 2026-10-26: "khách hàng đọc được emoji reaction trên zalo và unimate thả được reaction vào", then "Khách chỉ thả
 reaction thì bot có trả lời không? phần này tự học trong bộ phán xử, đừng fix cứng" and "bot được tự thả dựa theo bộ
 phán xử luôn". This file guards:
   1. A reaction lands in the inbox as one line saying who reacted, with what, and to which message (the bot's own
      reply included: its id is attached when its echo comes back).
   2. The account's own reactions never count as the owner typing; the bot's own one is filed as the bot's.
-  3. A customer's reaction reaches the decider (the Agent, or the judge in a group) as an event; nothing in Javis
+  3. A customer's reaction reaches the decider (the Agent, or the judge in a group) as an event; nothing in UNI MATE
      answers or ignores it on its own. Taking a reaction back is only recorded.
   4. The bot reacts only when the Agent (`[CAM_XUC:<name>]`) or the judge (`"reaction"`) says so, on the customer's
      message, never on a reaction; the marker never reaches the customer.
@@ -22,7 +22,7 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-reactions-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-reactions-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -122,7 +122,7 @@ def message(text, mid, thread=CUSTOMER, uid=CUSTOMER, who="Lan", secs_ago=2, gro
 
 def reaction_msg(rid, target, name="heart", thread=CUSTOMER, uid=CUSTOMER, who="Lan", group=False, removed=False,
                  own=False, secs_ago=1):
-    """Exactly javis-zalo 1.7.0 `normalizeReaction`."""
+    """Exactly unimate-zalo 1.7.0 `normalizeReaction`."""
     emoji = bot_reaction.emoji_of(name)
     return {"id": rid, "threadId": thread, "threadType": "group" if group else "dm", "senderId": uid,
             "senderName": who, "isSelf": own, "text": None, "timestamp": _ms(secs_ago), "type": "reaction",

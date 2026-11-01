@@ -68,7 +68,7 @@ st = my_tasks.habit_state(swim, T.isoformat())
 check("a weekday habit rests on Friday, streak intact", st["rest"] and not st["frozen"] and st["cur"] > 20)
 
 # ---- reminder tick ----
-brain = Path(tempfile.mkdtemp(prefix="javis-habits-"))
+brain = Path(tempfile.mkdtemp(prefix="unimate-habits-"))
 sent = []
 
 
@@ -102,7 +102,7 @@ check("only the due, undone, switched-on habit is reminded" + ("" if now.strftim
 n = asyncio.run(feat.tick())
 check("never twice in a day", n == 0 and len(sent) == 1)
 check("the day it was reminded is stored", next(t for t in feat.load("brain")["tasks"] if t["id"] == "m_due")["habit"].get("nudged") == today)
-check("Javis reminds: half an hour after the usual time, earlier while frozen",
+check("UNI MATE reminds: half an hour after the usual time, earlier while frozen",
       my_tasks.nudge_time({"habit": {"remind": "auto"}, "time": "21:00"}, {"frozen": False}) == "21:30"
       and my_tasks.nudge_time({"habit": {"remind": "auto"}, "time": "21:00"}, {"frozen": True}) == "20:30")
 

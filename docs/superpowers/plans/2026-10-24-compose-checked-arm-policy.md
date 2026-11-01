@@ -6,10 +6,10 @@ owner diff, bundle/view and comparison consumers; accepting ordinal3 as grammar
 alone is not integration or qualification.
 
 Upstream selection_pool (blob2cf04f50e35fd82d7abaea279a83b4a7eb4c2193)
-uses finals-only candidates and removes the baseline. Preserve the Javis baseline
+uses finals-only candidates and removes the baseline. Preserve the UNI MATE baseline
 and independent typed/native/protected-meaning/paired comparison gates instead.
 The actual compose_round implementation remains the existing unchanged vendor;
-this unit adapts its new output to the current Javis ownership pipeline, not a
+this unit adapts its new output to the current UNI MATE ownership pipeline, not a
 second selection/executor/usage store.
 
 Current immutable definitions reserve multiple_tests=2; current comparison_matrix,

@@ -132,7 +132,7 @@ def role_worker(stage, kind):
         expected = stage.parent / ('config' if name == 'CLAUDE_CONFIG_DIR' else 'empty-auth-home')
         if Path(os.environ[name]) != expected:
             raise ValueError('qualification_home_not_scratch')
-    binary = candidate(os.environ['JAVIS_TEST_NATIVE_QUALIFICATION_CLI'])
+    binary = candidate(os.environ['UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'])
     _ambient(stage)
     pin = {'version': 1, 'provider': 'anthropic-cli', 'engine_id': 'claude-sdk', 'model': 'claude-opus-5-5',
         'reasoning': 'medium', 'cli_path': str(binary), 'cli_hash': CANDIDATE_HASH, 'cli_version': CANDIDATE_VERSION,
@@ -301,7 +301,7 @@ class RoleNativeQualificationTests(unittest.TestCase):
         environment = worker_environment(root, auth_home=root / 'empty-auth-home')
         environment.update({'CLAUDE_CONFIG_DIR': str(root / 'config'), 'ANTHROPIC_API_KEY': 'synthetic-local-provider-only',
             'ANTHROPIC_BASE_URL': endpoint, 'HTTP_PROXY': endpoint, 'HTTPS_PROXY': endpoint, 'ALL_PROXY': endpoint,
-            'NO_PROXY': '127.0.0.1,localhost', 'JAVIS_TEST_NATIVE_QUALIFICATION_CLI': str(binary)})
+            'NO_PROXY': '127.0.0.1,localhost', 'UNIMATE_TEST_NATIVE_QUALIFICATION_CLI': str(binary)})
         process = subprocess.Popen([sys.executable, '-I', '-X', 'utf8', str(Path(__file__).resolve()), '--role-worker', kind, str(stage)],
             cwd=stage, env=environment, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             text=True, creationflags=worker.process_flags() | (4 if os.name == 'nt' else 0))
@@ -320,13 +320,13 @@ class RoleNativeQualificationTests(unittest.TestCase):
         process.stdin.flush()
         return process, group
 
-    @unittest.skipUnless(os.environ.get('JAVIS_TEST_NATIVE_QUALIFICATION_CLI'), 'Exact opt-in candidate only; no real provider fallback')
+    @unittest.skipUnless(os.environ.get('UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'), 'Exact opt-in candidate only; no real provider fallback')
     def test_guardian_death_retains_both_recovery_fences(self):
         import ctypes
         from ctypes import wintypes
         from improvement_sandbox import _bytes_hash
         from improvement_native_lifetime import fence_busy
-        binary = candidate(os.environ['JAVIS_TEST_NATIVE_QUALIFICATION_CLI'])
+        binary = candidate(os.environ['UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'])
         kernel = ctypes.WinDLL('kernel32', use_last_error=True)
         kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
         kernel.OpenProcess.restype = wintypes.HANDLE
@@ -374,12 +374,12 @@ class RoleNativeQualificationTests(unittest.TestCase):
                 process.communicate(timeout=5)
                 provider.close()
 
-    @unittest.skipUnless(os.environ.get('JAVIS_TEST_NATIVE_QUALIFICATION_CLI'), 'Exact opt-in candidate only; no real provider fallback')
+    @unittest.skipUnless(os.environ.get('UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'), 'Exact opt-in candidate only; no real provider fallback')
     def test_host_death_cannot_release_the_brain_barrier_before_native_exit(self):
         import ctypes
         import msvcrt
         from ctypes import wintypes
-        binary = candidate(os.environ['JAVIS_TEST_NATIVE_QUALIFICATION_CLI'])
+        binary = candidate(os.environ['UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'])
         kernel = ctypes.WinDLL('kernel32', use_last_error=True)
         kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
         kernel.OpenProcess.restype = wintypes.HANDLE
@@ -393,7 +393,7 @@ class RoleNativeQualificationTests(unittest.TestCase):
                 (root / 'tmp').mkdir()
                 provider = LocalProvider(outside, pending=True)
                 environment = worker_environment(root, auth_home=root / 'empty-owner-home')
-                environment['JAVIS_TEST_NATIVE_QUALIFICATION_CLI'] = str(binary)
+                environment['UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'] = str(binary)
                 owner = subprocess.Popen([sys.executable, '-I', '-X', 'utf8', str(Path(__file__).resolve()),
                     '--role-owner', kind, str(root), provider.endpoint], env=environment,
                     stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=worker.process_flags())
@@ -468,9 +468,9 @@ class RoleNativeQualificationTests(unittest.TestCase):
                         barrier.close()
                     provider.close()
 
-    @unittest.skipUnless(os.environ.get('JAVIS_TEST_NATIVE_QUALIFICATION_CLI'), 'Exact opt-in candidate only; no real provider fallback')
+    @unittest.skipUnless(os.environ.get('UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'), 'Exact opt-in candidate only; no real provider fallback')
     def test_real_typed_profiles_deny_all_ambient_tools_and_preserve_input_and_unknowns(self):
-        binary = candidate(os.environ['JAVIS_TEST_NATIVE_QUALIFICATION_CLI'])
+        binary = candidate(os.environ['UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'])
         for kind in KINDS:
             with self.subTest(kind=kind), qualification_directory(prefix='role-qualification-') as directory:
                 root = Path(directory)
@@ -551,9 +551,9 @@ class RoleNativeQualificationTests(unittest.TestCase):
                     'model_coverage': 'observed', 'actual_reasoning': 'unknown', 'actual_input_use': 'unknown',
                     'scope': 'Native typed-profile enforcement only; no auth readiness or actual worker/CallLedger feasibility claim.'})
 
-    @unittest.skipUnless(os.environ.get('JAVIS_TEST_NATIVE_QUALIFICATION_CLI'), 'Exact opt-in candidate only; no real provider fallback')
+    @unittest.skipUnless(os.environ.get('UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'), 'Exact opt-in candidate only; no real provider fallback')
     def test_each_pending_role_query_is_owned_by_the_actual_windows_job(self):
-        binary = candidate(os.environ['JAVIS_TEST_NATIVE_QUALIFICATION_CLI'])
+        binary = candidate(os.environ['UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'])
         for kind in KINDS:
             with self.subTest(kind=kind), qualification_directory(prefix='role-qualification-cancel-') as directory:
                 root = Path(directory)
@@ -599,7 +599,7 @@ class RoleNativeQualificationTests(unittest.TestCase):
 
 
 def role_owner(root, kind, endpoint):
-    binary = candidate(os.environ['JAVIS_TEST_NATIVE_QUALIFICATION_CLI'])
+    binary = candidate(os.environ['UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'])
     barrier = TrialWorkspace(root / 'trials').acquire_brain_execution('disposable-qualification-brain')
     if barrier is None:
         raise RuntimeError('qualification_owner_brain_busy')
@@ -622,8 +622,8 @@ if __name__ == '__main__':
         role_owner(Path(sys.argv[3]), sys.argv[2], sys.argv[4])
     else:
         result = unittest.main(exit=False)
-        if EVIDENCE and os.environ.get('JAVIS_TEST_NATIVE_ROLE_QUALIFICATION_EVIDENCE'):
-            target = Path(os.environ['JAVIS_TEST_NATIVE_ROLE_QUALIFICATION_EVIDENCE'])
+        if EVIDENCE and os.environ.get('UNIMATE_TEST_NATIVE_ROLE_QUALIFICATION_EVIDENCE'):
+            target = Path(os.environ['UNIMATE_TEST_NATIVE_ROLE_QUALIFICATION_EVIDENCE'])
             target.write_text(json.dumps({'label': 'synthetic/native-role-profile-qualification-only', 'passed': result.result.wasSuccessful(),
                 'profile_hash': native.profile_hash(), 'production_billing': False, 'scenarios': EVIDENCE}, indent=2))
         raise SystemExit(not result.result.wasSuccessful())

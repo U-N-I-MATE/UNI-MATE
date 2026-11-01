@@ -13,13 +13,13 @@ const fails = [];
 const check = (name, cond) => { console.log((cond ? "ok   " : "FAIL ") + name); if (!cond) fails.push(name); };
 
 const REAL = [
-  { name: "Brain Default", path: "D:\\Project\\Javis-OS\\brains\\Brain Default", notes: 90, is_default: true },
-  { name: "My Bullet Journal", path: "D:\\Project\\Javis-OS\\brains\\My Bullet Journal", notes: 576 },
-  { name: "Ngọc Thu Phạm", path: "D:\\Project\\Javis-OS\\brains\\Ngọc Thu Phạm", notes: 111 },
+  { name: "Brain Default", path: "D:\\Project\\UNI-MATE\\brains\\Brain Default", notes: 90, is_default: true },
+  { name: "My Bullet Journal", path: "D:\\Project\\UNI-MATE\\brains\\My Bullet Journal", notes: 576 },
+  { name: "Ngọc Thu Phạm", path: "D:\\Project\\UNI-MATE\\brains\\Ngọc Thu Phạm", notes: 111 },
 ];
 // Server: path nào còn là thư mục.
 const EXISTS = {
-  "D:\\Project\\Javis-OS\\brain": { exists: false, is_dir: false },          // 📁 brain: đã xoá
+  "D:\\Project\\UNI-MATE\\brain": { exists: false, is_dir: false },          // 📁 brain: đã xoá
   "D:\\My Bullet Journal": { exists: true, is_dir: true },                    // 📁 ngoài hợp lệ
 };
 
@@ -72,18 +72,18 @@ class Select {
 const sel = new Select();
 // Trạng thái khởi đầu: default + 2 option 📁 (như app.js đã render từ localStorage).
 const def = new Opt("brain", "🧠 Brain Default"); sel.appendChild(def);
-const c1 = new Opt("path:D:\\Project\\Javis-OS\\brain", "📁 brain"); c1.dataset.custom = "1"; sel.appendChild(c1);
+const c1 = new Opt("path:D:\\Project\\UNI-MATE\\brain", "📁 brain"); c1.dataset.custom = "1"; sel.appendChild(c1);
 const c2 = new Opt("path:D:\\My Bullet Journal", "📁 My Bullet Journal"); c2.dataset.custom = "1"; sel.appendChild(c2);
-const c3 = new Opt("path:D:\\Project\\Javis-OS\\brains\\My Bullet Journal", "📁 My Bullet Journal"); c3.dataset.custom = "1"; sel.appendChild(c3); // TRÙNG não thật
+const c3 = new Opt("path:D:\\Project\\UNI-MATE\\brains\\My Bullet Journal", "📁 My Bullet Journal"); c3.dataset.custom = "1"; sel.appendChild(c3); // TRÙNG não thật
 
 // localStorage khởi đầu (3 entry, có 1 trùng não thật)
 const store = {
-  "javis.brains": JSON.stringify([
-    { name: "brain", path: "D:\\Project\\Javis-OS\\brain" },
+  "unimate.brains": JSON.stringify([
+    { name: "brain", path: "D:\\Project\\UNI-MATE\\brain" },
     { name: "My Bullet Journal", path: "D:\\My Bullet Journal" },
-    { name: "My Bullet Journal", path: "D:\\Project\\Javis-OS\\brains\\My Bullet Journal" },
+    { name: "My Bullet Journal", path: "D:\\Project\\UNI-MATE\\brains\\My Bullet Journal" },
   ]),
-  "javis.graphSource": "brain",
+  "unimate.graphSource": "brain",
 };
 
 // ---- Globals ----
@@ -115,10 +115,10 @@ await new Promise((r) => setTimeout(r, 50));
 // ---- Assert ----
 const customVals = sel.querySelectorAll("option[data-custom]").map((o) => o.value);
 const brainNames = sel.querySelectorAll("option[data-brain]").map((o) => o.dataset.brainName);
-const stored = JSON.parse(store["javis.brains"]);
+const stored = JSON.parse(store["unimate.brains"]);
 
-check("📁 'brain' (đã xoá) bị gỡ khỏi menu", !customVals.includes("path:D:\\Project\\Javis-OS\\brain"));
-check("📁 trùng não thật bị gỡ khỏi menu", !customVals.includes("path:D:\\Project\\Javis-OS\\brains\\My Bullet Journal"));
+check("📁 'brain' (đã xoá) bị gỡ khỏi menu", !customVals.includes("path:D:\\Project\\UNI-MATE\\brain"));
+check("📁 trùng não thật bị gỡ khỏi menu", !customVals.includes("path:D:\\Project\\UNI-MATE\\brains\\My Bullet Journal"));
 check("📁 folder ngoài hợp lệ được GIỮ", customVals.includes("path:D:\\My Bullet Journal"));
 check("chỉ còn ĐÚNG 1 option 📁", customVals.length === 1);
 check("localStorage còn ĐÚNG 1 entry", stored.length === 1 && stored[0].path === "D:\\My Bullet Journal");
@@ -129,7 +129,7 @@ check("option default cập nhật nhãn kèm note", def.textContent.includes("B
 const sel2 = new Select();
 sel2.appendChild(new Opt("brain", "🧠 Brain Default"));
 const d1 = new Opt("path:D:\\mot\\folder", "📁 folder"); d1.dataset.custom = "1"; sel2.appendChild(d1);
-const store2 = { "javis.brains": JSON.stringify([{ name: "folder", path: "D:\\mot\\folder" }]), "javis.graphSource": "brain" };
+const store2 = { "unimate.brains": JSON.stringify([{ name: "folder", path: "D:\\mot\\folder" }]), "unimate.graphSource": "brain" };
 global.document.getElementById = (id) => id === "graphSource" ? sel2 : (btns[id] || (btns[id] = { addEventListener() {} }));
 global.localStorage = { getItem: (k) => (k in store2 ? store2[k] : null), setItem: (k, v) => { store2[k] = String(v); } };
 global.fetch = async (url) => {
@@ -139,7 +139,7 @@ global.fetch = async (url) => {
 };
 eval(SRC);
 await new Promise((r) => setTimeout(r, 50));
-const stored2 = JSON.parse(store2["javis.brains"]);
+const stored2 = JSON.parse(store2["unimate.brains"]);
 check("fail-safe: endpoint 404 → GIỮ nguyên entry (không xoá nhầm)", stored2.length === 1 && sel2.querySelectorAll("option[data-custom]").length === 1);
 
 console.log();

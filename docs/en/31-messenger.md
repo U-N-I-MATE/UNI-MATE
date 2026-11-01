@@ -6,12 +6,12 @@ From 0.134.0 a dedicated bot can answer a Facebook Page's inbox, the same way a 
 
 | | Messenger |
 |---|---|
-| How Javis connects | Webhook: Meta calls Javis, **needs an HTTPS domain** |
+| How UNI MATE connects | Webhook: Meta calls UNI MATE, **needs an HTTPS domain** |
 | Groups | No, private chats with the Page only |
 | Files | Images and documents, both ways |
 | Voice notes | Transcribed (needs a Groq key on the Models page) |
 | Replies | Only within 24 hours of the customer's last message |
-| Formatting | Plain text: Messenger shows no Markdown, Javis strips the symbols |
+| Formatting | Plain text: Messenger shows no Markdown, UNI MATE strips the symbols |
 
 ## Quick way: the Facebook Messenger card on the Connections page (from 0.311.0)
 
@@ -19,8 +19,8 @@ The step people get wrong is the token: a user token pasted where a Page token b
 
 1. On Meta, create an app with the Messenger use case and connect the Page (steps 1.1 to 1.3 below, no need to click Generate yet).
 2. Open [Graph API Explorer](https://developers.facebook.com/tools/explorer), pick the right app, add `pages_show_list`, `pages_messaging`, `pages_manage_metadata`, `pages_read_engagement`, click **Generate Access Token** and tick the right Page. Copy the `EAA...` string.
-3. Open Javis through its HTTPS domain, go to **Connections**, card **Facebook Messenger**, click **Connect a Page**. Paste the Page ID, App ID, App secret and the token, then click **Connect and check**.
-4. Javis derives a non-expiring Page token, registers the app webhook with `messages` and `messaging_postbacks`, subscribes the Page to the app, saves the channel and shows a checklist with a fix for every red row.
+3. Open UNI MATE through its HTTPS domain, go to **Connections**, card **Facebook Messenger**, click **Connect a Page**. Paste the Page ID, App ID, App secret and the token, then click **Connect and check**.
+4. UNI MATE derives a non-expiring Page token, registers the app webhook with `messages` and `messaging_postbacks`, subscribes the Page to the app, saves the channel and shows a checklist with a fix for every red row.
 5. Open **Chatbot**, **Bots** to create a bot for the new channel (section 3).
 
 Every connected Page has **Check**, **Repair** (registers the webhook and subscribes the Page again) and **New token** buttons. Any brain can call the `messenger_check` and `messenger_repair` tools when the bot goes silent. Business verification and App Review for `pages_messaging` (section 4) still happen on Meta's site.
@@ -35,18 +35,18 @@ The manual steps below still work.
 4. Go to **App settings → Basic** and click **Show** next to **App secret**. Copy it.
 5. Get the **Page ID**: it shows next to the Page name in step 3, or under About → Page transparency on the Page.
 
-## 2. Add the Messenger account in Javis
+## 2. Add the Messenger account in UNI MATE
 
-1. Open Javis **through its HTTPS domain** (not localhost or an IP), go to the **Chatbot** page, **Bots** tab, click **Add a channel**, choose **Messenger**.
+1. Open UNI MATE **through its HTTPS domain** (not localhost or an IP), go to the **Chatbot** page, **Bots** tab, click **Add a channel**, choose **Messenger**.
 2. The form shows a **Webhook address** and a **Verify token**. Back in the Meta app, under Messenger's **Configure webhooks**, paste them as the Callback URL and Verify token and click **Verify and save**. Tick the **messages** and **messaging_postbacks** fields.
-3. Back in Javis, paste three things separated by spaces into the token field: `Page ID`, `Page access token`, `App secret`. Click **Check** (Javis asks Meta for the Page name), then **Save**.
+3. Back in UNI MATE, paste three things separated by spaces into the token field: `Page ID`, `Page access token`, `App secret`. Click **Check** (UNI MATE asks Meta for the Page name), then **Save**.
 
 ## 3. Attach a bot
 
 - **Reuse the bot already on Zalo:** open it on the Chatbot page, click **Edit**, tick the new Messenger account, **Save**. The bot answers on Zalo and Messenger with the same Agent and the same active hours.
 - **Or create a new bot** for Messenger only.
 
-Switch the bot on. Javis then subscribes the Page to the app's webhook by itself (no manual step); any error shows on the bot card in words. If the token lacks the permission to subscribe, the bot still runs and its card reminds you to subscribe the Page once by hand: Meta app, Messenger, Webhooks, **Add Subscriptions** for the Page.
+Switch the bot on. UNI MATE then subscribes the Page to the app's webhook by itself (no manual step); any error shows on the bot card in words. If the token lacks the permission to subscribe, the bot still runs and its card reminds you to subscribe the Page once by hand: Meta app, Messenger, Webhooks, **Add Subscriptions** for the Page.
 
 ## 4. Test, then open it to everyone
 
@@ -55,11 +55,11 @@ Switch the bot on. Javis then subscribes the Page to the app's webhook by itself
 
 ## Common errors
 
-| Javis says | Meaning | Fix |
+| UNI MATE says | Meaning | Fix |
 |---|---|---|
 | more than 24 hours since this person last wrote | The customer wrote over a day ago | Wait for them to write again, or answer from Meta Business Suite |
 | the app may not message people outside it yet (200) | App Review not passed | Test with an account that has a role on the app, or submit pages_messaging for review |
 | the Page access token expired or is wrong (190) | Temporary or revoked token | Generate a new one (step 1.3) and paste it again on the channel account |
-| Javis could not subscribe the Page to the webhook | Token lacks pages_manage_metadata | The bot still runs if the Page was subscribed by hand; otherwise click Add Subscriptions for the Page under Messenger, Webhooks, or generate the token again while you are a Page admin |
-| The App secret does not belong to the app this Page access token was made in | App secret copied from another app | Copy the App secret again from App settings, Basic of the app that made the token. With a wrong secret Javis cannot trust the signature on Meta's messages, so it refuses it when you save |
-| Meta cannot verify the webhook | Callback URL is not HTTPS, or wrong token | Open Javis through its HTTPS domain and copy the address from the form again |
+| UNI MATE could not subscribe the Page to the webhook | Token lacks pages_manage_metadata | The bot still runs if the Page was subscribed by hand; otherwise click Add Subscriptions for the Page under Messenger, Webhooks, or generate the token again while you are a Page admin |
+| The App secret does not belong to the app this Page access token was made in | App secret copied from another app | Copy the App secret again from App settings, Basic of the app that made the token. With a wrong secret UNI MATE cannot trust the signature on Meta's messages, so it refuses it when you save |
+| Meta cannot verify the webhook | Callback URL is not HTTPS, or wrong token | Open UNI MATE through its HTTPS domain and copy the address from the form again |

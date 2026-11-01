@@ -20,8 +20,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a2-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a2-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import resonance as R  # noqa: E402
 import resonance_heartbeat as HB  # noqa: E402
@@ -39,9 +39,9 @@ def check(name, cond):
 
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a2-")).resolve())
-(Path(BRAIN) / "Javis").mkdir(parents=True)
+(Path(BRAIN) / "UNI MATE").mkdir(parents=True)
 (Path(BRAIN) / "Inbox").mkdir(parents=True)
-P = RS.Principal("agent", "javis", BRAIN)
+P = RS.Principal("agent", "unimate", BRAIN)
 OWNER = RS.Principal("owner", "owner", BRAIN)
 T0 = 1_800_000_000.0
 POL = HB.POLICY

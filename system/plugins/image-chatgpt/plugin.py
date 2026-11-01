@@ -1,13 +1,13 @@
 """Plugin bundled: tạo ảnh bằng gói ChatGPT (OAuth) cho MỌI engine.
 
-Đăng ký tool javis_generate_image, gọi image_gen.generate_chatgpt
+Đăng ký tool unimate_generate_image, gọi image_gen.generate_chatgpt
 (Codex Responses + tool image_generation) bằng chính gói ChatGPT đã đăng nhập.
 Bất kỳ engine nào (Claude Code/Codex/API) khi user bảo "tạo ảnh ..." đều gọi được tool này.
 
 - min_mode=safe: coi như thao tác GHI (tạo file + dùng quota) → chặn ở chế độ suggest.
 - check_fn: chưa kết nối ChatGPT → tool báo rõ cách bật, không lỗi khó hiểu.
 
-Tool thứ hai javis_describe_image (0.73.0) là đôi MẮT cho engine không tự xem được ảnh: hub chỉ
+Tool thứ hai unimate_describe_image (0.73.0) là đôi MẮT cho engine không tự xem được ảnh: hub chỉ
 chuyển chữ và sáu engine API không gửi ảnh, nên ChatGPT nhìn ảnh trong brain rồi tả lại bằng chữ
 (xem server/image_vision.py). Chỉ đọc nên min_mode=readonly.
 """
@@ -52,7 +52,7 @@ def register(ctx):
                 f"![{prompt[:40]}]({rel})")
 
     ctx.register_tool(
-        name="javis_generate_image",
+        name="unimate_generate_image",
         description=("Tạo hoặc SỬA ẢNH bằng gói ChatGPT đang đăng nhập (không cần API key). Tham số: "
                      "prompt (mô tả, bắt buộc), images (danh sách đường dẫn ảnh MẪU trong brain - "
                      "ChatGPT sẽ NHÌN THẤY ảnh thật để sửa/dựng theo, dùng khi cần giữ đúng sản phẩm, "
@@ -88,7 +88,7 @@ def register(ctx):
         return f"ChatGPT đã xem {res['count']} ảnh:\n{res['text']}"
 
     ctx.register_tool(
-        name="javis_describe_image",
+        name="unimate_describe_image",
         description=("XEM ẢNH trong brain: ChatGPT (gói đang đăng nhập) nhìn ảnh thật rồi tả lại bằng chữ, chép nguyên văn "
                      "chữ/số trong ảnh. Dùng khi bạn KHÔNG tự mở được file ảnh (tool đọc file chỉ đọc chữ, không cho thấy "
                      "ảnh). Tham số: images (đường dẫn ảnh trong brain, tối đa 4), question (cần tìm gì trong ảnh, tuỳ chọn)."),

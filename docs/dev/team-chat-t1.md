@@ -18,19 +18,19 @@ Spec: [2026-10-13-team-chat-design.md](../superpowers/specs/2026-10-13-team-chat
 | Kho nhóm | `server/team_store.py` (`team.sqlite3`) | Nhóm, thành viên, sự kiện, bước nội bộ, sổ lượt, khoá bận; `set_caps`, `log_event` |
 | Tin có người gửi | `server/sessions.py` | Cột `author_kind`, `author_ref`, `client_msg_id` (duy nhất trong phiên), `reply_to`, `task_id`, `step_id`, `meta_json`; ẩn `team:` và `teammate:` khỏi lịch sử chat; sổ quyết định; tin theo việc |
 | Hàng đợi | `server/task_store.py` (làn `team` của `kanban.sqlite3`) | `enqueue_team` (khoá = tin nguồn, không gộp theo tiêu đề), `team_queue`, `team_priority` (CAS `queue_version`, 409), `claim_team_next` (một việc chạy mỗi nhóm, cùng giao dịch), chặn, gỡ chặn, xong, huỷ, sửa yêu cầu, khôi phục. Mã bảng Việc cũ bỏ qua mọi dòng `lane='team'` |
-| Bộ chạy | `server/team_runner.py` | Định tuyến, lượt trả lời, việc nhóm (`plan`, `work`, `help`, `synthesize`), khối `JAVIS_TEAM`, trần, chống vòng, đầu ra muộn, khoá bận FIFO, sổ lượt, huỷ giữa lượt, phục hồi sau restart |
+| Bộ chạy | `server/team_runner.py` | Định tuyến, lượt trả lời, việc nhóm (`plan`, `work`, `help`, `synthesize`), khối `UNIMATE_TEAM`, trần, chống vòng, đầu ra muộn, khoá bận FIFO, sổ lượt, huỷ giữa lượt, phục hồi sau restart |
 | Route | `server/team_api.py`, nối ở cuối `server/main.py` | `/teams/*` (19 route), vòng điều phối 5 giây, nhắc việc chặn quá 24 giờ, engine chỉ chữ, hộp thư, gói WS `team_message` / `team_state` |
 | Giao diện | `dashboard/teams.js`, `console.js`, `index.html`, `console.css`, `app.js`, i18n | Trang Nhóm ba cột, ngăn kéo dưới 1060px, một cột dưới 760px |
 | Nâng, hạ | `server/team_migration.py`, `tools/team_chat_restore_pre.py` | Snapshot `.pre-0.111.0` của `kanban.sqlite3` và `conversations.db`, công cụ khôi phục |
 
-## Khối JAVIS_TEAM (phán quyết R1)
+## Khối UNIMATE_TEAM (phán quyết R1)
 
 Agent điều phối bằng khối do host đọc ở cuối câu trả lời:
 
 ```
-<!-- JAVIS_TEAM: {"op": "assign", "agent": "<mã hay slug>", "brief": "..."} -->
-<!-- JAVIS_TEAM: {"op": "request_help", "agent": "<mã hay slug>", "question": "..."} -->
-<!-- JAVIS_TEAM: {"op": "propose_job", "title": "...", "brief": "..."} -->
+<!-- UNIMATE_TEAM: {"op": "assign", "agent": "<mã hay slug>", "brief": "..."} -->
+<!-- UNIMATE_TEAM: {"op": "request_help", "agent": "<mã hay slug>", "question": "..."} -->
+<!-- UNIMATE_TEAM: {"op": "propose_job", "title": "...", "brief": "..."} -->
 ```
 
 | Vai của lượt | Op dùng được |
@@ -55,13 +55,13 @@ Một dòng mỗi lời gọi model. Giữ chỗ và kiểm trần (ngày, việ
 
 **Kết cục engine (R1):** adapter đọc sự kiện theo `team_runner.TextOnlyOutcome`, cùng luật với `_engine_outcome_pop` của lượt chat: final `is_error`, cờ `auth_refresh_race`, sự kiện `error` (kể cả sau final), gọi công cụ (`tool_call`, `tool_use`, `tool_result`), thiếu final, final rỗng đều là lượt `error` (đã tính), bước lỗi, việc chặn `failed`. Lỗi mất mạch đã được engine mồi lại trong lượt (`resume_failed`) không tính là lỗi.
 
-**Bài học bền (R3):** adapter chỉ BÓC `JAVIS_LESSON` / `JAVIS_RULE` (rule hạ thành bài học vì trong nhóm chủ không nói trực tiếp với agent), trả `commit`. Pha chấp nhận (`_accept`) kiểm đầu ra còn hợp lệ rồi gọi `commit` trong cùng `accept_lock` (lượt trò chuyện); bước của việc nhóm thì `commit` chạy ở pha áp dụng (`_apply_step`) sau lần kiểm cuối (vòng 2, R7); các thao tác làm đầu ra hết hợp lệ (bỏ thành viên, đổi trưởng nhóm, huỷ, sửa yêu cầu, lưu trữ, xoá agent ở `delete_agent`) giữ cùng khoá. `commit` kiểm lại danh tính (mã bền còn trỏ đúng slug) ngay trước khi ghi, và `claim_commit(turn_id)` cho ghi đúng một lần mỗi lượt. Đầu ra không hợp lệ chỉ là bằng chứng: tin có `applied=false` và `held_lessons`, bộ nhớ agent không đổi.
+**Bài học bền (R3):** adapter chỉ BÓC `UNIMATE_LESSON` / `UNIMATE_RULE` (rule hạ thành bài học vì trong nhóm chủ không nói trực tiếp với agent), trả `commit`. Pha chấp nhận (`_accept`) kiểm đầu ra còn hợp lệ rồi gọi `commit` trong cùng `accept_lock` (lượt trò chuyện); bước của việc nhóm thì `commit` chạy ở pha áp dụng (`_apply_step`) sau lần kiểm cuối (vòng 2, R7); các thao tác làm đầu ra hết hợp lệ (bỏ thành viên, đổi trưởng nhóm, huỷ, sửa yêu cầu, lưu trữ, xoá agent ở `delete_agent`) giữ cùng khoá. `commit` kiểm lại danh tính (mã bền còn trỏ đúng slug) ngay trước khi ghi, và `claim_commit(turn_id)` cho ghi đúng một lần mỗi lượt. Đầu ra không hợp lệ chỉ là bằng chứng: tin có `applied=false` và `held_lessons`, bộ nhớ agent không đổi.
 
 ## Giới hạn đã biết của T1
 
-- **Lượt nhóm chỉ chữ** (R3): không đọc, ghi file, không MCP, không `javis_goal`. Mở công cụ cùng cổng quyền theo nhóm để T3.
+- **Lượt nhóm chỉ chữ** (R3): không đọc, ghi file, không MCP, không `unimate_goal`. Mở công cụ cùng cổng quyền theo nhóm để T3.
   - **Đổi ở 0.142.0** ([team-chat-0142.md](team-chat-0142.md)): lượt nhóm KHÔNG còn dựng engine qua hợp đồng Cộng hưởng (`_resonance_engine`, model việc nền, chỉ Claude và engine API). Hợp đồng riêng `server/team_engine.py`: model của trợ lý, thiếu thì model chính; Codex chạy chỉ chữ (không profile, MCP rỗng, tắt công cụ native, luôn `--sandbox read-only`). Giới hạn R3 giữ nguyên: vẫn chỉ chữ, không công cụ, không MCP, không hub; Grok và Antigravity chạy bằng model chính kèm ghi chú.
-  - **Đổi ở 0.194.0** (chủ 17/10/2026: "team phải đầy đủ các quyền thì mới làm việc được"): bước **Làm** và **Hỗ trợ** của một việc nhóm (`team_runner.TOOL_ROLES`) chạy CÓ công cụ như chat riêng với trợ lý: cwd là thư mục làm việc ghim của nhóm (không có thì bộ não), hub MCP gắn ở mức `full` (`main.TEAM_WORK_MODE`), file bộ não qua `javis_vault`, dựng bằng `team_engine.build_tools` (provider khác Claude đi qua các builder việc nền `aux_engine._build_*`, nên Grok Build và Antigravity cũng chạy được lượt Làm). Kết cục đọc theo `team_runner.ToolTurnOutcome` (gọi công cụ là bình thường, các luật lỗi khác giữ nguyên). Lượt công cụ trên cùng một bộ não chạy lần lượt (khoá trong tiến trình theo bộ não). Lượt trò chuyện, lập kế hoạch, tổng hợp, quét và học vẫn chỉ chữ. Test: `tests/python/test_team_work_tools.py`.
+  - **Đổi ở 0.194.0** (chủ 17/10/2026: "team phải đầy đủ các quyền thì mới làm việc được"): bước **Làm** và **Hỗ trợ** của một việc nhóm (`team_runner.TOOL_ROLES`) chạy CÓ công cụ như chat riêng với trợ lý: cwd là thư mục làm việc ghim của nhóm (không có thì bộ não), hub MCP gắn ở mức `full` (`main.TEAM_WORK_MODE`), file bộ não qua `unimate_vault`, dựng bằng `team_engine.build_tools` (provider khác Claude đi qua các builder việc nền `aux_engine._build_*`, nên Grok Build và Antigravity cũng chạy được lượt Làm). Kết cục đọc theo `team_runner.ToolTurnOutcome` (gọi công cụ là bình thường, các luật lỗi khác giữ nguyên). Lượt công cụ trên cùng một bộ não chạy lần lượt (khoá trong tiến trình theo bộ não). Lượt trò chuyện, lập kế hoạch, tổng hợp, quét và học vẫn chỉ chữ. Test: `tests/python/test_team_work_tools.py`.
 - **Không resume mạch thành viên:** mỗi lượt là một lời gọi mới mang khối nhóm: cửa sổ 20 tin GẦN NHẤT của chính phiên nhóm (gồm tin cũ của chủ và câu trả lời trước của mọi thành viên, kể cả của agent đó; tin sau lượt trước của agent có nhãn "mới"), tối đa 8.000 ký tự; sổ quyết định; đầu vào của bước. Trước review vòng 1 khối này chỉ có tin SAU lượt trước của agent, nên câu hỏi nối tiếp mất dữ kiện (R2). Tin cũ hơn cửa sổ chỉ còn qua sổ quyết định.
 - **I/O ở luồng phụ (R5):** mọi đọc, ghi SQLite và file của bộ chạy và của route `/teams/*` chạy qua `run_io` (luồng phụ). Bị huỷ, kể cả huỷ lặp, khi luồng phụ đang ghi thì chờ ghi xong, chạy bước hoàn tác (hoàn lượt vừa giữ chỗ, nhả dòng khoá vừa lấy, trả việc vừa nhận về hàng) rồi mới ném huỷ; dòng khoá bận chỉ nhả sau khi lượt đã chốt. Gói WS, hộp thư và huỷ task asyncio từ luồng phụ được xếp về event loop.
 - **Không stream từng chữ** (R2): câu trả lời về khi xong.
@@ -92,7 +92,7 @@ Reviewer tái hiện 2 P1 và 4 P2 bằng `exports/reviews/PR-628-T1-review-chec
 | R5 [P2] chặn event loop | `run_io` cho runner và mọi route `/teams/*`; giữ chỗ kèm kiểm trần một giao dịch | mục R5: kho chậm (lượt trả lời, việc, route thật), hai lượt đồng thời trần 1, tám luồng trần 3, huỷ lặp khi giữ chỗ, huỷ khi chốt lượt, huỷ khi lấy khoá, kho lỗi |
 | R6 [P2] nhóm sống trỏ phiên đã mất | Khôi phục cả bộ ba kho, đối soát nhóm mồ côi lúc khởi động | `test_team_rollback.py` mục R6: vòng đầy đủ với nhóm thật và mã 0.109.0 thật, nhóm mồ côi, thiếu snapshot, hỏng giữa chừng |
 
-Quyết định đổi so với bản trước: khối ngữ cảnh có lịch sử, không chỉ tin mới (R2); `JAVIS_RULE` trong lượt nhóm vẫn hạ thành bài học nhưng chỉ ghi khi đầu ra được chấp nhận (R3); `team.sqlite3` không còn "để nguyên" khi khôi phục (R6). Ngoài phạm vi: Toàn quyền, công cụ, stream, reaction (T2, T3).
+Quyết định đổi so với bản trước: khối ngữ cảnh có lịch sử, không chỉ tin mới (R2); `UNIMATE_RULE` trong lượt nhóm vẫn hạ thành bài học nhưng chỉ ghi khi đầu ra được chấp nhận (R3); `team.sqlite3` không còn "để nguyên" khi khôi phục (R6). Ngoài phạm vi: Toàn quyền, công cụ, stream, reaction (T2, T3).
 
 ## Review mã vòng 2 (14/10/2026, head `280959a7`)
 
@@ -107,7 +107,7 @@ Sáu ca vòng 1 giữ đạt. Reviewer tái hiện thêm 1 P1 và 2 P2 bằng `e
 ## Nâng, hạ phiên bản
 
 - Lần đầu 0.111.0 mở `kanban.sqlite3` và `conversations.db` có từ trước, mỗi kho được chụp một bản `<tên>.pre-0.111.0` bằng SQLite backup, trước khi thêm cột. Kho mới tinh thì không chụp.
-- **Hạ về 0.109.0:** tắt Javis, chạy `python tools/team_chat_restore_pre.py --yes`. Công cụ khôi phục CẢ BỘ ba kho (review vòng 1, R6):
+- **Hạ về 0.109.0:** tắt UNI MATE, chạy `python tools/team_chat_restore_pre.py --yes`. Công cụ khôi phục CẢ BỘ ba kho (review vòng 1, R6):
   1. Kiểm trước cả bộ, chưa ghi gì: kho nào đã nâng thì phải có snapshot hợp lệ. Thiếu hay hỏng một snapshot là dừng, không đụng kho nào.
   2. Chép mọi kho hiện có (kể cả `team.sqlite3`) sang `<tên>.post-0.111.0-<thời điểm>`.
   3. Gỡ `team.sqlite3` khỏi chỗ chạy: trước 0.111.0 không có kho này.
@@ -124,7 +124,7 @@ Sáu ca vòng 1 giữ đạt. Reviewer tái hiện thêm 1 P1 và 2 P2 bằng `e
 | `tests/python/test_team_store.py` | 24 ca: nhóm, thành viên, trưởng nhóm, bước CAS, sổ lượt, khoá bận |
 | `tests/python/test_team_messages.py` | Người gửi, chống gửi trùng, phân trang, ẩn khỏi lịch sử chat |
 | `tests/python/test_team_queue.py` | 33 ca: TC9, TC14 tới TC18 (ví dụ A, C, B), cách ly bảng Việc |
-| `tests/python/test_team_runner.py` | 65 ca, engine giả: TC6 tới TC13, TC17 tới TC23, khối JAVIS_TEAM sai khuôn, huỷ giữa lượt |
+| `tests/python/test_team_runner.py` | 65 ca, engine giả: TC6 tới TC13, TC17 tới TC23, khối UNIMATE_TEAM sai khuôn, huỷ giữa lượt |
 | `tests/python/test_team_api.py` | 40 ca trên app thật với engine giả: route, 409, đề xuất, sổ quyết định, xoá agent rồi tạo lại (TC5), lưu trữ |
 | `tests/js/test_teams_ui.js` | 53 ca: danh sách, tin, hàng đợi, khung soạn, cài đặt, chỗ nối, CSS, i18n |
 | `tests/python/test_team_rollback.py` | 31 ca với mã 0.109.0 thật (`bfb1c29f`): snapshot, hạ có và không khôi phục, nâng lại; R6 với nhóm thật, nhóm mồ côi, thiếu snapshot, hỏng giữa chừng |

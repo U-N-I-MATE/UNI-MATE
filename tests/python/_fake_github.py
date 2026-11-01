@@ -1,6 +1,6 @@
 """A fake GitHub for the GitHub-in-chat tests: a local HTTP server plus bare git repos as remotes.
 
-Nothing here reaches github.com. Tests point Javis at it with `JAVIS_GITHUB_API=<server url>`; each fake repo's
+Nothing here reaches github.com. Tests point UNI MATE at it with `UNIMATE_GITHUB_API=<server url>`; each fake repo's
 `clone_url` is a bare repo on disk, so clone, fetch and push are real git operations.
 
 The server keeps just enough of the REST API for what github_api.py calls: user, repos, pulls (create, find, read,

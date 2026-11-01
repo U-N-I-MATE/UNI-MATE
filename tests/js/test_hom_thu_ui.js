@@ -7,7 +7,7 @@
 
    Mấy chỗ dễ làm sai mà file này khoá lại:
 
-   1. Bấm một mẩu thư phải mở ĐÚNG hội thoại cũ (`JavisSessions.open`), không phải mở hội
+   1. Bấm một mẩu thư phải mở ĐÚNG hội thoại cũ (`UniMateSessions.open`), không phải mở hội
       thoại mới - toàn bộ ngữ cảnh nằm ở hội thoại cũ, hỏi tiếp ở chỗ khác là kể lại từ đầu.
    2. Đã-đọc của thư riêng nằm ở SERVER (`/inbox/read`), không phải localStorage như tin
       chung: điện thoại và máy tính phải đếm giống nhau.
@@ -49,11 +49,11 @@ check("chấm đỏ trên chuông đếm CẢ HAI tầng",
   /var tong = unread\.length \+ state\.thuChuaDoc/.test(noti));
 
 // ---- 2. Bấm thư = quay về hội thoại cũ ----
-check("CANARY: mở thư gọi JavisSessions.open (quay về hội thoại đã hỏi)",
-  /window\.JavisSessions\.open\(item\.session_id\)/.test(noti));
+check("CANARY: mở thư gọi UniMateSessions.open (quay về hội thoại đã hỏi)",
+  /window\.UniMateSessions\.open\(item\.session_id\)/.test(noti));
 check("CANARY: KHÔNG mở hội thoại mới khi đọc thư",
-  noti.indexOf("JavisSessions.new()") === -1);
-check("0.191.0: thư không gắn hội thoại thì mở trong Javis Core (chép sang đó một lần, kèm nguồn)",
+  noti.indexOf("UniMateSessions.new()") === -1);
+check("0.191.0: thư không gắn hội thoại thì mở trong UNI MATE Core (chép sang đó một lần, kèm nguồn)",
   /if \(!item\.session_id\) \{ closePanel\(\); hoiCore\("inbox", item\.id\); return; \}/.test(noti));
 
 // ---- 3. Đã-đọc nằm ở server ----
@@ -62,7 +62,7 @@ check("CANARY: đọc tất cả ở tab thư riêng đi qua API, không chỉ t
   /docThu\(\{ all: true \}\)/.test(noti));
 check("mở một hội thoại thì thư của nó tự đánh dấu đã đọc (chống đếm hai lần)",
   /docThu\(\{ session_id: sid \}\)/.test(noti)
-  && /window\.JavisInbox\.docPhien\(id\)/.test(app));
+  && /window\.UniMateInbox\.docPhien\(id\)/.test(app));
 check("server có đủ ba lối đánh dấu (một mẩu / cả hội thoại / tất cả)",
   main.indexOf("inbox.doc_het()") !== -1 && main.indexOf("inbox.doc_theo_phien(") !== -1
   && main.indexOf("inbox.danh_dau_doc(") !== -1);
@@ -70,7 +70,7 @@ check("server có đủ ba lối đánh dấu (một mẩu / cả hội thoại 
 // ---- 4. Chấm đỏ cập nhật sống qua WebSocket ----
 check("app.js xử lý sự kiện 'inbox' từ WebSocket", /data\.type === "inbox"/.test(app));
 check("thư của hội thoại ĐANG mở thì đánh dấu đọc luôn, còn lại chỉ làm tươi chuông",
-  /sid === savedSessionId\) window\.JavisInbox\.docPhien\(sid\)/.test(app));
+  /sid === savedSessionId\) window\.UniMateInbox\.docPhien\(sid\)/.test(app));
 
 // ---- 5. Thông báo đẩy: không tự ý xin quyền ----
 check("CANARY: chỉ xin quyền TRONG hàm bat() (do người dùng bấm), không gọi lúc tải trang",
@@ -101,7 +101,7 @@ check("nêu ĐÍCH DANH dịch vụ đẩy đang hỏng",
   /window\.t\("push\.err_dv_khong_nhan", \{ dv: mot\.dich_vu \}\)/.test(push)
   && /\{dv\}/.test(VI["push.err_dv_khong_nhan"] || "")
   && /không nhận được/.test(VI["push.err_dv_khong_nhan"] || ""));
-check("ô công tắc nói số thiết bị đang nhận", /JavisPush\.thietBi\(\)/.test(noti));
+check("ô công tắc nói số thiết bị đang nhận", /UniMatePush\.thietBi\(\)/.test(noti));
 check("server trả danh sách thiết bị kèm lỗi lần gửi gần nhất",
   main.indexOf('"loi_lan_cuoi"') !== -1 && main.indexOf('"devices": chi_tiet') !== -1);
 
@@ -112,7 +112,7 @@ check("trả kèm Service-Worker-Allowed: /", main.indexOf('"Service-Worker-Allo
 check("client đăng ký đúng /sw.js với scope /", /register\("\/sw\.js", \{ scope: "\/" \}\)/.test(push));
 check("sw.js có handler push + notificationclick",
   sw.indexOf('addEventListener("push"') !== -1 && sw.indexOf('addEventListener("notificationclick"') !== -1);
-check("CANARY: bấm thông báo thì FOCUS tab Javis đang mở, không đẻ tab thứ hai",
+check("CANARY: bấm thông báo thì FOCUS tab UNI MATE đang mở, không đẻ tab thứ hai",
   sw.indexOf("c.focus()") !== -1 && sw.indexOf("matchAll") !== -1);
 // 0.418.0: một ngoại lệ HẸP (chủ repo duyệt 30/10/2026, giai đoạn 3 hiệu năng): chỉ trang "/" và từ điển i18n, LUÔN hỏi
 // máy chủ trước, bản đã giữ chỉ dùng khi máy chủ không với tới được. Hành vi chạy thật ở test_hieu_nang_gd3.js.
@@ -130,7 +130,7 @@ check("xoá tham số khỏi URL để F5 không mở lại", /history\.replaceS
 
 // ---- 7b. Thư của TRỢ LÝ / QUY TRÌNH mở ở trang Cộng sự (0.59.22) ----
 // Đổ nó vào khung chat của bộ não chính thì hai chuyện xảy ra cùng lúc: người dùng nhìn một
-// đoạn chat với trợ lý trên màn Javis mà không hiểu vì sao, và phiên đang mở trở thành phiên
+// đoạn chat với trợ lý trên màn UNI MATE mà không hiểu vì sao, và phiên đang mở trở thành phiên
 // của trợ lý nên tin gõ tiếp bay thẳng vào đó - đúng lỗi bản 0.59.15 đã chữa cho đường rời
 // trang, hòm thư mở lại nó bằng một cửa khác.
 const ws = read("dashboard/workspace.js");
@@ -140,9 +140,9 @@ check("server ghi KÊNH của hội thoại vào mẩu thư",
 check("client nhận ra thư của cộng sự qua kênh",
   /\^\(agent\|workflow\):\(\.\+\)\$/.test(noti));
 check("thư của cộng sự mở bằng trang Cộng sự, kèm ĐÚNG mã hội thoại",
-  /JavisWorkspace\.openCommand\(cs\.loai, cs\.slug, item\.session_id\)/.test(noti));
-check("CANARY: thư thường vẫn mở bằng JavisSessions.open như cũ",
-  /JavisSessions\.open\(item\.session_id\)/.test(noti));
+  /UniMateWorkspace\.openCommand\(cs\.loai, cs\.slug, item\.session_id\)/.test(noti));
+check("CANARY: thư thường vẫn mở bằng UniMateSessions.open như cũ",
+  /UniMateSessions\.open\(item\.session_id\)/.test(noti));
 check("openCommand nhận mã hội thoại và chuyển tiếp xuống moPhien",
   /function openCommand\(kind, slug, sid\)/.test(ws)
   && /moPhien\(item, false, cmd\.sid\)/.test(ws));
@@ -160,8 +160,8 @@ check("moPhien mở ĐÚNG hội thoại được chỉ định, không lấy cu
   const ctx = {
     docThu: () => ({ then: () => {} }), render() {}, closePanel() {},
     window: {
-      JavisWorkspace: { openCommand: (loai, slug, sid) => goi.push(["ws", loai, slug, sid]) },
-      JavisSessions: { open: (sid) => goi.push(["chat", sid]) },
+      UniMateWorkspace: { openCommand: (loai, slug, sid) => goi.push(["ws", loai, slug, sid]) },
+      UniMateSessions: { open: (sid) => goi.push(["chat", sid]) },
     },
   };
   ctx.Alpine = { store: () => ({ active: "kanban", go: (p) => goi.push(["nav", p]) }) };
@@ -183,7 +183,7 @@ check("moPhien mở ĐÚNG hội thoại được chỉ định, không lấy cu
     goi.some((x) => x[0] === "chat" && x[1] === "s-cu"), goi);
 
   goi.length = 0;
-  ctx.window.JavisWorkspace = null;
+  ctx.window.UniMateWorkspace = null;
   ctx.moThu({ id: "4", session_id: "s-cs2", channel: "agent:ke-toan" });
   check("CANARY: chưa nạp module Cộng sự thì lui về khung chat chứ không nuốt cú bấm",
     goi.some((x) => x[0] === "chat" && x[1] === "s-cs2"), goi);

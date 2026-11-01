@@ -13,8 +13,8 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-gate-f-")
-TEMP = Path(tempfile.mkdtemp(prefix="javis-team-gate-fw-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-gate-f-")
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-team-gate-fw-"))
 # Keep the real config reader, but give it a test-owned home instead of the host's MCP servers.
 CODEX_CONFIG_HOME = TEMP / "codex-home"
 CODEX_CONFIG_HOME.mkdir()
@@ -115,8 +115,8 @@ def one_job(label, provider, work_mode=None):
 # Claude, gated (the default)
 seen, task, tm, t = one_job("claude", "anthropic-cli")
 b = seen[0]["base"] if seen else None
-check("claude gated: the hub level is `gated`", b is not None and b.javis_mode == team_gate.HUB_MODE
-      and ".mcp_hub_gated" in str(b.mcp_config or ".mcp_hub_gated"), getattr(b, "javis_mode", None))
+check("claude gated: the hub level is `gated`", b is not None and b.unimate_mode == team_gate.HUB_MODE
+      and ".mcp_hub_gated" in str(b.mcp_config or ".mcp_hub_gated"), getattr(b, "unimate_mode", None))
 check("claude gated: the engine carries the gate id for its PreToolUse hook", b is not None and b.team_gate)
 check("claude gated: the gate knows the brain as a writable root",
       b is not None and SEEN_TURN and SEEN_TURN[0] and SEEN_TURN[0]["team_gate"] == b.team_gate)
@@ -190,9 +190,9 @@ full_turn = (SEEN_TURN[0] or {}) if len(SEEN_TURN) == 1 else {}
 full_execution = full_turn.get("execution") or {}
 stored_turn = tm.turn(full_execution.get("turn_id") or "") or {}
 stored_step = next((s for s in tm.steps(task["id"]) if s["step_id"] == full_execution.get("step_id")), {})
-check("full: Claude at full with a bound team turn and no tool gate", b is not None and b.javis_mode == "full"
+check("full: Claude at full with a bound team turn and no tool gate", b is not None and b.unimate_mode == "full"
       and not b.team_gate and full_turn.get("kenh") == "team" and not full_turn.get("team_gate"),
-      (getattr(b, "javis_mode", None), SEEN_TURN))
+      (getattr(b, "unimate_mode", None), SEEN_TURN))
 check("full: usage context carries the actual host execution identifiers", stored_turn and stored_step
       and full_execution.get("team_id") == stored_turn["team_id"] == t["team_id"]
       and full_execution.get("task_id") == stored_turn["task_id"] == task["id"]

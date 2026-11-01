@@ -7,10 +7,10 @@ Bug 2026-09-28 trên VPS: mỗi lượt chat bằng ChatGPT hiện liền bốn 
 before response.completed)". Hai tầng hỏng:
 
   1. Đó là Codex TỰ thử lại (sau 5 lần nó lùi về HTTPS), lượt chưa hỏng, nhưng `codex exec
-     --json` in nó thành sự kiện `error` và Javis đẩy thẳng lên thành bong bóng lỗi.
+     --json` in nó thành sự kiện `error` và UNI MATE đẩy thẳng lên thành bong bóng lỗi.
   2. `codex exec` là tiến trình mới mỗi lượt nên không nhớ đã lùi: lượt nào cũng mất năm lần
      thử WebSocket trước. Không có cờ tắt (features.responses_websockets đã bị gỡ, provider
-     `openai` cấm ghi đè), nên Javis khai provider riêng cùng địa chỉ ChatGPT với
+     `openai` cấm ghi đè), nên UNI MATE khai provider riêng cùng địa chỉ ChatGPT với
      supports_websockets=false.
 
 File này dựng một Codex CLI giả in đúng khuôn JSONL đó và soi cả hai tầng.
@@ -24,12 +24,12 @@ import tempfile
 import time
 from pathlib import Path
 
-TMP = Path(tempfile.mkdtemp(prefix="javis-codexws-"))
-os.environ["JAVIS_STATE_DIR"] = str(TMP / "state")
+TMP = Path(tempfile.mkdtemp(prefix="unimate-codexws-"))
+os.environ["UNIMATE_STATE_DIR"] = str(TMP / "state")
 os.environ["CODEX_HOME"] = str(TMP / "codexhome")
 (TMP / "state").mkdir()
 (TMP / "codexhome").mkdir()
-os.environ.pop("JAVIS_CODEX_TRANSPORT", None)
+os.environ.pop("UNIMATE_CODEX_TRANSPORT", None)
 
 import claude_cli  # noqa: E402
 from claude_cli import CodexCLI  # noqa: E402
@@ -44,7 +44,7 @@ def check(ten, dieu_kien, them=""):
         _fails.append(ten)
 
 
-MARK = Path(os.environ["JAVIS_STATE_DIR"]) / "codex_ws_hong.json"
+MARK = Path(os.environ["UNIMATE_STATE_DIR"]) / "codex_ws_hong.json"
 RECON = ("Reconnecting... 2/5 (stream disconnected before completion: websocket closed by "
          "server before response.completed)")
 
@@ -119,14 +119,14 @@ MARK.write_text(json.dumps({"ts": time.time() - 4 * 86400}), encoding="utf-8")
 check("dấu cũ quá hạn: về WebSocket", not co_http(args_moi()))
 
 # 6) Cờ môi trường.
-os.environ["JAVIS_CODEX_TRANSPORT"] = "http"
-check("JAVIS_CODEX_TRANSPORT=http: luôn HTTPS", co_http(args_moi()))
+os.environ["UNIMATE_CODEX_TRANSPORT"] = "http"
+check("UNIMATE_CODEX_TRANSPORT=http: luôn HTTPS", co_http(args_moi()))
 MARK.write_text(json.dumps({"ts": time.time()}), encoding="utf-8")
-os.environ["JAVIS_CODEX_TRANSPORT"] = "ws"
-check("JAVIS_CODEX_TRANSPORT=ws: không ép dù vừa hỏng", not co_http(args_moi()))
-os.environ.pop("JAVIS_CODEX_TRANSPORT")
+os.environ["UNIMATE_CODEX_TRANSPORT"] = "ws"
+check("UNIMATE_CODEX_TRANSPORT=ws: không ép dù vừa hỏng", not co_http(args_moi()))
+os.environ.pop("UNIMATE_CODEX_TRANSPORT")
 
-# 7) Người dùng tự trỏ Codex sang provider khác → Javis không giành.
+# 7) Người dùng tự trỏ Codex sang provider khác → UNI MATE không giành.
 (Path(os.environ["CODEX_HOME"]) / "config.toml").write_text('model_provider = "ollama"\n', encoding="utf-8")
 check("config.toml có model_provider riêng: không ép HTTPS", not co_http(args_moi()))
 (Path(os.environ["CODEX_HOME"]) / "config.toml").write_text('model_provider = "openai"\n', encoding="utf-8")

@@ -2,13 +2,13 @@
 
    Đo ngày 30/10/2026: lúc mở app, 72% code JS được tải và đọc nhưng không hề chạy, vì đó là code của các trang khác
    (Nhóm, Hội thoại, Chatbot, Store, Thống kê, Webhook...). Các file LỚN mà chỉ một trang dùng giờ không còn nằm trong
-   index.html; danh sách của chúng nằm trong khối <script id="javis-lazy"> (máy chủ gắn khoá ?v= y như mọi file khác).
+   index.html; danh sách của chúng nằm trong khối <script id="unimate-lazy"> (máy chủ gắn khoá ?v= y như mọi file khác).
 
    CSS riêng của một trang (inbox-v5.css, inbox-compact.css của trang Hội thoại) đi cùng nhóm, đứng trước JS, và trang
    chỉ vẽ khi nó đã áp xong. Nạp sau style.css/console.css y như vị trí cũ cuối index.html, nên thứ tự ưu tiên không đổi.
 
    Hai đường nạp, để không có chỗ nào thấy "module chưa sẵn sàng":
-   - TRANG: console.js renderPage chờ `JavisNapCham.cho(nhóm)` trước khi vẽ trang đó. Chỗ gọi chéo (thông báo mở một
+   - TRANG: console.js renderPage chờ `UniMateNapCham.cho(nhóm)` trước khi vẽ trang đó. Chỗ gọi chéo (thông báo mở một
      nhóm Teams, nút Store ở trang Cộng sự...) cũng chờ đúng nhóm nó cần.
    - NỀN: trang mở xong và rảnh thì nạp nốt mọi nhóm, lần lượt, đúng thứ tự cũ trong index.html. Nên hầu như lúc người
      dùng bấm sang trang khác thì code đã nằm sẵn, chỉ khác là nó không còn chặn lúc mở app.
@@ -25,7 +25,7 @@
 
   function bang() {
     if (NHOM) return NHOM;
-    try { NHOM = JSON.parse(document.getElementById("javis-lazy").textContent || "{}"); } catch (e) { NHOM = {}; }
+    try { NHOM = JSON.parse(document.getElementById("unimate-lazy").textContent || "{}"); } catch (e) { NHOM = {}; }
     return NHOM;
   }
 
@@ -74,6 +74,6 @@
     if (document.readyState === "complete") chay(); else window.addEventListener("load", chay);
   }
 
-  window.JavisNapCham = { cho: cho, goi: goi, daXong: daXong, nhom: function () { return bang(); } };
+  window.UniMateNapCham = { cho: cho, goi: goi, daXong: daXong, nhom: function () { return bang(); } };
   henNen();
 })();

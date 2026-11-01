@@ -16,12 +16,12 @@ const ctx={window:{addEventListener(n,f){nghe[n]=f;}},
   document:{addEventListener(){}, querySelectorAll:(sel)=>dom[sel]||[]}};
 vm.createContext(ctx);vm.runInContext(catalog,ctx);
 // toneOf trả NULL khi tên bảng màu lạ - đúng như dashboard/pet.js.
-ctx.window.JavisPet={shapes:()=>ctx.SHAPES,palettes:()=>ctx.PALETTES,
+ctx.window.UniMatePet={shapes:()=>ctx.SHAPES,palettes:()=>ctx.PALETTES,
   previewSvg:()=>'<svg><path/><ellipse/><ellipse/></svg>',
   toneOf:(p)=>ctx.PALETTES[p]?['#112233','#445566']:null};
 const nguon = fs.readFileSync(path.join(root,'dashboard/agent-avatar.js'),'utf8');
 vm.runInContext(nguon,ctx);
-const A=ctx.window.JavisAvatar;
+const A=ctx.window.UniMateAvatar;
 const saved={shape:'pentagon',palette:'pink'};
 assert.equal(JSON.stringify(A.of({avatar:saved})),JSON.stringify(saved));
 assert.equal(JSON.stringify(A.of({slug:'legacy'})),JSON.stringify(A.of({slug:'legacy'})));
@@ -49,7 +49,7 @@ dom['.agent-avatar']=[{dataset:{shape:'circle',palette:'amber'},set innerHTML(v)
                      {dataset:{shape:'square',palette:'jade'},set innerHTML(v){ve.push(v);}}];
 dom['.aa-colors [data-palette]']=[{dataset:{palette:'khong-co'},style:{setProperty:(k,v)=>swatch.push(v)}},
                                   {dataset:{palette:'jade'},style:{setProperty:(k,v)=>swatch.push(v)}}];
-assert.doesNotThrow(()=>nghe['javis-theme-change']({}), 'bảng màu lạ không được ném');
+assert.doesNotThrow(()=>nghe['unimate-theme-change']({}), 'bảng màu lạ không được ném');
 assert.equal(ve.length,3,'mọi avatar đều được vẽ lại');
 assert.equal(swatch.length,2);
 assert.equal(swatch[0],'transparent','bảng màu lạ rơi về màu trong suốt');
@@ -81,7 +81,7 @@ assert.equal(swatch[1],'#112233');
 // Chủ dự án chốt: ô đó liếc sang TRÁI và hơi XUỐNG, khác dáng chữ ký chéo lên phải.
 {
   const goi = [];
-  ctx.window.JavisPet.previewSvg = (s, p, o) => { goi.push(o || {}); return '<svg><path/><ellipse/><ellipse/></svg>'; };
+  ctx.window.UniMatePet.previewSvg = (s, p, o) => { goi.push(o || {}); return '<svg><path/><ellipse/><ellipse/></svg>'; };
   A.html({slug:'x'}, 40);
   assert.deepEqual(goi.pop(), {}, 'avatar thường giữ nguyên dáng liếc mặc định');
   A.html({slug:'x'}, 100, 'idle', {liec:'trai_duoi'});
@@ -99,21 +99,21 @@ assert.equal(swatch[1],'#112233');
 // ============================================================
 {
   // Ngẫu nhiên: hình + bảng màu CÓ SẴN + mắt trắng hoặc đen (chủ dự án chốt 24/09).
-  const cu = ctx.window.JavisPet.toneOf;
-  ctx.window.JavisPet.toneOf = () => ['#c0703a'];   // thân tầm trung: trắng hay đen đều đọc được
+  const cu = ctx.window.UniMatePet.toneOf;
+  ctx.window.UniMatePet.toneOf = () => ['#c0703a'];   // thân tầm trung: trắng hay đen đều đọc được
   const mat = new Set();
   for (let i = 0; i < 80; i++) { const a = A.random(); mat.add(a.eye); assert(co(ctx.PALETTES, a.palette), 'không bốc màu tự chọn'); }
   assert.deepEqual([...mat].sort(), ['den', 'trang'], 'mắt ngẫu nhiên phải ra cả trắng lẫn đen, và chỉ hai màu đó');
   // Thân rất sáng thì không bao giờ bốc mắt trắng (mất mặt).
-  ctx.window.JavisPet.toneOf = () => ['#fafafa'];
+  ctx.window.UniMatePet.toneOf = () => ['#fafafa'];
   for (let i = 0; i < 40; i++) assert.equal(A.random().eye, 'den', 'thân sáng thì mắt đen');
-  ctx.window.JavisPet.toneOf = cu;
+  ctx.window.UniMatePet.toneOf = cu;
   // Màu tự chọn + mắt tự chọn + cỡ mắt đi qua of() và ra đúng trường form.
   const v = A.of({avatar:{shape:'star',palette:'custom',color:'#FA4F05',eye:'custom',eyeColor:'#2A62B0',eyeSize:1.3}});
   assert.equal(JSON.stringify(v), JSON.stringify({shape:'star',palette:'custom',color:'#fa4f05',eye:'custom',eyeColor:'#2a62b0',eyeSize:1.3}));
   assert.deepEqual(A.formFields(v), {avatar_shape:'star',avatar_palette:'custom',avatar_eye_size:'1.3',
     avatar_color:'#fa4f05',avatar_eye:'custom',avatar_eye_color:'#2a62b0',avatar_image:'none'});
-  // 0.176.0: ảnh tự tải lên. of() chỉ giữ tên đúng dạng kho ảnh đặt; html() vẽ <img> thay hình Javis; formFields gửi tên
+  // 0.176.0: ảnh tự tải lên. of() chỉ giữ tên đúng dạng kho ảnh đặt; html() vẽ <img> thay hình UNI MATE; formFields gửi tên
   // ảnh, không có ảnh thì "none" (gỡ ảnh: FastAPI coi ô form rỗng là không gửi).
   const IMG = '0123456789abcdef0123.webp';
   const vi = A.of({avatar:{shape:'star',palette:'jade',image:IMG}});
@@ -131,6 +131,6 @@ assert.equal(swatch[1],'#112233');
   assert(/data-color="#fa4f05"/.test(h) && /data-eye="custom"/.test(h) && /data-eye-color="#2a62b0"/.test(h) && /data-eye-size="1.3"/.test(h));
   // Picker dùng đúng bộ chỉnh của linh vật, không dựng bản riêng.
   assert(/P\.editorHtml\(value, \{\}\)/.test(nguon) && /P\.editorBind\(host\.querySelector\('\.aa-editor'\)/.test(nguon),
-    'cài đặt avatar phải dùng bộ chỉnh chung JavisPet.editorHtml/editorBind');
+    'cài đặt avatar phải dùng bộ chỉnh chung UniMatePet.editorHtml/editorBind');
 }
 console.log('OK - saved identity, stable legacy avatar, escaped markup, theme redraw survives a stray palette, staggered blink, preview gaze');

@@ -34,7 +34,7 @@ Chỗ nối vào `main.py`, `team_runner.py`, `resonance_heartbeat.py` giữ ng�
 ### 1b. Chỗ cắm đã có ở phần P (chi tiết: `docs/dev/team-chat-t3-pulse.md` mục 7)
 
 - `agent_pulse_host.register_view_part(name, fn(store, agent_key))`: mục của J/L trong `GET /agents/{slug}/pulse` (khoá `parts`);
-  phía trang `window.JavisPulseParts.push({name, render(view, null, {slug})})` (`agent-pulse.js` gọi `render(view, null, {slug})`).
+  phía trang `window.UniMatePulseParts.push({name, render(view, null, {slug})})` (`agent-pulse.js` gọi `render(view, null, {slug})`).
 - `agent_pulse_host.register_reason_handler(code, fn(host, reason))`: phục vụ `reaction_review` (L), `related_review` và
   `wait_unblocked` (J); hàm tự `WakeReasons.claim(..., try_busy, release_busy)` với `host.busy_pair(agent_key)`.
 - `judge_proactive(..., origin="pulse", payload={"judge_daily", "source_ref"})`: host KHÔNG truyền `engine` (bộ phán xử dùng đường
@@ -53,7 +53,7 @@ Chi tiết và lý do: [team-chat-t3-judge.md](team-chat-t3-judge.md). Ba hàm g
 - `await agent_judge.judge_proactive(*, agent_key, context_ref, draft, source_event, engine=None, origin="", payload=None) ->
   Decision`: nói/chờ/im cho tin chủ động ở chat riêng và nhóm. Lỗi, hết giờ, sai cấu trúc: `silent` có lý do, không gửi. Trong
   nhóm truyền `payload={"judge_daily": <trần>}`. `engine`: `async (prompt, purpose, started) -> str`, mặc định model việc nền.
-  Dưới chốt test `JAVIS_NO_REAL_JUDGE_ENGINE=1`, mọi hàm hỏi (kể cả `engine=` và `ctx["ask"]`) bị từ chối trừ hàm đánh dấu
+  Dưới chốt test `UNIMATE_NO_REAL_JUDGE_ENGINE=1`, mọi hàm hỏi (kể cả `engine=` và `ctx["ask"]`) bị từ chối trừ hàm đánh dấu
   `agent_judge.mark_test_fake`. Lỗi trước `started()` hoàn dòng sổ (`engine_unavailable`). Ở chat riêng, `origin =
   "reaction_review"` tiêu hạn mức ở mức ưu tiên `reaction_review`.
 - `Decision = {"decision_id", "verdict": "speak"|"wait"|"silent", "score", "threshold", "reason", "wait_until", "ask_clarify",
@@ -87,8 +87,8 @@ Chi tiết và lý do: [team-chat-t3-learn.md](team-chat-t3-learn.md).
   (bộ xử lý `reaction_review`, mục "lessons", hàm quay lại cho `offset_set|eagerness_set|lesson_add|lesson_remove|lesson_promote`).
   `ReviewHost.tick(agents)` chạy trước `PulseHost.tick`. `ReviewHost.on_judge_send(decision, payload, mode)` là bộ gửi đăng ký với J
   (chỉ nhận `payload.origin == "reaction_review"`).
-- `JAVIS_LESSON` của chat riêng ghi `agent_lessons` scope `dm:<agent_key>` (không còn vào `MEMORY.md`); của lượt nhóm scope
-  `team:<id>`; `JAVIS_RULE` giữ nguyên.
+- `UNIMATE_LESSON` của chat riêng ghi `agent_lessons` scope `dm:<agent_key>` (không còn vào `MEMORY.md`); của lượt nhóm scope
+  `team:<id>`; `UNIMATE_RULE` giữ nguyên.
 - `agent_review.serve_reaction_review(reason)`: phục vụ lý do `reaction_review` theo 4.4 (lượt có cấu trúc, `consumed ⊆ nguồn`, trạng
   thái theo kết quả host thật, ghi `agent_pulse_events`).
 - `agent_review.maybe_self_review(agent_key)`: 8.3, tối đa 3 thay đổi từ danh sách đóng, tự áp, ghi trước/sau, quay lại theo 6.4.

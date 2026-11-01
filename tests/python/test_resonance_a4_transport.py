@@ -2,9 +2,9 @@
 
     python tests/run.py resonance_a4_transport -v
 
-Không gọi model hay mạng thật. Ba đường mang danh tính lượt tới `javis_submit_deliverable`:
+Không gọi model hay mạng thật. Ba đường mang danh tính lượt tới `unimate_submit_deliverable`:
 1. engine API: plugin trong tiến trình (route thật của `plugins_host`), ngữ cảnh lượt gắn trong tiến trình;
-2. Codex: hub HTTP thật (`mcp_hub.handle_http`) với khoá `X-Javis-Turn`, chạy trong ngữ cảnh rỗng như tiến trình con;
+2. Codex: hub HTTP thật (`mcp_hub.handle_http`) với khoá `X-UniMate-Turn`, chạy trong ngữ cảnh rỗng như tiến trình con;
 3. Claude Code: server MCP plugin trong tiến trình THẬT (`ClaudeSDK._plugins_server`).
 Rồi chủ dự án Cho phép qua `POST /goals/{id}/commands` của main.app (đăng đúng bản nháp, thẻ cũ 409) và xem trước bản
 nháp qua `GET /goals/{id}/drafts/{submission_id}`.
@@ -18,8 +18,8 @@ import os
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a4x-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a4x-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import main  # noqa: E402
 import mcp_hub  # noqa: E402
@@ -68,10 +68,10 @@ PROPOSAL = {"understanding": "Bản hướng dẫn nhận hàng", "relevant_quot
             "mode": "achieve"}
 A = RA.enable(store, BRAIN, "viet-bai")
 _, ROUTE = plugins_host.plugin_tools("full", BRAIN, scope_vault=False)
-GOAL = ROUTE["javis_goal"]["call"]
-SUBMIT = ROUTE["javis_submit_deliverable"]["call"]
-check("G22 plugin javis-goal có cả hai công cụ: javis_goal và javis_submit_deliverable",
-      "javis_goal" in ROUTE and "javis_submit_deliverable" in ROUTE)
+GOAL = ROUTE["unimate_goal"]["call"]
+SUBMIT = ROUTE["unimate_submit_deliverable"]["call"]
+check("G22 plugin unimate-goal có cả hai công cụ: unimate_goal và unimate_submit_deliverable",
+      "unimate_goal" in ROUTE and "unimate_submit_deliverable" in ROUTE)
 
 
 def handoff_of(text):
@@ -87,7 +87,7 @@ with RA.turn(A, "eA", 1, USER, BRAIN, slug="viet-bai", store=store):
     h1 = handoff_of(out)
     sub1 = asyncio.run(SUBMIT({"path": DELIV, "content": GOOD, "handoff": h1}))
 g1 = store.find_by_key(OWNER, R.message_ref("eA", 1))
-check("1 engine API: javis_goal nói rõ phạm vi CHƯA được cho phép và trả mã bàn giao",
+check("1 engine API: unimate_goal nói rõ phạm vi CHƯA được cho phép và trả mã bàn giao",
       "CHƯA được cho phép" in out and h1.startswith("bd_"), out[-400:])
 check("1 engine API: nộp giữ làm nháp, chưa ghi file đích", "NHÁP" in sub1 and not (Path(BRAIN) / DELIV).exists()
       and [s["status"] for s in store.submissions(OWNER, g1.id)] == ["awaiting_scope"], sub1)
@@ -96,7 +96,7 @@ check("G20 gọi ngoài lượt: ERROR no_turn, không ghi bản nộp", out_pla
       and len(store.submissions(OWNER, g1.id)) == 1, out_plain)
 
 
-# ═══════════ 2. Codex: hub HTTP với khoá X-Javis-Turn ═══════════
+# ═══════════ 2. Codex: hub HTTP với khoá X-UniMate-Turn ═══════════
 class _Req:
     def __init__(self, headers, body):
         self.headers = {k.lower(): v for k, v in headers.items()}
@@ -119,19 +119,19 @@ mcp_hub.hub_token = lambda: "T"
 
 
 async def _fake_discover(*a, **kw):
-    return [], {"javis_goal": ROUTE["javis_goal"], "javis_submit_deliverable": ROUTE["javis_submit_deliverable"]}
+    return [], {"unimate_goal": ROUTE["unimate_goal"], "unimate_submit_deliverable": ROUTE["unimate_submit_deliverable"]}
 mcp_hub.discover_all = _fake_discover
 
 with RA.turn(A, "cA", 1, USER, BRAIN, slug="viet-bai", store=store):
     key = turn_context.issue_key()
-    out2 = asyncio.run(_hub(key, "javis_goal", {"op": "create", **PROPOSAL}))
-    sub2 = asyncio.run(_hub(key, "javis_submit_deliverable", {"path": DELIV, "content": GOOD,
+    out2 = asyncio.run(_hub(key, "unimate_goal", {"op": "create", **PROPOSAL}))
+    sub2 = asyncio.run(_hub(key, "unimate_submit_deliverable", {"path": DELIV, "content": GOOD,
                                                                 "handoff": handoff_of(out2)}))
 g2 = store.find_by_key(OWNER, R.message_ref("cA", 1))
 check("2 Codex qua hub với khoá lượt: nộp đúng mục tiêu của lượt, giữ làm nháp", "NHÁP" in sub2
       and [s["status"] for s in store.submissions(OWNER, g2.id)] == ["awaiting_scope"], sub2)
-no_key = asyncio.run(_hub(None, "javis_submit_deliverable", {"path": DELIV, "content": GOOD}))
-dead = asyncio.run(_hub(key, "javis_submit_deliverable", {"path": DELIV, "content": GOOD + "x"}))
+no_key = asyncio.run(_hub(None, "unimate_submit_deliverable", {"path": DELIV, "content": GOOD}))
+dead = asyncio.run(_hub(key, "unimate_submit_deliverable", {"path": DELIV, "content": GOOD + "x"}))
 check("G22 không có khoá lượt (đường của Grok, Antigravity) hay khoá của lượt đã xong: ERROR, không ghi bản nộp",
       no_key.startswith("ERROR") and dead.startswith("ERROR") and len(store.submissions(OWNER, g2.id)) == 1,
       (no_key, dead))
@@ -140,7 +140,7 @@ check("G22 không có khoá lượt (đường của Grok, Antigravity) hay kho�
 # ═══════════ 3. Claude Code: server plugin trong tiến trình ═══════════
 async def _sdk(name, args):
     e = claude_sdk_engine.ClaudeSDK(cwd=BRAIN)
-    e.javis_vault = BRAIN
+    e.unimate_vault = BRAIN
     server = e._plugins_server()["instance"]
     req = CallToolRequest(method="tools/call", params=CallToolRequestParams(name=name, arguments=args))
     res = await server.request_handlers[CallToolRequest](req)
@@ -148,8 +148,8 @@ async def _sdk(name, args):
 
 
 with RA.turn(A, "kA", 1, USER, BRAIN, slug="viet-bai", store=store):
-    out3 = asyncio.run(_sdk("javis_goal", {"op": "create", **PROPOSAL}))
-    sub3 = asyncio.run(_sdk("javis_submit_deliverable", {"path": DELIV, "content": GOOD, "handoff": handoff_of(out3)}))
+    out3 = asyncio.run(_sdk("unimate_goal", {"op": "create", **PROPOSAL}))
+    sub3 = asyncio.run(_sdk("unimate_submit_deliverable", {"path": DELIV, "content": GOOD, "handoff": handoff_of(out3)}))
 g3 = store.find_by_key(OWNER, R.message_ref("kA", 1))
 check("3 Claude Code qua server plugin thật: nộp đúng mục tiêu của lượt", "NHÁP" in sub3
       and [s["status"] for s in store.submissions(OWNER, g3.id)] == ["awaiting_scope"], sub3)

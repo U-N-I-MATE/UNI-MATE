@@ -64,9 +64,9 @@ check("không có mục tiêu: rỗng", G.barHtml([], "a", 1, {}) === "");
 const handlers = {};
 global.window = { addEventListener: (ev, f) => { (handlers[ev] = handlers[ev] || []).push(f); } };
 G._datLai();
-window.JavisGoals = G;
+window.UniMateGoals = G;
 let SID = null, RUNNING = {}, SENT = [], NOTES = [];
-window.JavisChatApi = {
+window.UniMateChatApi = {
   note: (md) => NOTES.push(md),
   sid: () => SID,
   brain: () => "brain",
@@ -77,7 +77,7 @@ window.JavisChatApi = {
     L.daGui(SID, opts);
   },
 };
-window.JavisSessions = { open: (sid) => { SID = sid; fire("javis:sessions-changed"); } };
+window.UniMateSessions = { open: (sid) => { SID = sid; fire("unimate:sessions-changed"); } };
 global.fetch = async () => ({ ok: true, status: 200, json: async () => ({ block: "[MỤC TIÊU: x]\n\n" }) });
 function fire(ev) { (handlers[ev] || []).forEach((f) => f()); }
 const L = require("../../dashboard/chat-lenh.js");
@@ -97,14 +97,14 @@ function xongVong(sid, marker) { L.ghiNhan(sid, marker, false); L.hetLuot(sid); 
   check("chưa đạt: vòng 2 tự gửi", SENT.length === 2 && g.vong === 2 && g.left === "còn 8 đơn");
 
   // Rời sang chat khác trong lúc vòng 2 đang chạy, vòng 2 xong ở nền.
-  SID = "s2"; fire("javis:sessions-changed");
+  SID = "s2"; fire("unimate:sessions-changed");
   check("rời chat: mục tiêu KHÔNG tắt", G.theoSid("s1") === g);
   xongVong("s1", { done: false, left: "còn 3 đơn" });
   await sleep(350);
   check("vòng xong lúc chat đang ở nền: chưa gửi gì, mục tiêu chờ", SENT.length === 2 && g.xongLuot === true);
   check("thanh: mục tiêu ở chat khác hiện là đang chờ", G.trangThaiHien(g, SID) === "waiting");
 
-  SID = "s1"; fire("javis:sessions-changed");
+  SID = "s1"; fire("unimate:sessions-changed");
   await sleep(350);
   check("mở lại chat: chạy tiếp vòng 3, gửi vào đúng chat", SENT.length === 3 && SENT[2].sid === "s1" && g.vong === 3);
 
@@ -150,7 +150,7 @@ function xongVong(sid, marker) { L.ghiNhan(sid, marker, false); L.hetLuot(sid); 
   check("tạm dừng từ thanh, vòng báo chưa đạt: không tự gửi", h.tiepNgay === true && SENT.length === truoc);
 
   // Mục tiêu thứ hai ở chat khác: thanh có ô số.
-  SID = "s9"; fire("javis:sessions-changed");
+  SID = "s9"; fire("unimate:sessions-changed");
   await L.chay("goal", "dọn kho ảnh");
   check("hai chat hai mục tiêu", G.ds().length === 2 && G.barHtml(G.ds(), SID, Date.now(), {}).includes("gb-count"));
   L.goalAct("del", G.theoSid("s9").id);
@@ -174,8 +174,8 @@ function xongVong(sid, marker) { L.ghiNhan(sid, marker, false); L.hetLuot(sid); 
   const app = fs.readFileSync(path.join(ROOT, "dashboard/app.js"), "utf8");
   const html = fs.readFileSync(path.join(ROOT, "dashboard/index.html"), "utf8");
   const con = fs.readFileSync(path.join(ROOT, "dashboard/console.js"), "utf8");
-  check("app.js: nút Dừng tạm dừng mục tiêu chứ không xoá", app.includes("window.JavisLenh.tamDungVi(sid)") && !app.includes("window.JavisLenh.dungMucTieu(); } catch (e) {}   // Dừng"));
-  check("app.js: turn_done của chat nền cũng báo cho /goal", app.includes("if (window.JavisLenh) window.JavisLenh.hetLuot(sid);") && !app.includes("isActive && window.JavisLenh) window.JavisLenh.hetLuot"));
+  check("app.js: nút Dừng tạm dừng mục tiêu chứ không xoá", app.includes("window.UniMateLenh.tamDungVi(sid)") && !app.includes("window.UniMateLenh.dungMucTieu(); } catch (e) {}   // Dừng"));
+  check("app.js: turn_done của chat nền cũng báo cho /goal", app.includes("if (window.UniMateLenh) window.UniMateLenh.hetLuot(sid);") && !app.includes("isActive && window.UniMateLenh) window.UniMateLenh.hetLuot"));
   check("index.html: thanh mục tiêu ẩn sẵn, nạp chat-goal.js trước chat-lenh.js",
     /id="goalBar"[^>]*hidden/.test(html) && html.indexOf("chat-goal.js") > 0 && html.indexOf("chat-goal.js") < html.indexOf("chat-lenh.js"));
   check("console.js: thanh đi theo khung chat sang trang Trò chuyện", /CHAT_NODE_IDS = \[[^\]]*"goalBar"/.test(con));

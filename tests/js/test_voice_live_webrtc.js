@@ -1,6 +1,6 @@
 // voice-live.js, nhánh WebRTC của ChatGPT Live (0.65.17, docs/dev/2026-10-voice-call-spec.md mục 3.4).
 // Khoá: chờ ready rồi mới chọn đường; transport webrtc thì KHÔNG đẩy PCM mà dựng peer connection có
-// kênh oai-events, gửi offer, đặt answer; onReady chỉ báo SAU khi bắt tay xong (câu gọi Javis gửi
+// kênh oai-events, gửi offer, đặt answer; onReady chỉ báo SAU khi bắt tay xong (câu gọi Uni gửi
 // trước lúc đó không có phiên nào nhận); lỗi lúc chờ answer báo đúng một lần; tắt mic tắt track;
 // khung tool_result tới onToolResult; đường PCM cũ không đổi.
 const assert = require('node:assert/strict');
@@ -51,7 +51,7 @@ function setup() {
     Float32Array, Int16Array, Promise, JSON, Math, Date, Array, String, console,
   };
   vm.runInNewContext(fs.readFileSync('dashboard/voice-live.js', 'utf8'), context);
-  return { live: window.JavisVoiceLive, FakeWS, log, track };
+  return { live: window.UniMateVoiceLive, FakeWS, log, track };
 }
 
 function events() {
@@ -91,8 +91,8 @@ test('webrtc: waits for ready, sends offer with oai-events, reports ready only a
   live.setMuted(false);
   assert.equal(track.enabled, true);
 
-  FakeWS.last.serverSend({ type: 'tool_result', name: 'ask_javis', text: '## Doanh thu\n12 triệu' });
-  assert.deepEqual(seen.find(e => e[0] === 'onToolResult'), ['onToolResult', 'ask_javis', '## Doanh thu\n12 triệu']);
+  FakeWS.last.serverSend({ type: 'tool_result', name: 'ask_unimate', text: '## Doanh thu\n12 triệu' });
+  assert.deepEqual(seen.find(e => e[0] === 'onToolResult'), ['onToolResult', 'ask_unimate', '## Doanh thu\n12 triệu']);
 
   live.stop();
   assert.equal(log.peers[0].closed, true, 'stop closes the peer connection');

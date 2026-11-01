@@ -52,7 +52,7 @@
     try { return window.innerWidth < HEP; } catch (e) { return false; }
   }
 
-  // Chỗ đứng của nút "≡ n/m" trên điện thoại: hàng nhãn ngay trên khung chat. Ở màn Javis là
+  // Chỗ đứng của nút "≡ n/m" trên điện thoại: hàng nhãn ngay trên khung chat. Ở màn UNI MATE là
   // nhóm nút .panel-acts (cạnh nút phóng to), ở trang Trò chuyện là thanh .chatpage-bar. Tìm
   // theo KHUNG ĐANG CHỨA #chatArea chứ không theo id cố định, vì node chat bị mượn qua lại
   // giữa hai trang. Không thấy thì rơi về góc khung như cũ - còn hơn không có nút.
@@ -71,7 +71,7 @@
   // markdown. Đọc markdown gốc (dataset.md) chứ không đọc chữ đã vẽ: bảng, code, ảnh vẽ ra thì dòng đầu là rác.
   function tenTraLoi(el) {
     var md = el.dataset && el.dataset.md != null ? el.dataset.md : "";
-    if (window.JavisVisibleMarkdown) { try { md = window.JavisVisibleMarkdown(md); } catch (e) {} }
+    if (window.UniMateVisibleMarkdown) { try { md = window.UniMateVisibleMarkdown(md); } catch (e) {} }
     var dong = String(md || el.textContent || "").split("\n").map(function (x) { return x.trim(); })
       .filter(function (x) { return x && !/^(```|\||---|!\[)/.test(x); });
     var tieuDe = dong.filter(function (x) { return /^#{1,6}\s/.test(x); })[0];
@@ -85,10 +85,10 @@
   function docMoc() {
     var ds = [];
     if (!chatArea) return ds;
-    var els = chatArea.querySelectorAll(".msg-user, .msg-javis[data-pinned]");
+    var els = chatArea.querySelectorAll(".msg-user, .msg-unimate[data-pinned]");
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (el.classList.contains("msg-javis")) {
+      if (el.classList.contains("msg-unimate")) {
         ds.push({ el: el, text: tenTraLoi(el) || window.t("cmark.answer_untitled"), ghim: true });
         continue;
       }
@@ -359,7 +359,7 @@
   function gan() {
     chatArea = document.getElementById("chatArea");
     if (!chatArea) return;
-    // childList thôi, KHÔNG subtree: lúc Javis trả lời, nội dung bong bóng vẽ lại liên tục
+    // childList thôi, KHÔNG subtree: lúc UNI MATE trả lời, nội dung bong bóng vẽ lại liên tục
     // theo từng chữ. Nghe subtree là dựng lại thanh mốc hàng chục lần mỗi câu trả lời, trong
     // khi số câu HỎI có đổi gì đâu.
     try {
@@ -401,5 +401,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", gan);
   else gan();
 
-  window.JavisChatMarks = { refresh: veLai, jump: nhayToi };
+  window.UniMateChatMarks = { refresh: veLai, jump: nhayToi };
 })();

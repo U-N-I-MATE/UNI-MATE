@@ -13,10 +13,10 @@ from datetime import datetime, timedelta, timezone
 #
 # SLUG giữ nguyên là `datetime-vn` có chủ ý, dù plugin nay không còn chỉ phục vụ VN: đổi slug
 # là bắt mọi brain đang chạy phải di trú, đổi lấy đúng một cái tên đẹp hơn. Tên tool
-# `javis_now` / `javis_date_add` cũng giữ - chúng đã nằm trong prompt và trong thói quen dùng.
+# `unimate_now` / `unimate_date_add` cũng giữ - chúng đã nằm trong prompt và trong thói quen dùng.
 #
 # Rơi về UTC+7 khi chưa nạp được cấu hình (plugin có thể chạy ngoài tiến trình server), vì đó
-# vẫn là mặc định của Javis và VN không có giờ mùa hè nên nó là hằng số đáng tin.
+# vẫn là mặc định của UNI MATE và VN không có giờ mùa hè nên nó là hằng số đáng tin.
 _TZ_DU_PHONG = timezone(timedelta(hours=7))
 _WD_DU_PHONG = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"]
 
@@ -82,14 +82,14 @@ def _date_add(args, ctx):
 
 def register(ctx):
     ctx.register_tool(
-        name="javis_now",
+        name="unimate_now",
         description=("Ngày giờ hiện tại theo múi giờ đã cấu hình: iso, date, time, thứ trong tuần. "
                      "Dùng khi cần biết 'hôm nay', 'bây giờ mấy giờ', đặt nhắc hẹn, hay đóng dấu thời gian báo cáo."),
         handler=_now, min_mode="readonly",
         schema={"type": "object", "properties": {}},
     )
     ctx.register_tool(
-        name="javis_date_add",
+        name="unimate_date_add",
         description=("Tính ngày cách hôm nay (hoặc cách ngày 'from') N ngày. Tham số: days (số nguyên, "
                      "âm = trước), from (YYYY-MM-DD, tuỳ chọn). Dùng cho 'ngày mai', '3 ngày nữa', 'tuần trước'."),
         handler=_date_add, min_mode="readonly",

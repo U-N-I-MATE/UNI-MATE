@@ -1,6 +1,6 @@
-/* Health section of the Work page (0.199.0): incidents Javis Core is handling, and the read-only health scan.
+/* Health section of the Work page (0.199.0): incidents UNI MATE Core is handling, and the read-only health scan.
  *
- * Incidents (server/incident_desk.py): a background run broke, Javis Core retried it once or said what only you can
+ * Incidents (server/incident_desk.py): a background run broke, UNI MATE Core retried it once or said what only you can
  * fix. Each row has "Done" to close it. Health scan (server/sentinel.py): failures of the last 24 hours from every
  * store, grouped by cause and sorted by count. Nothing here starts or changes a job.
  *
@@ -25,9 +25,9 @@
   }
   var ic = function (n) { return (typeof window !== "undefined" && window.ic) ? window.ic(n) : ""; };
   // (i) button from info-tip.js; without it (node tests) the explanation is drawn inline.
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(tw("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(tw("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
 
@@ -147,6 +147,6 @@
   }
 
   var api_ = { mount: mount, incidentHtml: incidentHtml, issueHtml: issueHtml, clientErrorHtml: clientErrorHtml, shortUa: shortUa };
-  if (typeof window !== "undefined") window.JavisHealthPanel = api_;
+  if (typeof window !== "undefined") window.UniMateHealthPanel = api_;
   if (typeof module !== "undefined" && module.exports) module.exports = api_;
 })();

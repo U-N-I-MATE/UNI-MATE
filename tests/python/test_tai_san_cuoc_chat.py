@@ -20,7 +20,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-taisan-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-taisan-"))
 
 from fastapi.testclient import TestClient  # noqa: E402
 import main  # noqa: E402
@@ -40,7 +40,7 @@ def check(name, cond, them=""):
 # Ghi vào brain mặc định thì test này rải file thật vào `brains/` của người chạy lẫn của CI,
 # và bất kỳ test nào sau đó soi brain mặc định cũng có thể đỏ tuỳ thứ tự chạy - đúng loại
 # lỗi chập chờn khó truy nhất.
-BRAIN = tempfile.mkdtemp(prefix="javis-brain-taisan-")
+BRAIN = tempfile.mkdtemp(prefix="unimate-brain-taisan-")
 broot = Path(BRAIN)
 (broot / "05 - Projects").mkdir(parents=True, exist_ok=True)
 (broot / "attachments").mkdir(parents=True, exist_ok=True)
@@ -86,7 +86,7 @@ check("đường dẫn ngoài brain bị bỏ", "passwd" not in files)
 # dẫn trần của channel_context cấm khoảng trắng, vì không cấm thì nó nuốt cả câu văn phía sau.
 # Chỗ này gần như luôn dính trong đời thật: brain mặc định tên là "Brain Default", tự nó đã
 # có khoảng trắng. Nên nhánh đường dẫn trần chỉ ăn với brain đặt ở đường không dấu cách (VPS
-# kiểu /opt/javis/brain), còn lối chính vẫn là link markdown - thứ CLAUDE.md đã dặn Javis
+# kiểu /opt/unimate/brain), còn lối chính vẫn là link markdown - thứ CLAUDE.md đã dặn UNI MATE
 # nhúng mỗi khi đưa file cho người dùng, và bắt được kể cả tên có khoảng trắng.
 check("CANARY: brain mặc định có khoảng trắng nên nhánh đường dẫn trần khó ăn",
       " " in str(main._default_brain_dir()), main._default_brain_dir())
@@ -96,7 +96,7 @@ check("giữ nhãn người dùng đọc được, không chỉ tên file",
       files.get("ke-hoach.md", {}).get("label") == "Kế hoạch quý 4")
 check("có đường dẫn theo GỐC BRAIN để hiện cho người đọc",
       files.get("ke-hoach.md", {}).get("brain_path") == "05 - Projects/ke-hoach.md")
-# `path` phải theo TRẦN duyệt vì giao diện đưa thẳng cho JavisOpenNoteAt - hàm đó nhận path
+# `path` phải theo TRẦN duyệt vì giao diện đưa thẳng cho UniMateOpenNoteAt - hàm đó nhận path
 # trần. Trần có thể cao hơn gốc brain nên hai đường dẫn này KHÔNG phải lúc nào cũng giống nhau.
 _ceil = main._files_root(BRAIN)
 check("và đường dẫn theo TRẦN để giao diện mở thẳng được",
@@ -104,7 +104,7 @@ check("và đường dẫn theo TRẦN để giao diện mở thẳng được",
       == main._files_rel(_ceil, broot / "05 - Projects" / "ke-hoach.md"))
 
 # ---- 3. Link -----------------------------------------------------------------
-check("link của Javis có", "https://elegant.vn/" in links)
+check("link của UNI MATE có", "https://elegant.vn/" in links)
 check("link người dùng gửi cũng có", "https://moc-viet.vn/bang-gia" in links)
 check("link nhắc hai lần chỉ hiện một dòng", links.count("https://moc-viet.vn/bang-gia") == 1)
 _vai = {l["url"]: l["vai"] for l in d.get("links", [])}

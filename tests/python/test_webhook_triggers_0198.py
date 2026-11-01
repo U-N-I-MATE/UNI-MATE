@@ -15,8 +15,8 @@ import os
 import tempfile
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-webhooks-state-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
+STATE = Path(tempfile.mkdtemp(prefix="unimate-webhooks-state-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
 
 import webhook_triggers as wt  # noqa: E402
 
@@ -50,7 +50,7 @@ async def send(chat_id, text, viec=None, web="", brain="", dedup=""):
 
 feat = wt.WebhookFeature(wt.WebhookDeps(
     state_dir=lambda: STATE, run_task=run_task, run_workflow=run_workflow, send=send,
-    base_url=lambda _r: "https://javis.example",
+    base_url=lambda _r: "https://unimate.example",
     workflow_exists=lambda brain, slug: slug == "cham-soc-lead"))
 
 
@@ -206,7 +206,7 @@ async def main():
 
     # token sources
     check("bearer header read", wt.token_from_request({"authorization": "Bearer abc"}, "") == "abc")
-    check("X-Javis-Token read", wt.token_from_request({"x-javis-token": "def"}, "") == "def")
+    check("X-UniMate-Token read", wt.token_from_request({"x-unimate-token": "def"}, "") == "def")
     check("query token read (older hooks only: see the security tests)", wt.token_from_request({}, "token=ghi&x=1") == "ghi")
 
 

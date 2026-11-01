@@ -180,10 +180,10 @@
     var base = { host: root, total: function () { return body.clientWidth; }, keep: 360 };
     // 0.196.0: let go narrower than the fold point and the column folds with its own collapse button (same as clicking it).
     var press = function (sel) { return function () { var b = document.querySelector(sel); if (b) b.click(); }; };
-    var oL = Object.assign({}, base, { varName: "--hud-left-w", key: "javis_hud_left_w", min: 200, max: 560, edge: "right",
+    var oL = Object.assign({}, base, { varName: "--hud-left-w", key: "unimate_hud_left_w", min: 200, max: 560, edge: "right",
       label: "common.resize_vault", other: function () { return wOf(right); },
       collapse: { below: FOLD_AT(200), run: press("#vtCollapse") } });
-    var oR = Object.assign({}, base, { varName: "--hud-right-w", key: "javis_hud_right_w", min: 280, max: 820, edge: "left",
+    var oR = Object.assign({}, base, { varName: "--hud-right-w", key: "unimate_hud_right_w", min: 280, max: 820, edge: "left",
       label: "common.resize_chatcol", other: function () { return wOf(left); },
       collapse: { below: FOLD_AT(280), run: press("#chatColThu") } });
     apply(oL); apply(oR);
@@ -194,7 +194,7 @@
   var api = { attach: attach, apply: apply, chan: chan, fit: fit, hud: hud, FOLD_AT: FOLD_AT,
     miniTip: { show: tipShow, hide: tipHide, html: tipHtml } };
   if (typeof window !== "undefined") {
-    window.JavisColResize = api;
+    window.UniMateColResize = api;
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", hud);
     else hud();
   }

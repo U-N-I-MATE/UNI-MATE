@@ -60,7 +60,7 @@ try {
 check("packs.js nap duoc, khong nem loi luc dinh nghia", !loiNap);
 if (loiNap) console.log("     ->", loiNap.message);
 
-const P = win.JavisPacks || {};
+const P = win.UniMatePacks || {};
 check("phoi ra render / moKho / LOAI",
   typeof P.render === "function" && typeof P.moKho === "function" && !!P.LOAI);
 
@@ -82,7 +82,7 @@ const CON = fs.readFileSync(path.join(ROOT, "dashboard", "console.js"), "utf8");
 const khoiLoaiKho = (CON.match(/const LOAI_KHO = \{([\s\S]*?)\};/) || [])[1] || "";
 const loaiTuConsole = [...khoiLoaiKho.matchAll(/:\s*"([a-z]+)"/g)].map(m => m[1]);
 // Ba trang, khong phai nam: hai trang Tro ly va Quy trinh da gop vao trang Cong su, va trang
-// do tu co nut Javis Store rieng (workspace.js goi thang JavisPacks.moKho theo tab dang mo),
+// do tu co nut UNI MATE Store rieng (workspace.js goi thang UniMatePacks.moKho theo tab dang mo),
 // nen no khong di qua bang LOAI_KHO nay.
 check("console.js khai du ba trang nang luc di qua hang tab kho", loaiTuConsole.length === 3);
 check("moi loai console.js tro toi deu co trong bang cua packs.js",
@@ -93,7 +93,7 @@ check("bang loai co ca nam loai cong 'bundle' lam cho roi",
 
 globalThis.Alpine = _alpineCu;
 
-// ---- Ngon ngu: `JavisI18n.lang` la HAM ----
+// ---- Ngon ngu: `UniMateI18n.lang` la HAM ----
 // Quen cap ngoac thi `v[lang]` tra bang mot object ham, luon truot, va MOI ten goi roi ve
 // tieng Anh trong giao dien tieng Viet. Hong lang le: van co chu de hien nen trong nhu goi
 // khai thieu ban dich, chu khong nhu mot loi. Da xay ra that trong packs.js tu 0.55.22.
@@ -101,9 +101,9 @@ for (const f of ["packs.js", "console.js", "studio.js", "chatbots.js"]) {
   const p = path.join(ROOT, "dashboard", f);
   if (!fs.existsSync(p)) continue;
   const s = fs.readFileSync(p, "utf8");
-  // Bat `JavisI18n.lang` khong theo sau boi `(`. Cho phep `lang:` (khai bao trong i18n).
-  const xau = [...s.matchAll(/JavisI18n\.lang(?!\s*\()/g)];
-  check(`${f} goi JavisI18n.lang() co ngoac, khong lay ham lam chuoi`, xau.length === 0);
+  // Bat `UniMateI18n.lang` khong theo sau boi `(`. Cho phep `lang:` (khai bao trong i18n).
+  const xau = [...s.matchAll(/UniMateI18n\.lang(?!\s*\()/g)];
+  check(`${f} goi UniMateI18n.lang() co ngoac, khong lay ham lam chuoi`, xau.length === 0);
 }
 
 console.log("");

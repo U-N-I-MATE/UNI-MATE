@@ -4,10 +4,10 @@
 
 Audit 2026-09-24 (xem test_viec_nen_khong_moc_lung_tung.py) để lại hai việc, chủ repo bảo làm
 luôn:
-1. `javis_task` thiếu chat_id thì kết quả rơi về ID Telegram đầu tiên, máy chưa đấu Telegram
+1. `unimate_task` thiếu chat_id thì kết quả rơi về ID Telegram đầu tiên, máy chưa đấu Telegram
    thì mất hút. Trường đó trước đây hoàn toàn trông vào model tự chép. Nay máy chủ ghi sổ lượt
    đang chạy theo brain (luot_dang_chay.py) và tool tự điền khi chỉ có đúng một khung chat.
-2. Kết quả loop và nhắc hẹn vẫn là bong bóng chữ trơn có emoji. Nay mang khối JAVIS_VIEC như
+2. Kết quả loop và nhắc hẹn vẫn là bong bóng chữ trơn có emoji. Nay mang khối UNIMATE_VIEC như
    việc Kanban để khung chat vẽ thẻ.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -18,7 +18,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-khung-chat-state-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-khung-chat-state-"))
 
 import luot_dang_chay as ldc  # noqa: E402
 
@@ -65,10 +65,10 @@ bg = MAIN[MAIN.index("async def _voice_bg_task("):MAIN.index("async def _start_r
 check("việc nền giọng cũng ghi và gạch sổ",
       "luot_dang_chay.bat_dau(" in bg and "luot_dang_chay.ket_thuc(_khoa_luot)" in bg)
 
-# ---- 2. Tool javis_task tự điền chat_id ----
+# ---- 2. Tool unimate_task tự điền chat_id ----
 sys.path.insert(0, str(SERVER))
 spec = importlib.util.spec_from_file_location(
-    "javis_task_plugin", ROOT / "system" / "plugins" / "javis-task" / "plugin.py")
+    "unimate_task_plugin", ROOT / "system" / "plugins" / "unimate-task" / "plugin.py")
 pl = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(pl)
 
@@ -138,7 +138,7 @@ async def _gui(chat_id, text, viec=None, web=""):
     return True, ""
 
 
-brain = Path(tempfile.mkdtemp(prefix="javis-rem-the-"))
+brain = Path(tempfile.mkdtemp(prefix="unimate-rem-the-"))
 
 
 def _ghi(p, t):

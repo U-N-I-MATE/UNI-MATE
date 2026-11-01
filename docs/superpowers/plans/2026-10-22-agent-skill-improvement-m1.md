@@ -24,7 +24,7 @@ usage attribution, durable trial/recovery lifecycle and installation receipts. N
 generation, activation or automatic trigger is exposed at this milestone.
 
 Verified non-secret local selection: anthropic-cli / claude-opus-5-5 / medium. SDK 0.2.116
-is installed in D:/Project/Javis-OS/.venv/Scripts/python.exe. Native CLI 2.1.304 exists.
+is installed in D:/Project/UNI-MATE/.venv/Scripts/python.exe. Native CLI 2.1.304 exists.
 No provider/model/reasoning replacement. Snapshot sources for the eventual business pilot
 are not yet selected; synthetic tests cannot satisfy business or live rollout evidence.
 

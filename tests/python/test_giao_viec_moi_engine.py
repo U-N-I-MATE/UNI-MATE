@@ -10,7 +10,7 @@ với Codex không".
 đường duy nhất để giao việc là `POST /kanban/task`, mà gọi được nó thì phải có Bash và curl - tức
 là chỉ Claude Code với Codex. Năm engine API đứng ngoài.
 
-Tệ hơn cả việc thiếu: `CLAUDE.md` còn dặn Javis "đừng bao giờ nói mình không làm task được, sai
+Tệ hơn cả việc thiếu: `CLAUDE.md` còn dặn UNI MATE "đừng bao giờ nói mình không làm task được, sai
 sự thật". Nên engine API sẽ TỰ TIN nhận lời rồi im lặng không làm gì. Người dùng ngồi đợi một
 việc không bao giờ chạy, và không có một dòng lỗi nào ở đâu cả.
 
@@ -18,7 +18,7 @@ Chủ repo chọn sửa MÃ chứ không hạ tài liệu. File này canh cái s
 tự rủi ro:
 
 1. **Tool phải tới được tay engine API.** Đây là toàn bộ lý do tính năng tồn tại. Đường đi thật
-   là qua MCP Hub, và hiện lazy đang bật nên nó nằm sau `javis_search_tools`/`javis_run_tool` -
+   là qua MCP Hub, và hiện lazy đang bật nên nó nằm sau `unimate_search_tools`/`unimate_run_tool` -
    test phải đi đúng đường đó chứ không gọi tắt vào hàm.
 2. **Mức quyền mặc định là `full`** (đổi 2026-09-10, khi chủ repo bỏ luật "không giao tự động
    tiền/đơn/đăng bài/nhắn khách"). Trước đó tool từ chối thẳng mức full và mặc định `suggest`;
@@ -33,7 +33,7 @@ import os
 import pathlib
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-viec-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-viec-")
 
 import mcp_hub  # noqa: E402
 import plugins_host  # noqa: E402
@@ -48,26 +48,26 @@ def check(name, cond):
         _fails.append(name)
 
 
-_VAULT = pathlib.Path(tempfile.mkdtemp(prefix="javis-vault-"))
-(_VAULT / "Javis").mkdir(parents=True, exist_ok=True)
+_VAULT = pathlib.Path(tempfile.mkdtemp(prefix="unimate-vault-"))
+(_VAULT / "UNI MATE").mkdir(parents=True, exist_ok=True)
 
 
 # ============================================================
 # 0. Plugin nạp được và khai đúng
 # ============================================================
 _mo_ta = {p.get("slug"): p for p in plugins_host.describe(None)}
-_pl = _mo_ta.get("javis-task") or {}
-check("có plugin javis-task", bool(_pl))
+_pl = _mo_ta.get("unimate-task") or {}
+check("có plugin unimate-task", bool(_pl))
 check("plugin nạp không lỗi", not _pl.get("error"))
 check("plugin bật sẵn (nếu tắt thì lời hứa vẫn thủng)", _pl.get("enabled") is True)
 check("đi theo app, không phải bản người dùng tự cài", _pl.get("source") == "bundled")
-check("khai đúng tool", _pl.get("tools") == ["javis_task"])
+check("khai đúng tool", _pl.get("tools") == ["unimate_task"])
 # Hai chỗ khai min_mode: manifest (thứ trang Plugins HIỆN cho người dùng) và register_tool
 # (thứ thật sự ENFORCE). Gate chỉ đọc cái thứ hai. Lệch nhau là trang Plugins nói dối về quyền
 # của chính nó - người dùng đọc "chỉ đọc" rồi yên tâm, trong khi tool vẫn ghi được.
 check("CANARY: min_mode hiện ra khớp min_mode enforce thật",
       _pl.get("min_mode") == "safe"
-      and 'min_mode="safe"' in (ROOT / "system" / "plugins" / "javis-task" / "plugin.py")
+      and 'min_mode="safe"' in (ROOT / "system" / "plugins" / "unimate-task" / "plugin.py")
       .read_text(encoding="utf-8"))
 
 
@@ -78,18 +78,18 @@ async def _chay():
     tools, route = await mcp_hub.discover_all("full", vault_root=str(_VAULT))
     ten = [t.get("fn") or t.get("name") for t in tools]
 
-    if "javis_search_tools" in ten:
+    if "unimate_search_tools" in ten:
         # Lazy bật: mọi tool trừ nhóm hạt nhân nằm sau meta-tool. Đây là đường đi THẬT của
         # engine API khi đã đấu nhiều nguồn, nên phải test đúng nó chứ không gọi tắt vào hàm.
-        tim = await route["javis_search_tools"]["call"]({"query": "giao việc chạy nền kanban"})
-        check("CANARY: engine API tìm ra được tool giao việc", "javis_task" in tim)
-        _run = route["javis_run_tool"]["call"]
+        tim = await route["unimate_search_tools"]["call"]({"query": "giao việc chạy nền kanban"})
+        check("CANARY: engine API tìm ra được tool giao việc", "unimate_task" in tim)
+        _run = route["unimate_run_tool"]["call"]
 
         async def goi(a):
-            return await _run({"name": "javis_task", "args": a})
+            return await _run({"name": "unimate_task", "args": a})
     else:
-        check("CANARY: engine API thấy tool giao việc", "javis_task" in ten)
-        _c = (route.get("javis_task") or {}).get("call")
+        check("CANARY: engine API thấy tool giao việc", "unimate_task" in ten)
+        _c = (route.get("unimate_task") or {}).get("call")
 
         async def goi(a):
             return await _c(a)
@@ -116,9 +116,9 @@ async def _chay():
     feat = tasks_mod.register(FastAPI(), tasks_mod.TasksDeps(
         brain_root=lambda b: b if os.path.isdir(b) else str(_VAULT),
         atomic_write_text=lambda p, s: pathlib.Path(p).write_text(s, encoding="utf-8"),
-        execute_workflow=None, workflows_dir=lambda b: str(_VAULT / "Javis" / "workflows"),
+        execute_workflow=None, workflows_dir=lambda b: str(_VAULT / "UNI MATE" / "workflows"),
         build_system_prompt=lambda *a, **k: "", aux_model=lambda *a, **k: ("", ""),
-        aux_swap=None, safe_tools=[], state_dir=pathlib.Path(os.environ["JAVIS_STATE_DIR"]),
+        aux_swap=None, safe_tools=[], state_dir=pathlib.Path(os.environ["UNIMATE_STATE_DIR"]),
         scheduler_brains=lambda: [str(_VAULT)], apply_mcp=None,
         mcp_allow_patterns=lambda *a, **k: [], report=None))
     check("tasks.current() trả đúng hàng đợi đang chạy", tasks_mod.current() is feat)
@@ -126,7 +126,7 @@ async def _chay():
     out = await goi({"op": "add", "title": "soạn báo cáo tuần", "chat_id": "web:phien123"})
     check("giao được việc", "Đã giao việc" in out)
     check("trả mã việc để theo dõi tiếp", "Mã việc:" in out)
-    check("CANARY: mặc định là full (Javis tự thao tác, luật cũ đã bỏ 2026-09-10)", "full" in out)
+    check("CANARY: mặc định là full (UNI MATE tự thao tác, luật cũ đã bỏ 2026-09-10)", "full" in out)
 
     # Mức full truyền tường minh cũng được nhận, không còn bị từ chối như trước 2026-09-10.
     out_full = await goi({"op": "add", "title": "chạy quảng cáo hộ anh", "mode": "full",
@@ -188,11 +188,11 @@ async def _chay():
     # Chế độ suggest (chỉ đọc): giao việc là hành động ghi, phải bị chặn ở TẦNG QUYỀN chứ không
     # phải trông vào tự giác của tool. Đây là lý do plugin khai min_mode=safe.
     _t2, _r2 = await mcp_hub.discover_all("suggest", vault_root=str(_VAULT))
-    if "javis_search_tools" in [x.get("fn") for x in _t2]:
-        out = await _r2["javis_run_tool"]["call"]({"name": "javis_task",
+    if "unimate_search_tools" in [x.get("fn") for x in _t2]:
+        out = await _r2["unimate_run_tool"]["call"]({"name": "unimate_task",
                                                   "args": {"op": "add", "title": "lén giao việc"}})
     else:
-        out = await (_r2.get("javis_task") or {}).get("call")({"op": "add", "title": "lén giao việc"})
+        out = await (_r2.get("unimate_task") or {}).get("call")({"op": "add", "title": "lén giao việc"})
     check("CANARY: chế độ chỉ-đọc CHẶN giao việc ở tầng quyền",
           "ERROR" in out and "quyền" in out)
     check("số việc trong kho không đổi sau lần bị chặn",
@@ -201,8 +201,8 @@ async def _chay():
     # Không biết brain nào thì PHẢI từ chối, không được âm thầm rơi về Brain Default - giao việc
     # nhầm brain là việc chạy trên dữ liệu của người khác. (Đúng lỗi image_gen từng dính.)
     _t3, _r3 = await mcp_hub.discover_all("full", vault_root=None)
-    if "javis_search_tools" in [x.get("fn") for x in _t3]:
-        out = await _r3["javis_run_tool"]["call"]({"name": "javis_task",
+    if "unimate_search_tools" in [x.get("fn") for x in _t3]:
+        out = await _r3["unimate_run_tool"]["call"]({"name": "unimate_task",
                                                    "args": {"op": "add", "title": "việc lạc brain"}})
         check("CANARY: không biết brain thì TỪ CHỐI, không rơi về brain mặc định",
               "ERROR" in out and "brain" in out)
@@ -235,22 +235,22 @@ asyncio.run(_chay())
 # ============================================================
 # "Mọi bộ não" là ba đường khác nhau, không phải một:
 #   - engine API   -> mcp_hub.discover_all() in-process   (mục 1 ở trên đã canh)
-#   - Codex        -> hub qua HTTP, có header X-Javis-Vault
+#   - Codex        -> hub qua HTTP, có header X-UniMate-Vault
 #   - Claude Code  -> plugins_host.plugin_tools() nạp THẲNG vào SDK, KHÔNG qua hub
-# Đường Claude đi riêng hẳn (nó gửi X-Javis-No-Plugins để hub bỏ nhóm plugin, rồi tự nạp
+# Đường Claude đi riêng hẳn (nó gửi X-UniMate-No-Plugins để hub bỏ nhóm plugin, rồi tự nạp
 # in-process), nên một thay đổi làm hỏng đúng đường đó sẽ không bị mục 1 phát hiện.
 _pt, _pr = plugins_host.plugin_tools("full", str(_VAULT), scope_vault=False)
 check("CANARY: đường Claude Code cũng có tool giao việc",
-      "javis_task" in [x["fn"] for x in _pt])
+      "unimate_task" in [x["fn"] for x in _pt])
 check("mức full giao được trên cả đường đó",
-      "Đã giao việc" in asyncio.run(_pr["javis_task"]["call"](
+      "Đã giao việc" in asyncio.run(_pr["unimate_task"]["call"](
           {"op": "add", "title": "chạy quảng cáo", "mode": "full", "chat_id": "web:x"})))
 
 # Chế độ chỉ-đọc phải chặn ở đường này nữa - min_mode nằm trong route của plugin_tools(mode).
 _pt2, _pr2 = plugins_host.plugin_tools("suggest", str(_VAULT), scope_vault=False)
-if "javis_task" in _pr2:
+if "unimate_task" in _pr2:
     check("CANARY: đường Claude Code cũng chặn giao việc ở chế độ chỉ-đọc",
-          "ERROR" in asyncio.run(_pr2["javis_task"]["call"]({"op": "add", "title": "lén"})))
+          "ERROR" in asyncio.run(_pr2["unimate_task"]["call"]({"op": "add", "title": "lén"})))
 else:
     check("chế độ chỉ-đọc thì tool giao việc không lộ ra ở đường Claude Code", True)
 
@@ -272,7 +272,7 @@ check("CANARY: CLAUDE.md kể cả WebFetch/WebSearch là của riêng engine CL
       "WebFetch" in _CL)
 check("CANARY: docs/10 không còn nói khác biệt duy nhất là chạy lệnh máy",
       "Khác biệt **duy nhất** là chạy được lệnh máy hay không" not in _DOC)
-check("docs/10 có nhắc tool giao việc cho engine API", "javis_task" in _DOC)
+check("docs/10 có nhắc tool giao việc cho engine API", "unimate_task" in _DOC)
 
 print()
 if _fails:

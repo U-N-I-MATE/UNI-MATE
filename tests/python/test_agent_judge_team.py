@@ -15,7 +15,7 @@ Kho SQLite tạm thật, bộ chạy nhóm thật, engine lượt nhóm và engi
 """
 import os
 
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 from _judge_world import World, batch, check, finish, keys_in  # noqa: E402
 
@@ -145,7 +145,7 @@ w7.send("Mọi người ơi ads hay kho, lần ba?")
 check("judge_daily Không giới hạn (null): lô chạy lại", len(w7.jeng.prompts) == 2)
 
 w8 = World("ceiling", roles=ROLES)
-os.environ["JAVIS_RESONANCE_CALL_CEILING"] = "4"
+os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = "4"
 w8.send("Mọi người ơi ads hay kho?")
 cap_rows = [d for d in w8.decisions(kind="message") if d["silence_code"] == "server_ceiling"]
 check("trần chung: lô tự phát chỉ dùng tới 80% (4 -> 3): sau lượt nghĩa vụ vẫn còn chỗ", len(w8.jeng.prompts) == 1,
@@ -155,7 +155,7 @@ w8.send("Mọi người ơi ads hay kho lần ba?")
 cap_rows = [d for d in w8.decisions(kind="message") if d["silence_code"] == "server_ceiling"]
 check("trần chung đầy phần tự phát: ứng viên silent/server_ceiling, không gọi engine", cap_rows
       and len(w8.jeng.prompts) < 3, (len(w8.jeng.prompts), w8.ledger.rows()))
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 w9 = World("off-modes", roles=ROLES, enabled=("hoa",))
 w9.jeng.decide = lambda p: batch(**{k: ("silent", 0.1) for k in keys_in(p)})

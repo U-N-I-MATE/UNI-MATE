@@ -113,7 +113,7 @@ def test_plugin_muc_full_ghi_so_muc_thap_hon_thi_khong(tmp_path):
         return "ok"
 
     full = plugins_host._make_call({"handler": handler, "min_mode": "full", "name": "zalo_send_message"}, None, "full")
-    safe = plugins_host._make_call({"handler": handler, "min_mode": "safe", "name": "javis_task"}, None, "full")
+    safe = plugins_host._make_call({"handler": handler, "min_mode": "safe", "name": "unimate_task"}, None, "full")
 
     async def trong_viec():
         tok = turn_context.bind(turn_context.make("kanban", job=JOB))

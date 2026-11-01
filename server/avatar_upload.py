@@ -1,8 +1,8 @@
 """Ảnh đại diện tự tải lên cho trợ lý và nhóm làm việc (0.176.0).
 
-Chủ repo 16/10/2026: "ngoài avatar mặc định của Javis thêm một lựa chọn để tải avatar của họ lên, ở cả agent và nhóm".
-Hình Javis (hình dáng, màu, mắt trong agent_avatar.py) vẫn là mặc định; ảnh tải lên chỉ là một lựa chọn thêm, xoá đi là
-trở về đúng hình Javis cũ.
+Chủ repo 16/10/2026: "ngoài avatar mặc định của UNI MATE thêm một lựa chọn để tải avatar của họ lên, ở cả agent và nhóm".
+Hình UNI MATE (hình dáng, màu, mắt trong agent_avatar.py) vẫn là mặc định; ảnh tải lên chỉ là một lựa chọn thêm, xoá đi là
+trở về đúng hình UNI MATE cũ.
 
 Cách lưu:
   - Một kho chung `STATE_DIR/avatars/`, tên file là băm nội dung (20 ký tự hex) + đuôi theo loại ảnh thật. Cùng một ảnh

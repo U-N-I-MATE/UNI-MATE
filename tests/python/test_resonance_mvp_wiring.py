@@ -1,4 +1,4 @@
-"""Resonance M2: nối vào đường chat thật. Plugin javis-goal, sổ lượt đang chạy, định tuyến sau lượt.
+"""Resonance M2: nối vào đường chat thật. Plugin unimate-goal, sổ lượt đang chạy, định tuyến sau lượt.
 
     python tests/run.py resonance_mvp_wiring -v
 
@@ -13,8 +13,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m2w-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m2w-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import luot_dang_chay  # noqa: E402
 import plugins_host  # noqa: E402
@@ -73,14 +73,14 @@ luot_dang_chay.ket_thuc(k_old)
 
 # ───────────── tool chỉ hiện khi brain bật Resonance ─────────────
 names, _ = tools_for(BRAIN)
-check("tắt (mặc định): brain KHÔNG thấy tool javis_goal", "javis_goal" not in names)
-check("tắt: các tool khác vẫn còn (javis_task)", "javis_task" in names)
+check("tắt (mặc định): brain KHÔNG thấy tool unimate_goal", "unimate_goal" not in names)
+check("tắt: các tool khác vẫn còn (unimate_task)", "unimate_task" in names)
 enable(BRAIN)
 names, route = tools_for(BRAIN)
-check("bật: brain thấy tool javis_goal", "javis_goal" in names)
+check("bật: brain thấy tool unimate_goal", "unimate_goal" in names)
 names_o, _ = tools_for(OTHER)
-check("bật ở brain này không làm brain khác thấy tool", "javis_goal" not in names_o)
-call = route["javis_goal"]["call"]
+check("bật ở brain này không làm brain khác thấy tool", "unimate_goal" not in names_o)
+call = route["unimate_goal"]["call"]
 TURN = {"sid": "s1", "mid": 41, "text": USER}
 
 
@@ -101,7 +101,7 @@ PROPOSAL = {
     "stage": "delivery", "mode": "maintain",
 }
 
-# ───────────── bộ não gọi javis_goal create ─────────────
+# ───────────── bộ não gọi unimate_goal create ─────────────
 out = tool({"op": "create", **PROPOSAL})
 check("create: trả mã mục tiêu và revision", "g_" in out and "revision 1" in out and not out.startswith("ERROR"))
 store = RS.GoalStore()
@@ -186,7 +186,7 @@ check("lượt có ngữ cảnh nhưng sổ lượt không còn lời của đú
 # ───────────── tắt lại giữa chừng ─────────────
 _old_ag = dict(AG)
 enable(BRAIN, on=False)
-check("tắt lại: tool biến mất khỏi danh sách", "javis_goal" not in tools_for(BRAIN)[0])
+check("tắt lại: tool biến mất khỏi danh sách", "unimate_goal" not in tools_for(BRAIN)[0])
 with RA.turn(_old_ag, "s1", 62, USER, BRAIN):
     outD = asyncio.run(call({"op": "list"}))
 check("tắt lại: gọi tool cũ còn giữ trong tay cũng bị từ chối", outD.startswith("ERROR"))

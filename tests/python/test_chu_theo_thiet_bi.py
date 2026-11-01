@@ -3,7 +3,7 @@
     python tests/run.py chu_theo_thiet_bi
 
 `ui_lang` trong settings là chung cả máy, còn ngôn ngữ giao diện là theo từng trình duyệt.
-Nên dashboard đặt cookie `javis_lang`, middleware gán nó cho request, và `localefmt.chu()`
+Nên dashboard đặt cookie `unimate_lang`, middleware gán nó cho request, và `localefmt.chu()`
 chọn bản chữ theo đó. Test này canh ba chỗ dễ hỏng:
   - thứ tiếng thứ ba rơi về tiếng Việt thay vì tiếng Anh;
   - request không có cookie (Telegram, script, test cũ) bị đổi sang tiếng Anh;
@@ -15,7 +15,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-chu-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-chu-"))
 import lang_registry  # noqa: E402
 import localefmt  # noqa: E402
 
@@ -63,10 +63,10 @@ try:
             return {"chu": localefmt.chu("Xin chào", "Hello")}
     c = TestClient(main.app, base_url="http://localhost")
     check("app: không cookie -> tiếng Việt", c.get("/__test_chu").json().get("chu") == "Xin chào")
-    c.cookies.set("javis_lang", "en")
-    check("app: cookie javis_lang=en -> tiếng Anh", c.get("/__test_chu").json().get("chu") == "Hello")
-    c.cookies.set("javis_lang", "vi")
-    check("app: cookie javis_lang=vi -> tiếng Việt", c.get("/__test_chu").json().get("chu") == "Xin chào")
+    c.cookies.set("unimate_lang", "en")
+    check("app: cookie unimate_lang=en -> tiếng Anh", c.get("/__test_chu").json().get("chu") == "Hello")
+    c.cookies.set("unimate_lang", "vi")
+    check("app: cookie unimate_lang=vi -> tiếng Việt", c.get("/__test_chu").json().get("chu") == "Xin chào")
     # Nguồn của ui_lang: dashboard tự ghi theo trình duyệt thì đánh dấu "tu_dong", người chọn
     # thì "chon". Thiết bị khác chỉ bị áp giá trị người CHỌN (console.js), không thì người ghé
     # đầu tiên quyết định ngôn ngữ của mọi người.

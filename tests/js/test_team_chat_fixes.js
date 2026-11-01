@@ -2,7 +2,7 @@
 //  (a) a revealed answer does not pull the reader down when they are up in the history;
 //  (b) uploads use the main chat's progress and stall watch (chat-upload.js), retry, and say why they failed, so the
 //      composer is never blocked forever;
-//  (c) JAVIS_CARD buttons in the Team chat answer in the team (chat-card.js onSend registry), not in the hidden main chat;
+//  (c) UNIMATE_CARD buttons in the Team chat answer in the team (chat-card.js onSend registry), not in the hidden main chat;
 //  (d) with the phone keyboard open the composer drops the safe-area gap (body.kb-open).
 //
 //     node tests/js/test_team_chat_fixes.js
@@ -36,7 +36,7 @@ check("(a) and scrolls only then", /if \(atEnd\) toLatest\(false\);/.test(nr) &&
 
 // (b)
 const up = fnBody("upload");
-check("(b) Team upload goes through the shared JavisUpload.send (progress + stall watch)", /U\.send\(fd, function \(loaded, total\)/.test(up));
+check("(b) Team upload goes through the shared UniMateUpload.send (progress + stall watch)", /U\.send\(fd, function \(loaded, total\)/.test(up));
 check("(b) a stall or a dropped connection is retried, the server's silence is not",
   /\(kind === "stall" \|\| kind === "net"\) && tries < U\.RETRIES/.test(up));
 check("(b) progress updates the chip in place (no composer redraw that would steal the input focus)",
@@ -55,10 +55,10 @@ check("(b) chat-upload.js loads before app.js and teams.js",
 // (c) chat-card.js with a fake document: presses inside a registered root go to that root's sender.
 const listeners = [];
 const sentMain = [];
-const ctx = { window: { JavisSend: (t) => sentMain.push(t) }, document: { addEventListener: (n, fn) => { if (n === "click") listeners.push(fn); } } };
+const ctx = { window: { UniMateSend: (t) => sentMain.push(t) }, document: { addEventListener: (n, fn) => { if (n === "click") listeners.push(fn); } } };
 vm.createContext(ctx);
 vm.runInContext(cardJs, ctx);
-const JC = ctx.window.JavisCard;
+const JC = ctx.window.UniMateCard;
 function btn(reply, inside) {
   const row = { querySelectorAll: () => [] };
   const b = { disabled: false, parentNode: row, classList: { add() {} }, getAttribute: (k) => (k === "data-reply" ? reply : null),
@@ -83,7 +83,7 @@ check("(c) Team registers its root, unregisters on leave, and sends the press as
 check("(c) the Team click handler leaves card buttons to chat-card.js (their data-reply is words, not an id)",
   /if \(t\.classList && t\.classList\.contains\("jv-card-btn"\)\) return;/.test(teamsJs));
 check("(c) hidden blocks never show in a preview or a quote",
-  T.plainPreview('Chọn một:\n\n<!-- JAVIS_CARD: {"type":"buttons"} -->', 160) === "Chọn một:");
+  T.plainPreview('Chọn một:\n\n<!-- UNIMATE_CARD: {"type":"buttons"} -->', 160) === "Chọn một:");
 
 // (d)
 check("(d) keyboard open: the Team composer drops the safe-area padding", /body\.kb-open \.tm-composer \{ padding-bottom: 8px; \}/.test(css));

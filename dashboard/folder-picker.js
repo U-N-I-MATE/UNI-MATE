@@ -9,7 +9,7 @@
 
    Cách dùng:
 
-     JavisFolderPicker.open({
+     UniMateFolderPicker.open({
        tieuDe: "Thêm thư mục",       // chữ ở đầu hộp
        ghiChu: "...",                 // dòng gợi ý ở chân hộp khi chưa có gì để nói
        nhanDung: "Dùng thư mục này",  // chữ trên nút xác nhận
@@ -207,7 +207,7 @@
     if (cu && cu.parentNode) cu.parentNode.removeChild(cu);
   }
 
-  W.JavisFolderPicker = { open: open, dong: dong };
+  W.UniMateFolderPicker = { open: open, dong: dong };
   // Phơi cho test node: tests/js/test_hop_chon_thu_muc.js dựng một DOM giả rồi GỌI THẬT hàm
   // open(), thay vì quét chuỗi trên mã nguồn.
   if (typeof module !== "undefined" && module.exports) {

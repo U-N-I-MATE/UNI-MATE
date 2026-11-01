@@ -10,14 +10,14 @@ final answer, resume of a thread `codex exec` created, the profile's MCP entry p
 Only the main chat engine of a web or chat-channel turn takes this path (`CodexCLI.steer`, set by main.py) and only
 while that turn's steer inbox is open. Background work, workflows and loops keep `codex exec`. Anything that fails
 before the turn has started (the profile cannot be read, app-server does not answer, the thread cannot open) falls
-back to `codex exec`, i.e. exactly the old behaviour. JAVIS_CODEX_STEER=0 turns the whole path off.
+back to `codex exec`, i.e. exactly the old behaviour. UNIMATE_CODEX_STEER=0 turns the whole path off.
 
 Differences from exec handled here, each found by trying it:
 - app-server ignores the root flags `-m`, `--sandbox`, `--ask-for-approval` and
   `--dangerously-bypass-approvals-and-sandbox`, so model, sandbox and approval go in `thread/start`;
 - app-server refuses `-p <profile>`, so the profile file is flattened into `-c key=value` overrides;
 - items arrive in camelCase (`commandExecution`, `aggregatedOutput`): `exec_item` turns them into the exec shape the
-  rest of Javis reads (tool labels, file paths, `aggregated_output`).
+  rest of UNI MATE reads (tool labels, file paths, `aggregated_output`).
 
 0.382.0 (docs/dev/2026-10-toc-do-luot-chat-spec.md):
 - the answer streams as Codex writes it (`item/agentMessage/delta`) instead of one block per finished message;
@@ -43,7 +43,7 @@ import steer_inbox
 import turn_lane
 import warm_pool
 
-ENV_SWITCH = "JAVIS_CODEX_STEER"
+ENV_SWITCH = "UNIMATE_CODEX_STEER"
 POLL_S = 0.25            # how often a running turn looks for messages to pass on
 START_TIMEOUT_S = 120.0  # initialize + thread/start (a required MCP server may take its startup_timeout_sec)
 STEER_SETTLE_S = 2.0     # after turn/completed, wait this long for answers to steer requests still in flight
@@ -124,7 +124,7 @@ _STATUS = {"inProgress": "in_progress", "completed": "completed", "failed": "fai
 
 
 def exec_item(it: dict) -> dict:
-    """An app-server ThreadItem in the shape `codex exec --json` prints, which the rest of Javis reads."""
+    """An app-server ThreadItem in the shape `codex exec --json` prints, which the rest of UNI MATE reads."""
     t = str(it.get("type") or "")
     iid = str(it.get("id") or "")
     st = _STATUS.get(str(it.get("status") or ""), it.get("status"))
@@ -256,7 +256,7 @@ async def _call(rpc: _Rpc, method: str, params: dict, deadline: float, seen: lis
                 raise Fallback(f"{method}: {(m.get('error') or {}).get('message')}")
             return m.get("result") or {}
         if "method" in m and "id" in m:
-            rpc.reply(m["id"], "Javis does not grant requests from a chat turn")
+            rpc.reply(m["id"], "UNI MATE does not grant requests from a chat turn")
             continue
         seen.append(line)
 
@@ -268,7 +268,7 @@ def _thread_params(cli, start: bool = False) -> dict:
         p["model"] = cli.model
     if start and (cli.instructions or "").strip():
         # Once per thread (0.382.0). A resumed thread already carries them: from its own thread/start, or, for a thread
-        # an older Javis or `codex exec` opened, in front of its first message.
+        # an older UNI MATE or `codex exec` opened, in front of its first message.
         p["developerInstructions"] = cli.instructions.strip()
     return p
 
@@ -345,7 +345,7 @@ def mark_instructions(thread_id: str) -> None:
 
 
 def carries_instructions(thread_id: str) -> bool:
-    """False for a thread an older Javis or `codex exec` opened: its rules are only in its first message, which
+    """False for a thread an older UNI MATE or `codex exec` opened: its rules are only in its first message, which
     Codex's own compaction may summarise away, so such a thread keeps getting them in front of every message."""
     return bool(thread_id) and thread_id in _instr_threads()
 
@@ -359,7 +359,7 @@ def _stat(p) -> str:
 
 
 def _codex_account(home: str) -> str:
-    """Who Codex is signed in as, without the file's stat: Javis rewrites auth.json on every turn when it holds the
+    """Who Codex is signed in as, without the file's stat: UNI MATE rewrites auth.json on every turn when it holds the
     ChatGPT tokens (openai_oauth.write_codex_auth stamps last_refresh), and a refreshed token is the same account."""
     try:
         with open(os.path.join(home, "auth.json"), encoding="utf-8") as f:
@@ -379,7 +379,7 @@ def _fingerprint(cli, args: List[str]) -> str:
     except OSError:
         binary = str(cli.cli_path)
     # The hub turn key changes with every lane, so it is left out: the slot keeps its own lane.
-    args = [a for a in args if not a.startswith("mcp_servers.javis.http_headers.X-Javis-Turn")]
+    args = [a for a in args if not a.startswith("mcp_servers.unimate.http_headers.X-UniMate-Turn")]
     import claude_cli as cc
     home = str(getattr(cli, "codex_home", None) or cc._codex_home())
     raw = json.dumps([binary, args, home, cli.cwd, cli.sandbox or "", cli.model or "", str(cli.session_id or ""),
@@ -519,7 +519,7 @@ async def run(cli, prompt: str) -> AsyncIterator[dict]:
         if not turn_id:
             deadline = time.monotonic() + START_TIMEOUT_S
             try:
-                await _call(rpc, "initialize", {"clientInfo": {"name": "javis", "version": "1"}}, deadline, seen)
+                await _call(rpc, "initialize", {"clientInfo": {"name": "unimate", "version": "1"}}, deadline, seen)
                 rpc.send("initialized", {}, notify=True)
                 if cli.session_id:
                     res = await _call(rpc, "thread/resume", {**_thread_params(cli), "threadId": cli.session_id,
@@ -545,8 +545,8 @@ async def run(cli, prompt: str) -> AsyncIterator[dict]:
         cli.session_id = thread_id
         yield {"type": "session", "session_id": thread_id, "warm": slot is not None}
 
-        IDLE = tran_watchdog("JAVIS_CLAUDE_IDLE_TIMEOUT", "0")
-        TOOL_IDLE = tran_watchdog("JAVIS_CLAUDE_TOOL_TIMEOUT", "3600")
+        IDLE = tran_watchdog("UNIMATE_CLAUDE_IDLE_TIMEOUT", "0")
+        TOOL_IDLE = tran_watchdog("UNIMATE_CLAUDE_TOOL_TIMEOUT", "3600")
         last = time.monotonic()
         busy = 0
         final_text = ""
@@ -612,7 +612,7 @@ async def run(cli, prompt: str) -> AsyncIterator[dict]:
                     steer_inbox.INBOX.requeue(sid, items)   # the turn ended first: they run as the next turn
                 continue
             if method and "id" in m:
-                rpc.reply(m["id"], "Javis does not grant requests from a chat turn")
+                rpc.reply(m["id"], "UNI MATE does not grant requests from a chat turn")
                 continue
             p = m.get("params") or {}
             if p.get("threadId") not in (None, thread_id):
@@ -744,7 +744,7 @@ async def run(cli, prompt: str) -> AsyncIterator[dict]:
 def _recipe(cli, args: List[str], acct_home, thread_id: str):
     """How to reopen this process for a prewarm: same argv, same thread, resumed. The instructions live on the thread."""
     cwd, params = cli.cwd, {**_thread_params(cli), "threadId": thread_id, "excludeTurns": True}
-    lane_arg = next((a for a in args if a.startswith("mcp_servers.javis.http_headers.")), None)
+    lane_arg = next((a for a in args if a.startswith("mcp_servers.unimate.http_headers.")), None)
 
     async def _open() -> CodexHandle:
         import turn_context
@@ -755,7 +755,7 @@ def _recipe(cli, args: List[str], acct_home, thread_id: str):
         rpc.keep_reading = True
         try:
             deadline = time.monotonic() + START_TIMEOUT_S
-            await _call(rpc, "initialize", {"clientInfo": {"name": "javis", "version": "1"}}, deadline, [])
+            await _call(rpc, "initialize", {"clientInfo": {"name": "unimate", "version": "1"}}, deadline, [])
             rpc.send("initialized", {}, notify=True)
             await _call(rpc, "thread/resume", params, deadline, [])
         except BaseException:

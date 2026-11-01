@@ -1,6 +1,6 @@
 # Resonance A4: nộp sản phẩm đa engine qua một hợp đồng host, kèm quyền có phạm vi
 
-**Trạng thái:** thiết kế **chốt** (vòng 5, phương án dự phòng D1), reviewer chấp thuận để code. **Mã A4 đạt review mã vòng 5** (`5b5e3ef0`; mục 17: I1, I2 đã được chấp nhận; I10 tới I16). Smoke giao diện, bộ chạy pilot và pilot thật một lần (11/10, khép bằng hậu kiểm): [biên bản](../../dev/resonance-a4-verification.md). **đã phát hành 0.96.0** (`d36ebb3e`, PR #604, 11/10/2026; CI `main` run 38146898745 và build image run 38146898746 thành công; image `ghcr.io/blogminhquy/javis-os:0.96.0`, digest `sha256:8f1751d2…`; VPS chưa kéo). Đổi cơ chế cấp quyền ngoài bản này thì gửi diff thiết kế review trước.
+**Trạng thái:** thiết kế **chốt** (vòng 5, phương án dự phòng D1), reviewer chấp thuận để code. **Mã A4 đạt review mã vòng 5** (`5b5e3ef0`; mục 17: I1, I2 đã được chấp nhận; I10 tới I16). Smoke giao diện, bộ chạy pilot và pilot thật một lần (11/10, khép bằng hậu kiểm): [biên bản](../../dev/resonance-a4-verification.md). **đã phát hành 0.96.0** (`d36ebb3e`, PR #604, 11/10/2026; CI `main` run 38146898745 và build image run 38146898746 thành công; image `ghcr.io/u-n-i-mate/uni-mate:0.96.0`, digest `sha256:8f1751d2…`; VPS chưa kéo). Đổi cơ chế cấp quyền ngoài bản này thì gửi diff thiết kế review trước.
 
 - **Nhánh:** `claude/resonance-a4-handoff-grants`, PR nháp #604, số **0.96.0** (đặt 0.90.0; `main` đi qua 0.91.0, 0.92.1, 0.94.0 rồi 0.95.1 nên đánh số lại bốn lần).
 - **Vòng 1** (`5edfc9b6`) chưa đạt: 3 P1, 2 P2 (`exports/reviews/PR-604-A4-design-r1-review.md`, ngoài git).
@@ -14,7 +14,7 @@
 - **Nền:** thiết kế viết trên `main` `33a3c1aa` (0.89.0); mã đã merge `main` `1d0b515c` (0.91.0: 0.89.1, 0.89.2, DeepSeek) rồi `709e3db9` (0.92.1: đăng nhập, màn cài đặt đầu) `b7e09dbf` (0.92.2: Ollama cục bộ có công cụ) `55bc8e86` (0.94.0: bot xem ảnh khách) và `adb103ed` (0.95.1: Ollama cục bộ tắt suy nghĩ mặc định). A1 0.87.0, A2 0.88.0, A3 0.89.0, bản hiệu năng 0.88.5 (#602) đã vào `main`.
 - **Lộ trình:** [agent scope roadmap](2026-10-08-resonance-agent-scope-roadmap.md), mục 7 (A4, A5).
 - **Đầu vào giao quyền** (ngoài git):
-  - báo cáo Paperclip 08/10: `exports/reviews/paperclip-javis-assessment-2026-10-08.md`;
+  - báo cáo Paperclip 08/10: `exports/reviews/paperclip-unimate-assessment-2026-10-08.md`;
   - bản bổ sung 10/10: `exports/reviews/2026-10-10-resonance-delegation-paperclip-review-supplement.md`.
 
 **Mức bằng chứng:**
@@ -42,9 +42,9 @@ A5 dùng lại đúng hợp đồng này cho cặp làm/review.
 **Người dùng thấy:**
 
 - Anh giao kết quả một lần.
-- **Đích mới hay đổi phạm vi:** anh bấm Cho phép trên thẻ, kèm đúng đường file. Kể cả khi lời giao đã nêu đích, Javis vẫn hỏi một lần; A4 không suy quyền ghi từ lời chat.
+- **Đích mới hay đổi phạm vi:** anh bấm Cho phép trên thẻ, kèm đúng đường file. Kể cả khi lời giao đã nêu đích, UNI MATE vẫn hỏi một lần; A4 không suy quyền ghi từ lời chat.
 - **Phạm vi đã cấp:** trợ lý tự làm tiếp, không hỏi lại từng bước hay từng lần sửa.
-- **Bản nháp được giữ:** bản trợ lý soạn trước khi anh cho phép được giữ làm nháp. Anh bấm Cho phép thì Javis đăng đúng bản đó, bước này không gọi model. Mục tiêu chưa có bản nháp thì sau khi cho phép, việc nền chạy theo ngân sách lượt như thường.
+- **Bản nháp được giữ:** bản trợ lý soạn trước khi anh cho phép được giữ làm nháp. Anh bấm Cho phép thì UNI MATE đăng đúng bản đó, bước này không gọi model. Mục tiêu chưa có bản nháp thì sau khi cho phép, việc nền chạy theo ngân sách lượt như thường.
 - Thẻ mục tiêu hiện: được làm gì, trên file nào, tối đa bao nhiêu lượt, có được giao tiếp không, nút Thu hồi.
 
 **Giữ nguyên:**
@@ -74,7 +74,7 @@ A5 dùng lại đúng hợp đồng này cho cặp làm/review.
 
 | Đã có | Chỗ trong mã | Khoảng trống A4 lấp |
 |---|---|---|
-| Danh tính lượt do host gắn: `kenh`, `session_id`, `message_id`, `agent{key, slug, config_version}`. Truyền qua `X-Javis-Turn` (Claude, Codex) hay trong tiến trình (engine API). Khoá lượt chỉ sống trong tiến trình và bị huỷ khi lượt kết thúc (`turn_context.reset`) | `turn_context.make/current/issue_key/resolve_key`, `main.run_turn`, `mcp_hub` | Lượt không mang mục tiêu, revision, quyền, `generation`, thời điểm bắt đầu. Grok và Antigravity không truyền khoá lượt |
+| Danh tính lượt do host gắn: `kenh`, `session_id`, `message_id`, `agent{key, slug, config_version}`. Truyền qua `X-UniMate-Turn` (Claude, Codex) hay trong tiến trình (engine API). Khoá lượt chỉ sống trong tiến trình và bị huỷ khi lượt kết thúc (`turn_context.reset`) | `turn_context.make/current/issue_key/resolve_key`, `main.run_turn`, `mcp_hub` | Lượt không mang mục tiêu, revision, quyền, `generation`, thời điểm bắt đầu. Grok và Antigravity không truyền khoá lượt |
 | Cổng trợ lý hai lớp, ghim version | `resonance.agent_gate`, `resonance_store._agent_block`, `begin_action`, `finish_handoff` | Không có phạm vi theo đường hay thao tác |
 | `CapabilityGrant` (replan workflow) | `agent_runtime.py` | Chỉ trong bộ nhớ, không lưu, không thu hồi. A4 không mở rộng lớp này |
 | Hạn mức SQLite, hoàn lượt, `call_holds`, đối soát | `resonance_store.begin_action/finish_action/reconcile_holds` | Đủ. Quyền không thêm bộ đếm |
@@ -90,7 +90,7 @@ A5 dùng lại đúng hợp đồng này cho cặp làm/review.
 | Snapshot khi nâng kho: SQLite backup API, lấy cả phần trong WAL, một lần, không ghi đè | `GoalStore._backup_before(marker_table, suffix)` | Dùng lại cho 0.96.0 (mục 7.4) |
 
 - **Không có công cụ "nộp sản phẩm".**
-- **Ý tưởng cũ chưa thành mã:** tài liệu 06/10 có `GoalGrant`, `AuthorityService`, `X-Javis-Run`, nhưng chưa có dòng mã nào.
+- **Ý tưởng cũ chưa thành mã:** tài liệu 06/10 có `GoalGrant`, `AuthorityService`, `X-UniMate-Run`, nhưng chưa có dòng mã nào.
 
 ## 3. Năm bất biến
 
@@ -120,7 +120,7 @@ Lấy từ bản bổ sung 10/10, mục 5. A4 hiện thực các bất biến 1 
 | Nguồn | Engine | Nội dung đến từ | Bytes ở đâu khi thành bản nộp |
 |---|---|---|---|
 | `background_text` (đã có) | Claude, engine API | Model trả chữ | Host đã ghi `output_root/<action_id>.md` |
-| `submit_tool` (mới) | Engine có khoá lượt tới hub: Claude, Codex, engine API | Model gọi `javis_submit_deliverable` | Host ghi `output_root/submissions/<id>.md` (vùng nháp) |
+| `submit_tool` (mới) | Engine có khoá lượt tới hub: Claude, Codex, engine API | Model gọi `unimate_submit_deliverable` | Host ghi `output_root/submissions/<id>.md` (vùng nháp) |
 | `observed_write` (đã có, giữ làm đường phụ) | Claude trong chat | Model Write thẳng vào đích | Engine đã ghi ở đích |
 | `approved_draft` (mới) | Không có engine | Chủ dự án Cho phép một bản nháp đã giữ (mục 5.3) | Chính file nháp cũ, không chép lại |
 
@@ -208,7 +208,7 @@ Hai phép kiểm này chỉ là kiểm quyền. Bước đăng vẫn chạy đ�
   - trong cùng tiến trình, liên kết đã `sealed` nên lời nộp bị từ chối (`turn_closed`).
 - **Khởi động lại không làm mất bản đã nhận.** Bàn giao hết hạn chỉ chuyển liên kết sang `sealed`. Đối soát vẫn đăng được bản `candidate` đã nhận, dưới đúng quyền đã ghim, nếu quyền đó còn hiệu lực (mục 4.7).
 
-### 4.3 Công cụ `javis_submit_deliverable`
+### 4.3 Công cụ `unimate_submit_deliverable`
 
 **Đầu vào:**
 
@@ -346,7 +346,7 @@ Bốn bước, không giữ khoá trong lúc gọi model hay ghi file:
 
 **Thông báo khi thu hồi chen giữa:**
 
-- Có `commit_at`, chưa có bằng chứng ở đích: "Lần đăng đã được chốt trước khi thu hồi; Javis đang hoàn tất." Chưa nói file đã đăng.
+- Có `commit_at`, chưa có bằng chứng ở đích: "Lần đăng đã được chốt trước khi thu hồi; UNI MATE đang hoàn tất." Chưa nói file đã đăng.
 - Bước 4 khớp hash: "Đã hoàn tất lần đăng được chốt trước khi thu hồi" kèm sha. Không nói "đã đăng trước khi thu hồi", vì file có thể được thay sau lúc thu hồi.
 - Bước 4 không khớp: báo xung đột như mọi lần đăng khác.
 
@@ -499,7 +499,7 @@ Lượt chat cũ không hưởng gì: liên kết `draft` của nó đã `closed
 | Điểm | Kiểm (trong giao dịch) |
 |---|---|
 | Mở liên kết `handoff` | Gốc đang `active`, luật ghim gốc theo lượt (mục 4.2). Không có gốc thì liên kết `draft` theo yêu cầu đang chờ |
-| `javis_submit_deliverable` | Liên kết của đúng lượt; phát lại trước, rồi `binding_accepts`; quyền `submit` + đích, hay đúng đường của yêu cầu |
+| `unimate_submit_deliverable` | Liên kết của đúng lượt; phát lại trước, rồi `binding_accepts`; quyền `submit` + đích, hay đúng đường của yêu cầu |
 | `begin_action(work)` | Quyền revision hiệu lực. Ghi liên kết `action`. Không có thì không giữ lượt (`grant_missing`, `scope_pending`, `grant_revoked`) |
 | `begin_experiment` (phép thử A3) | Như trên, liên kết `experiment`. Mỗi lượt thử kiểm `binding_accepts` ở cổng lượt sẵn có (`_TrialCall`). Hỏng thì phép thử dừng `inconclusive` với lý do quyền, theo đường dừng sẵn có |
 | Lượt làm sản phẩm A3 (`use_hold`) | Liên kết `followup` mới, kiểm quyền hiện hành, không kế thừa liên kết của phép thử |
@@ -518,7 +518,7 @@ Lượt chat cũ không hưởng gì: liên kết `draft` của nó đã `closed
 | Provider | Khoá lượt tới hub | Nộp qua công cụ | Quan sát Write có biên nhận | Chặn ghi native | Việc nền chỉ chữ |
 |---|---|---|---|---|---|
 | `anthropic-cli` | Có (header) | Có | Có | Theo từng lời gọi (`can_use_tool`) khi có `allowed_tools` | Có |
-| `openai-oauth` (Codex) | Có (`-c`) | **Có (mới)** | Không | Chỉ sandbox; tắt được bằng `JAVIS_CODEX_SANDBOX=off` | Không |
+| `openai-oauth` (Codex) | Có (`-c`) | **Có (mới)** | Không | Chỉ sandbox; tắt được bằng `UNIMATE_CODEX_SANDBOX=off` | Không |
 | `grok-cli` | **Không** | Không | Không | `--deny` theo mức | Không |
 | `antigravity-cli` | **Không** | Không | Không | Chỉ sandbox | Không |
 | Engine API | Có (trong tiến trình) | **Có (mới)** | Không | Không có công cụ native | Có |
@@ -615,7 +615,7 @@ Review vòng 1 chỉ ra `apply_command(..., "resume")` của 0.95.1 gỡ tạm d
   1. `GoalStore._backup_before("grants", ".pre-0.96.0")`: dùng lại helper có sẵn, SQLite backup API (lấy cả phần trong WAL), chỉ khi kho chưa có bảng `grants`, không ghi đè bản đã có.
   2. Tạo bảng mới.
   3. Đóng băng legacy (mục 5.2) trong cùng giao dịch tạo bảng, trước khi server nhận lời gọi.
-- **Hạ đúng cách,** bằng script đi kèm `tools/resonance_restore_pre_a4.py`, chạy khi Javis đã tắt:
+- **Hạ đúng cách,** bằng script đi kèm `tools/resonance_restore_pre_a4.py`, chạy khi UNI MATE đã tắt:
   1. Chép kho **hiện tại** sang `resonance.sqlite3.post-0.96.0-<thời điểm>` bằng SQLite backup API, để giữ hồ sơ sau nâng.
   2. Khôi phục snapshot vào đường kho bằng backup API, rồi dọn `-wal`/`-shm` cũ.
   3. Chạy 0.95.1.
@@ -637,7 +637,7 @@ Review vòng 1 chỉ ra `apply_command(..., "resume")` của 0.95.1 gỡ tạm d
   - Có bản nháp: thêm "Trợ lý đã soạn sẵn một bản (3,2 KB). Cho phép sẽ đăng đúng bản này" và nút Xem trước.
   - Thẻ gửi `request_id`, `path`, `submission_id`, `sha256` đã hiển thị. Thẻ cũ nhận lời "Thẻ đã cũ, tải lại để xem yêu cầu hiện tại".
 - **Bản nháp:** "1 bản nháp chờ đăng", hay "Bản nháp bị xung đột với file hiện có; xem trong lịch sử".
-- **Thu hồi chen giữa lần đăng:** "Lần đăng đã được chốt trước khi thu hồi; Javis đang hoàn tất", rồi "Đã hoàn tất lần đăng được chốt trước khi thu hồi" khi có bằng chứng ở đích.
+- **Thu hồi chen giữa lần đăng:** "Lần đăng đã được chốt trước khi thu hồi; UNI MATE đang hoàn tất", rồi "Đã hoàn tất lần đăng được chốt trước khi thu hồi" khi có bằng chứng ở đích.
 - **Trang Cộng sự:** bảng khả năng engine (mục 6.1).
 - Chữ qua `vi.json` và `en.json`. Không có ô cấu hình quyền kỹ thuật.
 
@@ -657,7 +657,7 @@ Review vòng 1 chỉ ra `apply_command(..., "resume")` của 0.95.1 gỡ tạm d
 
 ## 10. API và công cụ
 
-- **`javis_submit_deliverable(path, content, submission_key?, handoff?)`:** công cụ hub.
+- **`unimate_submit_deliverable(path, content, submission_key?, handoff?)`:** công cụ hub.
   - Công cụ lập và sửa mục tiêu trả thêm `handoff` (mã liên kết) khi host mở liên kết, và `scope: "granted" | "pending"`.
 - **`GET /goals/{id}`:** thêm các trường:
   - `scope`: gốc, đích, nguồn, trạng thái;
@@ -835,7 +835,7 @@ Bảng câu của `test_resonance_a4_directive.py` ghi kết quả thật của 
    - `handoff_after_turn` theo bản nộp, quy tắc A/B, niêm liên kết;
    - cổng trong phép thử A3;
    - đối soát theo mục 4.7.
-5. **Công cụ hub** `javis_submit_deliverable` (plugin `javis-goal`). Công cụ lập và sửa mục tiêu trả `handoff` và `scope`.
+5. **Công cụ hub** `unimate_submit_deliverable` (plugin `unimate-goal`). Công cụ lập và sửa mục tiêu trả `handoff` và `scope`.
 6. **API** theo mục 10.
 7. **Giao diện** theo mục 8.
 8. **Script** `tools/resonance_restore_pre_a4.py` (repo không có thư mục `scripts/`).
@@ -908,7 +908,7 @@ Các điểm dưới đây là chỗ mã phải chọn mà thiết kế chưa n�
 | I1 | §5.3 ghi "Thu hồi (nút Thu hồi quyền, hay tắt Cộng hưởng của trợ lý)" | **Tắt Cộng hưởng KHÔNG thu hồi gốc.** Liên kết vẫn chết ngay vì ghim version trợ lý (§4.2 điều 3); bật lại thì lượt mới làm tiếp dưới gốc cũ | Giữ hành vi A1 "bật lại thì chạy tiếp". **Reviewer chấp nhận ở review mã vòng 1**; §5.3 đã sửa theo |
 | I2 | §4.5 liệt kê "đăng lại" nhưng §4.2 không có nguồn cho nó | File đích bị xoá thì `_publish_latest` tạo bản nộp `republish` chép bản đã đăng, dưới liên kết **mới** `republish` ghim quyền revision ĐANG hiệu lực (không dùng lại liên kết cũ). Không có quyền hiệu lực thì không đăng lại | Giữ hành vi A2 "xoá file thì đăng lại bản hiệu lực, 0 lượt model". **Reviewer chấp nhận ở review mã vòng 1**; đã ghi vào §4.2 và §4.7 |
 | I3 | Mục tiêu không có đường sản phẩm (chỉ có tiêu chí người dùng xác nhận) | `scope_state=none`: không cần phạm vi, việc nền chạy như 0.95.1, không có gì để đăng | Không có đích để cho phép; chặn chúng thì mục tiêu kẹt vĩnh viễn |
-| I4 | Hệ quả của D1 với Claude | Write trong lượt LẬP mục tiêu không được tiếp nhận (bytes lạ ở đích). Chỉ bản nộp qua `javis_submit_deliverable` được giữ làm nháp. Gợi ý trong prompt và kết quả `javis_goal` dặn bộ não nộp qua công cụ, không Write thẳng | Đúng §4.4 ("liên kết draft không bao giờ tiếp nhận Write tại chỗ"). Câu hỏi mở cho A5: có nên chuyển một Write có biên nhận thành bản nháp không; mã chưa làm |
+| I4 | Hệ quả của D1 với Claude | Write trong lượt LẬP mục tiêu không được tiếp nhận (bytes lạ ở đích). Chỉ bản nộp qua `unimate_submit_deliverable` được giữ làm nháp. Gợi ý trong prompt và kết quả `unimate_goal` dặn bộ não nộp qua công cụ, không Write thẳng | Đúng §4.4 ("liên kết draft không bao giờ tiếp nhận Write tại chỗ"). Câu hỏi mở cho A5: có nên chuyển một Write có biên nhận thành bản nháp không; mã chưa làm |
 | I5 | A1 quyết định 4 (đăng lại đầu ra giữ sau khi tắt bật, ý định mới theo version hiện tại) | Thay bằng §4.2 điều 3: bản nộp `stale`, lần thức sau làm lại một lượt | "Host không bao giờ sửa liên kết đang dở sang quyền mới". Test A1 sửa kỳ vọng, có chú thích |
 | I6 | Revision do mã cũ tạo, hay mục tiêu vừa gán, cần phạm vi mà chưa có yêu cầu | `_gate` gọi `ensure_scope_request`: chỉ ghi yêu cầu chờ, không cấp | Để thẻ có nút Cho phép; §7.4 |
 | I7 | `origin_ref` của liên kết `handoff` | Dùng `message_ref` (`msg:<phiên>:<tin>`), cùng khoá với bảng `handoffs` | Tương đương `<session_id>:<message_id>` của §4.2 |

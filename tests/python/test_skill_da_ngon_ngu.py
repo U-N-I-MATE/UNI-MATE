@@ -93,7 +93,7 @@ check("bản tiếng Anh không mở đầu bằng cụm sáo rỗng", not _sao_
 # ============================================================
 # 3. Đọc cả cây skill theo ngôn ngữ
 # ============================================================
-_tmp = pathlib.Path(tempfile.mkdtemp(prefix="javis-skill-i18n-"))
+_tmp = pathlib.Path(tempfile.mkdtemp(prefix="unimate-skill-i18n-"))
 (_tmp / "skills" / "co-ban-dich").mkdir(parents=True)
 (_tmp / "skills" / "co-ban-dich" / "SKILL.md").write_text(
     '---\nname: Ghi chú\nname_en: Notes\ndescription: Lưu note nhanh\n'

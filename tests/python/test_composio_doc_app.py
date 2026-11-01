@@ -2,7 +2,7 @@
 
     python tests/run.py composio_doc_app
 
-Vụ thật 24/09: người dùng nối Composio (mặc định mức Chỉ đọc) rồi nhờ Javis đọc/sửa lịch. Javis
+Vụ thật 24/09: người dùng nối Composio (mặc định mức Chỉ đọc) rồi nhờ Uni đọc/sửa lịch. UNI MATE
 chỉ còn mỗi COMPOSIO_SEARCH_TOOLS: cổng chạy hành động COMPOSIO_MULTI_EXECUTE_TOOL bị xếp
 "nguy hiểm" và COMPOSIO_MANAGE_CONNECTIONS bị xếp "ghi" theo TÊN, nên cả hai bị giấu khỏi danh
 sách. Kết quả: không đọc được lịch, không liệt kê được app đã nối. Thêm vào đó chế độ tìm tool
@@ -18,7 +18,7 @@ import json
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-composio-doc-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-composio-doc-"))
 
 import config  # noqa: E402
 import mcp_catalog  # noqa: E402

@@ -1,6 +1,6 @@
 """A hub turn key that outlives one turn, for an engine process kept warm across turns (warm_pool.py, 0.382.0).
 
-A warm `claude` or `codex app-server` connects to the hub ONCE, so the `X-Javis-Turn` header it sends is fixed for its
+A warm `claude` or `codex app-server` connects to the hub ONCE, so the `X-UniMate-Turn` header it sends is fixed for its
 whole life. A lane gives it one fixed key, and `attach` points that key at the turn running now: the key goes into
 turn_context's key table with that turn and onto the turn's own key list, so the turn's `reset` removes it like any
 key the turn issued. Between two turns the key resolves to None, which keeps turn_context's rule that a key dies with

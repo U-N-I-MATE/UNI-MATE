@@ -10,12 +10,12 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-wfapi-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-wfapi-")
 # TestClient gửi Host: testserver, không nằm trong allowlist mặc định của web_security.py
 # (localhost/127.0.0.1/::1) - chưa đặt mật khẩu thì middleware DNS-rebinding chặn 403 "host
 # không được phép" trước khi vào tới route. Thêm host giả này vào allowlist CHỈ trong tiến
 # trình test, không đụng gì tới hành vi thật.
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"
 
 import main  # noqa: E402
 import workflow_runs  # noqa: E402

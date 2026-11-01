@@ -1,8 +1,8 @@
-"""Self-learning loop: Harness² sequential recursion over one skill text, with Javis's baseline rule.
+"""Self-learning loop: Harness² sequential recursion over one skill text, with UNI MATE's baseline rule.
 
 Shape follows harness2/core/recursion.py `run_sequential` (pin 1cfe254e): for t in 1..k, two proposals from the
 shared evidence (INV: how the work is done; DOM: the business procedure), each rolled out on the tuning cases,
-then one composition over the round pool becomes the next current version. Javis keeps its own contract where
+then one composition over the round pool becomes the next current version. UNI MATE keeps its own contract where
 it differs from upstream selection:
 
 - the baseline always stays a candidate and wins ties: a version is chosen only if it beats the baseline on the
@@ -248,7 +248,7 @@ class Loop:
             res.tuning[label] = _mean(current_rows)
             current = composed
             history.append(label)
-        # Javis rule: the baseline stays in the choice and wins ties; a text equal to the baseline is not a candidate
+        # UNI MATE rule: the baseline stays in the choice and wins ties; a text equal to the baseline is not a candidate
         # (an unchanged re-roll beating the baseline's roll is chance, not improvement).
         real = [lbl for lbl in res.tuning if lbl != "base" and not _same(res.versions[lbl], base_skill)]
         best = max(real, key=lambda lbl: (res.tuning[lbl], lbl.startswith("c")), default="base")

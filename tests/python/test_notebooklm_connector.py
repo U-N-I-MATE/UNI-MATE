@@ -6,7 +6,7 @@ Không cần pytest, không chạm mạng.
 
 Vì sao có file này. Sổ tay ghi việc này là "viết MCP server wrapper cho notebooklm-py", nhưng
 thư viện đó đã đóng gói sẵn một MCP server (console script `notebooklm-mcp`, transport stdio),
-nên phần Javis làm chỉ là MỘT mục trong kho connector. Cái gì chỉ là dữ liệu thì rất dễ gõ
+nên phần UNI MATE làm chỉ là MỘT mục trong kho connector. Cái gì chỉ là dữ liệu thì rất dễ gõ
 sai mà không ai thấy, nên ba thứ sau phải có test canh:
 
   1. LỆNH CHẠY. Tên package (notebooklm-py) khác tên lệnh (notebooklm-mcp) nên bắt buộc

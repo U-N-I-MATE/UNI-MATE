@@ -10,7 +10,7 @@ Chạy tay / CI (không cần pytest, không chạm mạng):
 Phủ: có brain_root → recipe /reminders (Telegram + dashboard) chứa 'brain' đúng path và JSON hợp lệ;
 path có KHOẢNG TRẮNG vẫn là JSON chuỗi hợp lệ; recipe send-file KHÔNG bị chèn brain; thiếu brain_root
 → không có field brain (giữ tương thích) và có ghi chú cảnh báo rơi về Brain Default; có gợi ý dùng
-tool javis_schedule.
+tool unimate_schedule.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path (xem tests/python/_paths.py)
 import json
@@ -19,7 +19,7 @@ import re
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-chanbrain-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-chanbrain-"))
 
 import channel_context as cc  # noqa: E402
 
@@ -55,12 +55,12 @@ rj = _reminder_json(tg)
 check("TG: body /reminders là JSON hợp lệ", isinstance(rj, dict))
 check("TG: brain trong body = path phiên", (rj or {}).get("brain") == BRAIN)
 check("TG: vẫn giữ chat_id đúng người", (rj or {}).get("chat_id") == "12345")
-check("TG: gợi ý dùng tool javis_schedule", "javis_schedule" in tg)
+check("TG: gợi ý dùng tool unimate_schedule", "unimate_schedule" in tg)
 check("TG: fallback huỷ dùng đúng POST /reminders/cancel", "POST http://127.0.0.1:7777/reminders/cancel" in tg)
 check("TG: fallback huỷ dùng form-data id + brain", '--data-urlencode "id=<r_id>"' in tg
       and f'--data-urlencode "brain={BRAIN}"' in tg)
 check("TG: cấm DELETE/JSON và sửa thẳng reminders.json", "KHÔNG gọi DELETE" in tg
-      and "KHÔNG đoán body JSON" in tg and "KHÔNG sửa trực tiếp `Javis/reminders.json`" in tg)
+      and "KHÔNG đoán body JSON" in tg and "KHÔNG sửa trực tiếp `UniMate/reminders.json`" in tg)
 # send-file KHÔNG được dính brain (chỉ /reminders cần)
 sendfile_blobs = [b for b in re.findall(r"-d '(\{.*?\})'", " ".join(tg.split("\n"))) if '"path"' in b]
 check("TG: recipe send-file KHÔNG chèn brain", sendfile_blobs and all('"brain"' not in b for b in sendfile_blobs))

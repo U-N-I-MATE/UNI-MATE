@@ -402,7 +402,7 @@ def migrate(m: dict, *, connected_ids, defaults: dict, key_fields: dict, telegra
         aux.update({"provider": o[0], "model": d["model"], "reasoning": d["reasoning"]})
     elif aux.get("reasoning") not in LEVELS:
         aux["reasoning"] = "off"
-    # The shared Telegram pin becomes a pin of every Telegram chat Javis knows, then goes away.
+    # The shared Telegram pin becomes a pin of every Telegram chat UNI MATE knows, then goes away.
     tg = m.get("telegram") or {}
     if tg.get("provider"):
         for k in _uniq(telegram_chat_keys):

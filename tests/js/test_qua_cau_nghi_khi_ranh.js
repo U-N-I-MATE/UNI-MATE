@@ -29,7 +29,7 @@ global.performance = { now: () => _gio };
 const troi = (ms) => { _gio += ms; };
 
 require("../../dashboard/graph.js");
-const JavisGraph = window.JavisGraph;
+const UniMateGraph = window.UniMateGraph;
 
 let fails = 0;
 const check = (ten, ok) => { console.log((ok ? "ok   " : "FAIL ") + ten); if (!ok) fails++; };
@@ -51,7 +51,7 @@ function doThiGia(log) {
 
 const log = [];
 const cont = khungGia();
-const g = new JavisGraph(cont, {});
+const g = new UniMateGraph(cont, {});
 g.graph = doThiGia(log);
 g.container = cont;
 g._ngheChuot();
@@ -82,7 +82,7 @@ for (let i = 0; i < 200; i++) g.setLevel(0);
 check("mức âm đã về 0 nhưng còn ân hạn: vẫn vẽ", g._veLienTuc === true);
 
 // ---- 5. Hết ân hạn thì đóng băng ----
-troi(JavisGraph.AN_HAN_MS + 50);
+troi(UniMateGraph.AN_HAN_MS + 50);
 g.setLevel(0);
 check("hết ân hạn: đóng băng lại", g._veLienTuc === false);
 check("và đã bảo thư viện tự bỏ khung", log[log.length - 1] === true);
@@ -92,7 +92,7 @@ g.setThinking(true);
 check("đang nghĩ: vẽ liên tục", g._veLienTuc === true);
 g.setThinking(false);
 for (let i = 0; i < 200; i++) g.setLevel(0);
-troi(JavisGraph.AN_HAN_MS + 50);
+troi(UniMateGraph.AN_HAN_MS + 50);
 g.setLevel(0);
 check("nghĩ xong, hết ân hạn: đóng băng", g._veLienTuc === false);
 
@@ -106,7 +106,7 @@ cont.ban("pointermove");
 check("rê tiếp vẫn giữ vẽ", g._veLienTuc === true);
 cont.ban("pointerleave");
 for (let i = 0; i < 200; i++) g.setLevel(0);
-troi(JavisGraph.AN_HAN_MS + 50);
+troi(UniMateGraph.AN_HAN_MS + 50);
 g.setLevel(0);
 check("chuột rời ra, hết ân hạn: đóng băng lại", g._veLienTuc === false);
 

@@ -328,7 +328,7 @@ class ActivationConsumerTests(ActivationBase):
     def hub(self):
         import mcp_hub
         _, routes = mcp_hub._builtin_tools("full", str(self.root))
-        handler = routes["javis_use_skill"]["call"]
+        handler = routes["unimate_use_skill"]["call"]
         return lambda: asyncio.run(handler({"name": self.slug}))
 
     def test_hub_tool_serves_overlay_in_chosen_chat_and_canonical_over_cli(self):

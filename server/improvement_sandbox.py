@@ -466,7 +466,7 @@ def worker_environment(workspace_root: Path, *, auth_home: Path | None = None) -
         standard.append("/usr/local/bin")
     environment.update({"PATH": os.pathsep.join(dict.fromkeys([str(Path(sys.executable).parent), *standard])),
         "HOME": str(home), "USERPROFILE": str(home), "TEMP": str(workspace_root / "tmp"), "TMP": str(workspace_root / "tmp"),
-        "JAVIS_STATE_DIR": str(workspace_root / "host-state"), "BRAINS_DIR": str(workspace_root / "empty-brains"),
+        "UNIMATE_STATE_DIR": str(workspace_root / "host-state"), "BRAINS_DIR": str(workspace_root / "empty-brains"),
         "OBSIDIAN_VAULT_PATH": str(workspace_root / "empty-vault"), "BRAIN_PATH": str(workspace_root / "empty-brain"),
         "SOURCES_PATH": str(workspace_root / "empty-sources"), "ENABLE_TOOL_SEARCH": "false",
         "DISABLE_TELEMETRY": "1", "DISABLE_ERROR_REPORTING": "1", "DISABLE_NON_ESSENTIAL_MODEL_CALLS": "1",

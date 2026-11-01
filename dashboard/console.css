@@ -1,5 +1,5 @@
 /* ============================================
-   JAVIS OS - Console layer (sidebar + pages)
+   UNI MATE - Console layer (sidebar + pages)
    Tông màu kế thừa style.css (:root). Glassmorphism + glow.
    Cockpit (.hud) giữ nguyên; layer này bọc thêm bên ngoài.
    ============================================ */
@@ -24,7 +24,7 @@
 /* Header (.hud-top) thành thanh top TOÀN CỤC: luôn nằm trên cùng, cview quản lý bắt đầu dưới nó.
    .hud render sẵn phía sau → header (row 52px đầu) lộ ra; z-index để chắc chắn nổi trên cview. */
 .hud-top { position: relative; z-index: 45; }
-/* Nút điều khiển trợ lý (cài đặt, giọng nói, làm mới) chỉ thuộc cockpit Javis → ẩn khi đang ở trang quản lý */
+/* Nút điều khiển trợ lý (cài đặt, giọng nói, làm mới) chỉ thuộc cockpit UNI MATE → ẩn khi đang ở trang quản lý */
 body.in-console .hud-actions { display: none; }
 
 /* ===== Rail (sidebar dọc, kính mờ) ===== */
@@ -80,7 +80,7 @@ body.in-console .hud-actions { display: none; }
   color: var(--accent); font-size: 22px;
 }
 /* Quầng sáng cam ở trên ô DẤU ẤN, không ở cả khối. filter của cha ăn xuống toàn bộ cây con,
-   và `filter:none` của con KHÔNG gỡ được nó - để nguyên ở .rail-brand là chữ "JAVIS OS"
+   và `filter:none` của con KHÔNG gỡ được nó - để nguyên ở .rail-brand là chữ "UNI MATE"
    cũng phát sáng cam theo. */
 .rail-brand .brand-mark {
   display: flex; flex: none;
@@ -1251,7 +1251,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
 .ol-hint { font-size: 12px; color: var(--text3); margin-top: 8px; line-height: 1.55; }
 .ol-empty-line { padding: 16px 4px; color: var(--text3); font-size: 13.5px; }
 
-/* Khung chưa nối: ba bước đọc từ trên xuống, không có nút "tự cài" nào - Javis trong container
+/* Khung chưa nối: ba bước đọc từ trên xuống, không có nút "tự cài" nào - UNI MATE trong container
    không có quyền chạy lệnh trên máy vật lý của người dùng. */
 .ol-empty { text-align: center; max-width: 620px; margin: 10px auto; padding: 34px 26px; }
 .ol-empty-ico { color: var(--accent); margin-bottom: 12px; }
@@ -2059,7 +2059,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
 @keyframes aa-think { 0%,100% { transform:translateY(0) rotate(-5deg); } 50% { transform:translateY(-3px) rotate(5deg); } }
 @keyframes aa-talk { 0%,100% { transform:scaleY(.7); } 50% { transform:scaleY(1.1); } }
 .aa-preview { display:flex; justify-content:center; padding:12px 0; min-height:112px; }
-/* Ảnh tự tải lên (0.176.0): tròn, phủ kín ô, cùng cỡ với hình Javis ở mọi chỗ vẽ. Hàng nút tải ảnh nằm ngay dưới ô xem thử. */
+/* Ảnh tự tải lên (0.176.0): tròn, phủ kín ô, cùng cỡ với hình UNI MATE ở mọi chỗ vẽ. Hàng nút tải ảnh nằm ngay dưới ô xem thử. */
 .agent-avatar.has-img { border-radius:50%; overflow:hidden; background:var(--surface-2); }
 .agent-avatar.has-img img { display:block; width:100%; height:100%; object-fit:cover; }
 .aa-upload { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 0 6px; }
@@ -2618,7 +2618,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
 .ht-form input:focus { border-color: var(--info-line); outline: none; }
 .ht-form .cb-kenh-o { background: var(--surface-1); }
 .ht-form-acts { gap: 8px; }
-/* Ô trả lời khách (0.61.0): chỉ hiện khi kênh gửi được từ Javis. */
+/* Ô trả lời khách (0.61.0): chỉ hiện khi kênh gửi được từ UNI MATE. */
 .ht-compose { border-top: 1px solid var(--hairline); padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
 .ht-compose-note { font-size: 12.5px; color: var(--text3); display: flex; gap: 5px; align-items: center; }
 .ht-compose textarea { flex: 1 1 auto; min-width: 0; resize: vertical; padding: 8px 10px; border-radius: 9px;
@@ -2731,7 +2731,7 @@ body.has-rail .hud { margin-left: var(--rail-w); width: calc(100% - var(--rail-w
 .cd-undo-go:disabled { opacity: .5; cursor: default; }
 .cd-undo-kq { margin-top: 10px; }
 
-/* Không có kiểu dáng riêng cho hộp "thêm thư mục": nó là JavisFolderPicker, mặc bộ lớp
+/* Không có kiểu dáng riêng cho hộp "thêm thư mục": nó là UniMateFolderPicker, mặc bộ lớp
    .folder-modal/.fm-* có sẵn trong style.css. */
 
 /* Hàng chip RIÊNG của màn hẹp. Trên máy tính nó rỗng và không chiếm chỗ (không có chip nào
@@ -2914,7 +2914,7 @@ body.on-teams .cview-head { display: none; }
 .tm-ava-c3 { background: #8c62c4; } .tm-ava-c4 { background: #c4566e; } .tm-ava-c5 { background: #4f8f3f; }
 .tm-ava-c6 { background: #a8822a; } .tm-ava-c7 { background: #3f86b3; }
 
-/* Ảnh trợ lý thật (bộ JavisAvatar) trong khung tròn; ảnh nhóm ghép từ ảnh thành viên (1, 2 chéo, 3 tam giác, lưới 2x2,
+/* Ảnh trợ lý thật (bộ UniMateAvatar) trong khung tròn; ảnh nhóm ghép từ ảnh thành viên (1, 2 chéo, 3 tam giác, lưới 2x2,
    ô đếm "+N"). Viền màu nền tách các ảnh chồng nhau. */
 .tm-face { display: inline-flex; align-items: center; justify-content: center; flex: none; border-radius: 50%; overflow: hidden;
   background: var(--surface-2); }
@@ -3143,13 +3143,13 @@ body.on-teams .cview-head { display: none; }
 .tm-face-btn { flex: none; display: inline-flex; padding: 0; border: none; background: none; border-radius: 50%; cursor: pointer; }
 .tm-face-btn:hover { box-shadow: 0 0 0 2px var(--accent-line); }
 .tm-face-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-/* Message text: the same type and colours as the main chat (style.css .msg-javis .bubble / .msg-user .bubble). The
-   assistant text is wrapped in .msg-javis > .bubble to inherit every markdown rule; only the box of that inner bubble is
+/* Message text: the same type and colours as the main chat (style.css .msg-unimate .bubble / .msg-user .bubble). The
+   assistant text is wrapped in .msg-unimate > .bubble to inherit every markdown rule; only the box of that inner bubble is
    switched off because .tm-bubble already draws one. */
 .tm-text { font-family: var(--font-chat); font-size: 16px; line-height: 1.55; }
-.tm-mdwrap.msg-javis .bubble { background: none; border: none; padding: 0; border-radius: 0; max-width: none;
+.tm-mdwrap.msg-unimate .bubble { background: none; border: none; padding: 0; border-radius: 0; max-width: none;
   line-height: 1.65; font-size: 16px; }
-.tm-mdwrap.msg-javis { display: block; }
+.tm-mdwrap.msg-unimate { display: block; }
 .tm-msg-owner .tm-bubble { background: var(--accent-wash-2); }
 .tm-quote { margin: 0 0 6px; padding: 4px 0 4px 10px; border-left: 3px solid var(--accent); color: var(--text2); font-size: 14px;
   line-height: 1.45; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
@@ -3372,7 +3372,7 @@ body.kb-open .tm-composer { padding-bottom: 8px; }
   .tm-search-btn, .tm-search-go, .tm-search-input, .tm-search-hit, .tm-jump-back { min-height: 44px; }
   /* Trang Nhóm trên điện thoại: bỏ đầu trang chung (danh sách tự có tiêu đề, khung chat có đầu riêng) và ẩn linh vật để
      không che khung soạn. */
-  body.on-teams #javisPet { display: none; }
+  body.on-teams #unimatePet { display: none; }
 }
 
 /* 0.142.0: kết cục từng lượt trả lời dưới tin của chủ nhóm (chờ, đang trả lời, lỗi + Thử lại). Chữ 16px: đọc trên điện thoại. */
@@ -3664,7 +3664,7 @@ span.tmp-lead { cursor: default; }
 .ws-item-text { flex: 1 1 auto; }
 .ws-item-top { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
 .ws-item-top > strong { flex: 1 1 auto; min-width: 0; }
-/* 0.185.0: Javis Core, the system assistant. A small System badge on its row and on its card; the row keeps the
+/* 0.185.0: UNI MATE Core, the system assistant. A small System badge on its row and on its card; the row keeps the
    accent edge like a pinned one. */
 .ws-sys { flex: 0 0 auto; padding: 1px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 600; line-height: 1.5;
   color: var(--accent); background: var(--accent-wash); border: 1px solid var(--accent); }
@@ -3908,7 +3908,7 @@ body.col-resizing { cursor: col-resize; user-select: none; }
     padding-top: 4px; }
   .wspage.ws-mini .ws-grp-tog { justify-content: center; font-size: 0; }
   .wspage.ws-mini .ws-grp-tog svg { width: 16px; height: 16px; }
-  /* 0.191.1: the job state is one small dot on the avatar, four colours (data-st from JavisAgentJobs.statusOf). */
+  /* 0.191.1: the job state is one small dot on the avatar, four colours (data-st from UniMateAgentJobs.statusOf). */
   .wspage.ws-mini .ws-item-wrap[data-st]::after { content: ""; position: absolute; top: 6px; right: 10px; width: 8px;
     height: 8px; border-radius: 50%; background: var(--st-dot); box-shadow: 0 0 0 2px var(--bg2); pointer-events: none; }
   .wspage.ws-mini .ws-more { font-size: 0; padding: 6px 0; }
@@ -4084,7 +4084,7 @@ button.tm-quote-ref:hover, button.tm-quote-ref:focus-visible { border-color: var
   .tm-list > .col-resize, .tm-side > .col-resize { display: block; position: absolute; top: 0; bottom: 0; width: 8px; z-index: 6;
     cursor: col-resize; touch-action: none; }
   /* The strip of team pictures (like the Partners list .ws-mini): names, previews, tags, the row "..." and paging hide;
-     "New team" keeps only its icon; the hover card (JavisColResize.miniTip) gives the details. */
+     "New team" keeps only its icon; the hover card (UniMateColResize.miniTip) gives the details. */
   .tm-page.tm-mini .tm-list { padding: 8px 6px; }
   .tm-page.tm-mini .tm-list-title, .tm-page.tm-mini .tm-tagbar, .tm-page.tm-mini .tm-team-main,
   .tm-page.tm-mini .tm-row-more, .tm-page.tm-mini .tm-row-menu, .tm-page.tm-mini .tm-more-teams { display: none; }
@@ -4179,7 +4179,7 @@ button.tm-quote-ref:hover, button.tm-quote-ref:focus-visible { border-color: var
   .tm-msg-agent .tm-col { max-width: calc(100% - 34px); }
   .tm-msg-owner .tm-col { max-width: 88%; }
   .tm-bubble { padding: 7px 11px; }
-  .tm-mdwrap.msg-javis .bubble { line-height: 1.5; }
+  .tm-mdwrap.msg-unimate .bubble { line-height: 1.5; }
   .tm-text { line-height: 1.5; }
   .tm-msg-agent .tm-who { font-size: 16px; }
   /* Headings inside a message are bold lines of the same size; tables stay compact and scroll sideways. */

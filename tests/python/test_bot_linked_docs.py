@@ -24,8 +24,8 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-bld-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-bld-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -239,7 +239,7 @@ check("Google down: the owner is told the bot uses the previous copy",
 # ============================================================
 # 4. Through the search, and through the bot runtime
 # ============================================================
-BRAIN = Path(tempfile.mkdtemp(prefix="javis-bld-brain-"))
+BRAIN = Path(tempfile.mkdtemp(prefix="unimate-bld-brain-"))
 (BRAIN / "chinh-sach.md").write_text("# Chính sách\n\n## Giao hàng\n\nNội thành giao trong 24 giờ.\n",
                                      encoding="utf-8")
 extra = bld.collect([{"url": SHEET_URL, "label": "Bảng giá"}])["docs"]

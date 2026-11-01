@@ -2,9 +2,9 @@
 
     python tests/run.py voice_live_progress
 
-Owner's call log, 2026-10-03: while Javis spent minutes writing a spec, every question the owner
+Owner's call log, 2026-10-03: while UNI MATE spent minutes writing a spec, every question the owner
 asked ("is it done yet?", "can you hear me?", "read me the titles") got a stalled filler line
-("I'm on it"). The question at 17:45 was answered at 17:56. Cause: since 0.65.21 every `ask_javis`
+("I'm on it"). The question at 17:45 was answered at 17:56. Cause: since 0.65.21 every `ask_unimate`
 handoff of a call waited on ONE lock, so a follow-up could not start until the long job ended, and
 then the queued follow-ups ran one by one and their stale answers were read out in a burst.
 
@@ -12,7 +12,7 @@ This file pins the fix:
   - a progress question while a job runs is answered at once from the real state (what runs, for how
     long, which step) and never reaches the brain;
   - a real new request runs alongside the running one instead of waiting for it;
-  - a job that runs long makes Javis speak up on its own, only when nobody is talking, and the
+  - a job that runs long makes UNI MATE speak up on its own, only when nobody is talking, and the
     status line is neither a chat bubble nor part of the saved history;
   - a status line that is still queued when the real result arrives is dropped, so it is never
     read out after the answer it was waiting for.
@@ -64,7 +64,7 @@ class ProgressQuestionTests(unittest.TestCase):
 
 class StatusLineTests(unittest.TestCase):
     def test_one_job_names_the_work_the_time_and_the_step(self):
-        job = {"request": "Viết spec slide HTML cho buổi học Javis", "started": 100.0,
+        job = {"request": "Viết spec slide HTML cho buổi học UNI MATE", "started": 100.0,
                "step": "⚙ Đang dùng công cụ: Write"}
         text = voice_live.status_line([job], now=350.0)   # 250 s = about 4 minutes
         self.assertIn("Viết spec slide HTML", text)
@@ -139,7 +139,7 @@ class StatusSpeechTests(unittest.IsolatedAsyncioTestCase):
         self.fake.push("thread/realtime/transcript/delta", role="assistant", delta=" Dạ, để em")
         await asyncio.sleep(0.05)   # the model is mid-sentence, so the status has to wait
         await self.prov.say_status("Em vẫn đang làm, được 2 phút.")
-        await self.prov.send_tool_result("h1", "ask_javis", "Xong rồi anh, có 24 slide.")
+        await self.prov.send_tool_result("h1", "ask_unimate", "Xong rồi anh, có 24 slide.")
         self.fake.push("thread/realtime/transcript/done", role="assistant", text="x")
         self.assertTrue(await self.until(lambda: self.fake.spoken() == ["Xong rồi anh, có 24 slide."]))
         await asyncio.sleep(0.3)
@@ -167,10 +167,10 @@ class StatusSpeechTests(unittest.IsolatedAsyncioTestCase):
 class LiveRouteProgressTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
     async def test_progress_question_is_answered_from_state_and_never_reaches_the_brain(self):
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
-                              "args": {"request": "Viết spec slide HTML cho buổi học Javis"}})
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
+                              "args": {"request": "Viết spec slide HTML cho buổi học UNI MATE"}})
             await h.until(lambda: len(h.asks) == 1, "first job running")
-            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_unimate",
                               "args": {"request": "Vẫn chưa xong à"}})
             await h.until(lambda: len(prov.status_calls) == 1, "status spoken")
             await asyncio.sleep(0.05)
@@ -190,10 +190,10 @@ class LiveRouteProgressTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
         # right after the handoff, before the status line is read. If the route marked the NEXT model
         # turn as a hidden read-back at that moment, it would hide this filler and show the status.
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": "Viết spec slide HTML"}})
             await h.until(lambda: len(h.asks) == 1, "first job running")
-            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_unimate",
                               "args": {"request": "Vẫn chưa xong à"}})
             await h.until(lambda: len(prov.status_calls) == 1, "status handed to the model")
             await prov.q.put({"type": "transcript", "role": "assistant", "text": "Dạ, đợi em xem ạ.", "final": False})
@@ -206,11 +206,11 @@ class LiveRouteProgressTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
 
     async def test_the_current_step_is_part_of_the_status(self):
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": "Viết spec slide HTML"}})
             await h.until(lambda: len(h.asks) == 1 and h.progress.get(0), "first job running")
             await h.progress[0]("⚙ Đang dùng công cụ: Write")
-            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_unimate",
                               "args": {"request": "Tiến độ đến đâu rồi"}})
             await h.until(lambda: len(prov.status_calls) == 1, "status spoken")
 
@@ -219,10 +219,10 @@ class LiveRouteProgressTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
 
     async def test_a_new_request_runs_alongside_the_running_job(self):
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": "Viết spec slide HTML"}})
             await h.until(lambda: len(h.asks) == 1, "first job running")
-            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_unimate",
                               "args": {"request": "Doanh thu hôm nay là bao nhiêu"}})
             await h.until(lambda: len(h.asks) == 2, "second job started WITHOUT waiting for the first")
             h.release(1)   # the short job finishes first and is read out first
@@ -240,10 +240,10 @@ class LiveRouteProgressTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
 
     async def test_parallel_jobs_do_not_share_one_engine_session(self):
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": "Viết spec slide HTML"}})
             await h.until(lambda: len(h.asks) == 1, "first job")
-            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_unimate",
                               "args": {"request": "Doanh thu hôm nay là bao nhiêu"}})
             await h.until(lambda: len(h.asks) == 2, "second job")
             # Same engine key = same engine thread: the second job would queue behind the first
@@ -255,10 +255,10 @@ class LiveRouteProgressTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
 
     async def test_acknowledgements_are_still_dropped_while_a_job_runs(self):
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": "Viết spec slide HTML"}})
             await h.until(lambda: len(h.asks) == 1, "first job")
-            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_unimate",
                               "args": {"request": "Ok, xong thì báo anh nhé"}})
             await h.until(lambda: len(prov.acks) == 1, "acknowledgement closed")
             await asyncio.sleep(0.05)
@@ -268,10 +268,10 @@ class LiveRouteProgressTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
 
     async def test_without_a_status_voice_the_answer_goes_back_as_the_tool_reply(self):
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": "Viết spec slide HTML"}})
             await h.until(lambda: len(h.asks) == 1, "first job")
-            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h2", "name": "ask_unimate",
                               "args": {"request": "Xong chưa em"}})
             await h.until(lambda: len(prov.acks) == 1, "status returned as the tool reply")
 
@@ -286,7 +286,7 @@ class LiveRouteHeartbeatTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
 
     async def _long_job(self, script_after, **kw):
         async def script(prov, h):
-            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "h1", "name": "ask_unimate",
                               "args": {"request": "Viết spec slide HTML"}})
             await h.until(lambda: len(h.asks) == 1, "job running")
             await script_after(prov, h)

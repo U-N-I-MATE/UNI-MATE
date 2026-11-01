@@ -3,7 +3,7 @@
     python tests/python/test_local_exempt_tunnel.py
 
 /reminders, /reminders/cancel, /reminders/update and /telegram/send-file skip the login so the engines and the
-javis_schedule plugin can call them from this machine. The check used to look at the client address only, but the
+unimate_schedule plugin can call them from this machine. The check used to look at the client address only, but the
 built-in Cloudflare Tunnel, Tailscale serve and a reverse proxy on a VPS all connect from 127.0.0.1: anyone with the
 tunnel URL could create a task or script reminder at the full permission level without logging in. Found while
 reviewing PR #733. No network.
@@ -13,7 +13,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-tunnel-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-tunnel-")
 
 import main  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

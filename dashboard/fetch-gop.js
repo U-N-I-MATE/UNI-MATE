@@ -54,7 +54,7 @@
   // Mã trả về cho thấy máy chủ CHƯA tới được (đang khởi động, đường hầm chập chờn), không phải lỗi của chính yêu cầu.
   function maTam(status) { return status === 502 || status === 503 || status === 504 || (status >= 520 && status <= 530); }
 
-  // Lời gọi này có được tự thử lại không: GET tới chính máy chủ Javis, không phải file tĩnh, không tự lo việc chờ.
+  // Lời gọi này có được tự thử lại không: GET tới chính máy chủ UNI MATE, không phải file tĩnh, không tự lo việc chờ.
   function thuLaiDuoc(input, init, goc) {
     if (typeof input !== "string") return false;
     if (laGet(init) !== "GET" || (init && init.body)) return false;
@@ -79,7 +79,7 @@
       if (hien) {
         if (!dai) {
           dai = document.createElement("div");
-          dai.id = "javisKetNoiLai";
+          dai.id = "unimateKetNoiLai";
           dai.setAttribute("role", "status");
           dai.style.cssText = "position:fixed;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);"
             + "z-index:99998;padding:8px 16px;border-radius:999px;font-size:15px;line-height:1.4;"
@@ -147,5 +147,5 @@
     }
     return e.p.then(function (r) { return r.clone(); });
   };
-  window.JavisFetchGop = api;
+  window.UniMateFetchGop = api;
 })();

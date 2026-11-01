@@ -90,7 +90,7 @@ function nap(traLoi) {
   globalThis.Alpine = alpineCu;
   // `docEl` day them mot vung HTML nua cho getElementById soi: trang kho ve vao `el` chu khong
   // vao hop thoai, ma hai thu do dung chung mot ban DOM gia.
-  return { P: win.JavisPacks || {}, goi, hop, nut, docEl: (x) => { doc._el = x; } };
+  return { P: win.UniMatePacks || {}, goi, hop, nut, docEl: (x) => { doc._el = x; } };
 }
 
 check("packs.js phoi ra goApp", typeof nap(() => ({ ok: true })).P.goApp === "function");

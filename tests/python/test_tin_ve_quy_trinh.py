@@ -30,7 +30,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-tinwf-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-tinwf-"))
 
 import workflow_chat  # noqa: E402
 
@@ -110,9 +110,9 @@ check("câu báo nói rõ KHÔNG chạy và chỉ hai đường ép chạy",
 
 # Khối ngữ cảnh: bộ não chính phải biết file nào, bước nào, và KHÔNG được tự chạy quy trình.
 _khoi = workflow_chat.khoi_quy_trinh_dang_mo(
-    "Viết bài chuyên sâu", "viet-bai-chuyen-sau", "/brains/Trang Javis/workflows/viet-bai.md", 2,
+    "Viết bài chuyên sâu", "viet-bai-chuyen-sau", "/brains/Trang UniMate/workflows/viet-bai.md", 2,
     [{"agent": "nguoi-viet", "task": "viết bản thảo"}, {"agent": "nguoi-sua", "task": "sửa {{prev}}"}])
-check("khối ngữ cảnh mang ĐƯỜNG DẪN file quy trình", "/brains/Trang Javis/workflows/viet-bai.md" in _khoi)
+check("khối ngữ cảnh mang ĐƯỜNG DẪN file quy trình", "/brains/Trang UniMate/workflows/viet-bai.md" in _khoi)
 check("khối ngữ cảnh liệt kê bước + agent", "B1. nguoi-viet: viết bản thảo" in _khoi
       and "B2. nguoi-sua" in _khoi)
 check("khối ngữ cảnh cấm tự chạy quy trình", "KHÔNG tự chạy" in _khoi)

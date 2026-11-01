@@ -4,7 +4,7 @@ route.
 
 The account secret is four credentials in one string, "<App ID> <App secret key> <OA secret key>
 <Refresh token>", because the channel-account store keeps one encrypted secret per account. After
-the first refresh Javis rewrites it as JSON with the rotated tokens (`zalo_oa_bot.TokenKeeper`).
+the first refresh UNI MATE rewrites it as JSON with the rotated tokens (`zalo_oa_bot.TokenKeeper`).
 Different from the `zalo` channel, which is the separate Zalo Bot API (bot accounts made in
 "Zalo Bot Manager"): an OA is the business page customers follow.
 """
@@ -15,7 +15,7 @@ import localefmt
 
 SPEC = KenhSpec(
     id="zalo_oa", nhan="Zalo OA", kind="bot", logo="zalo", mau="#0068FF",
-    lay_token=("Cần Javis có tên miền HTTPS. Ở developers.zalo.me tạo app, liên kết OA, xác thực tên miền "
+    lay_token=("Cần UNI MATE có tên miền HTTPS. Ở developers.zalo.me tạo app, liên kết OA, xác thực tên miền "
                "(dán mã vào ô bên dưới), đặt webhook bằng địa chỉ bên dưới và bật các sự kiện user_send_*. "
                "Rồi dán bốn thứ cách nhau dấu cách: App ID, App secret key, OA secret key, Refresh token. "
                "Chi tiết: docs/35-zalo-oa.md."),
@@ -23,7 +23,7 @@ SPEC = KenhSpec(
              "Zalo không cho OA trả lời tự do nữa."),
     nang_luc={"nhom": False, "gui_chu": True, "gui_file": True},
     en={
-        "lay_token": ("Javis needs an HTTPS domain. On developers.zalo.me create an app, link your OA, verify "
+        "lay_token": ("UNI MATE needs an HTTPS domain. On developers.zalo.me create an app, link your OA, verify "
                       "the domain (paste the code in the box below), set the webhook to the address below and "
                       "enable the user_send_* events. Then paste four things separated by spaces: App ID, App "
                       "secret key, OA secret key, Refresh token. Details: docs/en/35-zalo-oa.md."),

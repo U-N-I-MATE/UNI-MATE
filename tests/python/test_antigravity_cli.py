@@ -26,7 +26,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-agytest-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-agytest-")
 
 import antigravity_cli   # noqa: E402
 
@@ -46,7 +46,7 @@ def chay(coro):
 
 def _gia(dong_ra, ma=0, stderr="", help_text="", models_out="", vong_stdin=False):
     """Dựng một `agy` giả: trả `--help` / `models` / lượt chat theo ý mình."""
-    d = Path(tempfile.mkdtemp(prefix="javis-fakeagy-"))
+    d = Path(tempfile.mkdtemp(prefix="unimate-fakeagy-"))
     p = d / "agy"
     p.write_text(
         "#!/usr/bin/env python3\n"
@@ -343,39 +343,39 @@ check("is_available() nói đúng sự thật", _g9.is_available() is False)
 # 5. MCP hub: ĐÚNG CHỖ, ĐÚNG KHOÁ
 # ============================================================
 # Đây là chỗ đã sai BA LẦN liên tiếp và cả ba lần đều hỏng lặng lẽ - `agy` chạy trơn tru, trả
-# lời trôi chảy, mà không có lấy một tool nào của Javis (không Kanban, không MCP, không skill),
+# lời trôi chảy, mà không có lấy một tool nào của UNI MATE (không Kanban, không MCP, không skill),
 # và không ở đâu có một câu lỗi để lần ra. Hai chỗ sai chồng lên nhau:
 #
-#   khoá:  Javis ghi `httpUrl` (schema của Gemini CLI). `agy` đọc `serverUrl` - tài liệu di trú
+#   khoá:  UNI MATE ghi `httpUrl` (schema của Gemini CLI). `agy` đọc `serverUrl` - tài liệu di trú
 #          Gemini -> Antigravity nói thẳng là `url` được ĐỔI TÊN thành `serverUrl`, và issue #71
 #          của google-antigravity/antigravity-cli dán đúng cấu hình chạy được.
-#   chỗ:   Javis ghi vào brain (`.antigravity/*`, `.agents/mcp_config.json`). `agy` nạp MCP từ
+#   chỗ:   UNI MATE ghi vào brain (`.antigravity/*`, `.agents/mcp_config.json`). `agy` nạp MCP từ
 #          cấu hình tầng HOME `~/.gemini/config/mcp_config.json`; issue #60 ghi nhận nó TÌM THẤY
 #          cấu hình project rồi bỏ qua `mcpServers` trong đó.
 #
 # Nên test này canh cả hai, và canh cả chiều ngược lại (không được có `httpUrl`).
-_home = Path(tempfile.mkdtemp(prefix="javis-agyhome-"))
+_home = Path(tempfile.mkdtemp(prefix="unimate-agyhome-"))
 os.environ["HOME"] = str(_home)
 os.environ.pop("USERPROFILE", None)
-os.environ.pop("JAVIS_AGY_MCP_CONFIG", None)
-os.environ.pop("JAVIS_AGY_MCP_HOME", None)
+os.environ.pop("UNIMATE_AGY_MCP_CONFIG", None)
+os.environ.pop("UNIMATE_AGY_MCP_HOME", None)
 
-_brain = Path(tempfile.mkdtemp(prefix="javis-agybrain-"))
+_brain = Path(tempfile.mkdtemp(prefix="unimate-agybrain-"))
 _hub = antigravity_cli.hub_entry("http://127.0.0.1:7777/hub/mcp",
-                                 {"Authorization": "Bearer x", "X-Javis-Vault": str(_brain)})
+                                 {"Authorization": "Bearer x", "X-UniMate-Vault": str(_brain)})
 
 check("CANARY: entry dùng khoá `serverUrl` của agy", _hub.get("serverUrl") == "http://127.0.0.1:7777/hub/mcp", _hub)
 check("CANARY: KHÔNG còn `httpUrl` (khoá của Gemini CLI - thủ phạm cũ)", "httpUrl" not in _hub, _hub)
 check("giữ header hub", (_hub.get("headers") or {}).get("Authorization") == "Bearer x", _hub)
 # Chỗ này KHÔNG đo được (máy dựng bản này bị chặn mạng, không tải nổi `agy`), nên phải có
 # một cái lẫy: file cấu hình bị ghi đè mỗi lượt chat nên sửa tay không giữ được.
-os.environ["JAVIS_AGY_MCP_KEY"] = "serverUrl"
-check("JAVIS_AGY_MCP_KEY=serverUrl -> chỉ ghi đúng một khoá",
+os.environ["UNIMATE_AGY_MCP_KEY"] = "serverUrl"
+check("UNIMATE_AGY_MCP_KEY=serverUrl -> chỉ ghi đúng một khoá",
       antigravity_cli.hub_entry("http://x").get("url") is None, antigravity_cli.hub_entry("http://x"))
-os.environ["JAVIS_AGY_MCP_KEY"] = "url"
-check("JAVIS_AGY_MCP_KEY=url -> ngược lại",
+os.environ["UNIMATE_AGY_MCP_KEY"] = "url"
+check("UNIMATE_AGY_MCP_KEY=url -> ngược lại",
       antigravity_cli.hub_entry("http://x").get("serverUrl") is None)
-os.environ.pop("JAVIS_AGY_MCP_KEY")
+os.environ.pop("UNIMATE_AGY_MCP_KEY")
 
 antigravity_cli.ghi_mcp_settings(_brain, _hub)
 
@@ -388,7 +388,7 @@ check("và cả đường HOME cũ `~/.gemini/antigravity-cli/mcp_config.json`",
 check("và cả workspace `.agents/mcp_config.json` (cho bản vá xong issue #60)", _p_ws.is_file(), _p_ws)
 for _ten, _pp in (("HOME", _p_home), ("HOME cũ", _p_cu), ("workspace", _p_ws)):
     _d = json.loads(_pp.read_text(encoding="utf-8"))
-    check(f"entry hub tên 'javis' ở {_ten}", (_d.get("mcpServers") or {}).get("javis") == _hub, _d)
+    check(f"entry hub tên 'unimate' ở {_ten}", (_d.get("mcpServers") or {}).get("unimate") == _hub, _d)
 check("CANARY: có neo `.antigravitycli/` để agy nhận đúng brain làm gốc project",
       (_brain / ".antigravitycli").is_dir())
 check("CANARY: KHÔNG tạo `.antigravitycli/mcp_config.json` (đường project-local bị agy bỏ qua,"
@@ -396,7 +396,7 @@ check("CANARY: KHÔNG tạo `.antigravitycli/mcp_config.json` (đường project
       not (_brain / ".antigravitycli" / "mcp_config.json").exists())
 
 # Giữ nguyên phần người dùng đã tự thêm vào cấu hình HOME - đó là file CỦA HỌ, dùng chung với
-# Antigravity IDE. Javis chỉ được thêm/bớt đúng entry `javis` của mình.
+# Antigravity IDE. UNI MATE chỉ được thêm/bớt đúng entry `unimate` của mình.
 _d0 = json.loads(_p_home.read_text(encoding="utf-8"))
 _d0["mcpServers"]["cua-toi"] = {"serverUrl": "http://x"}
 _d0["theme"] = "dark"
@@ -407,20 +407,20 @@ check("CANARY: không xoá MCP người dùng tự thêm", "cua-toi" in (_d1.get
 check("và không xoá cấu hình khác của họ", _d1.get("theme") == "dark")
 
 check("trang_thai_mcp() thấy hub đã đấu", antigravity_cli.trang_thai_mcp(_brain).get("ok") is True)
-# CANARY: soi trạng thái phải nhận CẢ HAI tên khoá, không thì đặt JAVIS_AGY_MCP_KEY=url
+# CANARY: soi trạng thái phải nhận CẢ HAI tên khoá, không thì đặt UNIMATE_AGY_MCP_KEY=url
 # xong thẻ Models báo "chưa đấu" cho một cấu hình hoàn toàn đúng.
-os.environ["JAVIS_AGY_MCP_KEY"] = "url"
+os.environ["UNIMATE_AGY_MCP_KEY"] = "url"
 antigravity_cli.ghi_mcp_settings(_brain, antigravity_cli.hub_entry("http://127.0.0.1:7777/hub/mcp"))
 check("CANARY: entry chỉ có khoá `url` vẫn được tính là đã đấu",
       antigravity_cli.trang_thai_mcp(_brain).get("ok") is True,
       antigravity_cli.trang_thai_mcp(_brain))
-os.environ.pop("JAVIS_AGY_MCP_KEY")
+os.environ.pop("UNIMATE_AGY_MCP_KEY")
 antigravity_cli.ghi_mcp_settings(_brain, _hub)
 
 antigravity_cli.ghi_mcp_settings(_brain, None)
 _d2 = json.loads(_p_home.read_text(encoding="utf-8"))
-check("tắt hub -> gỡ đúng entry javis, giữ phần còn lại",
-      "javis" not in (_d2.get("mcpServers") or {})
+check("tắt hub -> gỡ đúng entry unimate, giữ phần còn lại",
+      "unimate" not in (_d2.get("mcpServers") or {})
       and "cua-toi" in (_d2.get("mcpServers") or {}), _d2)
 check("và KHÔNG xoá file HOME của người dùng", _p_home.is_file())
 check("trang_thai_mcp() nói thật khi chưa đấu",
@@ -434,29 +434,29 @@ if os.name != "nt":
 # lên remote của người dùng. Nâng cấp lên bản này phải DỌN chúng đi, không phải chỉ ngừng ghi.
 _p_bo = _brain / ".antigravity" / "mcp.json"
 _p_bo.parent.mkdir(parents=True, exist_ok=True)
-_p_bo.write_text(json.dumps({"mcpServers": {"javis": {"httpUrl": "http://cu", "headers":
+_p_bo.write_text(json.dumps({"mcpServers": {"unimate": {"httpUrl": "http://cu", "headers":
                                                       {"Authorization": "Bearer bí-mật"}}}}),
                  encoding="utf-8")
 _p_bo2 = _brain / ".antigravity" / "settings.json"
-_p_bo2.write_text(json.dumps({"mcpServers": {"javis": {"httpUrl": "http://cu"}}, "theme": "dark"}),
+_p_bo2.write_text(json.dumps({"mcpServers": {"unimate": {"httpUrl": "http://cu"}}, "theme": "dark"}),
                   encoding="utf-8")
 antigravity_cli.ghi_mcp_settings(_brain, _hub)
 check("CANARY: dọn file đoán cũ chứa hub token khỏi brain", not _p_bo.exists(), _p_bo)
-check("nhưng file đoán cũ còn cấu hình khác thì chỉ gỡ entry javis, không xoá",
+check("nhưng file đoán cũ còn cấu hình khác thì chỉ gỡ entry unimate, không xoá",
       _p_bo2.is_file()
-      and "javis" not in (json.loads(_p_bo2.read_text(encoding="utf-8")).get("mcpServers") or {})
+      and "unimate" not in (json.loads(_p_bo2.read_text(encoding="utf-8")).get("mcpServers") or {})
       and json.loads(_p_bo2.read_text(encoding="utf-8")).get("theme") == "dark")
 
-# Cửa thoát cho ai không muốn Javis đụng vào HOME.
-os.environ["JAVIS_AGY_MCP_HOME"] = "0"
-check("JAVIS_AGY_MCP_HOME=0 -> chỉ còn đường workspace",
+# Cửa thoát cho ai không muốn UNI MATE đụng vào HOME.
+os.environ["UNIMATE_AGY_MCP_HOME"] = "0"
+check("UNIMATE_AGY_MCP_HOME=0 -> chỉ còn đường workspace",
       [str(x) for x in antigravity_cli.duong_mcp(_brain)] == [str(_p_ws)],
       antigravity_cli.duong_mcp(_brain))
-os.environ.pop("JAVIS_AGY_MCP_HOME")
+os.environ.pop("UNIMATE_AGY_MCP_HOME")
 
 
 # ============================================================
-# 6. Đã đấu vào Javis chưa (không chỉ là một module nằm không)
+# 6. Đã đấu vào UNI MATE chưa (không chỉ là một module nằm không)
 # ============================================================
 antigravity_cli.find_antigravity_cli = _that_find
 _main_src = (ROOT / "server" / "main.py").read_text(encoding="utf-8")
@@ -512,11 +512,11 @@ check("server cấp hướng dẫn đó cho trang Models",
 #
 # Người dùng báo 2026-08-13 kèm ảnh: mọi lượt chat qua Antigravity trên Windows đều trả về "Hội
 # thoại này đã quá dài", KỂ CẢ tin nhắn "hi em" trong một hội thoại mới tinh. Đo lại thì rõ vì
-# sao: system prompt của Javis trên brain TRỐNG đã 36.045 ký tự (CLAUDE.md 27.172 + lớp agentic +
+# sao: system prompt của UNI MATE trên brain TRỐNG đã 36.045 ký tự (CLAUDE.md 27.172 + lớp agentic +
 # chỉ mục năng lực + khối kênh 5.838), trong khi CreateProcess của Windows chặn tổng dòng lệnh ở
 # 32767. Phần vượt trần là phần CỐ ĐỊNH chứ không phải phần hội thoại - nên lời khuyên "mở hội
 # thoại mới" của bản cũ không bao giờ cứu được ai, và mỗi lần người dùng làm theo lại càng tin
-# là mình làm sai chứ không phải Javis hỏng.
+# là mình làm sai chứ không phải UNI MATE hỏng.
 #
 # Nay có ba đường, và phải ĐO chứ không đoán: argv (khi vừa), stdin (khi CLI chịu), file ngữ
 # cảnh (khi không còn cách nào). Test tách làm hai nửa vì một lý do rất cụ thể: giả `os.name =
@@ -575,7 +575,7 @@ check("CANARY: công thức stdin là thứ ĐO được trên máy, không ph�
       antigravity_cli.duong_prompt_dai(_cli_win).startswith("stdin"),
       antigravity_cli.duong_prompt_dai(_cli_win))
 check("CANARY: không dựng file ngữ cảnh khi stdin đã đủ (đường trung thực hơn thì ưu tiên)",
-      not (_d_win / ".javis-agy").exists())
+      not (_d_win / ".unimate-agy").exists())
 
 # `-p` PHẢI là cờ CUỐI CÙNG. `agy` bỏ qua mọi cờ đứng sau nó, nên chèn thêm gì ở dưới là
 # `--output-format stream-json` rơi mất, CLI in chữ thuần, bộ đọc stream không hiểu, và người
@@ -612,7 +612,7 @@ _HELP_MOI_KHONG_STDIN = _HELP_MOI.replace(". Appended to input on stdin", "")
 #      cờ trước khi ngó tới stdin.
 #   2. Lượt hỏng thoát CÓ LỖI nên rơi vào nhánh "có lỗi" và không kích hoạt đường dự phòng. Lưới
 #      an toàn chỉ giăng cho ca "im lặng", đúng nửa số cách hỏng.
-_d_choi = Path(tempfile.mkdtemp(prefix="javis-fakeagy-choi-"))
+_d_choi = Path(tempfile.mkdtemp(prefix="unimate-fakeagy-choi-"))
 _cli_choi = _d_choi / "agy"
 _cli_choi.write_text(
     "#!/usr/bin/env python3\nimport sys, json\n"
@@ -646,7 +646,7 @@ check("và nhớ lại để lượt sau khỏi đâm đầu vào công thức �
 # Một bản `agy` đủ cũ (trước 1.1.1) hoặc một ngày Google đổi luật thì stdin thành ngõ cụt. Dấu
 # hiệu là: chạy xong, không lỗi, mà cũng không có lấy một chữ. Bắt người dùng nhìn bong bóng
 # rỗng rồi tự đoán là đúng cái sai mà file engine này viết ra để tránh.
-_d_bo = Path(tempfile.mkdtemp(prefix="javis-fakeagy-boqua-"))
+_d_bo = Path(tempfile.mkdtemp(prefix="unimate-fakeagy-boqua-"))
 _cli_bo = _d_bo / "agy"
 _cli_bo.write_text(
     "#!/usr/bin/env python3\nimport sys, json\n"
@@ -664,11 +664,11 @@ antigravity_cli.find_antigravity_cli = lambda: str(_cli_bo)
 _g_bo = antigravity_cli.AntigravityCLI(cwd=str(_d_bo))
 _g_bo.cli_path = str(_cli_bo)
 _g_bo.instructions = "x" * 40000
-os.environ["JAVIS_AGY_PROMPT_DAI"] = "stdin"
+os.environ["UNIMATE_AGY_PROMPT_DAI"] = "stdin"
 try:
     _evs_bo = chay(_gom(_g_bo))
 finally:
-    os.environ.pop("JAVIS_AGY_PROMPT_DAI", None)
+    os.environ.pop("UNIMATE_AGY_PROMPT_DAI", None)
 check("CANARY: CLI bỏ qua stdin -> tự thử lại bằng file ngữ cảnh, người dùng vẫn có câu trả lời",
       any(e["type"] == "final" and "Chào anh." in str(e.get("content") or "")
           for e in _evs_bo), _evs_bo)
@@ -707,11 +707,11 @@ check("còn kết quả DƯƠNG TÍNH thì nhớ mãi (bằng chứng chắc ch�
 # mỗi ký tự tiếng Việt 3 byte hoá đúng 3 dấu hỏi kim cương (U+FFFD). Đó là chữ ký của một bên
 # đọc gọi `buffer.toString("utf8")` trên TỪNG MẨU ống dẫn thay vì dùng bộ giải mã tăng dần.
 #
-# Việc ĐẦU TIÊN phải làm là đo xem bên hỏng có phải Javis không, chứ không sửa mò. Đo rồi: KHÔNG
+# Việc ĐẦU TIÊN phải làm là đo xem bên hỏng có phải UNI MATE không, chứ không sửa mò. Đo rồi: KHÔNG
 # phải. Test dưới đây cắt byte ngay giữa một ký tự 3 byte, chữ vẫn ghép lại nguyên vẹn - vì
 # `io.TextIOWrapper` dùng bộ giải mã tăng dần đúng chuẩn. Giữ canary này để lần sau ai đó "tối
 # ưu" sang đọc thô rồi decode từng mẩu thì đỏ ngay.
-_d_cat = Path(tempfile.mkdtemp(prefix="javis-fakeagy-cat-"))
+_d_cat = Path(tempfile.mkdtemp(prefix="unimate-fakeagy-cat-"))
 _cli_cat = _d_cat / "agy"
 _cli_cat.write_text(
     "#!/usr/bin/env python3\nimport sys, time, json\n"
@@ -732,10 +732,10 @@ _g_cat = antigravity_cli.AntigravityCLI(cwd=str(_d_cat))
 _g_cat.cli_path = str(_cli_cat)
 _evs_cat = chay(_gom(_g_cat))
 _txt_cat = "".join(e.get("content", "") for e in _evs_cat if e.get("type") == "final")
-check("CANARY: byte bị cắt GIỮA ký tự tiếng Việt -> Javis vẫn ghép lại nguyên vẹn",
+check("CANARY: byte bị cắt GIỮA ký tự tiếng Việt -> UNI MATE vẫn ghép lại nguyên vẹn",
       "gồm hạn từng đồng bộ" in _txt_cat and "\ufffd" not in _txt_cat, repr(_txt_cat[:80]))
 
-# Phía Javis GHI vào stdin cũng không được cắt giữa ký tự: bên đọc của `agy` cắt ẩu thì mình
+# Phía UNI MATE GHI vào stdin cũng không được cắt giữa ký tự: bên đọc của `agy` cắt ẩu thì mình
 # chỉnh được chỗ mình đặt ranh giới. Mọi mẩu phải kết thúc đúng biên ký tự.
 class _StdinGia:
     def __init__(self):
@@ -754,7 +754,7 @@ class _ProcGia:
 
 
 _pg = _ProcGia()
-_dai = ("Javis nhắc anh: báo cáo gồm doanh thu, hạn chót từng kênh, đồng bộ lịch. " * 400)
+_dai = ("UNI MATE nhắc anh: báo cáo gồm doanh thu, hạn chót từng kênh, đồng bộ lịch. " * 400)
 antigravity_cli._ghi_stdin(_pg, _dai)
 _mau = _pg.stdin.buffer.mau
 def _tu_giai_ma_duoc(m):
@@ -773,7 +773,7 @@ check("và ghép lại thì đúng nguyên văn prompt (không mất, không th�
 check("chia thành nhiều mẩu thật (prompt dài hơn một mẩu)", len(_mau) > 1, len(_mau))
 
 # Câu trả lời về mà CÓ ký tự hỏng: phải tự đổi đường thử lại, và nếu vẫn hỏng thì NÓI RA.
-_d_hong = Path(tempfile.mkdtemp(prefix="javis-fakeagy-hong-"))
+_d_hong = Path(tempfile.mkdtemp(prefix="unimate-fakeagy-hong-"))
 _cli_hong = _d_hong / "agy"
 _cli_hong.write_text(
     "#!/usr/bin/env python3\nimport sys, json\n"
@@ -798,11 +798,11 @@ check("CANARY: đổi đường vẫn hỏng -> NÓI THẲNG là lỗi nằm tro
 
 
 # ---- Nửa 2: cơ chế file ngữ cảnh, chạy thật (ép đường bằng biến môi trường) ----
-_STATE = Path(os.environ["JAVIS_STATE_DIR"])
+_STATE = Path(os.environ["UNIMATE_STATE_DIR"])
 
 
 def _tep_ngu_canh():
-    d = _STATE / ".javis-agy"
+    d = _STATE / ".unimate-agy"
     return sorted(d.glob("ngu-canh-*.md")) if d.is_dir() else []
 
 
@@ -813,14 +813,14 @@ def _chay_ep_file(dong_ra, giu=False, help_text=_HELP_MOI):
     g = antigravity_cli.AntigravityCLI(cwd=str(d))
     g.cli_path = cli
     g.instructions = "x" * 40000
-    os.environ["JAVIS_AGY_PROMPT_DAI"] = "file"
+    os.environ["UNIMATE_AGY_PROMPT_DAI"] = "file"
     if giu:
-        os.environ["JAVIS_AGY_GIU_NGU_CANH"] = "1"
+        os.environ["UNIMATE_AGY_GIU_NGU_CANH"] = "1"
     try:
         evs = chay(_gom(g))
     finally:
-        os.environ.pop("JAVIS_AGY_PROMPT_DAI", None)
-        os.environ.pop("JAVIS_AGY_GIU_NGU_CANH", None)
+        os.environ.pop("UNIMATE_AGY_PROMPT_DAI", None)
+        os.environ.pop("UNIMATE_AGY_GIU_NGU_CANH", None)
     argv = ""
     try:
         argv = (d / "argv.txt").read_text(encoding="utf-8")
@@ -849,10 +849,10 @@ check("CANARY: mở quyền đọc thư mục đó bằng --add-dir (file không
       and str(_tep_nc[0].parent) in _argv_f, _argv_f[:8])
 # Hai lớp nữa cho cùng một rủi ro, phòng khi có ai đó đổi chỗ ghi file về lại trong brain.
 _gb = (ROOT / "server" / "git_brain.py").read_text(encoding="utf-8")
-check("CANARY: git backup chặn thư mục .javis-agy", "/.javis-agy/" in _gb)
-check("và .gitignore của brain cũng chặn", '".javis-agy/"' in _gb)
+check("CANARY: git backup chặn thư mục .unimate-agy", "/.unimate-agy/" in _gb)
+check("và .gitignore của brain cũng chặn", '".unimate-agy/"' in _gb)
 
-# Cùng một hạng rủi ro, chỗ khác: cấu hình MCP Javis ghi vào brain chứa `Bearer <hub token>` và
+# Cùng một hạng rủi ro, chỗ khác: cấu hình MCP UNI MATE ghi vào brain chứa `Bearer <hub token>` và
 # có đuôi .json, mà khối 2 của .gitignore mở lại MỌI file .json. Không chặn thì token đi thẳng
 # lên remote sao lưu của người dùng và git giữ blob vĩnh viễn.
 import git_brain as _gbm  # noqa: E402
@@ -872,7 +872,7 @@ check("CANARY: dọn sạch file ngữ cảnh sau khi chạy (không để lại
 
 # Dọn cả file MỒ CÔI: kill -9 hay mất điện giữa lượt thì không `finally` nào chạy, mà thứ nằm
 # lại là bản sao ký ức của người dùng chứ không phải file tạm vô hại.
-_mo_coi = _STATE / ".javis-agy" / "ngu-canh-mocoi000000.md"
+_mo_coi = _STATE / ".unimate-agy" / "ngu-canh-mocoi000000.md"
 _mo_coi.parent.mkdir(parents=True, exist_ok=True)
 _mo_coi.write_text("rác cũ", encoding="utf-8")
 os.utime(_mo_coi, (0, 0))
@@ -904,12 +904,12 @@ def _chay_file_voi_su_kien(dong_ra_fn, help_text=_HELP_MOI):
         return p, duong
 
     antigravity_cli._viet_file_ngu_canh = _viet_roi_dung_cli
-    os.environ["JAVIS_AGY_PROMPT_DAI"] = "file"
+    os.environ["UNIMATE_AGY_PROMPT_DAI"] = "file"
     try:
         return chay(_gom(g))
     finally:
         antigravity_cli._viet_file_ngu_canh = that
-        os.environ.pop("JAVIS_AGY_PROMPT_DAI", None)
+        os.environ.pop("UNIMATE_AGY_PROMPT_DAI", None)
 
 
 def _co_canh_bao(evs):
@@ -967,7 +967,7 @@ try:
 finally:
     os.name = _ten_that
 check("CANARY: bản CLI nhận stdin thì đi stdin, không dựng file ngữ cảnh",
-      not (_d_sd / ".javis-agy").exists() and any(e["type"] == "final" for e in _evs_sd),
+      not (_d_sd / ".unimate-agy").exists() and any(e["type"] == "final" for e in _evs_sd),
       _evs_sd)
 
 antigravity_cli._no_window = _no_window_that
@@ -1008,7 +1008,7 @@ def _gia_xung_effort(dong_ra):
 
     Ghi NỐI TIẾP argv của từng lần chạy để test soi được cả lượt hỏng lẫn lượt chạy lại.
     """
-    d = Path(tempfile.mkdtemp(prefix="javis-fakeagy-eff-"))
+    d = Path(tempfile.mkdtemp(prefix="unimate-fakeagy-eff-"))
     p = d / "agy"
     p.write_text(
         "#!/usr/bin/env python3\n"
@@ -1078,7 +1078,7 @@ _LOI_503 = ("failed to send message: send failed; already reported to the user: 
 
 def _gia_gay_roi_hoi(so_lan_gay, dong_ra, stderr=_LOI_503, help_text=None):
     """`agy` giả: gãy `so_lan_gay` lần đầu, lần sau trả lời bình thường. Đếm bằng file."""
-    d = Path(tempfile.mkdtemp(prefix="javis-fakeagy-503-"))
+    d = Path(tempfile.mkdtemp(prefix="unimate-fakeagy-503-"))
     p = d / "agy"
     p.write_text(
         "#!/usr/bin/env python3\n"
@@ -1183,7 +1183,7 @@ try:
         "n = int(open(dem).read()) if os.path.exists(dem) else 0\n"
         "open(dem, 'w').write(str(n + 1))\n"
         "print(%r, flush=True)\n" % json.dumps(
-            {"type": "tool_use", "tool_name": "javis_write_file", "tool_id": "t1"}) +
+            {"type": "tool_use", "tool_name": "unimate_write_file", "tool_id": "t1"}) +
         f"sys.stderr.write({_LOI_HET_GIO!r}); sys.exit(1)\n",
         encoding="utf-8")
     Path(_cli_h).chmod(Path(_cli_h).stat().st_mode | stat.S_IEXEC)
@@ -1195,7 +1195,7 @@ try:
     check("the turn that hit the cap runs exactly once (running it again would redo its steps)",
           (_d_h / "dem.txt").read_text().strip() == "1", (_d_h / "dem.txt").read_text())
     check("CANARY: the message says the turn ran too long, names the cap and how to go on",
-          "15 phút" in _loi_h and "làm tiếp" in _loi_h and "JAVIS_AGY_TIMEOUT" in _loi_h, _loi_h[:300])
+          "15 phút" in _loi_h and "làm tiếp" in _loi_h and "UNIMATE_AGY_TIMEOUT" in _loi_h, _loi_h[:300])
     check("and does not blame Google or claim retries",
           "phía Google" not in _loi_h and "thử lại" not in _loi_h, _loi_h[:300])
 finally:
@@ -1218,7 +1218,7 @@ check("dùng tim_binary chứ không shutil.which (tiến trình nền trên mac
       "tim_binary" in _sdk.split('"cli_path" in fields')[1][:800])
 check("CANARY: chặn PATH trỏ nhầm về chính binary đóng gói",
       '"_bundled" not in' in _sdk)
-check("có cửa thoát JAVIS_CLAUDE_CLI cho máy cài chỗ lạ", "JAVIS_CLAUDE_CLI" in _sdk)
+check("có cửa thoát UNIMATE_CLAUDE_CLI cho máy cài chỗ lạ", "UNIMATE_CLAUDE_CLI" in _sdk)
 
 
 print()

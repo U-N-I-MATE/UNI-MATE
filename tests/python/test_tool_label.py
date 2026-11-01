@@ -29,7 +29,7 @@ check("Bash: ưu tiên description (câu model viết cho người đọc)",
 check("Bash không description: lấy command",
       ct({"name": "Bash", "input": {"command": "ls -la"}}) == "ls -la")
 check("Read: đường dẫn file", ct({"name": "Read", "input": {"file_path": "wiki/a.md"}}) == "wiki/a.md")
-dai = ct({"name": "Read", "input": {"file_path": "/root/.javis/brains/cua-hang/wiki/khach-hang/danh-sach.md"}})
+dai = ct({"name": "Read", "input": {"file_path": "/root/.unimate/brains/cua-hang/wiki/khach-hang/danh-sach.md"}})
 check("đường dẫn tuyệt đối dài: chỉ giữ 3 đoạn cuối", dai == "…/wiki/khach-hang/danh-sach.md", dai)
 check("Grep: mẫu tìm", ct({"name": "Grep", "input": {"pattern": "doanh thu"}}) == "doanh thu")
 check("WebFetch: URL", ct({"name": "WebFetch", "input": {"url": "https://x.vn/a"}}) == "https://x.vn/a")

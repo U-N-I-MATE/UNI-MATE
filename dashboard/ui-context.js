@@ -1,8 +1,8 @@
 /* ui-context.js - khối [NGỮ CẢNH GIAO DIỆN: ...] dashboard chèn trước câu hỏi (Voice V1, spec mục 5).
 
-   Javis cần biết người dùng ĐANG NHÌN gì để "cái này", "đoạn này", "cuộn xuống" có nghĩa mà
+   UNI MATE cần biết người dùng ĐANG NHÌN gì để "cái này", "đoạn này", "cuộn xuống" có nghĩa mà
    không phải hỏi lại. Ba thứ được gửi: trang đang mở (trừ chat/home, mặc định không mang tin),
-   đoạn đang bôi đen (cắt 600 ký tự), và câu Javis bị ngắt lời lúc đọc (để nó không đọc lại từ
+   đoạn đang bôi đen (cắt 600 ký tự), và câu UNI MATE bị ngắt lời lúc đọc (để nó không đọc lại từ
    đầu). Không có gì thì trả chuỗi RỖNG: đừng tốn token cho một khối trống.
 
    Khối này bị lột khỏi bong bóng hiển thị (app.js chuNguoiGo) và khỏi tiêu đề hội thoại
@@ -42,6 +42,6 @@
   }
 
   var api = { build: build, PREFIX: PREFIX, MAX_SEL: MAX_SEL };
-  if (typeof window !== "undefined") window.JavisUiContext = api;
+  if (typeof window !== "undefined") window.UniMateUiContext = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

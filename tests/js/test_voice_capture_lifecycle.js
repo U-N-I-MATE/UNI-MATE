@@ -23,7 +23,7 @@ function setup(onTranscript = () => {}, opts = {}) {
     clearTimeout: id => timers.delete(id), setInterval: () => 0, clearInterval() {},
   };
   vm.runInNewContext(fs.readFileSync('dashboard/voice.js', 'utf8'), context);
-  const voice = new context.window.JavisVoice({ onTranscript, ...opts });
+  const voice = new context.window.UniMateVoice({ onTranscript, ...opts });
   voice.isSpeaking = () => false;
   return { voice, context, timers };
 }
@@ -121,15 +121,15 @@ test('failed selected voice never silently switches to the browser', () => {
 
 test('focus rejects raw ambient before STT upload or delivery', async () => {
   const received = [];
-  const { voice, context } = setup(t => received.push(t), { acceptTranscript: t => t.startsWith('Javis') });
+  const { voice, context } = setup(t => received.push(t), { acceptTranscript: t => t.startsWith('UNI MATE') });
   voice.sttUpload = true; voice._recComplete = true;
   let uploads = 0;
   voice._stopRecorder = async () => new Blob(['x'.repeat(3000)]);
-  context.fetch = async () => { uploads++; return { ok: true, json: async () => ({text: 'Javis mở chat'}) }; };
+  context.fetch = async () => { uploads++; return { ok: true, json: async () => ({text: 'UNI MATE mở chat'}) }; };
   voice.onTranscript('mua ngay trên TV'); await tick();
   assert.equal(uploads, 0); assert.deepEqual(received, []);
-  voice.onTranscript('Javis mở chat'); await voice._sttDelivery;
-  assert.equal(uploads, 1); assert.deepEqual(received, ['Javis mở chat']);
+  voice.onTranscript('UNI MATE mở chat'); await voice._sttDelivery;
+  assert.equal(uploads, 1); assert.deepEqual(received, ['UNI MATE mở chat']);
 });
 
 test('Live handoff waits until browser capture has really ended', async () => {
@@ -210,7 +210,7 @@ test('late capture uses browser transcript without trusting the partial recordin
   voice.sttUpload = true; voice._recComplete = false;
   voice._stopRecorder = async () => new Blob(['x'.repeat(3000)]);
   let uploads = 0, received;
-  context.fetch = async () => { uploads++; return { ok: true, json: async () => ({ ok: true, text: 'Javis' }) }; };
+  context.fetch = async () => { uploads++; return { ok: true, json: async () => ({ ok: true, text: 'UNI MATE' }) }; };
   await voice._quaStt('Đưa anh về màn hình trò chuyện nhé.', text => { received = text; });
   assert.equal(received, 'Đưa anh về màn hình trò chuyện nhé.');
   assert.equal(uploads, 0);
@@ -309,7 +309,7 @@ test('cancelling a voice session discards pending STT results', async () => {
   await tick();
   assert.equal(typeof voice.cancelListening, 'function');
   voice.cancelListening();
-  response.resolve({ ok: true, json: async () => ({ ok: true, text: 'Javis' }) });
+  response.resolve({ ok: true, json: async () => ({ ok: true, text: 'UNI MATE' }) });
   await pending;
   assert.equal(received, ''); assert.equal(voice.isTranscribing, false);
 });

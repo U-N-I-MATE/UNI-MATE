@@ -16,9 +16,9 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-dm-react-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-BR = Path(tempfile.mkdtemp(prefix="javis-dm-react-brain-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-dm-react-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+BR = Path(tempfile.mkdtemp(prefix="unimate-dm-react-brain-"))
 (BR / "agents").mkdir()
 for slug, name in (("lan", "Lan"), ("minh", "Minh")):
     (BR / "agents" / f"{slug}.md").write_text(f"---\nname: {name}\nrole: Trợ lý\n---\nBạn là {name}.\n",
@@ -74,7 +74,7 @@ u1 = store.append_message(S_LAN, "user", "Viết giúp bài giới thiệu")
 a1 = store.append_message(S_LAN, "assistant", "Đây là bài giới thiệu của Lan")
 a2 = store.append_message(S_LAN, "assistant", "Bản thứ hai của Lan")
 am = store.append_message(S_MINH, "assistant", "Câu trả lời của Minh")
-ax = store.append_message(S_MAIN, "assistant", "Câu của Javis")
+ax = store.append_message(S_MAIN, "assistant", "Câu của UNI MATE")
 
 
 def post(sid, mid, body):
@@ -167,7 +167,7 @@ check("trang Trò chuyện chính: lưu, agent rỗng, trạng thái 'Đã nhậ
 
 # turn_saved sau khi lưu lượt
 sent.clear()
-mid_saved = asyncio.run(main._persist_turn(store, S_LAN, str(BR), "hỏi tiếp", "Trả lời mới.\n<!-- JAVIS_ASK: {} -->"))
+mid_saved = asyncio.run(main._persist_turn(store, S_LAN, str(BR), "hỏi tiếp", "Trả lời mới.\n<!-- UNIMATE_ASK: {} -->"))
 ts_ev = [e for e in sent if e.get("type") == "turn_saved"]
 saved = store.message_row(S_LAN, mid_saved) if isinstance(mid_saved, int) else None
 check("_persist_turn trả mã tin câu trả lời", isinstance(mid_saved, int) and saved and saved["role"] == "assistant")

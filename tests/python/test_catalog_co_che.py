@@ -17,9 +17,9 @@ không bao giờ bị dọn đi, không phụ thuộc vào việc app còn ship 
 ra cơ chế đang được kiểm là gì - đọc test là hiểu luật, không phải đi tra một connector.
 
 Phần dữ liệu (khuôn `n8n` có đúng url_template không, 330 tool của Hostinger xếp đúng nhóm
-chưa) đi theo dữ liệu sang repo kho `blogminhquy/javis-store`, nơi `tools/kiem-tra.py` chạy
+chưa) đi theo dữ liệu sang repo kho `U-N-I-MATE/unimate-store`, nơi `tools/kiem-tra.py` chạy
 trên mọi Pull Request. Giữ bản chụp của chúng ở đây chỉ là tự trấn an: kho đổi được mà không
-cần bản Javis mới, nên test ở repo này không canh nổi thứ người dùng thật sự cài.
+cần bản UNI MATE mới, nên test ở repo này không canh nổi thứ người dùng thật sự cài.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path
 import json
@@ -247,7 +247,7 @@ check("CANARY: loop chế độ suggest không chạy được dù kết nối T
 #
 # `system/ucp-agent-profile.json` ở lại trong app dù connector Shopify đã sang kho: gói shopify
 # trong kho trỏ tới bản phục vụ qua GitHub raw của repo này, nên nội dung nó khai vẫn là lời của
-# Javis chứ không phải của kho.
+# UNI MATE chứ không phải của kho.
 # ============================================================
 prof = ROOT / "system" / "ucp-agent-profile.json"
 check("file hồ sơ agent có thật trong repo", prof.exists(), str(prof))
@@ -257,7 +257,7 @@ if prof.exists():
     ten_nl = [c.get("name") for c in (pj.get("capabilities") or [])]
     check("hồ sơ khai năng lực catalog + cart",
           "dev.ucp.shopping.catalog" in ten_nl and "dev.ucp.shopping.cart" in ten_nl, ten_nl)
-    # Javis dừng ở giỏ hàng rồi đưa link cho người thật bấm - khai checkout là tự nhận quyền
+    # UNI MATE dừng ở giỏ hàng rồi đưa link cho người thật bấm - khai checkout là tự nhận quyền
     # thanh toán mà app không hề có đường đi tới.
     check("CANARY: hồ sơ KHÔNG khai năng lực thanh toán",
           not any("checkout" in str(n) for n in ten_nl), ten_nl)
@@ -283,7 +283,7 @@ for c in data.get("connectors", []):
 
 # Bất biến bảo mật của TOÀN catalog: không khuôn nào được nhét credential vào `url`.
 #
-# Tài liệu của vài server gợi ý kiểu link `https://.../mcp?jwt=<token>`. Javis không được dùng
+# Tài liệu của vài server gợi ý kiểu link `https://.../mcp?jwt=<token>`. UNI MATE không được dùng
 # kiểu đó: `mcp_store.add_connection` lưu `url` KHÔNG qua `secrets_store`, và `public_catalog`
 # trả nguyên `url` ra frontend - chỉ headers/env/secrets mới được che. Token trong url là rơi
 # thẳng ra dashboard và ra log.
@@ -313,7 +313,7 @@ CATALOG_GIA = {"version": 1, "connectors": [dict(KHUON_URL, name="Giả URL", ca
                                                  status="ready", default_perm="readonly")]}
 
 with tempfile.TemporaryDirectory() as tmp:
-    os.environ["JAVIS_STATE_DIR"] = tmp
+    os.environ["UNIMATE_STATE_DIR"] = tmp
     # Hai bước, thiếu bước nào thì test ghi thẳng vào kho kết nối THẬT của người đang chạy:
     #
     # (1) Nạp lại `config` nữa, không chỉ hai module dưới: `config.STATE_DIR` tính MỘT LẦN lúc

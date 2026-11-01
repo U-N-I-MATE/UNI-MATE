@@ -3,7 +3,7 @@
     python tests/run.py zalo_formatting      (no network)
 
 Owner, 30/10/2026: with Hermes the bot showed "đang soạn tin" and sent coloured, formatted messages, so customers could
-not tell a bot from a person; Javis sent Markdown stars as typed. What is guarded, in order of what would hurt most:
+not tell a bot from a person; UNI MATE sent Markdown stars as typed. What is guarded, in order of what would hurt most:
 
   1. The customer never sees Markdown symbols: bold/italic/strike/colour become Zalo styles, positions in UTF-16 units.
   2. The echo of a formatted reply is still recognised as the bot's own (else the bot thinks the owner typed and goes
@@ -19,7 +19,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-zalo-fmt-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-zalo-fmt-")
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -62,13 +62,13 @@ check("a pair cut in half loses its stray stars", to("giá **85.000đ") == ("gi�
 check("stray stars before a style move it back", to("** đầu, **đậm**") == (" đầu, đậm", [(6, 3, "bold")]),
       to("** đầu, **đậm**"))
 check("plain text is untouched", to("Dạ em chào anh ạ") == ("Dạ em chào anh ạ", []))
-check("only names javis-zalo knows", all(n in zalo_markup.STYLE_NAMES for _a, _n, n in to("{big:A} {small:B} {orange:C} {yellow:D}")[1]))
+check("only names unimate-zalo knows", all(n in zalo_markup.STYLE_NAMES for _a, _n, n in to("{big:A} {small:B} {orange:C} {yellow:D}")[1]))
 
 # ============================================================
 # 2. Sending
 # ============================================================
 CID = "zalo-1"
-CONN = {"id": CID, "label": "Javis Vũ", "connector_id": "zalo", "env": {"HOME": "/state/zalo-1"}}
+CONN = {"id": CID, "label": "Uni Vũ", "connector_id": "zalo", "env": {"HOME": "/state/zalo-1"}}
 MCP, CLI, TYPING = [], [], []
 NEXT = {"cli": (True, {"message": {"msgId": "1"}}, ""), "typing": "ok"}
 

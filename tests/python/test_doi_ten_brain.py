@@ -2,10 +2,10 @@
 
     python tests/run.py doi_ten_brain      (KHÔNG mạng)
 
-Nhóm chat của chủ (2026-10-19): "cái brain đó ko đổi tên đc ạ" / "sao lại fix cứng thế". Javis nhận diện một bộ não bằng
+Nhóm chat của chủ (2026-10-19): "cái brain đó ko đổi tên đc ạ" / "sao lại fix cứng thế". UNI MATE nhận diện một bộ não bằng
 THƯ MỤC ("brain" = Brain Default, còn lại `path:<thư mục>`), và địa chỉ đó nằm khắp nơi: trình duyệt, bot, nhắc việc,
 vòng lặp, việc nền, sao lưu git, link `/brains/<thư mục>/...` trong note. Đổi tên thư mục là cắt hết. Nên đổi tên chỉ đổi
-TÊN HIỂN THỊ, lưu trong chính bộ não (`Javis/brain.json`), thư mục giữ nguyên.
+TÊN HIỂN THỊ, lưu trong chính bộ não (`UniMate/brain.json`), thư mục giữ nguyên.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
@@ -13,10 +13,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-doiten-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-doiten-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 os.environ["BRAINS_DIR"] = str(Path(_STATE) / "brains")
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -39,17 +39,17 @@ d = Path(tempfile.mkdtemp(prefix="brain-")) / "Brain Default"
 d.mkdir()
 check("chưa đặt tên: hiện tên thư mục", bl.display(d) == "Brain Default" and bl.read(d) == "")
 check("đặt tên: trả tên mới", bl.write(d, "  Gsmsuppliers   Kho  ") == "Gsmsuppliers Kho")
-check("tên nằm TRONG brain, ở Javis/brain.json", (d / "Javis" / "brain.json").is_file())
+check("tên nằm TRONG brain, ở UniMate/brain.json", (d / "UNI MATE" / "brain.json").is_file())
 check("đọc lại đúng tên", bl.display(d) == "Gsmsuppliers Kho")
 check("thư mục không đổi", d.is_dir() and d.name == "Brain Default")
-check("file tên được sao lưu git như chữ", git_brain.la_file_chu("Brain Default/Javis/brain.json"))
+check("file tên được sao lưu git như chữ", git_brain.la_file_chu("Brain Default/UniMate/brain.json"))
 check("tên quá dài bị cắt, xuống dòng bị gộp", bl.clean("a\nb" + "x" * 100) == ("a b" + "x" * 100)[:60])
-check("để trống: về tên thư mục và dọn file", bl.write(d, "") == "Brain Default" and not (d / "Javis" / "brain.json").exists())
-(d / "Javis").mkdir(exist_ok=True)
-(d / "Javis" / "brain.json").write_text('{"khac": 1}', encoding="utf-8")
+check("để trống: về tên thư mục và dọn file", bl.write(d, "") == "Brain Default" and not (d / "UNI MATE" / "brain.json").exists())
+(d / "UNI MATE").mkdir(exist_ok=True)
+(d / "UNI MATE" / "brain.json").write_text('{"khac": 1}', encoding="utf-8")
 bl.write(d, "Tên mới")
-check("giữ các khoá khác trong file", '"khac": 1' in (d / "Javis" / "brain.json").read_text(encoding="utf-8"))
-(d / "Javis" / "brain.json").write_text("hỏng{", encoding="utf-8")
+check("giữ các khoá khác trong file", '"khac": 1' in (d / "UNI MATE" / "brain.json").read_text(encoding="utf-8"))
+(d / "UNI MATE" / "brain.json").write_text("hỏng{", encoding="utf-8")
 check("file hỏng: không vỡ, dùng tên thư mục", bl.display(d) == "Brain Default")
 
 # ---- 2. Endpoint ----

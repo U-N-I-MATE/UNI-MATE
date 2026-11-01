@@ -13,7 +13,7 @@ Ba nhóm được canh ở đây, theo đúng thứ tự "hỏng thì đau tới
 3. **Không bỏ lại tiến trình mồ côi.** Shell chạy trong process group riêng nên nó KHÔNG chết
    theo server; đóng phiên phải giết cả nhóm.
 
-Chạy được trên Linux/macOS. Trên Windows phần pty tự bỏ qua (ở đó Javis chạy chế độ ống) -
+Chạy được trên Linux/macOS. Trên Windows phần pty tự bỏ qua (ở đó UNI MATE chạy chế độ ống) -
 nhưng nhánh ống vẫn được test ở mọi hệ bằng cách ép CO_PTY=False, vì đó là nhánh không ai ngồi
 Linux chạy thử được.
 """
@@ -52,10 +52,10 @@ _than = _ws.group(0) if _ws else ""
 check("có endpoint WebSocket /ws/terminal", bool(_than))
 check("WS terminal đòi ĐÚNG session đăng nhập như /ws",
       "cfgmod.gate_active()" in _than and "cfgmod.valid_session" in _than
-      and "javis_session" in _than)
+      and "unimate_session" in _than)
 check("CANARY: WS terminal KHÔNG nhận token API (_token_ok là đường của script, không phải shell)",
       "_token_ok" not in _than)
-check("WS terminal tôn trọng công tắc tắt JAVIS_TERMINAL", "terminal.bat()" in _than)
+check("WS terminal tôn trọng công tắc tắt UNIMATE_TERMINAL", "terminal.bat()" in _than)
 check("/terminal/status + /terminal/close không nằm trong danh sách khỏi đăng nhập",
       "/terminal" not in re.search(r"_AUTH_PUBLIC_EXACT = \((.*?)\)", SRC, re.S).group(1)
       and "/terminal" not in re.search(r"_AUTH_LOCAL_EXACT = \((.*?)\)", SRC, re.S).group(1))
@@ -68,17 +68,17 @@ check("rời tab chỉ GỠ NGƯỜI XEM, không giết shell",
 # ============================================================
 # 2. Công tắc + cấu hình
 # ============================================================
-_cu = os.environ.get("JAVIS_TERMINAL")
+_cu = os.environ.get("UNIMATE_TERMINAL")
 try:
-    os.environ.pop("JAVIS_TERMINAL", None)
+    os.environ.pop("UNIMATE_TERMINAL", None)
     check("mặc định terminal BẬT", terminal.bat() is True)
     for v in ("0", "off", "false", "no", "OFF"):
-        os.environ["JAVIS_TERMINAL"] = v
-        check(f"JAVIS_TERMINAL={v} -> tắt", terminal.bat() is False)
+        os.environ["UNIMATE_TERMINAL"] = v
+        check(f"UNIMATE_TERMINAL={v} -> tắt", terminal.bat() is False)
 finally:
-    os.environ.pop("JAVIS_TERMINAL", None)
+    os.environ.pop("UNIMATE_TERMINAL", None)
     if _cu is not None:
-        os.environ["JAVIS_TERMINAL"] = _cu
+        os.environ["UNIMATE_TERMINAL"] = _cu
 
 check("shell_argv() luôn trả ít nhất một lệnh", len(terminal.shell_argv()) >= 1)
 check("che_do() ra 'pty' trên POSIX / 'ong' trên Windows",

@@ -30,8 +30,8 @@ import os
 import sys
 import tempfile
 
-_STATE = tempfile.mkdtemp(prefix="javis-chatbot-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-chatbot-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -68,7 +68,7 @@ check("tạo thiếu Agent -> từ chối", bad is None and "agent" in why.lower
 bad, why = chatbot_store.create_bot({"name": "Bot", "agent_slug": "cskh"})
 check("tạo thiếu brain -> từ chối", bad is None and "brain" in why.lower())
 
-# Slug Agent = TÊN FILE trong Javis/agents, và tên đó do người dùng đặt. Rào ở đây canh AN
+# Slug Agent = TÊN FILE trong UniMate/agents, và tên đó do người dùng đặt. Rào ở đây canh AN
 # TOÀN ĐƯỜNG DẪN chứ không canh hình dạng: khuôn cũ chỉ nhận ASCII nên nó chặn đúng những
 # Agent đặt tên tiếng Việt (`main._slugify` giữ nguyên dấu), và chặn bằng câu "Thiếu Agent"
 # trong khi chủ đang nhìn thấy Agent mình vừa chọn trong ô.
@@ -398,7 +398,7 @@ check("lệnh lạ trả lời chung chung, không khai còn tập lệnh khác"
 # ============================================================
 # 10. Prompt của bot
 # ============================================================
-# Nội dung prompt do test_chatbot_cach_ly.py canh (Javis không được chèn luật của mình lên
+# Nội dung prompt do test_chatbot_cach_ly.py canh (UNI MATE không được chèn luật của mình lên
 # quy định người dùng viết trong Agent). Ở đây chỉ kiểm đúng phần thuộc về kho: bot TRỎ TỚI
 # một Agent bằng cặp (brain, slug), và prompt dựng từ đúng cặp đó.
 chatbot_runtime.wire(
@@ -412,8 +412,8 @@ p = chatbot_runtime.build_bot_prompt({"name": "Bot CSKH", "agent": {"brain": "br
 check("prompt lấy TÊN từ Agent", "Hoa CSKH" in p)
 check("prompt lấy VAI TRÒ từ Agent", "Trả lời khách về sản phẩm" in p)
 check("prompt lấy THÂN file Agent", "Luôn hỏi khách đã mua chưa." in p)
-check("prompt KHÔNG mang system prompt điều phối của Javis",
-      "javis_schedule" not in p and "Kanban" not in p)
+check("prompt KHÔNG mang system prompt điều phối của UNI MATE",
+      "unimate_schedule" not in p and "Kanban" not in p)
 
 
 def _no_agent(brain, slug):

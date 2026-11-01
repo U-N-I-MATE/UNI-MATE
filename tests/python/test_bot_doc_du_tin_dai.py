@@ -12,8 +12,8 @@ import sys
 import tempfile
 import time
 
-_STATE = tempfile.mkdtemp(prefix="javis-tindai-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-tindai-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

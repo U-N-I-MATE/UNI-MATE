@@ -14,7 +14,7 @@ connection is built, and main.py is imported before the first connection, so `di
 import) turns the setting into a read-only False on the Config class: a data descriptor on the class wins over the
 value uvicorn's __init__ stored on the instance. The cost is bandwidth only: chat frames are small text deltas.
 
-`JAVIS_WS_DEFLATE=1` keeps uvicorn's compression (for a setup that needs it and has no Safari users).
+`UNIMATE_WS_DEFLATE=1` keeps uvicorn's compression (for a setup that needs it and has no Safari users).
 
 0.274.0: `import main` no longer loads uvicorn for this (about 40 ms of every start, on a check that sits at its
 ceiling). Every launch path but `python main.py` has loaded uvicorn before main, so the patch applies at once; otherwise
@@ -30,7 +30,7 @@ import sys
 
 def wanted() -> bool:
     """True when the operator asked to keep WebSocket compression on."""
-    return str(os.environ.get("JAVIS_WS_DEFLATE", "")).strip().lower() in ("1", "true", "yes", "on")
+    return str(os.environ.get("UNIMATE_WS_DEFLATE", "")).strip().lower() in ("1", "true", "yes", "on")
 
 
 def disable_deflate() -> bool:

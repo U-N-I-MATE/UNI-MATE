@@ -161,7 +161,7 @@
     "tests/python/test_improvement_role_qualification.py": "8e3e5362fa7571589324a4c67098ee07ecbeef00100997cfc55df7d1da3d8832"
   },
   "command": [
-    "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+    "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
     "tests/python/test_improvement_view_native_qualification.py",
     "-v"
   ],

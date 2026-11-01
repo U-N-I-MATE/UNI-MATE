@@ -4,7 +4,7 @@
 
 Owner report 23/10/2026: "cài đặt là nữ nhưng khi nói là giọng nói nam, lưu thế nào cũng không cài được". The Edge
 voice lived only in one browser's localStorage, so a voice picked on the laptop never reached the phone, nor the voice
-notes Javis records for Telegram and Zalo. Checks:
+notes UNI MATE records for Telegram and Zalo. Checks:
   1. POST /settings keeps `edge_voice` (an Edge name or "auto"), refuses anything else, /voice/options returns it;
   2. voice notes use that voice when it can read the text, and the language default when it cannot;
   3. every live voice the server offers has male/female in dashboard/voice-catalog.js (only alloy is neutral), so
@@ -17,7 +17,7 @@ import re
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-gioi-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-gioi-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

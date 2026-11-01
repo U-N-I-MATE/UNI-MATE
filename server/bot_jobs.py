@@ -1,17 +1,17 @@
 """Which dedicated chatbot made a job (0.429.0).
 
-Owner, 31/10/2026: the Tasks page listed every reminder, loop and Kanban job under Javis Core, while most of them
+Owner, 31/10/2026: the Tasks page listed every reminder, loop and Kanban job under UNI MATE Core, while most of them
 were made by the owner's Zalo assistant bot. A job made in a chatbot's turn now carries that bot:
 
-  - a reminder: `bot_id` in reminders.json (javis_schedule reads the bot from turn_context);
+  - a reminder: `bot_id` in reminders.json (unimate_schedule reads the bot from turn_context);
   - a loop: `bot_id:` in its frontmatter;
-  - a Kanban job: `created_by = "bot:<id>"` (javis_task).
+  - a Kanban job: `created_by = "bot:<id>"` (unimate_task).
 
 Jobs made before this version carry nothing, so this module guesses them from the bot's own turn log
 (chatbot_log.py: one line per answered turn, written when the turn ends). A job belongs to a bot when it was created
 during one of that bot's turns (at most WINDOW_S before the turn's line) and, when the job names a chat, in that
-same chat. Two bots answering at that moment is no answer: the job stays with Javis Core rather than with a guess.
-A guess, once made, is kept in <brain>/Javis/bot-jobs.json, because the turn log is trimmed and the proof would go.
+same chat. Two bots answering at that moment is no answer: the job stays with UNI MATE Core rather than with a guess.
+A guess, once made, is kept in <brain>/UniMate/bot-jobs.json, because the turn log is trimmed and the proof would go.
 
 `GET /tasks/bots?brain=` hands the page the brain's bots and the job -> bot map. task_stats uses the same map.
 """
@@ -110,7 +110,7 @@ def guess(created_at: float, chat_id: str, turns: dict) -> str:
 
 def guess_loop(owner_chat: str, day: str, turns: dict, tz=None) -> str:
     """A loop has no creation time, only the day it was last saved (`updated`). It belongs to a bot when it names a
-    chat and exactly one bot answered that chat that day. A loop naming no chat stays with Javis Core."""
+    chat and exactly one bot answered that chat that day. A loop naming no chat stays with UNI MATE Core."""
     from datetime import datetime
     cid, day = _chat(owner_chat), str(day or "").strip()
     if not cid or not re.match(r"^\d{4}-\d{2}-\d{2}$", day):
@@ -121,7 +121,7 @@ def guess_loop(owner_chat: str, day: str, turns: dict, tz=None) -> str:
 
 
 def _sidecar(root: str) -> Path:
-    return Path(root) / "Javis" / SIDECAR
+    return Path(root) / "UNI MATE" / SIDECAR
 
 
 def _load_sidecar(root: str) -> dict:
@@ -146,7 +146,7 @@ def _save_sidecar(root: str, jobs: dict) -> None:
 
 def _reminders(root: str) -> list:
     try:
-        return json.loads((Path(root) / "Javis" / "reminders.json").read_text(encoding="utf-8")).get("reminders") or []
+        return json.loads((Path(root) / "UNI MATE" / "reminders.json").read_text(encoding="utf-8")).get("reminders") or []
     except Exception:
         return []
 

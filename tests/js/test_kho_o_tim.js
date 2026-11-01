@@ -71,16 +71,16 @@ const host = {
 const win = { ic: () => "<svg></svg>", Alpine: { store: () => ({ go() {} }) } };
 const goi = (id, ten, mo) => ({
   id: id, kind: "connector", name: { vi: ten }, description: { vi: mo },
-  tier: "data", verified: true, nguon: "kho", author: { name: "Javis" },
+  tier: "data", verified: true, nguon: "kho", author: { name: "UNI MATE" },
   version: "1.0.0", installed: false, download: { url: "https://x/y.zip", sha256: "a" },
   nhom: "Ban hang",
 });
 const DANH_MUC = {
   ok: true, fetched_at: Math.floor(Date.now() / 1000),
   packs: [
-    goi("javis.pancake-pos", "Pancake POS", "Don hang, doanh thu"),
-    goi("javis.shopify", "Shopify", "Tra cuu san pham"),
-    goi("javis.webcake", "Webcake", "Dung trang ban hang"),
+    goi("unimate.pancake-pos", "Pancake POS", "Don hang, doanh thu"),
+    goi("unimate.shopify", "Shopify", "Tra cuu san pham"),
+    goi("unimate.webcake", "Webcake", "Dung trang ban hang"),
   ],
 };
 
@@ -89,7 +89,7 @@ globalThis.Alpine = win.Alpine;
 new Function("window", "document", "fetch",
   fs.readFileSync(path.join(ROOT, "dashboard", "packs.js"), "utf8"))(
   win, doc, () => Promise.resolve({ json: () => Promise.resolve(DANH_MUC) }));
-const P = win.JavisPacks || {};
+const P = win.UniMatePacks || {};
 
 check("packs.js phoi ra veKho / ghiConTro / traConTro",
   typeof P.veKho === "function" && typeof P.ghiConTro === "function"

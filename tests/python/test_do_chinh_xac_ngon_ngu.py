@@ -31,7 +31,7 @@ def check(ten, dieu_kien, chi_tiet=""):
 # ============================================================
 # Lỗi 1: hư từ tiếng Anh chỉ có 20 chữ và thiếu đúng nhóm hay gặp nhất trong câu lệnh ngắn
 # (my, from, we, will, show, give...). Đo được: 5/18 câu. Nghĩa là người dùng tiếng Anh gõ
-# "show me my revenue" vẫn bị Javis trả lời bằng tiếng Việt - đúng tính năng đầu bài của cả
+# "show me my revenue" vẫn bị UNI MATE trả lời bằng tiếng Việt - đúng tính năng đầu bài của cả
 # đợt này, hỏng trên phần lớn câu thật, mà không test nào đỏ.
 CAU_EN = (
     "summarize my orders from last week", "show me my revenue",
@@ -175,7 +175,7 @@ for _vi, _en, _mong in (
 # từ (`have` HOẶC `just` HOẶC `already`), nên "I have created" bắt được mà "I have ALREADY
 # sent the report" thì lọt - trong khi đó là cách nói tự nhiên nhất.
 #
-# Cổng này bắt Javis KHAI đã làm một việc mà đường chỉ-đọc không cho phép làm. Bỏ sót ở đây
+# Cổng này bắt UNI MATE KHAI đã làm một việc mà đường chỉ-đọc không cho phép làm. Bỏ sót ở đây
 # nghĩa là rào chắn mất tác dụng trong im lặng. Bản tiếng Việt không dính vì tiếng Việt hiếm
 # khi xếp chồng trợ từ - tức lỗi chỉ có ở MỘT ngôn ngữ, đúng kiểu lệch mà tầng đa ngôn ngữ
 # phải chủ động đi tìm chứ không đợi nó tự lộ.
@@ -193,7 +193,7 @@ for _c in ("I have already sent the report to your email.",
            "I have just created the new order.",
            "I've already deleted those drafts.",
            "We have already scheduled the reminder.",
-           "Javis has already posted it to the page.",
+           "UNI MATE has already posted it to the page.",
            "I have successfully updated the record.",
            "Em đã gửi báo cáo qua email rồi ạ."):
     check(f"bắt được khai man: {_c[:44]}", _khai_man(_c))

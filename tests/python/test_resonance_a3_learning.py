@@ -20,9 +20,9 @@ import tempfile
 import threading
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a3-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a3-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 import resonance as R  # noqa: E402
 import resonance_heartbeat as HB  # noqa: E402
@@ -41,9 +41,9 @@ def check(name, cond, info=None):
 
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a3-")).resolve())
-(Path(BRAIN) / "Javis").mkdir(parents=True)
+(Path(BRAIN) / "UNI MATE").mkdir(parents=True)
 (Path(BRAIN) / "Inbox").mkdir(parents=True)
-P = RS.Principal("agent", "javis", BRAIN)
+P = RS.Principal("agent", "unimate", BRAIN)
 OWNER = RS.Principal("owner", "owner", BRAIN)
 T0 = 1_800_000_000.0
 DELIV = "Inbox/a3-viec.md"
@@ -664,7 +664,7 @@ check("R3i2 sửa tay trong lúc lượt sản phẩm chạy: không ghi đè, l
 
 # ═══════════════════ R4: tiếp quản lượt giữ khi chạm trần ═══════════════════
 
-os.environ["JAVIS_RESONANCE_CALL_CEILING"] = "8"
+os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = "8"
 w = World("r4a")
 g = w.held_goal(budget=9)
 to_applied(w, g.id)
@@ -695,7 +695,7 @@ if w.g(g.id).status == "active":
     w.tick()
 check("R4c lượt giữ đã dùng, trần 8 đã chạm: góp ý không mượn lại lượt giữ, bị trần chặn, 0 lượt",
       cu == 8 and w.engine.queries == q, (cu, q, w.engine.queries))
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 # ═══════════════════ R5: huỷ trước và sau engine, đối soát ═══════════════════
 

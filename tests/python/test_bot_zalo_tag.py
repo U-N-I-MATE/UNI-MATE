@@ -21,7 +21,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-zptag-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-zptag-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -43,7 +43,7 @@ def check(name, cond, them=""):
 
 CID = "zalo-1"
 GROUP = "5550001"
-CONN = {"id": CID, "label": "Javis Vũ", "connector_id": "zalo", "env": {"HOME": "/state/zalo-1"}}
+CONN = {"id": CID, "label": "Uni Vũ", "connector_id": "zalo", "env": {"HOME": "/state/zalo-1"}}
 MCP = []          # mỗi lần gọi zalo_send_message
 CLI = []          # mỗi lần chạy CLI: {"conn", "command", "pos", "opts", "timeout"}
 NEXT = {"r": (True, {"message": {"msgId": "1"}}, "")}
@@ -253,9 +253,9 @@ check("channels.gui chuyển `mention` cho kênh, và không thêm gì khi ngư�
 # Báo cáo 14/10/2026: bot được dặn tag "@Minh Quý" và "@Phạm Đại", viết đủ hai tên, nhưng chỉ người
 # đang được trả lời có tag thật; tên còn lại là chữ thường nên Zalo không báo ai.
 DANH_BA = [{"uid": "7770001", "name": "Minh Quý"}, {"uid": "7770002", "name": "Phạm Đại"},
-           {"uid": "7770003", "name": "Minh Quý Trần"}, {"uid": "7770009", "name": "Javis Vũ"}]
+           {"uid": "7770003", "name": "Minh Quý Trần"}, {"uid": "7770009", "name": "Uni Vũ"}]
 zp._danh_ba_nhom = lambda cid, chat: list(DANH_BA)
-zc._ID_MINH[CID] = {"uid": "7770009", "ten": "Javis Vũ"}
+zc._ID_MINH[CID] = {"uid": "7770009", "ten": "Uni Vũ"}
 KHACH = {"uid": "7770005", "name": "Lan"}
 
 reset()
@@ -280,7 +280,7 @@ check("tên dài thắng tên ngắn trùng đầu ('@Minh Quý Trần' không t
       CLI and [x for x in CLI[0]["opts"] if x.count(":") == 2] == ["4:7770003:14"], CLI)
 
 reset()
-send("Chào @Minh Quýnh và @Javis Vũ", mention=None)
+send("Chào @Minh Quýnh và @Uni Vũ", mention=None)
 check("không ăn vào đầu tên dài hơn ('@Minh Quýnh'), không tự tag chính tài khoản: gửi thường",
       CLI == [] and len(MCP) == 1, (CLI, MCP))
 

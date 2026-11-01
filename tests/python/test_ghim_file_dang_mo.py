@@ -40,9 +40,9 @@ check("/files/read trả thêm khoá 'abs'", '"abs": str(f)' in _read)
 # --- app.js: trạng thái ghim ------------------------------------------------
 check("có state pinnedNote riêng, không nhét chung pendingAttachments",
       re.search(r"^let pinnedNote = null;", APP, re.M) is not None)
-check("mở API JavisPin cho console.js gọi",
-      "window.JavisPin = JavisPin;" in APP
-      and re.search(r"const JavisPin = \{[\s\S]*?get\(\)[\s\S]*?set\(note\)[\s\S]*?clear\(\)", APP) is not None)
+check("mở API UniMatePin cho console.js gọi",
+      "window.UniMatePin = UniMatePin;" in APP
+      and re.search(r"const UniMatePin = \{[\s\S]*?get\(\)[\s\S]*?set\(note\)[\s\S]*?clear\(\)", APP) is not None)
 
 # Chỉ MỘT ghim: set() gán đè chứ không push vào mảng.
 _set = APP.split("set(note) {", 1)[1].split("clear()", 1)[0]
@@ -54,7 +54,7 @@ check("set() gán đè (một ghim duy nhất), không push",
 check("thanh chip bung ra khi chỉ có ghim",
       'attachBar.classList.toggle("has-items", pendingAttachments.length > 0 || !!pinnedNote' in APP)
 check("chip ghim render với class riêng .pinned", '"attach-chip pinned"' in APP)
-check("chip ghim có nút bỏ ghim riêng", 'data-unpin="1"' in APP and "if (b.dataset.unpin) JavisPin.clear();" in APP)
+check("chip ghim có nút bỏ ghim riêng", 'data-unpin="1"' in APP and "if (b.dataset.unpin) UniMatePin.clear();" in APP)
 
 # --- Bấm chip = quay lại sửa file đó ---------------------------------------
 # Chip là lối quay lại DUY NHẤT khi trình sửa đã đóng: không có nó thì phải đi tìm lại file
@@ -70,9 +70,9 @@ check("chip có dấu hiệu nhìn thấy được là bấm được (cây bút
 
 _reopen = APP.split("function reopenPinnedNote()", 1)[1].split("\n}", 1)[0]
 check("mở lại đi qua trình sửa đính trước",
-      "window.JavisOpenNoteAt(rel, pinnedNote.name)" in _reopen)
+      "window.UniMateOpenNoteAt(rel, pinnedNote.name)" in _reopen)
 check("màn hẹp / console chưa nạp thì rơi về khung sửa bung giữa màn",
-      "window.JavisEditFile(rel)" in _reopen and "window.JavisOpenFiles(rel)" in _reopen)
+      "window.UniMateEditFile(rel)" in _reopen and "window.UniMateOpenFiles(rel)" in _reopen)
 check("mở lại dùng rel (path theo trần) chứ không phải abs của máy",
       "pinnedNote.rel" in _reopen and "pinnedNote.abs" not in _reopen)
 
@@ -85,14 +85,14 @@ _send = APP.split("function sendMessage(", 1)[1].split("\nfunction ", 1)[0]
 # 0.236.0: the wrap lives in boiNguCanh, shared with a file pasted during a Live call.
 _wrap = APP.split("function boiNguCanh(", 1)[1].split("\nfunction ", 1)[0]
 check("sendMessage wraps the message with boiNguCanh", "outMsg = boiNguCanh(outMsg," in _send)
-check("gửi kèm khối FILE ĐANG MỞ", "[FILE ĐANG MỞ trong trình sửa của Javis: ${pinnedNote.abs}" in _wrap)
+check("gửi kèm khối FILE ĐANG MỞ", "[FILE ĐANG MỞ trong trình sửa của UNI MATE: ${pinnedNote.abs}" in _wrap)
 check("khối ghim đứng TRƯỚC nội dung user gõ (câu của user nối vào cuối)",
       re.search(r"outMsg = `\[FILE ĐANG MỞ[\s\S]{0,900}?\\n\\n\$\{outMsg\}`;", _wrap) is not None)
 check("bong bóng chat vẫn hiện câu GỐC của user, không lẫn khối ghim",
       "appendUserMessage(msg, atts)" in _send)
 
 # Sống qua F5 - cùng lý do với khôi phục hội thoại ở 0.9.268.
-check("ghim lưu xuống localStorage", 'const PIN_KEY = "javis.pinnedNote"' in APP)
+check("ghim lưu xuống localStorage", 'const PIN_KEY = "unimate.pinnedNote"' in APP)
 check("khôi phục ghim lúc khởi động", "_pinRestore();" in APP)
 check("ghim của brain khác bị bỏ khi khôi phục", "p.brain === currentBrainPath()" in APP)
 
@@ -100,15 +100,15 @@ check("ghim của brain khác bị bỏ khi khôi phục", "p.brain === currentB
 # --- console.js: trình sửa nối vào ghim -------------------------------------
 _open = CONSOLE.split("async function openNote(", 1)[1].split("\n  function ", 1)[0]
 check("openNote ghim file vừa mở",
-      "window.JavisPin.set({ name: d.name || it.name || rel, rel, abs: d.abs })" in _open)
+      "window.UniMatePin.set({ name: d.name || it.name || rel, rel, abs: d.abs })" in _open)
 check("ghim dùng abs từ server chứ không tự ghép đường dẫn",
       "d.abs" in _open and "_vtHome +" not in _open)
 
 # Cửa "mở lại" của console.js: nhận path THEO TRẦN DUYỆT (đúng dạng ghim đang giữ). Đi vòng
-# qua JavisOpenNote sẽ ghép tiền tố trần lần hai → mở hụt file khi trần cao hơn gốc brain.
-check("console.js mở cửa JavisOpenNoteAt cho chip ghim gọi",
-      "window.JavisOpenNoteAt = function (ceilRel, name)" in CONSOLE)
-_at = CONSOLE.split("window.JavisOpenNoteAt = function (ceilRel, name) {", 1)[1].split("\n  };", 1)[0]
+# qua UniMateOpenNote sẽ ghép tiền tố trần lần hai → mở hụt file khi trần cao hơn gốc brain.
+check("console.js mở cửa UniMateOpenNoteAt cho chip ghim gọi",
+      "window.UniMateOpenNoteAt = function (ceilRel, name)" in CONSOLE)
+_at = CONSOLE.split("window.UniMateOpenNoteAt = function (ceilRel, name) {", 1)[1].split("\n  };", 1)[0]
 check("màn hẹp thì trả false để người gọi tự lo đường lui", "if (isNarrow()) return false;" in _at)
 check("đúng file đang mở sẵn thì KHÔNG nạp lại (giữ chữ đang gõ dở)",
       "_neOpenRel === ceilRel" in _at and "openNote(ceilRel" in _at.split("_neOpenRel === ceilRel", 1)[1])
@@ -118,9 +118,9 @@ check("openNote nhớ file đang mở để so", "_neOpenRel = rel" in CONSOLE)
 check("đóng trình sửa thì quên file đang mở", '_neOpenRel = "";' in CONSOLE)
 
 check("đổi brain thì bỏ ghim (file thuộc brain cũ)",
-      re.search(r"_vtCache\.clear\(\);[\s\S]{0,400}?window\.JavisPin\.clear\(\)", CONSOLE) is not None)
+      re.search(r"_vtCache\.clear\(\);[\s\S]{0,400}?window\.UniMatePin\.clear\(\)", CONSOLE) is not None)
 _del = CONSOLE.split("async function _neDeleteCur(", 1)[1].split("\n  function ", 1)[0]
-check("xoá file đang ghim thì bỏ ghim", "p.rel === rel" in _del and "JavisPin.clear()" in _del)
+check("xoá file đang ghim thì bỏ ghim", "p.rel === rel" in _del and "UniMatePin.clear()" in _del)
 
 
 # --- Giao diện + tài liệu ---------------------------------------------------
@@ -130,7 +130,7 @@ check("chip ghim trông như bấm được (con trỏ tay + viền nhấn khi r
       ".attach-chip.pinned { cursor: pointer; }" in STYLE
       and ".attach-chip.pinned:hover {" in STYLE
       and ".attach-chip.pinned .chip-edit {" in STYLE)
-check("system prompt dạy Javis xử lý khối FILE ĐANG MỞ",
+check("system prompt dạy UNI MATE xử lý khối FILE ĐANG MỞ",
       "## The open file (the FILE ĐANG MỞ block)" in CLAUDE_MD
       and "write straight into this file" in CLAUDE_MD)
 check("doc Quản lý tệp tin mô tả tính năng ghim",

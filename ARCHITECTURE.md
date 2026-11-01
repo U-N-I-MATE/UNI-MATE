@@ -1,4 +1,4 @@
-# Javis OS architecture
+# UNI MATE architecture
 
 This is the entry point for contributors. Read it before touching code. It describes how the
 pieces fit together today (version in [VERSION](VERSION)); every claim here was checked against
@@ -8,13 +8,13 @@ The code base was written in Vietnamese: comments, docstrings and most identifie
 Vietnamese without diacritics (`bat` = start, `nhac_hen` = reminder, `viec_nen` = background
 job). Keep [docs/dev/GLOSSARY.md](docs/dev/GLOSSARY.md) open while reading the code.
 
-## What Javis is
+## What UNI MATE is
 
-Javis is a self-hosted personal AI assistant for "business and life". It runs as one Python
+UNI MATE is a self-hosted personal AI assistant for "business and life". It runs as one Python
 FastAPI server with a plain-JavaScript dashboard, and keeps everything it knows in a folder of
 markdown files (the "Second Brain", Obsidian-compatible). The model behind it is swappable: the
 user picks a "brain" (a subscription CLI such as Claude Code, or an API provider such as
-OpenRouter) and every brain gets the same tools through Javis's own MCP Hub. Javis is an
+OpenRouter) and every brain gets the same tools through UNI MATE's own MCP Hub. UNI MATE is an
 orchestration layer, not an inference layer: when an answer is wrong, look first at the prompt
 it built, the tools it allowed and the brain folder it pointed at.
 
@@ -25,7 +25,7 @@ flowchart LR
   subgraph IN["Ways in"]
     D["Dashboard (browser)<br/>WebSocket /ws"]
     TG["Owner channels<br/>Telegram, Zalo Bot"]
-    CLI["javis CLI<br/>POST /chat, /chat/stream"]
+    CLI["unimate CLI<br/>POST /chat, /chat/stream"]
     BOT["Dedicated chatbots<br/>talking to customers"]
   end
   D --> M
@@ -36,13 +36,13 @@ flowchart LR
   P --> R{"Engine router<br/>_chat_provider_for_session"}
   R -->|"kind cli / oauth"| S["Subscription CLIs<br/>Claude Agent SDK, Codex,<br/>Grok Build, Antigravity"]
   R -->|"kind api"| A["API engines<br/>server/engine.py"]
-  S -->|"one MCP server named javis<br/>HTTP /hub/mcp"| H["MCP Hub<br/>server/mcp_hub.py"]
+  S -->|"one MCP server named unimate<br/>HTTP /hub/mcp"| H["MCP Hub<br/>server/mcp_hub.py"]
   A -->|"in process, discover_all()"| H
   H --> X["External MCP connections<br/>POS, ads, calendar, Zalo..."]
   H --> PL["Plugins<br/>system/plugins + user plugins"]
   H --> VT["Vault file tools + skills"]
   M --> V[("Brain vaults<br/>BRAINS_DIR")]
-  M --> ST[("Runtime state<br/>JAVIS_STATE_DIR")]
+  M --> ST[("Runtime state<br/>UNIMATE_STATE_DIR")]
   BG["Background work<br/>Kanban, loops, reminders,<br/>self-learning"] --> R
 ```
 
@@ -80,11 +80,11 @@ vendor:
 |------|------------------|-------|----------------|
 | `cli` | `anthropic-cli` (Claude Code), `grok-cli`, `antigravity-cli` | `claude_sdk_engine.py` via `claude_cli.claude_engine()`, `grok_cli.py`, `antigravity_cli.py` | Runs the vendor's own agent binary on the user's subscription: native MCP, shell, web fetch, sub-agents |
 | `oauth` | `openai-oauth` (ChatGPT via Codex) | `CodexCLI` in `claude_cli.py` (spawns `codex exec`) | Same as `cli` |
-| `api` | `openrouter`, `anthropic-api`, `openai`, `gemini`, `groq`, `ollama` (Cloud), `ollama-local`, `openai-compat` | `engine.py` (`*_chat_with_mcp`), driven by `main._api_stream_mcp()` | Tool loop over the hub, vault file tools, at most `JAVIS_MAX_TOOL_ROUNDS` (default 30, max 120) tool rounds per turn |
+| `api` | `openrouter`, `anthropic-api`, `openai`, `gemini`, `groq`, `ollama` (Cloud), `ollama-local`, `openai-compat` | `engine.py` (`*_chat_with_mcp`), driven by `main._api_stream_mcp()` | Tool loop over the hub, vault file tools, at most `UNIMATE_MAX_TOOL_ROUNDS` (default 30, max 120) tool rounds per turn |
 
 Things worth knowing:
 
-- Javis never reads the user's Claude login token; it runs the real `claude` binary through the
+- UNI MATE never reads the user's Claude login token; it runs the real `claude` binary through the
   official `claude-agent-sdk` (see `claude_auth.py` for why). Codex, Grok and Antigravity also
   keep their own credentials.
 - Gemini CLI was removed (Google cut personal tiers); Antigravity CLI replaced it.
@@ -98,7 +98,7 @@ User docs: [docs/en/10-models-and-engines.md](docs/en/10-models-and-engines.md).
 ## The MCP Hub and permissions
 
 `server/mcp_hub.py` is the single tool gateway. CLI engines see it as one MCP server named
-`javis` (`POST /hub/mcp`, authenticated by `STATE_DIR/.hub_token`); API engines call
+`unimate` (`POST /hub/mcp`, authenticated by `STATE_DIR/.hub_token`); API engines call
 `discover_all()` in process. Either way the same rules apply:
 
 - **Connector vs connection.** `system/mcp-catalog.json` (read by `mcp_catalog.py`) holds
@@ -109,13 +109,13 @@ User docs: [docs/en/10-models-and-engines.md](docs/en/10-models-and-engines.md).
   The hub applies the stricter of the two in `mcp_catalog.allowed()`, regardless of what the
   prompt says.
 - **Transports.** `mcp_client.py` keeps a long-lived session pool over HTTP/SSE, stdio (local
-  servers such as `javis-zalo`) and "internal" Python bridges (`botcake_mcp.py`,
+  servers such as `unimate-zalo`) and "internal" Python bridges (`botcake_mcp.py`,
   `substack_mcp.py`). `oauth_mcp.py` does MCP OAuth 2.1 so no engine needs a terminal login.
 - **Plugins.** `plugins_host.py` loads Python plugin folders (`plugin.yaml` + `plugin.py`) from,
   in order: `system/plugins/` (bundled), installed packs, `STATE_DIR/plugins/` (global user
   plugins) and `<brain>/plugins/`. User plugins load by default when their manifest is enabled;
-  `JAVIS_ENABLE_USER_PLUGINS=false` turns them off.
-  Javis's own tools (`javis_task`, `javis_schedule`, `javis_ui`, ...) are bundled plugins.
+  `UNIMATE_ENABLE_USER_PLUGINS=false` turns them off.
+  UNI MATE's own tools (`unimate_task`, `unimate_schedule`, `unimate_ui`, ...) are bundled plugins.
 - **Packs.** `packs.py` loads extension packs from `STATE_DIR/packs/` so connectors and plugins
   can ship without a new release; `pack_install.py`, `packs_fetch.py` (HTTPS only, SSRF
   guarded), `packs_store.py` and `pack_vault.py` handle install, download, the store index and
@@ -129,11 +129,11 @@ operations index and media cleanup; Kanban has its own dispatcher.
 
 | What | Module | Stored in | Notes |
 |------|--------|-----------|-------|
-| Kanban tasks | `tasks.py`, `task_store.py` | `STATE_DIR/kanban.sqlite3` (+ JSON snapshot in `<brain>/Javis/kanban.json`) | Dispatcher claims tasks atomically and runs them as asyncio tasks |
-| Loops | `self_improve.py` | `<brain>/Javis/loops/<slug>.md`, state in `Javis/loop-state.json` | "Every X minutes find one unit of work"; run one at a time |
-| Reminders and cron jobs | `reminders.py`, `cron_util.py` | `<brain>/Javis/reminders.json` | Dependency-free 5-field cron parser |
+| Kanban tasks | `tasks.py`, `task_store.py` | `STATE_DIR/kanban.sqlite3` (+ JSON snapshot in `<brain>/UniMate/kanban.json`) | Dispatcher claims tasks atomically and runs them as asyncio tasks |
+| Loops | `self_improve.py` | `<brain>/UniMate/loops/<slug>.md`, state in `UniMate/loop-state.json` | "Every X minutes find one unit of work"; run one at a time |
+| Reminders and cron jobs | `reminders.py`, `cron_util.py` | `<brain>/UniMate/reminders.json` | Dependency-free 5-field cron parser |
 | Webhook triggers | `webhook_triggers.py` | `STATE_DIR/webhooks.json` (token hashes only) | `POST /hooks/<id>` runs a workflow or job from an outside event |
-| Incidents | `incident_desk.py` | `STATE_DIR/incidents.json` | A broken background run reaches Javis Core: retried once or the owner is told what to fix |
+| Incidents | `incident_desk.py` | `STATE_DIR/incidents.json` | A broken background run reaches UNI MATE Core: retried once or the owner is told what to fix |
 | Health scan | `sentinel.py`, `tools/sentinel.py` | (read only) | Groups failures from every store by cause; runs without the server |
 | Workflows | `execute_workflow()` in `main.py`, `workflow_runtime.py`, `workflow_runs.py` | `<brain>/workflows/<slug>.md`, run history in SQLite | A chain of agent steps with checkpoints |
 | Self-learning | `learn.py`, `git_brain.py` | `<brain>/memory/` | The learning fork is read-only; only trusted Python writes, and only when the brain is a git checkout |
@@ -184,7 +184,7 @@ line each, grouped by area.
   `oauth_mcp.py`, `cred_exchange.py`, `connect_health.py`: described above.
 - `plugins_host.py`, `optional_tools.py`: plugins; optional heavy tools (a browser for UI tests).
 - `botcake_mcp.py`, `substack_mcp.py`, `youtube_read.py`, `zalo_cli.py`: built-in bridges.
-- `run_command.py`: `javis_run_command`, one fenced shell command for engines without a shell.
+- `run_command.py`: `unimate_run_command`, one fenced shell command for engines without a shell.
 - `tool_label.py`: short human labels for tool calls in the progress panel.
 
 **Background work**: `tasks.py`, `task_store.py`, `self_improve.py`, `reminders.py`,
@@ -211,8 +211,8 @@ workflow on the Collaborators page), `chat_runtime.py`.
   coding toolkit API brains get through the hub (paged reads, fuzzy section edits, file search, a
   real bash terminal with background processes at Full access, automatic restore points in a
   shadow git store with selective Undo). `secret_redact.py` masks secrets for logs and terminal output.
-- `web_tools.py` (0.259.0): `javis_web_search` (DuckDuckGo keyless, Tavily, Brave, SearXNG with
-  failover) and `javis_web_fetch` (HTML to markdown, PDF, paging cache, private-network guard shared
+- `web_tools.py` (0.259.0): `unimate_web_search` (DuckDuckGo keyless, Tavily, Brave, SearXNG with
+  failover) and `unimate_web_fetch` (HTML to markdown, PDF, paging cache, private-network guard shared
   with `web_watch.check_url`) for API brains in owner chats.
 
 **Adaptive Context Runtime** (phased, mostly shadow or canary paths behind settings):
@@ -258,7 +258,7 @@ the Vietnamese way for TTS), `voice_turn_protocol.py`, `voice_privacy.py`, `ui_b
 (`# ====...` followed by a title line); search for `# ===` to jump between them. In order:
 
 - **Top (lines 1 to ~1270):** imports, `app = FastAPI(...)`, middleware (CSRF guard, auth
-  guard, static caching, gzip, the `javis_lang` cookie), `/static` mount, `CLAUDE_MD_PATH` and the prompt
+  guard, static caching, gzip, the `unimate_lang` cookie), `/static` mount, `CLAUDE_MD_PATH` and the prompt
   kernel cap, memory seeding, `build_system_prompt()`, `BRAINS_DIR`, the `/` route that rewrites
   asset URLs.
 - **Auth**, **Providers** (`PROVIDER_DEFS`, `_effective_main`, engine helpers,
@@ -266,7 +266,7 @@ the Vietnamese way for TTS), `voice_turn_protocol.py`, `voice_privacy.py`, `ui_b
 - **Connector catalog + MCP Hub** (`/hub/mcp`, `/connect/*`), **GitHub sync of brains**.
 - **Studio** (agents, skills, workflows), **File manager**, **Dataview lite**.
 - **Self-improving loops**, **Self-learning**, **Kanban task queue**, **Reminders**,
-  **Background jobs of one chat**, **Javis index**, **Plugins**.
+  **Background jobs of one chat**, **UNI MATE index**, **Plugins**.
 - **Version and updates**, **Autostart**, **Inbox and push**, **Branding**, **TTS**, **Voice
   V2**.
 - **Workflow sessions**, `_persist_turn()`, then **WebSocket `/ws`** (the main chat turn).
@@ -312,15 +312,15 @@ There are three separate places. Mixing them up is a classic mistake.
 | Place | Default | Holds | Owner |
 |-------|---------|-------|-------|
 | Code tree | the repo | `server/`, `dashboard/`, `system/`, `.claude/skills/`, `CLAUDE.md` | The repo. Not writable by the app inside Docker |
-| `JAVIS_STATE_DIR` | `server/` locally, `/data/state` in Docker | Runtime state, gitignored | Javis |
+| `UNIMATE_STATE_DIR` | `server/` locally, `/data/state` in Docker | Runtime state, gitignored | UNI MATE |
 | `BRAINS_DIR` | `<repo>/brains`, `/brains` in Docker | One folder per brain | The user (can be pushed to a private GitHub repo) |
 
-**`JAVIS_STATE_DIR`** contains, among others: `settings.json` (secret fields stored `enc:`),
+**`UNIMATE_STATE_DIR`** contains, among others: `settings.json` (secret fields stored `enc:`),
 `.secret_key`, `.sessions.json` (login sessions), `.hub_token`, `conversations.db` (chat
 history), `kanban.sqlite3`, `customer_conversations.sqlite3`, `mcp_servers.json`,
 `mcp_audit.jsonl`, `.oauth_mcp.json`, `chatbots.json`, `channel_accounts.json`, `inbox.json`,
-`usage*.json*`, `runtime.db`, `plugins/`, `plugins.json`, `packs/`, `branding/`, `javis.log`.
-Anything Javis writes at runtime goes here, never into the code tree.
+`usage*.json*`, `runtime.db`, `plugins/`, `plugins.json`, `packs/`, `branding/`, `unimate.log`.
+Anything UNI MATE writes at runtime goes here, never into the code tree.
 
 **A brain** (default `BRAINS_DIR/Brain Default`, scaffolded by `_ensure_brain_scaffold()` from
 `STANDARD_STRUCTURE`):
@@ -333,14 +333,14 @@ Anything Javis writes at runtime goes here, never into the code tree.
   memory/conversations/    raw daily chat logs, input for learning
   sources/                 raw notes (source of truth); "06 - Sources" also accepted
   wiki/                    distilled knowledge with [[wikilinks]]; "07 - Wiki" also accepted
-  agents/<slug>.md         agents (flat; Javis/agents is a legacy read fallback only)
+  agents/<slug>.md         agents (flat; UniMate/agents is a legacy read fallback only)
   workflows/<slug>.md      workflows (flat)
   skills/<slug>/SKILL.md   skills, mirrored into .claude/skills for Claude Code
   attachments/, inbox/     media cache, cleaned by media_gc.py
   00 - Dashboard/ ... 04 - Future Log/   bullet-journal notes with dataview blocks
-  Javis/                   operations layer: README.md, index.md (auto-built), loops/,
+  UniMate/                   operations layer: README.md, index.md (auto-built), loops/,
                            loop-state.json, reminders.json, kanban.json, skill-usage.json
-  .javis/system-manifest.json   hashes of installed system files (system_sync.py)
+  .unimate/system-manifest.json   hashes of installed system files (system_sync.py)
 ```
 
 **Repo-root `CLAUDE.md`** is the system prompt kernel every engine receives, whatever the
@@ -359,16 +359,16 @@ Developer conventions therefore live in `docs/quy-uoc-dev.md`, not in `CLAUDE.md
    - Dashboard: `dashboard/i18n/vi.json` and `en.json` (same keys, ASCII hierarchical keys like
      `nav.group.bo_nao`), loaded by `dashboard/i18n/index.js`, used via `t("key")`. Fallback is
      chosen language, then `en`, then `vi`, then the key. The choice is per device
-     (`localStorage` key `javis.ui_lang`) and is copied into the `javis_lang` cookie.
+     (`localStorage` key `unimate.ui_lang`) and is copied into the `unimate_lang` cookie.
    - Server: `localefmt.chu("Vietnamese", "English")` returns the right string for the device
-     making the request (a middleware reads `javis_lang` into a context variable); without a
+     making the request (a middleware reads `unimate_lang` into a context variable); without a
      request it uses the machine's `ui_lang` setting.
    - Connector catalog: `system/mcp-catalog.json` is the Vietnamese source;
      `system/mcp-catalog.<code>.json` overlays display text by connector id
      (`catalog_i18n.py`).
    - New-brain seed files: `HAT_GIONG` in `server/brain_seed_i18n.py`.
 3. **Logic gates** (fast paths, "claimed but did not do it" detectors, ...) read per-language
-   word lists in `server/lexicon/` (`vi.py`, `en.py`). A language without a lexicon makes Javis
+   word lists in `server/lexicon/` (`vi.py`, `en.py`). A language without a lexicon makes UNI MATE
    more expensive, never less safe; a half-written lexicon is dangerous.
 4. **Locale** (time zone, currency, number format) is independent of language and lives in
    `localefmt.py`. `lang_registry.py` is the single registry that knows everything about a
@@ -395,7 +395,7 @@ pip install -r requirements.txt
 cd server && python main.py        # http://127.0.0.1:7777
 ```
 
-`JAVIS_HOST` and `JAVIS_PORT` change the bind address. `install.sh`, `setup.bat` and the
+`UNIMATE_HOST` and `UNIMATE_PORT` change the bind address. `install.sh`, `setup.bat` and the
 Docker files do the same with more care; see [QUICKSTART.en.md](QUICKSTART.en.md),
 [DEPLOY.en.md](DEPLOY.en.md) and every variable in
 [docs/en/16-env-configuration.md](docs/en/16-env-configuration.md). Auth (`_auth_guard` in

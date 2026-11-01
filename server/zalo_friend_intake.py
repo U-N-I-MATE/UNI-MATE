@@ -23,9 +23,9 @@ Rules that keep it from hurting the rest of the account (maintainer review of PR
     `TUOI_TOI_DA`, so the promised turn never comes) or when the bot answers only chosen people (accepting a stranger
     under the owner's name only to park them in the approval queue). Requests simply stay pending until then.
   - A failed accept stops the round, and that person is skipped for a while (`FAIL_BACKOFF`, doubling); after
-    `MAX_FAILS` failures they are skipped until Javis restarts. Skipped people do not count toward `MAX_PER_ROUND`,
+    `MAX_FAILS` failures they are skipped until UNI MATE restarts. Skipped people do not count toward `MAX_PER_ROUND`,
     so one refused request never starves the newer ones or makes Zalo calls every round forever.
-  - The CLI commands used here exist in every javis-zalo release (v1.0.0 and later; Javis pins v1.9.0, see
+  - The CLI commands used here exist in every unimate-zalo release (v1.0.0 and later; UNI MATE pins v1.9.0, see
     `zalo_cli.CLI_PACKAGE`). A CLI that answers "unknown command" anyway pauses intake for `UNSUPPORTED_WAIT`.
 
 Everything goes through the same session as the rest of the account (`zalo_cli.run_cli` with the connection's HOME).

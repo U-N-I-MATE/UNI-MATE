@@ -15,7 +15,7 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-usagetest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-usagetest-"))
 
 import skill_usage  # noqa: E402
 
@@ -28,7 +28,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-_ROOT = Path(tempfile.mkdtemp(prefix="javis-usagebrain-"))
+_ROOT = Path(tempfile.mkdtemp(prefix="unimate-usagebrain-"))
 
 # ---- file thiếu ----
 check("brain chưa có sidecar → read_usage trả {}", skill_usage.read_usage(_ROOT) == {})
@@ -51,8 +51,8 @@ check("bump slug khác không đè slug cũ", u.get("viet-email", {}).get("use_c
 check("bump slug khác tạo bản ghi riêng", u.get("skill-khac", {}).get("use_count") == 1)
 
 # ---- đúng vị trí ----
-check("sidecar nằm ở Javis/skill-usage.json",
-      skill_usage.usage_path(_ROOT) == _ROOT / "Javis" / "skill-usage.json")
+check("sidecar nằm ở UniMate/skill-usage.json",
+      skill_usage.usage_path(_ROOT) == _ROOT / "UNI MATE" / "skill-usage.json")
 check("sidecar thật sự tồn tại trên đĩa", skill_usage.usage_path(_ROOT).is_file())
 
 # ---- file hỏng: KHÔNG được làm gãy ----
@@ -66,11 +66,11 @@ except Exception as e:
 
 # ---- brain root KHÔNG ghi được: vẫn không raise ----
 # Mẹo: lấy một FILE thường rồi truyền vào như thể nó là brain root. _write_atomic sẽ
-# mkdir("<file>/Javis") → OS ném NotADirectoryError/FileExistsError trên MỌI nền tảng.
+# mkdir("<file>/UniMate") → OS ném NotADirectoryError/FileExistsError trên MỌI nền tảng.
 # KHÔNG dùng đường dẫn kiểu "/khong/ton/tai": trên Windows "/" resolve theo ổ đĩa hiện
 # tại nên mkdir THÀNH CÔNG, nhánh except không bao giờ chạy (test rởm) và còn ghi rác ra
 # đĩa thật. CI ở đây là win32 nên đây là lỗi thật, không phải khác biệt lý thuyết.
-_fd_bogus, _bogus_file = tempfile.mkstemp(prefix="javis-usagebogus-")
+_fd_bogus, _bogus_file = tempfile.mkstemp(prefix="unimate-usagebogus-")
 os.close(_fd_bogus)
 _BOGUS_ROOT = Path(_bogus_file)
 try:
@@ -80,7 +80,7 @@ except Exception as e:
     check(f"brain root không ghi được → bump nuốt lỗi, không raise (raised {e!r})", False)
 check("brain root không ghi được → read_usage trả {}", skill_usage.read_usage(_BOGUS_ROOT) == {})
 check("brain root không ghi được → không có gì được tạo dưới file đó",
-      _BOGUS_ROOT.is_file() and not (_BOGUS_ROOT / "Javis").exists())
+      _BOGUS_ROOT.is_file() and not (_BOGUS_ROOT / "UNI MATE").exists())
 os.unlink(_bogus_file)
 
 # ---- gọi song song: _LOCK phải serialize read-modify-write, KHÔNG được mất bump nào ----
@@ -90,7 +90,7 @@ os.unlink(_bogus_file)
 # test này KHÔNG có nhiệm vụ chứng minh.
 import threading  # noqa: E402
 
-_R2 = Path(tempfile.mkdtemp(prefix="javis-usagepar-"))
+_R2 = Path(tempfile.mkdtemp(prefix="unimate-usagepar-"))
 
 
 def _hammer():
@@ -144,7 +144,7 @@ check("is_stale: use_count là chuỗi không-phải-số + bản ghi mới tạ
                             None, _now) is False)
 
 # ---- bump: bản ghi hỏng phải TỰ LÀNH ở lần bump kế tiếp, không kẹt mãi mãi ----
-_R3 = Path(tempfile.mkdtemp(prefix="javis-usagecorrupt-"))
+_R3 = Path(tempfile.mkdtemp(prefix="unimate-usagecorrupt-"))
 _p3 = skill_usage.usage_path(_R3)
 _p3.parent.mkdir(parents=True, exist_ok=True)
 
@@ -177,15 +177,15 @@ _u3c = skill_usage.read_usage(_R3)
 check("bump: sau khi lành, lần bump tiếp theo cộng dồn bình thường (use_count=2)",
       _u3c.get("demo", {}).get("use_count") == 2)
 
-# ---- javis_use_skill (mcp_hub): bump đúng tại điểm nghẽn duy nhất ----
-# Test HÀNH VI THẬT qua handler (gọi thẳng route["javis_use_skill"]["call"]), KHÔNG quét
+# ---- unimate_use_skill (mcp_hub): bump đúng tại điểm nghẽn duy nhất ----
+# Test HÀNH VI THẬT qua handler (gọi thẳng route["unimate_use_skill"]["call"]), KHÔNG quét
 # source text - quét chuỗi không phân biệt được code sống với comment/code chết.
 import asyncio  # noqa: E402
 import shutil  # noqa: E402
 
 import mcp_hub  # noqa: E402
 
-_HUB_ROOT = Path(tempfile.mkdtemp(prefix="javis-hubtest-"))
+_HUB_ROOT = Path(tempfile.mkdtemp(prefix="unimate-hubtest-"))
 _HUB_SLUG = "skill-that-ban-dung-thu"
 _HUB_SKILL_DIR = _HUB_ROOT / "skills" / _HUB_SLUG
 _HUB_SKILL_DIR.mkdir(parents=True)
@@ -194,19 +194,19 @@ _HUB_CONTENT = ("---\nname: Demo\ndescription: skill demo cho test hub\ngroup: T
 (_HUB_SKILL_DIR / "SKILL.md").write_text(_HUB_CONTENT, encoding="utf-8")
 
 _hub_tools, _hub_route = mcp_hub._builtin_tools("auto", str(_HUB_ROOT))
-check("_builtin_tools đăng ký javis_use_skill khi có vault_root thật",
-      "javis_use_skill" in _hub_route)
-_hub_handler = _hub_route["javis_use_skill"]["call"]
+check("_builtin_tools đăng ký unimate_use_skill khi có vault_root thật",
+      "unimate_use_skill" in _hub_route)
+_hub_handler = _hub_route["unimate_use_skill"]["call"]
 
 _out1 = asyncio.run(_hub_handler({"name": _HUB_SLUG}))
 check("handler trả đúng nội dung SKILL.md thật (bump không nuốt/đổi kết quả trả về)",
       _out1 == _HUB_CONTENT)
 _u = skill_usage.read_usage(_HUB_ROOT)
-check("gọi javis_use_skill lần 1 → use_count = 1", _u.get(_HUB_SLUG, {}).get("use_count") == 1)
+check("gọi unimate_use_skill lần 1 → use_count = 1", _u.get(_HUB_SLUG, {}).get("use_count") == 1)
 
 asyncio.run(_hub_handler({"name": _HUB_SLUG}))
 _u = skill_usage.read_usage(_HUB_ROOT)
-check("gọi javis_use_skill lần 2 → use_count = 2", _u.get(_HUB_SLUG, {}).get("use_count") == 2)
+check("gọi unimate_use_skill lần 2 → use_count = 2", _u.get(_HUB_SLUG, {}).get("use_count") == 2)
 
 # slug sai (gõ nhầm): KHÔNG được đếm, KHÔNG được tạo bản ghi rác
 _out_bad = asyncio.run(_hub_handler({"name": "slug-khong-ton-tai"}))
@@ -216,21 +216,21 @@ check("slug sai → KHÔNG tạo bản ghi rác cho slug đó", "slug-khong-ton-
 check("slug sai → không đếm nhầm sang skill khác (use_count không đổi)",
       _u.get(_HUB_SLUG, {}).get("use_count") == 2)
 
-# sidecar hỏng (Javis/ bị 1 FILE THƯỜNG chiếm chỗ → mkdir thất bại khi bump ghi) → việc nạp
+# sidecar hỏng (UniMate/ bị 1 FILE THƯỜNG chiếm chỗ → mkdir thất bại khi bump ghi) → việc nạp
 # skill KHÔNG ĐƯỢC gãy theo. Đây là hợp đồng chịu lỗi cốt lõi của skill_usage.bump.
-_HUB_ROOT2 = Path(tempfile.mkdtemp(prefix="javis-hubtest-broken-"))
+_HUB_ROOT2 = Path(tempfile.mkdtemp(prefix="unimate-hubtest-broken-"))
 _HUB_SLUG2 = "skill-sidecar-hong"
 _HUB_SKILL_DIR2 = _HUB_ROOT2 / "skills" / _HUB_SLUG2
 _HUB_SKILL_DIR2.mkdir(parents=True)
 _HUB_CONTENT2 = "---\nname: Demo2\ndescription: skill sidecar hong\ngroup: Test\n---\nNoi dung 2."
 (_HUB_SKILL_DIR2 / "SKILL.md").write_text(_HUB_CONTENT2, encoding="utf-8")
-(_HUB_ROOT2 / "Javis").write_text("chiem cho, khong phai thu muc", encoding="utf-8")
+(_HUB_ROOT2 / "UNI MATE").write_text("chiem cho, khong phai thu muc", encoding="utf-8")
 
 _hub_tools2, _hub_route2 = mcp_hub._builtin_tools("auto", str(_HUB_ROOT2))
-_hub_handler2 = _hub_route2["javis_use_skill"]["call"]
+_hub_handler2 = _hub_route2["unimate_use_skill"]["call"]
 try:
     _out2 = asyncio.run(_hub_handler2({"name": _HUB_SLUG2}))
-    check("sidecar hỏng (Javis/ bị file chiếm chỗ) → handler vẫn trả nội dung thật, không raise",
+    check("sidecar hỏng (UniMate/ bị file chiếm chỗ) → handler vẫn trả nội dung thật, không raise",
           _out2 == _HUB_CONTENT2)
 except Exception as e:
     check(f"sidecar hỏng → handler không raise (raised {e!r})", False)
@@ -310,19 +310,19 @@ if _list_skills is not None:
 # ---- sidecar là state runtime → phải bị gitignore + không lên mirror backup ----
 import git_brain  # noqa: E402
 
-check("_GITIGNORE có Javis/skill-usage.json", "Javis/skill-usage.json" in git_brain._GITIGNORE)
-check("_backup_skip bỏ qua sidecar", git_brain._backup_skip("brain/Javis/skill-usage.json") is True)
+check("_GITIGNORE có UniMate/skill-usage.json", "UniMate/skill-usage.json" in git_brain._GITIGNORE)
+check("_backup_skip bỏ qua sidecar", git_brain._backup_skip("brain/UniMate/skill-usage.json") is True)
 check("_backup_skip KHÔNG bỏ nhầm skill thật",
       git_brain._backup_skip("brain/skills/viet-email/SKILL.md") is False)
 
 # reconcile brain cũ: .gitignore có sẵn thiếu dòng mới → phải được append, KHÔNG ghi đè
-_gi_root = Path(tempfile.mkdtemp(prefix="javis-gitest-"))
+_gi_root = Path(tempfile.mkdtemp(prefix="unimate-gitest-"))
 (_gi_root / ".gitignore").write_text("# cua toi\nrieng-cua-toi/\n", encoding="utf-8")
 _changed = git_brain._ensure_gitignore_lines(_gi_root)
 _txt = (_gi_root / ".gitignore").read_text(encoding="utf-8")
 check("reconcile báo có thay đổi", _changed is True)
 check("reconcile GIỮ dòng user tự thêm", "rieng-cua-toi/" in _txt)
-check("reconcile thêm dòng sidecar", "Javis/skill-usage.json" in _txt)
+check("reconcile thêm dòng sidecar", "UniMate/skill-usage.json" in _txt)
 check("reconcile lần 2 là no-op", git_brain._ensure_gitignore_lines(_gi_root) is False)
 
 # Byte trên đĩa phải là LF: write_text không có newline="\n" sẽ dịch \n -> os.linesep (CRLF
@@ -332,7 +332,7 @@ check("reconcile lần 2 là no-op", git_brain._ensure_gitignore_lines(_gi_root)
 check("reconcile ghi LF thuần, không CRLF (đọc nhị phân)",
       b"\r\n" not in (_gi_root / ".gitignore").read_bytes())
 
-_gi_fresh = Path(tempfile.mkdtemp(prefix="javis-gifresh-"))
+_gi_fresh = Path(tempfile.mkdtemp(prefix="unimate-gifresh-"))
 git_brain._ensure_gitignore_lines(_gi_fresh)
 check("file .gitignore dựng mới cũng LF thuần",
       b"\r\n" not in (_gi_fresh / ".gitignore").read_bytes())
@@ -357,9 +357,9 @@ if not git_brain.has_git():
     # cứng của chính tính năng đang test - không có git thì git_brain vô nghĩa.
     check("máy không có git → KHÔNG kiểm được khoá lúc commit (cần git dựng repo tạm)", False)
 else:
-    _lk_root = Path(tempfile.mkdtemp(prefix="javis-gilock-"))
+    _lk_root = Path(tempfile.mkdtemp(prefix="unimate-gilock-"))
     # brain CŨ: đã là repo, .gitignore cũ thiếu dòng sidecar (đúng ca brains/Brain Default)
-    (_lk_root / ".gitignore").write_text("Javis/learn-log/\n", encoding="utf-8", newline="\n")
+    (_lk_root / ".gitignore").write_text("UniMate/learn-log/\n", encoding="utf-8", newline="\n")
     _git_q(_lk_root, "init")
     _git_q(_lk_root, "config", "user.email", "test@localhost")
     _git_q(_lk_root, "config", "user.name", "Test")
@@ -383,7 +383,7 @@ else:
     check("kẹt khoá → KHÔNG sinh commit nào (không cuốn index của learn đang chạy)",
           _n_after == _n_before)
     check("kẹt khoá → .gitignore trên đĩa VẪN được vá (git đọc ignore từ working tree)",
-          "Javis/skill-usage.json" in _txt_locked)
+          "UniMate/skill-usage.json" in _txt_locked)
     # ensure_git_repo bị gọi THẲNG (không qua asyncio.to_thread) từ 2 handler async, mà
     # BrainLock.acquire() chờ bằng time.sleep CHẶN → chờ lâu = đóng băng CẢ event loop. Phải
     # fail nhanh (timeout=1.0), không dùng mặc định 30s. Ngưỡng 10s rộng rãi để không nhạy với

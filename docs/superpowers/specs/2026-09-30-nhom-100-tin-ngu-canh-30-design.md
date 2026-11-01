@@ -31,7 +31,7 @@ người ta vừa nói gì.
 
 1. Cắt nhầm chat riêng hoặc tin mới: test ghi 130 tin nhóm và 130 tin riêng, nhóm còn đúng tin 31 đến 130, riêng còn đủ 130.
 2. Xoá không hoàn tác: sao lưu trước, chạy một lần (lần hai không sao lưu thêm), bản sao lưu còn NGUYÊN số tin cũ, bản quá hạn tự xoá.
-3. Tin nhắn thoát khỏi khối dữ liệu: tin chứa `</chat_data>`, `[IM_LANG]`, `JAVIS_ADMIN` bị gỡ; khối chỉ có một thẻ đóng.
+3. Tin nhắn thoát khỏi khối dữ liệu: tin chứa `</chat_data>`, `[IM_LANG]`, `UNIMATE_ADMIN` bị gỡ; khối chỉ có một thẻ đóng.
 4. Phình phiên: ngữ cảnh nằm trong prompt hệ thống, tin của người hỏi vẫn chỉ là `[Tên] nội dung`.
 5. Lỗi khởi động bị nuốt im lặng: hook chạy trong `try/except` nên thiếu `import threading` khiến di trú không bao giờ chạy mà không báo gì. Bắt được khi chạy thật trên bản thử
    (log `NameError`), đã sửa; di trú thật đã kiểm: nhóm 300 tin còn 100, nhóm 80 tin và chat riêng 250 tin nguyên vẹn, có bản sao lưu đủ 300.

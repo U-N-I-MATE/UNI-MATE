@@ -36,7 +36,7 @@ const henGio = (cb, ms) => { hangHen.push({ luc: now + (ms || 0), cb }); return 
 const created = [];
 const win = {
   matchMedia: () => ({ matches: false, addEventListener() {} }), addEventListener() {}, dispatchEvent() {},
-  innerWidth: 1280, innerHeight: 800, javisTheme: { isLight: () => true, on() {} },
+  innerWidth: 1280, innerHeight: 800, unimateTheme: { isLight: () => true, on() {} },
 };
 const doc = {
   readyState: "complete", addEventListener() {}, querySelectorAll: () => [], querySelector: () => nut(),
@@ -56,7 +56,7 @@ new Function("window", "document", "localStorage", "fetch", "requestAnimationFra
   win, doc, { getItem: () => null, setItem() {} }, () => Promise.reject(new Error("offline")),
   (cb) => { hangRaf.push(cb); return hangRaf.length; }, () => {}, { now: () => now },
   function () {}, function () { this.append = () => {}; }, henGio, () => {});
-const P = win.JavisPet;
+const P = win.UniMatePet;
 const el = created[0];
 const mat = () => el.querySelector(".pet-eyes").innerHTML;
 // Chạy vòng vẽ MỘT nhịp ở thời điểm `t` (không chạy mãi: mỗi nhịp tự xin nhịp sau).

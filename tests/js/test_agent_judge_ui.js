@@ -78,7 +78,7 @@ function fakeFetch(status, body, seen) {
     && !keys.some(function (k) { return /[ăđơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i.test(en[k]); }));
   const src = fs.readFileSync(path.join(ROOT, "dashboard", "agent-judge-ui.js"), "utf8");
   check("không em dash hay en dash", !/[\u2013\u2014]/.test(src));
-  check("đăng ký phần judge với khung nhịp của phần P", src.includes('window.JavisPulseParts.push({ name: "judge", render: render })'));
+  check("đăng ký phần judge với khung nhịp của phần P", src.includes('window.UniMatePulseParts.push({ name: "judge", render: render })'));
   const css = fs.readFileSync(path.join(ROOT, "dashboard", "console.css"), "utf8");
   check("CSS phán xử: chữ 16px, nút 44px", /\.agj \{[^}]*font-size: 16px/.test(css) && /\.agj-btn \{[^}]*min-height: 44px/.test(css));
   const idx = fs.readFileSync(path.join(ROOT, "dashboard", "index.html"), "utf8");
@@ -109,7 +109,7 @@ function fakeFetch(status, body, seen) {
   check("Lưu: gửi chế độ chỉ lọc code (0) và judge_daily Không giới hạn", pl.caps.judge_off_batch === 0
     && pl.caps.judge_daily && pl.caps.judge_daily.unlimited === true, JSON.stringify(pl));
   const tjs = fs.readFileSync(path.join(ROOT, "dashboard", "teams.js"), "utf8");
-  check("ngăn Nhóm gọi hydrate sau khi vẽ", tjs.includes("window.JavisAgentJudge.hydrate(side)"));
+  check("ngăn Nhóm gọi hydrate sau khi vẽ", tjs.includes("window.UniMateAgentJudge.hydrate(side)"));
   check("gợi ý 'sao không trả lời' mở lịch sử quyết định của đúng người", tjs.includes("data-judge-hint") && tjs.includes("if (d.judgeHint)"));
 
   // Ghép T3: trang nhịp gọi render(view, null, {slug}) và cần chuỗi HTML (mục ở view.parts.judge).

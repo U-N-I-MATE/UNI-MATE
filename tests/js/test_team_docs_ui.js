@@ -39,7 +39,7 @@ check("'+' menu: attach a file, pin a working folder", tm.includes('data-plus-at
 check("attachments upload to /upload and go out with the message; sending waits for uploads",
   tm.includes('fetch("/upload"') && tm.includes("body.attachments = atts.map(") && tm.includes('setNote(tw("teams.attach_wait"))'));
 check("the team folder pins on the team's own conversation (same route as the main chat)",
-  tm.includes('"/coding/session/" + q(sid) + "/pin"') && tm.includes("window.JavisPinnedFolder && window.JavisPinnedFolder.panelFor"));
+  tm.includes('"/coding/session/" + q(sid) + "/pin"') && tm.includes("window.UniMatePinnedFolder && window.UniMatePinnedFolder.panelFor"));
 check("the team picture opens the info panel", tm.includes('class="tm-ava-btn" data-team-info="1"')
   && /if \(d\.teamInfo\) return S\.side && S\.tab === "info" \? closeSide\(\) : openSide\("info", t\);/.test(tm));
 check("the info panel: members, working folder, pictures, files with Add, links with Add, from the conversation assets",
@@ -57,7 +57,7 @@ check("CSS: chips, info panel, the '>' button 44px on touch", css.includes(".tm-
   && /\(pointer: coarse\) \{ \.cp-in \{ width: 44px; height: 44px; \}/.test(css));
 check("no em dash", !/[–—]/.test(cf + keys.map((k) => vi[k] + en[k]).join("")));
 
-// ---- 0.191.0 follow-ups: avatar strip of the partner list, Javis Core's Jobs tab, the tab pill ----
+// ---- 0.191.0 follow-ups: avatar strip of the partner list, UNI MATE Core's Jobs tab, the tab pill ----
 const ws = read("workspace.js"), aj = read("agent-jobs.js");
 check("dragging the list edge past the threshold snaps it to the avatar strip and marks the page",
   ws.includes("var MINI_W = 72, NGUONG_MINI = 160;") && ws.includes('if (ben === "left" && w < NGUONG_MINI) return MINI_W;')
@@ -69,7 +69,7 @@ check("hovering an avatar in the strip shows its name card, the card goes with t
 check("CSS: the strip hides the words on wide screens only, keeps a dot for waiting work",
   /@media \(min-width: 901px\) \{\n  \.wspage\.ws-mini > \.ws-left/.test(css) && css.includes(".wspage.ws-mini .ws-item-wrap[data-st]::after")
   && css.includes(".ws-mini-tip {"));
-check("Javis Core's Jobs tab has no Assign button and its own empty line",
+check("UNI MATE Core's Jobs tab has no Assign button and its own empty line",
   ws.includes("noAssign: !!item.system,") && aj.includes('if (ui.noAssign) return "";') && vi["ajobs.empty_core"] && en["ajobs.empty_core"]);
 check("the right column tabs leave room around the label of the selected one",
   css.includes(".ws-rtabs .cside-tab { flex: 1 1 auto; padding: 7px 10px;"));

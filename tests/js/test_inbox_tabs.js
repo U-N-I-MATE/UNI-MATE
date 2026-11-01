@@ -27,7 +27,7 @@ const ctx = { window: win, document: {}, console, String, Object, Array, Number,
 vm.createContext(ctx);
 vm.runInContext(ST, ctx);
 vm.runInContext(KN, ctx);
-const S = win.JavisInboxStats, K = win.JavisInboxChannels;
+const S = win.UniMateInboxStats, K = win.UniMateInboxChannels;
 
 // ---- 1. Stats builders ----
 check("wait in words: seconds, minutes, hours, nothing yet", S.fmtWait(42.4) === "ib.st_sec#42" && S.fmtWait(150) === "ib.st_min#3" &&
@@ -62,10 +62,10 @@ check("bars: one hue, the longest is full width, the value written at the end, l
   /width:100%/.test(bars) && /width:50%/.test(bars) && /width:2%/.test(bars) && /st-num">10</.test(bars) && bars.indexOf("<Zalo>") < 0);
 check("bars: nothing in the period says so", /ib-hint">none</.test(S.barsHtml("x", [], "none")));
 // 0.401.0 (owner, 2026-10-29: one account's hand replies lowered another account's A.I. share)
-const accs = S.accountsHtml([{ label: "<Javis Vũ>", ai: 1404, human: 0 }, { label: "Ngọc Thu", ai: 52, human: 1762 }]);
+const accs = S.accountsHtml([{ label: "<Uni Vũ>", ai: 1404, human: 0 }, { label: "Ngọc Thu", ai: 52, human: 1762 }]);
 check("per account: each account its own A.I. share, A.I. and hand replies as one two-colour bar, labels escaped",
   /<b>100%<\/b>/.test(accs) && /<b>3%<\/b>/.test(accs) && /class="st-fill hu" style="width:97%"/.test(accs) &&
-  /class="st-fill" style="width:77%"/.test(accs) && accs.indexOf("<Javis Vũ>") < 0 && /ib\.st_lg_hand/.test(accs));
+  /class="st-fill" style="width:77%"/.test(accs) && accs.indexOf("<Uni Vũ>") < 0 && /ib\.st_lg_hand/.test(accs));
 check("per account: nothing in the period says so", /ib-hint">ib\.st_empty</.test(S.accountsHtml([])));
 check("account picker: every account first, the chosen one selected, hidden with one account",
   /^<option value="">ib\.st_acc_all<\/option>/.test(S.accountPickerHtml([{ id: "z:1", name: "A" }, { id: "z:2", name: "B" }], "z:2")) &&
@@ -77,7 +77,7 @@ check("account: remembered in this browser, sent as account=, the per-channel li
 check("nothing the period before reads once, not '... vs the period before'", S.vsText(S.delta(3, 0)) === "ib.st_new" &&
   S.vsText(S.delta(12, 10)) === "ib.st_vs#+20%");
 check("period: the date range picker (quick ranges or days on the calendar), remembered in this browser, sent as from/to",
-  /window\.JavisDateRange\.open\(rb, _range/.test(ST) && /localStorage\.setItem\(KEY/.test(ST) &&
+  /window\.UniMateDateRange\.open\(rb, _range/.test(ST) && /localStorage\.setItem\(KEY/.test(ST) &&
   /\/conversations\/insights\?" \+ \(d \? "from=" \+ d\.from \+ "&to=" \+ d\.to/.test(ST) && /aria-haspopup="dialog"/.test(ST));
 
 // ---- 2. Channels ----
@@ -130,8 +130,8 @@ check("four tabs in the owner's order: Conversations, Bot, Channels, Stats", /va
   /var TAB_CU = \{ chatbot: "bot" \};/.test(CV));
 check("each tab has an icon and a word", /kenh: \["ib\.tab_kenh", "plug"\]/.test(CV) && /thongke: \["ib\.tab_stats", "chart-column"\]/.test(CV));
 check("the Channels and Stats tabs draw from one context (no second copy of the channel logic)",
-  /if \(_tab === "kenh"\) return renderSub\(body, window\.JavisInboxChannels/.test(CV) &&
-  /if \(_tab === "thongke"\) return renderSub\(body, window\.JavisInboxStats/.test(CV) &&
+  /if \(_tab === "kenh"\) return renderSub\(body, window\.UniMateInboxChannels/.test(CV) &&
+  /if \(_tab === "thongke"\) return renderSub\(body, window\.UniMateInboxStats/.test(CV) &&
   ["accounts:", "reloadAccounts:", "openChat:", "openBot:", "goWho:", "addAccount:"].every((k) => CV.indexOf(k) > 0));
 check("the Bot tab no longer carries the 'channels without a bot' block (it is the Channels tab now)",
   !/ht-kenh-sec|function renderKenhSec|function dsKenhRanh/.test(CV));

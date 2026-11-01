@@ -3,7 +3,7 @@
     python tests/run.py bot_anh_ly_do      (KHÔNG mạng)
 
 Chủ repo báo 10/10/2026: bot nhóm Zalo vẫn trả lời "Em không xem được ảnh kèm tin này", sau cả bản 0.88.3. Câu đó là nhãn
-`_KEM_ANH`, tức Javis biết tin có ảnh nhưng không có ảnh nào tới model. Bốn khả năng: tin không kèm link ảnh, tải ảnh hỏng,
+`_KEM_ANH`, tức UNI MATE biết tin có ảnh nhưng không có ảnh nào tới model. Bốn khả năng: tin không kèm link ảnh, tải ảnh hỏng,
 bộ não của bot không nhận ảnh (Antigravity, Grok Build), hoặc model từ chối ảnh. Trước bản này lý do chỉ in ra stderr của
 server, mà bot chạy trên VPS nên không ai đọc được. Giờ lý do đi vào trường `canh_bao` của nhật ký bot.
 """
@@ -14,7 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-anhlydo-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-anhlydo-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -32,7 +32,7 @@ def check(name, cond, detail=""):
         _fails.append(name)
 
 
-BRAIN = Path(tempfile.mkdtemp(prefix="javis-brain-anhlydo-"))
+BRAIN = Path(tempfile.mkdtemp(prefix="unimate-brain-anhlydo-"))
 cr._deps["brain_root"] = lambda b: BRAIN
 META = {"chat_id": "g1", "chat_type": "group", "user_id": "u1", "co_anh": True, "message_id": "m1"}
 

@@ -8,7 +8,7 @@ Bot chuyên trách đứng trong nhóm chat (Zalo cá nhân, Telegram) phải t�
 nói với mình không, có nên chen vào không, và nói thì nói gì. Bản 0.64.82 giải bằng một chuỗi luật
 cứng viết riêng cho một trường hợp:
 
-- `zalo_personal_channel.nhan_dien_goi` chỉ bắt "@tên". Gọi tên trơn ("javis vũ ơi") không được coi
+- `zalo_personal_channel.nhan_dien_goi` chỉ bắt "@tên". Gọi tên trơn ("uni vũ ơi") không được coi
   là gọi bot.
 - `chatbot_tu_dong.nhin_nhu_cau_hoi` là cửa từ khoá (dấu hỏi, "sao", "giúp"...). Tin không khớp bị
   loại, và cố ý KHÔNG ghi nhật ký, nên lỗi không để lại dấu vết.
@@ -20,9 +20,9 @@ dần dần tự học cách trả lời trong nhóm; học TRỰC TIẾP chứ 
 nick riêng nên nói nhầm là rẻ.
 
 Và điều quan trọng nhất, chủ nói rõ sau bản đặc tả đầu: chủ chạy NHIỀU bot với lĩnh vực và nhóm không
-liên quan nhau (ví dụ Javis Vũ hỗ trợ về Javis, Nhi Mai và Ngọc Thu mỗi người một ngành khác). Cách
+liên quan nhau (ví dụ Uni Vũ hỗ trợ về UNI MATE, Nhi Mai và Ngọc Thu mỗi người một ngành khác). Cách
 trả lời của mỗi bot phải đến từ Agent của chính nó. Bản thiết kế không được mượn giọng, ca hay ví dụ
-của bot này cho bot kia, và không được thiên về trường hợp của Javis Vũ.
+của bot này cho bot kia, và không được thiên về trường hợp của Uni Vũ.
 
 ## 2. Mục tiêu và không mục tiêu
 
@@ -93,10 +93,10 @@ Ba khối dữ liệu tách rời, đổi cái này không đụng cái kia:
 | Bot | phạm vi đảm nhiệm và không đảm nhiệm, giọng, xưng hô, ngôn ngữ, khi nào nên lên tiếng | biên dịch từ file Agent và mục lục tài liệu brain của CHÍNH bot (5.10) | chủ sửa tay; tự soạn lại khi Agent đổi |
 | Cuộc chat | ngưỡng lệch, ca đã học, bài học | phản ứng trong chính nhóm đó | học tự động; chủ xoá được |
 
-Ví dụ với ba bot: Javis Vũ nhận câu hỏi về Javis, Nhi Mai và Ngọc Thu mỗi người nhận đúng ngành của
+Ví dụ với ba bot: Uni Vũ nhận câu hỏi về UNI MATE, Nhi Mai và Ngọc Thu mỗi người nhận đúng ngành của
 mình. Cả ba dùng CÙNG một bộ máy, nhưng hồ sơ vai, ca khởi tạo, ca đã học, ngưỡng và bài học đều tách
 riêng theo `bot_id` (và theo cuộc chat). Bộ phán xử của Nhi Mai không bao giờ đọc thấy ca, ví dụ hay
-giọng của Javis Vũ. Ai học gì ở nhóm nào thì chỉ ở nhóm đó.
+giọng của Uni Vũ. Ai học gì ở nhóm nào thì chỉ ở nhóm đó.
 
 Mã mới nằm trong `server/chatbot_reply_policy.py` (bộ máy, thuần và test được) và
 `server/chatbot_reply_policy_store.py` (SQLite). Không nhét vào `chatbot_runtime.py` thêm nữa.
@@ -111,7 +111,7 @@ Event: channel, bot_id, chat_id, chat_type, msg_id, ts, text, sender_id, sender_
 ```
 
 `window` lấy từ Hộp thư (`conversations.tin_nhan`) của đúng cuộc chat; chưa có thì rỗng, bộ máy
-vẫn chạy. Nội dung mỗi tin cắt 400 ký tự, gỡ marker nội bộ (`[IM_LANG]`, `JAVIS_`).
+vẫn chạy. Nội dung mỗi tin cắt 400 ký tự, gỡ marker nội bộ (`[IM_LANG]`, `UNIMATE_`).
 
 ### 4.3 Quy ước đặt tên
 
@@ -155,15 +155,15 @@ trắng (dùng `chatbot_grounding._bo_dau`), khớp theo ranh giới từ.
 | Mức | Điều kiện |
 |---|---|
 | `certain` | `@tên`; `mentions` chứa id nick; reply vào tin của bot; tên gọi đứng ĐẦU câu (sau các chữ mở như "ê", "này", "alo", "hi", "chào"); tên gọi đi liền tiểu từ gọi ("ơi", "à", "ạ", "này", "nè", "nha", "ê") |
-| `possible` | tên gọi nằm giữa hoặc cuối câu không kèm tiểu từ ("hỏi javis vũ xem"); tin nối tiếp (5.3) |
+| `possible` | tên gọi nằm giữa hoặc cuối câu không kèm tiểu từ ("hỏi uni vũ xem"); tin nối tiếp (5.3) |
 | `none` | còn lại |
 
 Tên gọi (`aliases`) gồm: nhãn kết nối, tên hiển thị học được của nick, và danh sách tên do chủ tự
 thêm. KHÔNG tự lấy tên Agent hay tên bot ("@Lan" trong nhóm thường là một thành viên tên Lan). Tên
 tự suy phải dài từ 4 ký tự trở lên sau chuẩn hoá; tên do chủ thêm không bị luật này.
 
-Ví dụ phải đúng (chạy cả bản không dấu): "javis vũ ơi" certain; "Javis Vũ giúp anh cái này" certain;
-"alo javis vu" certain; "hỏi javis vũ xem" possible; "mai họp mấy giờ" none; "@Lan xem giúp" none.
+Ví dụ phải đúng (chạy cả bản không dấu): "uni vũ ơi" certain; "Uni Vũ giúp anh cái này" certain;
+"alo uni vu" certain; "hỏi uni vũ xem" possible; "mai họp mấy giờ" none; "@Lan xem giúp" none.
 
 `certain` thì trả lời luôn như chat riêng, KHÔNG qua người phán xử, KHÔNG cần tài liệu, không đếm
 hạn mức tự nói.
@@ -319,7 +319,7 @@ chủ đã sửa tay: hai vùng riêng `generated_text` và `owner_text`, ngư�
 đè lên khi mâu thuẫn. Chủ sửa ở ô "Luật lên tiếng" (`guidelines`). Không có engine thì dùng mẫu tĩnh
 chỉ có bốn đầu mục để chủ điền.
 
-`lessons` (máy ghi, theo mẫu `JAVIS_LESSON`: đề xuất lúc dùng, mã ghi, khử trùng, tối đa 15 dòng, dòng
+`lessons` (máy ghi, theo mẫu `UNIMATE_LESSON`: đề xuất lúc dùng, mã ghi, khử trùng, tối đa 15 dòng, dòng
 cũ nhất rơi ra) là phần thứ năm, riêng từng bot. KHÔNG có vòng nền viết lại hàng loạt (quyết định
 của chủ 2026-08-16).
 
@@ -361,7 +361,7 @@ Chủ dự án nhận xét ngày 30/09/2026: cài đặt quá nhiều, muốn l�
 
 | Ô cũ | Nay |
 |---|---|
-| Chế độ Tắt / Chạy thử / Bật | Bỏ. Chọn "Tự đánh giá" là bật; muốn tắt thì chọn cách lên tiếng khác. Chạy thử thành công tắc của người vận hành: biến môi trường `JAVIS_REPLY_POLICY_SHADOW=1`. |
+| Chế độ Tắt / Chạy thử / Bật | Bỏ. Chọn "Tự đánh giá" là bật; muốn tắt thì chọn cách lên tiếng khác. Chạy thử thành công tắc của người vận hành: biến môi trường `UNIMATE_REPLY_POLICY_SHADOW=1`. |
 | Độ hăng hái | Bỏ. Cố định mức vừa làm ngưỡng gốc; ngưỡng riêng từng nhóm tự nhích theo Đúng/Sai và phản ứng của nhóm (đã có từ 0.65.0), co dần về gốc theo chu kỳ 14 ngày. |
 | Căn cứ (tài liệu / vai) | Bỏ. Tự chọn: brain của bot có mảnh tài liệu nào thì bắt buộc có tài liệu khớp mới được tự nói, không có thì dựa vào vai. Đo ở thread nền cùng lần soạn hồ sơ vai (`chatbot_grounding.chi_muc`); chưa đo thì giữ luật chặt (tài liệu). |
 | Luật lên tiếng + nút Soạn từ vai trò | Bỏ. Hồ sơ vai vốn đã tự soạn và tự soạn lại khi Agent hay tài liệu đổi. Chữ chủ đã viết ở 0.65.0 được gộp MỘT LẦN vào bảng `lessons` (từng dòng) rồi xoá khỏi cấu hình; ghi hỏng thì giữ chữ cũ nên không mất luật nào. Route `draft-guidelines` bị gỡ. |
@@ -435,9 +435,9 @@ Người phán xử luôn thay được bằng bản giả (`ask` là tham số)
 4. **Ngưỡng:** cập nhật, kẹp biên, nhạt dần theo thời gian giả, tách theo cuộc chat.
 5. **Tra ca:** xếp hạng, ưu tiên cùng cuộc chat, nhạt theo tuổi, trần dung lượng, 1000 ca dưới 50 ms.
 6. **An toàn:** người ngoài dạy luật không được; model trả rác, hết giờ, ném lỗi thì im (còn `certain`
-   vẫn trả lời); chèn "[IM_LANG]" hay "JAVIS_" trong tin chat không đi vào prompt; giá trị cấu hình lạ
+   vẫn trả lời); chèn "[IM_LANG]" hay "UNIMATE_" trong tin chat không đi vào prompt; giá trị cấu hình lạ
    rơi về hẹp nhất.
-7. **Kịch bản học đầu cuối** (nhân bản Zalo giả như `test_bot_zalo_nhom.py`): "javis vũ ơi" được trả
+7. **Kịch bản học đầu cuối** (nhân bản Zalo giả như `test_bot_zalo_nhom.py`): "uni vũ ơi" được trả
    lời; tin phiếm im và có dòng vết; câu hỏi có căn cứ bị im vì điểm thấp, người hỏi hỏi lại nên gắn
    `missed` và hạ ngưỡng, câu giống lần sau được trả lời và prompt của người phán xử giả CÓ chứa ca đó;
    nhóm B không bị ảnh hưởng bởi nhóm A; lời dạy của chủ có tác dụng ở tin kế tiếp; nút Quên xoá sạch.

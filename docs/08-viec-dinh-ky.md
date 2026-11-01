@@ -2,7 +2,7 @@
 
 ***Tiếng Việt** · [English](en/08-recurring-jobs.md)*
 
-Trang **Việc định kỳ** là nơi bạn giao cho Javis những việc tự chạy khi bạn không ngồi trước máy: việc lặp theo chu kỳ (gọi là **loop**) và nhắc hẹn theo mốc giờ. Mỗi việc lặp tự thức dậy đúng chu kỳ, làm đúng một nhiệm vụ bạn mô tả, tự kiểm chứng rồi ghi nhật ký và nhắn kết quả về Telegram cho bạn.
+Trang **Việc định kỳ** là nơi bạn giao cho UNI MATE những việc tự chạy khi bạn không ngồi trước máy: việc lặp theo chu kỳ (gọi là **loop**) và nhắc hẹn theo mốc giờ. Mỗi việc lặp tự thức dậy đúng chu kỳ, làm đúng một nhiệm vụ bạn mô tả, tự kiểm chứng rồi ghi nhật ký và nhắn kết quả về Telegram cho bạn.
 
 Trang này gộp việc của **mọi brain**, không chỉ brain đang chọn ở thanh bên.
 
@@ -12,20 +12,20 @@ Hai loại việc sống chung một trang:
 
 | Loại | Bản chất | Lưu ở đâu |
 |---|---|---|
-| 🔁 **Việc lặp** (loop) | Cứ mỗi N phút lại tự thức dậy làm đúng một việc rồi dừng. Chạy vô hạn cho tới khi bạn tắt. | Một file `.md` trong `Javis/loops/` của brain |
-| ⏰ **Nhắc hẹn** | Một mốc giờ cụ thể ("30 phút nữa", "8h30"), hoặc lịch cron lặp theo giờ cố định ("7h sáng mỗi ngày"). | `Javis/reminders.json` của brain |
+| 🔁 **Việc lặp** (loop) | Cứ mỗi N phút lại tự thức dậy làm đúng một việc rồi dừng. Chạy vô hạn cho tới khi bạn tắt. | Một file `.md` trong `UniMate/loops/` của brain |
+| ⏰ **Nhắc hẹn** | Một mốc giờ cụ thể ("30 phút nữa", "8h30"), hoặc lịch cron lặp theo giờ cố định ("7h sáng mỗi ngày"). | `UniMate/reminders.json` của brain |
 
 Điểm khác nhau quan trọng: việc lặp tính theo **khoảng cách** giữa hai lần chạy, nhắc hẹn tính theo **mốc giờ**. "Mỗi 2 tiếng quét đơn" là việc lặp; "7h sáng nào cũng báo doanh thu" là nhắc hẹn dùng cron.
 
-Bạn tạo được **nhiều việc lặp song song**, mỗi việc một file riêng. Nhưng chúng chạy **tuần tự**: tại một thời điểm toàn hệ thống chỉ có đúng một vòng đang chạy. Bộ đếm lịch của Javis kiểm tra mỗi 30 giây, mỗi lần kiểm chỉ chọn **một** việc lặp quá hạn lâu nhất để chạy. Vì vậy thời điểm chạy thật có thể lệch vài chục giây so với chu kỳ bạn đặt, và nếu đặt nhiều việc cùng lúc thì chúng xếp hàng chứ không chạy chồng nhau.
+Bạn tạo được **nhiều việc lặp song song**, mỗi việc một file riêng. Nhưng chúng chạy **tuần tự**: tại một thời điểm toàn hệ thống chỉ có đúng một vòng đang chạy. Bộ đếm lịch của UNI MATE kiểm tra mỗi 30 giây, mỗi lần kiểm chỉ chọn **một** việc lặp quá hạn lâu nhất để chạy. Vì vậy thời điểm chạy thật có thể lệch vài chục giây so với chu kỳ bạn đặt, và nếu đặt nhiều việc cùng lúc thì chúng xếp hàng chứ không chạy chồng nhau.
 
 Loop **đọc được dữ liệu thật qua MCP** (POS, quảng cáo, lịch, analytics...) để làm việc. Nó có ghi được file hay có thao tác thật ra ngoài hay không thì tuỳ **mức quyền** bạn chọn, xem mục "Ba mức quyền" bên dưới.
 
-Việc lặp được sửa trực tiếp bằng cách mở file `.md` trong Obsidian hoặc trang [Quản lý tệp tin](05-quan-ly-tep-tin.md). Trạng thái chạy (lần cuối, số vòng hôm nay, chuỗi lỗi) nằm tách ở `Javis/loop-state.json`, do server sở hữu, nên bạn sửa file định nghĩa mà không sợ giẫm chân.
+Việc lặp được sửa trực tiếp bằng cách mở file `.md` trong Obsidian hoặc trang [Quản lý tệp tin](05-quan-ly-tep-tin.md). Trạng thái chạy (lần cuối, số vòng hôm nay, chuỗi lỗi) nằm tách ở `UniMate/loop-state.json`, do server sở hữu, nên bạn sửa file định nghĩa mà không sợ giẫm chân.
 
-## Mở ở đâu trong Javis
+## Mở ở đâu trong UNI MATE
 
-1. Mở dashboard Javis (mặc định `http://localhost:7777`).
+1. Mở dashboard UNI MATE (mặc định `http://localhost:7777`).
 2. Nhìn thanh điều hướng bên trái, bấm nhóm **Việc** để mở ra.
 3. Bấm mục **Việc định kỳ**.
 
@@ -48,9 +48,9 @@ Lưu ý: khi bạn bấm **Sửa** trên một thẻ có sẵn, hai nút này b�
 ### Bước 3: Đặt tên và mô tả
 
 - **Tên**: tên ngắn hiện trên thẻ, ví dụ "Đọc email mỗi 2 tiếng". Bỏ trống thì báo "Nhập tên".
-- **Mô tả nhiệm vụ (mỗi vòng Javis làm đúng việc này)**: đây là ô **bắt buộc** và là thứ quan trọng nhất. Javis không tự nghĩ ra việc; mỗi vòng nó làm đúng cái bạn viết trong ô này rồi dừng. Bỏ trống thì báo "Nhập mô tả nhiệm vụ (Javis cần biết mỗi vòng làm gì)".
+- **Mô tả nhiệm vụ (mỗi vòng UNI MATE làm đúng việc này)**: đây là ô **bắt buộc** và là thứ quan trọng nhất. UNI MATE không tự nghĩ ra việc; mỗi vòng nó làm đúng cái bạn viết trong ô này rồi dừng. Bỏ trống thì báo "Nhập mô tả nhiệm vụ (UNI MATE cần biết mỗi vòng làm gì)".
 
-Khi bạn chọn **⏰ Nhắc hẹn**, nhãn ô mô tả đổi thành "Nội dung nhắc (Javis sẽ nhắc hoặc làm đúng việc này)", và báo lỗi khi để trống là "Nhập nội dung nhắc".
+Khi bạn chọn **⏰ Nhắc hẹn**, nhãn ô mô tả đổi thành "Nội dung nhắc (UNI MATE sẽ nhắc hoặc làm đúng việc này)", và báo lỗi khi để trống là "Nhập nội dung nhắc".
 
 Viết mô tả càng cụ thể càng tốt: nói rõ đọc gì, làm gì, lưu vào đâu. Viết tự đủ, đừng phụ thuộc ngữ cảnh cuộc chat hiện tại, vì việc sẽ chạy lúc không ai ngồi đó. Ví dụ:
 
@@ -69,8 +69,8 @@ Dưới biểu mẫu có dòng nhắc: "Toàn quyền (mặc định) = tự tha
 
 - **Khi nào**: ô nhập thời điểm. Xem đầy đủ các dạng nó hiểu ở mục Ô "Khi nào" hiểu những gì bên dưới. Bỏ trống thì báo lỗi `Nhập thời điểm (vd "30 phút nữa", "8h30", "0 7 * * *")`.
 - **Kiểu**: hai nút **⏰ Chỉ nhắc** (chọn sẵn) và **🤖 Tự làm rồi báo**.
-  - **⏰ Chỉ nhắc**: tới giờ Javis bắn thẳng một tin Telegram, mở đầu bằng "⏰ Nhắc anh: " rồi tới nội dung bạn viết. Không gọi model, không tốn token.
-  - **🤖 Tự làm rồi báo**: tới giờ Javis chạy engine để **làm** việc đó rồi gửi kết quả về Telegram.
+  - **⏰ Chỉ nhắc**: tới giờ UNI MATE bắn thẳng một tin Telegram, mở đầu bằng "⏰ Nhắc anh: " rồi tới nội dung bạn viết. Không gọi model, không tốn token.
+  - **🤖 Tự làm rồi báo**: tới giờ UNI MATE chạy engine để **làm** việc đó rồi gửi kết quả về Telegram.
 - **Được phép làm gì** (chỉ hiện khi chọn 🤖 Tự làm rồi báo): ba mức, mặc định **Toàn quyền**.
   - **Chỉ đọc**: đọc dữ liệu thật qua MCP và đọc file, rồi báo lại. Không ghi gì, không làm gì ra ngoài.
   - **Ghi file**: thêm quyền ghi file nháp trong brain. Hub vẫn chặn hành động ra ngoài ở mức này.
@@ -94,19 +94,19 @@ Nhắc hẹn thì khác: tạo xong là đã ở hàng chờ, không cần bật
 
 ## Ba mức quyền (chế độ của việc lặp)
 
-| Nút trên biểu mẫu | Nhãn trên thẻ | Javis được làm gì |
+| Nút trên biểu mẫu | Nhãn trên thẻ | UNI MATE được làm gì |
 |---|---|---|
 | **Toàn quyền** | toàn quyền | Mở hết: mọi công cụ và mọi MCP, **thao tác thật ra bên ngoài** không cần hỏi: tạo đơn, chạy quảng cáo, đăng bài, gửi tin. **Mặc định** từ 0.55.62. |
 | **Tự làm (ghi nháp)** | tự làm (ghi nháp) | Đọc MCP + **ghi được file** trong brain (tạo/sửa note nháp). Hub chặn hành động ra ngoài. Có thêm bước tự kiểm chứng sau mỗi vòng. |
 | **Đề xuất (chỉ đọc)** | đề xuất | Chỉ dùng công cụ đọc, kể cả đọc dữ liệu thật qua MCP. **Không ghi file**. Mỗi vòng nêu 2-3 đề xuất hành động cụ thể. |
 
-Trước 0.55.62 Javis có một luật an toàn: việc chạy nền không bao giờ được tự tiêu tiền, lên đơn, đăng bài hay nhắn khách, nên mặc định là Đề xuất và chọn Toàn quyền phải qua hai hộp xác nhận. Chủ dự án đã bỏ luật đó: Javis giờ tự thao tác, hai mức nhẹ chỉ còn là lựa chọn cho ai muốn một loop cụ thể chỉ đọc hoặc chỉ ghi nháp. Loop toàn quyền chạy nền theo lịch không có người duyệt từng bước, nên hãy viết mô tả nhiệm vụ rõ phạm vi.
+Trước 0.55.62 UNI MATE có một luật an toàn: việc chạy nền không bao giờ được tự tiêu tiền, lên đơn, đăng bài hay nhắn khách, nên mặc định là Đề xuất và chọn Toàn quyền phải qua hai hộp xác nhận. Chủ dự án đã bỏ luật đó: UNI MATE giờ tự thao tác, hai mức nhẹ chỉ còn là lựa chọn cho ai muốn một loop cụ thể chỉ đọc hoặc chỉ ghi nháp. Loop toàn quyền chạy nền theo lịch không có người duyệt từng bước, nên hãy viết mô tả nhiệm vụ rõ phạm vi.
 
 ## Ô "Khi nào" hiểu những gì
 
 Ô này nhận bốn dạng, gợi ý sẵn trong ô là `30 phút nữa · 8h30 · 0 7 * * * · 2026-07-20 09:00`:
 
-| Bạn gõ | Javis hiểu |
+| Bạn gõ | UNI MATE hiểu |
 |---|---|
 | `30 phút nữa`, `2 tiếng nữa`, `1.5 giờ`, `3 ngày` | Đếm ngược kể từ bây giờ. Đơn vị nhận: phút, tiếng, giờ, ngày (có dấu hoặc không dấu đều được). |
 | `8h30`, `8:30`, `8h` | Mốc giờ trong ngày. Nếu giờ đó đã qua rồi thì tự dời sang **ngày mai**. |
@@ -131,7 +131,7 @@ Cạnh đó là ba nút lọc **Tất cả**, **Việc lặp** và **Nhắc hẹ
 
 Mỗi trang **10 thẻ**, có nút **← Trước** và **Sau →** cùng dòng đếm "Trang 1/2 · 14 mục". Đổi bộ não, đổi bộ lọc hay gõ tìm kiếm thì quay về trang đầu.
 
-Bộ não chưa có việc thì hiện dòng "Chưa có việc nào ở brain này. Bấm **+ Thêm việc**, hoặc nói với Javis trong chat."
+Bộ não chưa có việc thì hiện dòng "Chưa có việc nào ở brain này. Bấm **+ Thêm việc**, hoặc nói với UNI MATE trong chat."
 
 ### Ô tìm kiếm
 
@@ -144,7 +144,7 @@ Thẻ bắt đầu bằng `🔁 <tên việc>` kèm slug (tên file) mờ ở b�
 | Trạng thái | Nghĩa |
 |---|---|
 | ⏳ đang chạy | Vòng của chính việc này đang chạy ngay lúc đó |
-| ⚠ tự tạm dừng | Đã hỏng 3 lần liên tiếp nên Javis tự khoá lại, xem mục "Tự tạm dừng" |
+| ⚠ tự tạm dừng | Đã hỏng 3 lần liên tiếp nên UNI MATE tự khoá lại, xem mục "Tự tạm dừng" |
 | ● bật | Đang bật, sẽ tự chạy theo chu kỳ |
 | ○ tắt | Đang tắt, không tự chạy (thẻ hiển thị mờ) |
 
@@ -175,27 +175,27 @@ Trên thẻ việc lặp:
 - **Bật** / **Tắt**: gạt trạng thái. Bật cũng xoá luôn trạng thái tự tạm dừng.
 - **▶ Chạy ngay**: chạy một vòng ngay lập tức, không chờ tới chu kỳ. Nút đổi thành "Đang chạy..." và danh sách tự tải lại sau khoảng 2,5 giây. Lưu ý: nút này **không** lưu biểu mẫu đang mở, nó chạy đúng nội dung đã lưu trong file. Bấm Chạy ngay cũng xoá trạng thái tự tạm dừng vì đây là hành động chủ động của bạn.
 - **Sửa**: mở lại biểu mẫu với nội dung của việc này.
-- **Xoá**: hỏi xác nhận rồi xoá hẳn file `Javis/loops/<slug>.md`.
-- **Chuyển brain…**: ô chọn để dời việc sang brain khác, giữ nguyên file và trạng thái chạy. Brain đích đã có việc trùng tên thì Javis từ chối và báo lỗi, không ghi đè. Việc đang chạy cũng không dời được, hãy thử lại sau.
+- **Xoá**: hỏi xác nhận rồi xoá hẳn file `UniMate/loops/<slug>.md`.
+- **Chuyển brain…**: ô chọn để dời việc sang brain khác, giữ nguyên file và trạng thái chạy. Brain đích đã có việc trùng tên thì UNI MATE từ chối và báo lỗi, không ghi đè. Việc đang chạy cũng không dời được, hãy thử lại sau.
 
 Trên thẻ nhắc hẹn:
 
-- **Sửa**: mở lại biểu mẫu với nội dung của nhắc hẹn này. Đổi được tên, nội dung, kiểu và giờ. Nếu là lịch cron thì ô "Khi nào" điền sẵn biểu thức cũ, sửa xong Javis tính lại lần chạy kế tiếp ngay. Nếu là hẹn một lần thì ô đó để trống và ghi giờ đang hẹn trong phần gợi ý: **để trống nghĩa là giữ nguyên giờ cũ**, chỉ gõ khi muốn đổi.
+- **Sửa**: mở lại biểu mẫu với nội dung của nhắc hẹn này. Đổi được tên, nội dung, kiểu và giờ. Nếu là lịch cron thì ô "Khi nào" điền sẵn biểu thức cũ, sửa xong UNI MATE tính lại lần chạy kế tiếp ngay. Nếu là hẹn một lần thì ô đó để trống và ghi giờ đang hẹn trong phần gợi ý: **để trống nghĩa là giữ nguyên giờ cũ**, chỉ gõ khi muốn đổi.
 - **Huỷ**: ngừng chạy nhưng bản ghi vẫn nằm trong lịch sử để tra lại.
 - **Xoá**: mất hẳn, không hoàn tác được.
 - **Chuyển brain…**: dời sang brain khác, giữ nguyên id và mọi thiết lập.
 
-## Chưa đấu Telegram thì Javis không tạo lịch
+## Chưa đấu Telegram thì UNI MATE không tạo lịch
 
-Nhắc hẹn và việc "tự làm rồi báo" chỉ có giá trị khi tới giờ nó **nói được với ai đó**, mà kênh báo duy nhất hiện nay là Telegram. Nếu bot Telegram chưa bật, chưa có token, hoặc chưa có Chat ID nào được phép, Javis **từ chối tạo** và nói rõ thiếu gì kèm lối sang trang [Kênh](11-telegram.md) để đấu.
+Nhắc hẹn và việc "tự làm rồi báo" chỉ có giá trị khi tới giờ nó **nói được với ai đó**, mà kênh báo duy nhất hiện nay là Telegram. Nếu bot Telegram chưa bật, chưa có token, hoặc chưa có Chat ID nào được phép, UNI MATE **từ chối tạo** và nói rõ thiếu gì kèm lối sang trang [Kênh](11-telegram.md) để đấu.
 
-Đây là chỗ trước đây gây hiểu lầm nhiều nhất: Javis dựng job "sáng nào cũng báo email và lịch", job chạy đúng giờ thật, nhưng kết quả không gửi được cho ai và cũng không ai nói cho bạn biết là thiếu Telegram.
+Đây là chỗ trước đây gây hiểu lầm nhiều nhất: UNI MATE dựng job "sáng nào cũng báo email và lịch", job chạy đúng giờ thật, nhưng kết quả không gửi được cho ai và cũng không ai nói cho bạn biết là thiếu Telegram.
 
-Nếu bạn vẫn muốn tạo (ví dụ định đấu Telegram sau), bấm **Vẫn tạo** ngay cạnh lời cảnh báo. Việc sẽ chạy đúng giờ, kết quả lưu trong Javis, chỉ là chưa gửi đi đâu.
+Nếu bạn vẫn muốn tạo (ví dụ định đấu Telegram sau), bấm **Vẫn tạo** ngay cạnh lời cảnh báo. Việc sẽ chạy đúng giờ, kết quả lưu trong UNI MATE, chỉ là chưa gửi đi đâu.
 
 Khi trang Việc định kỳ phát hiện chưa có kênh báo, nó hiện một dải cảnh báo ở đầu trang, vì các việc đã tạo từ trước vẫn đang chạy mà không tới tay bạn.
 
-Đặt lịch bằng lời qua chat cũng theo luật này: Javis phải soát trước xem nguồn dữ liệu đã đấu chưa và có chỗ báo kết quả chưa, thiếu thì nói thẳng rồi hỏi bạn, không tạo cho xong.
+Đặt lịch bằng lời qua chat cũng theo luật này: UNI MATE phải soát trước xem nguồn dữ liệu đã đấu chưa và có chỗ báo kết quả chưa, thiếu thì nói thẳng rồi hỏi bạn, không tạo cho xong.
 
 ## Chạy ngay và dừng vòng đang chạy
 
@@ -207,7 +207,7 @@ Trong lúc có một vòng chạy, trang tự làm mới danh sách mỗi 5 giâ
 
 ## Bước tự kiểm chứng
 
-Với chế độ **Tự làm (ghi nháp)** và **Toàn quyền**, sau khi làm xong việc, Javis chạy thêm một lượt kiểm tra độc lập: một "người soi" giả định kết quả vừa rồi là SAI, rồi đọc lại file liên quan để đối chiếu. Lượt kiểm chứng này **luôn chỉ được đọc**, kể cả với việc toàn quyền.
+Với chế độ **Tự làm (ghi nháp)** và **Toàn quyền**, sau khi làm xong việc, UNI MATE chạy thêm một lượt kiểm tra độc lập: một "người soi" giả định kết quả vừa rồi là SAI, rồi đọc lại file liên quan để đối chiếu. Lượt kiểm chứng này **luôn chỉ được đọc**, kể cả với việc toàn quyền.
 
 Bước này bị bỏ qua nếu vòng vừa rồi lỗi, hoặc kết quả nói "không có việc mới".
 
@@ -224,20 +224,20 @@ Kết quả hiện dạng **✓ Đạt** hoặc **✗ Chưa đạt** kèm lý do
 
 ## Tự tạm dừng khi hỏng 3 lần
 
-Nếu một việc lặp hỏng **3 lần liên tiếp** (engine lỗi, hoặc kiểm chứng ✗ Chưa đạt), Javis tự khoá nó lại và ghi lý do dạng "Tự tạm dừng 20/07 14:35: 3 lần lỗi/kiểm chứng không đạt liên tiếp". Thẻ chuyển sang **⚠ tự tạm dừng** và không tự chạy nữa cho tới khi bạn can thiệp.
+Nếu một việc lặp hỏng **3 lần liên tiếp** (engine lỗi, hoặc kiểm chứng ✗ Chưa đạt), UNI MATE tự khoá nó lại và ghi lý do dạng "Tự tạm dừng 20/07 14:35: 3 lần lỗi/kiểm chứng không đạt liên tiếp". Thẻ chuyển sang **⚠ tự tạm dừng** và không tự chạy nữa cho tới khi bạn can thiệp.
 
 Lý do này ghi vào trạng thái runtime, **không** sửa file `.md` của bạn. Muốn chạy lại, bấm **Bật** hoặc **▶ Chạy ngay** trên thẻ, cả hai đều xoá khoá và reset chuỗi lỗi. Trước khi bật lại, hãy đọc nhật ký xem nó hỏng vì cái gì.
 
 ## Báo cáo về Telegram
 
-Đây là hành vi mặc định của Javis: **mỗi vòng chạy xong đều tự gửi kết quả về Telegram** cho người yêu cầu việc đó. Tin nhắn mở đầu bằng `✅ Loop '<tên việc>' vừa chạy...` (hoặc `⚠` nếu hỏng), rồi tới phần tóm tắt và dòng kiểm chứng.
+Đây là hành vi mặc định của UNI MATE: **mỗi vòng chạy xong đều tự gửi kết quả về Telegram** cho người yêu cầu việc đó. Tin nhắn mở đầu bằng `✅ Loop '<tên việc>' vừa chạy...` (hoặc `⚠` nếu hỏng), rồi tới phần tóm tắt và dòng kiểm chứng.
 
 Gửi cho ai:
 
 - Việc tạo qua chat có gắn sẵn chat_id của người nói, nên báo về đúng người đó.
 - Việc tạo trên dashboard không biết bạn là ai, nên báo về **ID Telegram đầu tiên** trong danh sách cho phép.
 
-Muốn một việc ngừng báo mỗi vòng vì quá ồn, mở file `Javis/loops/<slug>.md` và đặt `notify: false` trong phần frontmatter.
+Muốn một việc ngừng báo mỗi vòng vì quá ồn, mở file `UniMate/loops/<slug>.md` và đặt `notify: false` trong phần frontmatter.
 
 Nhắc hẹn cũng bắn qua Telegram. Nhắc hẹn tạo trên dashboard không gắn người nhận nên gửi cho **mọi ID** trong danh sách cho phép; nhắc hẹn đặt bằng lời qua chat thì gửi đúng người đã đặt.
 
@@ -250,15 +250,15 @@ Cả hai đều cần bot đã bật, xem [Kênh Telegram](11-telegram.md). Chư
 - **Nhật ký brain đang xem**: gộp mọi việc lặp của brain đang chọn ở thanh bên.
 - Hoặc chọn đúng một việc, hiển thị dạng `<tên việc> · <tên brain>`.
 
-Javis tải 200 mục gần nhất rồi chia trang **10 mục** một trang, có nút **← Trước** và **Sau →**, kèm dòng đếm "Trang 1/5 · 47 mục". Chưa có gì thì hiện "Chưa có nhật ký."
+UNI MATE tải 200 mục gần nhất rồi chia trang **10 mục** một trang, có nút **← Trước** và **Sau →**, kèm dòng đếm "Trang 1/5 · 47 mục". Chưa có gì thì hiện "Chưa có nhật ký."
 
 Mỗi mục bắt đầu bằng dòng tiêu đề dạng `## [2026-07-20 14:35] doc-source · loop (custom/auto) - scheduled`, trong đó `scheduled` nghĩa là chạy theo lịch, `manual` nghĩa là bạn bấm **▶ Chạy ngay**. Bên dưới là tóm tắt việc đã làm, dòng **Kiểm chứng** nếu có, và dòng cảnh báo nếu chính vòng đó khiến việc bị tự tạm dừng.
 
-Nhật ký cũng nằm trong brain dưới dạng file thật: `Javis/loop-log/YYYY-MM-DD.md`, mỗi ngày một file. Mở qua [Quản lý tệp tin](05-quan-ly-tep-tin.md) nếu muốn xem xa hơn 200 mục.
+Nhật ký cũng nằm trong brain dưới dạng file thật: `UniMate/loop-log/YYYY-MM-DD.md`, mỗi ngày một file. Mở qua [Quản lý tệp tin](05-quan-ly-tep-tin.md) nếu muốn xem xa hơn 200 mục.
 
 ## Đặt lịch bằng lời trong chat
 
-Bạn không bắt buộc phải vào trang này. Nói thẳng với Javis trong [Trò chuyện](02-tro-chuyen-va-giong-noi.md) hoặc qua Telegram cũng được, ví dụ:
+Bạn không bắt buộc phải vào trang này. Nói thẳng với UNI MATE trong [Trò chuyện](02-tro-chuyen-va-giong-noi.md) hoặc qua Telegram cũng được, ví dụ:
 
 - "Tạo cho anh việc mỗi 2 tiếng quét đơn mới rồi tổng hợp."
 - "7h sáng nào cũng nhắc anh xem doanh thu hôm qua."
@@ -266,16 +266,16 @@ Bạn không bắt buộc phải vào trang này. Nói thẳng với Javis trong
 - "Còn việc gì đang chạy không?"
 - "Huỷ việc quét đơn đi."
 
-Javis dùng công cụ `javis_schedule` (một plugin đi kèm app) để tự chọn đúng kho: lịch lặp theo khoảng cách thì ghi file vào `Javis/loops/`; mốc giờ cố định lặp lại hoặc hẹn một lần thì vào kho nhắc hẹn. Công cụ này tự đặt slug đúng chuẩn và **chặn trùng tên**: đã có việc cùng tên thì nó báo lỗi và bảo bạn sửa cái cũ, chứ không đẻ bản sao.
+UNI MATE dùng công cụ `unimate_schedule` (một plugin đi kèm app) để tự chọn đúng kho: lịch lặp theo khoảng cách thì ghi file vào `UniMate/loops/`; mốc giờ cố định lặp lại hoặc hẹn một lần thì vào kho nhắc hẹn. Công cụ này tự đặt slug đúng chuẩn và **chặn trùng tên**: đã có việc cùng tên thì nó báo lỗi và bảo bạn sửa cái cũ, chứ không đẻ bản sao.
 
 Hai rào an toàn cứng của đường này, không tham số nào đổi được:
 
 - Việc lặp tạo qua chat **luôn** ở `enabled: false`, và mặc định `mode: full` (nói "chỉ đọc" hoặc "chỉ ghi nháp" nếu muốn nhẹ hơn). Bạn phải vào trang Việc định kỳ bấm **Bật** thì nó mới chạy thật.
 - Không rõ chu kỳ (ví dụ bạn chỉ nói "mỗi sáng" mà không kèm giờ) thì công cụ báo lỗi và hỏi lại, tuyệt đối không tự đoán.
 
-## Webhook: hệ thống bên ngoài gọi Javis làm việc
+## Webhook: hệ thống bên ngoài gọi Uni làm việc
 
-Nhắc hẹn chạy theo giờ. Webhook chạy theo **sự kiện**: khách vừa điền form trên landing page, vừa thanh toán, hay một app khác vừa có dữ liệu mới thì Javis vào việc ngay, không phải chờ tới lượt lịch kế tiếp.
+Nhắc hẹn chạy theo giờ. Webhook chạy theo **sự kiện**: khách vừa điền form trên landing page, vừa thanh toán, hay một app khác vừa có dữ liệu mới thì UNI MATE vào việc ngay, không phải chờ tới lượt lịch kế tiếp.
 
 **Tạo một webhook:** từ 0.204.0 webhook có trang riêng: mở nhóm **Việc** trên thanh bên, chọn **Webhook**, bấm **+ Thêm webhook**. Đặt tên, chọn brain, rồi chọn chạy gì:
 
@@ -284,42 +284,42 @@ Nhắc hẹn chạy theo giờ. Webhook chạy theo **sự kiện**: khách vừ
 
 Chọn mức quyền như nhắc hẹn (Chỉ đọc, Được ghi file, Toàn quyền), rồi **Lưu**.
 
-**Mã bí mật chỉ hiện một lần**, ngay sau khi lưu, kèm một lệnh `curl` để thử. Hệ thống gọi tới gửi mã trong header `Authorization: Bearer <mã>` (hoặc header `X-Javis-Token`, hoặc `?token=` cuối link nếu nó không đặt được header). Javis chỉ giữ bản băm của mã, nên quên mã thì bấm **Tạo mã mới**; mã cũ ngừng chạy ngay.
+**Mã bí mật chỉ hiện một lần**, ngay sau khi lưu, kèm một lệnh `curl` để thử. Hệ thống gọi tới gửi mã trong header `Authorization: Bearer <mã>` (hoặc header `X-UniMate-Token`, hoặc `?token=` cuối link nếu nó không đặt được header). UNI MATE chỉ giữ bản băm của mã, nên quên mã thì bấm **Tạo mã mới**; mã cũ ngừng chạy ngay.
 
-**Kết quả về đâu:** như nhắc hẹn, vào khung Javis Core của brain, hòm thư (chuông) và Telegram của bạn. Kết quả mở đầu hoặc kết thúc bằng `[SILENT]` thì không báo.
+**Kết quả về đâu:** như nhắc hẹn, vào khung UNI MATE Core của brain, hòm thư (chuông) và Telegram của bạn. Kết quả mở đầu hoặc kết thúc bằng `[SILENT]` thì không báo.
 
 **Rào an toàn:**
 
 - Link sai mã, webhook đã tắt hay không tồn tại đều nhận cùng một câu từ chối, nên không ai dò được.
 - Dữ liệu sự kiện được đưa cho bộ não như **dữ liệu**, không phải lệnh. Giới hạn 32 KB mỗi lần gọi.
 - Mỗi webhook chạy từng việc một, chờ tối đa 5 việc, tối đa 30 lần mỗi giờ.
-- Hệ thống gọi lại vì mạng chập (gửi kèm header `Idempotency-Key` hoặc `X-Request-Id`) thì Javis nhận nhưng không chạy lần hai.
+- Hệ thống gọi lại vì mạng chập (gửi kèm header `Idempotency-Key` hoặc `X-Request-Id`) thì UNI MATE nhận nhưng không chạy lần hai.
 
-**Link phải ra được Internet.** Javis chạy trên VPS có tên miền thì dùng luôn. Chạy trên máy nhà thì cần một đường hầm (Cloudflare Tunnel, Tailscale Funnel) trỏ vào Javis.
+**Link phải ra được Internet.** UNI MATE chạy trên VPS có tên miền thì dùng luôn. Chạy trên máy nhà thì cần một đường hầm (Cloudflare Tunnel, Tailscale Funnel) trỏ vào UNI MATE.
 
-## Sức khoẻ việc nền: Javis Core lo sự cố
+## Sức khoẻ việc nền: UNI MATE Core lo sự cố
 
-Việc nền nào hỏng (việc Kanban, việc lặp tự tạm dừng, nhắc hẹn kiểu Tự làm rồi báo, webhook) thì **Javis Core** của brain đó được báo trước tiên, rồi quyết một trong ba:
+Việc nền nào hỏng (việc Kanban, việc lặp tự tạm dừng, nhắc hẹn kiểu Tự làm rồi báo, webhook) thì **UNI MATE Core** của brain đó được báo trước tiên, rồi quyết một trong ba:
 
 - **Chạy lại một lần** nếu lỗi thoáng qua (mạng chập, hết giờ, máy bận). Chỉ áp cho việc Kanban và nhắc hẹn; việc lặp và webhook không tự chạy lại.
 - **Báo bạn** một hai câu nếu chỉ bạn gỡ được: đăng nhập lại, khoá API, quyền, gói hết lượt, kết nối chưa đấu, việc đang tắt.
 - **Im** nếu việc đã tự ổn.
 
-Quyết định do model việc nền đưa ra ở chế độ chỉ chữ (không công cụ nào), nhưng luật cứng do Javis giữ: lỗi về đăng nhập hay khoá không bao giờ được chạy lại, mỗi sự cố chạy lại tối đa một lần, và chạy lại vẫn hỏng thì chỉ báo đúng một tin. Không có model sẵn sàng thì Javis tự phân loại theo chữ lỗi.
+Quyết định do model việc nền đưa ra ở chế độ chỉ chữ (không công cụ nào), nhưng luật cứng do UNI MATE giữ: lỗi về đăng nhập hay khoá không bao giờ được chạy lại, mỗi sự cố chạy lại tối đa một lần, và chạy lại vẫn hỏng thì chỉ báo đúng một tin. Không có model sẵn sàng thì UNI MATE tự phân loại theo chữ lỗi.
 
-Tab **Sự cố** của trang Việc định kỳ hiện các sự cố đang mở (bấm **Đã xử lý** để đóng) và các lỗi 24 giờ qua gom theo nguyên nhân. Muốn tắt hẳn việc báo cho Javis Core thì đặt `incidents.enabled` thành `false` trong cài đặt.
+Tab **Sự cố** của trang Việc định kỳ hiện các sự cố đang mở (bấm **Đã xử lý** để đóng) và các lỗi 24 giờ qua gom theo nguyên nhân. Muốn tắt hẳn việc báo cho UNI MATE Core thì đặt `incidents.enabled` thành `false` trong cài đặt.
 
-**Khi Javis không mở được:** chạy `python tools/sentinel.py` trên máy chủ. Lệnh này chỉ đọc dữ liệu, không gọi model, in danh sách lỗi gom theo nguyên nhân; thêm `--json` để lấy bản máy đọc, `--out <thư mục>` để lưu báo cáo (thư mục phải nằm ngoài thư mục dữ liệu của Javis).
+**Khi UNI MATE không mở được:** chạy `python tools/sentinel.py` trên máy chủ. Lệnh này chỉ đọc dữ liệu, không gọi model, in danh sách lỗi gom theo nguyên nhân; thêm `--json` để lấy bản máy đọc, `--out <thư mục>` để lưu báo cáo (thư mục phải nằm ngoài thư mục dữ liệu của UNI MATE).
 
 ## Nhắc hẹn nhớ kết quả lần trước
 
-Nhắc hẹn kiểu **Tự làm rồi báo** có thêm ô **Nhớ kết quả lần trước**. Bật lên thì mỗi lần chạy Javis nhận lại báo cáo lần trước (tối đa 2.000 ký tự), nên chỉ báo cái mới hay cái thay đổi. Hợp với việc theo dõi giá đối thủ, theo dõi chỉ số, rà hộp thư.
+Nhắc hẹn kiểu **Tự làm rồi báo** có thêm ô **Nhớ kết quả lần trước**. Bật lên thì mỗi lần chạy UNI MATE nhận lại báo cáo lần trước (tối đa 2.000 ký tự), nên chỉ báo cái mới hay cái thay đổi. Hợp với việc theo dõi giá đối thủ, theo dõi chỉ số, rà hộp thư.
 
-Lịch lặp theo cron còn hiện **ba lần chạy tới** ngay trên thẻ. Lần chạy bị trễ vì máy tắt thì vẫn chạy bù một lần khi máy mở lại, và Javis được báo là đang chạy trễ để tính theo giờ hiện tại.
+Lịch lặp theo cron còn hiện **ba lần chạy tới** ngay trên thẻ. Lần chạy bị trễ vì máy tắt thì vẫn chạy bù một lần khi máy mở lại, và UNI MATE được báo là đang chạy trễ để tính theo giờ hiện tại.
 
 ## Trường nâng cao (chỉ sửa được trong file .md)
 
-Biểu mẫu trên dashboard cố ý giữ gọn. Những thứ dưới đây phải mở `Javis/loops/<slug>.md` và sửa phần frontmatter (qua [Quản lý tệp tin](05-quan-ly-tep-tin.md) hoặc Obsidian). Sửa xong, dashboard đọc lại ngay, không cần khởi động lại gì.
+Biểu mẫu trên dashboard cố ý giữ gọn. Những thứ dưới đây phải mở `UniMate/loops/<slug>.md` và sửa phần frontmatter (qua [Quản lý tệp tin](05-quan-ly-tep-tin.md) hoặc Obsidian). Sửa xong, dashboard đọc lại ngay, không cần khởi động lại gì.
 
 | Trường | Ý nghĩa |
 |---|---|
@@ -384,17 +384,17 @@ Phần **thân file** (bên dưới dấu `---` thứ hai) chính là ô "Mô t�
 
 **Kết quả báo "Claude CLI chưa cài".** Bộ não chưa sẵn sàng trên máy. Xem [Bắt đầu & thiết lập lần đầu](01-bat-dau-thiet-lap.md) và [Khắc phục sự cố & FAQ](17-khac-phuc-su-co.md).
 
-**Chạy bằng ChatGPT thì báo `bwrap: Failed to make / slave: Permission denied`.** Codex (ChatGPT) bọc mọi lệnh đọc/ghi file của nó bằng bubblewrap, mà bubblewrap không khởi động nổi trong container Docker, nên việc nền không đọc được một file nào. Ảnh Docker từ bản 0.25.9 đã tắt sẵn rào riêng đó (`JAVIS_CODEX_SANDBOX=off`) nên chỉ cần **cập nhật lên bản mới** là hết. Nếu bạn tự dựng container riêng thì đặt biến môi trường đó, hoặc chuyển việc nền sang bộ não Claude. Chi tiết ở [Biến môi trường](16-cau-hinh-env.md).
+**Chạy bằng ChatGPT thì báo `bwrap: Failed to make / slave: Permission denied`.** Codex (ChatGPT) bọc mọi lệnh đọc/ghi file của nó bằng bubblewrap, mà bubblewrap không khởi động nổi trong container Docker, nên việc nền không đọc được một file nào. Ảnh Docker từ bản 0.25.9 đã tắt sẵn rào riêng đó (`UNIMATE_CODEX_SANDBOX=off`) nên chỉ cần **cập nhật lên bản mới** là hết. Nếu bạn tự dựng container riêng thì đặt biến môi trường đó, hoặc chuyển việc nền sang bộ não Claude. Chi tiết ở [Biến môi trường](16-cau-hinh-env.md).
 
 **Việc lặp than không có số liệu kinh doanh.** Nó chỉ đọc được số thật khi bạn đã đấu nguồn. Vào [Kết nối & số liệu kinh doanh](09-mcp-va-so-lieu.md) để nối POS, quảng cáo hoặc kênh bán. Không có nguồn nào thì vòng đó dừng và báo lại một câu.
 
-**Không tải được danh sách việc.** Trang hiện "Không tải được danh sách việc (mạng chậm hoặc hết giờ)" kèm liên kết **Thử lại**. Trên VPS yếu hoặc brain rất lớn, lần tải đầu có thể quá lâu; Javis đã tự thử lại một lần trước khi báo. Bấm **Thử lại**.
+**Không tải được danh sách việc.** Trang hiện "Không tải được danh sách việc (mạng chậm hoặc hết giờ)" kèm liên kết **Thử lại**. Trên VPS yếu hoặc brain rất lớn, lần tải đầu có thể quá lâu; UNI MATE đã tự thử lại một lần trước khi báo. Bấm **Thử lại**.
 
 **Tạo việc qua Telegram xong lên dashboard không thấy.** Việc rơi vào brain khác. Trang này gộp mọi brain nên hãy cuộn xem các khối `🧠` khác, hoặc gõ tên việc vào ô tìm kiếm. Muốn dời về đúng chỗ thì dùng **Chuyển brain…** trên thẻ.
 
 **Không nhận được tin báo về Telegram.** Kiểm tra bot đã bật và Chat ID đã nằm trong danh sách cho phép chưa, xem [Kênh Telegram](11-telegram.md). Cũng kiểm tra file việc có bị đặt `notify: false` không.
 
-**Sửa file .md xong loop biến mất khỏi danh sách.** File hỏng frontmatter (thiếu cặp `---`, hoặc YAML sai) thì Javis bỏ qua file đó. Mở lại file, đối chiếu với một file loop khác còn chạy tốt, sửa cho đúng khuôn.
+**Sửa file .md xong loop biến mất khỏi danh sách.** File hỏng frontmatter (thiếu cặp `---`, hoặc YAML sai) thì UNI MATE bỏ qua file đó. Mở lại file, đối chiếu với một file loop khác còn chạy tốt, sửa cho đúng khuôn.
 
 ## Liên quan
 
@@ -405,4 +405,4 @@ Phần **thân file** (bên dưới dấu `---` thứ hai) chính là ô "Mô t�
 - [Models & engine](10-models-va-engine.md) - chọn model rẻ cho việc nền.
 - [Quản lý tệp tin](05-quan-ly-tep-tin.md) - mở file định nghĩa việc và file nhật ký.
 - [Trò chuyện & giọng nói](02-tro-chuyen-va-giong-noi.md) - đặt việc và nhắc hẹn bằng lời.
-- [Plugins](20-plugins.md) - hiểu về `javis_schedule` và các công cụ đi kèm app.
+- [Plugins](20-plugins.md) - hiểu về `unimate_schedule` và các công cụ đi kèm app.

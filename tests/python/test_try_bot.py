@@ -21,8 +21,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-try-")
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-try-")
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -57,10 +57,10 @@ async def _engine(text, meta, progress, *, channel="", bot=None, **kw):
 
 BRAIN = Path(tempfile.mkdtemp(prefix="brain-try-"))
 (BRAIN / "cai-dat.md").write_text(
-    "# Hướng dẫn cài đặt Javis\n\n## Lỗi cổng 7777 đang được dùng\n\nNếu Javis báo lỗi cổng 7777 đang được dùng, "
-    "hãy tắt tiến trình Javis cũ rồi khởi động lại bằng file start-javis.bat.\n", encoding="utf-8")
+    "# Hướng dẫn cài đặt UNI MATE\n\n## Lỗi cổng 7777 đang được dùng\n\nNếu UNI MATE báo lỗi cổng 7777 đang được dùng, "
+    "hãy tắt tiến trình UNI MATE cũ rồi khởi động lại bằng file start-unimate.bat.\n", encoding="utf-8")
 chatbot_runtime.wire(answer=_engine, brain_root=lambda b: str(BRAIN),
-                     read_agent=lambda br, slug: ({"name": "Lan", "role": "Trợ lý cài đặt Javis"}, "Trả lời ngắn gọn."),
+                     read_agent=lambda br, slug: ({"name": "Lan", "role": "Trợ lý cài đặt UNI MATE"}, "Trả lời ngắn gọn."),
                      session_probe=lambda key: ("sid-1", 3), session_undo=lambda key, keep: UNDO.append((key, keep)))
 
 
@@ -71,9 +71,9 @@ class Judge:
 
     async def __call__(self, prompt, purpose=""):
         if purpose == "profile":
-            return "Đảm nhiệm:\n- cài đặt Javis\nKhông đảm nhiệm:\n- chuyện riêng"
+            return "Đảm nhiệm:\n- cài đặt UNI MATE\nKhông đảm nhiệm:\n- chuyện riêng"
         if purpose == "bootstrap":
-            return json.dumps([{"text": "javis lỗi cổng thì làm sao", "verdict": "reply", "reason": "đúng ngành"}])
+            return json.dumps([{"text": "unimate lỗi cổng thì làm sao", "verdict": "reply", "reason": "đúng ngành"}])
         if purpose == "teach":
             return json.dumps({"is_teaching": False})
         self.calls += 1
@@ -90,14 +90,14 @@ def run(*a, **k):
     return asyncio.run(chatbot_runtime.try_message(*a, **k))
 
 
-bid, err = chatbot_store.create_bot({"name": "Javis Vũ", "agent_slug": "lan", "brain": "b",
+bid, err = chatbot_store.create_bot({"name": "Uni Vũ", "agent_slug": "lan", "brain": "b",
                                      "muc_quyen": "suggest", "reply_when": "mention", "groups": []})
 check("(setup) bot created", bool(bid) and not err, err)
 chatbot_store.update_bot(bid, {"muc_quyen": "full", "xac_nhan_rui_ro": True})
 check("(setup) bot is set to full permission", chatbot_store.get_bot(bid).get("muc_quyen") == "full")
 
 # ---- 1. Private message: answered, read-only, clean session --------------------------------------
-r = run(bid, "Javis báo lỗi cổng 7777 thì làm sao?")
+r = run(bid, "UNI MATE báo lỗi cổng 7777 thì làm sao?")
 check("private: ok and would reply", r.get("ok") and r.get("would_reply") is True and r.get("stage") == "answered", r)
 check("private: returns the Agent's answer", r.get("text") == REPLY["v"], r)
 check("private: lists the documents it found", any("cai-dat" in str(s) for s in (r.get("sources") or [])), r.get("sources"))
@@ -121,7 +121,7 @@ check("group with no allowed group: assumed allowed, and the result says so",
       "group_assumed_allowed" in (r.get("notes") or []), r.get("notes"))
 
 # ---- 3. Group, called by @tag -> answered ---------------------------------------------------------
-r = run(bid, "@Javis Vũ lỗi cổng 7777 xử lý sao", chat_type="group", mentioned=True)
+r = run(bid, "@Uni Vũ lỗi cổng 7777 xử lý sao", chat_type="group", mentioned=True)
 check("group, tagged: answered", r.get("would_reply") is True and r.get("stage") == "answered" and len(CALLS) == 1, r)
 check("group: the engine sees who is speaking like a real group turn",
       CALLS and CALLS[-1]["meta"].get("chat_type") == "group", CALLS and CALLS[-1]["meta"])
@@ -130,13 +130,13 @@ check("group: the engine sees who is speaking like a real group turn",
 chatbot_store.update_bot(bid, {"reply_when": "auto"})
 CALLS.clear()
 J.verdict = "silent"
-r = run(bid, "Javis báo lỗi cổng 7777 thì làm sao ạ?", chat_type="group", mentioned=False)
+r = run(bid, "UNI MATE báo lỗi cổng 7777 thì làm sao ạ?", chat_type="group", mentioned=False)
 check("auto, judge says silent: would stay silent, stage judge",
       r.get("would_reply") is False and r.get("stage") == "judge" and r.get("code") in ("judge_silent", "below_threshold"), r)
 check("judge result carries the judge's reason and score", "chuyện phiếm" in str(r.get("reason")) and r.get("score") == 0.2, r)
 check("judge asked once, engine not called", J.calls == 1 and CALLS == [], (J.calls, CALLS))
 J.verdict = "reply"
-r = run(bid, "Javis báo lỗi cổng 7777 thì làm sao ạ?", chat_type="group", mentioned=False)
+r = run(bid, "UNI MATE báo lỗi cổng 7777 thì làm sao ạ?", chat_type="group", mentioned=False)
 check("auto, judge says reply: answered with the Agent's text",
       r.get("would_reply") is True and r.get("stage") == "answered" and r.get("text") == REPLY["v"], r)
 check("answered result keeps the judge's score", r.get("score") == 0.92, r)
@@ -190,7 +190,7 @@ chatbot_runtime.wire(answer=_engine, brain_root=lambda b: str(BRAIN),
                      read_agent=lambda br, slug: ({"name": "Lan"}, "Trả lời ngắn gọn."),
                      session_probe=lambda key: ("", 0), session_undo=lambda key, keep: None)
 c = TestClient(main.app)
-res = c.post(f"/chatbots/{bid}/try", data={"text": "@Javis Vũ chào em", "chat_type": "group", "mentioned": "1"})
+res = c.post(f"/chatbots/{bid}/try", data={"text": "@Uni Vũ chào em", "chat_type": "group", "mentioned": "1"})
 check("POST /chatbots/{id}/try answers", res.status_code == 200 and res.json().get("would_reply") is True, res.text)
 check("POST unknown bot -> 404", c.post("/chatbots/khong-co/try", data={"text": "hi"}).status_code == 404)
 
@@ -199,7 +199,7 @@ js = (ROOT / "dashboard" / "chatbots-try.js").read_text(encoding="utf-8")
 html = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
 cb = (ROOT / "dashboard" / "chatbots.js").read_text(encoding="utf-8")
 check("UI file is loaded by the page", "/static/chatbots-try.js" in html)
-check("bot card has a Try button wired to the panel", "cb-try" in cb and "JavisTryBot" in cb)
+check("bot card has a Try button wired to the panel", "cb-try" in cb and "UniMateTryBot" in cb)
 check("UI posts to the try route", "/try" in js and "FormData" in js)
 check("no em dash in this file", chr(0x2014) not in open(__file__, encoding="utf-8").read())
 

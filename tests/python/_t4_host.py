@@ -1,9 +1,9 @@
 """Host thật cho test T4 (0.170.0): `main.app` qua TestClient, state và brain tạm, engine GIẢ cho mọi loại lượt.
 
 Chốt chặn engine thật dùng chung với tools/team_adaptive_bench.py (`install_guards`): engine nhóm, Claude, Codex, engine
-Cộng hưởng, engine phán xử (`_agent_judge_ask`, chốt `JAVIS_NO_REAL_JUDGE_ENGINE` trong `Judge._run_engine`: engine giả
+Cộng hưởng, engine phán xử (`_agent_judge_ask`, chốt `UNIMATE_NO_REAL_JUDGE_ENGINE` trong `Judge._run_engine`: engine giả
 được đánh dấu bằng `agent_judge.mark_test_fake`), engine quét của nhịp, engine lượt học (`_learn_engine_for`,
-`JAVIS_NO_REAL_REVIEW_ENGINE`) và sandbox của engine chỉ chữ đều ném lỗi NGAY nếu bị dựng. Việc nền (lượt trả lời, lô phán xử, điều phối) gom lại rồi chạy trong test.
+`UNIMATE_NO_REAL_REVIEW_ENGINE`) và sandbox của engine chỉ chữ đều ném lỗi NGAY nếu bị dựng. Việc nền (lượt trả lời, lô phán xử, điều phối) gom lại rồi chạy trong test.
 
 Không phải file test (tên bắt đầu bằng `_`).
 """
@@ -14,14 +14,14 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-t4-host-")
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"   # chốt trung tâm (tests/run.py, _paths.py đặt sẵn; đặt lại cho chắc)
-os.environ["JAVIS_NO_REAL_REVIEW_ENGINE"] = "1"
-os.environ["JAVIS_NO_REAL_TEAM_ENGINE"] = "1"
-os.environ["JAVIS_PULSE_TICK_PAUSED"] = "1"
-os.environ["JAVIS_RESONANCE_TICK_PAUSED"] = "1"
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-BR = Path(tempfile.mkdtemp(prefix="javis-t4-host-brain-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-t4-host-")
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"   # chốt trung tâm (tests/run.py, _paths.py đặt sẵn; đặt lại cho chắc)
+os.environ["UNIMATE_NO_REAL_REVIEW_ENGINE"] = "1"
+os.environ["UNIMATE_NO_REAL_TEAM_ENGINE"] = "1"
+os.environ["UNIMATE_PULSE_TICK_PAUSED"] = "1"
+os.environ["UNIMATE_RESONANCE_TICK_PAUSED"] = "1"
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+BR = Path(tempfile.mkdtemp(prefix="unimate-t4-host-brain-"))
 (BR / "agents").mkdir()
 SLUGS = ("lan", "minh", "hoa", "tuan")
 for _slug in SLUGS:

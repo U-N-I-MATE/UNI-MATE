@@ -171,5 +171,5 @@
     return html;
   }
 
-  window.JavisModelList = { models, peek, render, clearCache };
+  window.UniMateModelList = { models, peek, render, clearCache };
 })();

@@ -12,7 +12,7 @@ copied verbatim), and that description goes into the turn for the bot's own mode
 
 Which brain looks, in this order, never the exact provider+model that just failed:
   1. the owner's main brain, with the model the owner picked on the Models page (no model is chosen behind the owner's back);
-  2. the ChatGPT plan, with the model Javis already uses for images (`image_vision.VISION_MODEL`);
+  2. the ChatGPT plan, with the model UNI MATE already uses for images (`image_vision.VISION_MODEL`);
   3. Claude Code on the owner's plan, with the CLI's own default model.
 Owner decision 2026-10-11: "can you make the bot see Zalo photos whatever model it runs on" - this reverses the 2026-10-05 rule of
 "no second model describes the photo" ONLY for the fallback; a model that can see still looks itself.

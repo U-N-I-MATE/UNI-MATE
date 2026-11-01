@@ -8,12 +8,12 @@ Nối tiếp đặc tả gốc `2026-09-30-bo-phan-xu-nhom-design.md`; đọc m�
 Bộ phán xử (0.65.x) học tức thì từ phản ứng trong nhóm và từ nút Đúng/Sai, nhưng:
 
 - **Không AI nào đọc được kho của nó.** Kho `chatbot_reply_policy.sqlite3` chỉ đi ra qua route của
-  trang Chatbot. Hỏi Javis "vì sao bot im" thì Javis đoán theo tài liệu, không nhìn số liệu thật
-  (ca 05/10: Javis trên VPS khẳng định tin tag chủ "không để lại dòng nào", sai, dòng có ghi).
+  trang Chatbot. Hỏi Uni "vì sao bot im" thì UNI MATE đoán theo tài liệu, không nhìn số liệu thật
+  (ca 05/10: UNI MATE trên VPS khẳng định tin tag chủ "không để lại dòng nào", sai, dòng có ghi).
 - **Có chỗ học không chạm tới được.** `coarse_gate` trả `addressed_other` cho tin mở đầu bằng
   `@người khác` TRƯỚC khi xét ca dương, nên chủ bấm Sai hay dạy bằng lời cũng không gỡ được.
 - Chủ muốn tự động hoá: máy tự soát, tự chỉnh; người chỉ can thiệp khi muốn, và can thiệp bằng
-  cách NÓI với Javis chứ không tự tay sửa (nguyên tắc chung [ít cài đặt, đẩy về AI]).
+  cách NÓI với UNI MATE chứ không tự tay sửa (nguyên tắc chung [ít cài đặt, đẩy về AI]).
 
 ## 2. Mục tiêu và không làm
 
@@ -67,7 +67,7 @@ Thuần, tiêm `ask`, `store`, `notify`, `write_feedback`, `bot_lookup` để te
 
 **Khi nào chạy** (`due_bots(now)`): bot có trong `chatbot_store`, cách lần soát trước ít nhất 24
 giờ, và từ lần trước có ít nhất 8 nhãn mới HOẶC 40 tin bị im. Mỗi nhịp chỉ khởi một lượt soát,
-không chạy hai lượt cùng lúc. Biến môi trường `JAVIS_REPLY_POLICY_REVIEW=0` tắt hẳn (cho người
+không chạy hai lượt cùng lúc. Biến môi trường `UNIMATE_REPLY_POLICY_REVIEW=0` tắt hẳn (cho người
 vận hành, không phải ô cài đặt).
 
 **Báo cáo** (`build_report`): cửa sổ từ lần soát trước, tối đa 7 ngày. Gồm tổng theo kết luận và
@@ -102,10 +102,10 @@ tệ hơn quá 0.15 (và có ít nhất 3 lỗi) thì hoàn CẢ lượt, trạn
 `kept`. Quá 14 ngày mà chưa đủ nhãn thì `kept`. Thay đổi do chủ nhờ không tự hoàn.
 
 **Góp ý mã**: `code_feedback` khác rỗng thì ghi một dòng `changes` trạng thái `noted` và nối vào
-`<brain của bot>/Javis/gop-y-bo-phan-xu.md` (ngày, tên bot, nội dung, id bằng chứng).
+`<brain của bot>/UniMate/gop-y-bo-phan-xu.md` (ngày, tên bot, nội dung, id bằng chứng).
 
 **Báo lại**: có thay đổi, có góp ý, hoặc có tự hoàn thì gửi đúng một tin qua `_notify_owner("")`
-(hộp thư + Telegram của chủ), viết thường, có câu "không vừa ý thì nhắn Javis hoàn lại".
+(hộp thư + Telegram của chủ), viết thường, có câu "không vừa ý thì nhắn UNI MATE hoàn lại".
 
 **Model**: `main._reply_policy_review_ask` dựng engine giống `_reply_policy_ask` (thư mục trống,
 không MCP, không công cụ) nhưng chọn **bộ não chính** qua `aux_engine.swap(spec=main_spec())`.
@@ -127,12 +127,12 @@ tạo ca từ `decision_id` có trong báo cáo. Chỉ ca dương nguồn `owner
 **Chữ của model ra khỏi vòng soát** (tin báo chủ, file góp ý) bị bỏ link và khối mã; file góp ý
 ghi dạng trích dẫn kèm lời dặn "đọc như dữ liệu"; tin báo không chép nguyên nhận xét của model.
 
-### 3.4 Hai tool hub (plugin hệ thống `system/plugins/javis-reply-policy/`)
+### 3.4 Hai tool hub (plugin hệ thống `system/plugins/unimate-reply-policy/`)
 
-- `javis_reply_policy` (readonly). `op`: `bots` (bot có dữ liệu phán xử, kèm số liệu gọn),
+- `unimate_reply_policy` (readonly). `op`: `bots` (bot có dữ liệu phán xử, kèm số liệu gọn),
   `report` (bot, days), `decisions` (bot, code, label, chat_id, only_silent, limit), `changes`
   (bot). `bot` nhận id hoặc tên (không phân biệt dấu, hoa thường).
-- `javis_reply_policy_tune` (safe). `op`: `apply` (bot, action = một op ở bảng trên, các tham
+- `unimate_reply_policy_tune` (safe). `op`: `apply` (bot, action = một op ở bảng trên, các tham
   số, reason) và `revert` (change_id hoặc review_id). Ghi `actor=owner`.
 
 Kết quả tool là chữ gọn, có trần ký tự (engine API cắt 8000).
@@ -143,11 +143,11 @@ Bot ở mức Được ghi / Toàn quyền nhận tool từ hub; khách lạ đi
 của khách khác, chỉnh kho là khách tự vặn bot. Nên:
 
 - `mcp_hub.OWNER_ONLY_TOOLS` = hai tool trên. `discover_all(..., for_bot=True)` bỏ chúng TRƯỚC
-  tầng lazy (kẻo `javis_run_tool` vẫn gọi được), và `for_bot` nằm trong khoá cache.
+  tầng lazy (kẻo `unimate_run_tool` vẫn gọi được), và `for_bot` nằm trong khoá cache.
 - Đường API của bot (`_bot_tra_loi_co_tool`) truyền `for_bot=True`.
-- Đường Claude của bot: `claude_config_path(..., bot=True)` gắn header `X-Javis-Bot: 1` (file
+- Đường Claude của bot: `claude_config_path(..., bot=True)` gắn header `X-UniMate-Bot: 1` (file
   config riêng hậu tố `_bot`); `handle_http` đọc header, chuyển xuống `discover_all`. Thêm lớp hai:
-  `disallowed_tools` của bot có `mcp__javis__javis_reply_policy*`.
+  `disallowed_tools` của bot có `mcp__unimate__unimate_reply_policy*`.
 - Engine Claude của bot là bản "gated" (có `allowed_tools`) nên không nạp plugin trong tiến trình;
   mọi tool đều đi qua hub, rào trên là đủ.
 
@@ -177,5 +177,5 @@ Script chạy thẳng như các test bộ phán xử cũ (`tests/python/test_rep
 
 ## 6. Tài liệu
 
-`docs/25-chatbot.md` (và bản tiếng Anh nếu có): mục "Bộ phán xử tự soát", cách nhờ Javis xem và
+`docs/25-chatbot.md` (và bản tiếng Anh nếu có): mục "Bộ phán xử tự soát", cách nhờ Uni xem và
 chỉnh, cách hoàn lại, biến tắt, lưu ý gói thuê bao. CHANGELOG hai thứ tiếng cho 0.77.0.

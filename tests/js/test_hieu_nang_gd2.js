@@ -4,7 +4,7 @@
        node tests/js/test_hieu_nang_gd2.js
 
    Measured 30/10/2026: 72% of the JS the dashboard loaded at boot never ran (other pages' code). The large modules that
-   only one page uses now live in <script id="javis-lazy"> and load through nap-cham.js; renderPage waits for a page's
+   only one page uses now live in <script id="unimate-lazy"> and load through nap-cham.js; renderPage waits for a page's
    group before drawing it, cross-page calls wait for the group they need, and the rest loads in the background once
    the page is idle. Separately, a page opened while the server was restarting got 502 pages for every read and broke
    (customer report): GET reads to the server now retry for ~10 s with a "Reconnecting" pill. */
@@ -17,7 +17,7 @@ function check(name, cond) { console.log((cond ? "ok   " : "FAIL ") + name); if 
 const read = rel => fs.readFileSync(path.join(ROOT, rel), "utf8");
 
 const html = read("dashboard/index.html");
-const lazy = JSON.parse((html.match(/<script id="javis-lazy" type="application\/json">([\s\S]*?)<\/script>/) || [])[1] || "{}");
+const lazy = JSON.parse((html.match(/<script id="unimate-lazy" type="application\/json">([\s\S]*?)<\/script>/) || [])[1] || "{}");
 const all = Object.values(lazy).flat();
 check("the lazy groups exist", ["congviec", "teams", "packs", "hoithoai", "usage", "webhooks"].every(g => Array.isArray(lazy[g]) && lazy[g].length));
 check("every lazy URL carries ?v= so the server keys it like any other file", all.every(u => /^\/static\/[\w./-]+\.(js|css)\?v=[\w.]+$/.test(u)));
@@ -30,7 +30,7 @@ check("files that wire things at load stay eager (studio.js binds the Studio but
   /<script src="\/static\/studio\.js\?v=/.test(html) && !all.some(u => /studio\.js/.test(u)));
 check("the conversations CSS loads before its JS in the same group",
   lazy.hoithoai[0].indexOf("inbox-v5.css") > 0 && lazy.hoithoai[1].indexOf("inbox-compact.css") > 0);
-check("the shared pulse parts load before teams.js (teams needs JavisAgentJudge)", lazy.congviec.some(u => /agent-judge-ui/.test(u)));
+check("the shared pulse parts load before teams.js (teams needs UniMateAgentJudge)", lazy.congviec.some(u => /agent-judge-ui/.test(u)));
 check("nap-cham.js loads early, before console.js", html.indexOf("/static/nap-cham.js") > 0 && html.indexOf("/static/nap-cham.js") < html.indexOf("/static/console.js"));
 
 const con = read("dashboard/console.js");
@@ -40,12 +40,12 @@ check("every page that needs lazy code is mapped in NHOM_TRANG",
   && /chatbots: \["hoithoai"\]/.test(map) && /packs: \["packs"\]/.test(map) && /plugins: \["packs"\]/.test(map) && /mcp: \["packs"\]/.test(map)
   && /usage: \["usage"\]/.test(map) && /webhooks: \["webhooks"\]/.test(map));
 check("renderPage waits for the page's group, and stops if the user moved on meanwhile",
-  /await window\.JavisNapCham\.cho\(nhomCan\);\n\s+if \(gen !== _renderGen\) return;/.test(con));
-check("the Settings usage tab waits for usage.js itself", /if \(!window\.JavisUsage && window\.JavisNapCham\) await window\.JavisNapCham\.cho\("usage"\);/.test(con));
+  /await window\.UniMateNapCham\.cho\(nhomCan\);\n\s+if \(gen !== _renderGen\) return;/.test(con));
+check("the Settings usage tab waits for usage.js itself", /if \(!window\.UniMateUsage && window\.UniMateNapCham\) await window\.UniMateNapCham\.cho\("usage"\);/.test(con));
 check("the zip plugin button is not deferred (the file picker only opens inside the click)",
-  /zip\.onclick = \(\) => \{\n\s+if \(!window\.JavisPacks/.test(con));
+  /zip\.onclick = \(\) => \{\n\s+if \(!window\.UniMatePacks/.test(con));
 check("a notice for a team chat loads teams.js and opens it, instead of falling back to the main chat",
-  /window\.JavisNapCham\.goi\(\["congviec", "teams"\]/.test(read("dashboard/notifications.js")));
+  /window\.UniMateNapCham\.goi\(\["congviec", "teams"\]/.test(read("dashboard/notifications.js")));
 const ws = read("dashboard/workspace.js");
 check("workspace opens a team and the Store through the loader", /openTeam: function \(teamId, taskId\) \{[\s\S]{0,200}nhom\(\["congviec", "teams"\]/.test(ws)
   && (ws.match(/nhom\("packs", function/g) || []).length === 2);
@@ -63,7 +63,7 @@ async function loader() {
   const win = { addEventListener() {}, requestIdleCallback: null };
   const ctx = vm.createContext({ window: win, document: doc, setTimeout, Promise, JSON, Array });
   vm.runInContext(read("dashboard/nap-cham.js"), ctx);
-  const N = win.JavisNapCham;
+  const N = win.UniMateNapCham;
   let ran = false;
   const sync = N.goi("nothing-to-load", () => { ran = true; });
   check("goi() on a group with nothing to load calls at once, inside the click", ran);

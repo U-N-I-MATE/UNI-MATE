@@ -9,7 +9,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-rp-review-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-rp-review-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -30,7 +30,7 @@ def check(name, cond, extra=""):
 
 NOW = 1_800_000_000.0
 H, DAY = 3600.0, 86400.0
-CFG = {"id": "A", "name": "Javis Vũ"}
+CFG = {"id": "A", "name": "Uni Vũ"}
 
 
 def dec(bot, text, *, ts, verdict="silent", code="judge_silent", label=None, chat="g1", level="none"):
@@ -60,9 +60,9 @@ def run(coro):
 check("due_bots on a missing store is empty and creates nothing", rv.due_bots(st, NOW) == [] and not st.db_path().exists())
 
 # ---- data: bot A gets tagged questions silenced, bot B has a secret ----
-tag_ids = [dec("A", f"@Quý anh ơi lịch học Javis tuần {i} thế nào", ts=NOW - 20 * H + i * 60, code="addressed_other")
+tag_ids = [dec("A", f"@Quý anh ơi lịch học UNI MATE tuần {i} thế nào", ts=NOW - 20 * H + i * 60, code="addressed_other")
            for i in range(5)]
-wrong_ids = [dec("A", f"cài Javis trên VPS bị lỗi cổng {i} thì sao", ts=NOW - 10 * H + i * 60, label="missed")
+wrong_ids = [dec("A", f"cài UNI MATE trên VPS bị lỗi cổng {i} thì sao", ts=NOW - 10 * H + i * 60, label="missed")
              for i in range(5)]
 secret = dec("B", "mật khẩu kho của shop B là 1234", ts=NOW - 5 * H, label="missed")
 check("not due with only 5 labels", rv.due_bots(st, NOW) == [])
@@ -70,7 +70,7 @@ more = [dec("A", f"bot trả lời đúng câu {i}", ts=NOW - 8 * H + i * 60, ve
 check("due once 8 labels gathered", rv.due_bots(st, NOW) == ["A"])
 
 # ---- report ----
-report, shown = rv.build_report(st, "A", since=NOW - 2 * DAY, now=NOW, bot_name="Javis Vũ")
+report, shown = rv.build_report(st, "A", since=NOW - 2 * DAY, now=NOW, bot_name="Uni Vũ")
 check("report shows the wrong and silenced decisions", set(wrong_ids) <= shown and set(tag_ids) & shown)
 check("report never shows another bot's chat", "1234" not in report and secret not in shown)
 check("chat text, lessons and change reasons are fenced as data",
@@ -83,7 +83,7 @@ payload = {"summary": "Nhiều tin tag chủ hỏi lịch học bị im.", "code
            "changes": [
                {"op": "consider_tagged_set", "value": 1, "reason": "5 tin tag chủ hỏi lịch học bị im",
                 "evidence": tag_ids[-3:]},
-               {"op": "lesson_add", "text": "Khách tag chủ hỏi lịch học hay cài Javis thì trả lời thay chủ.",
+               {"op": "lesson_add", "text": "Khách tag chủ hỏi lịch học hay cài UNI MATE thì trả lời thay chủ.",
                 "reason": "mẫu lặp lại", "evidence": [wrong_ids[0]]},
                {"op": "case_add", "decision_id": secret, "verdict": "reply", "reason": "x", "evidence": [wrong_ids[1]]},
            ]}
@@ -118,11 +118,11 @@ for change, why in bad:
 check("owner lesson still there", st.get_lesson("A", owner_lesson) is not None)
 
 # ---- owner (through chat) may do more ----
-ok, _m, _c = rv.apply_change(st, "A", {"op": "role_profile_set", "text": "Đảm nhiệm: hỗ trợ học viên Javis."},
+ok, _m, _c = rv.apply_change(st, "A", {"op": "role_profile_set", "text": "Đảm nhiệm: hỗ trợ học viên UNI MATE."},
                              actor="owner", now=NOW)
 check("no role profile generated yet: editing waits (an empty hash would be overwritten)", not ok)
 st.set_role_profile("A", "Đảm nhiệm: hồ sơ máy soạn", "hash-agent-1", NOW)
-ok, _m, cid_role = rv.apply_change(st, "A", {"op": "role_profile_set", "text": "Đảm nhiệm: hỗ trợ học viên Javis và lịch học."},
+ok, _m, cid_role = rv.apply_change(st, "A", {"op": "role_profile_set", "text": "Đảm nhiệm: hỗ trợ học viên UNI MATE và lịch học."},
                                    actor="owner", now=NOW)
 check("owner may edit the role profile, the agent hash is kept",
       ok and "lịch học" in st.get_role_profile("A")["generated_text"]
@@ -248,7 +248,7 @@ check("owner changes are never judged", ok and rv.evaluate_due(st, NOW + rv.EVAL
 
 # ---- operator switch ----
 os.environ[rv.REVIEW_ENV] = "0"
-check("JAVIS_REPLY_POLICY_REVIEW=0 turns it off", not rv.enabled())
+check("UNIMATE_REPLY_POLICY_REVIEW=0 turns it off", not rv.enabled())
 os.environ.pop(rv.REVIEW_ENV)
 check("on by default", rv.enabled())
 

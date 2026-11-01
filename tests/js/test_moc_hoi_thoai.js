@@ -212,7 +212,7 @@ check("điện thoại KHÔNG chừa lề (chế độ nút, không có dải)",
 // ============================================================
 // Bản đầu nút sticky ở góc trên-phải TRONG khung cuộn. Bong bóng của mình căn phải, nên cuộn
 // tới đâu nút đè lên chữ tới đó, trong khi hàng nhãn ngay trên lại thừa chỗ. Nay JS cắm nút
-// vào .panel-acts (màn Javis) hoặc .chatpage-bar (trang Trò chuyện), tìm theo khung đang chứa
+// vào .panel-acts (màn UNI MATE) hoặc .chatpage-bar (trang Trò chuyện), tìm theo khung đang chứa
 // #chatArea vì node chat bị mượn qua lại giữa hai trang.
 check("có hàm tìm chỗ đứng cho nút điện thoại", /function choNut\(\)/.test(JS));
 check("tìm theo KHUNG đang chứa #chatArea, không theo id cố định",

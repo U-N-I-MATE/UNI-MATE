@@ -3,10 +3,10 @@
     GET  /tasks/stats?brain&from=YYYY-MM-DD&to=YYYY-MM-DD   (both days included, local time zone)
     POST /tasks/stats/minutes {brain, minutes: {kind: n}}    how many minutes the owner would spend on each kind of job
 
-What Javis did comes from three places, since no single store keeps it:
+What UNI MATE did comes from three places, since no single store keeps it:
   - Kanban jobs: `task_events` of the Kanban store ("completed", "blocked", "retry_scheduled"), which survive the
     auto-archive of finished jobs;
-  - loops: the markdown run log <brain>/Javis/loop-log/YYYY-MM-DD.md (headers carry the local time);
+  - loops: the markdown run log <brain>/UniMate/loop-log/YYYY-MM-DD.md (headers carry the local time);
   - reminders and page watches: work_log.py (one line per finished run, written from 0.428.0 on). A reminder that
     ran before that only counts its last run (`fired_at`).
 What the owner did comes from my_tasks (done_at, done_dates, appointments that already took place).
@@ -66,7 +66,7 @@ def _agent_slug(key: str) -> str:
     return p[2] if len(p) >= 3 and p[0] == "agent" else ""
 
 
-# ---------- what Javis did ----------
+# ---------- what UNI MATE did ----------
 def kanban_events(store, root: str, since: float, until: float) -> list:
     """Finished, stopped and self-retried Kanban jobs of one brain between two times."""
     if store is None:
@@ -110,7 +110,7 @@ def kanban_events(store, root: str, since: float, until: float) -> list:
 def loop_events(brain_root: str, since: float, until: float, tz) -> list:
     out = []
     d0, d1 = _local(since, tz).date(), _local(until, tz).date()
-    folder = Path(brain_root) / "Javis" / "loop-log"
+    folder = Path(brain_root) / "UNI MATE" / "loop-log"
     if not folder.is_dir():
         return out
     d = d0
@@ -153,7 +153,7 @@ def reminder_last_runs(brain_root: str, since: float, until: float, logged: set)
     """Reminders that fired before work_log existed: their last run, unless the log already has it."""
     out = []
     try:
-        data = json.loads((Path(brain_root) / "Javis" / "reminders.json").read_text(encoding="utf-8"))
+        data = json.loads((Path(brain_root) / "UNI MATE" / "reminders.json").read_text(encoding="utf-8"))
     except Exception:
         return out
     for r in data.get("reminders") or []:
@@ -232,7 +232,7 @@ class TaskStats:
 
     def _bot_owners(self, brain: str, events: list, names: dict) -> None:
         """0.429.0: a job a chatbot made counts for the bot's assistant (or the bot itself when that assistant is not
-        in this brain), not for Javis Core. Only events with no assistant of their own are moved."""
+        in this brain), not for UNI MATE Core. Only events with no assistant of their own are moved."""
         if not self.deps.bot_jobs:
             return
         try:
@@ -387,7 +387,7 @@ class TaskStats:
                           for x in open_tasks if int(x.get("moves") or 0) >= 2), key=lambda x: -x["moves"])[:5]
         overdue = sum(1 for x in open_tasks if x.get("date") and x["date"] < today)
 
-        # Things Javis could take over: jobs the owner keeps moving, and repeating chores they do by hand.
+        # Things UNI MATE could take over: jobs the owner keeps moving, and repeating chores they do by hand.
         ideas = [{"kind": "moved", "id": x["id"], "title": x["title"], "n": x["moves"], "minutes": mins["kanban"]}
                  for x in delayed[:2]]
         month_ago = now - 30 * 86400
@@ -409,7 +409,7 @@ class TaskStats:
             "me": {"done": me_n, "prev_done": me_pn, "by_day": by_day, "on_time": on_time(me), "prev_on_time": on_time(me_p),
                    "overdue": overdue, "habit_done": sum(1 for e in me if e["kind"] == "habit"),
                    "appts": sum(1 for e in me if e["kind"] == "appt"),
-                   "javis_ticks": sum(1 for e in me if e.get("by") == "javis"),
+                   "unimate_ticks": sum(1 for e in me if e.get("by") == "unimate"),
                    "heat": [{"d": (t - timedelta(days=83 - i)).isoformat(), "n": heat.get((t - timedelta(days=83 - i)).isoformat(), 0)}
                             for i in range(84)],
                    "gold": gold, "hours": hours_me, "habits": habits, "projects": projects, "delayed": delayed},

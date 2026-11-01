@@ -13,7 +13,7 @@ function graphTw(khoa, bien) {
 }
 
 // ============================================
-// JAVIS OS - Knowledge graph "Tinh vân bộ não" (force-graph / d3-force, kiểu Obsidian)
+// UNI MATE - Knowledge graph "Tinh vân bộ não" (force-graph / d3-force, kiểu Obsidian)
 // Engine d3-force. Thiết kế: node = sao phát sáng, TÔ MÀU THEO DANH MỤC
 // (thư mục cha, khớp nhãn PERSONAL/BUSINESS...), hover = rọi đèn vùng liên quan (synapse), thở nhẹ
 // lúc nghỉ, nhãn chỉ hiện khi hover / zoom sát / vài hub lớn.
@@ -68,7 +68,7 @@ function _hash(s) { let h = 0; s = String(s || ""); for (let i = 0; i < s.length
 
 // Gán màu danh mục (tuần tự theo danh mục) vào n.color của từng node.
 // Nhớ CHỈ SỐ danh mục (không phải màu) để đổi tông chỉ là tra lại bảng khác.
-window.JavisCatColorize = function (nodes) {
+window.UniMateCatColorize = function (nodes) {
   const idx = {}; let next = 0;
   (nodes || []).forEach(n => {
     const segs = (n.path || "").split("/");
@@ -77,9 +77,9 @@ window.JavisCatColorize = function (nodes) {
     n.__catIdx = idx[cat];
     n.color = CAT_COLORS[idx[cat] % CAT_COLORS.length];   // ghi đè màu tím backend bằng màu danh mục
   });
-  window.__javisCatIdx = idx;
-  window.__javisCatMap = _mapFromIdx(idx);   // để nhãn danh mục tô chữ khớp màu
-  return window.__javisCatMap;
+  window.__unimateCatIdx = idx;
+  window.__unimateCatMap = _mapFromIdx(idx);   // để nhãn danh mục tô chữ khớp màu
+  return window.__unimateCatMap;
 };
 
 function _mapFromIdx(idx) {
@@ -90,7 +90,7 @@ function _mapFromIdx(idx) {
 
 // Mở một lối tra màu cho nhãn danh mục trong app.js.
 // để nó lấy đúng bảng màu của tông đang bật.
-window.JavisCatColorAt = function (idx) {
+window.UniMateCatColorAt = function (idx) {
   return CAT_COLORS[(idx || 0) % CAT_COLORS.length];
 };
 
@@ -119,10 +119,10 @@ function _glowSprite(color) {
 function _applyGraphTheme(light) {
   CAT_COLORS = light ? CAT_COLORS_LIGHT : CAT_COLORS_DARK;
   INK = light ? INK_LIGHT : INK_DARK;
-  if (window.__javisCatIdx) window.__javisCatMap = _mapFromIdx(window.__javisCatIdx);
-  const g = window.__javisGraph;
+  if (window.__unimateCatIdx) window.__unimateCatMap = _mapFromIdx(window.__unimateCatIdx);
+  const g = window.__unimateGraph;
   if (g && g._recolor) g._recolor();
-  try { window.dispatchEvent(new Event("javis-catcolors-change")); } catch (e) {}
+  try { window.dispatchEvent(new Event("unimate-catcolors-change")); } catch (e) {}
 }
 // Đọc tông hiện tại từ thuộc tính trên <html>. Bọc typeof vì file này còn được nạp
 // trong Node (test JS ở tests/js/) với DOM giả lập tối thiểu, không có documentElement.
@@ -131,11 +131,11 @@ function _themeIsLight() {
     ? document.documentElement.getAttribute("data-theme") === "light"
     : false;
 }
-// KHÔNG dùng window.javisTheme.on() ở đây: file này có lúc nạp trước theme.js, khi đó
-// window.javisTheme chưa tồn tại nên đăng ký hụt IM LẶNG và đồ thị kẹt ở bảng màu tối.
+// KHÔNG dùng window.unimateTheme.on() ở đây: file này có lúc nạp trước theme.js, khi đó
+// window.unimateTheme chưa tồn tại nên đăng ký hụt IM LẶNG và đồ thị kẹt ở bảng màu tối.
 // Nghe thẳng sự kiện + tự đọc thuộc tính thì đúng ở mọi thứ tự nạp.
 if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
-  window.addEventListener("javis-theme-change", function (e) {
+  window.addEventListener("unimate-theme-change", function (e) {
     _applyGraphTheme(!!(e && e.detail && e.detail.light));
   });
 }
@@ -153,7 +153,7 @@ function _centerGravity(strength) {
   return force;
 }
 
-class JavisGraph {
+class UniMateGraph {
   constructor(container) {
     this.container = container;
     this.graph = null;
@@ -176,8 +176,8 @@ class JavisGraph {
     this._henGiua = null;      // hẹn giờ về giữa
     this._loaiTro = "";        // "mouse" | "touch" | "pen" của lần chạm cuối
     this._diemCham = null;
-    window.__javisGraph = this;
-    try { window.dispatchEvent(new Event("javis-graph-created")); } catch (e) {}
+    window.__unimateGraph = this;
+    try { window.dispatchEvent(new Event("unimate-graph-created")); } catch (e) {}
   }
 
   _prep(nodes) {
@@ -208,8 +208,8 @@ class JavisGraph {
     const nodes = Array.isArray(data.nodes) ? data.nodes : [];
     this._catMap = null;                     // gán lại màu danh mục tươi cho mỗi lần nạp
     this._prep(nodes);
-    window.__javisCatIdx = this._catMap;                    // danh mục → chỉ số
-    window.__javisCatMap = _mapFromIdx(this._catMap);       // để nhãn danh mục (app.js) tô chữ khớp màu node
+    window.__unimateCatIdx = this._catMap;                    // danh mục → chỉ số
+    window.__unimateCatMap = _mapFromIdx(this._catMap);       // để nhãn danh mục (app.js) tô chữ khớp màu node
     const links = (data.edges || []).map(e => ({ source: e.source, target: e.target }));
 
     if (!this.graph) {
@@ -466,14 +466,14 @@ class JavisGraph {
       if (this._chuotTren && this._loaiTro === "mouse") return;     // chuột còn trên quả cầu: chờ nó rời đi
       this._daKeo = false;
       this.refit(700);
-    }, JavisGraph.VE_GIUA_MS);
+    }, UniMateGraph.VE_GIUA_MS);
   }
 
   _nhipVe() {
     const dong = this.level > 0.02 || this._thinking || this._hoverId != null || this._chuotTren;
     const gio = (typeof performance !== "undefined" ? performance.now() : Date.now());
     if (dong) this._dongLuc = gio;
-    const can = dong || (gio - (this._dongLuc || 0) < JavisGraph.AN_HAN_MS);
+    const can = dong || (gio - (this._dongLuc || 0) < UniMateGraph.AN_HAN_MS);
     if (can === this._veLienTuc) return;          // không đổi thì đừng gọi lại thư viện
     this._veLienTuc = can;
     if (this.graph) { try { this.graph.autoPauseRedraw(!can); } catch (e) {} }
@@ -555,7 +555,7 @@ class JavisGraph {
     if (this._tlTimer) { clearInterval(this._tlTimer); this._tlTimer = null; }
     try { this.graph.warmupTicks(24); } catch (e) {}
     if (this._tlFull) { this.graph.graphData(this._tlFull); this._tlFull = null; }
-    try { window.dispatchEvent(new Event("javis-timelapse-end")); } catch (e) {}
+    try { window.dispatchEvent(new Event("unimate-timelapse-end")); } catch (e) {}
   }
 
   get timelapseRunning() { return !!this._tlTimer; }
@@ -592,4 +592,4 @@ class JavisGraph {
   }
 }
 
-window.JavisGraph = JavisGraph;
+window.UniMateGraph = UniMateGraph;

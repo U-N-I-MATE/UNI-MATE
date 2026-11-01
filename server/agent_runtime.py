@@ -366,8 +366,8 @@ class AgentRunner:
                 return AgentRunResult(
                     "ESCALATED", text, str(exc), result.task_id,
                     rounds, tuple(added),
-                    localefmt.chu("Kế hoạch mới đòi quyền chưa được cấp nên Javis đã dừng.",
-                                  "The new plan needs permissions that were not granted, so Javis stopped."),
+                    localefmt.chu("Kế hoạch mới đòi quyền chưa được cấp nên UNI MATE đã dừng.",
+                                  "The new plan needs permissions that were not granted, so UNI MATE stopped."),
                     events, from_node)
             if len(current.nodes) + len(new_nodes) > policy.max_total_nodes:
                 text, from_node = self._best_output(state, current.output_node_id)

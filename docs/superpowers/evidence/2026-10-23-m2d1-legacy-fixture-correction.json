@@ -29,7 +29,7 @@
       "before_sha256": "0b451621acb7bf22237d439b813c2ec056dc8b55e080ca5afce09bf020392d56",
       "after_sha256": "3e96ab0c3f1748d62fa454c86b93d02894098a08de9893103402893595730f61",
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_candidate_records.py",
         "-v"
       ],
@@ -46,7 +46,7 @@
       "before_sha256": "0573d27516e427c89b4983964e48842cc8e13ef8e05d9a07add31ceb2ec49301",
       "after_sha256": "25f4564b3aa61ccd49d02fc7f5600b8511d7026c6874ecb56bc89285d9e69e68",
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_cases.py",
         "-v"
       ],
@@ -63,7 +63,7 @@
       "before_sha256": "ba09af0609c07244060d02bf4449d9adc63d519157935f99481a3193e99e4024",
       "after_sha256": "1d1d1e2151ad80a6659ba2dcd864a9cb4f6c2d4e96a92dff13aae73f999ab06b",
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_trials.py",
         "-v"
       ],

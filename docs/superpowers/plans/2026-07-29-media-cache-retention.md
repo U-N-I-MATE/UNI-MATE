@@ -125,7 +125,7 @@ Kỳ vọng: ĐỎ với `ModuleNotFoundError: No module named 'media_gc'`.
 """
 media_gc.py - Dọn vùng cache media của brain.
 
-Vì sao tồn tại: ảnh Javis tự tạo (image_gen.py:202) và file user gửi qua Telegram
+Vì sao tồn tại: ảnh UNI MATE tự tạo (image_gen.py:202) và file user gửi qua Telegram
 (main.py:6242) rơi vào `<brain>/attachments/` và `<brain>/inbox/` rồi nằm đó vĩnh viễn.
 Không ai dọn, mà trước đây chúng còn được commit vào git của brain nên xoá file cũng
 không lấy lại được dung lượng. Quyết định: hai thư mục đó là VÙNG CACHE, không phải tri
@@ -221,7 +221,7 @@ import tempfile  # noqa: E402
 
 import config    # noqa: E402
 
-_brain = tempfile.mkdtemp(prefix="javis-mediagc-")
+_brain = tempfile.mkdtemp(prefix="unimate-mediagc-")
 
 
 def _tao(rel, mb, tuoi_ngay):
@@ -363,7 +363,7 @@ Chèn NGAY SAU dòng `"image": {"strip_c2pa": False},` (hiện là dòng 83):
 ```python
     # Vùng cache media của brain: attachments/ + inbox/. Ảnh là NGUYÊN LIỆU đi qua, không
     # phải tri thức - đọc xong rút thành .md là đủ dùng, nên chúng tự hết hạn thay vì nằm
-    # mãi làm phình đĩa VPS. Muốn giữ ảnh lâu dài thì đấu kho ngoài (Drive), đừng để Javis ôm.
+    # mãi làm phình đĩa VPS. Muốn giữ ảnh lâu dài thì đấu kho ngoài (Drive), đừng để UNI MATE ôm.
     # max_age_days / max_mb <= 0 = tắt luật tương ứng. enabled=False = không dọn gì cả.
     "media": {"enabled": True, "max_age_days": 30, "max_mb": 300},
 ```
@@ -414,7 +414,7 @@ _MEDIA_GC_LAST = [0.0]
 
 - [ ] **Step 3: Thêm mục 6 vào vòng lặp**
 
-Chèn NGAY SAU khối `# 5) Javis index` (kết thúc ở `server/main.py:4266`), vẫn nằm trong `try` ngoài cùng của vòng lặp:
+Chèn NGAY SAU khối `# 5) UNI MATE index` (kết thúc ở `server/main.py:4266`), vẫn nằm trong `try` ngoài cùng của vòng lặp:
 
 ```python
                 # 6) Dọn media quá hạn: attachments/ + inbox/ là VÙNG CACHE chứ không phải
@@ -490,7 +490,7 @@ for _dong in ("attachments/", "Attachments/", "*attachments/", "*Attachments/", 
     check(f"gitignore co dong {_dong}", _dong + "\n" in git_brain._GITIGNORE)
 
 if git_brain.has_git():
-    _repo = tempfile.mkdtemp(prefix="javis-mediagit-")
+    _repo = tempfile.mkdtemp(prefix="unimate-mediagit-")
 
     def _g(*a):
         return subprocess.run(["git", "-C", _repo, *a], capture_output=True, text=True,
@@ -562,13 +562,13 @@ Sửa hằng `_GITIGNORE` (dòng 63-74) thành:
 
 ```python
 _GITIGNORE = (
-    "# Javis brain - KHÔNG commit: khoá, log thô (có thể chứa secret), nhật ký nền.\n"
+    "# UNI MATE brain - KHÔNG commit: khoá, log thô (có thể chứa secret), nhật ký nền.\n"
     "# Git chỉ version TRI THỨC ĐÃ CHƯNG CẤT (facts/wiki/skills/MEMORY.md) → undo sạch, an toàn.\n"
-    ".javis-learn.lock\n"
-    "Javis/learn-staging/\n"
-    "Javis/learn-log/\n"
-    "Javis/loop-log/\n"
-    "Javis/skill-usage.json\n"
+    ".unimate-learn.lock\n"
+    "UniMate/learn-staging/\n"
+    "UniMate/learn-log/\n"
+    "UniMate/loop-log/\n"
+    "UniMate/skill-usage.json\n"
     "memory/conversations/\n"
     "Memory/conversations/\n"
     "*.tmp\n"

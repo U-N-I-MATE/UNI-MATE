@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Javis OS - Linux/macOS native installer (no Docker)
+# UNI MATE - Linux/macOS native installer (no Docker)
 #   ./install.sh
 # Installs python3 + node + Claude Code CLI, creates a venv, installs deps,
 # seeds .env, and registers a systemd service (or falls back to nohup).
 #
 # NHIEU BAN TREN CUNG MOT MAY: clone vao THU MUC KHAC roi dat hai bien truoc khi chay.
-#   JAVIS_NAME=javis-shop JAVIS_PORT=7778 ./install.sh
-# JAVIS_NAME dat ten dich vu systemd (javis-shop.service); JAVIS_PORT la cong nghe.
-# Bo trong ca hai = javis.service + cong 7777, y het truoc day.
+#   UNIMATE_NAME=unimate-shop UNIMATE_PORT=7778 ./install.sh
+# UNIMATE_NAME dat ten dich vu systemd (unimate-shop.service); UNIMATE_PORT la cong nghe.
+# Bo trong ca hai = unimate.service + cong 7777, y het truoc day.
 # ============================================================================
 set -euo pipefail
 
@@ -22,11 +22,11 @@ APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$APP_DIR"
 
 # Ten dich vu + cong cua BAN NAY. Truoc day ca hai deu dong cung, nen cai ban thu hai la ghi de
-# /etc/systemd/system/javis.service cua ban thu nhat va hai ban tranh nhau cong 7777.
-SVC="${JAVIS_NAME:-javis}"
-PORT="${JAVIS_PORT:-7777}"
+# /etc/systemd/system/unimate.service cua ban thu nhat va hai ban tranh nhau cong 7777.
+SVC="${UNIMATE_NAME:-unimate}"
+PORT="${UNIMATE_PORT:-7777}"
 case "$SVC" in
-  *[!A-Za-z0-9._-]*) err "JAVIS_NAME may only contain letters, digits, '.', '_' and '-' (got: $SVC)"; exit 1;;
+  *[!A-Za-z0-9._-]*) err "UNIMATE_NAME may only contain letters, digits, '.', '_' and '-' (got: $SVC)"; exit 1;;
 esac
 
 SUDO=""; [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1 && SUDO="sudo"
@@ -122,12 +122,12 @@ if need_node; then
     arch=$(uname -m); case "$arch" in x86_64) na=x64;; aarch64|arm64) na=arm64;; *) err "unsupported arch $arch"; exit 1;; esac
     tb=$(curl -fsSL https://nodejs.org/dist/latest-v22.x/ | grep -oE "node-v22\.[0-9]+\.[0-9]+-linux-${na}\.tar\.xz" | head -1)
     tmp=$(mktemp -d); curl -fsSL "https://nodejs.org/dist/latest-v22.x/${tb}" -o "$tmp/n.tar.xz"
-    mkdir -p "$HOME/.javis"; rm -rf "$HOME/.javis/node"
-    tar xf "$tmp/n.tar.xz" -C "$tmp"; mv "$tmp"/node-v22* "$HOME/.javis/node"; rm -rf "$tmp"
+    mkdir -p "$HOME/.unimate"; rm -rf "$HOME/.unimate/node"
+    tar xf "$tmp/n.tar.xz" -C "$tmp"; mv "$tmp"/node-v22* "$HOME/.unimate/node"; rm -rf "$tmp"
     mkdir -p "$HOME/.local/bin"
-    ln -sf "$HOME/.javis/node/bin/node" "$HOME/.local/bin/node"
-    ln -sf "$HOME/.javis/node/bin/npm"  "$HOME/.local/bin/npm"
-    ln -sf "$HOME/.javis/node/bin/npx"  "$HOME/.local/bin/npx"
+    ln -sf "$HOME/.unimate/node/bin/node" "$HOME/.local/bin/node"
+    ln -sf "$HOME/.unimate/node/bin/npm"  "$HOME/.local/bin/npm"
+    ln -sf "$HOME/.unimate/node/bin/npx"  "$HOME/.local/bin/npx"
     export PATH="$HOME/.local/bin:$PATH"
   fi
 fi
@@ -150,7 +150,7 @@ ok "Claude CLI $(claude --version 2>/dev/null || echo installed)"
 
 # --- 4b. Codex CLI (gói ChatGPT) ---
 #
-# BEST-EFFORT, cố ý khác Claude ở trên: thiếu Claude thì Javis không còn bộ não mặc định nào
+# BEST-EFFORT, cố ý khác Claude ở trên: thiếu Claude thì UNI MATE không còn bộ não mặc định nào
 # để chạy, còn thiếu cái này chỉ mất đúng một engine. Nên lỗi ở đây chỉ cảnh báo chứ không cho
 # `set -e` giết cả lần cài.
 #
@@ -173,13 +173,13 @@ cai_them_cli @openai/codex@latest codex "Codex CLI"
 # --- 4c. agy (Antigravity CLI, đường Google) + grok (Grok Build, đường xAI) ---
 #
 # Hai engine này KHÔNG cài bằng npm: mỗi nhà một script tải về chạy thẳng. Trước 0.59.13 cài
-# xong Javis là người dùng còn phải tự mở terminal gõ hai dòng của hai nhà khác nhau, và chủ
+# xong UNI MATE là người dùng còn phải tự mở terminal gõ hai dòng của hai nhà khác nhau, và chủ
 # dự án báo đúng chỗ đó làm người không quen kỹ thuật tắc ở màn Models với hai thẻ "CLI chưa
 # cài" (16/09). Nay cài luôn một lượt.
 #
 # BEST-EFFORT tuyệt đối: chạy script của nhà thứ ba nên hỏng là chuyện bình thường (mạng, máy
 # lạ, nhà cung cấp đổi URL) - hỏng thì nói một dòng rồi đi tiếp, không được giết lần cài.
-# ĐĂNG NHẬP thì vẫn là việc của người dùng, làm ở trang Models sau khi Javis chạy.
+# ĐĂNG NHẬP thì vẫn là việc của người dùng, làm ở trang Models sau khi UNI MATE chạy.
 cai_cli_script() {   # <tên binary> <tên hiển thị> <URL script cài>
   if command -v "$1" >/dev/null 2>&1; then ok "$2 da co san"; return 0; fi
   log "Installing $2 (best-effort, script cua nha cung cap)..."
@@ -218,11 +218,11 @@ if [ -t 0 ]; then
     if grep -q '^OBSIDIAN_VAULT_PATH=' .env; then sed -i.bak "s|^OBSIDIAN_VAULT_PATH=.*|OBSIDIAN_VAULT_PATH=$VP|" .env && rm -f .env.bak; else echo "OBSIDIAN_VAULT_PATH=$VP" >> .env; fi
   fi
 fi
-grep -q '^JAVIS_HOST=' .env || echo "JAVIS_HOST=127.0.0.1" >> .env
+grep -q '^UNIMATE_HOST=' .env || echo "UNIMATE_HOST=127.0.0.1" >> .env
 
 # --- 7b. Tài khoản quản trị: ĐẶT SẴN ngay lúc cài ---
 #
-# Trước đây bước này không tồn tại, nên ai mở Javis ra công khai đều đụng "MÃ THIẾT LẬP":
+# Trước đây bước này không tồn tại, nên ai mở UNI MATE ra công khai đều đụng "MÃ THIẾT LẬP":
 # server in một chuỗi ngẫu nhiên vào log lúc khởi động, và người dùng phải SSH vào VPS đọc log
 # rồi dán vào trình duyệt mới tạo được tài khoản. Cái mã đó có lý do tồn tại - nó chặn người
 # lạ chỉ-có-URL chiếm quyền admin lần đầu - nhưng bắt người ta đi đọc log là một trải nghiệm
@@ -264,14 +264,14 @@ PY
 _env_has() { grep -qE "^[[:space:]]*$1=[\"']?[^\"'[:space:]]" .env 2>/dev/null; }
 
 ADMIN_PW_SINH=""      # chỉ có giá trị khi script TỰ SINH - để in ra đúng một lần ở cuối
-if _env_has JAVIS_ADMIN_PASSWORD; then
+if _env_has UNIMATE_ADMIN_PASSWORD; then
   ok "Admin account already set in .env - keeping it"
 else
   ADMIN_USER="admin"
   ADMIN_PW=""
   if [ -t 0 ]; then
     echo ""
-    log "Javis admin account (required: the AI brain runs with full rights on this machine):"
+    log "UNI MATE admin account (required: the AI brain runs with full rights on this machine):"
     read -rp "  Username [admin]: " AU || true
     [ -n "${AU:-}" ] && ADMIN_USER="$AU"
     while :; do
@@ -289,8 +289,8 @@ else
     # bỏ trống là đẩy người dùng về đúng cái màn đọc-log mà bước này sinh ra để xoá đi.
     ADMIN_PW="$(_gen_pw)"; ADMIN_PW_SINH="$ADMIN_PW"
   fi
-  _env_set JAVIS_ADMIN_USER "$ADMIN_USER"
-  _env_set JAVIS_ADMIN_PASSWORD "$ADMIN_PW"
+  _env_set UNIMATE_ADMIN_USER "$ADMIN_USER"
+  _env_set UNIMATE_ADMIN_PASSWORD "$ADMIN_PW"
   chmod 600 .env
   ok "Admin account saved in .env"
 fi
@@ -305,11 +305,11 @@ fi
 # khoản. Cờ này KHÔNG phải rào bảo mật và không tự bật gì cả: 2FA chỉ thật sự bật sau khi
 # người dùng quét QR và nhập đúng một mã, vì bật trước lúc họ chứng minh app sinh đúng mã là
 # tự khoá họ ra ngoài chính máy vừa cài.
-if ! _env_has JAVIS_SETUP_2FA && [ -t 0 ]; then
+if ! _env_has UNIMATE_SETUP_2FA && [ -t 0 ]; then
   read -rp "  Turn on two-factor sign-in (Google Authenticator)? [y/N]: " TFA || true
   case "${TFA:-}" in
     [yY]*)
-      _env_set JAVIS_SETUP_2FA 1
+      _env_set UNIMATE_SETUP_2FA 1
       ok "Noted - the first time you open the dashboard, the Account page will show the QR code to scan"
       ;;
     *) log "Skipped - you can turn it on any time under Dashboard → Account" ;;
@@ -324,19 +324,19 @@ fi
 
 # --- 9. service: systemd if available, else nohup ---
 PY="$APP_DIR/.venv/bin/python"
-# 0.306.0, chủ repo 24/10/2026: "mặc định cài javis trên win hoặc trên mac os thì cài khởi động cùng trình duyệt".
-# macOS: dùng LaunchAgent (bin/javis-autostart.sh) thay cho nohup: đăng nhập máy là server tự chạy, rồi dashboard tự
-# mở trên trình duyệt; cài xong cũng mở luôn. Không muốn: JAVIS_NO_AUTOSTART=1 (chạy nohup như cũ, không mở gì).
-# Bản thứ hai (JAVIS_NAME) vẫn đi nohup: LaunchAgent dùng một nhãn chung com.javis.os, hai bản sẽ đè nhau.
-if [ "$(uname -s)" = "Darwin" ] && [ "${JAVIS_NO_AUTOSTART:-0}" != "1" ] && [ -z "${JAVIS_NAME:-}" ] && [ -f "$APP_DIR/bin/javis-autostart.sh" ]; then
+# 0.306.0, chủ repo 24/10/2026: "mặc định cài unimate trên win hoặc trên mac os thì cài khởi động cùng trình duyệt".
+# macOS: dùng LaunchAgent (bin/unimate-autostart.sh) thay cho nohup: đăng nhập máy là server tự chạy, rồi dashboard tự
+# mở trên trình duyệt; cài xong cũng mở luôn. Không muốn: UNIMATE_NO_AUTOSTART=1 (chạy nohup như cũ, không mở gì).
+# Bản thứ hai (UNIMATE_NAME) vẫn đi nohup: LaunchAgent dùng một nhãn chung com.unimate.os, hai bản sẽ đè nhau.
+if [ "$(uname -s)" = "Darwin" ] && [ "${UNIMATE_NO_AUTOSTART:-0}" != "1" ] && [ -z "${UNIMATE_NAME:-}" ] && [ -f "$APP_DIR/bin/unimate-autostart.sh" ]; then
   log "Installing login auto-start (LaunchAgent, port $PORT)..."
-  JAVIS_PORT="$PORT" bash "$APP_DIR/bin/javis-autostart.sh" install
-  ok "Starts at login and opens the dashboard. Turn off: ./bin/javis-autostart.sh uninstall"
+  UNIMATE_PORT="$PORT" bash "$APP_DIR/bin/unimate-autostart.sh" install
+  ok "Starts at login and opens the dashboard. Turn off: ./bin/unimate-autostart.sh uninstall"
 elif command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
   log "Installing systemd service ($SVC.service, port $PORT)..."
   $SUDO tee "/etc/systemd/system/$SVC.service" >/dev/null <<UNIT
 [Unit]
-Description=Javis OS ($SVC)
+Description=UNI MATE ($SVC)
 After=network-online.target
 Wants=network-online.target
 StartLimitIntervalSec=0
@@ -345,9 +345,9 @@ StartLimitIntervalSec=0
 Type=simple
 User=$(whoami)
 WorkingDirectory=$APP_DIR/server
-Environment="JAVIS_HOST=127.0.0.1"
-Environment="JAVIS_PORT=$PORT"
-Environment="JAVIS_STATE_DIR=$APP_DIR/server"
+Environment="UNIMATE_HOST=127.0.0.1"
+Environment="UNIMATE_PORT=$PORT"
+Environment="UNIMATE_STATE_DIR=$APP_DIR/server"
 Environment="PATH=$APP_DIR/.venv/bin:/usr/local/bin:/usr/bin:/bin"
 ExecStart=$PY -m uvicorn main:app --host 127.0.0.1 --port $PORT
 Restart=always
@@ -364,12 +364,12 @@ UNIT
   ok "Service installed. Logs: journalctl -u $SVC -f"
 else
   warn "systemd not available - starting under nohup..."
-  ( cd "$APP_DIR/server" && JAVIS_STATE_DIR="$APP_DIR/server" JAVIS_PORT="$PORT" nohup "$PY" -m uvicorn main:app --host 127.0.0.1 --port "$PORT" > "$APP_DIR/server/javis.log" 2>&1 & )
-  ok "Started. Logs: $APP_DIR/server/javis.log"
+  ( cd "$APP_DIR/server" && UNIMATE_STATE_DIR="$APP_DIR/server" UNIMATE_PORT="$PORT" nohup "$PY" -m uvicorn main:app --host 127.0.0.1 --port "$PORT" > "$APP_DIR/server/unimate.log" 2>&1 & )
+  ok "Started. Logs: $APP_DIR/server/unimate.log"
 fi
 
 echo ""
-ok "Javis OS is up at: http://127.0.0.1:$PORT"
+ok "UNI MATE is up at: http://127.0.0.1:$PORT"
 log "Remote access (SSH tunnel): ssh -L $PORT:localhost:$PORT $(whoami)@<vps-ip>"
 
 # Mật khẩu tự sinh chỉ in ra ĐÚNG chỗ này, đúng một lần. Không ghi vào log service, không in

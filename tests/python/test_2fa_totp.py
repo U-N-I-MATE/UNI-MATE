@@ -2,7 +2,7 @@
 
     python tests/run.py 2fa      (KHÔNG mạng)
 
-Javis chạy full quyền và có Bash, nên cổng đăng nhập là thứ đáng canh nhất trong cả sản phẩm.
+UNI MATE chạy full quyền và có Bash, nên cổng đăng nhập là thứ đáng canh nhất trong cả sản phẩm.
 File này canh bốn thứ dễ làm sai khi tự viết TOTP, và cả bốn đều KHÔNG lộ ra lúc dùng thử:
 
 1. **Dùng lại mã.** Một mã sống 30 giây, cộng cửa sổ lệch đồng hồ là tới 90. Không ghi lại bước
@@ -19,8 +19,8 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-2fa-test-")
-os.environ["JAVIS_REQUIRE_LOGIN"] = "1"
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-2fa-test-")
+os.environ["UNIMATE_REQUIRE_LOGIN"] = "1"
 
 from fastapi.testclient import TestClient   # noqa: E402
 import config as c   # noqa: E402
@@ -72,12 +72,12 @@ check("nhưng bước SAU đó vẫn nhận",
 # Nhãn otpauth: tên workspace tiếng Việt có dấu làm vài app hiện chuỗi hỏng, dấu ':' phá cú pháp.
 # Nhãn GIỮ dấu tiếng Việt (phần trăm-mã-hoá UTF-8, đúng Key Uri Format) nhưng phải bỏ dấu ':'
 # vì nó là dấu ngăn giữa issuer và tên tài khoản - lọt vào là vỡ cú pháp nhãn.
-_uri = totp.otpauth_uri(S, "Minh Quý", "Javis OS của Quý: bản 1")
+_uri = totp.otpauth_uri(S, "Minh Quý", "UNI MATE của Quý: bản 1")
 import urllib.parse as _up   # noqa: E402
 _nhan = _up.unquote(_up.urlparse(_uri).path).lstrip("/")
 check("otpauth đúng dạng và chỉ còn MỘT dấu ':' (của scheme)",
       _uri.startswith("otpauth://totp/") and _uri.count(":") == 1)
-check("nhãn GIỮ nguyên dấu tiếng Việt", _nhan == "Javis OS của Quý bản 1:Minh Quý")
+check("nhãn GIỮ nguyên dấu tiếng Việt", _nhan == "UNI MATE của Quý bản 1:Minh Quý")
 check("dấu ':' trong tên workspace bị bỏ, không phá nhãn", _nhan.count(":") == 1)
 # `period`/`digits` cố ý KHÔNG có mặt khi chúng đúng bằng mặc định - xem mục 1b, chúng chỉ làm
 # QR dày lên mà không thêm thông tin nào. Phần bắt buộc được kiểm kỹ hơn ở đó.
@@ -106,7 +106,7 @@ check("chuẩn hoá bỏ qua cách gõ",
 import re as _re          # noqa: E402
 import segno as _segno    # noqa: E402
 
-_uri = totp.otpauth_uri(S, "admin", "Javis OS")
+_uri = totp.otpauth_uri(S, "admin", "UNI MATE")
 for _thua in ("algorithm=", "digits=", "period="):
     check(f"URI KHÔNG nhét tham số mặc định ({_thua!r}) - chỉ làm QR dày thêm",
           _thua not in _uri)
@@ -117,7 +117,7 @@ check("nhưng vẫn đủ phần bắt buộc", _uri.startswith("otpauth://totp/
 _cu = (totp.SO_CHU_SO, totp.CHU_KY)
 try:
     totp.SO_CHU_SO, totp.CHU_KY = 8, 60
-    _u2 = totp.otpauth_uri(S, "admin", "Javis OS")
+    _u2 = totp.otpauth_uri(S, "admin", "UNI MATE")
     check("CANARY: đổi hằng số khác mặc định thì URI PHẢI khai ra",
           "digits=8" in _u2 and "period=60" in _u2)
 finally:
@@ -154,7 +154,7 @@ def _px_moi_o(uri):
     return canh_px / so_o, svg
 
 
-for _ten, _tk in (("Javis OS", "admin"),
+for _ten, _tk in (("UNI MATE", "admin"),
                   ("Cong ty TNHH Thuong mai Dich vu Minh Quy Sai Gon", "nguyenvanadmin")):
     _px, _svg = _px_moi_o(totp.otpauth_uri(S, _tk, _ten))
     check(f"CANARY: mỗi ô >= 7px ở cỡ tự nhiên (workspace {len(_ten)} ký tự) - đang {_px:.1f}px",
@@ -194,7 +194,7 @@ check("và bị TIÊU luôn, không dùng lại được",
 check("mã bịa thì không qua", c.totp_dung_ma_khoi_phuc("ZZZZ-ZZZZ") is False)
 
 _raw = (ROOT / "server" / "settings.json")
-_raw = (os.path.join(os.environ["JAVIS_STATE_DIR"], "settings.json"))
+_raw = (os.path.join(os.environ["UNIMATE_STATE_DIR"], "settings.json"))
 _txt = open(_raw, encoding="utf-8").read()
 check("CANARY: secret TOTP được mã hoá trên đĩa, không nằm nguyên văn", S not in _txt)
 check("CANARY: mã khôi phục cũng không nằm nguyên văn",
@@ -287,9 +287,9 @@ check("CANARY: /auth/2fa/* KHÔNG nằm trong danh sách miễn đăng nhập",
 
 # install.sh chỉ ghi Ý ĐỊNH, không được tự bật 2FA (bật trước khi quét QR = tự khoá mình).
 _ins = (ROOT / "install.sh").read_text(encoding="utf-8")
-check("install.sh có hỏi bật 2FA", "JAVIS_SETUP_2FA" in _ins)
+check("install.sh có hỏi bật 2FA", "UNIMATE_SETUP_2FA" in _ins)
 check("CANARY: install.sh KHÔNG tự bật, chỉ ghi cờ gợi ý",
-      "_env_set JAVIS_SETUP_2FA 1" in _ins and "totp" not in _ins.lower())
+      "_env_set UNIMATE_SETUP_2FA 1" in _ins and "totp" not in _ins.lower())
 
 print()
 if _fails:

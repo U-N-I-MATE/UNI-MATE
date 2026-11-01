@@ -10,7 +10,7 @@ Fast mode do 9 agent đọc song song (workflow `composer-map-fastmode`), các r
 - **Mức suy nghĩ tách khỏi chọn model**: đổi mức là việc làm thường xuyên, không được bắt mở danh sách model
   rồi cuộn xuống đáy.
 - **Fast mode** bật bằng một nút tia sét, giống ChatGPT: bật thì cam và sóng sánh chạy, tắt thì đứng yên.
-- Hiệu ứng dùng màu cam của Javis (`--accent`, #ff7a3c), chạy đúng ở giao diện sáng và tối.
+- Hiệu ứng dùng màu cam của UNI MATE (`--accent`, #ff7a3c), chạy đúng ở giao diện sáng và tối.
 
 Thành công khi: mọi thao tác cũ vẫn chạy (gõ, Enter gửi, dán và kéo thả file, giọng nói, chọn model, ghim
 model theo phiên, trang Chat/Coding/Workspace mượn khung gõ, điện thoại), và hàng điều khiển chỉ còn một.
@@ -74,7 +74,7 @@ PR 2 merge ngay sau PR 1. Giữa hai bản, nút tia sét lưu được nhưng c
 File mới `dashboard/composer-plus.js` (không chữ Việt trong mã chạy; chữ qua i18n). Một danh sách đăng ký:
 
 ```js
-window.JavisComposerMenu.register({ id, order, icon, label: "i18n.key", hint, run(ctx) | submenu(ctx) })
+window.UniMateComposerMenu.register({ id, order, icon, label: "i18n.key", hint, run(ctx) | submenu(ctx) })
 ```
 
 Thêm tính năng sau này chỉ cần gọi `register`. Mục mặc định:
@@ -87,7 +87,7 @@ Thêm tính năng sau này chỉ cần gọi `register`. Mục mặc định:
    (đường `/upload` lưu phẳng), câu báo nói rõ.
 3. **Chọn file trong brain**: popover tìm theo tên (GET `/files/search?mode=name`), chọn là gắn vào tin như một file
    đính kèm nhưng không tải lên lại. Cần endpoint nhỏ `GET /files/resolve?path=` trả đường dẫn tuyệt đối đã kiểm
-   nằm trong gốc brain (chặn `..`, symlink ra ngoài). app.js lộ `window.JavisAttach = { upload, addBrainFile }`,
+   nằm trong gốc brain (chặn `..`, symlink ra ngoài). app.js lộ `window.UniMateAttach = { upload, addBrainFile }`,
    `addBrainFile` đẩy vào `pendingAttachments` với khối `[File đính kèm ...]` sẵn có.
 4. **Lệnh và kỹ năng** (/): focus ô gõ, chèn "/" ở con trỏ, phát sự kiện `input` để chat-slash.js mở menu.
 5. **Kết nối ›**: menu con từ GET `/connect/health` (+ tên từ catalog), mỗi kết nối một chấm trạng thái; dòng mục cha
@@ -144,7 +144,7 @@ Mỗi chỗ đặt cạnh chỗ đang truyền mức suy nghĩ. Không bao giờ
 
 - `codex_models._chuan_hoa` giữ trường `serviceTiers` để biết model nào nhận Fast mode.
 - Đọc lại trạng thái thật: Claude Code báo `fast_mode_state` (`off|cooldown|on`) và `fast_mode_disabled_reason`;
-  API báo `usage.speed` hoặc `service_tier` trong phản hồi. Javis nhớ trạng thái cuối theo bộ não, tooltip của tia
+  API báo `usage.speed` hoặc `service_tier` trong phản hồi. UNI MATE nhớ trạng thái cuối theo bộ não, tooltip của tia
   sét đọc nó: "đang tạm chạy thường vì vượt giới hạn tốc độ", "cần bật usage credits"...
 
 ## Kiểm thử

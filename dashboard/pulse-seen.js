@@ -3,7 +3,7 @@
    Tin CỦA TRỢ LÝ nằm trong khung nhìn ≥ 1,5 giây trong lúc tab đang hiển thị thì báo POST /seen {context_ref,
    message_ids, session_id?} một lần (gom lô). Chỉ hai loại phần tử, không theo dõi gì khác:
    - chat nhóm: `.tm-msg-agent[data-mid]` trong khung `[data-seen-team]` (teams.js), ngữ cảnh `team:<id>`;
-   - chat riêng: bong bóng trả lời `.msg-javis[data-mid][data-sid]` (chat-reactions.js), ngữ cảnh `session:<mã phiên>`.
+   - chat riêng: bong bóng trả lời `.msg-unimate[data-mid][data-sid]` (chat-reactions.js), ngữ cảnh `session:<mã phiên>`.
      Máy chủ chỉ ghi tin của trợ lý trong phiên `agent:<slug>`; phiên không phải của trợ lý (trang Trò chuyện chính) trả
      `agent: false` và trang thôi gửi cho phiên đó.
 
@@ -100,17 +100,17 @@
       var team = box && box.getAttribute("data-seen-team");
       return team ? { ctx: "team:" + team, mid: Number(mid), sid: "" } : null;
     }
-    if (el.classList && el.classList.contains("msg-javis")) {
+    if (el.classList && el.classList.contains("msg-unimate")) {
       var sid = el.getAttribute("data-sid");
       return sid ? { ctx: "session:" + sid, mid: Number(mid), sid: sid } : null;
     }
     return null;
   }
 
-  var SELECTOR = ".tm-msg-agent[data-mid], .msg-javis[data-mid][data-sid]";
+  var SELECTOR = ".tm-msg-agent[data-mid], .msg-unimate[data-mid][data-sid]";
 
   function start() {
-    if (typeof window === "undefined" || typeof IntersectionObserver === "undefined" || window.__javisSeen) return null;
+    if (typeof window === "undefined" || typeof IntersectionObserver === "undefined" || window.__unimateSeen) return null;
     var tr = createTracker({
       visible: document.visibilityState === "visible",
       post: function (ctx, ids, sid) {
@@ -151,14 +151,14 @@
     });
     mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-mid"] });
     scan(document.body);
-    window.__javisSeen = tr;
+    window.__unimateSeen = tr;
     return tr;
   }
 
   var out = { createTracker: createTracker, contextOf: contextOf, start: start, DWELL_MS: DWELL_MS, FLUSH_MS: FLUSH_MS,
     SELECTOR: SELECTOR };
   if (typeof window !== "undefined") {
-    window.JavisSeen = out;
+    window.UniMateSeen = out;
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
     else start();
   }

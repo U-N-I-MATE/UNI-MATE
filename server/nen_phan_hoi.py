@@ -1,6 +1,6 @@
 """Nén gzip các câu trả lời TRỌN MỘT CỤC của API (0.225.0).
 
-Vì sao: Javis hay chạy trên VPS, trình duyệt ở xa. Đo lúc đổi sang một bộ não 2000 note: `/graph` trả 989 KB JSON không
+Vì sao: UNI MATE hay chạy trên VPS, trình duyệt ở xa. Đo lúc đổi sang một bộ não 2000 note: `/graph` trả 989 KB JSON không
 nén, qua đường 8 Mbps mất 1,5 giây chỉ để tải, trong khi gzip xuống còn 62 KB. Mọi danh sách khác (hội thoại, file,
 ký ức, việc) cũng đi trần như vậy, vì trước bản này chỉ `/static/` được nén (xem `_NenTinh` trong main.py).
 

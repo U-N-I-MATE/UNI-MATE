@@ -7,7 +7,7 @@ quản lý chung ở trang Link chia sẻ. Đây là mặt tiền công khai th�
 phần lớn test này là test an toàn:
 
   1. Chỉ câu hỏi và câu trả lời ra ngoài. Tool, khối ngữ cảnh máy chèn (file đính kèm có đường
-     dẫn trên máy chủ, file đang ghim, ngữ cảnh giao diện) và khối điều khiển ẩn JAVIS_* bị gỡ.
+     dẫn trên máy chủ, file đang ghim, ngữ cảnh giao diện) và khối điều khiển ẩn UNIMATE_* bị gỡ.
   2. Link là ẢNH CHỤP tới lúc bấm: tin gõ SAU đó không tự lọt ra. Bấm lại thì dời mốc, giữ token.
   3. Ảnh chỉ đi qua được khi nằm trong attachments, và chỉ loại tài nguyên trình bày.
   4. Thu hồi là chết hẳn; trang không có script và mang header cách ly.
@@ -17,9 +17,9 @@ import os
 import sys
 import tempfile
 
-_STATE = tempfile.mkdtemp(prefix="javis-share-ht-")
-_BRAINS = tempfile.mkdtemp(prefix="javis-share-ht-brains-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-share-ht-")
+_BRAINS = tempfile.mkdtemp(prefix="unimate-share-ht-brains-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 os.environ["BRAINS_DIR"] = _BRAINS
 
 BRAIN = os.path.join(_BRAINS, "brain")
@@ -56,7 +56,7 @@ store.append_message(SID, "user", "[File đính kèm để ĐỌC (đường d�
                                   "Mặc định: chỉ đọc file]\n\nGiá sỉ bao nhiêu?")
 store.append_message(SID, "tool", "ket qua tool noi bo")
 store.append_message(SID, "assistant", "Giá sỉ là **45k** một chai.\n\n![chai](attachments/anh.png)"
-                                       "<!-- JAVIS_ASK: {\"question\":\"x\"} -->")
+                                       "<!-- UNIMATE_ASK: {\"question\":\"x\"} -->")
 store.append_message(SID, "user", "> Giá sỉ là 45k một chai.\n\nVậy lấy 100 chai thì sao?")
 store.append_message(SID, "assistant", "100 chai được giảm 5%.")
 
@@ -82,7 +82,7 @@ check("trích dẫn trong câu hỏi hiện thành khối trích dẫn", "<block
 check("CANARY: khối file đính kèm (đường dẫn máy chủ) KHÔNG lộ ra", "/data/stage" not in body
       and "File đính kèm" not in body)
 check("CANARY: kết quả tool KHÔNG lộ ra", "ket qua tool noi bo" not in body)
-check("CANARY: khối điều khiển ẩn JAVIS_* KHÔNG lộ ra", "JAVIS_ASK" not in body)
+check("CANARY: khối điều khiển ẩn UNIMATE_* KHÔNG lộ ra", "UNIMATE_ASK" not in body)
 check("trang không có script", "<script" not in body.lower())
 check("header cách ly sandbox", p.headers.get("content-security-policy") == "sandbox")
 check("ảnh trỏ qua chính token", f"/s/{TOK}/asset?p=attachments%2Fanh.png" in body)

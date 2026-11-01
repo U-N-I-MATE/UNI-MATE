@@ -96,7 +96,7 @@ Nghiệm thu bước 1, làm ngay sau khi VPS lên:
 Đây là bước không hào nhoáng và là bước hay bị bỏ nhất. Không có nó thì không có cách nào
 biết đường mới tốt hơn hay tệ hơn đường cũ, và mọi con số sau này đều là cảm tính.
 
-Việc phải làm: dùng Javis như bình thường. Không đụng gì.
+Việc phải làm: dùng UNI MATE như bình thường. Không đụng gì.
 
 Mỗi tuần mở trang Chẩn đoán một lần và ghi lại bốn thứ:
 

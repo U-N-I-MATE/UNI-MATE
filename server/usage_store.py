@@ -1,7 +1,7 @@
 """
-usage_store.py - Kho đếm token/chi phí do CHÍNH JAVIS đo (đa nhà cung cấp).
+usage_store.py - Kho đếm token/chi phí do CHÍNH UNI MATE đo (đa nhà cung cấp).
 
-Vì Javis nhìn thấy token in/out trong mọi phản hồi (Claude Code CLI, Codex, OpenRouter, OpenAI,
+Vì UNI MATE nhìn thấy token in/out trong mọi phản hồi (Claude Code CLI, Codex, OpenRouter, OpenAI,
 Anthropic), đây là con số usage đồng nhất - KHÔNG phụ thuộc provider có lộ hạn mức hay không.
 KHÁC với "hạn mức tài khoản" (gói thuê bao) mà đa số provider không cho lấy qua API.
 

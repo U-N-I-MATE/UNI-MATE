@@ -1,6 +1,6 @@
 """Recall: a few lines from the owner's earlier chats, put in front of a turn when they look relevant (0.201.0).
 
-Idea borrowed from OpenMausBot's recall. Javis already keeps durable facts in `memory/` and every chat in
+Idea borrowed from OpenMausBot's recall. UNI MATE already keeps durable facts in `memory/` and every chat in
 SQLite with full-text search, but a turn only sees its own conversation: "làm tiếp cái landing page hôm
 trước" in a NEW chat started from nothing. Now, before a turn, the words of the message are searched in
 the brain's other chats and at most MAX_HITS short excerpts (one per chat) ride in front of the message.
@@ -41,7 +41,7 @@ def _fold(s: str) -> str:
 
 
 def allowed_channel(channel: Any) -> bool:
-    """Owner chats only: the main chat, partner chats and Javis Core. Never team, chatbot or customer channels."""
+    """Owner chats only: the main chat, partner chats and UNI MATE Core. Never team, chatbot or customer channels."""
     ch = str(channel or "")
     return ch == "" or ch == "web" or ch.startswith("agent:")
 

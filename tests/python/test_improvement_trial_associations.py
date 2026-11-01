@@ -14,8 +14,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="as-"))
-for key, name in {"JAVIS_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
-                  "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources", "JAVIS_SESSIONS_DB": "sessions.sqlite3"}.items():
+for key, name in {"UNIMATE_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
+                  "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources", "UNIMATE_SESSIONS_DB": "sessions.sqlite3"}.items():
     os.environ[key] = str(TEST_ROOT / name)
 
 import test_improvement_host_snapshots as fixtures

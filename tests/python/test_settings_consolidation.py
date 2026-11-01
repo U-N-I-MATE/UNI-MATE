@@ -35,18 +35,18 @@ check("rail không còn tab Tổng quan", '"overview"' not in rail_block)
 check("metadata không còn trang Tổng quan", '"overview"' not in meta_block)
 check("router không còn render Tổng quan", 'id === "overview"' not in router_block)
 boot_block = CONSOLE.split("function boot()", 1)[1]
-# Hợp đồng (chủ chốt, 0.9.260): MỞ APP LÀ VÀO MÀN JAVIS, mọi khổ màn hình. 0.9.182 từng cho
+# Hợp đồng (chủ chốt, 0.9.260): MỞ APP LÀ VÀO MÀN UNI MATE, mọi khổ màn hình. 0.9.182 từng cho
 # lite-mode/mobile tự nhảy sang Trò chuyện; dùng thật thì rối hơn (mỗi lần tải lại rơi vào một
 # trang khác) nên bỏ. Trang Tổng quan cũ cũng không còn chỗ nào trỏ tới.
-check("mở app là vào màn Javis, không tự nhảy trang khác",
+check("mở app là vào màn UNI MATE, không tự nhảy trang khác",
       'active: "home"' in CONSOLE
       and 'navigateTo("chat")' not in boot_block
       and 'navigateTo("overview")' not in CONSOLE)
-# Điều cần canh là deep-link CÒN ĐƯỢC XỬ sau khi vào màn Javis, chứ không phải nó gọi đúng
+# Điều cần canh là deep-link CÒN ĐƯỢC XỬ sau khi vào màn UNI MATE, chứ không phải nó gọi đúng
 # hàm nào. Từ 0.30.2 nó gọi openVaultPath: file sửa được thì mở thẳng trình sửa, thư mục mới về
 # trang Tệp tin - trước đó thả tất vào thư mục, nên cùng một file .html bấm ở chat thì sửa được
 # mà mở tab mới lại không.
-check("deep-link file vẫn được ưu tiên sau khi vào Javis",
+check("deep-link file vẫn được ưu tiên sau khi vào UNI MATE",
       'const m = /^#open=(.+)$/' in boot_block and "openVaultPath(decodeURIComponent(m[1]))" in boot_block)
 # Soi "wireUpdateManager(el" chứ KHÔNG soi "wireUpdateManager(el)": điều cần canh là trang Cập
 # nhật có gọi bộ máy đó hay không, chứ không phải nó truyền mấy tham số. Khoá cả dấu đóng ngoặc

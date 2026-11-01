@@ -86,14 +86,14 @@ check("tin từ mic lúc đang gọi thì XẾP HÀNG, không dừng lượt cũ
   // 0.206.0: typed text no longer stops at a silent return; it goes to the running turn (guiBoSung). Mic rules unchanged.
   /if \(!\(_tuGiong \|\| handsFree\)\) \{ guiBoSung\(msg, atts\); return; \}[\s\S]{0,400}if \(handsFree\) \{ xepCauChoLuot\(msg, opts\); return; \}\s*\n\s*stopCurrent\(\);/.test(app));
 
-// ---- 3. Cắt lời chỉ làm Javis im, lượt đang chạy viết nốt (0.65.28) ----
+// ---- 3. Cắt lời chỉ làm UNI MATE im, lượt đang chạy viết nốt (0.65.28) ----
 const b = new T.VoiceTurn();
 b.micOn(); b.turnStart(); b.ttsStart();
 check("trước khi cắt lời: đang xử lý và đang đọc", b.processing === true && b.speaking === true);
 let a = b.bargeConfirmed("doanh thu tuần này");
 check("cắt lời -> stop_tts + listen, KHÔNG stop_turn",
   has(a, "stop_tts") && has(a, "listen") && !has(a, "stop_turn"));
-check("cắt lời -> lượt vẫn đang chạy (processing giữ nguyên), Javis thôi đọc", b.processing === true && b.speaking === false);
+check("cắt lời -> lượt vẫn đang chạy (processing giữ nguyên), UNI MATE thôi đọc", b.processing === true && b.speaking === false);
 check("app.js: stop_tts lúc lượt còn chạy thì đánh dấu im phần còn lại của lượt",
   /case "stop_tts": \{[\s\S]{0,600}if \(_tLuot && _tLuot\.running\) \{ _tLuot\.imLoa = true; cum\.reset\(\); \}/.test(app));
 check("app.js: lượt đã bị cắt lời thì không đưa chữ ra loa nữa", /function docCum\(chunks, t\) \{\s*\n\s*if \(t && t\.imLoa\) return;/.test(app));

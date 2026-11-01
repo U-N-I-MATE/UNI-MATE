@@ -2,7 +2,7 @@
 
        node tests/js/test_logo_linh_vat.js
 
-   Chủ dự án chốt 24/09: linh vật chính thức của Javis là ngôi sao cam, mắt cười ^^; logo,
+   Chủ dự án chốt 24/09: linh vật chính thức của UNI MATE là ngôi sao cam, mắt cười ^^; logo,
    favicon và linh vật mặc định đều phải là hình đó. Ba thứ này nằm ở ba chỗ khác nhau
    (dashboard/logo.svg + các PNG xuất từ nó, bảng SHAPES/PALETTES trong pet.js, MAC_DINH), nên
    rất dễ lệch nhau khi một chỗ được sửa mà chỗ kia quên. Test này khoá sự trùng khớp đó.

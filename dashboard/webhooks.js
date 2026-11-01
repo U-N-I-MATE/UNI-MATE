@@ -1,6 +1,6 @@
 /* Webhooks section of the Work page (0.198.0).
  *
- * A webhook is a secret URL: when an outside system (a landing page form, a payment, a sheet) calls it, Javis runs a
+ * A webhook is a secret URL: when an outside system (a landing page form, a payment, a sheet) calls it, UNI MATE runs a
  * workflow or a written job with the event attached, then reports like a reminder. Server: server/webhook_triggers.py.
  *
  * The token is shown ONCE, right after creating or rotating, because the server keeps only its hash. Cards show the
@@ -34,9 +34,9 @@
   }
   var ic = function (n) { return (typeof window !== "undefined" && window.ic) ? window.ic(n) : ""; };
   // (i) button from info-tip.js; without it (node tests) the explanation is drawn inline.
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(tw("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(tw("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
 
@@ -352,7 +352,7 @@
       + '<div class="dim" style="font-size:16px;color:var(--text3);margin-top:2px">'
       + esc(h.verify && h.verify.provider && h.verify.provider !== "none"
         ? tw("wh.key_where_signed", { provider: h.verify.provider })
-        : tw(h.query_token ? "wh.key_where_legacy" : "wh.key_where", { header: h.token_header || "X-Javis-Token" })) + "</div>"
+        : tw(h.query_token ? "wh.key_where_legacy" : "wh.key_where", { header: h.token_header || "X-UniMate-Token" })) + "</div>"
       + (h.ai_triage ? '<div class="dim" style="font-size:16px;color:var(--text3)">' + esc(tw("wh.ai_triage_on")) + "</div>" : "")
       + '<div class="wf-actions" style="margin-top:8px">'
       + '<button class="s-btn-ghost whCopy">' + esc(tw("wh.copy_url")) + "</button>"
@@ -751,6 +751,6 @@
     simHtml: simHtml, rulesPanelHtml: rulesPanelHtml, readRules: readRules, readActions: readActions, detailHtml: detailHtml, settingsHtml: settingsHtml,
     testText: testText, readSettings: readSettings, stateWord: stateWord, timelineHtml: timelineHtml, payloadHtml: payloadHtml,
     replayHtml: replayHtml, planHtml: planHtml, healthHtml: healthHtml, testPanelHtml: testPanelHtml };
-  if (typeof window !== "undefined") window.JavisWebhooks = api_;
+  if (typeof window !== "undefined") window.UniMateWebhooks = api_;
   if (typeof module !== "undefined" && module.exports) module.exports = api_;
 })();

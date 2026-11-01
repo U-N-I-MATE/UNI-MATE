@@ -15,9 +15,9 @@ import os
 import sys
 import tempfile
 
-_STATE = tempfile.mkdtemp(prefix="javis-tkban-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"
+_STATE = tempfile.mkdtemp(prefix="unimate-tkban-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

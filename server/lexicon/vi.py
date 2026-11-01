@@ -49,7 +49,7 @@ DENY = (
         r"\b(web|internet|google|drive|gmail|calendar|github|repository|repo|database|"
         r"api|mcp|tool|vault|obsidian|slack|notion|airtable|facebook|tiktok|zalo|telegram)\b"
     )),
-    # Trỏ vào CHÍNH BỘ NÃO hoặc CHÍNH NĂNG LỰC của Javis. Đường tắt không phát tool, không
+    # Trỏ vào CHÍNH BỘ NÃO hoặc CHÍNH NĂNG LỰC của UNI MATE. Đường tắt không phát tool, không
     # đọc vault, không chạy skill/workflow - nên mấy câu này đi tắt là ra một lời từ chối
     # ("chưa có dữ liệu dự án đó", "chưa được cấp công cụ") ngay trên cái brain đang có đủ
     # thứ nó vừa nói là không có. Chủ repo gặp đúng ca này với brain TN88 (21/09/2026).
@@ -57,7 +57,7 @@ DENY = (
     # "ghi chu" phải đi kèm giới từ sở hữu/vị trí, không bắt trần: "brainstorm tên cho ứng
     # dụng ghi chú" là câu tự chứa hoàn toàn, chặn nó là siết vào đúng loại câu đường tắt
     # sinh ra để phục vụ.
-    ("javis_asset", re.compile(
+    ("unimate_asset", re.compile(
         r"\b(workflows?|quy trinh|skills?|agent|plugin|kanban|"
         r"bo nao|second brain|brain|wiki|"
         r"du an|du lieu|so lieu|co so du lieu)\b"
@@ -79,7 +79,7 @@ DENY = (
         r"execute|run|check my|look up|search for|fetch|open my)\b"
     )),
     # CÂU NỐI: nghĩa của nó nằm ở lượt TRƯỚC, không nằm trong chính nó. "uh, vậy viết bài
-    # đi" khớp ALLOW `viet` rồi đi tắt, mà đường tắt không đọc lịch sử, nên Javis hỏi lại
+    # đi" khớp ALLOW `viet` rồi đi tắt, mà đường tắt không đọc lịch sử, nên UNI MATE hỏi lại
     # "bạn muốn viết về chủ đề gì?" ngay sau khi vừa bàn xong chủ đề đó.
     #
     # Hư từ mở câu phải đi kèm DẤU hoặc một ĐỘNG TỪ, không bắt trần: "vang" bỏ dấu là cả
@@ -125,7 +125,7 @@ ACTION_VERBS = (
 FALSE_ACTION = re.compile(
     r"(?i)(?:"
     r"(?:^|[.!?\n]\s*)(?:đã|da|vừa|vua)\s+(?:được\s+|duoc\s+)?" + ACTION_VERBS + r"\b"
-    r"|\b(?:em|tôi|toi|mình|minh|javis)\s+(?:đã|da|vừa|vua)\s+" + ACTION_VERBS + r"\b"
+    r"|\b(?:em|tôi|toi|mình|minh|uni(?:\s*mate)?)\s+(?:đã|da|vừa|vua)\s+" + ACTION_VERBS + r"\b"
     r"|\b" + ACTION_VERBS + r"\s+thành công\b"
     r"|\b" + ACTION_VERBS + r"\s+thanh cong\b"
     r"|\bsuccessfully\s+" + ACTION_VERBS + r"\b"
@@ -201,7 +201,7 @@ PROMISE = (
 # what really changed in the brain's memory; a claim with no change gets one line of fact under the answer.
 # Narrow on purpose: "em nhớ là anh nói..." (recalling) must not match, only "đã/sẽ ghi nhớ", "đã quên ... ghi nhớ".
 MEMORY_CLAIM = (
-    ("da_nho", re.compile(r"\b(em|minh|toi|javis)\s+(da|se|vua)\s+(ghi nho|nho ky|luu lai|ghi lai)\b")),
+    ("da_nho", re.compile(r"\b(em|minh|toi|uni(?:\s*mate)?)\s+(da|se|vua)\s+(ghi nho|nho ky|luu lai|ghi lai)\b")),
     ("da_nho_ngan", re.compile(r"\b(em|minh|toi)\s+(da|vua)\s+nho\s+(roi|nhe|a|nha|dieu|chuyen|viec)\b")),
     ("da_quen", re.compile(
         r"\b(da|vua)\s+(quen|xoa|go bo|go|thu hoi)\b[^.!?\n]{0,60}?\b(ghi nho|tri nho|bai hoc|bo nho)\b"

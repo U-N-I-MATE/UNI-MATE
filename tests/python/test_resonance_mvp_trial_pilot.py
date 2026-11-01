@@ -1,9 +1,9 @@
 """Resonance M5: pilot thật một phép thử cải thiện, qua engine việc nền đã chọn và EvidenceStore thật.
 
-    JAVIS_RESONANCE_PILOT=1 JAVIS_RESONANCE_PILOT_SETTINGS=<settings.json thật> python tests/run.py resonance_mvp_trial_pilot -v
+    UNIMATE_RESONANCE_PILOT=1 UNIMATE_RESONANCE_PILOT_SETTINGS=<settings.json thật> python tests/run.py resonance_mvp_trial_pilot -v
 
-Không đặt JAVIS_RESONANCE_PILOT=1 thì bỏ qua (CI không gọi model). Khi chạy:
-- JAVIS_STATE_DIR tạm; chỉ chép các ô CHỌN engine từ settings.json thật (không chép khoá).
+Không đặt UNIMATE_RESONANCE_PILOT=1 thì bỏ qua (CI không gọi model). Khi chạy:
+- UNIMATE_STATE_DIR tạm; chỉ chép các ô CHỌN engine từ settings.json thật (không chép khoá).
 - Brain tạm, dữ liệu mô phỏng từ tests/fixtures/resonance/mvp_cases.json (mục "pilot").
 - Engine là main._resonance_engine (engine việc nền đã chọn, chỉ chữ, không chuỗi dự phòng), bằng chứng là
   main._RESONANCE_EVIDENCE. Không đăng gì vào brain, không gửi gì ra ngoài.
@@ -11,7 +11,7 @@ Không đặt JAVIS_RESONANCE_PILOT=1 thì bỏ qua (CI không gọi model). Khi
   tình huống chỉ người dùng chấm được không chạy.
 Kiểm CỨNG các tính chất của host (hạn mức, receipt, bằng chứng, không đăng, không đổi cách làm khi chưa eligible).
 Kết quả chấm của model chỉ GHI LẠI, không ép: model thật có thể cho kết quả khác kỳ vọng ghi trong fixture.
-JAVIS_RESONANCE_PILOT_OUT: nơi ghi báo cáo JSON (không có đường dẫn cá nhân).
+UNIMATE_RESONANCE_PILOT_OUT: nơi ghi báo cáo JSON (không có đường dẫn cá nhân).
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -24,24 +24,24 @@ import tempfile
 import time
 from pathlib import Path
 
-PILOT = os.environ.get("JAVIS_RESONANCE_PILOT") == "1"
+PILOT = os.environ.get("UNIMATE_RESONANCE_PILOT") == "1"
 if not PILOT:
-    print("pilot thật M5: bỏ qua (đặt JAVIS_RESONANCE_PILOT=1 để chạy)")
+    print("pilot thật M5: bỏ qua (đặt UNIMATE_RESONANCE_PILOT=1 để chạy)")
     print("\nOK")
     sys.exit(0)
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m5p-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
-src = os.environ.get("JAVIS_RESONANCE_PILOT_SETTINGS", "")
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m5p-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
+src = os.environ.get("UNIMATE_RESONANCE_PILOT_SETTINGS", "")
 if not src or not Path(src).is_file():
-    print("FAIL pilot: thiếu JAVIS_RESONANCE_PILOT_SETTINGS trỏ tới settings.json thật")
+    print("FAIL pilot: thiếu UNIMATE_RESONANCE_PILOT_SETTINGS trỏ tới settings.json thật")
     sys.exit(1)
 _m = (json.loads(Path(src).read_text(encoding="utf-8")).get("model") or {})
 Path(_STATE, "settings.json").write_text(json.dumps({"model": {k: _m[k] for k in ("auxiliary", "main", "engine",
                                                                                    "claude_model") if k in _m}},
                                                     ensure_ascii=False), encoding="utf-8", newline="\n")
 
-import main  # noqa: E402  - nạp SAU khi JAVIS_STATE_DIR tạm đã đặt
+import main  # noqa: E402  - nạp SAU khi UNIMATE_STATE_DIR tạm đã đặt
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
 
@@ -57,10 +57,10 @@ def check(name, cond):
 FIX = json.loads((Path(ROOT) / "tests" / "fixtures" / "resonance" / "mvp_cases.json").read_text(encoding="utf-8"))
 PLAN = FIX["pilot"]
 BRAIN = Path(tempfile.mkdtemp(prefix="brain-m5p-")).resolve()
-(BRAIN / "Javis").mkdir(parents=True)
-(BRAIN / "Javis" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+(BRAIN / "UNI MATE").mkdir(parents=True)
+(BRAIN / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
 KEY = main._brain_key(str(BRAIN))
-P = RS.Principal("agent", "javis", KEY)
+P = RS.Principal("agent", "unimate", KEY)
 store = main._resonance_store()
 d0 = R.GoalDeps(engine_factory=lambda s, t: (None, {"blocked": "tạo mục tiêu không gọi model"}),
                 budget=R.CallBudget(0), store=store)
@@ -130,7 +130,7 @@ rep = {"commit": head, "server_dirty": dirty, "seconds": secs, "engine": (trial_
                     "usage": a["receipt"].get("usage"), "text": _out(a)} for a in trial_acts]}
 print("PILOT_REPORT " + json.dumps({k: rep[k] for k in ("verdict", "reason", "applied", "usage", "results")},
                                    ensure_ascii=False)[:3000])
-outp = os.environ.get("JAVIS_RESONANCE_PILOT_OUT")
+outp = os.environ.get("UNIMATE_RESONANCE_PILOT_OUT")
 if outp:
     # ensure_ascii: đầu ra của model có thể có ký tự gạch dài, repo không cho ký tự đó xuất hiện nguyên dạng.
     Path(outp).write_text(json.dumps(rep, ensure_ascii=True, indent=2) + "\n", encoding="utf-8", newline="\n")

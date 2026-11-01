@@ -105,8 +105,8 @@ def companion_packs(catalog: dict, connector_ids) -> list:
     """Connected services whose extra tools live in a store pack (catalog field `companion_pack`).
 
     0.73.0 moved the three Zalo plugins (send images, tag people, read group images) out of the app into
-    the store pack `javis.zalo`, so people who never use Zalo no longer carry them. The Zalo connection
-    stays in the app (QR sign-in cannot be declared by a pack). Javis never installs a pack on its own, so
+    the store pack `unimate.zalo`, so people who never use Zalo no longer carry them. The Zalo connection
+    stays in the app (QR sign-in cannot be declared by a pack). UNI MATE never installs a pack on its own, so
     a machine that already used Zalo would silently lose those tools: this list lets the Connect page say
     so and open the pack's consent screen. `state` is installed | disabled | missing."""
     ledger = doc_so()
@@ -309,7 +309,7 @@ def soi(du_lieu: bytes, ten_tep: str = "") -> dict:
     manifest = next((kho / t for t in packs.MANIFEST_TEN if (kho / t).is_file()), None)
     if manifest is None:
         shutil.rmtree(kho, ignore_errors=True)
-        return {"ok": False, "stage": "validate", "error": localefmt.chu("trong gói không có javis-pack.yaml", "the pack has no javis-pack.yaml")}
+        return {"ok": False, "stage": "validate", "error": localefmt.chu("trong gói không có unimate-pack.yaml", "the pack has no unimate-pack.yaml")}
     if manifest.stat().st_size > MAX_MANIFEST:
         shutil.rmtree(kho, ignore_errors=True)
         return {"ok": False, "stage": "validate", "error": localefmt.chu("manifest quá lớn", "manifest too large")}
@@ -346,8 +346,8 @@ def soi(du_lieu: bytes, ten_tep: str = "") -> dict:
     py = sorted(str(p.relative_to(tam)).replace("\\", "/") for p in tam.rglob("*.py"))
 
     # Plugin trong gói: liệt kê để hiện lên màn hình xác nhận, và TỪ CHỐI nếu trùng tên một
-    # plugin đi kèm app. Chặn ở đây chứ không lúc nạp, vì một gói lặng lẽ thay `javis_task`
-    # hay `javis_schedule` dưới một màn hình chỉ nói "gói này chạy mã" là đúng kiểu bất ngờ
+    # plugin đi kèm app. Chặn ở đây chứ không lúc nạp, vì một gói lặng lẽ thay `unimate_task`
+    # hay `unimate_schedule` dưới một màn hình chỉ nói "gói này chạy mã" là đúng kiểu bất ngờ
     # không nên có - người dùng phải thấy lý do TRƯỚC khi có gì rơi xuống đĩa.
     plugin_slugs = []
     goc_pl = tam / "plugins"
@@ -363,9 +363,9 @@ def soi(du_lieu: bytes, ten_tep: str = "") -> dict:
     if trung:
         shutil.rmtree(boc, ignore_errors=True)
         return {"ok": False, "stage": "validate",
-                "error": localefmt.chu("gói mang plugin trùng tên plugin có sẵn của Javis: "
+                "error": localefmt.chu("gói mang plugin trùng tên plugin có sẵn của UNI MATE: "
                                        + ", ".join(trung) + ". Đổi tên trong gói rồi thử lại.",
-                                       "the pack carries a plugin with the same name as a built-in Javis plugin: "
+                                       "the pack carries a plugin with the same name as a built-in UNI MATE plugin: "
                                        + ", ".join(trung) + ". Rename it in the pack and try again.")}
     return {
         "ok": bool(ban["ok"]), "stage": "" if ban["ok"] else "validate",
@@ -503,13 +503,13 @@ def dat_bat_tat(pid: str, bat: bool) -> dict:
 # ─────────────────────────── gỡ ───────────────────────────
 
 def quet_tuong_thich() -> list:
-    """Lúc khởi động: TẮT gói có dải `compat.app` không còn khớp phiên bản Javis hiện tại.
+    """Lúc khởi động: TẮT gói có dải `compat.app` không còn khớp phiên bản UNI MATE hiện tại.
 
     Vì sao cần dù trình cài đã kiểm: `update.sh` chạy `git pull` và `updater.py` chạy
     `git reset --hard`, không cái nào chạy lại trình cài. Không có lượt quét này thì dải
     `compat` chỉ có tác dụng đúng một lần, ở lần cài đầu tiên - tức là trang trí.
 
-    TẮT chứ không xoá, và ghi lý do: hạ cấp Javis rồi nâng lại là gói tự chạy tiếp."""
+    TẮT chứ không xoá, và ghi lý do: hạ cấp UNI MATE rồi nâng lại là gói tự chạy tiếp."""
     ra = []
     so = doc_so()
     doi = False

@@ -122,7 +122,7 @@ check("đóng dấu chỉ ghi khi LỆCH (ghim lành không bị ghi lại mỗi
 
 mp = (ROOT / "dashboard" / "model-picker.js").read_text(encoding="utf-8")
 check("model bar: đổi model trong phiên là ghim cho phiên", "pinToSession" in mp)
-check("model bar: vẽ lại khi đổi phiên", "javis:sessions-changed" in mp)
+check("model bar: vẽ lại khi đổi phiên", "unimate:sessions-changed" in mp)
 check("model bar: chat trống chọn model xong mint id là ghim theo", "claimPending" in mp)
 check("model bar: ghim hỏng hiện đúng trạng thái, không nói dối",
       "pin_ok === false" in mp and "ghim hỏng" in mp)

@@ -41,7 +41,7 @@ _FLAGS_NO_VALUE = {"-y", "--yes", "-q", "--quiet", "-s", "--silent", "--no", "-n
                    "--ignore-scripts", "--no-audit", "--no-fund"}
 
 # A folder whose newest entry is younger than this may still be mid-install by a process this
-# server does not know about (a second Javis, a terminal). Leave it alone.
+# server does not know about (a second UNI MATE, a terminal). Leave it alone.
 QUIET_SECONDS = 120
 
 # Folders that sessions of this server are currently starting from, with a count: two

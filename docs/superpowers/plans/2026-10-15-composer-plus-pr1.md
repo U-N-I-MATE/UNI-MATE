@@ -6,13 +6,13 @@
 
 **Architecture:** Giữ nguyên các id mà app.js, pet.js, console.js và test đang dựa vào (`hudVoice`, `chatInput`, `voiceBtn`, `sendBtn`, `stopBtn`, `fileInput`, `attachBar`, `modelBar`, `mbOpen`, `mbPop`), chỉ đổi chỗ đặt và CSS. Logic mới nằm trong hai file mới không phụ thuộc DOM ở phần thuần (test bằng node): `composer-plus.js` (sổ đăng ký menu "+") và `effort-slider.js` (thanh trượt + hiệu ứng canvas). model-picker.js lo chip mức suy nghĩ và tia sét vì nó đang giữ `state.reasoning` và `saveModel`. Server thêm khoá `settings.model.fast` và endpoint `GET /files/resolve`.
 
-**Tech Stack:** HTML/CSS/vanilla JS (dashboard, không build step), FastAPI (server/main.py), test node `tests/js/*.js` và Python `tests/python/*.py` chạy bằng `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/run.py`.
+**Tech Stack:** HTML/CSS/vanilla JS (dashboard, không build step), FastAPI (server/main.py), test node `tests/js/*.js` và Python `tests/python/*.py` chạy bằng `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/run.py`.
 
 **Spec:** `docs/superpowers/specs/2026-10-15-composer-plus-fast-mode-design.md`
 
 ## Global Constraints
 
-- Màu hiệu ứng: cam Javis `var(--accent)` (#ff7a3c); không màu cứng trong cp-css của console.js (test_theme_tokens).
+- Màu hiệu ứng: cam UNI MATE `var(--accent)` (#ff7a3c); không màu cứng trong cp-css của console.js (test_theme_tokens).
 - Bo góc khung: **24px** (đổi từ 18px, sửa có chủ ý test_theme_tokens dòng 51-58 và cp-css).
 - Nhãn mức suy nghĩ tiếng Anh ở cả vi và en: Off, Light, Medium, High, Extra, Ultra. Giá trị lưu giữ nguyên `off/low/medium/high/xhigh/ultra` và các chuỗi có ngoặc kép đó phải còn trong model-picker.js.
 - Tia sét: không có chữ bật/tắt bên cạnh; chỉ tooltip (`title`) "Fast mode" + một dòng lưu ý.
@@ -58,7 +58,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-khunggo-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-khunggo-")
 from fastapi.testclient import TestClient  # noqa: E402
 import main  # noqa: E402
 import config as cfgmod  # noqa: E402
@@ -113,7 +113,7 @@ print("\nOK - test_khung_go_server: tất cả pass")
 
 - [ ] **Step 2: Chạy, thấy hỏng**
 
-Run: `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/python/test_khung_go_server.py`
+Run: `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/python/test_khung_go_server.py`
 Expected: FAIL ở "mặc định fast tắt" (khoá chưa có) và các check resolve (route chưa có).
 
 - [ ] **Step 3: Viết code**
@@ -159,9 +159,9 @@ async def files_resolve(brain: str = Query("brain"), path: str = Query("")):
 
 - [ ] **Step 4: Chạy, thấy qua**
 
-Run: `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/python/test_khung_go_server.py` -> `OK - test_khung_go_server`
-Run: `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/python/test_route_table.py --update` (route mới), rồi chạy lại không `--update` -> `bảng route khớp`.
-Run: `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/run.py settings` -> xanh.
+Run: `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/python/test_khung_go_server.py` -> `OK - test_khung_go_server`
+Run: `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/python/test_route_table.py --update` (route mới), rồi chạy lại không `--update` -> `bảng route khớp`.
+Run: `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/run.py settings` -> xanh.
 
 - [ ] **Step 5: Commit**
 
@@ -286,7 +286,7 @@ console.log("\nOK - test_khung_go: tất cả pass");
           </button>
         </div>
         <span class="cp-gap"></span>
-        <button type="button" class="mic-big" id="voiceBtn" title="Bấm để gọi Javis" data-i18n-title="bar.mic">
+        <button type="button" class="mic-big" id="voiceBtn" title="Bấm để gọi Uni" data-i18n-title="bar.mic">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
             <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
@@ -484,7 +484,7 @@ Dòng ~1604 `const src = atts[0].sources || "", attDir = atts[0].attachments || 
 
 Run: `node tests/js/test_khung_go.js` -> OK.
 Run: `grep -rln "hudVoice\|hud-voice\|voiceBtn\|attachBtn\|modelBar\|CHAT_NODE_IDS\|chatpage-slot .hud-voice\|attach-bar" tests/` rồi chạy từng file trong danh sách (`node tests/js/<f>` hoặc python). Mọi file xanh, trừ `test_model_theo_phien.py` (đỏ sẵn trên máy này vì WinError 32).
-Run: `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/run.py --js` -> toàn bộ xanh.
+Run: `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/run.py --js` -> toàn bộ xanh.
 
 - [ ] **Step 12: Commit**
 
@@ -507,7 +507,7 @@ git commit -m "Composer: one rounded card with attachments, input and a single c
 
 **Interfaces:**
 - Consumes: DOM từ Task 2 (`#effBtn`, `#effTxt`, `#effPop`).
-- Produces: `window.JavisEffortSlider = { LEVELS, levelFromRatio(r), ratioFromLevel(i), isLocked(provider, model), mount(el, {value, locked, onChange}) -> {set(v), destroy()} }`; node: `module.exports` cùng các hàm thuần. model-picker.js thêm `window.JavisModelBar.effortLabel()` trả nhãn đang hiện.
+- Produces: `window.UniMateEffortSlider = { LEVELS, levelFromRatio(r), ratioFromLevel(i), isLocked(provider, model), mount(el, {value, locked, onChange}) -> {set(v), destroy()} }`; node: `module.exports` cùng các hàm thuần. model-picker.js thêm `window.UniMateModelBar.effortLabel()` trả nhãn đang hiện.
 
 - [ ] **Step 1: Test hỏng** `tests/js/test_thanh_truot_effort.js`
 
@@ -667,7 +667,7 @@ console.log("\nOK - test_thanh_truot_effort: tất cả pass");
     };
   }
   api.mount = mount;
-  window.JavisEffortSlider = api;
+  window.UniMateEffortSlider = api;
 })();
 ```
 
@@ -687,15 +687,15 @@ console.log("\nOK - test_thanh_truot_effort: tất cả pass");
   let effSlider = null;
   function effOpen() {
     const pop = $("effPop"), btn = $("effBtn");
-    if (!pop || !window.JavisEffortSlider) return;
+    if (!pop || !window.UniMateEffortSlider) return;
     close(); closePlus();
     const eff = effective();
     pop.hidden = false;
     pop.style.left = btn ? (btn.offsetLeft) + "px" : "8px";
     if (btn) btn.setAttribute("aria-expanded", "true");
-    effSlider = window.JavisEffortSlider.mount(pop, {
+    effSlider = window.UniMateEffortSlider.mount(pop, {
       value: state.reasoning,
-      locked: window.JavisEffortSlider.isLocked(eff.provider, eff.model),
+      locked: window.UniMateEffortSlider.isLocked(eff.provider, eff.model),
       onChange: async (v) => { state.reasoning = v; renderBar(); await saveModel({ reasoning: v }); },
     });
     if (effSlider.focus) effSlider.focus();
@@ -707,7 +707,7 @@ console.log("\nOK - test_thanh_truot_effort: tất cả pass");
     if (btn) btn.setAttribute("aria-expanded", "false");
   }
   function effIsOpen() { const pop = $("effPop"); return pop && !pop.hidden; }
-  function closePlus() { try { if (window.JavisComposerMenu) window.JavisComposerMenu.close(); } catch (e) {} }
+  function closePlus() { try { if (window.UniMateComposerMenu) window.UniMateComposerMenu.close(); } catch (e) {} }
 ```
 
   4. Trong `open()` (bảng model) thêm `effClose(); closePlus();` ngay đầu hàm.
@@ -721,7 +721,7 @@ console.log("\nOK - test_thanh_truot_effort: tất cả pass");
 ```
    và xoá khối `const eff = e.target.closest(".mb-eff-btn"); if (eff) {...}`.
   6. Listener Escape: `if (e.key === "Escape") { if (isOpen()) close(); if (effIsOpen()) { effClose(); const b = $("effBtn"); if (b) b.focus(); } }`.
-  7. Trong `window.JavisModelBar` thêm `effortLabel: function () { return window.t("eff." + state.reasoning); },`.
+  7. Trong `window.UniMateModelBar` thêm `effortLabel: function () { return window.t("eff." + state.reasoning); },`.
   8. Sau `chonModel` gọi `renderBar()` như cũ (chip mức đổi theo); nếu `effIsOpen()` thì `effClose(); effOpen();` để thanh trượt cập nhật khoá theo model mới.
 
 - [ ] **Step 5: style.css** thêm sau luật `.eff-pop[hidden]`:
@@ -750,7 +750,7 @@ console.log("\nOK - test_thanh_truot_effort: tất cả pass");
 
 - [ ] **Step 7: index.html**: thêm `<script src="effort-slider.js?v=1"></script>` ngay trước dòng `model-picker.js`; bump `model-picker.js?v=` và `style.css?v=`.
 
-- [ ] **Step 8: Chạy test**: `node tests/js/test_thanh_truot_effort.js` -> OK; `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/python/test_do_sau_suy_nghi.py`, `test_mobile_layout.py`, `node tests/js/test_i18n.mjs`, `node tests/js/test_studio_chon_model_agent.js` -> xanh.
+- [ ] **Step 8: Chạy test**: `node tests/js/test_thanh_truot_effort.js` -> OK; `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/python/test_do_sau_suy_nghi.py`, `test_mobile_layout.py`, `node tests/js/test_i18n.mjs`, `node tests/js/test_studio_chon_model_agent.js` -> xanh.
 
 - [ ] **Step 9: Commit**
 
@@ -770,7 +770,7 @@ git commit -m "Composer: separate effort chip with an orange sparkle slider (Off
 
 **Interfaces:**
 - Consumes: `settings.model.fast` (Task 1), `#fastBtn` (Task 2).
-- Produces: `window.JavisModelBar.fastNote(provider, model)` -> `{supported: bool, note: "i18n.key"}` (hàm thuần, cũng xuất cho node qua `window.JavisFast` không cần; test đọc bằng vm). Hằng `FAST_NOTE` trong model-picker.js.
+- Produces: `window.UniMateModelBar.fastNote(provider, model)` -> `{supported: bool, note: "i18n.key"}` (hàm thuần, cũng xuất cho node qua `window.UniMateFast` không cần; test đọc bằng vm). Hằng `FAST_NOTE` trong model-picker.js.
 
 - [ ] **Step 1: Test hỏng** `tests/js/test_tia_set_fast.js`
 
@@ -859,7 +859,7 @@ Trong listener `click`, ngay sau dòng xử lý `#effBtn`:
     }
 ```
 
-Trong `window.JavisModelBar` thêm `fastNote: fastNote,`.
+Trong `window.UniMateModelBar` thêm `fastNote: fastNote,`.
 
 - [ ] **Step 4: i18n** (vi / en):
   - `fast.claude`: "Tính vào usage credits, giá gấp đôi, không trừ hạn mức gói." / "Billed to usage credits at twice the price, not to your plan limits."
@@ -883,7 +883,7 @@ git commit -m "Composer: Fast mode bolt saves settings.model.fast, tooltip per b
 
 **Files:**
 - Create: `dashboard/composer-plus.js`
-- Modify: `dashboard/app.js` (lộ `window.JavisAttach`, sau listener `fileInput` ~dòng 3550)
+- Modify: `dashboard/app.js` (lộ `window.UniMateAttach`, sau listener `fileInput` ~dòng 3550)
 - Modify: `dashboard/index.html` (`<script src="composer-plus.js?v=1"></script>` sau `model-picker.js`)
 - Modify: `dashboard/style.css` (luật `.cp-menu*`)
 - Modify: `dashboard/i18n/vi.json`, `en.json`
@@ -891,7 +891,7 @@ git commit -m "Composer: Fast mode bolt saves settings.model.fast, tooltip per b
 
 **Interfaces:**
 - Consumes: `#plusBtn`, `#plusMenu`, `#folderInput`, `#chatInput` (Task 2); `GET /files/search`, `GET /files/resolve` (Task 1); `GET /connect/catalog`, `GET /connect/health`, `GET /agents`, `GET /workflows`.
-- Produces: `window.JavisComposerMenu = { register(item), list(), open(), close(), isOpen() }`, item = `{ id, order, icon (svg string), label (i18n key), hint?: () => string, run?: (ctx) => void, submenu?: (ctx) => Promise<Array<{label, hint?, dot?: "ok"|"bad"|"unknown", run}>> }`. Node: `module.exports = { createRegistry, pickFolderFiles, runQueue, MAX_FOLDER_FILES }`. app.js: `window.JavisAttach = { pick(), upload(file) -> Promise, addBrainFile({name, path, size, kind}), note(text) }`.
+- Produces: `window.UniMateComposerMenu = { register(item), list(), open(), close(), isOpen() }`, item = `{ id, order, icon (svg string), label (i18n key), hint?: () => string, run?: (ctx) => void, submenu?: (ctx) => Promise<Array<{label, hint?, dot?: "ok"|"bad"|"unknown", run}>> }`. Node: `module.exports = { createRegistry, pickFolderFiles, runQueue, MAX_FOLDER_FILES }`. app.js: `window.UniMateAttach = { pick(), upload(file) -> Promise, addBrainFile({name, path, size, kind}), note(text) }`.
 
 - [ ] **Step 1: Test hỏng** `tests/js/test_menu_cong.js`
 
@@ -938,7 +938,7 @@ check("thư mục toàn file ẩn: không còn file nào", r.files.length === 0 
   check("Ctrl+U chặn mặc định của trình duyệt (xem mã nguồn)", /key === "u"[\s\S]{0,200}preventDefault/.test(src));
   check("mục lệnh mở menu / bằng sự kiện input", src.indexOf('new Event("input"') !== -1);
   check("gọi trợ lý chèn đúng token của menu /", src.indexOf('"/agent-" + ') !== -1 && src.indexOf('"/workflow-" + ') !== -1);
-  check("app.js lộ JavisAttach (pick, upload, addBrainFile, note)", /window\.JavisAttach = \{[\s\S]*pick[\s\S]*upload[\s\S]*addBrainFile[\s\S]*note/.test(app));
+  check("app.js lộ UniMateAttach (pick, upload, addBrainFile, note)", /window\.UniMateAttach = \{[\s\S]*pick[\s\S]*upload[\s\S]*addBrainFile[\s\S]*note/.test(app));
   check("composer-plus.js nạp sau model-picker.js", html.indexOf("model-picker.js") < html.indexOf("composer-plus.js"));
   check("không chữ Việt trong mã chạy của composer-plus.js",
     !/[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i.test(src.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "")));
@@ -953,7 +953,7 @@ check("thư mục toàn file ẩn: không còn file nào", r.files.length === 0 
 
 ```js
 // Menu "+" của khung gõ (composer-plus.js, 0.148.0) dùng chung đường tải lên và danh sách đính kèm.
-window.JavisAttach = {
+window.UniMateAttach = {
   pick: () => fileInput.click(),
   upload: (f) => uploadFile(f),
   addBrainFile: (it) => {
@@ -970,7 +970,7 @@ window.JavisAttach = {
 
 ```js
 /* composer-plus.js - menu "+" của khung gõ (0.148.0).
- * Một sổ đăng ký: tính năng mới chỉ cần JavisComposerMenu.register({...}), không sửa khung gõ.
+ * Một sổ đăng ký: tính năng mới chỉ cần UniMateComposerMenu.register({...}), không sửa khung gõ.
  * Phần thuần (sổ, lọc thư mục, hàng đợi) test bằng node.
  */
 (function () {
@@ -1019,7 +1019,7 @@ window.JavisAttach = {
   function tw(k, v) { return window.t ? window.t(k, v) : k; }
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function brain() { try { return (window.JavisSessions && window.JavisSessions.brain()) || "brain"; } catch (e) { return "brain"; } }
+  function brain() { try { return (window.UniMateSessions && window.UniMateSessions.brain()) || "brain"; } catch (e) { return "brain"; } }
   function getJson(url) { return fetch(url, { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
   function input() { return $("chatInput"); }
 
@@ -1102,7 +1102,7 @@ window.JavisAttach = {
   var badConn = 0;
 
   reg.register({ id: "attach", order: 10, icon: ICON.clip, label: "cp.attach", hint: function () { return /Mac/.test(navigator.platform) ? "Cmd+U" : "Ctrl+U"; },
-    run: function () { if (window.JavisAttach) window.JavisAttach.pick(); } });
+    run: function () { if (window.UniMateAttach) window.UniMateAttach.pick(); } });
   reg.register({ id: "folder", order: 20, icon: ICON.folder, label: "cp.folder", run: function () { var f = $("folderInput"); if (f) f.click(); } });
   reg.register({ id: "brain_file", order: 30, icon: ICON.file, label: "cp.brain_file", emptyKey: "cp.brain_empty",
     submenu: function () { return Promise.resolve(brainSearchRows("")); } });
@@ -1170,7 +1170,7 @@ window.JavisAttach = {
           el.addEventListener("click", function () {
             var it = items[+el.getAttribute("data-file")];
             getJson("/files/resolve?brain=" + encodeURIComponent(brain()) + "&path=" + encodeURIComponent(it.path)).then(function (r) {
-              if (r && r.ok && window.JavisAttach) window.JavisAttach.addBrainFile(r);
+              if (r && r.ok && window.UniMateAttach) window.UniMateAttach.addBrainFile(r);
               close(); var i2 = input(); if (i2) i2.focus();
             });
           });
@@ -1189,8 +1189,8 @@ window.JavisAttach = {
     if (r.over) notes.push(tw("cp.folder_over", { max: MAX_FOLDER_FILES }));
     if (!r.files.length) notes.push(tw("cp.folder_empty"));
     else notes.push(tw("cp.folder_flat"));
-    if (window.JavisAttach) window.JavisAttach.note(notes.join(" "));
-    if (r.files.length && window.JavisAttach) runQueue(r.files, function (f) { return window.JavisAttach.upload(f); }, UPLOAD_PARALLEL);
+    if (window.UniMateAttach) window.UniMateAttach.note(notes.join(" "));
+    if (r.files.length && window.UniMateAttach) runQueue(r.files, function (f) { return window.UniMateAttach.upload(f); }, UPLOAD_PARALLEL);
   }
 
   // ---- gắn sự kiện ----
@@ -1219,7 +1219,7 @@ window.JavisAttach = {
         var other = a && a !== input() && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
         if (other) return;
         e.preventDefault();
-        if (window.JavisAttach) window.JavisAttach.pick();
+        if (window.UniMateAttach) window.UniMateAttach.pick();
       }
     });
     // Đếm kết nối cần làm lại cho dòng "Kết nối" (đọc lúc mở trang, không quấy máy chủ).
@@ -1230,7 +1230,7 @@ window.JavisAttach = {
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 
-  window.JavisComposerMenu = { register: reg.register, list: reg.list, open: open, close: close, isOpen: isOpen };
+  window.UniMateComposerMenu = { register: reg.register, list: reg.list, open: open, close: close, isOpen: isOpen };
 })();
 ```
 
@@ -1324,7 +1324,7 @@ git commit -m "Composer: slash menu anchors to the card instead of the textarea"
 
 - [ ] **Step 1: Xem bằng mắt**: chạy sandbox server worktree (cổng 7788, state tạm; theo ghi nhớ "Sandbox soi UI") hoặc dựng trang xem thử dùng CSS/JS thật như đã làm ở #655. Kiểm: máy tính sáng và tối; điện thoại 375px (chip model lên đầu trang, hàng còn "+", chip mức, tia sét, mic, gửi); trang Trò chuyện, Coding (hàng chip ngữ cảnh vẫn hiện), Workspace; mở và đóng từng popover; kéo thanh trượt; bật tia sét; dán ảnh, kéo thả file; Ctrl+U; gọi giọng nói một lần.
 
-- [ ] **Step 2: Toàn bộ test**: `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/run.py --js` (tất cả xanh) và `/d/Project/Javis-OS/.venv/Scripts/python.exe tests/run.py --py` (chỉ còn 14 file đỏ sẵn của máy này; so danh sách với ghi nhớ "Test đỏ giả trên máy này").
+- [ ] **Step 2: Toàn bộ test**: `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/run.py --js` (tất cả xanh) và `/d/Project/UNI-MATE/.venv/Scripts/python.exe tests/run.py --py` (chỉ còn 14 file đỏ sẵn của máy này; so danh sách với ghi nhớ "Test đỏ giả trên máy này").
 
 - [ ] **Step 3: Phiên bản**: `git fetch origin`, đọc `git show origin/main:VERSION` và số các PR đang mở (`gh pr list --state open --json title`), lấy số kế tiếp chưa ai giữ (dự kiến 0.148.0). Ghi VERSION; thêm khối CHANGELOG.md (tiếng Việt, ngắn, cho màn hình điện thoại) và CHANGELOG.en.md (không chữ Việt):
 

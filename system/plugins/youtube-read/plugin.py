@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Plugin bundled: đọc nội dung video YouTube cho MỌI engine.
 
-Đăng ký tool `javis_youtube_read`, gọi youtube_read.read() (lấy phụ đề qua InnerTube, dự phòng
+Đăng ký tool `unimate_youtube_read`, gọi youtube_read.read() (lấy phụ đề qua InnerTube, dự phòng
 cào trang watch). Vì sao là plugin bundled chứ không phải để engine tự xoay:
   - Sáu engine API không có WebFetch, tức KHÔNG mở được URL nào. Không có tool này thì chúng
     chỉ còn cách báo "không đọc được" - đúng lời phàn nàn của người dùng.
@@ -12,7 +12,7 @@ min_mode=readonly: thuần đọc, không ghi file, không tiêu tiền, không 
 loop/agent ở chế độ chỉ-đọc vẫn tóm tắt được video.
 
 KHÔNG dùng cookie đăng nhập YouTube, có chủ ý: đổi lại là chịu thua video thật sự riêng tư,
-nhưng Javis không phải giữ phiên đăng nhập của người dùng trên máy chủ - thứ mà lộ ra là
+nhưng UNI MATE không phải giữ phiên đăng nhập của người dùng trên máy chủ - thứ mà lộ ra là
 mất luôn tài khoản. Ca hay gặp trên VPS ("nghi máy chủ là robot") thì đã có sáu kiểu trình
 phát và yt-dlp lo, không cần tới cookie.
 """
@@ -43,7 +43,7 @@ def register(ctx):
         return youtube_read.render(res)
 
     ctx.register_tool(
-        name="javis_youtube_read",
+        name="unimate_youtube_read",
         description=(
             "Đọc LỜI THOẠI (phụ đề) của một video YouTube từ link, để tóm tắt hoặc trích ý. "
             "GỌI TOOL NÀY mỗi khi người dùng gửi link YouTube (youtube.com, youtu.be, shorts) "

@@ -30,7 +30,7 @@ check("vẽ cột phải chọn tab THEO LOẠI đang xem (cả khi có mục l�
   (ws.match(/chonTabPhai\(tabTheoLoai\(\)\)/g) || []).length >= 2
   && /function tabTheoLoai\(\) \{ return \(S\.tabCua && S\.tabCua\[S\.loai\]\) \|\| S\.tabPhai; \}/.test(ws));
 check("chỉ tab của trợ lý mới ghi xuống localStorage",
-  /if \(S\.loai !== "workflow"\) \{ try \{ localStorage\.setItem\("javis_ws_rtab", S\.tabPhai\); \}/.test(ws));
+  /if \(S\.loai !== "workflow"\) \{ try \{ localStorage\.setItem\("unimate_ws_rtab", S\.tabPhai\); \}/.test(ws));
 
 // ---- 2. Hành vi: bóc chonTabPhai ra chạy thật ----
 const iBat = ws.indexOf("  function chonTabPhai(tab) {");
@@ -49,7 +49,7 @@ function dungCtx(loai, tabCua) {
     S: { loai: loai, el: el, tabPhai: "lichsu", tabCua: tabCua },
     TAB_PHAI: ["lichsu", "files", "cai"],
     localStorage: { getItem: (k) => (k in kho ? kho[k] : null), setItem(k, v) { kho[k] = String(v); } },
-    window: { JavisVaultPanel: { borrow() { return true; }, giveBack() {} } },
+    window: { UniMateVaultPanel: { borrow() { return true; }, giveBack() {} } },
     traCayThuMuc() {},
     // 0.142.0: rời tab Công việc thì gỡ tab đó (biến của workspace.js, ngoài đoạn được bóc).
     _congViec: null,
@@ -64,14 +64,14 @@ function dungCtx(loai, tabCua) {
   const c = dungCtx("workflow", { agent: "lichsu", workflow: "cai" });
   c.chonTabPhai("lichsu");
   check("quy trình: đổi sang Lịch sử thì S.tabCua.workflow nhớ", c.S.tabCua.workflow === "lichsu" && c.S.tabPhai === "lichsu");
-  check("quy trình: KHÔNG ghi javis_ws_rtab (F5 là về Cài đặt)", !("javis_ws_rtab" in c.kho));
+  check("quy trình: KHÔNG ghi unimate_ws_rtab (F5 là về Cài đặt)", !("unimate_ws_rtab" in c.kho));
   check("quy trình: ô nhớ của trợ lý không bị đè", c.S.tabCua.agent === "lichsu");
 }
 // Trợ lý: vẫn nhớ qua localStorage như trước.
 {
   const c = dungCtx("agent", { agent: "lichsu", workflow: "cai" });
   c.chonTabPhai("files");
-  check("trợ lý: đổi tab thì ghi javis_ws_rtab như cũ", c.kho["javis_ws_rtab"] === "files" && c.S.tabCua.agent === "files");
+  check("trợ lý: đổi tab thì ghi unimate_ws_rtab như cũ", c.kho["unimate_ws_rtab"] === "files" && c.S.tabCua.agent === "files");
   check("trợ lý: ô nhớ của quy trình vẫn là Cài đặt", c.S.tabCua.workflow === "cai");
 }
 // Không có S.tabCua (khung test cũ) thì vẫn chạy, không ném lỗi.

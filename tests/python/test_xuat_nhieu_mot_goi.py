@@ -4,10 +4,10 @@
 
 Yêu cầu chủ repo (16/08): trang Skills/Workflows chưa có "chọn tất cả" và "tải về những
 cái đã chọn" - muốn chia sẻ 10 skill là phải bấm Xuất 10 lần, nhận 10 file zip. Nay:
-tick từng thẻ hoặc Chọn tất cả → MỘT gói javis-bundle duy nhất, nhập lại một phát.
+tick từng thẻ hoặc Chọn tất cả → MỘT gói unimate-bundle duy nhất, nhập lại một phát.
 
 Điểm phải ghim: manifest v1 GIỮ NGUYÊN hình dạng (primary + items) nên gói chọn-nhiều
-mở được bằng cả bản Javis cũ - items vốn là danh sách từ đầu, phía nhập không cần biết
+mở được bằng cả bản UNI MATE cũ - items vốn là danh sách từ đầu, phía nhập không cần biết
 gì mới.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -61,9 +61,9 @@ with tempfile.TemporaryDirectory() as td:
 
     # ---- 1. Một slug (đường cũ) vẫn y nguyên ----
     data1, ten1 = share_bundle.build_bundle("workflow", "wf-1", **KW)
-    check("một slug: vẫn xuất được như cũ", bool(data1) and ten1.endswith(".javis.zip"))
+    check("một slug: vẫn xuất được như cũ", bool(data1) and ten1.endswith(".unimate.zip"))
     z1 = zipfile.ZipFile(io.BytesIO(data1))
-    check("một slug: tên file theo TÊN năng lực (không đổi hành vi cũ)", ten1 == "Wf-1.javis.zip")
+    check("một slug: tên file theo TÊN năng lực (không đổi hành vi cũ)", ten1 == "Wf-1.unimate.zip")
 
     # ---- 2. Nhiều slug → MỘT gói, đủ phụ thuộc ----
     data, ten = share_bundle.build_bundle("workflow", ["wf-1", "wf-2"], **KW)
@@ -74,10 +74,10 @@ with tempfile.TemporaryDirectory() as td:
               "agents/agent-2.md", "skills/skill-1/SKILL.md", "skills/skill-2/SKILL.md"):
         check(f"gói chứa {f}", f in co)
     check("skill lẻ KHÔNG bị vơ vào", "skills/skill-le/SKILL.md" not in co)
-    check("tên file nói rõ số lượng", ten == "javis-workflow-x2.javis.zip")
+    check("tên file nói rõ số lượng", ten == "unimate-workflow-x2.unimate.zip")
 
-    mf = json.loads(z.read("javis-bundle.json"))
-    check("manifest giữ hình dạng v1 (primary + items) - bản Javis cũ vẫn nhập được",
+    mf = json.loads(z.read("unimate-bundle.json"))
+    check("manifest giữ hình dạng v1 (primary + items) - bản UNI MATE cũ vẫn nhập được",
           mf.get("version") == 1 and isinstance(mf.get("primary"), dict)
           and isinstance(mf.get("items"), list))
     check("items đủ 6 mục (2 wf + 2 agent + 2 skill)", len(mf["items"]) == 6)

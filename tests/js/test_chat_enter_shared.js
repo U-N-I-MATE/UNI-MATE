@@ -1,4 +1,4 @@
-// Enter in the Team chat follows the main chat's rules (one helper, JavisActs.enterSends in chat-acts.js): an IME
+// Enter in the Team chat follows the main chat's rules (one helper, UniMateActs.enterSends in chat-acts.js): an IME
 // composition never sends, a touch screen keeps Enter as a new line (Send button sends), a computer sends on Enter and
 // Shift+Enter is a new line.
 //

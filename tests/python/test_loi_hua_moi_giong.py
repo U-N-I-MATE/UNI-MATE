@@ -4,7 +4,7 @@
 
 Tách ra từ `test_xung_ho.py` (chủ dự án gỡ test đó ngày 2026-09-14: xưng hô là chuyện của từng
 người dùng, không phải luật hệ thống). Phần này vẫn đáng giữ vì không liên quan tới luật xưng
-hô: `background_status.detect_promise` dán một dòng đính chính khi Javis hứa suông, và mẫu chỉ
+hô: `background_status.detect_promise` dán một dòng đính chính khi UNI MATE hứa suông, và mẫu chỉ
 bắt một giọng ("em ... báo lại") thì đổi giọng là cổng im lặng mất tác dụng, không có gì kêu lên.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401

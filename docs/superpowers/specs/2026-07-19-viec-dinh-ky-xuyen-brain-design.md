@@ -27,8 +27,8 @@ Thêm một tầng nữa: `_TG_SESS` bị `_TG_SESS.clear()` xoá mỗi lần bo
 
 ## Không gộp thành một kho (đã cân nhắc và loại)
 
-Lưu tách theo brain là CỐ Ý: loop là file `.md` trong `<vault>/Javis/loops/` (sửa trong
-Obsidian, commit theo git brain, `self_improve.py:11`); nhắc hẹn là `<vault>/Javis/reminders.json`.
+Lưu tách theo brain là CỐ Ý: loop là file `.md` trong `<vault>/UniMate/loops/` (sửa trong
+Obsidian, commit theo git brain, `self_improve.py:11`); nhắc hẹn là `<vault>/UniMate/reminders.json`.
 Spec 2026-07-17 đã chốt giữ vậy. Hướng đúng không phải nhét chung một kho, mà là làm **lớp
 hiển thị và lớp điều khiển xuyên brain**, còn lớp lưu giữ nguyên.
 
@@ -67,7 +67,7 @@ Nút "Chuyển sang brain..." trên mỗi thẻ, đổ danh sách brain (trừ b
 - **Loop**: `POST /loops/move` (self_improve router): `slug`, `from_brain`, `to_brain`.
   - Đọc loop nguồn (`get_loop`); không có → lỗi.
   - Đích đã có file cùng slug (`_loop_path(to_brain, slug).exists()`) → **lỗi, KHÔNG ghi đè**
-    (định danh theo tên file, `self_improve.py:319`; builtin `tu-cai-tien-javis` có ở mọi brain
+    (định danh theo tên file, `self_improve.py:319`; builtin `tu-cai-tien-unimate` có ở mọi brain
     nên đây là va chạm thật sẽ gặp).
   - Đang chạy đúng loop đó (`self._running`) → lỗi "đang chạy, thử lại sau".
   - `save_loop(to_brain, lp)` → `delete_loop(from_brain, slug)` → dời entry
@@ -87,8 +87,8 @@ vì cứng `fbrain()` (`console.js:847`). Không đổi backend `POST /loops` (�
 
 ### Mảnh 4 - Chat báo rõ brain khi tạo việc
 
-`javis_schedule` (system/plugins/javis-schedule/plugin.py) hiện báo "Đã tạo... tại
-Javis/loops/<slug>.md" nhưng KHÔNG nói brain (`plugin.py:249`). Sửa để câu xác nhận nêu tên
+`unimate_schedule` (system/plugins/unimate-schedule/plugin.py) hiện báo "Đã tạo... tại
+UniMate/loops/<slug>.md" nhưng KHÔNG nói brain (`plugin.py:249`). Sửa để câu xác nhận nêu tên
 brain: "Đã tạo việc 'Quét đơn' trong brain **Kim Khí Hà Lộc**, chạy mỗi 120 phút, đang tắt,
 vào tab Việc để bật."
 
@@ -128,7 +128,7 @@ Kết quả: `/brain` sang brain nào thì dính đó tới khi đổi cái khá
 1. **Nút thao tác nhắm nhầm brain sau khi gộp.** Điểm dễ sai nhất: mọi nút hiện gửi `fbrain()`.
    Gộp xong PHẢI đổi sang brain của chính item. Cần test: bật/xoá item ở brain B khi sidebar
    đang brain A phải tác động brain B.
-2. **Di chuyển loop trùng slug ở đích** (builtin `tu-cai-tien-javis` có ở mọi brain) - phải
+2. **Di chuyển loop trùng slug ở đích** (builtin `tu-cai-tien-unimate` có ở mọi brain) - phải
    fail rõ, KHÔNG ghi đè. Cần test va chạm.
 3. **Map bền lưu tên brain** - brain xoá/đổi tên giữa chừng phải fail-safe về mặc định, không
    crash `_tg_brain`.
@@ -142,5 +142,5 @@ Kết quả: `/brain` sang brain nào thì dính đó tới khi đổi cái khá
 - `test` di chuyển nhắc hẹn: record sang đúng file đích, giữ id.
 - `test` nhớ bền tg brain: set -> đọc lại sau khi "restart" (dựng lại state từ file) trả đúng
   brain; brain xoá -> về mặc định.
-- `test` javis_schedule: câu trả về create có tên brain.
+- `test` unimate_schedule: câu trả về create có tên brain.
 - `test` `/viec/all`: gắn đúng brain_name/brain_path cho từng item (nếu dựng được app trong test).

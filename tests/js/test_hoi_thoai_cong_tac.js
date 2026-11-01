@@ -33,7 +33,7 @@ const win = { t: (k, v) => k + (v ? "#" + Object.keys(v).map((x) => v[x]).join("
 const ctx = { window: win, console, String, Object, Array, Number, JSON };
 vm.createContext(ctx);
 vm.runInContext(V5SRC, ctx);
-const V = win.JavisInboxV5;
+const V = win.UniMateInboxV5;
 
 // ---- 1. the bar's controls ----
 const bar = (c) => V.modeBarHtml(c);
@@ -88,19 +88,19 @@ check("lý do lấy nhãn từ bộ phán xử (codeLabel), kèm điểm/ngưỡ
   /CODE_LB\[code\] \? tt\(CODE_LB\[code\]\) : String\(code \|\| ""\)/.test(RP));
 check("the silence line offers 'Ask the A.I. to answer this' only when it can (allowed, auto mode, bot running, customer last)",
   /var canAsk = c\.ai_allowed && modeOf\(c\) === "ai" && _running && last && last\.sender_type === "customer";/.test(CV) && /ib-silent-ask/.test(CV));
-check("nút 'Vì sao' mở đúng bảng Bộ phán xử của bot đó", /JavisReplyPolicy\.openPanel\(\{ id: c\.bot_id, name: c\.bot_name \|\| "" \}\)/.test(CV));
+check("nút 'Vì sao' mở đúng bảng Bộ phán xử của bot đó", /UniMateReplyPolicy\.openPanel\(\{ id: c\.bot_id, name: c\.bot_name \|\| "" \}\)/.test(CV));
 check("nhịp tự làm mới vẽ lại phần đầu khung khi who, mode, draft hay bot_silence đổi (chữ ký metaSig)",
   /function metaSig\(\)/.test(CV) && /c\.who, c\.who_code, c\.ai_allowed, c\.ai_pending, c\.draft \|\| null/.test(CV) &&
   /_silence, _running, u\.sender_type/.test(CV) && /sig !== _vetMeta/.test(CV));
 check("lý do do server trả được thoát HTML trước khi vẽ", /esc\(window\.t\("ht\.silent", \{ why: lyDo \+ diem \}\)\)/.test(CV));
 
-const rp = { window: { t: (k) => k, JavisI18n: { locale: () => "vi-VN" } }, document: { createElement: () => ({}) },
+const rp = { window: { t: (k) => k, UniMateI18n: { locale: () => "vi-VN" } }, document: { createElement: () => ({}) },
   fetch: () => Promise.reject(new Error("no net")), console, Date };
 vm.createContext(rp);
 vm.runInContext(RP, rp);
 check("codeLabel: mã biết thì ra khoá nhãn, mã lạ thì ra nguyên mã, rỗng thì rỗng",
-  rp.window.JavisReplyPolicy.codeLabel("below_threshold") === "rp.code_below_threshold" &&
-  rp.window.JavisReplyPolicy.codeLabel("ma_la_moi") === "ma_la_moi" && rp.window.JavisReplyPolicy.codeLabel("") === "");
+  rp.window.UniMateReplyPolicy.codeLabel("below_threshold") === "rp.code_below_threshold" &&
+  rp.window.UniMateReplyPolicy.codeLabel("ma_la_moi") === "ma_la_moi" && rp.window.UniMateReplyPolicy.codeLabel("") === "");
 
 // ---- 3. CSS and dictionary ----
 check("CSS: the bar takes the colour of who handles the chat; each pressed mode has its own colour",

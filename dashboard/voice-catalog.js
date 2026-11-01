@@ -1,4 +1,4 @@
-// voice-catalog.js - nam hay nữ của từng giọng Javis có thể nói (0.298.0).
+// voice-catalog.js - nam hay nữ của từng giọng UNI MATE có thể nói (0.298.0).
 //
 // Chủ repo báo 23/10/2026: "cài đặt là nữ nhưng khi nói là giọng nói nam, lưu thế nào cũng không cài được".
 // Hai nguyên nhân, cả hai đều ở cách thẻ Giọng nói trình bày:
@@ -72,6 +72,6 @@
 
   var api = { gioiCua: gioiCua, tenDep: tenDep, nhomTheoGioi: nhomTheoGioi, lechGioi: lechGioi,
               giongCungGioi: giongCungGioi };
-  if (typeof window !== "undefined") window.JavisVoiceCatalog = api;
+  if (typeof window !== "undefined") window.UniMateVoiceCatalog = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

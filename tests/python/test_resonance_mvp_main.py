@@ -11,8 +11,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m2m-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m2m-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import main  # noqa: E402
 import luot_dang_chay  # noqa: E402
@@ -38,15 +38,15 @@ SID, MID = "sess_m2", 7
 check("tắt: _resonance_after_turn không làm gì", main._resonance_after_turn(SID, BRAIN, MID, time.time(), None) is None)
 check("tắt: không tạo kho resonance.sqlite3", not (Path(_STATE) / "resonance.sqlite3").exists())
 p_off = main.build_system_prompt(BRAIN)
-check("tắt: system prompt không nhắc javis_goal", "javis_goal" not in p_off)
+check("tắt: system prompt không nhắc unimate_goal", "unimate_goal" not in p_off)
 
 # ───────────── bật (A1: theo agent, trong lượt của agent đó) ─────────────
 import _resonance_agent as RA  # noqa: E402
 RA.preapprove()  # A4: chủ dự án cho phép phạm vi ngay sau khi lập (D1); xem _resonance_agent.preapprove
-(Path(BRAIN) / "Javis").mkdir(parents=True, exist_ok=True)
-(Path(BRAIN) / "Javis" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
-check("công tắc brain cũ bật mà chưa có agent nào: prompt vẫn không nhắc javis_goal (không còn cấp quyền)",
-      "javis_goal" not in main.build_system_prompt(BRAIN))
+(Path(BRAIN) / "UNI MATE").mkdir(parents=True, exist_ok=True)
+(Path(BRAIN) / "UNI MATE" / "resonance.json").write_text('{"enabled": true}', encoding="utf-8")
+check("công tắc brain cũ bật mà chưa có agent nào: prompt vẫn không nhắc unimate_goal (không còn cấp quyền)",
+      "unimate_goal" not in main.build_system_prompt(BRAIN))
 AG = RA.enable(main._resonance_store(), BRAIN)
 
 
@@ -57,17 +57,17 @@ def in_turn(mid, text, fn):
 
 
 p_on = in_turn(MID, USER, lambda: main.build_system_prompt(BRAIN))
-check("bật: system prompt có dòng gợi ý javis_goal", "javis_goal op=create" in p_on)
+check("bật: system prompt có dòng gợi ý unimate_goal", "unimate_goal op=create" in p_on)
 # Trần nâng từ 450 lên 650 khi dòng gợi ý thêm ranh giới bốn loại việc và đường tìm tool theo engine.
 # 0.251.0: the "Plugins đang chạy" line lists the first 12 plugins by name, so turning the goal plugin on
 # pushes a different name off the end and the length swings with whatever plugin happens to sort last
-# (adding javis-login took it to 655). That line is not the hint this check bounds, so it is left out.
+# (adding unimate-login took it to 655). That line is not the hint this check bounds, so it is left out.
 def _no_plugin_line(p):
     return "\n".join(l for l in p.splitlines() if not l.startswith("Plugins đang chạy:"))
 check("bật: dòng gợi ý ngắn (dưới 650 ký tự)",
       0 < len(_no_plugin_line(p_on)) - len(_no_plugin_line(p_off)) < 650)
 check("ngoài lượt của agent: prompt không có dòng gợi ý lập mục tiêu",
-      "javis_goal op=create" not in main.build_system_prompt(BRAIN))
+      "unimate_goal op=create" not in main.build_system_prompt(BRAIN))
 
 t0 = time.time() - 1
 d = in_turn(MID, USER, lambda: main._resonance_after_turn(SID, BRAIN, MID, t0, None))
@@ -77,9 +77,9 @@ check("không có id tin nhắn thì không phân nhánh",
 check("lượt không thuộc agent (chat thường): không phân nhánh",
       main._resonance_after_turn(SID, BRAIN, MID, t0, None) is None)
 
-# Bộ não gọi javis_goal trong lượt (như engine sẽ gọi qua hub), rồi main phân nhánh sau lượt
+# Bộ não gọi unimate_goal trong lượt (như engine sẽ gọi qua hub), rồi main phân nhánh sau lượt
 tools, route = plugins_host.plugin_tools("full", BRAIN, scope_vault=False)
-out = in_turn(MID, USER, lambda: asyncio.run(route["javis_goal"]["call"]({
+out = in_turn(MID, USER, lambda: asyncio.run(route["unimate_goal"]["call"]({
     "op": "create", "understanding": "Bản tổng hợp ghi chú mới trong Inbox",
     "criteria": [{"description": "Bản tổng hợp có mặt", "evaluator": "artifact_contract",
                   "params": {"path": "Inbox/tong-hop.md"}}],
@@ -88,7 +88,7 @@ out = in_turn(MID, USER, lambda: asyncio.run(route["javis_goal"]["call"]({
 check("tool trong lượt: lập được mục tiêu", "Đã lập mục tiêu" in out)
 d = in_turn(MID, USER, lambda: main._resonance_after_turn(SID, BRAIN, MID, t0, None))
 check("sau lượt có lập mục tiêu: create_goal", d is not None and d.kind == "create_goal" and d.goal_id)
-_wk = [w for w in main._resonance_store().wakes(RS.Principal("agent", "javis", main._brain_key(BRAIN)), d.goal_id)
+_wk = [w for w in main._resonance_store().wakes(RS.Principal("agent", "unimate", main._brain_key(BRAIN)), d.goal_id)
        if w["kind"] == "work"]
 check("bàn giao cuối lượt: nhả lịch việc nền đã giữ khi lập trong lượt chat (đánh giá ngay)",
       bool(_wk) and _wk[0]["due_at"] <= time.time() + 1)
@@ -115,7 +115,7 @@ finally:
     main._resonance_store = _old
 
 # ───────────── M3: cổng bằng chứng thật và nhịp scheduler ─────────────
-_g_ev = R.GoalRecord(id="g_evtest", brain_id=BRAIN, owner="javis", revision=1, output_root=BRAIN, session_id=SID)
+_g_ev = R.GoalRecord(id="g_evtest", brain_id=BRAIN, owner="unimate", revision=1, output_root=BRAIN, session_id=SID)
 try:
     _eid = main._RESONANCE_EVIDENCE.put(_g_ev, "act_evtest01", "Nội dung bằng chứng thử", {"kind": "test"})
     _back = main._RESONANCE_EVIDENCE.valid(_eid)
@@ -135,20 +135,20 @@ check("M3 _resonance_deps: brain không tồn tại thì không dựng", main._r
 
 # Một mục tiêu đi trọn vòng trên host: tool tạo -> tick nền làm -> sản phẩm vào brain -> báo đúng khung chat.
 _USER3 = "Viết giúp anh ghi chú Inbox/tom-tat.md tóm tắt ba việc: gọi thợ máy lạnh, nộp báo cáo quý, mua quà cho mẹ."
-_out3 = in_turn(301, _USER3, lambda: asyncio.run(route["javis_goal"]["call"]({
+_out3 = in_turn(301, _USER3, lambda: asyncio.run(route["unimate_goal"]["call"]({
     "op": "create", "understanding": "Ghi chú tóm tắt ba việc trong Inbox",
     "criteria": [{"description": "Ghi chú có đủ ba việc", "evaluator": "artifact_contract",
                   "params": {"path": "Inbox/tom-tat.md", "must_contain": ["máy lạnh", "báo cáo quý", "quà"]}}],
     "relevant_quote": "Viết giúp anh ghi chú Inbox/tom-tat.md",
     "horizon": {"kind": "review", "at_iso": "2027-01-01T09:00:00+07:00"}, "mode": "achieve"})))
 check("M3 lời dặn của tool: nói rõ làm tiếp ở nền và kết quả tự về khung chat", "làm tiếp ở NỀN" in _out3)
-_g3 = main._resonance_store().find_by_key(RS.Principal("agent", "javis", main._brain_key(BRAIN)),
+_g3 = main._resonance_store().find_by_key(RS.Principal("agent", "unimate", main._brain_key(BRAIN)),
                                          R.message_ref(SID, 301))
 # Như run_turn: hết lượt thì bàn giao (lịch việc nền được giữ từ lúc tool lập mục tiêu tới đây).
 _d3 = in_turn(301, _USER3, lambda: main._resonance_after_turn(SID, BRAIN, 301, time.time() - 1, None))
 check("bàn giao lượt 301: không có Write nên không tiếp nhận, mục tiêu vẫn chờ việc nền làm",
       _d3 is not None and _d3.kind == "create_goal"
-      and not [e for e in main._resonance_store().events(RS.Principal("agent", "javis", main._brain_key(BRAIN)),
+      and not [e for e in main._resonance_store().events(RS.Principal("agent", "unimate", main._brain_key(BRAIN)),
                                                          _g3.id) if e["kind"] == "artifact_adopted"])
 
 # Bộ não Write bản đạt ngay trong lượt rồi lập mục tiêu (pilot lần 3): sự kiện Write đi qua đúng helper các nhánh
@@ -165,13 +165,13 @@ main._resonance_note_write(SID, 302, BRAIN, {"type": "tool_result", "tool_use_id
                                              "content": "File created"})
 (Path(BRAIN) / "Inbox").mkdir(parents=True, exist_ok=True)
 (Path(BRAIN) / "Inbox" / "ban-chat.md").write_text(_TXT4, encoding="utf-8")
-asyncio.run(route["javis_goal"]["call"]({
+asyncio.run(route["unimate_goal"]["call"]({
     "op": "create", "understanding": "Ghi chú hai việc trong Inbox",
     "criteria": [{"description": "Ghi chú có đủ hai việc", "evaluator": "artifact_contract",
                   "params": {"path": "Inbox/ban-chat.md", "must_contain": ["máy lạnh", "báo cáo quý"]}}],
     "relevant_quote": "Viết giúp anh ghi chú Inbox/ban-chat.md",
     "horizon": {"kind": "review", "at_iso": "2027-01-01T09:00:00+07:00"}, "mode": "achieve"}))
-_P4 = RS.Principal("agent", "javis", main._brain_key(BRAIN))
+_P4 = RS.Principal("agent", "unimate", main._brain_key(BRAIN))
 _g4 = main._resonance_store().find_by_key(_P4, R.message_ref(SID, 302))
 main._resonance_after_turn(SID, BRAIN, 302, time.time() - 1, None)
 _t4.__exit__(None, None, None)
@@ -206,8 +206,8 @@ try:
     asyncio.run(main._resonance_tick())
 finally:
     main._resonance_engine, main._notify_owner = _old_eng, _old_notify
-_g3b = main._resonance_store().get(RS.Principal("agent", "javis", main._brain_key(BRAIN)), _g3.id)
-_P3 = RS.Principal("agent", "javis", main._brain_key(BRAIN))
+_g3b = main._resonance_store().get(RS.Principal("agent", "unimate", main._brain_key(BRAIN)), _g3.id)
+_P3 = RS.Principal("agent", "unimate", main._brain_key(BRAIN))
 check("M3 trọn vòng: mục tiêu này được làm đúng một lượt engine (tick cũng làm mục tiêu khác đang tới hạn)",
       len([x for x in main._resonance_store().actions(_P3, _g3.id) if x["kind"] == "work"]) == 1)
 check("M3 trọn vòng: sản phẩm nằm đúng chỗ trong brain", (Path(BRAIN) / "Inbox" / "tom-tat.md").is_file())

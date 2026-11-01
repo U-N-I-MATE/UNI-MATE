@@ -1,4 +1,4 @@
-"""After a restart or an update, Javis pings every connection once and tells the owner what is broken.
+"""After a restart or an update, UNI MATE pings every connection once and tells the owner what is broken.
 
     python tests/run.py connect_startup_smoke      (no network; spawns small Python servers)
 
@@ -18,8 +18,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-smoke-"))
-os.environ["JAVIS_STATE_DIR"] = str(_TMP / "state")
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-smoke-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
 os.environ["HOME"] = str(_TMP / "home")
 for _d in ("state", "home"):
     (_TMP / _d).mkdir(parents=True, exist_ok=True)

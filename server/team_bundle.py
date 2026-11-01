@@ -1,13 +1,13 @@
 """Share a whole team as one file, and add it in another brain (0.200.0).
 
 Idea borrowed from OpenMausBot's "Share team": the unit people want to pass on is the TEAM, not one
-partner at a time. A team file is an ordinary `javis-bundle` zip (share_bundle.py) holding the
-members' partner files and their skills, plus one more entry, `javis-team.json`:
+partner at a time. A team file is an ordinary `unimate-bundle` zip (share_bundle.py) holding the
+members' partner files and their skills, plus one more entry, `unimate-team.json`:
 
-    {"format": "javis-team", "version": 1, "name", "description", "tags", "leader", "members": [slugs],
+    {"format": "unimate-team", "version": 1, "name", "description", "tags", "leader", "members": [slugs],
      "instructions": [pinned team messages, as text]}
 
-Older Javis versions open the same file as a plain bundle (they ignore the extra entry and import
+Older UNI MATE versions open the same file as a plain bundle (they ignore the extra entry and import
 the partners), so a team file never breaks an old install.
 
 What NEVER travels: chat history, keys and passwords, model choices, Auto switches, memory. Text that
@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import fastyaml
 
-TEAM_ENTRY = "javis-team.json"
+TEAM_ENTRY = "unimate-team.json"
 MAX_INSTRUCTIONS = 20
 INSTRUCTION_CHARS = 1500
 # Partner frontmatter keys that describe the sender's machine or switch work on: never shared.
@@ -76,7 +76,7 @@ def _dump(meta: dict) -> str:
 
 def team_manifest(team: dict, members: List[str], leader: str, instructions: List[str]) -> dict:
     return {
-        "format": "javis-team", "version": 1,
+        "format": "unimate-team", "version": 1,
         "name": scrub(str(team.get("name") or ""))[:120],
         "description": scrub(str(team.get("description") or ""))[:2000],
         "tags": [str(t)[:40] for t in (team.get("tags") or [])][:10],
@@ -113,7 +113,7 @@ def read_team_entry(data: bytes) -> Optional[dict]:
         m = json.loads(raw.decode("utf-8"))
     except ValueError:
         return None
-    if not isinstance(m, dict) or m.get("format") != "javis-team" or not isinstance(m.get("members"), list):
+    if not isinstance(m, dict) or m.get("format") != "unimate-team" or not isinstance(m.get("members"), list):
         return None
     m["members"] = [str(s) for s in m["members"] if str(s or "").strip()][:30]
     m["instructions"] = [str(t)[:INSTRUCTION_CHARS] for t in (m.get("instructions") or [])][:MAX_INSTRUCTIONS]

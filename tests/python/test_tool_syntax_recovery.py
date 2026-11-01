@@ -6,13 +6,13 @@ Lỗi thật chủ repo gặp với Groq llama-3.3-70b-versatile:
 
     Groq 400: {"error":{"message":"Failed to call a function. Please adjust your prompt.
     See 'failed_generation' for more details.","code":"tool_use_failed",
-    "failed_generation":"<function=javis_search_tools({\\"query\\": \\"nao dang duoc dung\\"}\\"</function>"}}
+    "failed_generation":"<function=unimate_search_tools({\\"query\\": \\"nao dang duoc dung\\"}\\"</function>"}}
 
 Model tự phát cú pháp riêng thay vì JSON tool_calls chuẩn. Người dùng thấy một khối JSON lỗi
 rồi "(không có nội dung trả về)" - tệ hơn hẳn một câu trả lời thiếu công cụ.
 
 LIÊN ĐỚI: chính việc đưa builtin vào tầng lazy (0.10.0) làm lỗi này hay xảy ra hơn. Trước đó
-`javis_search_tools` chỉ xuất hiện khi có trên 40 tool MCP; giờ nó luôn có mặt, nên model yếu
+`unimate_search_tools` chỉ xuất hiện khi có trên 40 tool MCP; giờ nó luôn có mặt, nên model yếu
 gặp nó mọi lượt.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -20,7 +20,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-toolsyn-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-toolsyn-"))
 
 import engine  # noqa: E402
 import limit_learner  # noqa: E402
@@ -37,7 +37,7 @@ def check(name, cond):
 # ---- 1. Nhận ra ĐÚNG lỗi này, nguyên văn từ chủ repo ----
 _real = ('{"error":{"message":"Failed to call a function. Please adjust your prompt. '
          'See \'failed_generation\' for more details.","type":"invalid_request_error",'
-         '"code":"tool_use_failed","failed_generation":"<function=javis_search_tools('
+         '"code":"tool_use_failed","failed_generation":"<function=unimate_search_tools('
          '{\\"query\\": \\"nao dang duoc dung\\"}\\"</function>"}}')
 check("nhận ra lỗi model bịa cú pháp gọi tool",
       engine._is_tool_syntax_failure(_real) is True)
@@ -71,7 +71,7 @@ check("nấc 1: thử lại y nguyên (sinh chữ ngẫu nhiên, lần sau thư�
       "if _is_tool_syntax_failure(body_text) and tool_fumbles < 2:" in _eng)
 check("nấc 2: BỎ TOOL để cứu lấy câu trả lời", "tools = []" in _eng)
 check("nấc 2: nói cho người dùng biết vì sao không dùng công cụ",
-      "javis_no_tools" in _eng)
+      "unimate_no_tools" in _eng)
 check("có trần, không thử lại vô hạn", "tool_fumbles < 2" in _eng)
 
 # Hai bẫy khi bỏ tool giữa chừng, cả hai đều làm request sau 400 ngay:

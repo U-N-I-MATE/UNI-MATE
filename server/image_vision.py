@@ -28,7 +28,7 @@ import image_gen
 import localefmt
 import openai_oauth
 
-_VISION_ENV = os.getenv("JAVIS_VISION_MODEL", "").strip()
+_VISION_ENV = os.getenv("UNIMATE_VISION_MODEL", "").strip()
 VISION_MODEL = _VISION_ENV or image_gen.HOST_MODEL
 MAX_IMAGES = image_gen.MAX_REF_IMAGES
 MAX_OUTPUT_CHARS = 12_000

@@ -62,7 +62,7 @@ global.setTimeout = (f) => f();
 
 const root = new El("transcript");
 function makeMsg(withQuote) {
-  const msg = new El("msg msg-javis", root);
+  const msg = new El("msg msg-unimate", root);
   const bubble = new El("bubble", msg);
   const text = new El("p", bubble);
   if (withQuote) new El("msg-act", msg).dataAct = "quote";
@@ -70,7 +70,7 @@ function makeMsg(withQuote) {
 }
 const quoted = [];
 SW.bind(root, {
-  selector: ".msg-javis, .msg-user", bubble: ".bubble",
+  selector: ".msg-unimate, .msg-user", bubble: ".bubble",
   can: (el) => !!el.querySelector(".msg-act"),
   run: (el) => quoted.push(el),
 });
@@ -124,15 +124,15 @@ check("chạm bắt đầu trên nút: không vuốt", quoted.length === 1);
 
 // ---- 3. Gắn vào khung chat chính ----
 const cr = fs.readFileSync(path.join(D, "chat-reactions.js"), "utf8");
-check("khung chat chính gắn vuốt cho tin Javis lẫn tin người dùng",
-  /SW\.bind\(root, \{\s*selector: "\.msg-javis, \.msg-user"/.test(cr));
+check("khung chat chính gắn vuốt cho tin UNI MATE lẫn tin người dùng",
+  /SW\.bind\(root, \{\s*selector: "\.msg-unimate, \.msg-user"/.test(cr));
 check("vuốt bấm chính nút Trích dẫn của tin (cùng đường với nút)", cr.includes("el.querySelector('.msg-act[data-act=\"quote\"]'); if (b) b.click();"));
 const html = fs.readFileSync(path.join(D, "index.html"), "utf8");
 check("index.html nạp msg-swipe.js trước chat-reactions.js",
   html.indexOf("msg-swipe.js?v=") > 0 && html.indexOf("/static/msg-swipe.js") < html.indexOf("/static/chat-reactions.js"));
 const css = fs.readFileSync(path.join(D, "style.css"), "utf8");
 check("máy chạm: tin chỉ để trình duyệt cuộn dọc, chiều ngang cho cú vuốt",
-  css.includes("@media (hover: none) { .msg-javis, .msg-user { touch-action: pan-y; } }"));
+  css.includes("@media (hover: none) { .msg-unimate, .msg-user { touch-action: pan-y; } }"));
 check("không em dash trong file mới", !/[\u2013\u2014]/.test(fs.readFileSync(path.join(D, "msg-swipe.js"), "utf8")));
 
 if (fails.length) { console.log("\nFAIL " + fails.length + ": " + fails.join(", ")); process.exit(1); }

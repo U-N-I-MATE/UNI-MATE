@@ -1,4 +1,4 @@
-"""`javis_terminal`: terminal thật cho mức Toàn quyền của phiên Coding (0.256.0).
+"""`unimate_terminal`: terminal thật cho mức Toàn quyền của phiên Coding (0.256.0).
 
     python tests/run.py coding_terminal
 
@@ -17,10 +17,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-terminal-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-terminal-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 os.environ["OPENAI_API_KEY"] = "sk-khoa-bi-mat-khong-duoc-lo-1234567890"
-os.environ["JAVIS_TEST_SECRET"] = "KHOA-BI-MAT-KHONG-DUOC-LO"
+os.environ["UNIMATE_TEST_SECRET"] = "KHOA-BI-MAT-KHONG-DUOC-LO"
 
 import coding_terminal as ct  # noqa: E402
 
@@ -68,7 +68,7 @@ check("làm sạch: bỏ mã màu và che bí mật",
 check("làm sạch: dòng thanh tiến trình chỉ giữ trạng thái cuối", ct.lam_sach("10%\r50%\r100%\nxong") == "100%\nxong")
 
 env = ct.env_sach()
-check("env không có API key của máy chủ", "OPENAI_API_KEY" not in env and "JAVIS_TEST_SECRET" not in env)
+check("env không có API key của máy chủ", "OPENAI_API_KEY" not in env and "UNIMATE_TEST_SECRET" not in env)
 check("env có PATH và không trình phân trang", env.get("PATH") and env.get("PAGER") == "cat")
 
 # ---- 2. Chạy thật: cần bash ----

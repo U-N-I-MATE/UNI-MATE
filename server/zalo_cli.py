@@ -1,11 +1,11 @@
-"""Chạy lại CHÍNH CLI Zalo (`javis-zalo`) cho các plugin Zalo (`zalo-image`, `zalo-group`).
+"""Chạy lại CHÍNH CLI Zalo (`unimate-zalo`) cho các plugin Zalo (`zalo-image`, `zalo-group`).
 
 Vì sao có file này. Tool gửi tin của MCP chỉ nhận CHỮ, trong khi chính CLI đó đã có lệnh gửi ảnh/file, tag người
-(`msg send --mention`), ghi chú nhóm (`group note-create`), nhắc hẹn (`reminder create`) và poll (`poll create`). Javis gọi lại
+(`msg send --mention`), ghi chú nhóm (`group note-create`), nhắc hẹn (`reminder create`) và poll (`poll create`). UNI MATE gọi lại
 đúng CLI đó bằng lệnh con nó đã có, với `HOME` trỏ vào thư mục phiên của kết nối Zalo đang đăng nhập (xem `zalo_login.py`): không
 viết lại giao thức, không bắt quét QR lần hai.
 
-Từ 0.83.0 CLI là bản riêng của Javis (github.com/blogminhquy/javis-zalo, thay cho zalo-agent-cli 1.6.2 của tác giả ngoài), cài
+Từ 0.83.0 CLI là bản riêng của UNI MATE (github.com/U-N-I-MATE/unimate-zalo, thay cho zalo-agent-cli 1.6.2 của tác giả ngoài), cài
 bằng tarball của tag phát hành. Chỉ zca-js bên dưới đi theo bản chính thức trên npm. Muốn lên bản CLI mới: ra tag mới ở repo đó rồi
 đổi CẢ BA chỗ ghim (catalog, `CLI_PACKAGE` ở đây, `_CLI_PACKAGE` ở zalo_login.py).
 
@@ -16,12 +16,12 @@ Bẫy cần biết (đều đã dính hoặc suýt dính):
   - Tham số bắt đầu bằng "-" ("- Họp lúc 9h") bị Commander coi là cờ. Dùng `--` chặn trước các tham số vị trí.
   - CLI KHÔNG thoát mã khác 0 khi Zalo từ chối (xem `interpret`).
   - GỬI FILE (xlsx, pdf, docx, zip, mp4...) KHÔNG đi đường CLI. Zalo chỉ báo "đã tải lên xong" cho file không phải ảnh qua
-    kết nối thời gian thực (sự kiện `file_done`), mà lệnh CLI chạy một lần không mở kết nối đó, nên trước javis-zalo 1.4.0 nó
+    kết nối thời gian thực (sự kiện `file_done`), mà lệnh CLI chạy một lần không mở kết nối đó, nên trước unimate-zalo 1.4.0 nó
     chờ mãi tới khi bị giết ở 120 giây (14/10/2026, gửi file Excel cho nhân sự treo hai lần). Mở kết nối riêng trong CLI cũng
     không được: Zalo giữ một kết nối Web mỗi tài khoản, và MCP đang trực Hộp thư bị đá thì tự thoát. Nên file đi qua tool MCP
     `zalo_send_file` của chính tiến trình MCP đang giữ kết nối, xem `send_files`. Ảnh vẫn đi CLI như cũ.
   - Tốc độ: mỗi lần `npx -y <gói>` mất khoảng 3 giây chỉ để khởi động (đo trên Windows), cộng thêm việc HOME của
-    phiên Zalo là thư mục riêng nên trên Linux npx còn có thể tải lại gói vào cache của HOME đó. Nên Javis cài ngầm MỘT bản ghim vào
+    phiên Zalo là thư mục riêng nên trên Linux npx còn có thể tải lại gói vào cache của HOME đó. Nên UNI MATE cài ngầm MỘT bản ghim vào
     thư mục của mình (`install_dir`) và chạy thẳng `node index.js`; chưa cài xong thì vẫn chạy bằng npx như cũ.
 """
 from __future__ import annotations
@@ -40,14 +40,14 @@ from typing import Any, List, Optional, Tuple
 import winproc
 
 CONNECTOR_ID = "zalo"
-CLI_PACKAGE = "https://codeload.github.com/blogminhquy/javis-zalo/tar.gz/refs/tags/v1.9.0"  # ghim đúng bản mà connector Zalo đang chạy
-CLI_NAME = "javis-zalo"                   # tên gói trong package.json của bản ghim: thư mục trong node_modules
+CLI_PACKAGE = "https://codeload.github.com/U-N-I-MATE/unimate-zalo/tar.gz/refs/tags/v1.9.0"  # ghim đúng bản mà connector Zalo đang chạy
+CLI_NAME = "unimate-zalo"                   # tên gói trong package.json của bản ghim: thư mục trong node_modules
 DEFAULT_TIMEOUT = 120                     # tải file lên Zalo có thể lâu, nhưng không lâu vô hạn
 TIMEOUT_MARK = "giây chưa xong"          # đuôi câu báo hết giờ; `is_timeout` nhận ra câu đó
 AUTO_INSTALL = True                       # test tắt cờ này để không cài thật
 INSTALL_TIMEOUT = 300                     # giây cho một lần `npm install`
 INSTALL_RETRY = 1800                      # cài hỏng thì chờ chừng này giây mới thử lại (không cài lại ở mọi câu trả lời)
-_INSTALL_MARK = ".javis-installed"        # ghi SAU KHI cài xong; cài dở (tắt máy giữa chừng) thì không có dấu này nên không dùng
+_INSTALL_MARK = ".unimate-installed"        # ghi SAU KHI cài xong; cài dở (tắt máy giữa chừng) thì không có dấu này nên không dùng
 _install_state: dict = {"task": None, "failed_at": 0.0}
 _OLD_INSTALL_DIRS = ("zalo-agent-cli",)  # thư mục cài của gói cũ trong `tools/`, dọn sau khi cài xong bản mới
 
@@ -97,7 +97,7 @@ def pick_connection(conns: List[dict], connection_id: str = "") -> Tuple[Optiona
 def check() -> Optional[str]:
     """Lý do CHƯA dùng được (người đọc hiểu và làm theo), hoặc None nếu ổn."""
     if not shutil.which("npx"):
-        return ("Máy chạy Javis chưa có Node.js 20+ (lệnh npx) nên chưa dùng được tính năng này. "
+        return ("Máy chạy UNI MATE chưa có Node.js 20+ (lệnh npx) nên chưa dùng được tính năng này. "
                 "Cài tại nodejs.org rồi thử lại.")
     if not connections():
         return ("Chưa đấu tài khoản Zalo nào. Vào trang Kết nối, chọn 'Zalo Agent MCP', "
@@ -106,7 +106,7 @@ def check() -> Optional[str]:
 
 
 def install_dir() -> Path:
-    """Thư mục Javis tự cài bản ghim của CLI. Nằm trong state (volume trên Docker) nên sống qua khởi động lại và cập nhật ảnh."""
+    """Thư mục UNI MATE tự cài bản ghim của CLI. Nằm trong state (volume trên Docker) nên sống qua khởi động lại và cập nhật ảnh."""
     import config
     return Path(config.STATE_DIR) / "tools" / CLI_NAME
 
@@ -155,7 +155,7 @@ async def _install() -> bool:
         root.mkdir(parents=True, exist_ok=True)
         pkg = root / "package.json"
         if not pkg.exists():
-            pkg.write_text('{"name": "javis-zalo-cli", "private": true}\n', encoding="utf-8")
+            pkg.write_text('{"name": "unimate-zalo-cli", "private": true}\n', encoding="utf-8")
         (root / _INSTALL_MARK).unlink(missing_ok=True)
     except OSError as e:
         print(f"[zalo-cli] không tạo được thư mục cài: {e}", file=sys.stderr)
@@ -249,7 +249,7 @@ def build_argv(command: List[str], positionals: Optional[List[str]] = None,
                options: Optional[List[str]] = None) -> Optional[List[str]]:
     """Dựng `node index.js --json <lệnh con> …` (bản đã cài sẵn) hoặc `npx -y --prefer-offline <gói> --json <lệnh con> …`.
 
-    `command` là lệnh con (`["msg", "send"]`), `positionals` là chữ TỰ DO (nội dung tin), `options` là các cờ do mã Javis viết
+    `command` là lệnh con (`["msg", "send"]`), `positionals` là chữ TỰ DO (nội dung tin), `options` là các cờ do mã UNI MATE viết
     (`["-t", "1", "--mention", "0:123:5"]`).
 
     Thứ tự quan trọng vì Commander (thư viện đọc lệnh của CLI):
@@ -358,7 +358,7 @@ def interpret(rc: Optional[int], out: Optional[str], err: str) -> Tuple[bool, An
     data = parse_json(out)
     if data is None:
         clean = _ANSI.sub("", err or "")
-        # Dòng "✗ ..." ở stderr (javis-zalo) hoặc stdout (bản 1.6.2 cũ, vd "✗ Not logged in" khi chưa có phiên): đọc cả hai.
+        # Dòng "✗ ..." ở stderr (unimate-zalo) hoặc stdout (bản 1.6.2 cũ, vd "✗ Not logged in" khi chưa có phiên): đọc cả hai.
         both = clean + "\n" + _ANSI.sub("", out or "")
         marks = [ln.strip().lstrip("✗").strip() for ln in both.splitlines() if "✗" in ln]
         why = "; ".join(m for m in marks if m) or clean.strip()[-300:] or (out or "").strip()[-300:] or "không có phản hồi"
@@ -391,10 +391,10 @@ async def run_cli(conn: dict, command: List[str], positionals: Optional[List[str
 
 
 # ============================================================
-# Gửi FILE qua MCP (javis-zalo >= 1.4.0), xem đầu file
+# Gửi FILE qua MCP (unimate-zalo >= 1.4.0), xem đầu file
 # ============================================================
 SEND_FILE_TOOL = "zalo_send_file"
-OUTBOX_PARTS = (".zalo-agent-cli", "outbox")   # trùng OUTBOX_DIR của javis-zalo: tool chỉ nhận file nằm trong đây
+OUTBOX_PARTS = (".zalo-agent-cli", "outbox")   # trùng OUTBOX_DIR của unimate-zalo: tool chỉ nhận file nằm trong đây
 # Đuôi zca-js tải lên như ảnh/GIF: link về ngay trong phản hồi HTTP, không cần kết nối thời gian thực.
 _NO_LIVE_CONFIRM = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
@@ -451,7 +451,7 @@ async def send_files(conn_id: str, home: str, thread_id: str, files: List[Path],
         except Exception as e:      # noqa: BLE001 - lỗi nào cũng phải thành câu người đọc hiểu
             why = re.sub(r"^\s*Error:\s*", "", str(e)).strip() or type(e).__name__
             if _old_mcp(why):
-                return False, None, ("kết nối Zalo đang chạy bản javis-zalo cũ chưa có tool gửi file. Cập nhật Javis rồi "
+                return False, None, ("kết nối Zalo đang chạy bản unimate-zalo cũ chưa có tool gửi file. Cập nhật UNI MATE rồi "
                                      "tắt-bật lại kết nối Zalo ở trang Kết nối (không phải quét QR lại).")
             return False, None, why
         if not isinstance(data, dict) or not data.get("success"):

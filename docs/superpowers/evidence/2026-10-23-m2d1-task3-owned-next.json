@@ -19,7 +19,7 @@
   "results": [
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_next.py",
         "-v"
       ],
@@ -33,7 +33,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_next.py",
         "ViewNextTests.test_owner_service_hands_exact_real_v4_reservation_to_existing_task_dispatcher",
         "ViewNextTests.test_cancelled_http_preflight_remains_owned_until_stop_settles",
@@ -48,7 +48,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_service.py",
         "-v"
       ],
@@ -61,7 +61,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_lifetime.py",
         "-v"
       ],
@@ -74,7 +74,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_api.py",
         "-v"
       ],
@@ -87,7 +87,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_workflow_api.py",
         "-v"
       ],
@@ -100,7 +100,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_lifecycle.py",
         "-v"
       ],
@@ -113,7 +113,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_experiment_c_stop.py",
         "-v"
       ],
@@ -126,7 +126,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_claude.py",
         "-v"
       ],
@@ -139,7 +139,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_reservations.py",
         "NativeFootprintTests",
         "-v"

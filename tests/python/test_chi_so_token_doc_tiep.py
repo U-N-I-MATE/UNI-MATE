@@ -21,8 +21,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-token-index-"))
-os.environ["JAVIS_STATE_DIR"] = str(_TMP / "state")
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-token-index-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
 (_TMP / "state").mkdir(parents=True, exist_ok=True)
 
 import usage_index as ui  # noqa: E402

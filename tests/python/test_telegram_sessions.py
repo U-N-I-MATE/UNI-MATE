@@ -23,8 +23,8 @@ import sys
 import tempfile
 import time
 
-_TMP = tempfile.mkdtemp(prefix="javis-tgsess-")
-os.environ.setdefault("JAVIS_STATE_DIR", _TMP)
+_TMP = tempfile.mkdtemp(prefix="unimate-tgsess-")
+os.environ.setdefault("UNIMATE_STATE_DIR", _TMP)
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")

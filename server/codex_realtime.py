@@ -1,8 +1,8 @@
 """Một `codex app-server` sống lâu cho ChatGPT Live (docs/dev/2026-10-voice-call-spec.md mục 3.2).
 
-ChatGPT Live chạy trên GÓI ChatGPT của người dùng qua giao diện realtime của Codex CLI: Javis nói
+ChatGPT Live chạy trên GÓI ChatGPT của người dùng qua giao diện realtime của Codex CLI: UNI MATE nói
 JSON-RPC qua stdin/stdout với `codex app-server`, còn âm thanh đi THẲNG trình duyệt tới OpenAI qua
-WebRTC. Javis chỉ chuyển gói bắt tay SDP và đọc thông báo chữ, nên không bao giờ cầm token: chính
+WebRTC. UNI MATE chỉ chuyển gói bắt tay SDP và đọc thông báo chữ, nên không bao giờ cầm token: chính
 app-server lo đăng nhập.
 
 Vì sao một tiến trình cho cả máy chủ: khởi động app-server mất cỡ 1 giây và nạp cả cấu hình MCP
@@ -15,7 +15,7 @@ conversation". Từ 0.159 cờ đã ổn định, truyền vào vẫn vô hại.
 
 Luồng đọc stdout là thread daemon (khuôn của codex_models và antigravity_cli), đẩy sang asyncio
 bằng `loop.call_soon_threadsafe`. Yêu cầu server gửi về (duyệt lệnh, duyệt file...) bị TỪ CHỐI
-ngay: phiên realtime của Javis không bao giờ được để Codex tự làm việc trên máy.
+ngay: phiên realtime của UNI MATE không bao giờ được để Codex tự làm việc trên máy.
 """
 from __future__ import annotations
 
@@ -53,7 +53,7 @@ def _no_window() -> int:
 
 
 def _codex_env() -> Optional[dict]:
-    """CODEX_HOME do Javis dò ra (claude_cli.codex_env). None = kế thừa môi trường như cũ."""
+    """CODEX_HOME do UNI MATE dò ra (claude_cli.codex_env). None = kế thừa môi trường như cũ."""
     try:
         import claude_cli
         return claude_cli.codex_env()
@@ -92,7 +92,7 @@ class AppServer:
                 return
             self._spawn()
             await self.request("initialize", {
-                "clientInfo": {"name": "javis_os", "title": "Javis OS", "version": "1.0"},
+                "clientInfo": {"name": "unimate_os", "title": "UNI MATE", "version": "1.0"},
                 "capabilities": {"experimentalApi": True},
             }, timeout=INIT_TIMEOUT)
             self._write({"method": "initialized", "params": {}})
@@ -106,7 +106,7 @@ class AppServer:
             text=True, encoding="utf-8", errors="replace", bufsize=1,
             creationflags=_no_window(), env=_codex_env(),
         )
-        threading.Thread(target=self._reader, name="javis-codex-realtime", daemon=True).start()
+        threading.Thread(target=self._reader, name="unimate-codex-realtime", daemon=True).start()
 
     def close(self):
         proc, self.proc = self.proc, None
@@ -191,7 +191,7 @@ class AppServer:
                     # Yêu cầu từ server (duyệt lệnh, duyệt file, gọi tool động): luôn từ chối.
                     try:
                         self._write({"id": msg["id"], "error": {"code": -32000,
-                                     "message": "Javis không cho phiên realtime tự làm việc trên máy."}})
+                                     "message": "UNI MATE không cho phiên realtime tự làm việc trên máy."}})
                     except AppServerError:
                         pass
                     continue
@@ -326,7 +326,7 @@ def _codex_logged_in() -> bool:
 def realtime_available(cfg: dict) -> Tuple[bool, str]:
     """ChatGPT Live dùng được chưa: (True, "") hoặc (False, "no_cli" | "no_login").
 
-    Không hỏi mạng: chỉ xem có Codex CLI và có đăng nhập ChatGPT (token Javis đã nối ở trang Models,
+    Không hỏi mạng: chỉ xem có Codex CLI và có đăng nhập ChatGPT (token UNI MATE đã nối ở trang Models,
     hoặc phiên `codex login` sẵn trên máy). Codex quá cũ hay gói không cho realtime thì lỗi hiện ra
     lúc mở cuộc gọi, và cuộc gọi rơi xuống đường kế tiếp.
     """

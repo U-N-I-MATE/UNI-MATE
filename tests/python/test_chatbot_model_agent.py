@@ -18,10 +18,10 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-botmodel-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-botmodel-"))
 # Brain RIÊNG cho test: mặc định BRAINS_DIR trỏ vào `brains/` thật của repo, nên không đặt
 # là test rải file agent vào brain người dùng đang xài.
-os.environ.setdefault("BRAINS_DIR", tempfile.mkdtemp(prefix="javis-botbrain-"))
+os.environ.setdefault("BRAINS_DIR", tempfile.mkdtemp(prefix="unimate-botbrain-"))
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

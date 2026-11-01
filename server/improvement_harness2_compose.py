@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Independent Harness² prompt definitions; Javis static surface glue below.
+"""Independent Harness² prompt definitions; UNI MATE static surface glue below.
 
 Verbatim definitions extracted from pinned upstream prompts.py. Attribution,
 source hashes and modifications: third_party/harness2/COMPOSE-PROVENANCE.json.
@@ -127,10 +127,10 @@ def compose_round(bp: BenchPrompts, surface: SurfaceSpec | str, *, t: int, k: in
     )
 
 
-# Javis adapter glue: upstream _build_surface_texts is intentionally excluded.
+# UNI MATE adapter glue: upstream _build_surface_texts is intentionally excluded.
 # Static registry cannot select upstream Codex/OpenCode hooks/guardrail surfaces.
 _SURFACE_TEXTS = MappingProxyType({
-    "javis_body": _SurfaceText(
+    "unimate_body": _SurfaceText(
         surface_md="# AUTHORIZED SURFACE\n\nOnly the supplied skill body region. Preserve frontmatter, routing, owner meanings, references and permissions. Return the host closed JSON contract; no commands, file access, system/guardrail/plugin edits, memory, jobs or activation.",
         inv="", dom="", tts_surface=""),
 })

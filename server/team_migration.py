@@ -3,7 +3,7 @@
 `task_store.TaskStore` (cột làn `team` của `tasks`) và `sessions.SessionStore` (cột người gửi của `messages`) gọi
 `snapshot_once` TRƯỚC khi mở kết nối và chạy migration. Lần đầu mã mới gặp một kho cũ (bảng có mà chưa có cột đánh dấu),
 kho được chép nguyên thành `<tên>.pre-0.140.0` bằng SQLite backup API (lấy cả phần còn trong WAL). Bản sao đã có thì không
-ghi đè; kho mới tinh thì không chép. Khôi phục: `tools/team_chat_restore_pre.py` (chạy khi Javis đã tắt).
+ghi đè; kho mới tinh thì không chép. Khôi phục: `tools/team_chat_restore_pre.py` (chạy khi UNI MATE đã tắt).
 """
 from __future__ import annotations
 

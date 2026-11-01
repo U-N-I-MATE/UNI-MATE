@@ -2,7 +2,7 @@
 
 *[Tiếng Việt](CHANGELOG.md) · **English***
 
-Javis OS release history, newest first. You can also read it inside the app under **Settings → Updates**.
+UNI MATE release history, newest first. You can also read it inside the app under **Settings → Updates**.
 
 English entries start at 0.66.0. Every earlier release is described in the Vietnamese [CHANGELOG.md](CHANGELOG.md), which remains the maintainer's original; the in-app Updates page shows those older entries in Vietnamese.
 
@@ -14,14 +14,14 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.429.0] - 2026-10-31
 ### Fixed
-- **Jobs a chatbot makes now sit under that chatbot.** Every reminder, loop and Kanban job a chatbot (your Zalo assistant, say) made while chatting used to show under Javis Core. They now sit under the assistant the chatbot uses, in the lists and in Stats. When that assistant is not in this brain, the chatbot gets a row of its own.
-- **Older jobs are sorted out too.** Javis reads each chatbot's reply log: a job made while exactly one chatbot was answering (in the same chat, when the job names one) belongs to that chatbot. Two chatbots answering at that moment leaves the job with Javis Core, to be safe.
+- **Jobs a chatbot makes now sit under that chatbot.** Every reminder, loop and Kanban job a chatbot (your Zalo assistant, say) made while chatting used to show under UNI MATE Core. They now sit under the assistant the chatbot uses, in the lists and in Stats. When that assistant is not in this brain, the chatbot gets a row of its own.
+- **Older jobs are sorted out too.** UNI MATE reads each chatbot's reply log: a job made while exactly one chatbot was answering (in the same chat, when the job names one) belongs to that chatbot. Two chatbots answering at that moment leaves the job with UNI MATE Core, to be safe.
 ### Improved
 - No search box on the Tasks page's Stats, since there is nothing to search there.
 
 ## [0.428.2] - 2026-10-31
 ### Fixed
-- **A Zalo Bot (official Zalo Bot) notices when it is tagged in a group.** Tagging it by its display name, such as "@Bot Nori", used to leave it silent, because Javis only matched the account handle like `bot.xxxx`. It now also matches the name you gave the bot in Javis. Thanks @VQTPiano (#885).
+- **A Zalo Bot (official Zalo Bot) notices when it is tagged in a group.** Tagging it by its display name, such as "@Bot Nori", used to leave it silent, because UNI MATE only matched the account handle like `bot.xxxx`. It now also matches the name you gave the bot in UNI MATE. Thanks @VQTPiano (#885).
 ## [0.428.1] - 2026-10-31
 ### Fixed
 - **A team job stopped because its model cannot run with approvals now says how to fix it.** The message leads with the fix, names the assistant and suggests only connected models that can run the step on this machine, then Try again. Before, the Docker image cut off exactly that part, and the advice could point back to the model that was refused. Thanks @hwangrin (#904).
@@ -29,15 +29,15 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.428.0] - 2026-10-31
 ### Added
 - **Stats on the Tasks page, for both tabs.** Stats closes the menu. Pick the period with the same dropdown as the Chatbot stats (Today, last 7 / 30 / 90 days, Last month... or your own days), always against the period before.
-- **Javis's stats:** how much of the work Javis carried next to you, **the time Javis gave back** (each kind of job counts the minutes you set, no money), work done while you slept, which assistant did what, reliability, and jobs Javis could take over.
-- **My stats:** done per day, a 12-week map, golden hours, on-time rate, habits over 30 days, projects, and tasks you keep moving with a Give to Javis button.
+- **UNI MATE's stats:** how much of the work UNI MATE carried next to you, **the time UNI MATE gave back** (each kind of job counts the minutes you set, no money), work done while you slept, which assistant did what, reliability, and jobs UNI MATE could take over.
+- **My stats:** done per day, a 12-week map, golden hours, on-time rate, habits over 30 days, projects, and tasks you keep moving with a Give to UNI MATE button.
 ### Improved
-- **Javis's tasks come first and open first.** "Mine" is now "My tasks".
+- **UNI MATE's tasks come first and open first.** "Mine" is now "My tasks".
 - Reminders and page watches now log every run so the stats count them all. Before this release a reminder kept only its last run.
 
 ## [0.427.0] - 2026-10-31
 ### Added
-- **Javis Core writes the habit lines every day.** The star and the habit reminders are no longer fixed sentences: Core reads each streak, frozen days and your usual time, and writes a line for each habit. Without a background model the fixed lines stay.
+- **UNI MATE Core writes the habit lines every day.** The star and the habit reminders are no longer fixed sentences: Core reads each streak, frozen days and your usual time, and writes a line for each habit. Without a background model the fixed lines stay.
 - **Core learns which nudge works for you.** Each reminder records its style (cheer, sulk, challenge, remind why) and whether you did the habit that day. Styles that get you moving are picked more often.
 - **Google Calendar on the Mine tab.** With Google Calendar connected on the Connections page, the next 14 days of events sit next to your appointments, overlaps flagged. View only here; open one to edit it in Google Calendar.
 
@@ -45,10 +45,10 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ### Fixed
 - **Loops can be edited by hand again.** Since 0.422.0 the Tasks page could only switch, run and delete a loop. Edit now changes its name, what it does each round, its permission level (Suggest, Drafts, Full) and how often it runs.
 - **Reminders get their old options back:** Call me, Read it aloud, Remember the last result and the permission level, when adding and when editing. They went missing when the Scheduled page was merged.
-- **Asking Javis to show a job on screen works again.** Javis opens the Tasks page, the Javis tab, on that job's details.
+- **Asking UNI MATE to show a job on screen works again.** UNI MATE opens the Tasks page, the UNI MATE tab, on that job's details.
 - **Allowing a job to act for real asks first,** since actions outside cannot be undone.
-- **Giving Javis a job has the Review the result when done box again.** A reminder's or loop's details show the permission level it runs at.
-- **With no channel for results, the Javis tab says so** with a button to Channels: reminders and loops still run but their results reach no one.
+- **Giving UNI MATE a job has the Review the result when done box again.** A reminder's or loop's details show the permission level it runs at.
+- **With no channel for results, the UNI MATE tab says so** with a button to Channels: reminders and loops still run but their results reach no one.
 - **Editing a script job no longer shows options that do not apply** (how it runs, level, call).
 ### Improved
 - **Cancel and Save stay at the bottom of the form,** so a long form on a phone needs no scrolling to find them.
@@ -57,30 +57,30 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.425.0] - 2026-10-30
 ### Added
 - **Appointments on the Mine tab.** When adding, pick Kind: Appointment to set a start time, duration and place. An appointment switches itself between Upcoming, Happening now and Past, and flags two appointments that overlap.
-- **A reminder before an appointment,** 5, 15, 30 or 60 minutes ahead (15 by default), once per appointment. You can also ask Javis to prepare beforehand (draft a document, look something up) as a reminder Javis finishes 30 minutes before the start.
-- **Say it in chat and it gets ticked.** Tell Javis "done reading" and the habit is ticked, marked as ticked by Javis so you can untick it. Several matching tasks make Javis ask instead of guessing. "Add this to my list" works too, on every brain.
+- **A reminder before an appointment,** 5, 15, 30 or 60 minutes ahead (15 by default), once per appointment. You can also ask UNI MATE to prepare beforehand (draft a document, look something up) as a reminder UNI MATE finishes 30 minutes before the start.
+- **Say it in chat and it gets ticked.** Tell UNI MATE "done reading" and the habit is ticked, marked as ticked by UNI MATE so you can untick it. Several matching tasks make UNI MATE ask instead of guessing. "Add this to my list" works too, on every brain.
 
 ## [0.424.0] - 2026-10-30
 ### Added
 - **Habits with a streak.** Switch "Count as a habit" on a repeating task (or pick Kind of repeat: Habit when adding) for a Duolingo-style streak. One missed session freezes it, the next one done thaws it, two missed in a row lose it. **Only scheduled days count**, so a habit's rest days never freeze.
 - **Ticking lights a flame.** The ring pops into a flame; a frozen one melts first. A habit's details show the streak, Days done, Frozen, Longest and a month calendar.
-- **The Habits list** opens with four tiles (grey until reached) and Javis's star saying a line with a matching face: sulking when you skip, delighted when all are done, sleepy on rest days.
-- **Habit reminders:** Javis reminds (after your usual time, earlier while frozen), At a set time, or No reminder. At most once a day, only when not done yet.
+- **The Habits list** opens with four tiles (grey until reached) and UNI MATE's star saying a line with a matching face: sulking when you skip, delighted when all are done, sleepy on rest days.
+- **Habit reminders:** UNI MATE reminds (after your usual time, earlier while frozen), At a set time, or No reminder. At most once a day, only when not done yet.
 
 ## [0.423.0] - 2026-10-30
 ### Added
 - **A "Mine" tab on the Tasks page.** Keep your own tasks: Today, Upcoming, Overdue, No date, Recurring, Done, and by **project** (create, rename, recolour, pin, delete with undo).
 - **Easier dates and repeats.** Quick picks When free, Today, Tomorrow, Next Monday, a month calendar and a time every 30 minutes. Repeat "Every [n] days, weeks, months, years", with weekday circles.
 - **Overdue also shows the latest missed run of a repeating task,** tickable right there. One-off tasks move to today with one button.
-- **Hand work back and forth with Javis.** "Give to Javis" turns your task into Javis work; "Do it myself" brings a Javis job to your tab. Both can be undone.
+- **Hand work back and forth with UNI MATE.** "Give to UNI MATE" turns your task into UNI MATE work; "Do it myself" brings a UNI MATE job to your tab. Both can be undone.
 
 ## [0.422.0] - 2026-10-30
 ### Added
-- **The Tasks page replaces Kanban and Scheduled.** The Work group now holds Tasks and Webhooks. What Javis does, reminders, loops and page watches sit in one place, split into lists: Today, Upcoming, Overdue, Recurring, Run errors, Done, Log, and one per assistant.
+- **The Tasks page replaces Kanban and Scheduled.** The Work group now holds Tasks and Webhooks. What UNI MATE does, reminders, loops and page watches sit in one place, split into lists: Today, Upcoming, Overdue, Recurring, Run errors, Done, Log, and one per assistant.
 - **Reminders can run now, stop, pause and skip their next run.** Press ▶ to run at once. While it runs the button turns into ■; pressed by mistake, press again to stop it, and the schedule stays.
 - **Delete, cancel and pause all have Undo** for a few seconds.
 ### Improved
-- **The Morning brief button and template are gone.** For a brief, ask Javis for a reminder like any other job.
+- **The Morning brief button and template are gone.** For a brief, ask UNI MATE for a reminder like any other job.
 
 ## [0.421.0] - 2026-10-30
 ### Fixed
@@ -96,86 +96,86 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.420.2] - 2026-10-30
 ### Fixed
-- **Disconnecting and signing in as another account on the ChatGPT, Grok Build or Claude Code card lets you chat right away.** Before, when the old account ran out of quota, its "out of quota" mark stayed on the card after you signed in a new account as account 1, even across a Javis restart, so chat was sent to a backup card until the old account's reset time. Signing in now clears that mark.
+- **Disconnecting and signing in as another account on the ChatGPT, Grok Build or Claude Code card lets you chat right away.** Before, when the old account ran out of quota, its "out of quota" mark stayed on the card after you signed in a new account as account 1, even across a UNI MATE restart, so chat was sent to a backup card until the old account's reset time. Signing in now clears that mark.
 
 ## [0.420.1] - 2026-10-30
 ### Fixed
-- **Adding a ChatGPT account after the old one ran out of quota lets you chat right away.** Before, if account 1 ran out while the ChatGPT card had only that one account, Javis treated the whole card as out of quota until the reset time, so the newly added account was skipped and chat fell to a backup card, on some machines showing "Not logged in". Now the next chat turn runs on any account that is signed in and switched on. Grok Build and Claude Code with several accounts get the same fix.
+- **Adding a ChatGPT account after the old one ran out of quota lets you chat right away.** Before, if account 1 ran out while the ChatGPT card had only that one account, UNI MATE treated the whole card as out of quota until the reset time, so the newly added account was skipped and chat fell to a backup card, on some machines showing "Not logged in". Now the next chat turn runs on any account that is signed in and switched on. Grok Build and Claude Code with several accounts get the same fix.
 
 ## [0.420.0] - 2026-10-30
 ### Improved
 - **Skills page on a phone: pick a group from one dropdown.** The row of group buttons (All, AI, Sales...) ran off the screen once there were a few groups. Now there is one **Group** box showing how many skills each group holds. The Team page (filter by tag) and Workflows work the same way. On a computer the group column on the left stays as it was.
-- **Tools page tidier on a phone.** Every tool installed from Javis Store had a **Manage in Javis Store** button taking half the width, squeezing the name and description into a narrow column. Cards now use the full width, and the **Manage in Javis Store** link appears once on the **From Javis Store** group heading. The **Reinstall** button of a removed tool moves to the action row under the description.
+- **Tools page tidier on a phone.** Every tool installed from UNI MATE Store had a **Manage in UNI MATE Store** button taking half the width, squeezing the name and description into a narrow column. Cards now use the full width, and the **Manage in UNI MATE Store** link appears once on the **From UNI MATE Store** group heading. The **Reinstall** button of a removed tool moves to the action row under the description.
 
 ## [0.419.0] - 2026-10-30
 ### Fixed
-- **The dictation button works on iPhone again.** Pressing the mic shows the recording bar and listens at once with Safari's own speech recognition, the very first press included, instead of flashing and closing. Javis used to ask the server first and missed the moment an iPhone allows the mic.
+- **The dictation button works on iPhone again.** Pressing the mic shows the recording bar and listens at once with Safari's own speech recognition, the very first press included, instead of flashing and closing. UNI MATE used to ask the server first and missed the moment an iPhone allows the mic.
 - **An iPhone with Dictation off is told so**: Settings, General, Keyboard, Enable Dictation. A blocked microphone points at aA in Safari's address bar instead of a "padlock" that only fits a computer.
 - **No more Groq API key hints** in the dictation notes: ordinary users never need one.
 
 ## [0.418.0] - 2026-10-30
 ### Improved
-- **Javis opens even while the server restarts.** Before, reloading the page while the server was not up yet showed the browser's blank error page. Now Javis shows its full interface with a **Reconnecting to the server…** line and carries on once the server is up. If the server has just updated, the page reloads the new version by itself. This works when Javis is opened over https (a domain link or the Remote access link); while the server runs normally, Javis always loads the newest version as before.
+- **UNI MATE opens even while the server restarts.** Before, reloading the page while the server was not up yet showed the browser's blank error page. Now UNI MATE shows its full interface with a **Reconnecting to the server…** line and carries on once the server is up. If the server has just updated, the page reloads the new version by itself. This works when UNI MATE is opened over https (a domain link or the Remote access link); while the server runs normally, UNI MATE always loads the newest version as before.
 - **The pet is much lighter while it sits still.** When nobody touches it or moves the pointer, the pet lets the browser run its ring spin and eye glances instead of drawing every frame in JS. On a simulated phone, idle on the Team page: busy about 26% of the time before, about 14% now, close to having no pet at all. Anything that happens wakes it right away as before.
 
 ## [0.417.0] - 2026-10-30
 ### Improved
-- **Javis opens faster, phase 2: first load on a phone over 4G from 5.1 to about 4.7 seconds.** The code of the large pages (Teams, Conversations, Chatbot, Javis Store, Usage, Webhooks, Agent jobs) no longer loads when the app opens. The main screen and the chat show first, the rest loads quietly right after, so by the time you tap another page it is ready. Opening the app straight onto a page loads just what that page needs.
+- **UNI MATE opens faster, phase 2: first load on a phone over 4G from 5.1 to about 4.7 seconds.** The code of the large pages (Teams, Conversations, Chatbot, UNI MATE Store, Usage, Webhooks, Agent jobs) no longer loads when the app opens. The main screen and the chat show first, the rest loads quietly right after, so by the time you tap another page it is ready. Opening the app straight onto a page loads just what that page needs.
 
 ### Fixed
-- **A flaky server no longer breaks the interface.** While the server restarts or the connection drops for a moment, Javis retries for about 10 seconds and shows a small **Reconnecting to the server…** line at the top, which hides itself once connected. Before, each of these showed cryptic errors such as "The string did not match the expected pattern". Javis only retries reading data, never re-sends a save or a message.
+- **A flaky server no longer breaks the interface.** While the server restarts or the connection drops for a moment, UNI MATE retries for about 10 seconds and shows a small **Reconnecting to the server…** line at the top, which hides itself once connected. Before, each of these showed cryptic errors such as "The string did not match the expected pattern". UNI MATE only retries reading data, never re-sends a save or a message.
 
 ## [0.416.0] - 2026-10-30
 ### Improved
-- **Javis opens faster: first visit from 6.3 to 5.1 seconds, later visits from 1.55 to 1.37 seconds.** Measured on a simulated phone over 4G. 35% less to download when the app opens (1.7 MB down to 1.1 MB):
-  - **The server minifies the interface before sending it.** Comments and extra whitespace are dropped: JS is 44% lighter, CSS 49%. The source stays as it is, line numbers included, so error reports still point at the right line. Set `JAVIS_MINIFY=0` to turn it off.
-  - **Fonts ship with Javis.** The page no longer calls Google Fonts when it opens, so text appears sooner, and still looks right when the machine running Javis cannot reach Google.
+- **UNI MATE opens faster: first visit from 6.3 to 5.1 seconds, later visits from 1.55 to 1.37 seconds.** Measured on a simulated phone over 4G. 35% less to download when the app opens (1.7 MB down to 1.1 MB):
+  - **The server minifies the interface before sending it.** Comments and extra whitespace are dropped: JS is 44% lighter, CSS 49%. The source stays as it is, line numbers included, so error reports still point at the right line. Set `UNIMATE_MINIFY=0` to turn it off.
+  - **Fonts ship with UNI MATE.** The page no longer calls Google Fonts when it opens, so text appears sooner, and still looks right when the machine running UNI MATE cannot reach Google.
   - **Fewer duplicate requests when the app opens.** Settings were asked for 9 times in a row; now 3.
-- **The Health page has a new Recent interface errors section.** Errors that happen in the browser of anyone using Javis (computer or phone) are sent here automatically, grouped, with the version and device type. If something odd happens, a screenshot of this section is enough for the developer to fix it. Only technical details, never chat content.
+- **The Health page has a new Recent interface errors section.** Errors that happen in the browser of anyone using UNI MATE (computer or phone) are sent here automatically, grouped, with the version and device type. If something odd happens, a screenshot of this section is enough for the developer to fix it. Only technical details, never chat content.
 
 ## [0.415.0] - 2026-10-30
 ### Fixed
-- **No more screen full of label codes after an update.** If the page reloaded while the server was still starting, every label showed as a code like `nav.group.bo_nao`, the version read v0.4.3, an error said "The string did not match the expected pattern", and the page stayed that way. Javis now retries; once the server is up the page reloads once and shows everything correctly. If you are typing, it does not reload and the labels come back in place.
+- **No more screen full of label codes after an update.** If the page reloaded while the server was still starting, every label showed as a code like `nav.group.bo_nao`, the version read v0.4.3, an error said "The string did not match the expected pattern", and the page stayed that way. UNI MATE now retries; once the server is up the page reloads once and shows everything correctly. If you are typing, it does not reload and the labels come back in place.
 - **The Update button waits until the server is fully ready** before reloading the page, instead of reloading as soon as it sees the new version number.
 
 ### Improved
-- **Javis is lighter on a phone while idle.** On a simulated phone, the Team page kept the device busy about 26% of the time while doing nothing; now about 21%. Less heat, less battery, smoother scrolling:
-  - The pet draws 30 frames a second at rest and 15 while dozing (it was always 60). It looks the same, and goes back to 60 when you move the pointer or Javis is working.
+- **UNI MATE is lighter on a phone while idle.** On a simulated phone, the Team page kept the device busy about 26% of the time while doing nothing; now about 21%. Less heat, less battery, smoother scrolling:
+  - The pet draws 30 frames a second at rest and 15 while dozing (it was always 60). It looks the same, and goes back to 60 when you move the pointer or UNI MATE is working.
   - The starfield and the brain graph stop drawing while another page covers them. Before, opening the app straight onto the Team page kept the graph drawing behind it.
-- **Faster opening from the second visit.** Javis no longer re-downloads and checks 100+ interface files on every page load. Each set of files is checked once per device, right after an update. About half as many requests when the page opens.
+- **Faster opening from the second visit.** UNI MATE no longer re-downloads and checks 100+ interface files on every page load. Each set of files is checked once per device, right after an update. About half as many requests when the page opens.
 
 ## [0.414.0] - 2026-10-30
 ### Improved
-- **Customers see "typing..." while a personal Zalo bot writes** a private reply, as when a person types. Javis moves to javis-zalo 1.9.0 (which adds the typing tool); the Zalo connection updates itself after Javis restarts, no new QR scan needed.
+- **Customers see "typing..." while a personal Zalo bot writes** a private reply, as when a person types. UNI MATE moves to unimate-zalo 1.9.0 (which adds the typing tool); the Zalo connection updates itself after UNI MATE restarts, no new QR scan needed.
 
 ## [0.413.0] - 2026-10-30
 ### Improved
 - **Personal Zalo bots send bold and coloured text.** When the bot writes in bold or colour (`{red:50% off}`), the customer sees real bold or coloured words, as a person would send, instead of `**` stars.
-- **"Typing..." shows while the bot writes** a private reply, so customers can hardly tell the bot from a person. Needs javis-zalo 1.9.0; with an older one the bot still answers, only without the indicator.
+- **"Typing..." shows while the bot writes** a private reply, so customers can hardly tell the bot from a person. Needs unimate-zalo 1.9.0; with an older one the bot still answers, only without the indicator.
 
 ## [0.412.0] - 2026-10-30
 ### Added
-- **A bot can answer your Zalo Official Account inbox.** Pick the **Zalo OA** channel under Chatbot, Add channel, paste the App ID, App secret key, OA secret key and Refresh token; the bot shares the Agent, hours and Inbox of every other channel. Javis needs an HTTPS domain.
-- **Javis refreshes the Zalo OA token by itself.** A Zalo token lives about 25 hours and each refresh token works once; Javis swaps and stores the new pair at once, so you never fetch one again each day.
-- **Verify the Zalo domain right in the form.** Paste the `zalo_verifier...html` file name Zalo gives and press Save code; Javis serves that exact file so you can press Verify on Zalo. Step by step in guide 35.
+- **A bot can answer your Zalo Official Account inbox.** Pick the **Zalo OA** channel under Chatbot, Add channel, paste the App ID, App secret key, OA secret key and Refresh token; the bot shares the Agent, hours and Inbox of every other channel. UNI MATE needs an HTTPS domain.
+- **UNI MATE refreshes the Zalo OA token by itself.** A Zalo token lives about 25 hours and each refresh token works once; UNI MATE swaps and stores the new pair at once, so you never fetch one again each day.
+- **Verify the Zalo domain right in the form.** Paste the `zalo_verifier...html` file name Zalo gives and press Save code; UNI MATE serves that exact file so you can press Verify on Zalo. Step by step in guide 35.
 
 ## [0.411.0] - 2026-10-30
 ### Improved
-- **Javis only asks you when it really needs you.** "Needs you" became "Javis is asking you" and holds only questions, permission requests and results to approve; jobs paused on technical hitches move to "Javis is handling these", with a quiet notice saying there is nothing for you to do.
+- **UNI MATE only asks you when it really needs you.** "Needs you" became "UNI MATE is asking you" and holds only questions, permission requests and results to approve; jobs paused on technical hitches move to "UNI MATE is handling these", with a quiet notice saying there is nothing for you to do.
 - **Add a note to a job in any state.** A done, paused or waiting job has Add a note (e.g. "rewrite paragraph 2 shorter") and continues from its last result instead of starting over; queued jobs get Run now.
 - **See whether a finished job was checked.** Cards say Checked or Not checked with the run time, and an unchecked job has Check again.
 - **Smarter and lighter.** A job you asked for by hand 3 times in 60 days is suggested as a schedule, new jobs go to the assistant that fits and small jobs run light; the page reloads only when something changed and History shows the newest jobs first.
 
 ## [0.410.0] - 2026-10-30
 ### Fixed
-- **A job that ran out of usage is no longer marked Done.** When Claude reported the limit in wording Javis did not know yet (like "You're out of extra usage"), or an API error mid-run, the job still went to Done with that message as its result. A turn that ends in an error is now an error: the job waits for the plan to reopen, or sits under Needs you with the reason.
+- **A job that ran out of usage is no longer marked Done.** When Claude reported the limit in wording UNI MATE did not know yet (like "You're out of extra usage"), or an API error mid-run, the job still went to Done with that message as its result. A turn that ends in an error is now an error: the job waits for the plan to reopen, or sits under Needs you with the reason.
 - **Background work moves to the next provider in your order when Claude runs out**, as it already did for Codex, if nothing was done yet. A job already part done stops and reports instead, so nothing is sent twice.
 - **You can answer a job's question right on its card.** The Work page refreshes every 3 seconds and wiped whatever you were typing in the reply box. The box now keeps your text until you send it, and buttons no longer stay grey after a server error.
 
 ## [0.409.0] - 2026-10-30
 ### Fixed
 - **Phone dictation: X and stop respond again.** The first recording worked, after that neither X nor the stop square did anything and the timer ran on. Main cause: stopping put the cursor in the text box, so the keyboard came up; on the next recording the iPhone dropped the keyboard but left the page shifted, and a tap on X landed on the text box (the "AutoFill" bubble) instead of the button. Now the box lets go of the cursor while recording, stopping does not bring up the keyboard (tap the box to edit), and the page settles back when the keyboard goes down.
-- **The recording bar no longer hangs.** If the browser never confirms the stop, Javis ends the recording after 1.5 seconds and keeps the words heard; a second press of stop ends it at once. X while the words are being transcribed closes the bar right away instead of waiting for the server. A transcription taking over 45 seconds is given up and the bar closes.
+- **The recording bar no longer hangs.** If the browser never confirms the stop, UNI MATE ends the recording after 1.5 seconds and keeps the words heard; a second press of stop ends it at once. X while the words are being transcribed closes the bar right away instead of waiting for the server. A transcription taking over 45 seconds is given up and the bar closes.
 
 ## [0.408.0] - 2026-10-29
 ### Improved
@@ -183,12 +183,12 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **An X on every notice** removes it from the queue without opening it.
 
 ### Fixed
-- **"Not needed" takes that notice out of the list at once.** It used to stay in the bell even though Javis had noted the feedback. What Javis Core learned shows once above the list.
-- **Background jobs with nothing to report no longer land in the bell.** Javis only saw the `[SILENT]` flag at the start of an answer, so a reply like "I will check the failed POSCake runs. [SILENT]" still became a notice. The flag now counts at the start or the end, for reminders and webhooks alike.
+- **"Not needed" takes that notice out of the list at once.** It used to stay in the bell even though UNI MATE had noted the feedback. What UNI MATE Core learned shows once above the list.
+- **Background jobs with nothing to report no longer land in the bell.** UNI MATE only saw the `[SILENT]` flag at the start of an answer, so a reply like "I will check the failed POSCake runs. [SILENT]" still became a notice. The flag now counts at the start or the end, for reminders and webhooks alike.
 
 ## [0.407.0] - 2026-10-29
 ### Improved
-- **The Store has a Sort box.** Pick Recommended (the default, recommended packs first), Recently updated, or Name A-Z. Javis remembers your choice on this device.
+- **The Store has a Sort box.** Pick Recommended (the default, recommended packs first), Recently updated, or Name A-Z. UNI MATE remembers your choice on this device.
 - **Long descriptions on Store cards fit in three lines and end with "…".** The text used to run a few more lines and get cut off mid-line. Tap the (i) next to the name to read it all.
 
 ## [0.406.0] - 2026-10-29
@@ -208,18 +208,18 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.403.0] - 2026-10-29
 ### Added
-- **Javis Core runs the notifications.** Every notice has a group (Reminders, Questions for you, Chatbot and customers, Connections and sign-in, Incidents, Job results...) and a level: normal, important or urgent.
-- **By default only urgent notices ring:** reminders, questions for you, a customer asking for a person, a failing chatbot, Javis not usable, a change on a page you watch. Other notices stay in the bell under **Filtered**, with no red dot, no phone push and no Telegram. A job given from a chat still reports back into that chat.
+- **UNI MATE Core runs the notifications.** Every notice has a group (Reminders, Questions for you, Chatbot and customers, Connections and sign-in, Incidents, Job results...) and a level: normal, important or urgent.
+- **By default only urgent notices ring:** reminders, questions for you, a customer asking for a person, a failing chatbot, UNI MATE not usable, a change on a page you watch. Other notices stay in the bell under **Filtered**, with no red dot, no phone push and no Telegram. A job given from a chat still reports back into that chat.
 - A **Filter** tab in the bell: each group picks Everything, Important and up, Urgent only or Off; see the kinds with their own rule; undo changes.
-- Every notice has two buttons, **Needed** and **Not needed**. To rate it with an emoji, press **Open in Javis Core** and put the emoji on it in the chat like on any answer. Javis Core adjusts itself from it, says so in its chat, and never hides an urgent notice by itself.
+- Every notice has two buttons, **Needed** and **Not needed**. To rate it with an emoji, press **Open in UNI MATE Core** and put the emoji on it in the chat like on any answer. UNI MATE Core adjusts itself from it, says so in its chat, and never hides an urgent notice by itself.
 - A kind that rings a 3rd time within 6 hours is filtered as "repeated" after that.
-- Say it in the Javis Core chat, for example "turn off Zalo sign-in notices", and Javis Core changes it with the new `javis_notify` tool.
+- Say it in the UNI MATE Core chat, for example "turn off Zalo sign-in notices", and UNI MATE Core changes it with the new `unimate_notify` tool.
 
 ## [0.402.0] - 2026-10-29
 ### Fixed
-- **Javis Core can pick a model.** By default Core follows the main model and changes with it. Picking another model in the model bar of a Core chat pins it for all of Core: every Core chat uses it until you choose "Follow the main chat's model". Core chats used to freeze on the model of the day they were made.
+- **UNI MATE Core can pick a model.** By default Core follows the main model and changes with it. Picking another model in the model bar of a Core chat pins it for all of Core: every Core chat uses it until you choose "Follow the main chat's model". Core chats used to freeze on the model of the day they were made.
 - **Fewer false sign-in notices:**
-  - A normal answer that mentions "not logged in" no longer makes Javis say it is not usable.
+  - A normal answer that mentions "not logged in" no longer makes UNI MATE say it is not usable.
   - A failure already reported is not reported again after a restart.
   - A connection still downloading on its first start is no longer counted as broken.
   - A recurring job that keeps failing makes one "needs you" incident, not a new notice on every failure.
@@ -228,14 +228,14 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.401.0] - 2026-10-29
 ### Fixed
 - **Chatbot Stats split per account.** The "answers the AI handled" share used to mix every account, so an account where a person types lowered the share of one only the AI answers.
-- An **account picker** sits next to the period button. Pick one account and the whole page counts only that one. Javis remembers the choice.
+- An **account picker** sits next to the period button. Pick one account and the whole page counts only that one. UNI MATE remembers the choice.
 - The per-channel list became **AI and hand replies per account**: one two-colour bar per account, with that account's own AI share.
 - "You answered" is now **Hand replies**, since it also counts messages someone else types on that account's phone.
 
 ## [0.400.0] - 2026-10-29
 ### Fixed
 - **Canva and other OAuth connections no longer drop mid-session.** Near expiry, several calls at once each renewed the token with the same code, and Canva accepts that code only once, so it shut the sign-in. Now one call renews and the others share the new token.
-- A tool call mid-chat always uses the latest token. If the server still rejects it (error 401), Javis renews and tries once more instead of asking you to reconnect.
+- A tool call mid-chat always uses the latest token. If the server still rejects it (error 401), UNI MATE renews and tries once more instead of asking you to reconnect.
 - A token change no longer cuts off work in progress, such as a Canva design being generated.
 
 ## [0.399.0] - 2026-10-29
@@ -257,7 +257,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **Smaller, tidier type on computers.** Each customer takes 2 lines and still shows the chat's message count and unread number; a third line appears only for tags.
 - **The four filter buttons that wrapped** (Needs you, AI is handling...) are now **one dropdown** that always shows the Needs you count. Each choice has a line saying what it means.
 - **The three reply modes sit in the chat head.** The coloured bar under it only shows when something needs you. The customer's tags sit next to the name, with a "+ Tag" button.
-- **The Info panel starts closed**; the ⓘ button opens it and Javis remembers your choice. Messages sit in a centred, easy-to-read column.
+- **The Info panel starts closed**; the ⓘ button opens it and UNI MATE remembers your choice. Messages sit in a centred, easy-to-read column.
 - The compose box's "AI reply" button is now **"AI draft"**, which is what it does: the AI writes, you press Send. The draft shows right inside the compose box.
 
 ## [0.396.0] - 2026-10-29
@@ -268,7 +268,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.394.0] - 2026-10-29
 ### Fixed
-- **Switching to another app and back, a running turn no longer looks stopped.** Javis kept working on the server while you were away, but on reconnecting the chat removed the "Javis is thinking" line and did not show what had been written, so the command looked stopped until the finished answer popped up. The status line now comes back at once, with the text Javis wrote while you were away.
+- **Switching to another app and back, a running turn no longer looks stopped.** UNI MATE kept working on the server while you were away, but on reconnecting the chat removed the "UNI MATE is thinking" line and did not show what had been written, so the command looked stopped until the finished answer popped up. The status line now comes back at once, with the text UNI MATE wrote while you were away.
 - **Back in the app, a dead connection is noticed after about 20 seconds instead of up to 50,** so the chat catches up sooner on phones.
 
 ## [0.393.0] - 2026-10-29
@@ -279,45 +279,45 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.391.0] - 2026-10-29
 ### Fixed
-- **The capability index `Javis/index.md` now updates itself in every brain**, not only Brain Default. A brain with no loop used to keep the file from the day it was created, so it still said "0 agents" after dozens were added, and an AI reading it to avoid duplicates was misled.
+- **The capability index `UniMate/index.md` now updates itself in every brain**, not only Brain Default. A brain with no loop used to keep the file from the day it was created, so it still said "0 agents" after dozens were added, and an AI reading it to avoid duplicates was misled.
 - Adding, editing or deleting an agent, skill, workflow, loop or plugin updates the index within about 30 seconds, also when the AI writes the file itself. No more toggling a plugin to force a rebuild.
-- **Lighter than before:** Javis rebuilds only the brains that actually changed, so many brains do not slow the machine down.
+- **Lighter than before:** UNI MATE rebuilds only the brains that actually changed, so many brains do not slow the machine down.
 
 ## [0.390.0] - 2026-10-29
 ### Improved
-- **The Javis Store shows at most 3 columns of cards**, six full rows per 18-item page. Narrow screens still drop to 2 columns, phones to 1.
+- **The UNI MATE Store shows at most 3 columns of cards**, six full rows per 18-item page. Narrow screens still drop to 2 columns, phones to 1.
 - **Fewer tags on a card:** no kind tag (the open tab already says it) and no official or community tag. Only packs that run code get a small amber chip in the corner, beside the group chip, so the name fits on one line.
 - Refresh is no longer pushed past the edge on wide screens. The catalog time now shows when you hover the button.
 
 ## [0.387.0] - 2026-10-29
 ### Fixed
-- **Claude Code and Codex now really stay running between messages.** In 0.382.0 Javis thought the setup had changed after every message (Claude Code and Codex rewrite their sign-in file themselves), so it started them again each time. Measured again on the dashboard: the next message shows text after about 2 seconds instead of 8 to 14.
-- **Getting ready as you type now actually works** for both Claude Code and Codex, and covers a chat left idle for up to 12 hours (was 1 hour). Signing in or out makes Javis start them again on the new account.
+- **Claude Code and Codex now really stay running between messages.** In 0.382.0 UNI MATE thought the setup had changed after every message (Claude Code and Codex rewrite their sign-in file themselves), so it started them again each time. Measured again on the dashboard: the next message shows text after about 2 seconds instead of 8 to 14.
+- **Getting ready as you type now actually works** for both Claude Code and Codex, and covers a chat left idle for up to 12 hours (was 1 hour). Signing in or out makes UNI MATE start them again on the new account.
 
 ## [0.386.0] - 2026-10-28
 ### Improved
-- **Javis Store on phones:** the six kind tabs become a dropdown, next to the group dropdown in one row that stays put while you scroll. Each choice shows its item count and new versions, in larger, easier to tap text. Computers keep the tabs.
+- **UNI MATE Store on phones:** the six kind tabs become a dropdown, next to the group dropdown in one row that stays put while you scroll. Each choice shows its item count and new versions, in larger, easier to tap text. Computers keep the tabs.
 
 ## [0.385.0] - 2026-10-28
 ### Fixed
-- **Signing in to Claude on the Models page no longer says done and then falls back to "Not signed in".** The Claude CLI reports success even when it could not save the sign-in (on a Mac, a locked Keychain), and Javis took its word for it, so the card went back with no reason. Javis now checks right away and, if nothing was saved, says why and what to do.
+- **Signing in to Claude on the Models page no longer says done and then falls back to "Not signed in".** The Claude CLI reports success even when it could not save the sign-in (on a Mac, a locked Keychain), and UNI MATE took its word for it, so the card went back with no reason. UNI MATE now checks right away and, if nothing was saved, says why and what to do.
 - Pasting a wrong code and then the right one no longer returns the first code's error. A refused code shows Claude's own reason on the card.
 
 ## [0.384.0] - 2026-10-28
 ### Improved
-- **A tidier Javis Store:** the repeated heading and intro lines are gone, and the tabs plus the Refresh and Install from .zip buttons share one row that **stays put while you scroll**. The group list moved to the right and stays put too.
+- **A tidier UNI MATE Store:** the repeated heading and intro lines are gone, and the tabs plus the Refresh and Install from .zip buttons share one row that **stays put while you scroll**. The group list moved to the right and stays put too.
 - **18 items per page**, with previous and next buttons. Moving to a page takes you to its first card.
 - **No more broken layout on phones:** the six tabs fit one row, groups are picked from a dropdown beside the search box, and Refresh and Install from .zip shrink to icons.
 
 ## [0.382.0] - 2026-10-28
 ### Improved
-- **Claude Code answers faster from the second message on.** Javis keeps Claude Code running between the messages of a chat instead of starting it again every time. Measured on a real machine: the next message went from about 10 seconds to about 4.
-- **Codex shows its answer as it writes** instead of making you wait for the whole paragraph. Codex is also kept running between messages, and Javis's rules go once per chat instead of with every message, so long chats no longer slow down.
-- Just start typing and Javis gets the brain ready again for a chat that has been idle over 5 minutes. How many stay ready is capped by the machine's free RAM; background work and customer bots run as before.
+- **Claude Code answers faster from the second message on.** UNI MATE keeps Claude Code running between the messages of a chat instead of starting it again every time. Measured on a real machine: the next message went from about 10 seconds to about 4.
+- **Codex shows its answer as it writes** instead of making you wait for the whole paragraph. Codex is also kept running between messages, and UNI MATE's rules go once per chat instead of with every message, so long chats no longer slow down.
+- Just start typing and UNI MATE gets the brain ready again for a chat that has been idle over 5 minutes. How many stay ready is capped by the machine's free RAM; background work and customer bots run as before.
 
 ## [0.381.0] - 2026-10-28
 ### Improved
-- **Models** moves from the Connections group to the **System** group in the sidebar: choosing the AI brain is Javis's own setting, while Connections is for outside services.
+- **Models** moves from the Connections group to the **System** group in the sidebar: choosing the AI brain is UNI MATE's own setting, while Connections is for outside services.
 
 ## [0.380.0] - 2026-10-28
 ### Fixed
@@ -347,15 +347,15 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **Pin and speaker buttons under every answer.** The pin puts an answer into the conversation's contents (the marks rail on the right, the ≡ button on phones), marked with an orange pin, one click to jump back; pins are kept on the server so other devices see them. The speaker reads that answer aloud; press again to stop.
 - **No token count on the small line under an answer.** It now shows only the engine, the model and the context mode; the Usage page has the token numbers.
 - **The "Recommended repos" tab is now "Recommended".** A shorter name without the word "repos", one line on a phone. The card line now reads "Updated from the author".
-- **Clearer icons in the Javis Store.** The solid letter tiles are gone. Skills show the puzzle icon of the Skills page, workflows and tools their own icons, each card in its own light colour. Agents show an agent portrait like the Partners page. Packs with a real logo keep it.
+- **Clearer icons in the UNI MATE Store.** The solid letter tiles are gone. Skills show the puzzle icon of the Skills page, workflows and tools their own icons, each card in its own light colour. Agents show an agent portrait like the Partners page. Packs with a real logo keep it.
 
 ### Added
-- **Recommended gains 15 of the most popular skill sets**, each taken as the author wrote it and updated with them: Superpowers, GitNexus, REA, Matt Pocock's skills, Anthropic Skills, Vercel, planning with files, UI/UX Pro Max, Marketing Skills (52 skills), Humanizer, Claude for Marketing, Sales and Small Business, HyperFrames, Video Use. Already in the Javis Store, no app update needed.
+- **Recommended gains 15 of the most popular skill sets**, each taken as the author wrote it and updated with them: Superpowers, GitNexus, REA, Matt Pocock's skills, Anthropic Skills, Vercel, planning with files, UI/UX Pro Max, Marketing Skills (52 skills), Humanizer, Claude for Marketing, Sales and Small Business, HyperFrames, Video Use. Already in the UNI MATE Store, no app update needed.
 ## [0.375.0] - 2026-10-28
 ### Improved
-- **Javis now sets up a browser right after install.** If the machine has no Chrome or Edge, Javis downloads a compact Chromium (about 100 MB) in the background on first start, so nobody has to find the button on the Tools page. Javis stays usable while it downloads.
-- Machines that already have Chrome or Edge use it as is and download nothing. If you pressed Remove on the browser, Javis respects that and does not download it again.
-- To turn the automatic download off, set the environment variable `JAVIS_SKIP_BROWSER=1`.
+- **UNI MATE now sets up a browser right after install.** If the machine has no Chrome or Edge, UNI MATE downloads a compact Chromium (about 100 MB) in the background on first start, so nobody has to find the button on the Tools page. UNI MATE stays usable while it downloads.
+- Machines that already have Chrome or Edge use it as is and download nothing. If you pressed Remove on the browser, UNI MATE respects that and does not download it again.
+- To turn the automatic download off, set the environment variable `UNIMATE_SKIP_BROWSER=1`.
 
 ## [0.372.0] - 2026-10-28
 ### Added
@@ -372,7 +372,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.370.0] - 2026-10-28
 ### Added
-- **Recommended repos in the Javis Store.** A new first tab in the Store with skill sets copied word for word from the author's own GitHub repo, nothing translated or changed. Each card links to the source repo with the day the latest version was taken. The store compares them with the source every day: when the author changes a skill the pack gets a new version, Javis tells you in the bell and you press Update. Skills you edited yourself are kept.
+- **Recommended repos in the UNI MATE Store.** A new first tab in the Store with skill sets copied word for word from the author's own GitHub repo, nothing translated or changed. Each card links to the source repo with the day the latest version was taken. The store compares them with the source every day: when the author changes a skill the pack gets a new version, UNI MATE tells you in the bell and you press Update. Skills you edited yourself are kept.
 - **The first two:** Remotion (12 official skills for making videos in React: new projects, animation, captions, maps, rendering) and Lemo-Opuscar (short films made entirely in code, in 59 styles).
 
 ### Improved
@@ -385,7 +385,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.368.0] - 2026-10-28
 ### Improved
 - **Tidier repo and branch picking.** Tapping the repo chip in the chat box (or plus, GitHub repo) opens a small menu with "Change repo" and "Change branch". The repo list has "Selected" and "Repos" sections, the owner small above the repo name, and a "Connect more" button.
-- **Work from a branch other than the default.** Pick a branch (dev, say) before or during a chat: Javis cuts its working branch from it and opens the PR into it. The chosen branch shows on the chip. A chat with work in progress cannot switch, so nothing is lost.
+- **Work from a branch other than the default.** Pick a branch (dev, say) before or during a chat: UNI MATE cuts its working branch from it and opens the PR into it. The chosen branch shows on the chip. A chat with work in progress cannot switch, so nothing is lost.
 
 ## [0.367.0] - 2026-10-28
 ### Improved
@@ -396,35 +396,35 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.366.0] - 2026-10-28
 ### Added
-- **A second engine reviews before merging.** After green CI the diff goes to an engine from a different vendor than the one that wrote it (code written with Claude is read by ChatGPT, for example). Findings must name a concrete failure path, go back to the author to verify and fix, and hold the merge until handled. With only one vendor connected, Javis notes on the PR that it was not cross-reviewed.
-- **Javis learns per repo:** a CI failure it later fixed or a check command that failed becomes one lesson line (at most 30), recalled on the next turn.
+- **A second engine reviews before merging.** After green CI the diff goes to an engine from a different vendor than the one that wrote it (code written with Claude is read by ChatGPT, for example). Findings must name a concrete failure path, go back to the author to verify and fix, and hold the merge until handled. With only one vendor connected, UNI MATE notes on the PR that it was not cross-reviewed.
+- **UNI MATE learns per repo:** a CI failure it later fixed or a check command that failed becomes one lesson line (at most 30), recalled on the next turn.
 - **Numbers per engine and model** on the GitHub card: first push green, fix rounds, review findings, minutes to merge.
 - **A user guide for GitHub inside chat** (Vietnamese and English) in the docs.
 
 ## [0.365.0] - 2026-10-28
 ### Added
-- **Green CI means Javis merges the PR by itself**, with an on/off switch per repo on the GitHub card. A flagged change, open review findings, a repo without CI or an unmet repo requirement never merges on its own. A person can still press Merge in the detail panel.
+- **Green CI means UNI MATE merges the PR by itself**, with an on/off switch per repo on the GitHub card. A flagged change, open review findings, a repo without CI or an unmet repo requirement never merges on its own. A person can still press Merge in the detail panel.
 - **Every conversation shows a GitHub status icon** next to its name in the chat list: working, ready, merged, needs a person. Tap it to see the branch, the PR, the check results and why it is stuck.
 - **Next jobs wait in line:** a new job starts only after the previous PR is merged and the checks after merging are green. A branch behind main is updated by GitHub first, and a conflict becomes a fix round.
 
 ## [0.364.0] - 2026-10-28
 ### Added
-- **Javis pushes to GitHub and opens a draft PR by itself** after a chat turn that changed a repo and passed the checks. Commits carry the connected account's name, and nothing is ever force-pushed.
-- **Javis follows the CI of every commit.** Green is reported in the chat and the PR is marked ready. Red starts a fix turn in that same chat with the error log (secrets hidden), up to 3 rounds, then it stops and asks a person.
+- **UNI MATE pushes to GitHub and opens a draft PR by itself** after a chat turn that changed a repo and passed the checks. Commits carry the connected account's name, and nothing is ever force-pushed.
+- **UNI MATE follows the CI of every commit.** Green is reported in the chat and the PR is marked ready. Red starts a fix turn in that same chat with the error log (secrets hidden), up to 3 rounds, then it stops and asks a person.
 - **It knows when a failure is not its own:** a red main branch means stop, a broken CI runner gets exactly one re-run, and a repo without CI is reported as unverified.
 - A restart halfway through never pushes or opens a PR twice.
 
 ## [0.363.0] - 2026-10-28
 ### Added
-- **Javis checks the code after every turn that changed a GitHub repo.** It runs the repo's own CI commands on this machine (read from the repo's workflows folder, leaving out steps that install into the machine, need secrets or deploy) and reports in the same conversation.
+- **UNI MATE checks the code after every turn that changed a GitHub repo.** It runs the repo's own CI commands on this machine (read from the repo's workflows folder, leaving out steps that install into the machine, need secrets or deploy) and reports in the same conversation.
 - **Stopped before pushing:** a diff that looks like it holds a password or token is not committed; skipping tests, deleting tests or editing workflows to get green CI is flagged for a person before merging.
 - **Every engine reads the repo's rules** (AGENTS.md, CLAUDE.md, CONTRIBUTING.md), not only Claude Code. Each repo's check commands are editable on the GitHub card of the Connections page.
 
 ## [0.362.0] - 2026-10-28
 ### Added
 - **GitHub is built into the Connections page.** Paste a token once, or reuse the brain-backup token with one click. Nothing to install.
-- **Attach GitHub repos to a conversation:** press plus, pick GitHub repo, tick one or more repos. Javis downloads them to this machine (outside the brain folder), and each conversation works on its own branch and folder, so two chats editing the same repo never overwrite each other.
-- **Removing a repo from the brain** deletes only the local copy; the repo on GitHub stays as it is. Javis refuses while there are unsaved edits or commits not pushed yet.
+- **Attach GitHub repos to a conversation:** press plus, pick GitHub repo, tick one or more repos. UNI MATE downloads them to this machine (outside the brain folder), and each conversation works on its own branch and folder, so two chats editing the same repo never overwrite each other.
+- **Removing a repo from the brain** deletes only the local copy; the repo on GitHub stays as it is. UNI MATE refuses while there are unsaved edits or commits not pushed yet.
 - This release does not push code to GitHub yet. Checking, pushing, opening a PR and watching CI come in the next releases.
 
 ## [0.361.0] - 2026-10-27
@@ -433,7 +433,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.360.0] - 2026-10-27
 ### Improved
-- **The design for "GitHub inside chat" is settled.** Soon you pick GitHub repos from the chat's plus button, give a task in words, and Javis edits on its own branch, checks its work, opens a PR, watches CI and merges when green (switchable per repo). This release only adds the design document, no new feature yet.
+- **The design for "GitHub inside chat" is settled.** Soon you pick GitHub repos from the chat's plus button, give a task in words, and UNI MATE edits on its own branch, checks its work, opens a PR, watches CI and merges when green (switchable per repo). This release only adds the design document, no new feature yet.
 - The GitHub connection will be built into the Connections page, with nothing extra to install.
 
 ## [0.359.0] - 2026-10-27
@@ -454,13 +454,13 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.357.0] - 2026-10-27
 ### Added
-- **Give a Team a job straight from chat.** Tell Javis "have the Content team write 3 posts" and it gives that Team exactly one job, coordinated by the Team as if you had given it on the Teams page. When it is done, blocked or needs your decision, the result comes back to the chat you asked in (web, Telegram, Zalo) and to the inbox.
-- The message says whether the job is **DONE** or **PASSED acceptance**. A job that needs your approval still stops on your card; Javis never approves for you. Repeating the same request never makes a second job. Only the owner can give jobs; a Team of another brain is refused before any job exists (issue #826).
+- **Give a Team a job straight from chat.** Tell UNI MATE "have the Content team write 3 posts" and it gives that Team exactly one job, coordinated by the Team as if you had given it on the Teams page. When it is done, blocked or needs your decision, the result comes back to the chat you asked in (web, Telegram, Zalo) and to the inbox.
+- The message says whether the job is **DONE** or **PASSED acceptance**. A job that needs your approval still stops on your card; UNI MATE never approves for you. Repeating the same request never makes a second job. Only the owner can give jobs; a Team of another brain is refused before any job exists (issue #826).
 
 ## [0.356.0] - 2026-10-27
 ### Fixed
-- **Image generation on a ChatGPT plan no longer dies on "Tool choice image_generation not found".** When a ChatGPT model has no image tool, Javis moves to another model of the account, as it does when a model is refused (issue #854).
-- **Google Workspace sign-in with Javis in Docker on a computer.** Clicking Allow used to end on "cannot connect to localhost:8000". Javis now handles the inside of the container; you open port 8000 once with docker-compose.google.yml (to that computer only), and the first Connect tells you the exact command. Updating with update.sh keeps the port (issue #855).
+- **Image generation on a ChatGPT plan no longer dies on "Tool choice image_generation not found".** When a ChatGPT model has no image tool, UNI MATE moves to another model of the account, as it does when a model is refused (issue #854).
+- **Google Workspace sign-in with UNI MATE in Docker on a computer.** Clicking Allow used to end on "cannot connect to localhost:8000". UNI MATE now handles the inside of the container; you open port 8000 once with docker-compose.google.yml (to that computer only), and the first Connect tells you the exact command. Updating with update.sh keeps the port (issue #855).
 
 ## [0.355.0] - 2026-10-27
 ### Improved
@@ -474,17 +474,17 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.354.0] - 2026-10-27
 ### Improved
-- **Out of quota, chat reruns on the next route by itself.** When the running model reports it is out of quota before writing a word or calling a tool, Javis asks the same question again right away on the next account or key of the same provider, then on the next provider in the usage order. The chat shows a line such as "Using ChatGPT because Claude Code is out of quota." and you do not have to send it again. Telegram does the same.
-- **Out of quota halfway, a Run again now button.** The answer stops where it got to; the button asks again on a model that still has quota. Javis never reruns by itself after a tool call, so nothing gets sent or posted twice.
+- **Out of quota, chat reruns on the next route by itself.** When the running model reports it is out of quota before writing a word or calling a tool, UNI MATE asks the same question again right away on the next account or key of the same provider, then on the next provider in the usage order. The chat shows a line such as "Using ChatGPT because Claude Code is out of quota." and you do not have to send it again. Telegram does the same.
+- **Out of quota halfway, a Run again now button.** The answer stops where it got to; the button asks again on a model that still has quota. UNI MATE never reruns by itself after a tool call, so nothing gets sent or posted twice.
 
 ## [0.353.0] - 2026-10-27
 ### Added
 - **Several accounts on one subscription plan.** The ChatGPT, Grok Build and Claude Code cards on the Models page now list their accounts. Tap Add account and sign in with a link and a code right on the page (works on a VPS too). Account 1 is the one the machine already uses. When one runs out of quota the next takes over, and all accounts of a card are used before the next card. A resting account comes back on its own once its reset time passes. Drag or use the arrows to reorder, switch off or remove any account.
-- Using several accounts on the same plan carries a risk of the provider locking them, though Javis has no reported case so far. If it happens, please tell the developer.
+- Using several accounts on the same plan carries a risk of the provider locking them, though UNI MATE has no reported case so far. If it happens, please tell the developer.
 
 ## [0.352.0] - 2026-10-27
 ### Improved
-- **Gentler wording for the account lock risk.** Running background work on a subscription plan (Claude Pro/Max, the xAI plan) still carries a risk of the provider locking the account, but Javis has no reported case so far. If it happens to you, please tell the developer so everyone knows.
+- **Gentler wording for the account lock risk.** Running background work on a subscription plan (Claude Pro/Max, the xAI plan) still carries a risk of the provider locking the account, but UNI MATE has no reported case so far. If it happens to you, please tell the developer so everyone knows.
 - **Easier model picking on a phone.** On the Models page, the model chip, the Effort chip and the background model's "Change model" now open a sheet that slides up from the bottom, with a title, a close button and large rows. The keyboard only comes up when you tap the search box. The model list is tidier: "default" first, the model in use next, the rest A to Z. The MAIN or Fallback label moves to the chip row so the provider name no longer breaks across lines.
 - **The "What the bot answers from" choice is gone from the chatbot form.** Every bot answers from its Agent and documents, so there is nothing to pick. An older bot set to "Documents only" keeps it until you edit and save it; to keep a bot to its documents, write that rule into its Agent file.
 ### Fixed
@@ -499,14 +499,14 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.350.0] - 2026-10-27
 ### Improved
-- **Background work follows a clear order.** It runs on the background model first; when that is out of quota it moves through the fallback providers (each on its own default setup) and uses the main model last. Javis no longer slips in Claude or free OpenRouter when you have not connected them.
+- **Background work follows a clear order.** It runs on the background model first; when that is out of quota it moves through the fallback providers (each on its own default setup) and uses the main model last. UNI MATE no longer slips in Claude or free OpenRouter when you have not connected them.
 - **Nothing is done twice.** An engine that already used a tool (sent a message, posted an article...) and then broke stops the job with a clear error instead of running it again on another engine. That is why jobs at Full access now get a fallback too.
 - **Chat steps around a provider that is out of quota.** When the main model is known to be out of quota, the chat turn starts on the next provider that still has quota, and the next turn tries the main model again. A provider with several API keys skips the keys that are out of quota. The model picker in the chat lists connected providers only.
 - **Telegram pins per chat.** Typing `/model` in a Telegram chat now pins that chat only and no longer changes the model on the web; other chats keep following the main model. An old shared Telegram pin turns into a pin for each chat.
 
 ## [0.349.0] - 2026-10-27
 ### Improved
-- **Rewind a chat to one of your questions.** Under each question you asked there is now a ↺ Rewind button, replacing Send again and Edit. Press it, confirm, and Javis deletes that question and everything below it, then puts the question back in the message box to edit or resend. The chat goes on from there, and the chatting brain forgets the deleted part too. While Javis is answering, press Stop first.
+- **Rewind a chat to one of your questions.** Under each question you asked there is now a ↺ Rewind button, replacing Send again and Edit. Press it, confirm, and UNI MATE deletes that question and everything below it, then puts the question back in the message box to edit or resend. The chat goes on from there, and the chatting brain forgets the deleted part too. While UNI MATE is answering, press Stop first.
 
 ## [0.348.0] - 2026-10-27
 ### Fixed
@@ -517,22 +517,22 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **A leaner sidebar: the Code group is gone and Terminal moves into Capabilities.** Every chat can now attach a folder and write code, so a separate Code area is no longer needed. The old Coding page still opens from old links or voice commands, it just is not on the sidebar. Saying "open the code group" now opens Capabilities, where Terminal lives.
 ### Fixed
 - **A call no longer hangs up when you switch screens.** Opening the Partners page, switching to another conversation or a dropped ChatGPT Live line all used to end the call. The call now stays with the conversation it started in, and after a drop it waits for you to speak, then reconnects. To hang up, press Hang up or tap the mascot.
-- **Long calls no longer lose the mic.** After several minutes the browser's listener could freeze: Javis stopped hearing, and calling again said "mic not closed yet" until a page reload. Javis now notices a frozen listener and rebuilds it at once.
+- **Long calls no longer lose the mic.** After several minutes the browser's listener could freeze: UNI MATE stopped hearing, and calling again said "mic not closed yet" until a page reload. UNI MATE now notices a frozen listener and rebuilds it at once.
 
 ## [0.346.0] - 2026-10-27
 ### Added
-- **Javis reads and edits pinned notes in Zalo groups.** Ask Javis what a group has pinned and you get its notes, pinned messages and polls, with who created and last edited each one and when, including notes staff or customers edited by hand on their phones. Ask Javis to update a note and it edits that same note instead of adding a new one on top. Needs the Store pack "Zalo extras" 1.5.0.
+- **UNI MATE reads and edits pinned notes in Zalo groups.** Ask UNI MATE what a group has pinned and you get its notes, pinned messages and polls, with who created and last edited each one and when, including notes staff or customers edited by hand on their phones. Ask UNI MATE to update a note and it edits that same note instead of adding a new one on top. Needs the Store pack "Zalo extras" 1.5.0.
 ### Fixed
 - **Editing a note no longer unpins it.** Editing a pinned note without saying "pin" used to make Zalo take it off the pin bar. The pin now stays as it was and comes off only when you ask.
 
 ## [0.345.0] - 2026-10-27
 ### Improved
 - **Greetings and thanks cost almost no tokens.** A message that is only a greeting or a thanks now gets its answer through the fast path on every brain, at every saving level. On Claude Code, "hi" dropped from about 60,800 tokens to about 2,100.
-- **Regular questions on Claude Code are about 23% lighter.** Claude Code no longer reads Javis's rules twice (regular installs), and the rules got leaner: the guides for creating plugins, assistants and workflows load only when needed. Measured: from 60,800 down to 46,600 tokens. Every other brain also saves about 1,900 tokens per turn.
-- **Long chats on Claude Code no longer grow to nearly a million tokens per turn.** Claude Code now summarizes the thread at about 180 thousand tokens instead of 980 thousand, so late in a long chat each message costs up to 5 times less while Javis keeps the thread.
+- **Regular questions on Claude Code are about 23% lighter.** Claude Code no longer reads UNI MATE's rules twice (regular installs), and the rules got leaner: the guides for creating plugins, assistants and workflows load only when needed. Measured: from 60,800 down to 46,600 tokens. Every other brain also saves about 1,900 tokens per turn.
+- **Long chats on Claude Code no longer grow to nearly a million tokens per turn.** Claude Code now summarizes the thread at about 180 thousand tokens instead of 980 thousand, so late in a long chat each message costs up to 5 times less while UNI MATE keeps the thread.
 - **The token line under each answer now shows only new tokens.** Context sent earlier is read back from cache by the provider at a far lower price, so it is no longer added in: a second chat turn on Claude Code shows about 4.5k tokens instead of 53k. Hover the line to see the cache share, for example "45k cached tokens". Applies to Claude Code and ChatGPT (Codex).
 ### Fixed
-- **Asking the time in the middle of a long chat on Claude Code now gives the right time.** Javis could answer with the time of the first message in the chat.
+- **Asking the time in the middle of a long chat on Claude Code now gives the right time.** UNI MATE could answer with the time of the first message in the chat.
 
 ## [0.344.0] - 2026-10-27
 ### Improved
@@ -541,21 +541,21 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.343.0] - 2026-10-27
 ### Improved
 - **Learning from chat costs far less.** Reviewing chat turns, writing test questions, grading and writing the revision now run on the background model (set on the Models page). Only the test work itself still runs on your main brain, so the result shows whether the new version helps the model that actually answers you. For the lowest cost, pick a light model as the background model.
-- **Stops early once the result is clear.** When the new version clearly wins, or does not beat the old one, in the first round, Javis skips the second comparison round.
+- **Stops early once the result is clear.** When the new version clearly wins, or does not beat the old one, in the first round, UNI MATE skips the second comparison round.
 
 ## [0.341.0] - 2026-10-26
 ### Added
-- **Javis learns from your chats on its own, nothing to approve.** While you chat, Javis reviews the turns that used a skill, an assistant or a workflow and spots mistakes from your next message (say "wrong, you forgot the VAT"). After the same mistake three times it writes its own test questions, revises the instructions, compares with the current version and applies the change only when it is clearly better and breaks nothing the current version got right.
-- **Safe and bounded.** Learning is text only, with no tools, so it cannot send messages or place orders. At most 40 reviews and one change a day, on the brain you selected. An assistant only gains a learned procedure; the assistant file you wrote stays as it is. The old version is always kept: see and undo changes under "Javis learns from your chats" in the skill improvement panel. Everything follows the Learning page: turning on Learning plus Skill, Role and Step chain is all it takes (Auto-write applies on its own, Suggest waits for you to press Apply, Dry run only records). Skills learn by default; Role and Step chain are switched on on the same page.
+- **UNI MATE learns from your chats on its own, nothing to approve.** While you chat, UNI MATE reviews the turns that used a skill, an assistant or a workflow and spots mistakes from your next message (say "wrong, you forgot the VAT"). After the same mistake three times it writes its own test questions, revises the instructions, compares with the current version and applies the change only when it is clearly better and breaks nothing the current version got right.
+- **Safe and bounded.** Learning is text only, with no tools, so it cannot send messages or place orders. At most 40 reviews and one change a day, on the brain you selected. An assistant only gains a learned procedure; the assistant file you wrote stays as it is. The old version is always kept: see and undo changes under "UNI MATE learns from your chats" in the skill improvement panel. Everything follows the Learning page: turning on Learning plus Skill, Role and Step chain is all it takes (Auto-write applies on its own, Suggest waits for you to press Apply, Dry run only records). Skills learn by default; Role and Step chain are switched on on the same page.
 
 ## [0.340.0] - 2026-10-26
 ### Improved
-- **Store update notices no longer scan in the background.** Javis used to check the Store every 6 hours, even when nobody was using it. Now nothing runs on its own: Javis looks for new versions only when you open it, at most once every 6 hours, and reads a saved copy, so it costs next to nothing. When a new version exists the bell still rings as before, once per version.
+- **Store update notices no longer scan in the background.** UNI MATE used to check the Store every 6 hours, even when nobody was using it. Now nothing runs on its own: UNI MATE looks for new versions only when you open it, at most once every 6 hours, and reads a saved copy, so it costs next to nothing. When a new version exists the bell still rings as before, once per version.
 
 ## [0.339.0] - 2026-10-26
 ### Fixed
-- **Dictation works on phones again.** On an iPhone, pressing the record button ran the timer but no words ever appeared. A phone lets only one thing use the microphone at a time, and this button opened two at once, so neither heard anything. On a phone it now uses one path only: with a Groq or OpenAI API key it records and the text appears when you press stop; without a key it uses the browser's own listener. When no words were heard, Javis now says so instead of staying silent.
-- **A voice call picks up again after waiting.** After about 30 quiet seconds a voice call goes on hold; on an iPhone, speaking again left Javis unable to hear you or make a sound. The call now keeps the audio it opened when you pressed call, so speaking again carries on the conversation. Hanging up releases it.
+- **Dictation works on phones again.** On an iPhone, pressing the record button ran the timer but no words ever appeared. A phone lets only one thing use the microphone at a time, and this button opened two at once, so neither heard anything. On a phone it now uses one path only: with a Groq or OpenAI API key it records and the text appears when you press stop; without a key it uses the browser's own listener. When no words were heard, UNI MATE now says so instead of staying silent.
+- **A voice call picks up again after waiting.** After about 30 quiet seconds a voice call goes on hold; on an iPhone, speaking again left UNI MATE unable to hear you or make a sound. The call now keeps the audio it opened when you pressed call, so speaking again carries on the conversation. Hanging up releases it.
 
 ## [0.338.0] - 2026-10-26
 ### Added
@@ -568,30 +568,30 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.335.0] - 2026-10-26
 ### Added
-- **The bell tells you when a Javis Store pack has a new version.** Javis checks every 6 hours. When a pack you installed has a newer version in the Store, the bell gets one notice naming the pack, the version you run and the new one; pressing it opens the Javis Store to update. Each new version is announced once, and Javis never updates on its own: a new version still goes through the confirm screen, like an install.
+- **The bell tells you when a UNI MATE Store pack has a new version.** UNI MATE checks every 6 hours. When a pack you installed has a newer version in the Store, the bell gets one notice naming the pack, the version you run and the new one; pressing it opens the UNI MATE Store to update. Each new version is announced once, and UNI MATE never updates on its own: a new version still goes through the confirm screen, like an install.
 ### Fixed
-- **An overloaded model (like Gemini's 503 "high demand") now says what is going on.** The chat used to paste Google's whole JSON block. It now shows only the provider's sentence, explains that the provider is overloaded rather than anything being wrong on your side, and says what to do: send again in a few minutes or switch models with the model chip. Javis also waits longer between retries (a few seconds instead of one), so a short spike often passes on its own.
+- **An overloaded model (like Gemini's 503 "high demand") now says what is going on.** The chat used to paste Google's whole JSON block. It now shows only the provider's sentence, explains that the provider is overloaded rather than anything being wrong on your side, and says what to do: send again in a few minutes or switch models with the model chip. UNI MATE also waits longer between retries (a few seconds instead of one), so a short spike often passes on its own.
 
 ## [0.334.0] - 2026-10-26
 ### Added
 - **Customers' reactions on personal Zalo are read.** When a customer hearts, likes or laughs at a message, the inbox shows one small line: who, which emoji, and on which message (the bot's own replies included). Taking a reaction back is recorded too.
-- **The bot decides whether a reaction deserves an answer, and learns it.** A customer's reaction reaches the judge (groups on "Auto-judge") or the Agent (private chats) like a message. Javis has no fixed rule: marking the judge's call right or wrong in its log steers the next one.
-- **The bot can react to customers' messages.** The judge or the Agent may put a heart, a like and so on on the customer's message, with an answer or on its own. The bot never reacts to a reaction. Javis in chat can react too when you ask.
+- **The bot decides whether a reaction deserves an answer, and learns it.** A customer's reaction reaches the judge (groups on "Auto-judge") or the Agent (private chats) like a message. UNI MATE has no fixed rule: marking the judge's call right or wrong in its log steers the next one.
+- **The bot can react to customers' messages.** The judge or the Agent may put a heart, a like and so on on the customer's message, with an answer or on its own. The bot never reacts to a reaction. UNI MATE in chat can react too when you ask.
 
 ## [0.333.0] - 2026-10-26
 ### Added
-- **Javis improves a skill on its own when you ask.** Press "Let Javis improve it": Javis proposes fixes from two angles, test-runs them against the current version, combines what works and picks the best on a sealed question set. The current version stays unless the new one is clearly better, and applying is still your call. The skill needs an examples file with answers (at least 13; you can ask Javis to write it in chat). Nothing to install: it uses the brain you already selected (Claude Code, Codex or an API brain).
+- **UNI MATE improves a skill on its own when you ask.** Press "Let UNI MATE improve it": UNI MATE proposes fixes from two angles, test-runs them against the current version, combines what works and picks the best on a sealed question set. The current version stays unless the new one is clearly better, and applying is still your call. The skill needs an examples file with answers (at least 13; you can ask UNI MATE to write it in chat). Nothing to install: it uses the brain you already selected (Claude Code, Codex or an API brain).
 
 ## [0.332.0] - 2026-10-26
 ### Fixed
 - **Viewing a PDF on a phone always has a close button.** On an iPhone the PDF frame stretched to the whole document, so scrolling through it carried the toolbar (with its close button) off the top. The PDF now scrolls in its own box, and on a phone a round X button floats in the bottom right corner, reachable however far you scroll.
-- **Chatting with Claude Code no longer ends in a "(nothing came back)" bubble.** Now and then Claude ended a turn without writing a word (it thought, then stopped), so a plain question got an empty bubble. Javis now asks Claude once more in the same conversation thread and shows the answer; a turn that reported an error or a plan limit is not asked again.
+- **Chatting with Claude Code no longer ends in a "(nothing came back)" bubble.** Now and then Claude ended a turn without writing a word (it thought, then stopped), so a plain question got an empty bubble. UNI MATE now asks Claude once more in the same conversation thread and shows the answer; a turn that reported an error or a plan limit is not asked again.
 ### Improved
 - **Facebook Messenger is back in its proper place on the Connections page.** It is no longer a stray section under the list: Messenger is now a card in the "Available connections" tab like Zalo, Connect opens its form in the same dialog as every other service, and connected Pages sit right in the "Connected" list.
 
 ## [0.331.0] - 2026-10-26
 ### Fixed
-- **Tagging someone in a Zalo group no longer shows as code on a phone.** When the bot answered someone (say "@Tuan Fernel") in a group that also has a member with a shorter name ("Tuan"), Javis added a second tag on top of the first. Zalo on a computer still looked right, while a phone showed a chunk of `href="zm://..."` code. Each stretch of text now carries one tag, and a "Tuan" written separately elsewhere in the message is still tagged correctly.
+- **Tagging someone in a Zalo group no longer shows as code on a phone.** When the bot answered someone (say "@Tuan Fernel") in a group that also has a member with a shorter name ("Tuan"), UNI MATE added a second tag on top of the first. Zalo on a computer still looked right, while a phone showed a chunk of `href="zm://..."` code. Each stretch of text now carries one tag, and a "Tuan" written separately elsewhere in the message is still tagged correctly.
 
 ## [0.330.0] - 2026-10-26
 ### Added
@@ -608,7 +608,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
   - Green with plenty left, amber from 50%, **red from 80% of either the 5-hour session or the week**, whichever is closer.
   - Click it to see the "5-hour session" and "Weekly" bars with their reset times, like Claude's plan usage panel.
   - The header names the plan in use, such as "Claude · Max" or "ChatGPT · Plus".
-  - The numbers come straight from Claude Code and Codex after each chat turn; Javis never reads your sign-in token. Models on an API key show no ring.
+  - The numbers come straight from Claude Code and Codex after each chat turn; UNI MATE never reads your sign-in token. Models on an API key show no ring.
   - **Grok Build and Antigravity** report no percentage, so their ring stays grey and turns red only when they refuse a turn for plan quota, with the reset time when one is given.
 ### Improved
 - **The lightning bolt (Fast mode) moved to the top-right corner of the Effort popover.** With it on, light particles run along the effort bar; off, the bar is a still gradient. The Effort chip shows a small bolt while Fast mode is on.
@@ -617,7 +617,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.327.0] - 2026-10-26
 ### Added
-- **Fair improvement trials for a whole team.** Javis snapshots the roster, roles, models and acceptance criteria of each trial; two trials that differ beyond the one thing being tested are not compared. Results go into the record only and never mark real work as done or send anything.
+- **Fair improvement trials for a whole team.** UNI MATE snapshots the roster, roles, models and acceptance criteria of each trial; two trials that differ beyond the one thing being tested are not compared. Results go into the record only and never mark real work as done or send anything.
 - **Experience moved to another assistant, team or engine is always marked "untested"** until it is tried again there.
 
 ## [0.325.0] - 2026-10-26
@@ -626,9 +626,9 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.324.0] - 2026-10-26
 ### Added
-- **An invitation to give Javis a star on GitHub**, shown at happy moments: the first time you heart an answer, when Javis just finished a job for you, at 50 or 100 chats, after a month with Javis, or right after an update. Each moment has its own greeting, with Javis's orange star as the mascot.
+- **An invitation to give UNI MATE a star on GitHub**, shown at happy moments: the first time you heart an answer, when UNI MATE just finished a job for you, at 50 or 100 chats, after a month with UNI MATE, or right after an update. Each moment has its own greeting, with UNI MATE's orange star as the mascot.
 - **A 3-step picture guide** for people who have never used GitHub: it points at the exact Star button on a computer or a phone, and GitHub sign-in takes one tap with Gmail. The real star count comes from GitHub with the next milestone, so it stays current by itself.
-- **No nagging:** closing it asks again in 3 days, "Later" in 7 days, at most 6 times; giving a star or "Don't ask again" ends it for good, on every device. To give a star any time, use the "Give a star" button under the version number or the "Support Javis" card on the Updates page.
+- **No nagging:** closing it asks again in 3 days, "Later" in 7 days, at most 6 times; giving a star or "Don't ask again" ends it for good, on every device. To give a star any time, use the "Give a star" button under the version number or the "Support UNI MATE" card on the Updates page.
 
 ## [0.323.0] - 2026-10-26
 ### Added
@@ -636,16 +636,16 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.322.0] - 2026-10-25
 ### Added
-- **Install a plugin from a .zip file.** The Plugins page has an "Install from .zip" button: pick the file and Javis shows its name, version, tools with the permission level of each, and the files inside before anything is installed. A new plugin always arrives turned off, so you review it and switch it on yourself. A store pack zip (one with javis-pack.yaml) opens the pack install flow instead.
-- **Ask Javis to make a plugin and it installs it in place**, no more downloading a file and uploading it again. Javis can also read and edit plugins you already have. A plugin Javis creates, or whose code it changes, stays off until you turn it on in the Plugins page; an edit with a syntax error is refused and the old version stays.
+- **Install a plugin from a .zip file.** The Plugins page has an "Install from .zip" button: pick the file and UNI MATE shows its name, version, tools with the permission level of each, and the files inside before anything is installed. A new plugin always arrives turned off, so you review it and switch it on yourself. A store pack zip (one with unimate-pack.yaml) opens the pack install flow instead.
+- **Ask UNI MATE to make a plugin and it installs it in place**, no more downloading a file and uploading it again. UNI MATE can also read and edit plugins you already have. A plugin UNI MATE creates, or whose code it changes, stays off until you turn it on in the Plugins page; an edit with a syntax error is refused and the old version stays.
 ### Fixed
-- **Pressing "Add" for a link in an assistant's, project's or chat's documents now always answers.** Pasting a link that was already in the list, or pressing with an empty box, used to clear the URL box and say nothing, so the button looked broken. Javis now says "This link is already in the list" and highlights that row, asks for a URL when the box is empty, and says "Added" when done. A link pasted without https:// (like docs.google.com/...) gets it added automatically.
+- **Pressing "Add" for a link in an assistant's, project's or chat's documents now always answers.** Pasting a link that was already in the list, or pressing with an empty box, used to clear the URL box and say nothing, so the button looked broken. UNI MATE now says "This link is already in the list" and highlights that row, asks for a URL when the box is empty, and says "Added" when done. A link pasted without https:// (like docs.google.com/...) gets it added automatically.
 ### Security
 - Plugin zips get the same checks as store packs: odd paths, symlinks, oversized files and compiled code (.pyc, .so) are refused. An existing plugin is only replaced when you choose to, and the app's built-in plugins cannot be overwritten.
 
 ## [0.320.0] - 2026-10-25
 ### Added
-- **Test a skill description before changing it.** You write a new description and sample questions (should pick this skill, should pick none, should pick another skill); Javis shows how many more it routes correctly and whether any become wrong. A version that causes wrong picks is rejected.
+- **Test a skill description before changing it.** You write a new description and sample questions (should pick this skill, should pick none, should pick another skill); UNI MATE shows how many more it routes correctly and whether any become wrong. A version that causes wrong picks is rejected.
 
 ## [0.318.0] - 2026-10-25
 ### Added
@@ -672,12 +672,12 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.313.0] - 2026-10-25
 ### Added
 - **Coloured tags on each chat** in the bot inbox, like Pancake: create, rename, recolour and delete tags right in the chat. Tags show as coloured chips in the list (the first 2, the rest as "+N") and can be used as a filter.
-- **Filter customers who left a phone number or email.** Javis picks up numbers and emails customers type in their messages (0912..., +84..., with or without spaces), older chats included. "Has phone/email" is a filter of its own, so it combines with others, such as "Needs reply" and has a phone number. The number or email shows at the top of the chat, ready to copy.
+- **Filter customers who left a phone number or email.** UNI MATE picks up numbers and emails customers type in their messages (0912..., +84..., with or without spaces), older chats included. "Has phone/email" is a filter of its own, so it combines with others, such as "Needs reply" and has a phone number. The number or email shows at the top of the chat, ready to copy.
 - **On phones the filters fold into one "Filters" button** next to the search box (with the number of filters on), so the chat list gets almost the whole screen. On a computer the filters keep their full text and wrap to a second line instead of being cut.
 - **Customers waiting longest for a reply come first** with "Waiting longest" in the Status filter.
 - **The conversation list column can be dragged** wider or narrower on a computer. Drag it all the way in to leave only initials; double-click to reset.
 ### Fixed
-- **Someone opening Javis on another machine no longer shows "Connection lost" on every open page.** Each page load looked up the server's public IP and its domain right on the main loop; on a server with slow outbound network that froze it for 12 to 24 seconds and every other browser dropped. The lookups now run on their own, and a failed one is remembered for two minutes so the next visitor does not wait again.
+- **Someone opening UNI MATE on another machine no longer shows "Connection lost" on every open page.** Each page load looked up the server's public IP and its domain right on the main loop; on a server with slow outbound network that froze it for 12 to 24 seconds and every other browser dropped. The lookups now run on their own, and a failed one is remembered for two minutes so the next visitor does not wait again.
 - **Bot inbox: clearing a search brings the list back.** After searching and switching tabs, the search box came back empty while the list stayed filtered, with nothing to clear. The box now keeps the text that filters the list, and clearing it shows every chat again.
 
 ## [0.312.0] - 2026-10-25
@@ -689,63 +689,63 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.311.0] - 2026-10-25
 ### Added
-- **A Facebook Messenger card on the Connections page.** Paste the Page ID, App ID, App secret and any token from Graph API Explorer, and Javis swaps it for a Page token that never expires, registers the webhook and subscribes the Page to the app. No more pasting a user token by mistake and hitting error 100 or 210. Thanks @adiagri09-code.
+- **A Facebook Messenger card on the Connections page.** Paste the Page ID, App ID, App secret and any token from Graph API Explorer, and UNI MATE swaps it for a Page token that never expires, registers the webhook and subscribes the Page to the app. No more pasting a user token by mistake and hitting error 100 or 210. Thanks @adiagri09-code.
 - **A step-by-step checklist** after connecting: token, permissions, App secret, webhook, Page subscribed, bot on duty. Every red row shows how to fix it right below. Each Page has Check, Auto-fix and Change token buttons.
-- When a Messenger bot goes quiet, ask Javis: any brain can check it with the `messenger_check` tool and fix it with `messenger_repair`.
+- When a Messenger bot goes quiet, ask UNI MATE: any brain can check it with the `messenger_check` tool and fix it with `messenger_repair`.
 ### Fixed
-- **A skill you turn off stays off.** A skill that was turned off came back in the list, and still loaded, when an old copy sat in `.claude/skills` or `.agents`. It is now off everywhere: in the skill list, when a brain loads it by name and when Javis picks a skill on its own. Javis also refuses a skill file that changes while being read, points outside the brain or is larger than 1 MB.
+- **A skill you turn off stays off.** A skill that was turned off came back in the list, and still loaded, when an old copy sat in `.claude/skills` or `.agents`. It is now off everywhere: in the skill list, when a brain loads it by name and when UNI MATE picks a skill on its own. UNI MATE also refuses a skill file that changes while being read, points outside the brain or is larger than 1 MB.
 - **Workflows no longer let a failed verification step through.** A verifier that answered "PASS" and then reported an error still counted as a pass and the next step ran. Any error now stops the run, the same as for a main step. Thanks @hwangrin.
 
 ## [0.310.0] - 2026-10-25
 ### Added
-- **Google Analytics (GA4) joins the connection store.** Connect with your Google account and Javis can read your website numbers: visits, traffic sources, top pages, realtime reports. Read only, nothing in Analytics is changed. Thanks @congsang1294.
+- **Google Analytics (GA4) joins the connection store.** Connect with your Google account and UNI MATE can read your website numbers: visits, traffic sources, top pages, realtime reports. Read only, nothing in Analytics is changed. Thanks @congsang1294.
 ### Fixed
 - **Team: saving the acceptance criteria again really rechecks.** When a task was marked "does not meet the criteria" and you saved the criteria in Acceptance to check it once more, it stayed on "Rechecking the product against the new criteria" forever and no check ran. The recheck now runs right away and records a new result.
 
 ## [0.309.0] - 2026-10-25
 ### Added
-- **What bots and assistants learn now lives in the brain.** The judge's lessons, eagerness, per-group thresholds and role profile, plus each assistant's lessons, learned presentation and own judge, are written to the brain's `Javis/learned/` folder, one file per bot and per assistant. Copy the brain to another machine or restore it from GitHub and Javis loads them back into the bot and assistant with the same name.
+- **What bots and assistants learn now lives in the brain.** The judge's lessons, eagerness, per-group thresholds and role profile, plus each assistant's lessons, learned presentation and own judge, are written to the brain's `UniMate/learned/` folder, one file per bot and per assistant. Copy the brain to another machine or restore it from GitHub and UNI MATE loads them back into the bot and assistant with the same name.
 - Cases learned from customer messages sit in a separate `.private.json` file: it travels with the brain folder but never goes to GitHub. "Forget everything" and deleting a bot remove these files too.
 ### Fixed
 - **Bot cards are tidy again, nothing runs out of them.** Errors, warnings and groups waiting for approval now sit in one "Status" row with counts on the card. Press View to read everything in a popup (long text wraps) and Allow or Ignore right there.
-- **Zalo messages no longer show tag code on phones.** A bot sometimes sent `href="zm://Profile/...">@Name</a_mention>` along with its reply: Zalo on a computer hid it but Zalo on a phone showed it as is. Javis now removes this markup, broken pieces included, on every way a Zalo message is sent, and two names that end up side by side keep a space between them.
+- **Zalo messages no longer show tag code on phones.** A bot sometimes sent `href="zm://Profile/...">@Name</a_mention>` along with its reply: Zalo on a computer hid it but Zalo on a phone showed it as is. UNI MATE now removes this markup, broken pieces included, on every way a Zalo message is sent, and two names that end up side by side keep a space between them.
 - **The Import old messages button is easy to find.** It used to hide inside the Zalo account chip on the bot card, where hardly anyone noticed it. The bot card's "..." menu now has an Import old messages item (about the last 2 weeks go into the Inbox).
 
 ## [0.308.0] - 2026-10-24
 ### Fixed
 - **The code box when signing in to Claude is no longer squashed.** The send button took the whole row, leaving the code box about 24px wide. Now the box takes the row with readable 16px text, and on a phone the button moves below. After opening the link the cursor lands in the box, Enter sends, and stray spaces from pasting are removed.
 ### Improved
-- **The Anthropic Compatible card no longer asks you to type a model name.** Enter the Base URL and API key and press Connect; Javis reads the gateway's model list so you pick one under Main model. Only a gateway that does not list its models opens a model box, with the usual Claude names ready to pick.
+- **The Anthropic Compatible card no longer asks you to type a model name.** Enter the Base URL and API key and press Connect; UNI MATE reads the gateway's model list so you pick one under Main model. Only a gateway that does not list its models opens a model box, with the usual Claude names ready to pick.
 
 ## [0.306.0] - 2026-10-24
 ### Improved
-- **Installing on Windows or macOS starts Javis with the computer and opens the browser.** The dashboard opens right after install, and from then on every login starts Javis and opens the dashboard with nothing to click. Before, you had to turn this on yourself, and then Javis only ran hidden, so after starting the computer you could not see it.
-- To stop it: on Windows press Turn off on the Start with the computer card (Settings) or run `javis-autostart.bat uninstall`; on macOS run `./bin/javis-autostart.sh uninstall`.
+- **Installing on Windows or macOS starts UNI MATE with the computer and opens the browser.** The dashboard opens right after install, and from then on every login starts UNI MATE and opens the dashboard with nothing to click. Before, you had to turn this on yourself, and then UNI MATE only ran hidden, so after starting the computer you could not see it.
+- To stop it: on Windows press Turn off on the Start with the computer card (Settings) or run `unimate-autostart.bat uninstall`; on macOS run `./bin/unimate-autostart.sh uninstall`.
 - A Windows machine that already had auto-start keeps running hidden as before; turn it off and on once to add the dashboard opening.
 
 ## [0.304.0] - 2026-10-24
 ### Fixed
-- **A Hostinger Ubuntu 26 VPS gets HTTPS with nothing to fill in, and this time it works.** 0.302.0 picked the wrong name: the HTTPS gateway got a certificate for one link while Javis checked another, so Open stayed on the IP page with no HTTPS. The gateway now serves both `javis.srvXXXX.hstgr.cloud` and `srvXXXX.hstgr.cloud`, and Javis tries exactly those two.
+- **A Hostinger Ubuntu 26 VPS gets HTTPS with nothing to fill in, and this time it works.** 0.302.0 picked the wrong name: the HTTPS gateway got a certificate for one link while UNI MATE checked another, so Open stayed on the IP page with no HTTPS. The gateway now serves both `unimate.srvXXXX.hstgr.cloud` and `srvXXXX.hstgr.cloud`, and UNI MATE tries exactly those two.
 ### Improved
 - **Settings, Domain says which step the VPS link is at:** working (with an open button), waiting for its certificate (with a reminder to open ports 80, 443 in hPanel's Firewall), or a VPS with Traefik that needs the `DOMAIN_NAME` line.
 
 ## [0.302.0] - 2026-10-24
 ### Fixed
-- **Hostinger's Open button no longer opens localhost.** Without `DOMAIN_NAME`, Open now goes to `http://<vps-ip>:7777` and reaches Javis right away. The install file used to put `localhost` where the domain goes, so Open pointed at the clicker's own computer.
+- **Hostinger's Open button no longer opens localhost.** Without `DOMAIN_NAME`, Open now goes to `http://<vps-ip>:7777` and reaches UNI MATE right away. The install file used to put `localhost` where the domain goes, so Open pointed at the clicker's own computer.
 ### Added
-- **Open goes straight to the VPS link after install.** On a Hostinger VPS without Traefik (Ubuntu 26) there is nothing to fill in: Javis reads the VPS name, issues HTTPS for `https://javis.srvXXXX.hstgr.cloud`, and a page opened by IP moves there once it works. Like an app installed from Hostinger's Catalog.
+- **Open goes straight to the VPS link after install.** On a Hostinger VPS without Traefik (Ubuntu 26) there is nothing to fill in: UNI MATE reads the VPS name, issues HTTPS for `https://unimate.srvXXXX.hstgr.cloud`, and a page opened by IP moves there once it works. Like an app installed from Hostinger's Catalog.
 ### Improved
-- **Javis suggests the Hostinger VPS's free link.** In Settings, Domain, Javis finds the VPS's `srvXXXX.hstgr.cloud` name and shows the line `DOMAIN_NAME=javis.srvXXXX.hstgr.cloud` with a copy button. Paste it into Environment and Redeploy for HTTPS and the right Open link.
+- **UNI MATE suggests the Hostinger VPS's free link.** In Settings, Domain, UNI MATE finds the VPS's `srvXXXX.hstgr.cloud` name and shows the line `DOMAIN_NAME=unimate.srvXXXX.hstgr.cloud` with a copy button. Paste it into Environment and Redeploy for HTTPS and the right Open link.
 
 ## [0.300.0] - 2026-10-24
 ### Fixed
-- **One Hostinger install link works on both Ubuntu 24 and Ubuntu 26.** A plain Ubuntu 26 image has no Traefik, so pasting the link used to give a running Javis whose domain never got HTTPS. The link now carries an HTTPS gateway (Caddy) that turns itself on when there is no Traefik and issues the certificate for `DOMAIN_NAME`; on a VPS with Traefik it stays out of the way.
+- **One Hostinger install link works on both Ubuntu 24 and Ubuntu 26.** A plain Ubuntu 26 image has no Traefik, so pasting the link used to give a running UNI MATE whose domain never got HTTPS. The link now carries an HTTPS gateway (Caddy) that turns itself on when there is no Traefik and issues the certificate for `DOMAIN_NAME`; on a VPS with Traefik it stays out of the way.
 ### Improved
 - The install docs say it plainly: Traefik only provides HTTPS, updates are done by the bundled Watchtower, so the **Update now** button works the same on every Ubuntu release.
 
 ## [0.298.0] - 2026-10-23
 ### Fixed
-- **A voice picked on one device now applies everywhere.** The reading voice used to live only in the open browser, so picking a female voice on the laptop left the phone on its old voice however many times you saved. It is now saved in Javis, so every device and the voice notes sent through Telegram and Zalo use it.
+- **A voice picked on one device now applies everywhere.** The reading voice used to live only in the open browser, so picking a female voice on the laptop left the phone on its old voice however many times you saved. It is now saved in UNI MATE, so every device and the voice notes sent through Telegram and Zalo use it.
 ### Improved
 - **The Voice card says which voice you will hear.** Every voice says Female or Male (ChatGPT Live voices like Juniper and Cove too). The top of the card says which voice the call uses and which reads answers.
 - **Two clearly separate voice fields:** Call voice and Answer reading voice. When they differ in gender, a warning offers a one-tap switch.
@@ -760,8 +760,8 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.295.0] - 2026-10-23
 ### Security
-- **Node.js 2026-10-21 security fixes.** Node.js disclosed 10 vulnerabilities, the worst a Brotli flaw that allows remote code execution. The new Docker image runs the patched Node.js 22.23.4, so Docker installs only need to update Javis.
-- **Javis checks this machine's Node.js.** If it runs an unpatched or end-of-life release (Node 20 and older), the News bell shows a Security item with the installed version and the upgrade command for Windows, Mac or Linux. Patched machines are not nagged.
+- **Node.js 2026-10-21 security fixes.** Node.js disclosed 10 vulnerabilities, the worst a Brotli flaw that allows remote code execution. The new Docker image runs the patched Node.js 22.23.4, so Docker installs only need to update UNI MATE.
+- **UNI MATE checks this machine's Node.js.** If it runs an unpatched or end-of-life release (Node 20 and older), the News bell shows a Security item with the installed version and the upgrade command for Windows, Mac or Linux. Patched machines are not nagged.
 - **Fresh installs get the patched release.** `install.sh` no longer accepts Node 20 or an old Node 22: it installs the latest Node.js 22, and warns about an unpatched Node 24 or 26 so you can upgrade it yourself.
 
 ## [0.293.0] - 2026-10-23
@@ -780,7 +780,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ### Added
 - **A goal bar right above the chat box.** Once you set `/goal`, a bar tracks it: the goal text, a running timer, buttons to delete, pause or resume, and an arrow for details (which round, what is still missing). It shows in every chat view.
 - **Several goals at once.** One goal per conversation. With two or more, the bar starts with a number; press it to drop down the list and press a row to open that conversation.
-- **Typed commands are highlighted.** Type `/goal`, `/plan` or a skill name into the chat box and the command part turns orange, so you can see what Javis will read as a command.
+- **Typed commands are highlighted.** Type `/goal`, `/plan` or a skill name into the chat box and the command part turns orange, so you can see what UNI MATE will read as a command.
 ### Improved
 - **Goals pause instead of vanishing.** Pressing Stop or typing a message mid-run only pauses the goal; moving to another conversation makes it wait and it carries on when you come back; it survives a page reload on the bar.
 - **A tidy, aligned / command menu.** One line per command, a shared command column so descriptions line up, smaller text, and group headings for Commands, Agents, Workflows and Skill.
@@ -798,9 +798,9 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.286.0] - 2026-10-22
 ### Fixed
-- **Choosing a model in an assistant's chat no longer changes the main chat's model.** For every assistant and Javis Core: the model chosen there is pinned to that chat only. An assistant with no model of its own follows the main model, and a new "Follow the main chat's model" row removes the pin.
+- **Choosing a model in an assistant's chat no longer changes the main chat's model.** For every assistant and UNI MATE Core: the model chosen there is pinned to that chat only. An assistant with no model of its own follows the main model, and a new "Follow the main chat's model" row removes the pin.
 - **When an assistant's pinned model runs out of plan quota, the chat runs on the main chat's model for now,** and goes back to the pinned model once the plan resets.
-- **Javis Core follows the main chat's reasoning level** until you pick one for it. A level set in an assistant's chat is always saved for that assistant.
+- **UNI MATE Core follows the main chat's reasoning level** until you pick one for it. A level set in an assistant's chat is always saved for that assistant.
 
 ## [0.285.0] - 2026-10-22
 ### Improved
@@ -810,13 +810,13 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.284.0] - 2026-10-22
 ### Fixed
-- **Changing Javis Core's reasoning level no longer changes the main chat's.** Javis Core now has its own level like every other assistant, Medium by default. Its chats used to share the main chat's level, so changing one changed the other.
+- **Changing UNI MATE Core's reasoning level no longer changes the main chat's.** UNI MATE Core now has its own level like every other assistant, Medium by default. Its chats used to share the main chat's level, so changing one changed the other.
 ### Improved
 - The reasoning level in an assistant's settings uses the same English names as the main chat: Off, Light, Medium, High, Extra, Ultra.
 
 ## [0.282.0] - 2026-10-22
 ### Fixed
-- **A Zalo bot no longer goes "deaf" while another session of the same account runs.** After today's update, a leftover old Zalo copy kept taking the connection, so the bot only heard messages for a few seconds after each reconnect and missed tags and private messages. Javis now stops old Zalo copies on the machine, the bot card turns red, and the bell tells you when the other session is elsewhere (Zalo Web, another Javis).
+- **A Zalo bot no longer goes "deaf" while another session of the same account runs.** After today's update, a leftover old Zalo copy kept taking the connection, so the bot only heard messages for a few seconds after each reconnect and missed tags and private messages. UNI MATE now stops old Zalo copies on the machine, the bot card turns red, and the bell tells you when the other session is elsewhere (Zalo Web, another UNI MATE).
 - **A bot reply Zalo did not accept now shows as a send error,** instead of looking sent while the customer saw nothing. Zalo MCP 1.6.1 also sends through the new session after every reconnect.
 ### Added
 - **The bot reads the Zalo tags of a chat** (Family, Friends, Work, Customer...), so it knows who it is talking to. Personal Zalo bots get **"Never answer chats with these Zalo tags"**: tick tags listed from Zalo or type one, and the bot stays silent in those chats.
@@ -829,7 +829,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.280.0] - 2026-10-22
 ### Improved
-- **Private 1-1 chats: the bot can stay silent and alert you on a hard question.** In Auto-judge mode a private message now has a third outcome besides reply and silence: when the documents and the Agent cannot settle it, or you must decide yourself (a discount, a complaint, a refund, a booking), the bot no longer guesses. It stays silent and alerts you in the Javis bell.
+- **Private 1-1 chats: the bot can stay silent and alert you on a hard question.** In Auto-judge mode a private message now has a third outcome besides reply and silence: when the documents and the Agent cannot settle it, or you must decide yourself (a discount, a complaint, a refund, a booking), the bot no longer guesses. It stays silent and alerts you in the UNI MATE bell.
 - **The alert says what the customer wrote and the bot's note on why it did not answer.** The message stays in the Bot inbox for you to reply by hand. A customer firing several hard questions rings the bell once per 10 minutes; the bot log still records each one.
 - **Try bot shows "The bot would stay silent and alert you in the bell"** with the bot's note, so you can test before going live. Your Agent's instructions still win: if the Agent says how to handle a kind of message, the bot does exactly that.
 
@@ -849,9 +849,9 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.275.0] - 2026-10-22
 ### Fixed
-- **Background work is more reliable.** Reminders fire on time in every brain, including brains with no loop. A network error right after the machine wakes is now recorded as failed and retried a few minutes later, without re-sending what already went out. When the Claude plan names its reset time (for example 1:50am), Javis schedules the retry itself. Loops remember earlier rounds, so they stop repeating a suggestion.
+- **Background work is more reliable.** Reminders fire on time in every brain, including brains with no loop. A network error right after the machine wakes is now recorded as failed and retried a few minutes later, without re-sending what already went out. When the Claude plan names its reset time (for example 1:50am), UNI MATE schedules the retry itself. Loops remember earlier rounds, so they stop repeating a suggestion.
 - **Teams work more smoothly.** Members read Excel files (every sheet, formula results, error cells) and see which PDF pages are scans, without per-command approvals. An approved command is no longer blocked again, and approval cards show the real command. Steps that must run in order do, and a job with steps left is never marked Done.
-- **Projects and partners work on every channel.** A project's rules apply on the CLI and Telegram too, and stay when the conversation moves to a new session; the `javis` command gains `--project`. On Telegram, start with `@partner-name` to have that partner answer, `/agent name` hands it the whole chat, `/agent off` brings Javis back.
+- **Projects and partners work on every channel.** A project's rules apply on the CLI and Telegram too, and stay when the conversation moves to a new session; the `unimate` command gains `--project`. On Telegram, start with `@partner-name` to have that partner answer, `/agent name` hands it the whole chat, `/agent off` brings UNI MATE back.
 - **The GitHub backup no longer pushes partners' raw run logs or the text extracted from attachments.** Copies pushed before stay in the repo; once every machine is updated you can delete them on GitHub.
 
 ### Improved
@@ -860,7 +860,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.274.0] - 2026-10-22
 ### Added
-- **Webhooks become a durable event inbox.** Each event is written to disk before Javis answers "received" (202). If the machine stops, updates or crashes midway, Javis carries on when it starts again and no order is lost.
+- **Webhooks become a durable event inbox.** Each event is written to disk before UNI MATE answers "received" (202). If the machine stops, updates or crashes midway, UNI MATE carries on when it starts again and no order is lost.
 - **Strict filters and duplicate checks.** Filters respect data types (the number 1 is not the text "1"), can check each item of an order, and a duplicate key can combine several fields (shop, order id, status) with an expiry. An event that does not match is logged with the reason and uses no AI run.
 - **Forward without AI:** to an HTTP address (the original body unchanged), a Google Apps Script (done only once it returns a receipt) or a plugin such as POSCake Zalo. Each target runs on its own, one can wait for another, and Retry resends only the one that failed.
 - **Automatic retries** after 1, 5 and then 30 minutes, for up to 24 hours. Work that may have happened with an unclear result is held for you to decide, never resent on its own.
@@ -870,7 +870,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **Process again with the current setup**, with a preview that says which actions already succeeded, or may have acted, and could act once more. A hook changed after the preview asks for a new preview.
 - **Retry all blocked:** after a fix outside the hook (plugin switched back on, key changed at the receiver), one button runs them all again.
 - **Failed events keep their payload** until you retry or **Delete** them, so Retry always sends what was received.
-- **Signature checks for Stripe, GitHub, Shopify and Systeme.io**, each done its own way, with an overlap period when a key changes. These senders need no Javis key: their signature is enough. Systeme.io was not tried with a real account, so it is marked unverified. POSCake has no signature check yet because there is no official documentation.
+- **Signature checks for Stripe, GitHub, Shopify and Systeme.io**, each done its own way, with an overlap period when a key changes. These senders need no UNI MATE key: their signature is enough. Systeme.io was not tried with a real account, so it is marked unverified. POSCake has no signature check yet because there is no official documentation.
 - **A rollback tool** (`server/webhook_rollback.py`): backs up the store, exports unfinished events for reconciliation and writes the webhook list back for the older build.
 ### Security
 - API keys and signing keys are encrypted on disk, never shown in the interface and never kept in the configuration history. Back up `webhook_keys.json` together with `webhook_secrets.json`.
@@ -882,7 +882,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - Notifications: every run, errors only (repeated errors grouped into one), a daily digest in the time zone you pick, or off. Off still keeps system alerts such as a nearly full disk.
 - On first start of this version the webhook list moves into the new store (with a backup) and older webhooks run as before.
 - A domain that briefly fails to resolve is retried later instead of failing for good.
-- Javis starts a little faster: the webhook platform, the push notification crypto library and uvicorn load only when needed.
+- UNI MATE starts a little faster: the webhook platform, the push notification crypto library and uvicorn load only when needed.
 ### Fixed
 - An Apps Script that ran but answered with an unreadable page is now "unknown", not "failed", so Retry does not write a second row.
 - Saving from an old tab, or from two tabs at once, never brings a secret key back to an older value.
@@ -903,27 +903,27 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.270.0] - 2026-10-21
 ### Fixed
-- **npx connections no longer break for good after their first install.** If Javis had just restarted while a connection was still downloading its package, it could be cut off halfway, leaving a half-installed copy that failed with MODULE_NOT_FOUND forever. Javis now waits for the first install, cleans up half-installed copies, and after each restart tries every connection and tells you once if any is not working. A connection still on its first install shows a yellow dot instead of red. (Contributed by @dev23072005.)
-- **An agent with an old Codex model no longer changes your main model.** This covers assistant chats on the dashboard and turns sent through `/chat`: Javis fixes only that assistant's or that session's model.
+- **npx connections no longer break for good after their first install.** If UNI MATE had just restarted while a connection was still downloading its package, it could be cut off halfway, leaving a half-installed copy that failed with MODULE_NOT_FOUND forever. UNI MATE now waits for the first install, cleans up half-installed copies, and after each restart tries every connection and tells you once if any is not working. A connection still on its first install shows a yellow dot instead of red. (Contributed by @dev23072005.)
+- **An agent with an old Codex model no longer changes your main model.** This covers assistant chats on the dashboard and turns sent through `/chat`: UNI MATE fixes only that assistant's or that session's model.
 ### Added
-- **Call one specific assistant through `/chat` and the `javis` command.** An outside app that adds `agent=<slug>` (or `javis --agent <slug>`) runs that turn with the assistant's prompt, skills and model, in its own session, and lessons are recorded as in a dashboard chat. An assistant or brain that does not exist gets a clear error instead of silently running the main model. (Contributed by @QuanAMG.)
+- **Call one specific assistant through `/chat` and the `unimate` command.** An outside app that adds `agent=<slug>` (or `unimate --agent <slug>`) runs that turn with the assistant's prompt, skills and model, in its own session, and lessons are recorded as in a dashboard chat. An assistant or brain that does not exist gets a clear error instead of silently running the main model. (Contributed by @QuanAMG.)
 
 ## [0.269.0] - 2026-10-21
 ### Fixed
-- **The Update button works again when Javis runs as a normal user.** Since 0.267.0, a machine running the Javis service as a non-root user failed every update with "Interactive authentication required" and stayed on the old version. Javis now falls back to a way that needs no admin rights: it downloads the new version while the old one keeps running, then restarts once. Machines running as root are unchanged.
+- **The Update button works again when UNI MATE runs as a normal user.** Since 0.267.0, a machine running the UNI MATE service as a non-root user failed every update with "Interactive authentication required" and stayed on the old version. UNI MATE now falls back to a way that needs no admin rights: it downloads the new version while the old one keeps running, then restarts once. Machines running as root are unchanged.
 - If the machine still does not allow it, the screen shows the manual update command and one command (`sudo loginctl enable-linger`) that makes the button work from then on.
-- **Note:** a machine stuck on 0.267.0 or 0.268.0 needs one manual update to reach this version (`git pull --ff-only`, install the libraries, `sudo systemctl restart javis`). After that the Update button works as usual.
+- **Note:** a machine stuck on 0.267.0 or 0.268.0 needs one manual update to reach this version (`git pull --ff-only`, install the libraries, `sudo systemctl restart unimate`). After that the Update button works as usual.
 
 ## [0.268.0] - 2026-10-21
 ### Fixed
-- **SharePoint files read through Composio at Read-only.** Every SharePoint command, even listing a folder or downloading a file to read, was blocked as dangerous because the app name starts with the word SHARE. Javis now ignores the app name when it judges a command: reads run at Read-only, while upload, share and delete still need Full access.
+- **SharePoint files read through Composio at Read-only.** Every SharePoint command, even listing a folder or downloading a file to read, was blocked as dangerous because the app name starts with the word SHARE. UNI MATE now ignores the app name when it judges a command: reads run at Read-only, while upload, share and delete still need Full access.
 
 ## [0.267.0] - 2026-10-21
 ### Fixed
 - **Teams stop asking for approval when an assistant only reads files.** In an "approval needed" team, a chained read (`cd ...; cat ...; sed -n ...; grep "a\|b" ...`) used to count as an outside action and stop the task for the owner. Each command in the chain is now checked on its own: reading, searching and printing run straight away. Writing files, deleting, running code and sending still wait for approval.
 - **The Team chat no longer freezes on a phone.** A send that hit a flaky network could leave the send button locked until the app was closed. Every server call now gives up after 30 seconds and says the network dropped; press send again (it is never sent twice). Coming back to the app after more than 20 seconds reloads the open team.
-- **A VPS running a self-built image is now told how to update.** Javis moved from a computer to a VPS by packing the image on the spot (a name like `javis-cwi:pc-0.206.0`) stayed on its old version whatever you pressed, because that image lives in no registry. The Updates page now says so and shows how to switch to the official image once, keeping all your data. The steps are in DEPLOY.md, Updating section.
-- **Updating on a VPS no longer leaves Javis switched off.** On a systemd install, stopping the service also killed the updater halfway, so Javis stopped and never came back. The updater now moves out on its own first, then stops the service. Installs with their own name (`JAVIS_NAME`, for example `javis-shop`) now stop and start their own service.
+- **A VPS running a self-built image is now told how to update.** UNI MATE moved from a computer to a VPS by packing the image on the spot (a name like `unimate-cwi:pc-0.206.0`) stayed on its old version whatever you pressed, because that image lives in no registry. The Updates page now says so and shows how to switch to the official image once, keeping all your data. The steps are in DEPLOY.md, Updating section.
+- **Updating on a VPS no longer leaves UNI MATE switched off.** On a systemd install, stopping the service also killed the updater halfway, so UNI MATE stopped and never came back. The updater now moves out on its own first, then stops the service. Installs with their own name (`UNIMATE_NAME`, for example `unimate-shop`) now stop and start their own service.
 
 ## [0.266.0] - 2026-10-21
 ### Improved
@@ -942,52 +942,52 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.262.0] - 2026-10-20
 ### Added
-- **Every brain can search and read the web.** OpenRouter, OpenAI, Anthropic API, Gemini, Groq, DeepSeek and Ollama now search the internet and read web pages and PDFs to answer about news, prices and documentation instead of guessing from memory. No key needed: DuckDuckGo by default. With a Tavily or Brave key (`TAVILY_API_KEY`, `BRAVE_API_KEY`) or your own SearXNG (`SEARXNG_URL`) Javis uses that first. Long pages are read in parts, nothing is cut off.
-- **Every chat gets the full Code page toolkit.** The normal chat, assistant chats and your Telegram now also have the terminal, section edits, file search, restore points and 150 tool rounds per turn. With no pinned folder Javis works right in the brain; with one, it works in that folder.
-- **Undo in every chat**: the composer's "+" menu has "Undo Javis's changes", which opens the same Undo panel as the Code page.
+- **Every brain can search and read the web.** OpenRouter, OpenAI, Anthropic API, Gemini, Groq, DeepSeek and Ollama now search the internet and read web pages and PDFs to answer about news, prices and documentation instead of guessing from memory. No key needed: DuckDuckGo by default. With a Tavily or Brave key (`TAVILY_API_KEY`, `BRAVE_API_KEY`) or your own SearXNG (`SEARXNG_URL`) UNI MATE uses that first. Long pages are read in parts, nothing is cut off.
+- **Every chat gets the full Code page toolkit.** The normal chat, assistant chats and your Telegram now also have the terminal, section edits, file search, restore points and 150 tool rounds per turn. With no pinned folder UNI MATE works right in the brain; with one, it works in that folder.
+- **Undo in every chat**: the composer's "+" menu has "Undo UNI MATE's changes", which opens the same Undo panel as the Code page.
 ### Improved
 - File reads, the terminal and web reads can return up to 60,000 characters at a time (normal chat used to cut at 8,000), so nothing is lost mid-way. Results from outside connections (POS, ads...) keep the old cap so chat turns do not grow heavier.
 ### Security
-- Web reads never touch the internal network (localhost, the LAN, a cloud server's metadata address), checked again on every redirect. Page content is marked as data, not instructions, so a page that plants commands cannot steer Javis.
+- Web reads never touch the internal network (localhost, the LAN, a cloud server's metadata address), checked again on every redirect. Page content is marked as data, not instructions, so a page that plants commands cannot steer UNI MATE.
 - Chatbots talking to customers get neither the terminal nor the web tools, even at Full access.
 
 ## [0.261.0] - 2026-10-20
 ### Improved
 - **The Login vault is now called Cookies**, with a cookie icon, so it fits the sidebar. Buttons and text on the page say "cookies" too.
-- **Upload a cookie file.** Press **Upload file** at the top of the page (or **Choose file** in the form, or drop the file on the box): Javis takes a Cookie-Editor JSON file or a `cookies.txt`, and names the entry after the file. No more opening the file to copy and paste.
+- **Upload a cookie file.** Press **Upload file** at the top of the page (or **Choose file** in the form, or drop the file on the box): UNI MATE takes a Cookie-Editor JSON file or a `cookies.txt`, and names the entry after the file. No more opening the file to copy and paste.
 
 ## [0.260.0] - 2026-10-20
 ### Improved
 - **Calling several members in one message makes them answer at the same time.** Before, @ three members meant waiting for each one in turn. For the old way (each reads the previous answer first), open the team's Advanced section and set "When one message calls several members" to One by one.
 - **When the leader splits a job, the members work at the same time**, up to 3 per round, and the summary comes once all are done. If one member hits an error, the others' parts are kept and Retry only redoes the failed part.
 - **Teams of the same brain can run tool work side by side.** Before, every step that read or wrote files in one brain waited in line. Now each working folder allows up to 3 turns at once, and a team with its own pinned folder never waits for another team. When they run together, each member is told to edit only the files of its own part.
-- For the stricter old behavior set `JAVIS_TEAM_TOOL_SLOTS=1` (one writer at a time) or `JAVIS_TEAM_JOB_PARALLEL=1` (one step at a time).
+- For the stricter old behavior set `UNIMATE_TEAM_TOOL_SLOTS=1` (one writer at a time) or `UNIMATE_TEAM_JOB_PARALLEL=1` (one step at a time).
 
 ## [0.257.0] - 2026-10-20
 ### Improved
 - **One assistant can work in several teams at once.** Before, an assistant answering in one team made every other team wait, sometimes up to 30 minutes. Each team now has its own thread, so they run in parallel. Within one team an assistant still answers one message at a time.
-- **More teams run jobs at once:** up from 2 to 4. Change it with `JAVIS_TEAM_PARALLEL`.
-- **A brake so a subscription plan is not overloaded.** Each plan engine (Claude Code, ChatGPT, Grok, Antigravity) runs at most 3 team turns at once, each API-key engine at most 6. Turns over the limit wait, nothing is lost. Change with `JAVIS_TEAM_CLI_SLOTS` and `JAVIS_TEAM_API_SLOTS`.
+- **More teams run jobs at once:** up from 2 to 4. Change it with `UNIMATE_TEAM_PARALLEL`.
+- **A brake so a subscription plan is not overloaded.** Each plan engine (Claude Code, ChatGPT, Grok, Antigravity) runs at most 3 team turns at once, each API-key engine at most 6. Turns over the limit wait, nothing is lost. Change with `UNIMATE_TEAM_CLI_SLOTS` and `UNIMATE_TEAM_API_SLOTS`.
 - One limit remains: **Work steps with tools** of teams in the same brain still take turns, so two teams never overwrite the same file. A later release loosens this.
 
 ## [0.256.0] - 2026-10-20
 ### Added
 - **API brains can really code on the Code page.** OpenRouter, OpenAI, Anthropic API, Gemini, Groq, DeepSeek and Ollama now do a developer's job in the folder you attach: search the code, read it in pages, change just a few lines, run commands, start a dev server. The design borrows from Hermes Agent.
-- **Edit a section instead of rewriting the whole file.** Javis replaces only the part that needs changing, even when the model gets indentation or quotes slightly wrong, and shows the diff. If the edit breaks the file's syntax you are told right away. You can also search code by content or by file name.
-- **A real terminal at Full access.** Commands with `|`, `&&` and `cd` work, and the folder is remembered between commands. Dev servers and long jobs run in the background; Javis reads their logs, can stop them, and reports in the chat when they finish.
-- **An Undo button on the Code page.** Before the first turn that edits files, Javis saves a restore point. Undo shows which files changed and the differences, then puts them back. Files you edited yourself afterwards stay as they are. Your project's git is never touched, and folders without git work too.
+- **Edit a section instead of rewriting the whole file.** UNI MATE replaces only the part that needs changing, even when the model gets indentation or quotes slightly wrong, and shows the diff. If the edit breaks the file's syntax you are told right away. You can also search code by content or by file name.
+- **A real terminal at Full access.** Commands with `|`, `&&` and `cd` work, and the folder is remembered between commands. Dev servers and long jobs run in the background; UNI MATE reads their logs, can stop them, and reports in the chat when they finish.
+- **An Undo button on the Code page.** Before the first turn that edits files, UNI MATE saves a restore point. Undo shows which files changed and the differences, then puts them back. Files you edited yourself afterwards stay as they are. Your project's git is never touched, and folders without git work too.
 ### Fixed
 - Before this release an API brain in a Code session could not actually read any file of the project, because the working folder was never passed in. It is now.
 - A new file at the project root no longer lands in the brain folder by mistake.
 - At the Plan level the command tool no longer appears.
 ### Improved
-- A turn on the Code page can use up to 150 tool rounds (normal chat stays at 30), and with 10 left Javis is told to sum up and wrap up. Change it with `JAVIS_MAX_TOOL_ROUNDS_CODING`.
+- A turn on the Code page can use up to 150 tool rounds (normal chat stays at 30), and with 10 left UNI MATE is told to sum up and wrap up. Change it with `UNIMATE_MAX_TOOL_ROUNDS_CODING`.
 ### Security
-- The terminal does not carry Javis's API keys and its output has secrets masked. Commands that could wreck the whole machine (deleting system folders, formatting disks, `sudo`, shutting down) are blocked at every level. Every command is logged.
+- The terminal does not carry UNI MATE's API keys and its output has secrets masked. Commands that could wreck the whole machine (deleting system folders, formatting disks, `sudo`, shutting down) are blocked at every level. Every command is logged.
 
 ## [0.255.0] - 2026-10-20
 ### Improved
-- **ElevenLabs can be picked even when calls run on ChatGPT Live.** The ElevenLabs choice used to show only on the Basic call path, so most machines never saw it. The Voice card now has a **Message reading voice** row: pick ElevenLabs there and Javis reads chat answers with it.
+- **ElevenLabs can be picked even when calls run on ChatGPT Live.** The ElevenLabs choice used to show only on the Basic call path, so most machines never saw it. The Voice card now has a **Message reading voice** row: pick ElevenLabs there and UNI MATE reads chat answers with it.
 - **No more pasting a Voice ID.** Once the API key is in, the voices of your ElevenLabs account show by name, your own cloned voices first. The key, voice and model boxes sit right under the choice instead of inside Advanced.
 - **ElevenLabs reads Vietnamese properly.** The old default model (Multilingual v2) has no Vietnamese and sounded foreign. The default is now Flash v2.5 (fast, has Vietnamese), with Eleven v3 (most expressive) as an option; a machine that saved the old model uses Flash v2.5 for Vietnamese sentences.
 - **Voice notes sent over Telegram and Zalo use the ElevenLabs voice too** when it is chosen. If ElevenLabs fails (quota, broken key) the note is read with Edge instead of being lost. ChatGPT Live and Live over an API calls still speak with their own voices.
@@ -995,18 +995,18 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.254.0] - 2026-10-20
 ### Added
 - **Connect an "Anthropic Compatible" gateway.** The Models page has a new card: paste the Base URL, the API key and the model name the seller gave you. It suits Claude resellers and the "anthropic" endpoints of DeepSeek, Kimi and MiniMax. When a seller says their Anthropic endpoint is more stable than their OpenAI one, you can now use it directly.
-- **Gateways without a model list still work:** type the model name in the second box (separate several with commas). Javis sends one very short test message before saving, so a wrong key or address is reported at once and nothing is saved.
+- **Gateways without a model list still work:** type the model name in the second box (separate several with commas). UNI MATE sends one very short test message before saving, so a wrong key or address is reported at once and nothing is saved.
 - It gets the full toolkit like every other brain: MCP, reading and writing the brain, skills, agents, background work, chatbots. The label under each reply says "Anthropic Compatible" so you know what answered.
 
 ## [0.253.0] - 2026-10-20
 ### Security
-- **Remote access no longer exposes the reminder endpoints.** Four endpoints Javis uses on the machine itself (create, edit, cancel a reminder and send a file over Telegram) skip the login. Cloudflare Tunnel, Tailscale and a proxy on a VPS also come in from the machine itself, so anyone with the tunnel address could create a reminder that runs an AI task or a script without the password. Requests through a tunnel or proxy now need the login; Javis's own calls on the machine work as before.
+- **Remote access no longer exposes the reminder endpoints.** Four endpoints UNI MATE uses on the machine itself (create, edit, cancel a reminder and send a file over Telegram) skip the login. Cloudflare Tunnel, Tailscale and a proxy on a VPS also come in from the machine itself, so anyone with the tunnel address could create a reminder that runs an AI task or a script without the password. Requests through a tunnel or proxy now need the login; UNI MATE's own calls on the machine work as before.
 - If you turned on remote access before this version, check the Recurring work page for reminders you did not create.
 
 ## [0.251.0] - 2026-10-20
 ### Added
-- **Login vault** (sidebar, Connections group): sign in in your own browser, export the cookies with Cookie-Editor and paste them. Javis reuses that session to read pages behind the sign-in (seller centers, affiliate dashboards, admin pages) and **Page watch** can watch them. Each card says whether it is still signed in and until when, with a switch to let Javis use it.
-- Cookies are encrypted on the server, the AI never sees a cookie value, and customer chatbots cannot use it. Javis only reads pages; it does not click buttons or send forms. Guide in `docs/en/33-login-vault.md`.
+- **Login vault** (sidebar, Connections group): sign in in your own browser, export the cookies with Cookie-Editor and paste them. UNI MATE reuses that session to read pages behind the sign-in (seller centers, affiliate dashboards, admin pages) and **Page watch** can watch them. Each card says whether it is still signed in and until when, with a switch to let UNI MATE use it.
+- Cookies are encrypted on the server, the AI never sees a cookie value, and customer chatbots cannot use it. UNI MATE only reads pages; it does not click buttons or send forms. Guide in `docs/en/33-login-vault.md`.
 ### Improved
 - **The conversation's name now sits next to the Shrink button** at the top of the Chat and Code pages, so you always know which chat you are in. Long names end in an ellipsis, and on a phone the name shrinks first so the buttons on the right stay on screen.
 - **Click the name to rename it** without opening the Conversations column. A chat with no messages yet shows a dimmed "New conversation".
@@ -1015,13 +1015,13 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ### Improved
 - **The Plugins page has a search box.** Type a plugin name, a tool inside it or a word from its description and the list filters at once, and Vietnamese accent marks are optional. Press Esc or the X to clear it.
 - **Quick filter: All, On, Off**, each with a count, plus Errors when a plugin has failed.
-- **Your own plugins come first**, then plugins from Javis Store, then the ones built into Javis. Before, your own plugins sat below all 20 built-in ones.
+- **Your own plugins come first**, then plugins from UNI MATE Store, then the ones built into UNI MATE. Before, your own plugins sat below all 20 built-in ones.
 - **Cards are less than half as tall, with an on/off switch** on the right like the Skills page. Switching keeps your search text and your place on the page.
 
 ## [0.248.0] - 2026-10-20
 ### Fixed
-- **Domain on Hostinger: Javis says which step is broken.** Before, when DNS was right but the domain did not open, Settings only said "SSL: via Hostinger" with a hint that DNS might be wrong. Now Javis opens the domain from the server and names the cause: Hostinger has no route yet (set DOMAIN_NAME and Redeploy), the certificate is pending, the proxy cannot reach Javis, the domain opens another site, or port 443 does not answer.
-- If you edit the `Host(...)` line in the YAML instead of setting DOMAIN_NAME, Javis no longer keeps saying "Redeploy still needed" once the domain works.
+- **Domain on Hostinger: UNI MATE says which step is broken.** Before, when DNS was right but the domain did not open, Settings only said "SSL: via Hostinger" with a hint that DNS might be wrong. Now UNI MATE opens the domain from the server and names the cause: Hostinger has no route yet (set DOMAIN_NAME and Redeploy), the certificate is pending, the proxy cannot reach UNI MATE, the domain opens another site, or port 443 does not answer.
+- If you edit the `Host(...)` line in the YAML instead of setting DOMAIN_NAME, UNI MATE no longer keeps saying "Redeploy still needed" once the domain works.
 
 ## [0.246.0] - 2026-10-20
 ### Improved
@@ -1031,15 +1031,15 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.244.0] - 2026-10-20
 ### Added
-- **Remote access gains a Tailscale option.** If Tailscale is installed, pick Tailscale and turn it on to get a private `https://...ts.net` link: only your own devices (Tailscale, same account) can open it, nothing is on the Internet. Javis runs `tailscale serve` itself, no commands needed.
-- If Tailscale first asks to switch HTTPS on for your network, Javis shows the link to click and retries once it is on. If Tailscale is missing or signed out, Javis says so and links to the download.
-- Turning it off, switching to another option or losing the password removes only what Javis added, never your other Tailscale settings.
+- **Remote access gains a Tailscale option.** If Tailscale is installed, pick Tailscale and turn it on to get a private `https://...ts.net` link: only your own devices (Tailscale, same account) can open it, nothing is on the Internet. UNI MATE runs `tailscale serve` itself, no commands needed.
+- If Tailscale first asks to switch HTTPS on for your network, UNI MATE shows the link to click and retries once it is on. If Tailscale is missing or signed out, UNI MATE says so and links to the download.
+- Turning it off, switching to another option or losing the password removes only what UNI MATE added, never your other Tailscale settings.
 
 ## [0.242.0] - 2026-10-20
 ### Added
-- **Open Javis from your phone or another computer, even when it runs on a Windows or macOS machine at home.** Settings has a new **Remote access** section: turn it on and you get an HTTPS link, with no VPS, no router port and no terminal. The microphone and voice work over that link.
-- **Two ways:** a **Quick link** that works right away with no account (it changes on every restart), or **Your own domain** for a fixed link like `https://javis.yourdomain.com`: paste the command Cloudflare shows into the token box and Javis picks out the token and reads back your hostname.
-- Javis downloads Cloudflare's `cloudflared` tool in the right build for the machine, turns it back on after a restart or an update, and reconnects when the network drops.
+- **Open UNI MATE from your phone or another computer, even when it runs on a Windows or macOS machine at home.** Settings has a new **Remote access** section: turn it on and you get an HTTPS link, with no VPS, no router port and no terminal. The microphone and voice work over that link.
+- **Two ways:** a **Quick link** that works right away with no account (it changes on every restart), or **Your own domain** for a fixed link like `https://unimate.yourdomain.com`: paste the command Cloudflare shows into the token box and UNI MATE picks out the token and reads back your hostname.
+- UNI MATE downloads Cloudflare's `cloudflared` tool in the right build for the machine, turns it back on after a restart or an update, and reconnects when the network drops.
 - **Safety:** it only turns on once a login password is set; while it is on, login cannot be switched off; if the password is removed, the tunnel stops. The token is stored encrypted and never sent to the browser.
 
 ## [0.240.0] - 2026-10-20
@@ -1049,7 +1049,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - Tapping the bright message does not open links in it. Tapping the dim area closes the card and clears the selection. Works in the main chat and on the Teams page, on iPhone and Android.
 
 ### Fixed
-- **Turning an iPhone sideways and back no longer leaves the text bigger.** Safari enlarges text in landscape on its own and sometimes does not shrink it back; the Javis interface now switches that off.
+- **Turning an iPhone sideways and back no longer leaves the text bigger.** Safari enlarges text in landscape on its own and sometimes does not shrink it back; the UNI MATE interface now switches that off.
 
 ## [0.239.0] - 2026-10-20
 ### Added
@@ -1057,26 +1057,26 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **Understands Vietnamese prices:** amounts with the dong sign, VND, millions written the Vietnamese way (full word or the short tr form), thousands written as 250k, as well as $ and USD.
 - **No crying wolf:** times like "3 minutes ago" that tick on their own do not count as a change; a line where only the price moved is reported as "Updated"; a restart never repeats an alert. A failing page is retried less and less often, and after 5 failures in a row the watch pauses and tells you exactly once.
 - **Create one by asking in chat** ("watch this page, tell me below $20") or on the **Page watch** tab of the Recurring work page. Optional AI summary on each change, off by default.
-- Technical details: new module `web_watch.py` (store `web_watch.sqlite3`), tool `javis_watch` (plugin `javis-watch`, owner only, customer bots never see it), `/watch` routes, tab `dashboard/web-watch.js`. Addresses pointing into a private network are blocked at every redirect hop. Docs: `docs/en/32-page-watch.md`. The idea comes from OpenMuse's `page-diff.ts` (CopilotKit, MIT license), rewritten for Javis.
+- Technical details: new module `web_watch.py` (store `web_watch.sqlite3`), tool `unimate_watch` (plugin `unimate-watch`, owner only, customer bots never see it), `/watch` routes, tab `dashboard/web-watch.js`. Addresses pointing into a private network are blocked at every redirect hop. Docs: `docs/en/32-page-watch.md`. The idea comes from OpenMuse's `page-diff.ts` (CopilotKit, MIT license), rewritten for UNI MATE.
 
 ## [0.238.0] - 2026-10-20
 ### Fixed
-- **A background job that runs again no longer sends, posts or orders twice.** Jobs run again after a temporary error, a server restart or when you press Retry, and each run used to start from scratch, including messages already sent to customers. Javis now records every outside action of a job, so whatever is already done is skipped next time.
-- **If the server stops right while sending, Javis asks you instead of sending again.** The job waits under "Needs you" and names the action that may not have gone through. Answer "sent" to skip it, "not sent" to send it again exactly once.
+- **A background job that runs again no longer sends, posts or orders twice.** Jobs run again after a temporary error, a server restart or when you press Retry, and each run used to start from scratch, including messages already sent to customers. UNI MATE now records every outside action of a job, so whatever is already done is skipped next time.
+- **If the server stops right while sending, UNI MATE asks you instead of sending again.** The job waits under "Needs you" and names the action that may not have gone through. Answer "sent" to skip it, "not sent" to send it again exactly once.
 - Ordinary chat is unchanged. Limits: Claude account connectors and shell commands do not go through the hub and are not recorded yet; Grok Build and Antigravity CLI cannot carry the job id to the hub yet.
-- Technical details: new module `once_ledger.py` (record `once_ledger.sqlite3` next to `kanban.sqlite3`), hooked into the hub's `_guard` for non-read MCP calls and into `full`-level plugin tools. A Kanban job binds `job` into `turn_context` while it runs. The idea comes from OpenMuse's `outcome_unknown` handling and operation cache (CopilotKit, MIT license), rewritten for Javis.
+- Technical details: new module `once_ledger.py` (record `once_ledger.sqlite3` next to `kanban.sqlite3`), hooked into the hub's `_guard` for non-read MCP calls and into `full`-level plugin tools. A Kanban job binds `job` into `turn_context` while it runs. The idea comes from OpenMuse's `outcome_unknown` handling and operation cache (CopilotKit, MIT license), rewritten for UNI MATE.
 
 ## [0.236.0] - 2026-10-19
 ### Fixed
 - **Pasting an image during a Live call no longer gets two overlapping spoken answers.** The image used to be read twice: once by the chat (in Vietnamese) and once more by the Live voice handing it over again (often in English). Now it is read once and only the Live voice speaks the result. The image still shows in the chat and stays after a reload.
-- **The Live voice answers in the chosen language.** With the mic on auto-detect and nothing heard yet, Javis uses the reply language from Settings instead of guessing from the model.
+- **The Live voice answers in the chosen language.** With the mic on auto-detect and nothing heard yet, UNI MATE uses the reply language from Settings instead of guessing from the model.
 
 ## [0.235.0] - 2026-10-19
 ### Added
 - **Background jobs can ask you a question and carry on with your answer.** A job missing some information used to stop under "Needs you" with nowhere to reply. Pressing Retry ran it again from scratch, and it asked the very same thing. Now the question comes back to the chat where you gave the job, Telegram and Zalo included. Answer it and the job carries on.
-- **Answer wherever is handy:** the box right under the question in the web chat, the answer box on the job's card on the Work page, or just reply in chat and Javis routes it to the right job.
+- **Answer wherever is handy:** the box right under the question in the web chat, the answer box on the job's card on the Work page, or just reply in chat and UNI MATE routes it to the right job.
 - **The job continues instead of starting over.** The next run reads the question, your answer and what the previous run already finished. Asking and answering does not use up an attempt. A job that asks several times keeps every round in its detail drawer.
-- Technical details: questions live in the job's `metadata.qa`, a new `POST /kanban/task/answer` endpoint, and `javis_task` gains `op=answer` so every engine can pass an answer on. The idea comes from OpenMuse's `ask_user` mechanism (CopilotKit, MIT license), rewritten for Javis.
+- Technical details: questions live in the job's `metadata.qa`, a new `POST /kanban/task/answer` endpoint, and `unimate_task` gains `op=answer` so every engine can pass an answer on. The idea comes from OpenMuse's `ask_user` mechanism (CopilotKit, MIT license), rewritten for UNI MATE.
 
 ## [0.234.0] - 2026-10-19
 ### Fixed
@@ -1087,22 +1087,22 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ### Improved
 - **The chat box is down to two buttons: the mic and one all-purpose button.** With an empty box it is voice chat (the sound wave); type or attach a file and it turns into send, clear the text and it turns back.
 - **During a call the mic steps aside**, leaving only the red hang-up button, so nothing gets pressed by mistake.
-- **A customer's photo on the Conversations page opens inside Javis** with a close button (Back works too) instead of a new tab, so you land right back on the message you were reading.
+- **A customer's photo on the Conversations page opens inside UNI MATE** with a close button (Back works too) instead of a new tab, so you land right back on the message you were reading.
 
 ### Fixed
 - **Dictating a sentence that mixes English and Vietnamese comes out right more often.** Browser speech hears one language only, so "Claude Code" became "lót code". A machine with an OpenAI API key (no Groq needed) now has the audio heard again by gpt-4o-transcribe on stop, keeping both languages.
-- **The listening hint now names AI products** (ChatGPT, Claude, Gemini, OpenAI...) so they are spelled right. With no key at all, Javis tells you once how to turn this on.
+- **The listening hint now names AI products** (ChatGPT, Claude, Gemini, OpenAI...) so they are spelled right. With no key at all, UNI MATE tells you once how to turn this on.
 
 ## [0.230.0] - 2026-10-19
 ### Added
 - **Dictate button in the chat box.** Press the mic, speak, and the words appear in the text box as you talk. Press the square to stop and edit before sending, the arrow to send right away, or X to cancel. Nothing is sent by itself.
-- **The voice chat button now shows a sound wave.** It is still the live conversation with Javis, now sitting next to the mic so the two are easy to tell apart.
+- **The voice chat button now shows a sound wave.** It is still the live conversation with UNI MATE, now sitting next to the mic so the two are easy to tell apart.
 - **A level meter and a timer run while recording**, so you can see the mic is listening. Long notes no longer get cut off midway, up to 5 minutes per recording. With the Groq ear on, the text is checked again when you stop for better accuracy.
 
 ## [0.228.0] - 2026-10-19
 ### Fixed
 - **Assistants running on an API key (Anthropic API, OpenAI API...) can create agents and workflows and set a model.** Chatting with an assistant on an API model used to end in "I can't", because it was never told where those files go or how to set a model. Every assistant now knows, on every model.
-- **Assistants give the real reason when browser control is missing.** Connections tied to your Claude account (such as Composio connected on claude.ai) only work when the chat model is Claude Code. On an API key the assistant now says so and offers the two fixes: connect that source on the Javis Connections page, or switch to Claude Code.
+- **Assistants give the real reason when browser control is missing.** Connections tied to your Claude account (such as Composio connected on claude.ai) only work when the chat model is Claude Code. On an API key the assistant now says so and offers the two fixes: connect that source on the UNI MATE Connections page, or switch to Claude Code.
 
 ## [0.227.0] - 2026-10-19
 ### Fixed
@@ -1117,15 +1117,15 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.225.0] - 2026-10-19
 ### Improved
-- **Switching brains loads notes much faster.** Measured on a 2000-note brain over a VPS-like connection: first open went from 1.6 s to 0.24 s, and going back to a brain you just viewed takes 0.12 s. Javis no longer re-reads notes that did not change, remembers that across restarts, and does not download the graph again when you go back.
+- **Switching brains loads notes much faster.** Measured on a 2000-note brain over a VPS-like connection: first open went from 1.6 s to 0.24 s, and going back to a brain you just viewed takes 0.12 s. UNI MATE no longer re-reads notes that did not change, remembers that across restarts, and does not download the graph again when you go back.
 - **The whole app is lighter on a VPS:** lists and the main page are compressed before sending, the note graph data is about 16 times smaller and the main page 3 times smaller. Chat replies still stream word by word.
 
 ## [0.223.0] - 2026-10-19
 ### Added
-- **Pin straight from conversation search results.** Searching in the History column (Chat page, an assistant's or Javis Core's history, the Coding page) now shows a pin button on each result, with pinned chats first. No need to clear the search and dig through the list.
+- **Pin straight from conversation search results.** Searching in the History column (Chat page, an assistant's or UNI MATE Core's history, the Coding page) now shows a pin button on each result, with pinned chats first. No need to clear the search and dig through the list.
 - **Pin chats in the bot Inbox.** Hover a chat (on a phone the button is always shown) and press the pin to keep it at the top of the inbox, marked with a colored bar. Press again to unpin.
 ### Fixed
-- **Push notifications stay off once you turn them off.** Before, pressing Off worked until the next time Javis opened, when it quietly turned them back on because the browser still held the notification permission. Javis now remembers you turned them off on that device and only turns them on again when you press On.
+- **Push notifications stay off once you turn them off.** Before, pressing Off worked until the next time UNI MATE opened, when it quietly turned them back on because the browser still held the notification permission. UNI MATE now remembers you turned them off on that device and only turns them on again when you press On.
 
 ## [0.222.0] - 2026-10-19
 ### Added
@@ -1133,26 +1133,26 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **A Morning brief template** on the recurring-work page: one click fills in a 7 a.m. reminder (greeting, today's calendar, yesterday's talk, notable news). It is only created when you press Save.
 ### Improved
 - **Background jobs stop wasting time on a broken model.** A model that just failed rests for a while (5 minutes after a quota error, 30 after an outage, 6 hours after an access error) and the next jobs go straight to one that works.
-- **Javis still finds old memories when the list is too long:** memories that no longer fit are named so Javis knows to open them.
+- **UNI MATE still finds old memories when the list is too long:** memories that no longer fit are named so UNI MATE knows to open them.
 
 ## [0.221.0] - 2026-10-19
 ### Improved
-- **Javis only says "opened" when the app really came up.** After opening an app it checks the app is running; if not, it says plainly that it is not sure, instead of reporting success.
+- **UNI MATE only says "opened" when the app really came up.** After opening an app it checks the app is running; if not, it says plainly that it is not sure, instead of reporting success.
 - **An app that is already running is brought to the front** instead of being started twice. If Zalo sits behind other windows, "open Zalo" shows it.
 - **No more opening the wrong app with a similar name.** Very short names like "wp" must match exactly, and an unclear name gets a question instead of a guess.
 - Closing an app, forced or not, is also checked to make sure it really closed.
 
 ## [0.220.0] - 2026-10-19
 ### Improved
-- **Gemini Live calls no longer go silent while Javis looks something up.** Javis answers with a short sentence at once and keeps listening; the result is read out when nobody is talking. Long jobs get an occasional progress update.
+- **Gemini Live calls no longer go silent while UNI MATE looks something up.** UNI MATE answers with a short sentence at once and keeps listening; the result is read out when nobody is talking. Long jobs get an occasional progress update.
 - **No more answering the TV or the person next to you** (Gemini Live). Settings → Voice → Advanced has a new **Background speech filter** (on by default) and a **Reply pace**: Fast, Medium, Relaxed.
 - **The voice follows the language being read:** pick "Auto by language" and Vietnamese is read by Hoai My, English by Emma, Japanese, Chinese and Korean by a native voice. A short "OK" does not flip the voice.
 - **Smoother microphone on Live calls over an API key**, even while the page is busy. Japanese and Chinese replies are read sentence by sentence so speech starts sooner, and version numbers like "0.220.0" are no longer read in pieces.
 
 ## [0.219.0] - 2026-10-19
 ### Added
-- **Brains can be renamed now, Brain Default included, without breaking a single link.** Click the pencil next to the brain picker and type the new name. Javis changes only the display name and leaves the folder alone, so wiki links, links to files in notes and chats, bots, reminders, loops, background jobs and the GitHub backup all keep pointing to the right place.
-- **The name travels with the brain:** it is stored inside the brain (`Javis/brain.json`), so the GitHub backup carries it to other machines. Leave it empty to go back to the folder name.
+- **Brains can be renamed now, Brain Default included, without breaking a single link.** Click the pencil next to the brain picker and type the new name. UNI MATE changes only the display name and leaves the folder alone, so wiki links, links to files in notes and chats, bots, reminders, loops, background jobs and the GitHub backup all keep pointing to the right place.
+- **The name travels with the brain:** it is stored inside the brain (`UniMate/brain.json`), so the GitHub backup carries it to other machines. Leave it empty to go back to the folder name.
 - **The new name shows everywhere:** the brain picker, the Work page, Settings, webhooks, Telegram (`/brain`, `/status`) and the `/brain` chat command. Typing the old folder name still selects it.
 
 ## [0.217.0] - 2026-10-18
@@ -1164,36 +1164,36 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.216.0] - 2026-10-18
 ### Added
 - **The bot inbox can search by phone number.** 0912 345 678, 84912345678 and +84 912 345 678 all find the same person.
-- **A number the inbox does not know yet is looked up on Zalo:** type a full number and Javis asks the connected personal Zalo accounts whose number it is, then shows the chat with that person. The number is kept on the customer, so the next search finds it at once.
+- **A number the inbox does not know yet is looked up on Zalo:** type a full number and UNI MATE asks the connected personal Zalo accounts whose number it is, then shows the chat with that person. The number is kept on the customer, so the next search finds it at once.
 - **Someone who never wrote is reported plainly:** "This number is Lan's Zalo, no conversation yet". A number with no Zalo account, or whose owner turned off search by phone, is reported too.
 - **Zalo is not asked twice:** answers are remembered (30 days when found, 1 day when not). At most 20 numbers are looked up per hour, because Zalo caps lookups per day.
-- **Swipe a message to the left to quote it (phone):** like Zalo, pull a bubble to the left until the orange quote mark shows, then lift your finger, and the message lands in the "Quoting" box above the input. Works on Javis's messages and your own, in the main chat and in chats with Javis Core or a partner. A short swipe or scrolling up and down does nothing.
+- **Swipe a message to the left to quote it (phone):** like Zalo, pull a bubble to the left until the orange quote mark shows, then lift your finger, and the message lands in the "Quoting" box above the input. Works on UNI MATE's messages and your own, in the main chat and in chats with UNI MATE Core or a partner. A short swipe or scrolling up and down does nothing.
 
 ### Fixed
 - **The phone menu no longer closes by itself and leaves the screen dim:** on iPhone the menu slid in, then vanished, leaving only the dark backdrop. The menu now has a solid background instead of a blur (Safari can stop drawing a box that is blurred and sliding at once). The dim layer always goes with the menu, so closing the menu clears it. A single tap counted as two clicks no longer closes the menu it just opened.
 
 ## [0.214.0] - 2026-10-18
 ### Fixed
-- **Antigravity no longer blames Google when a turn runs too long:** a turn over 15 minutes is stopped by Antigravity CLI itself, and Javis used to report "Google is having a temporary problem, retried 2 times" without retrying at all. The message now says the turn ran too long, finished steps keep their results, and you can send "continue" or give the job to the background queue.
-- **"Retried N times" only shows when Javis really retried.** A turn that already did part of the work is not run again (that would repeat it), and the message says so.
+- **Antigravity no longer blames Google when a turn runs too long:** a turn over 15 minutes is stopped by Antigravity CLI itself, and UNI MATE used to report "Google is having a temporary problem, retried 2 times" without retrying at all. The message now says the turn ran too long, finished steps keep their results, and you can send "continue" or give the job to the background queue.
+- **"Retried N times" only shows when UNI MATE really retried.** A turn that already did part of the work is not run again (that would repeat it), and the message says so.
 
 ### Improved
-- **Pages are much cleaner: explanations fold into an (i) button.** The page keeps titles, states, inputs and buttons; the why, the caveats and the step-by-step help sit behind the (i) next to the title and open on a tap. Applied across Javis: Models, Settings, Channels, Chatbots, Plugins, Learning, Work, Teams, Assistants, Usage.
+- **Pages are much cleaner: explanations fold into an (i) button.** The page keeps titles, states, inputs and buttons; the why, the caveats and the step-by-step help sit behind the (i) next to the title and open on a tap. Applied across UNI MATE: Models, Settings, Channels, Chatbots, Plugins, Learning, Work, Teams, Assistants, Usage.
 - **Long descriptions on cards (plugins, workflows) show two lines**, the full text is in the (i).
 - **Text in the explanation box is 16px**, easy to read on a phone.
 
 ## [0.213.0] - 2026-10-18
 ### Added
-- **Send more while Javis is working, now on Telegram, Discord, Slack, Lark, Messenger and Zalo too:** before, the bot replied "still on the previous message, send /stop" and dropped yours. Now it is kept, nothing is lost.
-- **Codex (ChatGPT plan) now reads the new message within the turn**, on the web and the channels, like Enter in the Codex app: no more waiting for the current work to finish. Turn it off with `JAVIS_CODEX_STEER=0` if needed.
-- **On chat channels the bot answers with one short line** saying whether Javis reads it at the next step (Claude Code, Codex, the API-key brains) or right after the current answer (Grok, Antigravity).
+- **Send more while UNI MATE is working, now on Telegram, Discord, Slack, Lark, Messenger and Zalo too:** before, the bot replied "still on the previous message, send /stop" and dropped yours. Now it is kept, nothing is lost.
+- **Codex (ChatGPT plan) now reads the new message within the turn**, on the web and the channels, like Enter in the Codex app: no more waiting for the current work to finish. Turn it off with `UNIMATE_CODEX_STEER=0` if needed.
+- **On chat channels the bot answers with one short line** saying whether UNI MATE reads it at the next step (Claude Code, Codex, the API-key brains) or right after the current answer (Grok, Antigravity).
 - **/stop ends the current work and drops what was waiting.** Customer-facing bots keep their old way: silent, follow-up messages merged into the next turn.
 
 ## [0.211.0] - 2026-10-17
 ### Improved
-- **The Claude Code card says one thing when the CLI is missing:** a single install box (Docker: update Javis; manual install: one command to copy) and only a Check again button. The Sign in button that could only fail is gone, and so are the version line and Update button for a program that is not there.
+- **The Claude Code card says one thing when the CLI is missing:** a single install box (Docker: update UNI MATE; manual install: one command to copy) and only a Check again button. The Sign in button that could only fail is gone, and so are the version line and Update button for a program that is not there.
 - **Messages are no longer squeezed into a narrow column:** errors and hints sit under the buttons at full width, and buttons keep their height. The PATH and Windows details fold under "Installed but still missing?".
-- **Provider cards use 16px text**, easier to read on a phone. The card is now named "Claude Code" (Javis never uses its OAuth token), and the green shield lights only when the CLI is there.
+- **Provider cards use 16px text**, easier to read on a phone. The card is now named "Claude Code" (UNI MATE never uses its OAuth token), and the green shield lights only when the CLI is there.
 
 ## [0.210.0] - 2026-10-17
 ### Improved
@@ -1226,14 +1226,14 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.206.0] - 2026-10-17
 ### Added
-- **Send more while Javis is working, like Claude Code and Codex:** type and send while a turn runs; the work in progress is not stopped. Before, a message typed at this point was silently ignored.
+- **Send more while UNI MATE is working, like Claude Code and Codex:** type and send while a turn runs; the work in progress is not stopped. Before, a message typed at this point was silently ignored.
 - **Claude Code and the API-key brains read the new message at their next step:** a correction applies at once, a new task is taken on too, in parallel where possible.
 - **Codex, Grok and Antigravity run your message right after the current work**, since those engines run in one go. Nothing is lost.
 - **A status line under the message you sent:** will read it at the next step, read, or working on it.
 
 ## [0.205.0] - 2026-10-17
 ### Improved
-- **A partner with a new message moves to the top of the list:** you writing, the partner replying, or a background job reporting into its chat all push that card up (after Javis Core and the pinned ones).
+- **A partner with a new message moves to the top of the list:** you writing, the partner replying, or a background job reporting into its chat all push that card up (after UNI MATE Core and the pinned ones).
 - **An unread count on each partner card**, next to the time. Opening the chat clears it, in every open tab.
 - **Mute notifications per partner:** the ⋮ button has **Mute notifications** for 1 hour, 4 hours, until 8:00 AM or until turned back on. Messages still reach the chat and the bell, just without a sound or a push.
 
@@ -1242,48 +1242,48 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **A tidier Scheduled page:** a brain picker instead of every brain stacked up, a **Repeating job / Reminder** filter and paging at 10 jobs a page. Incidents and Log are their own tabs; Webhooks have their own page in the Work group.
 
 ### Fixed
-- **Scheduled calls really ring now:** the call used to ring only when the chat receiving the reminder was the open one, so usually nothing showed. The call card now shows on whichever Javis page is open.
+- **Scheduled calls really ring now:** the call used to ring only when the chat receiving the reminder was the open one, so usually nothing showed. The call card now shows on whichever UNI MATE page is open.
 - **A bigger Read all button in Notifications:** lit while something is unread, dimmed once all is read, and it now reads both tabs instead of only the open one.
 - **@mentions in Team messages look normal again**, no longer squeezed into a small circle with one letter per line.
 
 ## [0.203.0] - 2026-10-17
 ### Added
-- **Javis calls you at a set time:** reminders get a **Call me** box (or say "call me at 7am and read the report"). At that time an open Javis tab rings and shows an incoming-call card with **Answer** and **Decline**.
-- **Answer starts a voice call:** Javis reads the reminder or report briefly, asks if you need anything else, and you keep talking as with the mic button (ChatGPT Live when it is set up).
-- **Missing it costs nothing:** after 45 seconds it is a missed call and the content stays in the chat; with no Javis tab open, Telegram gets the message like any other reminder.
+- **UNI MATE calls you at a set time:** reminders get a **Call me** box (or say "call me at 7am and read the report"). At that time an open UNI MATE tab rings and shows an incoming-call card with **Answer** and **Decline**.
+- **Answer starts a voice call:** UNI MATE reads the reminder or report briefly, asks if you need anything else, and you keep talking as with the mic button (ChatGPT Live when it is set up).
+- **Missing it costs nothing:** after 45 seconds it is a missed call and the content stays in the chat; with no UNI MATE tab open, Telegram gets the message like any other reminder.
 
 ## [0.202.1] - 2026-10-17
 ### Improved
-- **Reminders that read aloud now really "call":** at the set time, if Javis is open, the voice note plays at once like a call, no press needed. When the browser blocks autoplay the player stays there to press; Telegram still receives the audio file as before.
+- **Reminders that read aloud now really "call":** at the set time, if UNI MATE is open, the voice note plays at once like a call, no press needed. When the browser blocks autoplay the player stays there to press; Telegram still receives the audio file as before.
 
 ## [0.202.0] - 2026-10-17
 ### Added
-- **Voice notes:** ask Javis to "read it to me" and it records a short spoken message as an mp3; the chat shows a player under the answer and Telegram receives it as audio. The words are still there as text below.
+- **Voice notes:** ask UNI MATE to "read it to me" and it records a short spoken message as an mp3; the chat shows a player under the answer and Telegram receives it as audio. The words are still there as text below.
 - **Reminders that read aloud:** tick **Read it aloud** and the reminder or report arrives with a voice note, easy to hear while driving or cooking.
-- **Keep the cache warm (optional, off by default):** on the Token usage page, switch it on and Javis keeps a Claude Code chat's one-hour prompt cache alive across a short break, so the next message does not reload the whole conversation. It stops at a usage limit or a cold cache.
+- **Keep the cache warm (optional, off by default):** on the Token usage page, switch it on and UNI MATE keeps a Claude Code chat's one-hour prompt cache alive across a short break, so the next message does not reload the whole conversation. It stops at a usage limit or a cold cache.
 
 ## [0.201.0] - 2026-10-17
 ### Added
 - **Charts and number tiles in the chat:** a revenue, order or ads report can carry a bar or line chart and a few key figures with their change, drawn right under the answer.
-- **Quick-choice buttons:** Javis can offer up to 4 buttons such as "Approve draft A"; a press sends that text as if you typed it. Telegram and Zalo get a readable text version.
-- **Javis recalls earlier chats:** start a new chat that mentions something from before and Javis looks through your other chats for a few relevant lines as context. Team chats and customer chats are never used.
+- **Quick-choice buttons:** UNI MATE can offer up to 4 buttons such as "Approve draft A"; a press sends that text as if you typed it. Telegram and Zalo get a readable text version.
+- **UNI MATE recalls earlier chats:** start a new chat that mentions something from before and UNI MATE looks through your other chats for a few relevant lines as context. Team chats and customer chats are never used.
 
 ## [0.200.0] - 2026-10-17
 ### Added
 - **Share a whole team as one file:** a team's ⋯ menu has **Share team**, which downloads its partners, skills and shared instructions. No chat history, keys, models or Auto switches; text that looks like a password or API key is removed before writing.
 - **Import a team:** the **Import team** button on the Teams page reads the file and shows who comes in before adding it. Partners you already have under the same name keep your version.
-- **See at once what Javis just created:** a chat turn that creates, edits or removes a schedule, loop, partner, workflow or skill shows a small "Created schedule: ..." line under the answer. New items get an **Undo** button.
+- **See at once what UNI MATE just created:** a chat turn that creates, edits or removes a schedule, loop, partner, workflow or skill shows a small "Created schedule: ..." line under the answer. New items get an **Undo** button.
 
 ## [0.199.0] - 2026-10-17
 ### Added
-- **Javis Core handles broken background runs:** when a Kanban job, loop, reminder or webhook fails, Javis Core hears first. A passing failure (a network glitch, a timeout) is run again once; something only you can fix (a sign-in, a key, a setting) gets one or two plain sentences on what to do.
+- **UNI MATE Core handles broken background runs:** when a Kanban job, loop, reminder or webhook fails, UNI MATE Core hears first. A passing failure (a network glitch, a timeout) is run again once; something only you can fix (a sign-in, a key, a setting) gets one or two plain sentences on what to do.
 - **No storm of messages:** a job that keeps failing is one incident, and a retry that fails again sends exactly one "needs you" message.
 - **Background health on the Work page:** see open incidents, close them with Done, and the last 24 hours of failures grouped by cause (14 runs of the same token error show as one line).
-- **Health scan from outside:** `python tools/sentinel.py` reads the data (read only) and works even while Javis is down.
+- **Health scan from outside:** `python tools/sentinel.py` reads the data (read only) and works even while UNI MATE is down.
 
 ## [0.198.0] - 2026-10-17
 ### Added
-- **Webhooks: outside systems start work in Javis.** On the Work page, the **Webhooks** section creates a secret link. When a landing page form, a payment or another app calls it, Javis runs the workflow or job you chose with the event data, then reports like a reminder.
+- **Webhooks: outside systems start work in UNI MATE.** On the Work page, the **Webhooks** section creates a secret link. When a landing page form, a payment or another app calls it, UNI MATE runs the workflow or job you chose with the event data, then reports like a reminder.
 - **Safe by default:** the secret is shown once, with buttons to send a test, switch off and make a new token. A repeated delivery does not run twice, and each webhook runs at most 30 times an hour.
 - **A task reminder can remember its last run:** tick **Remember the last result** and each run knows what it already reported, so it reports only what is new. Good for watching competitor prices or a metric.
 
@@ -1292,7 +1292,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.197.1] - 2026-10-17
 ### Fixed
-- **Safari no longer loses the connection for minutes.** Safari has its own bug with the compression used on the live connection: a large message makes it cut the line, and every reconnect is cut again, while Chrome keeps working. Javis now turns that compression off, so every browser stays as stable as Chrome.
+- **Safari no longer loses the connection for minutes.** Safari has its own bug with the compression used on the live connection: a large message makes it cut the line, and every reconnect is cut again, while Chrome keeps working. UNI MATE now turns that compression off, so every browser stays as stable as Chrome.
 - **If it still drops, there is a trace:** each disconnect records the browser, the close code and how long it was down, and sends it to the server once back online, shown at `/health/loop`.
 
 ## [0.197.0] - 2026-10-17
@@ -1367,15 +1367,15 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ### Fixed
 - **Pinning a subfolder:** in the folder picker, a folder with folders inside has a **>**. Tap it to go inside, tap the name to pin that folder.
-- **Tapping a notice goes to the right place:** the "Ask Javis Core" button is gone. A notice that answers a chat reopens that chat; a system notice opens in Javis Core.
+- **Tapping a notice goes to the right place:** the "Ask UNI MATE Core" button is gone. A notice that answers a chat reopens that chat; a system notice opens in UNI MATE Core.
 - **Jobs tab:** with no jobs it says "No jobs yet" instead of "Could not load jobs". The selected tab has room around its label.
 
 ## [0.190.0] - 2026-10-16
 ### Improved
-- **Settings like the apps you know:** a colleague's settings column keeps only picture, name, description, instructions, documents, skills and model. Lessons, Revoke, Use everywhere and the Javis Core Memory section are gone: to change or forget something, just say so in chat, for example "forget the sales channel note".
-- **See what Javis just remembered:** a chat turn that saves, changes or forgets a memory shows a small "Remembered: ..." line under the answer, with **Undo**. If Javis says it remembered or forgot something while nothing changed, a correction line says so.
+- **Settings like the apps you know:** a colleague's settings column keeps only picture, name, description, instructions, documents, skills and model. Lessons, Revoke, Use everywhere and the UNI MATE Core Memory section are gone: to change or forget something, just say so in chat, for example "forget the sales channel note".
+- **See what UNI MATE just remembered:** a chat turn that saves, changes or forgets a memory shows a small "Remembered: ..." line under the answer, with **Undo**. If UNI MATE says it remembered or forgot something while nothing changed, a correction line says so.
 - **Tidier colleague cards:** the chat time is small and sits on the same row as the Auto switch in the bottom corner; the switch is back on every colleague. The Auto block in Settings is down to "Work on its own up to ... times a day" plus anything waiting on you.
-- **Release news stays out of Javis Core:** cards in the bell's News tab no longer have "Ask Javis Core".
+- **Release news stays out of UNI MATE Core:** cards in the bell's News tab no longer have "Ask UNI MATE Core".
 
 ## [0.189.1] - 2026-10-16
 ### Fixed
@@ -1387,42 +1387,42 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.188.0] - 2026-10-16
 ### Fixed
-- **A chat always runs on its own brain:** open a chat of another brain (from the bell or history) and keep writing, and Javis now answers with that brain's memory and files; the chat says which brain it belongs to, with a switch button. Clicking a notice of another brain switches the dashboard to it first.
-- **A quieter Javis Core:** runs that went fine stay in the notification bell; only reports that need you land in the chat. Reports sent to the Telegram of someone else sharing the bot are no longer copied into your Javis Core.
+- **A chat always runs on its own brain:** open a chat of another brain (from the bell or history) and keep writing, and UNI MATE now answers with that brain's memory and files; the chat says which brain it belongs to, with a switch button. Clicking a notice of another brain switches the dashboard to it first.
+- **A quieter UNI MATE Core:** runs that went fine stay in the notification bell; only reports that need you land in the chat. Reports sent to the Telegram of someone else sharing the bot are no longer copied into your UNI MATE Core.
 - **Turning learning off really blocks Claude Code:** when off, Claude Code cannot write anything into that brain's memory folder.
-- **New memories always carry a source:** Javis records the chat and date that produced them. The "Your Telegram" field is now a picker of the allowed IDs.
+- **New memories always carry a source:** UNI MATE records the chat and date that produced them. The "Your Telegram" field is now a picker of the allowed IDs.
 
 ## [0.187.0] - 2026-10-16
 ### Added
-- **Ask Javis Core about a notice:** cards in the bell have an **Ask Javis Core** button. The notice goes into your own Javis Core chat with its source and time so you can follow up; the shared notice itself does not change.
-- **See, edit and forget memories:** the Javis Core card has a **This brain's memory** section listing what Javis remembers and where it came from. Once forgotten, Javis does not learn it again from old chats; a switch turns off saving new memories.
+- **Ask UNI MATE Core about a notice:** cards in the bell have an **Ask UNI MATE Core** button. The notice goes into your own UNI MATE Core chat with its source and time so you can follow up; the shared notice itself does not change.
+- **See, edit and forget memories:** the UNI MATE Core card has a **This brain's memory** section listing what UNI MATE remembers and where it came from. Once forgotten, UNI MATE does not learn it again from old chats; a switch turns off saving new memories.
 - **Your profile, shared by every brain:** write once how to address you, language and level of detail; each brain's own memory still wins where they differ.
 ### Improved
 - **News read on one device is read on every device**, and push notifications are tied to the login: logging out stops that device receiving them. There is an option to **hide the text** in push notifications.
 
 ## [0.186.0] - 2026-10-16
 ### Fixed
-- **Reports without a chat of their own now go to the right brain's Javis Core:** background jobs, loops and reminders created on the Work page or without a chat report into the Javis Core of the brain that produced them, whatever brain you have open.
+- **Reports without a chat of their own now go to the right brain's UNI MATE Core:** background jobs, loops and reminders created on the Work page or without a chat report into the UNI MATE Core of the brain that produced them, whatever brain you have open.
 - **No more guessing on Telegram:** a report with no known recipient used to go to the FIRST Telegram ID on the list (possibly someone else sharing the bot), and a loop pausing itself went to EVERY ID. Now only your own Telegram gets them.
-- **New field "Your Telegram (receives reports)"** in the Telegram settings. With a single ID Javis uses it; with several you choose, Javis does not guess.
-- **No duplicates on retry:** a report sent again after a failure appears once. If the original chat was deleted the report goes to Javis Core; with neither a chat nor a brain it stays in the notification bell only.
+- **New field "Your Telegram (receives reports)"** in the Telegram settings. With a single ID UNI MATE uses it; with several you choose, UNI MATE does not guess.
+- **No duplicates on retry:** a report sent again after a failure appears once. If the original chat was deleted the report goes to UNI MATE Core; with neither a chat nor a brain it stays in the notification bell only.
 
 ## [0.185.0] - 2026-10-16
 ### Added
-- **Javis Core, a system assistant built into every brain:** it is always first on the Assistants page with a **System** badge, in old and new brains alike. It is the place to receive reports, ask follow-up questions and hand out work, with everything Javis can do.
+- **UNI MATE Core, a system assistant built into every brain:** it is always first on the Assistants page with a **System** badge, in old and new brains alike. It is the place to receive reports, ask follow-up questions and hand out work, with everything UNI MATE can do.
 - **It cannot be deleted, renamed, unpinned or edited:** the server refuses it, not just the buttons. Choosing its model works like any chat.
-- **Each brain has one default Javis Core chat:** delete or archive it and Javis makes a new empty one next time, without bringing back what you deleted.
-- **One update for every brain:** the Javis Core definition ships with the app instead of being copied into each brain, so your memory and personal settings stay as they are across updates.
+- **Each brain has one default UNI MATE Core chat:** delete or archive it and UNI MATE makes a new empty one next time, without bringing back what you deleted.
+- **One update for every brain:** the UNI MATE Core definition ships with the app instead of being copied into each brain, so your memory and personal settings stay as they are across updates.
 
 ## [0.184.0] - 2026-10-16
 ### Fixed
-- **Long press on a phone no longer triggers the phone's own text selection (iPhone and Android):** holding a message a little longer used to highlight the text and show the phone's Copy bar on top of the Javis menu. Now only the Javis menu appears (reactions, Reply, Copy...).
+- **Long press on a phone no longer triggers the phone's own text selection (iPhone and Android):** holding a message a little longer used to highlight the text and show the phone's Copy bar on top of the UNI MATE menu. Now only the UNI MATE menu appears (reactions, Reply, Copy...).
 - **Copying still works:** Copy in the menu copies the whole message. Text fields can still be selected and pasted into.
 
 ## [0.183.0] - 2026-10-16
 ### Fixed
-- **Zalo no longer silently misses a contact's reply:** every Javis restart or update used to wipe the Zalo message store, so a message that came in right then could vanish from all three ways of reading. The store is now kept (30 days) and survives restarts.
-- **Javis knows when messages may be missing:** each Zalo read now says whether the connection was down during that period. If it was, Javis says it is not certain, keeps the waiting step (approval, publishing) on hold and tells you, instead of concluding the contact has not replied.
+- **Zalo no longer silently misses a contact's reply:** every UNI MATE restart or update used to wipe the Zalo message store, so a message that came in right then could vanish from all three ways of reading. The store is now kept (30 days) and survives restarts.
+- **UNI MATE knows when messages may be missing:** each Zalo read now says whether the connection was down during that period. If it was, UNI MATE says it is not certain, keeps the waiting step (approval, publishing) on hold and tells you, instead of concluding the contact has not replied.
 - **Messages from an outage reach the Inbox:** messages Zalo replays after a reconnect now show up in the conversation Inbox too, not only in history.
 
 ## [0.182.0] - 2026-10-16
@@ -1450,7 +1450,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ### Improved
 - **A tidy model button, like the Claude app:** it shows the model name only (for example "Opus 4.8", "GPT-5 mini"), without the provider. Pressing it still opens the provider and model picker as before; hover it to see the provider. A session with its own pinned model shows a small pin icon on the button; pinning works as before.
 - **Phone: the model button sits right under the message box**, next to the thinking-level button, instead of in the top bar. Pick a model where you type.
-- **Copy no longer slides away (computer):** while Javis is answering, the chat stops following the answer while your mouse is on a message's buttons or moving over a message. Move the mouse away and it catches up to the bottom.
+- **Copy no longer slides away (computer):** while UNI MATE is answering, the chat stops following the answer while your mouse is on a message's buttons or moving over a message. Move the mouse away and it catches up to the bottom.
 
 ## [0.179.0] - 2026-10-16
 ### Improved
@@ -1461,7 +1461,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.178.0] - 2026-10-16
 ### Added
-- **Use your own picture for an assistant:** when editing an assistant, an **Upload a picture** button sits under the preview. The picture is cropped square and shrunk before upload, then shows everywhere the assistant appears: the list, the chat and teams. Press **Use the Javis character** to go back.
+- **Use your own picture for an assistant:** when editing an assistant, an **Upload a picture** button sits under the preview. The picture is cropped square and shrunk before upload, then shows everywhere the assistant appears: the list, the chat and teams. Press **Use the UNI MATE character** to go back.
 - **A picture of your own for a team:** the Team picture field in team settings has the same Upload button. By default a team still shows the collage of its members' faces.
 - PNG, JPG, WEBP and GIF pictures up to 2MB are accepted.
 
@@ -1482,7 +1482,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.175.0] - 2026-10-16
 ### Fixed
-- **Connecting Higgsfield (and other MCP servers that sign in through Clerk) no longer fails with invalid_grant:** Javis asks only for the permissions the MCP server needs. If the provider refuses one, Javis drops it and reopens the sign-in page; other sign-in errors now show their real name.
+- **Connecting Higgsfield (and other MCP servers that sign in through Clerk) no longer fails with invalid_grant:** UNI MATE asks only for the permissions the MCP server needs. If the provider refuses one, UNI MATE drops it and reopens the sign-in page; other sign-in errors now show their real name.
 
 ### Improved
 - **Tidier assistant cards:** each card shows name, time and role. A third line appears only when something is going on, "Needs you 1" or "Working 2" in words, instead of a hand icon that looked like a pin. Auto shows as a small label only while it is on (turn it on from the three-dot menu or the Settings tab). Tags are no longer drawn on the card (filter at the top of the column, hover a card to see them).
@@ -1492,17 +1492,17 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.174.0] - 2026-10-16
 ### Added
-- **Import old personal Zalo messages into the Inbox:** right after signing Zalo in to Javis, press **Import old messages** (on the Zalo account card, or on the Zalo chip of a bot card). Javis takes about the last 2 weeks Zalo lets it reload, up to 5,000 messages.
+- **Import old personal Zalo messages into the Inbox:** right after signing Zalo in to UNI MATE, press **Import old messages** (on the Zalo account card, or on the Zalo chip of a bot card). UNI MATE takes about the last 2 weeks Zalo lets it reload, up to 5,000 messages.
 - **Safe to run:** only chats with no message in the Inbox yet are filled, the bot does not answer these messages and they are not counted as unread. Pressing again never duplicates anything.
 
 ## [0.173.1] - 2026-10-16
 ### Improved
-- **Clearer /goal:** every time Javis nudges itself to keep going you see a line you can expand (round n/5) with a Stop goal button, and it survives a page reload.
-- Javis stops at once when it lacks a permission, a tool or data, says why and how to unblock it, instead of nudging itself again and again. At most 5 rounds.
+- **Clearer /goal:** every time UNI MATE nudges itself to keep going you see a line you can expand (round n/5) with a Stop goal button, and it survives a page reload.
+- UNI MATE stops at once when it lacks a permission, a tool or data, says why and how to unblock it, instead of nudging itself again and again. At most 5 rounds.
 
 ## [0.173.0] - 2026-10-16
 ### Added
-- **Javis creates and manages team chats from the chat box.** Ask for "a test team of three assistants" and Javis creates any missing assistant, sets up the team and picks the leader; renaming, adding or removing members, archiving or deleting a team works the same way.
+- **UNI MATE creates and manages team chats from the chat box.** Ask for "a test team of three assistants" and UNI MATE creates any missing assistant, sets up the team and picks the leader; renaming, adding or removing members, archiving or deleting a team works the same way.
 - Each assistant created this way can run its own model, so a mixed-model test team takes one request.
 - An archived team can now be deleted for good. If the team you have open is deleted, the Teams page closes it and tells you.
 
@@ -1511,23 +1511,23 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **Personal Zalo: set how many minutes the bot steps aside after you type by hand** (0 means never). The clock starts at your last hand-typed message, so in private chats the bot answers for you sooner than before. Once a number is set, a direct tag in a group is still answered right away.
 - **Per-chat exceptions:** one trusted person (a family member, say) gets their own permission level and wait, without raising the bot that answers strangers. Accept Zalo friend requests automatically (off by default) and hand the introduction to the bot. Plugins can add one line of context to each bot turn.
 ### Fixes
-- **Personal Zalo understands customers better:** a photo sent without text in a private chat reaches the bot and stays attached for 10 minutes. If the customer keeps typing while the bot composes, the stale reply is dropped and one answer covers everything. The role instructions you write always win over Javis's default. The bot no longer quotes old backups or agent and workflow files as documents.
+- **Personal Zalo understands customers better:** a photo sent without text in a private chat reaches the bot and stays attached for 10 minutes. If the customer keeps typing while the bot composes, the stale reply is dropped and one answer covers everything. The role instructions you write always win over UNI MATE's default. The bot no longer quotes old backups or agent and workflow files as documents.
 - **Small fixes:** a reminder answering `[SILENT]` sends nothing. What you write under the self-learning history heading is no longer wiped. A `---` inside a sentence no longer turns a 16-step workflow into 14.
 
 ## [0.171.4] - 2026-10-16
 ### Fixed
-- **Calling an assistant by name in a team, without @, is now noticed.** An assistant named Minh never noticed its own name before, because without accents the name matched a common Vietnamese word and was ignored. Javis now compares names with their accents, so an everyday word that only looks like the name is still not a call.
+- **Calling an assistant by name in a team, without @, is now noticed.** An assistant named Minh never noticed its own name before, because without accents the name matched a common Vietnamese word and was ignored. UNI MATE now compares names with their accents, so an everyday word that only looks like the name is still not a call.
 
 ## [0.171.3] - 2026-10-16
 ### Fixed
-- **Team chat no longer shows made-up command names.** When an assistant's reply contains a command Javis does not support, the team now notes "the reply had an unsupported Javis command, dropped" instead of printing the raw code in the bubble.
+- **Team chat no longer shows made-up command names.** When an assistant's reply contains a command UNI MATE does not support, the team now notes "the reply had an unsupported UNI MATE command, dropped" instead of printing the raw code in the bubble.
 
 ## [0.171.2] - 2026-10-16
 ### Fixes
-- **A dropped connection no longer kills the whole turn:** when the connection to the model provider is cut (errors like `ReadError ... WinError 1236` on Windows), Javis resends up to 3 times, even in the middle of a turn that uses tools. If it still fails, the message names the usual causes (network, VPN, antivirus) instead of just pasting the error chain.
+- **A dropped connection no longer kills the whole turn:** when the connection to the model provider is cut (errors like `ReadError ... WinError 1236` on Windows), UNI MATE resends up to 3 times, even in the middle of a turn that uses tools. If it still fails, the message names the usual causes (network, VPN, antivirus) instead of just pasting the error chain.
 - **Long Zalo replies are split into several messages:** a long reply on personal Zalo is cut at the end of a paragraph or sentence and sent in order, instead of Zalo refusing it and the customer getting nothing. In groups, the person being answered is tagged only in the first message.
 ### Improved
-- **Bot alerts go to the notification bell only:** the Telegram message to an "on-duty person" is gone (its field had long been hidden from the form). A customer asking for a human, or the bot getting stuck twice in a row, now lands in the Javis bell with the customer's name. Technical failures still ring the bell as before.
+- **Bot alerts go to the notification bell only:** the Telegram message to an "on-duty person" is gone (its field had long been hidden from the form). A customer asking for a human, or the bot getting stuck twice in a row, now lands in the UNI MATE bell with the customer's name. Technical failures still ring the bell as before.
 
 ## [0.171.0] - 2026-10-15
 ### Added
@@ -1566,17 +1566,17 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.166.4] - 2026-10-15
 ### Fixed
-- **Saving a setting can no longer wipe the admin account, models and admin channels.** If `settings.json` was locked for a split second while Javis read it (common on Windows when antivirus scans a freshly written file), Javis took it for a fresh install, showed the setup wizard again, and the next save (saving the Lark channel, for example) wrote an empty setup over the real one. Javis now retries the read until it works, and never writes an empty setup over a machine that is already set up.
+- **Saving a setting can no longer wipe the admin account, models and admin channels.** If `settings.json` was locked for a split second while UNI MATE read it (common on Windows when antivirus scans a freshly written file), UNI MATE took it for a fresh install, showed the setup wizard again, and the next save (saving the Lark channel, for example) wrote an empty setup over the real one. UNI MATE now retries the read until it works, and never writes an empty setup over a machine that is already set up.
 
 ## [0.166.3] - 2026-10-15
 ### Fixed
 - **The bot no longer sends customers the "please wait a moment while I check" line when something technical breaks** (out of tokens, plan limit reached, model error). The customer receives nothing at all, on personal Zalo, Zalo OA, Telegram and WhatsApp.
-- **The owner hears about it in the Javis notification bell:** which bot failed, which customer wrote without an answer, and the error. One notice per failure streak; the next one comes only after the bot has worked again. The on-duty person (if set) is still alerted as before.
+- **The owner hears about it in the UNI MATE notification bell:** which bot failed, which customer wrote without an answer, and the error. One notice per failure streak; the next one comes only after the bot has worked again. The on-duty person (if set) is still alerted as before.
 
 ## [0.166.2] - 2026-10-15
 ### Fixed
-- **Creating images on the ChatGPT plan no longer gets stuck on "The 'gpt-5.5' model is not supported".** When your plan lacks that model, Javis switches to another model from your own account's ChatGPT model list and makes the image, with nothing to configure.
-- Next time Javis goes straight to the model that worked, so no extra failed round. Letting ChatGPT look at images for you is fixed the same way.
+- **Creating images on the ChatGPT plan no longer gets stuck on "The 'gpt-5.5' model is not supported".** When your plan lacks that model, UNI MATE switches to another model from your own account's ChatGPT model list and makes the image, with nothing to configure.
+- Next time UNI MATE goes straight to the model that worked, so no extra failed round. Letting ChatGPT look at images for you is fixed the same way.
 
 ## [0.165.1] - 2026-10-15
 ### Fixed
@@ -1589,13 +1589,13 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.164.0] - 2026-10-15
 ### Added
 - **The Fast mode bolt now really switches each brain:** Claude Code and the Anthropic API (Opus 5.5, Opus 5, Opus 4.8), ChatGPT through Codex, the OpenAI API, OpenRouter and Gemini. Brains without Fast mode (Grok, Antigravity, Groq, DeepSeek, Ollama) keep a dimmed bolt.
-- **Bolt off means normal speed:** for Codex, Javis forces the normal tier even when the model or the Codex config defaults to Fast. Background runs (loops, reminders, Kanban, workflows, teams) and customer chatbots always run at normal speed, even if you once turned on `/fast` in Claude Code.
-- **When a provider refuses Fast mode** (account not eligible, limit reached), Javis resends at normal speed and the turn does not fail; hover the bolt to see why (e.g. usage credits need turning on).
+- **Bolt off means normal speed:** for Codex, UNI MATE forces the normal tier even when the model or the Codex config defaults to Fast. Background runs (loops, reminders, Kanban, workflows, teams) and customer chatbots always run at normal speed, even if you once turned on `/fast` in Claude Code.
+- **When a provider refuses Fast mode** (account not eligible, limit reached), UNI MATE resends at normal speed and the turn does not fail; hover the bolt to see why (e.g. usage credits need turning on).
 
 ## [0.162.0] - 2026-10-15
 ### Security
-- **Plugins you install load by default**, no environment variable needed. Each plugin still runs only after you click **Enable** on its card (a plugin Javis creates from chat always starts disabled), and the permission level still decides every tool call.
-- To block user plugins on a machine altogether (a shared server, bots for strangers), set `JAVIS_ENABLE_USER_PLUGINS=false` and restart.
+- **Plugins you install load by default**, no environment variable needed. Each plugin still runs only after you click **Enable** on its card (a plugin UNI MATE creates from chat always starts disabled), and the permission level still decides every tool call.
+- To block user plugins on a machine altogether (a shared server, bots for strangers), set `UNIMATE_ENABLE_USER_PLUGINS=false` and restart.
 
 ## [0.160.0] - 2026-10-15
 ### Improved
@@ -1654,7 +1654,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.141.0] - 2026-10-14
 ### Improved
 - **Zalo bots can see the photo in a quoted message.** Quote (reply to) a photo and tag the bot with "look at this" and the bot sees that photo. Before, the bot got only the text and said it could not see the photo, so you had to send the photo again and tag within 3 minutes.
-- Works in groups and private chats, and when you press "Reply for me" in the inbox. The photo must be one Javis read when it was sent, that is, sent after the Zalo account was connected.
+- Works in groups and private chats, and when you press "Reply for me" in the inbox. The photo must be one UNI MATE read when it was sent, that is, sent after the Zalo account was connected.
 
 ## [0.140.0] - 2026-10-14
 ### Added
@@ -1666,30 +1666,30 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.139.0] - 2026-10-14
 ### Fixed
-- **Sending Excel, PDF and Word files on Zalo no longer hangs.** Javis used to wait up to 2 minutes on such a file, then fail without delivering it (images went fine). Files now go through the Zalo connection that serves the inbox, so they reach the recipient.
-- **If Zalo does not confirm within a minute, Javis says so clearly and sends nothing**, so retrying is safe. No more waiting without knowing whether the file went.
-- After updating, **update the "Zalo extras" pack to 1.2.0** from the Store. Javis moves the Zalo connection to javis-zalo 1.4.0 on its own (no new QR scan).
+- **Sending Excel, PDF and Word files on Zalo no longer hangs.** UNI MATE used to wait up to 2 minutes on such a file, then fail without delivering it (images went fine). Files now go through the Zalo connection that serves the inbox, so they reach the recipient.
+- **If Zalo does not confirm within a minute, UNI MATE says so clearly and sends nothing**, so retrying is safe. No more waiting without knowing whether the file went.
+- After updating, **update the "Zalo extras" pack to 1.2.0** from the Store. UNI MATE moves the Zalo connection to unimate-zalo 1.4.0 on its own (no new QR scan).
 - Thanks to @thanhtmfyu-lang for the contribution.
 
 ## [0.137.0] - 2026-10-14
 ### Fixed
-- **Antigravity CLI updates itself every day, so new models (such as Gemini 4 Argon) show up in Javis on their own.** The Antigravity model list comes straight from `agy`, and `agy` was never updated: the Docker build installed it once and left it there. Javis now runs `agy update` daily, Docker included. If `agy` is up to date and a model is still missing, your Google account has not been granted that model.
+- **Antigravity CLI updates itself every day, so new models (such as Gemini 4 Argon) show up in UNI MATE on their own.** The Antigravity model list comes straight from `agy`, and `agy` was never updated: the Docker build installed it once and left it there. UNI MATE now runs `agy update` daily, Docker included. If `agy` is up to date and a model is still missing, your Google account has not been granted that model.
 - **The bot no longer says it is having technical trouble and asks the customer to write again later** when a reply fails. That line told customers they were talking to a machine and made them do the work. The bot now asks them to wait a moment while it checks. The person on duty is still told about the real error, as before.
 
 ## [0.136.0] - 2026-10-14
 ### Improved
-- **The personal Zalo bot answers when you have not replied within 10 minutes.** Before, once you typed into a chat yourself, customer messages that came after were dropped and nobody answered. Javis now holds them; if you do not answer within 10 minutes the bot answers them all once, in private chats only.
+- **The personal Zalo bot answers when you have not replied within 10 minutes.** Before, once you typed into a chat yourself, customer messages that came after were dropped and nobody answered. UNI MATE now holds them; if you do not answer within 10 minutes the bot answers them all once, in private chats only.
 - **A customer who sends only a file or a photo without text also gets a fitting reply**: the bot is told what arrived (file name, photo), and a bot with Can write opens the file too. If you answer on the phone or from the Inbox, the bot stays out.
 - Thanks to @thanhtmfyu-lang for the contribution.
 
 ## [0.135.0] - 2026-10-14
 ### Fixed
-- **The Tools page now shows the Browser (Chromium) as Ready when it was installed by a recent Playwright.** Since Playwright 1.57 the headless browser's executable is called `chrome-headless-shell`. Javis did not know that name, so it kept saying "There is a browser folder but no executable, the download broke midway" on a complete, working install, however many times it was removed and downloaded again. Javis now recognises both the new and the old names. No new download is needed: after updating, the Tools page shows Ready.
+- **The Tools page now shows the Browser (Chromium) as Ready when it was installed by a recent Playwright.** Since Playwright 1.57 the headless browser's executable is called `chrome-headless-shell`. UNI MATE did not know that name, so it kept saying "There is a browser folder but no executable, the download broke midway" on a complete, working install, however many times it was removed and downloaded again. UNI MATE now recognises both the new and the old names. No new download is needed: after updating, the Tools page shows Ready.
 
 ## [0.134.0] - 2026-10-14
 ### Added
 - **Bots answer your Facebook Page inbox (Messenger).** Add a Messenger channel on the Chatbot page; attach it to an existing bot and that bot answers on Zalo and Messenger with the same Agent. Customer messages land in the inbox like on every other channel.
-- **The add-channel form shows the webhook address and verify token** to paste into the Meta app. When the bot is switched on, Javis subscribes the Page to the webhook by itself. If the token lacks the permission for that, the bot still runs and reminds you to subscribe the Page once by hand.
+- **The add-channel form shows the webhook address and verify token** to paste into the Meta app. When the bot is switched on, UNI MATE subscribes the Page to the webhook by itself. If the token lacks the permission for that, the bot still runs and reminds you to subscribe the Page once by hand.
 - **A wrong App secret is refused when you save**, instead of a bot that looks healthy but never hears a message.
 - **Meta errors read as words:** more than 24 hours since the customer last wrote, app not yet approved to message the public, expired token. Step-by-step guide in docs/en/31-messenger.md.
 - Thanks to @thanhtmfyu-lang for the contribution.
@@ -1703,7 +1703,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.131.0] - 2026-10-14
 ### Added
-- **An operator theme.** Put a `theme.css` file in the `branding` folder of Javis's data (next to the logo) and the dashboard takes your brand colours and fonts, kept across every update. Delete the file to get the original look back. See the Branding and domain guide.
+- **An operator theme.** Put a `theme.css` file in the `branding` folder of UNI MATE's data (next to the logo) and the dashboard takes your brand colours and fonts, kept across every update. Delete the file to get the original look back. See the Branding and domain guide.
 - Thanks to @hodaclong for the contribution.
 
 ## [0.130.0] - 2026-10-14
@@ -1728,7 +1728,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.125.0] - 2026-10-14
 ### Fixed
-- **Background jobs on ChatGPT (Codex) no longer report a fake success when tools are missing.** Reminders, loops and Kanban jobs on Codex now wait for Javis's MCP Hub to come up. If it does not, the job fails with a clear reason instead of running without tools and still being recorded as done.
+- **Background jobs on ChatGPT (Codex) no longer report a fake success when tools are missing.** Reminders, loops and Kanban jobs on Codex now wait for UNI MATE's MCP Hub to come up. If it does not, the job fails with a clear reason instead of running without tools and still being recorded as done.
 - Thanks to @dev23072005 for the contribution.
 
 ## [0.123.0] - 2026-10-14
@@ -1738,7 +1738,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.122.0] - 2026-10-14
 ### Security
-- **The open-file tool no longer runs programs.** Opening a file on the machine running Javis now refuses runnable files (scripts, programs, shortcuts). Opening an app by name works as before.
+- **The open-file tool no longer runs programs.** Opening a file on the machine running UNI MATE now refuses runnable files (scripts, programs, shortcuts). Opening an app by name works as before.
 - **The login session file is readable by the owner only**, like the secret key and the hub token.
 
 ## [0.119.0] - 2026-10-14
@@ -1747,7 +1747,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.118.0] - 2026-10-14
 ### Security
-- **Tighter checks on live connections to Javis.** Every real-time connection (chat, terminal, voice, graph) now passes the same origin checks as write actions, including on machines with no password set. Your dashboard, Telegram and command-line tools are not affected. Updating soon is recommended.
+- **Tighter checks on live connections to UNI MATE.** Every real-time connection (chat, terminal, voice, graph) now passes the same origin checks as write actions, including on machines with no password set. Your dashboard, Telegram and command-line tools are not affected. Updating soon is recommended.
 
 ## [0.117.0] - 2026-10-14
 ### Security
@@ -1755,8 +1755,8 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.114.0] - 2026-10-14
 ### Fixed
-- **The Zalo bot no longer goes silent after Javis restarts.** A Javis that stopped uncleanly (a crash, a hard stop during an update) used to leave the old Zalo process running, so the account had two listening sessions. Zalo delivers to only one of them, the bot read the other and stayed quiet. Javis now records every connector process it starts and clears what an earlier run left behind.
-- **Safe cleanup.** It only clears a process when the old server is really gone and the process still runs the command Javis started, so nothing else is touched.
+- **The Zalo bot no longer goes silent after UNI MATE restarts.** A UNI MATE that stopped uncleanly (a crash, a hard stop during an update) used to leave the old Zalo process running, so the account had two listening sessions. Zalo delivers to only one of them, the bot read the other and stayed quiet. UNI MATE now records every connector process it starts and clears what an earlier run left behind.
+- **Safe cleanup.** It only clears a process when the old server is really gone and the process still runs the command UNI MATE started, so nothing else is touched.
 
 ## [0.109.0] - 2026-10-13
 ### Added
@@ -1765,12 +1765,12 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **The goal card shows who makes and who reviews**, which version was reviewed, who is being waited on and the calls left per role. **Turn the reviewer back on** and **Drop the review requirement** buttons appear when the goal is stuck.
 - Ongoing goals and discovery steps also wait for the reviewer to pass the version before reporting an update or a finished step; the same version is not reviewed again on schedule.
 - A call that fails before the model is reached is given back, not counted.
-- If a published file is edited by hand, a goal with a team waits instead of counting as done. To go back to 0.108.0: stop Javis and run `tools/resonance_restore_pre_a5.py`.
+- If a published file is edited by hand, a goal with a team waits instead of counting as done. To go back to 0.108.0: stop UNI MATE and run `tools/resonance_restore_pre_a5.py`.
 
 ## [0.108.0] - 2026-10-13
 ### Fixed
 - **The bot no longer sends plan-limit notices to customers.** Lines like "You've hit your session limit" or "API Error" used to be posted straight into a Zalo group, tagging the person who asked. That turn now counts as failed: whoever asked gets the usual apology, and the real reason is in the bot log.
-- **Messages you type by hand on personal Zalo reach the inbox.** Replies the owner or staff send from the phone now show as "You", and the bot steps back in that chat. The cause was in the Zalo CLI, which dropped every message from the account itself; Javis now runs javis-zalo 1.3.0.
+- **Messages you type by hand on personal Zalo reach the inbox.** Replies the owner or staff send from the phone now show as "You", and the bot steps back in that chat. The cause was in the Zalo CLI, which dropped every message from the account itself; UNI MATE now runs unimate-zalo 1.3.0.
 - **No duplicates, no wrongful silence.** Images the bot just sent and lines you type in the inbox are recognised when they come back, so they are not recorded twice and the bot does not think you just stepped in.
 
 ## [0.107.0] - 2026-10-13
@@ -1802,9 +1802,9 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.102.0] - 2026-10-12
 ### Added
-- **Lark (and Feishu) as a chatbot channel.** On the Chatbot page, add a Lark account with the App ID and App Secret of a separate Lark app, attach it to a bot, and the bot answers customers on Lark, with every chat in the Inbox and takeover like the other channels. No domain needed: Javis opens the connection out to Lark.
+- **Lark (and Feishu) as a chatbot channel.** On the Chatbot page, add a Lark account with the App ID and App Secret of a separate Lark app, attach it to a bot, and the bot answers customers on Lark, with every chat in the Inbox and takeover like the other channels. No domain needed: UNI MATE opens the connection out to Lark.
 - **Lark bots join groups, send images and documents**, see the photos customers send, and you can reply to a customer straight from the Inbox.
-- **Javis works out whether the app is on Lark or Feishu**, nothing to pick. Pasting the app that runs your admin channel is refused right away, since two connections on one app get messages split at random.
+- **UNI MATE works out whether the app is on Lark or Feishu**, nothing to pick. Pasting the app that runs your admin channel is refused right away, since two connections on one app get messages split at random.
 - **The Inbox shows Lark customer and group names** when the app may read contacts and chat info. Without those permissions the bot still runs and shows the ids.
 
 ## [0.100.0] - 2026-10-12
@@ -1821,27 +1821,27 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **"Deutsch" in the language pickers**, both under the side rail and in Settings, so you can switch back to German after choosing another language.
 
 ### Fixed
-- **Readers of the German interface no longer get Vietnamese from Javis.** The server speaks only Vietnamese and English, so for a language that exists only in the dashboard, Telegram messages, background work, the voice and the default brain now use English. Before, they could fall back to Vietnamese.
+- **Readers of the German interface no longer get Vietnamese from UNI MATE.** The server speaks only Vietnamese and English, so for a language that exists only in the dashboard, Telegram messages, background work, the voice and the default brain now use English. Before, they could fall back to Vietnamese.
 
 Thanks to @sirschnake for contributing the German translation (#618).
 
 ## [0.96.1] - 2026-10-11
 ### Fixed
-- **Updating no longer locks you out.** On servers that set the account from the environment (Docker, Hostinger) where `JAVIS_ADMIN_PASSWORD` carried a stray space, from 0.92.1 the first boot after an update took the environment password as changed and reset the account. The password you had changed in the dashboard was overwritten and the username became `admin`. Updating now leaves the account alone; only a real change of the environment value resets it.
-- **If your server was already reset:** sign in with `admin` (or your `JAVIS_ADMIN_USER` value, if you set one) and the password in `JAVIS_ADMIN_PASSWORD` on Hostinger, without the stray space. Then change the name and password back in Settings.
+- **Updating no longer locks you out.** On servers that set the account from the environment (Docker, Hostinger) where `UNIMATE_ADMIN_PASSWORD` carried a stray space, from 0.92.1 the first boot after an update took the environment password as changed and reset the account. The password you had changed in the dashboard was overwritten and the username became `admin`. Updating now leaves the account alone; only a real change of the environment value resets it.
+- **If your server was already reset:** sign in with `admin` (or your `UNIMATE_ADMIN_USER` value, if you set one) and the password in `UNIMATE_ADMIN_PASSWORD` on Hostinger, without the stray space. Then change the name and password back in Settings.
 
 ## [0.96.0] - 2026-10-11
 ### Added
 - **Resonance assistants only write to files you have allowed.** A new goal, or a switch to another file, makes the card ask "The assistant wants to write to ... Allow?" with the exact path. Once allowed, the assistant keeps working without asking again for each revision.
 - **What the assistant drafts before you allow it is kept as a draft.** Preview it, then Allow publishes exactly that version, with no new model call.
-- **Codex and API-key brains can also hand in their work during the chat**, through the same check as Claude: Javis reads, verifies and publishes the submission itself, and never overwrites a file you edited.
-- **A Revoke permission button on the goal card** stops the goal right away; press Resume to grant it again. To go back to 0.95.1, stop Javis and run `tools/resonance_restore_pre_a4.py`.
+- **Codex and API-key brains can also hand in their work during the chat**, through the same check as Claude: UNI MATE reads, verifies and publishes the submission itself, and never overwrites a file you edited.
+- **A Revoke permission button on the goal card** stops the goal right away; press Resume to grant it again. To go back to 0.95.1, stop UNI MATE and run `tools/resonance_restore_pre_a4.py`.
 
 ## [0.95.1] - 2026-10-11
 ### Fixed
-- **Ollama (Local) no longer "returns nothing" after thinking too long.** Models like qwen3 turn thinking on by themselves, and a job such as counting the rows of a file could spend the whole turn thinking without writing a word. Javis now switches thinking off for local models, with or without tools, so they answer directly.
+- **Ollama (Local) no longer "returns nothing" after thinking too long.** Models like qwen3 turn thinking on by themselves, and a job such as counting the rows of a file could spend the whole turn thinking without writing a word. UNI MATE now switches thinking off for local models, with or without tools, so they answer directly.
 - **The Effort button no longer drags the local model along.** Leave Effort at Medium or Very high for Claude and the local model still answers directly, so switching between the two no longer means toggling it every time.
-- **When a model only thinks and never answers, Javis says exactly that**, with what to do (lower the thinking level or split the task), instead of a "returned nothing" that looks like a lost connection.
+- **When a model only thinks and never answers, UNI MATE says exactly that**, with what to do (lower the thinking level or split the task), instead of a "returned nothing" that looks like a lost connection.
 
 Thanks to the user who reported this with a patch tested on a Mac.
 
@@ -1851,13 +1851,13 @@ Thanks to the user who reported this with a patch tested on a Mac.
 - **Bots remember what the earlier photo showed.** When a customer follows up about "the thing in that photo", the bot still knows, because the description stays in the conversation.
 
 ### Fixed
-- **Zalo photos are no longer dropped by mistake.** Zalo's photo server labels some photos as generic binary files instead of images, and Javis skipped them before the bot could see them. Javis now checks the file's own content to recognise an image.
+- **Zalo photos are no longer dropped by mistake.** Zalo's photo server labels some photos as generic binary files instead of images, and UNI MATE skipped them before the bot could see them. UNI MATE now checks the file's own content to recognise an image.
 - **The bot card shows the real error when a model rejects a photo**, instead of a generic "refused the image". When no brain can look, the card says why each one could not.
 
 ## [0.92.2] - 2026-10-11
 ### Fixed
-- **Ollama (Local) can use tools.** With a model running in Ollama on your own machine, the model could not read files or call any connection and said it had no tool permission, because Javis forgot to load tools for this kind of model. Local models now get the same tools as the API models, and the Connections page no longer says they cannot call tools.
-- **The Local Model page on Apple-chip Macs says the GPU is used.** It used to say "Runs on CPU and RAM" while Ollama ran fully on the chip's GPU. Javis now recognises Apple chips even when Python runs under Rosetta, counts the shared RAM as GPU memory, and no longer drops the GPU when you enter the RAM size by hand.
+- **Ollama (Local) can use tools.** With a model running in Ollama on your own machine, the model could not read files or call any connection and said it had no tool permission, because UNI MATE forgot to load tools for this kind of model. Local models now get the same tools as the API models, and the Connections page no longer says they cannot call tools.
+- **The Local Model page on Apple-chip Macs says the GPU is used.** It used to say "Runs on CPU and RAM" while Ollama ran fully on the chip's GPU. UNI MATE now recognises Apple chips even when Python runs under Rosetta, counts the shared RAM as GPU memory, and no longer drops the GPU when you enter the RAM size by hand.
 
 ### Improved
 - **API and local models can read PDF and Word (.docx) files.** These files used to come out as binary noise. A scanned PDF (images only) is reported plainly as having no text to read.
@@ -1867,15 +1867,15 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 ## [0.92.1] - 2026-10-11
 ### Fixed
 - **Signing in no longer fails on capital letters or invisible spaces.** Usernames ignore case now, so "Phong" and "phong" both work. A stray space before or after the password, which phone keyboards often add, no longer reads as a wrong password.
-- **When the password is right but the browser does not keep the session, Javis says so**, with the usual causes, instead of silently returning to an empty sign-in form.
-- **On a server that sets the account from its environment, the wrong-password message points out that the username is `JAVIS_ADMIN_USER`** (default admin). Resetting the password through Hostinger also resets the username, which is easy to miss.
+- **When the password is right but the browser does not keep the session, UNI MATE says so**, with the usual causes, instead of silently returning to an empty sign-in form.
+- **On a server that sets the account from its environment, the wrong-password message points out that the username is `UNIMATE_ADMIN_USER`** (default admin). Resetting the password through Hostinger also resets the username, which is easy to miss.
 ### Improved
 - **The first-run screen is readable on the light theme.** Brain names, card borders and the Claude sign-in command used to be nearly invisible on a light background. On a public server, the admin account section now says it is required right away instead of a red line at the bottom.
 
 ## [0.91.0] - 2026-10-10
 ### Added
 - **DeepSeek is a new brain.** Paste a DeepSeek API key on the Models page to pick `deepseek-flash` or `deepseek-v4-pro` as the main brain, for agents or for background work, with the same tools as the other API engines.
-- **Thinking depth works with DeepSeek.** Set to Off, DeepSeek answers directly, cheaper and faster; turned on, it thinks first. If an older conversation does not fit thinking mode, Javis answers in normal mode with a one-line notice.
+- **Thinking depth works with DeepSeek.** Set to Off, DeepSeek answers directly, cheaper and faster; turned on, it thinks first. If an older conversation does not fit thinking mode, UNI MATE answers in normal mode with a one-line notice.
 
 ## [0.89.2] - 2026-10-10
 ### Improved
@@ -1889,21 +1889,21 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 ### Added
 - **Resonance assistants learn from feedback, with checks.** React to an assistant's notice to suggest shorter or less disruptive updates; you preview the change and decide whether to apply it.
 - **When stuck, the assistant tries one other method, only if the goal's budget covers both the trial and one more pass on the deliverable,** compared with the old method on the same criteria; a losing or unclear result keeps the old method.
-- **Every lesson has a source, a scope and a revoke button.** After you revoke or dismiss a suggestion, Javis waits 14 days before suggesting the same change again. Feedback never marks a goal done by itself and never grants more permissions or budget.
+- **Every lesson has a source, a scope and a revoke button.** After you revoke or dismiss a suggestion, UNI MATE waits 14 days before suggesting the same change again. Feedback never marks a goal done by itself and never grants more permissions or budget.
 
 ## [0.88.6] - 2026-10-10
 ### Fixed
-- **The Zalo bot card states the real reason when the Zalo connection drops.** The card used to show only a technical config line like `process closed stdout ([mcp] Config loaded: ...)`, with the real reason cut off. It now says it in plain words. If Zalo closed the session because the account was just opened somewhere else (Zalo Web in a browser, or another Javis machine signed in to the same account), the card says to close the other one and that Javis reconnects in about 2 minutes. If the Zalo sign-in expired, it says to sign in again with the QR code on the Connections page. Any other error shows the end of the message, where the real reason is.
+- **The Zalo bot card states the real reason when the Zalo connection drops.** The card used to show only a technical config line like `process closed stdout ([mcp] Config loaded: ...)`, with the real reason cut off. It now says it in plain words. If Zalo closed the session because the account was just opened somewhere else (Zalo Web in a browser, or another UNI MATE machine signed in to the same account), the card says to close the other one and that UNI MATE reconnects in about 2 minutes. If the Zalo sign-in expired, it says to sign in again with the QR code on the Connections page. Any other error shows the end of the message, where the real reason is.
 
 ## [0.88.5] - 2026-10-10
 ### Improved
 - **Conversations with many goal cards open faster.** Cards of the same goal share one load instead of one each, and are redrawn once.
-- **Opening a goal card no longer makes other pages wait.** Javis reads goal state on a separate thread and only reads what the card shows, so goals with a long history still open quickly.
-- **You can see how long Javis spends on each request.** Every response carries a `Server-Timing` header, to tell slowness in Javis from slowness in the network or proxy (Cloudflare).
+- **Opening a goal card no longer makes other pages wait.** UNI MATE reads goal state on a separate thread and only reads what the card shows, so goals with a long history still open quickly.
+- **You can see how long UNI MATE spends on each request.** Every response carries a `Server-Timing` header, to tell slowness in UNI MATE from slowness in the network or proxy (Cloudflare).
 
 ## [0.88.4] - 2026-10-09
 ### Fixed
-- **The Partners page no longer shows up empty now and then even though the brain has assistants.** Opening the app straight on this page, Javis does not know the brain yet, so it loads the default brain's list (empty), then loads again once the real brain is known. If the first load came back later, it overwrote the right list and the page said there were no partners yet. Results from an outdated load are now dropped. If the server reports an error while loading the list, the page shows the error with a Retry button instead of pretending the list is empty.
+- **The Partners page no longer shows up empty now and then even though the brain has assistants.** Opening the app straight on this page, UNI MATE does not know the brain yet, so it loads the default brain's list (empty), then loads again once the real brain is known. If the first load came back later, it overwrote the right list and the page said there were no partners yet. Results from an outdated load are now dropped. If the server reports an error while loading the list, the page shows the error with a Retry button instead of pretending the list is empty.
 
 ## [0.88.3] - 2026-10-09
 ### Fixed
@@ -1913,7 +1913,7 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.88.2] - 2026-10-09
 ### Fixed
-- **Old ChatGPT chats recover by themselves after moving to another machine or VPS.** The Codex session files stay on the old machine, so an old chat kept failing with "no rollout found" while a new chat worked fine. Javis already rebuilds the context from chat history in this case, but did not recognise this error, especially when Codex only printed it and exited. Javis now recognises it and rebuilds once. Sign-in, usage limit and network errors are still reported as before. (Reported by @dev23072005, issue #595.)
+- **Old ChatGPT chats recover by themselves after moving to another machine or VPS.** The Codex session files stay on the old machine, so an old chat kept failing with "no rollout found" while a new chat worked fine. UNI MATE already rebuilds the context from chat history in this case, but did not recognise this error, especially when Codex only printed it and exited. UNI MATE now recognises it and rebuilds once. Sign-in, usage limit and network errors are still reported as before. (Reported by @dev23072005, issue #595.)
 
 ## [0.88.1] - 2026-10-09
 ### Fixed
@@ -1923,7 +1923,7 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 ### Improved
 - **Resonance assistants call the model only for a reason.** A new task, new feedback from you, or a retry still within its limit. While waiting on you they sleep; periodic reviews are code-only checks that back off to once a week.
 - **No pointless retries.** Two attempts in a row without progress pause retries until you give feedback; errors are retried at most 3 times; automatic retries always leave one call for your feedback.
-- **Files you edit by hand are not overwritten or redone.** Javis tells you once and re-checks on its own; a paused goal still watches its protective conditions, and turning an assistant off says clearly that watching stopped.
+- **Files you edit by hand are not overwritten or redone.** UNI MATE tells you once and re-checks on its own; a paused goal still watches its protective conditions, and turning an assistant off says clearly that watching stopped.
 - **The goal card shows why the assistant woke up** and its recent wake-ups, with or without a model call.
 
 ## [0.87.0] - 2026-10-08
@@ -1938,24 +1938,24 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 - **Settings are no longer wiped when you open the WhatsApp tab or allow someone to message a bot.** Since 0.71.0, three places meant to save one small piece but overwrote the whole settings file: opening the WhatsApp tab on the Admin channels page for the first time, allowing a Zalo chat, and allowing a Slack, WhatsApp, Discord or Lark user. Each time, the HTTPS domain, API keys, the Telegram connection and every other setting were lost. A Docker install with its own domain could also lose HTTPS after the next reverse proxy restart. All three now update only their own part. Thanks to the DaoVix team for reviewing the code and sending a detailed bug report.
 - **The settings file is written more safely.**
   - Writes are atomic: a machine shutting down mid-save no longer leaves a broken file.
-  - A backup of the last good save is kept in `settings.json.bak`. If the file is broken, Javis reads the backup instead of quietly falling back to defaults and writing them over it, and keeps the broken copy for manual recovery.
+  - A backup of the last good save is kept in `settings.json.bak`. If the file is broken, UNI MATE reads the backup instead of quietly falling back to defaults and writing them over it, and keeps the broken copy for manual recovery.
   - Several saves at once no longer overwrite each other's changes.
 
 ## [0.86.1] - 2026-10-08
 ### Improved
-- **With ChatGPT as the brain, the chat shows the step Javis is working on right away instead of going quiet until it finishes.** When Codex ran a long command (installing packages, scanning files, running a script), the chat used to show only "Javis is thinking..." counting up until the command finished, which looked like a hang. The step now appears the moment it starts, like "Running command: npm install", and is marked done when it finishes, just as with Claude.
+- **With ChatGPT as the brain, the chat shows the step UNI MATE is working on right away instead of going quiet until it finishes.** When Codex ran a long command (installing packages, scanning files, running a script), the chat used to show only "UNI MATE is thinking..." counting up until the command finished, which looked like a hang. The step now appears the moment it starts, like "Running command: npm install", and is marked done when it finishes, just as with Claude.
 
 ## [0.86.0] - 2026-10-08
 ### Added
-- **Resonance: Javis follows a task through until it is done.** When you hand over work that continues after the chat turn, Javis sets a goal with a clear finish line, works on it in the background within its budget, reports done only with evidence, and keeps the goal across restarts. The feature ships off and is turned on per brain.
-- **A "What I'm working toward" card in the chat.** Tap Right or Not quite for how Javis understood you, Accepted for the result, or pause it. Feedback you add in chat attaches to the same goal and Javis revises the version you actually saw; a draft Javis writes during the chat turn is kept as the first version instead of being rewritten.
-- **Try a new method before switching.** Javis compares its current way of working with one alternative on the same set of cases and switches only when the new one clearly wins; without enough evidence it keeps the current method.
+- **Resonance: UNI MATE follows a task through until it is done.** When you hand over work that continues after the chat turn, UNI MATE sets a goal with a clear finish line, works on it in the background within its budget, reports done only with evidence, and keeps the goal across restarts. The feature ships off and is turned on per brain.
+- **A "What I'm working toward" card in the chat.** Tap Right or Not quite for how UNI MATE understood you, Accepted for the result, or pause it. Feedback you add in chat attaches to the same goal and UNI MATE revises the version you actually saw; a draft UNI MATE writes during the chat turn is kept as the first version instead of being rewritten.
+- **Try a new method before switching.** UNI MATE compares its current way of working with one alternative on the same set of cases and switches only when the new one clearly wins; without enough evidence it keeps the current method.
 ### Fixed
-- **A chat turn that lands while Claude Code is refreshing its sign-in now says it can simply be resent.** Newer Claude Code reports this with a different message that Javis used to show raw in English; normal answers that happen to contain "already used" are no longer replaced by that error note.
+- **A chat turn that lands while Claude Code is refreshing its sign-in now says it can simply be resent.** Newer Claude Code reports this with a different message that UNI MATE used to show raw in English; normal answers that happen to contain "already used" are no longer replaced by that error note.
 
 ## [0.85.11] - 2026-10-08
 ### Fixed
-- **The chat no longer sits on "Javis is thinking..." when the connection dies silently.** A sleeping laptop, a Wi-Fi switch or a flaky network can kill the link between the page and Javis without the browser noticing. Javis still finished the work, but the answer never reached the page, so "thinking" kept counting and you had to resend the command. The page now checks in with Javis after a stretch of silence. If nothing answers, it reconnects by itself and pulls in the answer that is already done. The Stop button also always reaches Javis, even when the connection is dead.
+- **The chat no longer sits on "UNI MATE is thinking..." when the connection dies silently.** A sleeping laptop, a Wi-Fi switch or a flaky network can kill the link between the page and UNI MATE without the browser noticing. UNI MATE still finished the work, but the answer never reached the page, so "thinking" kept counting and you had to resend the command. The page now checks in with UNI MATE after a stretch of silence. If nothing answers, it reconnects by itself and pulls in the answer that is already done. The Stop button also always reaches UNI MATE, even when the connection is dead.
 
 ## [0.85.10] - 2026-10-08
 ### Fixed
@@ -1971,7 +1971,7 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.85.7] - 2026-10-08
 ### Fixed
-- **Brain sync with GitHub no longer fails on its very first push from a machine whose system language is not English.** When the GitHub repo was still empty, Javis read git's messages in the OS language and missed that case. It now talks to git in a neutral locale, so bootstrapping works regardless of the machine's language. (Contributed by @dev23072005.)
+- **Brain sync with GitHub no longer fails on its very first push from a machine whose system language is not English.** When the GitHub repo was still empty, UNI MATE read git's messages in the OS language and missed that case. It now talks to git in a neutral locale, so bootstrapping works regardless of the machine's language. (Contributed by @dev23072005.)
 
 ## [0.85.5] - 2026-10-07
 ### Improved
@@ -1991,12 +1991,12 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.85.1] - 2026-10-07
 ### Improved
-- **The Docker edition installs Antigravity CLI and Grok Build by itself.** These two cards on the Models page used to say "CLI not installed" with a command to type, and a Hostinger install has nowhere to type it. Javis now installs them at startup, once, and keeps them across updates.
-- While installing, the card says "Javis is installing" instead of showing a command. If the install fails (no Internet on the server), the card says so and how to retry. Turn it off with `JAVIS_AUTO_INSTALL_CLIS=0`.
+- **The Docker edition installs Antigravity CLI and Grok Build by itself.** These two cards on the Models page used to say "CLI not installed" with a command to type, and a Hostinger install has nowhere to type it. UNI MATE now installs them at startup, once, and keeps them across updates.
+- While installing, the card says "UNI MATE is installing" instead of showing a command. If the install fails (no Internet on the server), the card says so and how to retry. Turn it off with `UNIMATE_AUTO_INSTALL_CLIS=0`.
 
 ## [0.85.0] - 2026-10-07
 ### Added
-- **Chat with Javis from Lark/Feishu and Discord.** Both new channels connect outwards, so they run on a laptop too, no domain needed. A stranger who messages the bot gets a pairing code; click Allow and you are done.
+- **Chat with UNI MATE from Lark/Feishu and Discord.** Both new channels connect outwards, so they run on a laptop too, no domain needed. A stranger who messages the bot gets a pairing code; click Allow and you are done.
 ### Improved
 - **The "Channels" page is now "Admin channels"**, so it is not mixed up with the customer bots on the Chatbot page, and each channel has its own tab with a dot showing which ones are running.
 - **The confusing "Enable bot" checkbox is gone.** Each tab now starts with an On/Off switch that works immediately, the button at the bottom says what it does ("Save and turn on" or "Save changes"), and a missing field is named.
@@ -2013,7 +2013,7 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.84.7] - 2026-10-06
 ### Added
-- **Approve people asking to join a Zalo group from Javis.** When someone asks to join a group that requires approval, Javis tells you through the bell and Telegram. Ask "who is waiting to join group X" to see the list, then say "approve everyone" or "approve Lan, reject Minh" and Javis does it and reports back per person.
+- **Approve people asking to join a Zalo group from UNI MATE.** When someone asks to join a group that requires approval, UNI MATE tells you through the bell and Telegram. Ask "who is waiting to join group X" to see the list, then say "approve everyone" or "approve Lan, reject Minh" and UNI MATE does it and reports back per person.
 - A dedicated bot never approves on its own. The Zalo account must be the group's owner or a deputy, with the Zalo connection at Full access.
 
 ## [0.84.6] - 2026-10-06
@@ -2027,24 +2027,24 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.84.2] - 2026-10-06
 ### Added
-- **See who joined a Zalo group and when.** Ask "who joined group X this week" and Javis answers with names and join times, including people your own account added. The log survives restarts.
-- **Bots receive a "new member joined" event.** In a group the bot is allowed in, its Agent follows the instructions you wrote (welcome, a question) and what it sends tags the newcomer. Javis has no greeting of its own: if the Agent was told nothing about newcomers, the bot stays silent.
+- **See who joined a Zalo group and when.** Ask "who joined group X this week" and UNI MATE answers with names and join times, including people your own account added. The log survives restarts.
+- **Bots receive a "new member joined" event.** In a group the bot is allowed in, its Agent follows the instructions you wrote (welcome, a question) and what it sends tags the newcomer. UNI MATE has no greeting of its own: if the Agent was told nothing about newcomers, the bot stays silent.
 - Zalo only reports joins while connected, and the member list has no join date, so people who joined before this feature or while the machine was off have no join time.
 
 ## [0.83.2] - 2026-10-06
 ### Security
 - **Bots can no longer be steered by invisible characters.** A stranger could slip instructions into a message using characters that do not show on screen (hidden characters, text-direction overrides), so the bot read them while the owner saw nothing in the inbox. Every message from Telegram, Zalo and customer bots is now cleaned of them before it reaches the brain and before it is saved.
 ### Improved
-- **A broken connection no longer makes Javis sit and wait.** When a source has just failed to start, further calls to it within a minute get an error right away instead of each one waiting up to a minute to fail. A successful Check on the Connections page puts the source back in use at once.
+- **A broken connection no longer makes UNI MATE sit and wait.** When a source has just failed to start, further calls to it within a minute get an error right away instead of each one waiting up to a minute to fail. A successful Check on the Connections page puts the source back in use at once.
 
 ## [0.83.1] - 2026-10-05
 ### Fixed
-- **On Windows, file paths in replies are clickable again.** When Javis says "Saved to C:\...\post-1.txt" without backticks, the chat now turns it into a link that opens the file, as it already did on Linux and macOS.
+- **On Windows, file paths in replies are clickable again.** When UNI MATE says "Saved to C:\...\post-1.txt" without backticks, the chat now turns it into a link that opens the file, as it already did on Linux and macOS.
 - **On Windows, changing the time zone in Settings now takes effect.** Any zone other than Vietnam used to fall back to Vietnam time without a word, because Windows has no time zone table. The update installs it.
 
 ## [0.83.0] - 2026-10-05
 ### Improved
-- **Zalo runs Javis's own build.** The personal Zalo connection now uses `javis-zalo`, which Javis maintains and fixes itself, instead of a third-party tool. Accounts already signed in by QR switch over on their own, no new scan needed.
+- **Zalo runs UNI MATE's own build.** The personal Zalo connection now uses `unimate-zalo`, which UNI MATE maintains and fixes itself, instead of a third-party tool. Accounts already signed in by QR switch over on their own, no new scan needed.
 - **Group message history works.** The brain can read older messages in groups as well as private chats, see who replied to whom and who was tagged, and find every message from one person or within a date range.
 - When the QR code expires or Zalo rejects it, the sign-in window says why, instead of reporting success and then not working.
 ### Security
@@ -2054,27 +2054,27 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 ### Improved
 - **Third-party MCP connections always run the latest official release.** Google Search Console, Google Workspace, Google Tasks, Google Keep, NotebookLM and Google Ads move to each new release as the publisher ships it, instead of staying on whatever version a machine downloaded first.
 - **Connections made earlier move to the new command too.** Each connection used to keep the command it was created with, so app fixes never reached machines that were already connected (old Zalo connections ran an unpinned version, old Google Sheets ones missed a fix). A command you edited by hand is kept.
-- **Google Ads no longer needs Git.** Javis runs Google's official PyPI release instead of unreleased code from GitHub, and the Google Cloud Project ID box is gone because nothing reads it.
+- **Google Ads no longer needs Git.** UNI MATE runs Google's official PyPI release instead of unreleased code from GitHub, and the Google Cloud Project ID box is gone because nothing reads it.
 ### Security
-- **Google Workspace can no longer run Apps Script at the Draft level.** The new Workspace release added a tool that runs Apps Script functions, and Javis had filed it as read-only. It now needs Full access, and the tools that import files into Docs, Sheets and Slides count as writes.
+- **Google Workspace can no longer run Apps Script at the Draft level.** The new Workspace release added a tool that runs Apps Script functions, and UNI MATE had filed it as read-only. It now needs Full access, and the tools that import files into Docs, Sheets and Slides count as writes.
 - Gateway connections (one tool that runs many commands, like the new Hostinger release) are checked per command inside: reads run at Read-only, unknown commands count as dangerous.
 
 ## [0.81.1] - 2026-10-05
 ### Fixed
-- **A mismatched encryption key no longer wipes your connections.** API keys, the ChatGPT login and the Telegram token are encrypted with the machine's own key. When that key did not match (volume recreated, key file lost), a single settings save, or the first startup after an update, used to overwrite them with empty values for good. Javis now keeps the old encrypted values, so putting the right key back restores every connection.
+- **A mismatched encryption key no longer wipes your connections.** API keys, the ChatGPT login and the Telegram token are encrypted with the machine's own key. When that key did not match (volume recreated, key file lost), a single settings save, or the first startup after an update, used to overwrite them with empty values for good. UNI MATE now keeps the old encrypted values, so putting the right key back restores every connection.
 - With the right key nothing changes: clearing or changing a key works as before, and a key you type again is always saved.
 
 ## [0.81.0] - 2026-10-05
 ### Added
 - **Bots look at customer photos with their own brain.** The photo goes straight into the chat turn for Claude, GPT, Gemini, OpenRouter, Groq, Ollama, the ChatGPT plan or the Claude Code plan to see, no longer depending on ChatGPT describing it. Photos are stored in the bot's brain and cleaned up like every other download.
 - **Telegram reads photos in groups.** A photo with the bot tagged in the caption, a reply to a photo that tags the bot, or a photo sent just before tagging the bot (within 3 minutes, same person) all work. A logo sent as a File counts as a photo too.
-- A brain that cannot see images (Antigravity, Grok Build, text-only models) makes the bot say plainly that it cannot see the photo, never guessing. If a model rejects the image, Javis resends the text so the customer still gets an answer.
+- A brain that cannot see images (Antigravity, Grok Build, text-only models) makes the bot say plainly that it cannot see the photo, never guessing. If a model rejects the image, UNI MATE resends the text so the customer still gets an answer.
 ### Fixed
 - The Telegram bot used to say it could read photos while it actually received only a file path line, which also leaked a server path to the model. That line is now removed before it reaches the bot.
 
 ## [0.80.1] - 2026-10-05
 ### Fixed
-- **Picking drive C in the brain folder picker no longer hangs on "Loading...".** Javis counted note files inside every subfolder, and `C:\Windows` alone holds hundreds of thousands of files, so the scan never finished. Each folder now gets a short counting budget, so drive C opens within a few seconds.
+- **Picking drive C in the brain folder picker no longer hangs on "Loading...".** UNI MATE counted note files inside every subfolder, and `C:\Windows` alone holds hundreds of thousands of files, so the scan never finished. Each folder now gets a short counting budget, so drive C opens within a few seconds.
 
 ## [0.80.0] - 2026-10-05
 ### Added
@@ -2096,25 +2096,25 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.77.1] - 2026-10-05
 ### Fixed
-- **Changing the admin password on Hostinger now works.** `JAVIS_ADMIN_PASSWORD` used to apply only when no admin existed, so changing it in the Environment box and redeploying still said "Wrong username or password". Now, when the env value differs from last time, Javis resets the account to it; 2FA stays on and old sessions are signed out.
+- **Changing the admin password on Hostinger now works.** `UNIMATE_ADMIN_PASSWORD` used to apply only when no admin existed, so changing it in the Environment box and redeploying still said "Wrong username or password". Now, when the env value differs from last time, UNI MATE resets the account to it; 2FA stays on and old sessions are signed out.
 - An unchanged env touches nothing, so a password you change in the dashboard is not overwritten on every restart. This is also the way to recover a forgotten password on a VPS, no SSH needed.
 ### Improved
 - **An eye button on the sign-in password field** so you can check what you typed.
 
 ## [0.77.0] - 2026-10-05
 ### Added
-- **The group bot's reply judge reviews and tunes itself.** Once enough feedback has gathered, Javis gives the bot's numbers to your main brain (the strongest model you picked) to find repeated patterns, and it changes at most 3 things: lessons, examples, each group's threshold, eagerness. You get one message whenever it changes something.
-- **Wrong turns undo themselves.** After each review the bot is measured again: if it is marked wrong more often, that review is undone. Issues that need a code change are written to `Javis/gop-y-bo-phan-xu.md`.
-- **To adjust it, just tell Javis.** "Why is my bot so quiet?", "let the bot answer for me when customers tag me about class times", "undo the last review": Javis reads the real numbers and makes the change. Customer-facing bots never see these tools.
+- **The group bot's reply judge reviews and tunes itself.** Once enough feedback has gathered, UNI MATE gives the bot's numbers to your main brain (the strongest model you picked) to find repeated patterns, and it changes at most 3 things: lessons, examples, each group's threshold, eagerness. You get one message whenever it changes something.
+- **Wrong turns undo themselves.** After each review the bot is measured again: if it is marked wrong more often, that review is undone. Issues that need a code change are written to `UniMate/gop-y-bo-phan-xu.md`.
+- **To adjust it, just tell UNI MATE.** "Why is my bot so quiet?", "let the bot answer for me when customers tag me about class times", "undo the last review": UNI MATE reads the real numbers and makes the change. Customer-facing bots never see these tools.
 ### Fixed
 - Messages that start by **@tagging someone else** (say, a customer tagging the owner about the bot's topic) used to be ignored no matter how often you marked them wrong. A thumbs-down now works, and the self-review can turn on considering such messages.
 
 ## [0.76.0] - 2026-10-05
 ### Improved
 - **The Skills page is easier to use.** Each skill has its own on/off switch on the right, so there are no longer two look-alike checkboxes where a wrong click turned a skill off. Click a skill to open its details: description, "When to use", usage, and Edit, Export, Delete.
-- **Pick several skills to take elsewhere.** A checkbox at the start of every card is always there; pick some and an "Export N skills" button appears. The .zip imports into another Javis, or unzip it into a .claude folder and Claude Code uses it right away. The other way round, importing a bundle with several skill folders now brings them all in, not just the first.
+- **Pick several skills to take elsewhere.** A checkbox at the start of every card is always there; pick some and an "Export N skills" button appears. The .zip imports into another UNI MATE, or unzip it into a .claude folder and Claude Code uses it right away. The other way round, importing a bundle with several skill folders now brings them all in, not just the first.
 - **Filter and sort:** show On, Off or System skills, sort by Most used or Name. Duplicate groups such as "ai" and "AI" are merged, and saving a skill fixes its group name.
-- **Fixes:** turning a skill on or off on page 3 no longer jumps back to page 1. The description box counts characters and warns as soon as it passes 150 (the part Javis cannot read is shown in red), and a failed save now says why instead of closing the form as if it had saved.
+- **Fixes:** turning a skill on or off on page 3 no longer jumps back to page 1. The description box counts characters and warns as soon as it passes 150 (the part UNI MATE cannot read is shown in red), and a failed save now says why instead of closing the form as if it had saved.
 
 ## [0.75.1] - 2026-10-05
 ### Improved
@@ -2122,12 +2122,12 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.74.2] - 2026-10-04
 ### Fixed
-- **ChatGPT no longer dies on the first turn with "Could not find home directory".** On some Windows computers Codex could not find the user folder, so it missed the ChatGPT sign-in even though the Models page showed it as connected. Javis now tells Codex where that folder is, so chat, the model list and ChatGPT Live work there.
+- **ChatGPT no longer dies on the first turn with "Could not find home directory".** On some Windows computers Codex could not find the user folder, so it missed the ChatGPT sign-in even though the Models page showed it as connected. UNI MATE now tells Codex where that folder is, so chat, the model list and ChatGPT Live work there.
 - **If it still happens, the error says what to do**: sign out of Windows and back in, or restart, instead of one cryptic English line.
 
 ## [0.74.1] - 2026-10-04
 ### Fixed
-- **The Zalo bot can see the images customers send.** Tag the bot on a photo (like "@YourBot here it is") and it no longer replies "I can only read the caption": Javis saves the photo into the bot's brain and has ChatGPT on your signed-in plan look at it and describe it, so the bot answers from what the photo actually shows. It also works when you press "Reply for me" in the Inbox.
+- **The Zalo bot can see the images customers send.** Tag the bot on a photo (like "@YourBot here it is") and it no longer replies "I can only read the caption": UNI MATE saves the photo into the bot's brain and has ChatGPT on your signed-in plan look at it and describe it, so the bot answers from what the photo actually shows. It also works when you press "Reply for me" in the Inbox.
 - **Without ChatGPT signed in, the bot still replies as before**, from the caption, and says plainly it could not see the photo, never guessing what is in it.
 
 ## [0.74.0] - 2026-10-04
@@ -2137,31 +2137,31 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.73.0] - 2026-10-04
 ### Added
-- **Javis can see the images people post in a Zalo group.** Ask something like "look at the receipt Lan just posted in the Sales group" and Javis fetches it, shows it right in chat and says what is in it, copying text and numbers verbatim. Images come straight from Zalo, so the 2-hour limit is gone.
+- **UNI MATE can see the images people post in a Zalo group.** Ask something like "look at the receipt Lan just posted in the Sales group" and UNI MATE fetches it, shows it right in chat and says what is in it, copying text and numbers verbatim. Images come straight from Zalo, so the 2-hour limit is gone.
 - **Every brain can see images.** Claude Code and Codex open the image themselves. OpenRouter, Gemini and the other API engines have ChatGPT on your signed-in plan look at it and describe it, no API key needed, for any image in the brain, not only Zalo ones.
 ### Improved
-- **The extra Zalo tools moved to the "Zalo extras" pack on Javis Store.** Sending images, tagging people, notes, reminders, polls and reading group images no longer ship inside the app, so people who do not use Zalo do not carry them. Javis offers the pack right after you scan the Zalo QR.
+- **The extra Zalo tools moved to the "Zalo extras" pack on UNI MATE Store.** Sending images, tagging people, notes, reminders, polls and reading group images no longer ship inside the app, so people who do not use Zalo do not carry them. UNI MATE offers the pack right after you scan the Zalo QR.
 - **Already using Zalo?** Open the Connections page and press **Install companion pack** once to get every tool back. The Zalo connection, the Inbox and the Zalo chatbot keep working without it.
 
 ## [0.72.1] - 2026-10-04
 ### Fixed
-- **When Claude Code is too slow to start, Javis now says where it got stuck instead of guessing "probably a data source".** The error now tells you whether Claude Code reached Javis's tool hub at all, whether the hub answered fast or slow, and quotes the line Claude Code itself printed, such as an expired sign-in. The verdict comes first, so it stays readable on the bot card.
+- **When Claude Code is too slow to start, UNI MATE now says where it got stuck instead of guessing "probably a data source".** The error now tells you whether Claude Code reached UNI MATE's tool hub at all, whether the hub answered fast or slow, and quotes the line Claude Code itself printed, such as an expired sign-in. The verdict comes first, so it stays readable on the bot card.
 - **The error no longer says "the allowed limit" from the second turn on.** It always names the real number of seconds.
 - Full details of every timeout are also written to the server log on a `[claude init timeout]` line.
 
 ## [0.71.2] - 2026-10-04
 ### Fixed
-- **A ChatGPT Live call no longer goes silent while Javis works on something long.** Every follow-up question used to wait behind the running job, so "are you done yet?" got no answer, and when the job finished Javis read out a pile of stale replies. Now a progress question is answered at once from the real state: what is running, for how long, and which step it is on.
-- **A new request no longer waits for the old one.** Asking for something else while Javis is still working runs it alongside, and each result is read out as it arrives.
-- **Javis speaks up during long jobs.** Past one minute, about every minute and a half, Javis says a short line that it is still working, whenever you are not talking. These lines are not saved to the chat history.
+- **A ChatGPT Live call no longer goes silent while UNI MATE works on something long.** Every follow-up question used to wait behind the running job, so "are you done yet?" got no answer, and when the job finished UNI MATE read out a pile of stale replies. Now a progress question is answered at once from the real state: what is running, for how long, and which step it is on.
+- **A new request no longer waits for the old one.** Asking for something else while UNI MATE is still working runs it alongside, and each result is read out as it arrives.
+- **UNI MATE speaks up during long jobs.** Past one minute, about every minute and a half, UNI MATE says a short line that it is still working, whenever you are not talking. These lines are not saved to the chat history.
 
 ## [0.71.1] - 2026-10-03
 ### Fixed
-- **The Models page lists the newest ChatGPT models, such as GPT-6.1-Sol.** On a machine with both Codex Desktop and the Codex CLI, Javis always asked the copy bundled with Codex Desktop, even when it was months old, so the model list stopped at an older generation. Javis now picks the newest Codex on the machine.
+- **The Models page lists the newest ChatGPT models, such as GPT-6.1-Sol.** On a machine with both Codex Desktop and the Codex CLI, UNI MATE always asked the copy bundled with Codex Desktop, even when it was months old, so the model list stopped at an older generation. UNI MATE now picks the newest Codex on the machine.
 
 ## [0.71.0] - 2026-10-03
 ### Added
-- **Chat with Javis on Slack and WhatsApp.** Turn them on from the Channels page, like Telegram and Zalo. Slack even runs on a laptop with no domain; WhatsApp uses Meta's official API and needs Javis on an HTTPS domain.
+- **Chat with UNI MATE on Slack and WhatsApp.** Turn them on from the Channels page, like Telegram and Zalo. Slack even runs on a laptop with no domain; WhatsApp uses Meta's official API and needs UNI MATE on an HTTPS domain.
 - **Customer bots on Slack and WhatsApp.** Add an account on the Chatbot page and an agent answers whoever writes in, with every chat in the shared inbox and takeover, as with Telegram and Zalo.
 - **Strangers never reach your brain.** An empty allow-list lets nobody in: whoever writes gets a pairing code and you click Allow once. Background work handed over from Slack or WhatsApp reports back there.
 - **A step-by-step guide** in docs/en/29-slack-whatsapp.md, with a Slack app manifest you paste and go.
@@ -2172,7 +2172,7 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.70.1] - 2026-10-03
 ### Improved
-- **The README explains why your data stays yours.** "Why Javis" now covers the lock-in of keeping all your work on one AI vendor, and lists where each thing you build up (chat history, memory, skills, agents, workflows) lives on your machine, so a new model is a switch, not a fresh start.
+- **The README explains why your data stays yours.** "Why UNI MATE" now covers the lock-in of keeping all your work on one AI vendor, and lists where each thing you build up (chat history, memory, skills, agents, workflows) lives on your machine, so a new model is a switch, not a fresh start.
 - **A row of flags at the top of the README.** Twelve flags, each linking to its translation. Emoji flags show as letters on Windows; these are real images.
 
 ## [0.70.0] - 2026-10-03
@@ -2182,7 +2182,7 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.69.0] - 2026-10-03
 ### Improved
-- **The README now also comes in Chinese, Spanish and Japanese**, and so does the quick start. Each says plainly that it is a machine translation, that Javis replies in any language, and that the interface is in English and Vietnamese.
+- **The README now also comes in Chinese, Spanish and Japanese**, and so does the quick start. Each says plainly that it is a machine translation, that UNI MATE replies in any language, and that the interface is in English and Vietnamese.
 - **Stale translations get flagged.** After an edit to the English README, GitHub points out which translations need updating, without blocking a release.
 - **The website folder is gone.** The landing page will live elsewhere, which keeps the repo lean.
 
@@ -2198,7 +2198,7 @@ Thanks to the user who sent the bug report along with a patch tested on a Mac.
 
 ## [0.67.0] - 2026-10-02
 ### Improved
-- **Javis now speaks English all the way through.** Error messages, the Models page, the connection store (descriptions, guides, permission warnings), the Plugins page and newly created brains all appear in English when your browser is set to English. Vietnamese users see exactly what they saw before.
+- **UNI MATE now speaks English all the way through.** Error messages, the Models page, the connection store (descriptions, guides, permission warnings), the Plugins page and newly created brains all appear in English when your browser is set to English. Vietnamese users see exactly what they saw before.
 - **One language per device.** A phone set to Vietnamese and a laptop set to English each see their own language, including the text that comes back from the server.
 - **The website has an English version**, with the Vietnamese one a click away under "Tiếng Việt" in the menu.
 

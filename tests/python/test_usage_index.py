@@ -2,7 +2,7 @@
 
     python tests/run.py usage_index
 
-Tu co lap: JAVIS_STATE_DIR + thu muc nguon (Claude/Codex) tro vao temp. Khong mang.
+Tu co lap: UNIMATE_STATE_DIR + thu muc nguon (Claude/Codex) tro vao temp. Khong mang.
 Exit code != 0 neu fail.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path (xem tests/python/_paths.py)
@@ -12,10 +12,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-uidx-"))
-os.environ["JAVIS_STATE_DIR"] = str(_TMP / "state")
-os.environ["JAVIS_CLAUDE_PROJECTS_DIR"] = str(_TMP / "claude")
-os.environ["JAVIS_CODEX_SESSIONS_DIR"] = str(_TMP / "codex")
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-uidx-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
+os.environ["UNIMATE_CLAUDE_PROJECTS_DIR"] = str(_TMP / "claude")
+os.environ["UNIMATE_CODEX_SESSIONS_DIR"] = str(_TMP / "codex")
 (_TMP / "state").mkdir(parents=True, exist_ok=True)
 
 import usage_index as ui  # noqa: E402
@@ -88,9 +88,9 @@ check("refresh3: van 1 phien (cung file)", ui.totals_by("provider")["claude"]["s
 # ============================================================
 # Task 5: usage_store forward-log + nap nhanh API (khong dem trung)
 # ============================================================
-import usage_store  # noqa: E402  (dung chung JAVIS_STATE_DIR temp)
+import usage_store  # noqa: E402  (dung chung UNIMATE_STATE_DIR temp)
 
-_evp = Path(os.environ["JAVIS_STATE_DIR"]) / "usage-events.jsonl"
+_evp = Path(os.environ["UNIMATE_STATE_DIR"]) / "usage-events.jsonl"
 usage_store.record("openrouter", "deepseek/x", 100, 50, 0)
 check("events: record ghi 1 dong usage-events.jsonl", _evp.exists() and len(_evp.read_text(encoding="utf-8").strip().splitlines()) >= 1)
 
@@ -129,7 +129,7 @@ check("events: luot cli (Claude SDK) dem vao claude khi ngay do THIEU log tho",
 _c = ui._connect()
 _c.execute("INSERT INTO file_daily(path,day,provider,source,activity,model,project,input,output,cache_read,cache_create)"
            " VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-           ("/raw/today.jsonl", _today_vn, "claude", "javis", "chat", "sonnet", "Demo", 1000, 40, 0, 0))
+           ("/raw/today.jsonl", _today_vn, "claude", "unimate", "chat", "sonnet", "Demo", 1000, 40, 0, 0))
 _c.commit(); _c.close()
 ui.refresh()   # refresh chay _dedup_events_vs_raw
 check("events: dedup - log tho phu ngay nao thi go event ngay do (khong dem trung)",
@@ -143,7 +143,7 @@ import sqlite3 as _sq  # noqa: E402
 from datetime import date as _date  # noqa: E402
 
 
-def _seed(path, day, provider, model, inp, out, cread=0, ccreate=0, source="javis", activity="chat", project="Demo"):
+def _seed(path, day, provider, model, inp, out, cread=0, ccreate=0, source="unimate", activity="chat", project="Demo"):
     c = _sq.connect(str(ui.DB_PATH))
     c.execute("INSERT INTO file_daily(path,day,provider,source,activity,model,project,input,output,cache_read,cache_create)"
               " VALUES(?,?,?,?,?,?,?,?,?,?,?)", (path, day, provider, source, activity, model, project, inp, out, cread, ccreate))

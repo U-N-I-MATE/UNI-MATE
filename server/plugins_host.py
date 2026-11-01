@@ -1,5 +1,5 @@
 """
-plugins_host.py - Hệ PLUGIN của Javis (port ý tưởng "plugin" của nousresearch/hermes-agent).
+plugins_host.py - Hệ PLUGIN của UNI MATE (port ý tưởng "plugin" của nousresearch/hermes-agent).
 
 Plugin = THƯ MỤC Python thả vào, tự thêm TOOL (ra MỌI engine qua mcp_hub) + HOOK lifecycle,
 KHÔNG phải sửa lõi. Mỗi plugin gồm:
@@ -8,17 +8,17 @@ KHÔNG phải sửa lõi. Mỗi plugin gồm:
 
 NGUỒN plugin (giống bundled/user của Hermes):
     - BUNDLED  <project>/system/plugins/<slug>/    ship theo app, TIN CẬY
-    - VAULT    <vault>/plugins/<slug>/  (hoặc  <vault>/Javis/plugins/<slug>/)   do user tạo
+    - VAULT    <vault>/plugins/<slug>/  (hoặc  <vault>/UniMate/plugins/<slug>/)   do user tạo
 
 TOOL plugin đi qua mcp_hub.discover_all → Claude Code / Codex (HTTP /hub/mcp) + engine API
-(in-process). TÔN TRỌNG 3 mức quyền của Javis qua `min_mode` (readonly/safe/full), enforce y hệt
+(in-process). TÔN TRỌNG 3 mức quyền của UNI MATE qua `min_mode` (readonly/safe/full), enforce y hệt
 tool ghi file builtin. HOOK 'pre_tool_call'/'post_tool_call' được mcp_hub bắn quanh MỌI tool call
 khi có plugin đăng ký (0 overhead khi không plugin nào dùng hook).
 
 AN TOÀN (lớp CỨNG - plugin chạy code Python THẬT trong tiến trình server):
     - Bundled: tự nạp khi effective-enabled (mặc định theo manifest `enabled:`).
     - Vault:  loaded when the manifest says enabled:true. Since 0.162.0 (owner decision) user and vault
-      plugins load by default; JAVIS_ENABLE_USER_PLUGINS=false opts out (it used to be opt-in, like
+      plugins load by default; UNIMATE_ENABLE_USER_PLUGINS=false opts out (it used to be opt-in, like
       Hermes HERMES_ENABLE_PROJECT_PLUGINS).
     - Enable-state: bundled ở STATE_DIR/plugins.json (override, KHÔNG mutate file app);
       vault ở frontmatter plugin.yaml.
@@ -66,13 +66,13 @@ _HTTP_METHODS = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE"})
 _HTTP_NGUON = frozenset({"bundled", "pack", "user"})
 
 # Tên tool builtin/lõi - plugin KHÔNG được trùng (mcp_hub cũng skip lúc merge, đây là lớp 2).
-_RESERVED_TOOLS = {"javis_connections", "javis_read_file", "javis_list_dir",
-                   "javis_write_file", "javis_use_skill", "javis_edit_file", "javis_search_files",
-                   "javis_run_command", "javis_terminal", "javis_process",
-                   "javis_web_search", "javis_web_fetch"}
+_RESERVED_TOOLS = {"unimate_connections", "unimate_read_file", "unimate_list_dir",
+                   "unimate_write_file", "unimate_use_skill", "unimate_edit_file", "unimate_search_files",
+                   "unimate_run_command", "unimate_terminal", "unimate_process",
+                   "unimate_web_search", "unimate_web_fetch"}
 
 # Name of the in-process plugin MCP server the Claude Agent SDK engine mounts (claude_sdk_engine).
-PLUGIN_SERVER = "javis-plugins"
+PLUGIN_SERVER = "unimate-plugins"
 
 
 def grant_patterns(names) -> List[str]:
@@ -80,16 +80,16 @@ def grant_patterns(names) -> List[str]:
 
     Background lanes below Full run with an allowlist (Read/Write/Edit...) and no MCP, which used
     to mean no plugin tool at all: a Kanban job or a workflow step that had to make an image could
-    never reach `javis_generate_image` without opening Full access, which also opens posting and
+    never reach `unimate_generate_image` without opening Full access, which also opens posting and
     messaging. Naming the tool here grants that one tool and nothing else. Both server names are
-    listed: the SDK engine serves plugins in-process as `javis-plugins`, and when the hub is
-    attached the same tool is also reachable as `mcp__javis__<name>`. The tool's own `min_mode`
+    listed: the SDK engine serves plugins in-process as `unimate-plugins`, and when the hub is
+    attached the same tool is also reachable as `mcp__unimate__<name>`. The tool's own `min_mode`
     is still checked at call time against the session mode, so this never lifts a level."""
     out: List[str] = []
     for n in names or ():
         n = str(n or "").strip()
         if _TOOL_RE.match(n):
-            out += [f"mcp__{PLUGIN_SERVER}__{n}", f"mcp__javis__{n}"]
+            out += [f"mcp__{PLUGIN_SERVER}__{n}", f"mcp__unimate__{n}"]
     return list(dict.fromkeys(out))
 
 
@@ -116,10 +116,10 @@ def _env_user_enabled() -> bool:
 
     0.162.0, owner decision: YES BY DEFAULT. Each plugin still runs only when its own manifest says
     `enabled: true` (a plugin created from chat starts at `enabled: false`), and the permission level
-    of the caller still decides every tool call. Opt out with JAVIS_ENABLE_USER_PLUGINS=false (or
-    the old alias JAVIS_ENABLE_VAULT_PLUGINS=false) and a restart. The new name wins when both are
+    of the caller still decides every tool call. Opt out with UNIMATE_ENABLE_USER_PLUGINS=false (or
+    the old alias UNIMATE_ENABLE_VAULT_PLUGINS=false) and a restart. The new name wins when both are
     set; an empty value counts as not set. Bundled plugins never go through this gate."""
-    for k in ("JAVIS_ENABLE_USER_PLUGINS", "JAVIS_ENABLE_VAULT_PLUGINS"):
+    for k in ("UNIMATE_ENABLE_USER_PLUGINS", "UNIMATE_ENABLE_VAULT_PLUGINS"):
         v = str(os.getenv(k, "") or "").strip().lower()
         if v:
             return v not in _OFF_VALUES
@@ -131,7 +131,7 @@ _env_vault_enabled = _env_user_enabled
 
 
 def global_plugins_dir() -> Path:
-    """Thư mục plugin TOÀN CỤC (chung mọi brain) - JAVIS_STATE_DIR/plugins."""
+    """Thư mục plugin TOÀN CỤC (chung mọi brain) - UNIMATE_STATE_DIR/plugins."""
     return GLOBAL_DIR
 
 
@@ -200,14 +200,14 @@ def _write_state(state: dict) -> None:
 # ============================================================
 def vault_plugins_dir(vault_root: Optional[str]) -> Optional[Path]:
     """Thư mục plugin của vault: ưu tiên <root>/plugins (cấu trúc phẳng mới),
-    fallback <root>/Javis/plugins (cấu trúc cũ). Trả path mặc định (có thể chưa tồn tại)."""
+    fallback <root>/UniMate/plugins (cấu trúc cũ). Trả path mặc định (có thể chưa tồn tại)."""
     if not vault_root:
         return None
     root = Path(vault_root)
     flat = root / "plugins"
     if flat.is_dir():
         return flat
-    nested = root / "Javis" / "plugins"
+    nested = root / "UNI MATE" / "plugins"
     if nested.is_dir():
         return nested
     return flat
@@ -255,8 +255,8 @@ def _iter_plugin_dirs(vault_root: Optional[str]):
 def _slug_bundled() -> set:
     """Slug của plugin ĐI KÈM APP. Trình cài từ chối gói mang plugin trùng một trong số này.
 
-    Vì sao chặn ở lúc CÀI chứ không lúc nạp: một gói lặng lẽ thay `javis_task` hay
-    `javis_schedule` dưới một màn hình xác nhận chỉ nói "gói này chạy mã" là đúng kiểu bất ngờ
+    Vì sao chặn ở lúc CÀI chứ không lúc nạp: một gói lặng lẽ thay `unimate_task` hay
+    `unimate_schedule` dưới một màn hình xác nhận chỉ nói "gói này chạy mã" là đúng kiểu bất ngờ
     không nên có. Chặn sớm thì người dùng thấy lý do trước khi có gì rơi xuống đĩa."""
     try:
         return {d.name for d in BUNDLED_DIR.iterdir()
@@ -447,8 +447,8 @@ class PluginContext:
     def on_unload(self, fn: Callable) -> None:
         """Đăng ký việc phải làm khi plugin bị TẮT hoặc GỠ. Chạy ngược thứ tự đăng ký.
 
-        Tool và hook thì Javis tự thu hồi được: chúng chỉ nằm trong danh sách của
-        `LoadedPlugin` trong cache, và hub dựng lại bảng route mỗi lần cache hết hạn. Cái Javis
+        Tool và hook thì UNI MATE tự thu hồi được: chúng chỉ nằm trong danh sách của
+        `LoadedPlugin` trong cache, và hub dựng lại bảng route mỗi lần cache hết hạn. Cái UNI MATE
         KHÔNG tự thu hồi được là thứ `register()` mở ra với thế giới bên ngoài - một thread,
         một socket, một watcher hệ tệp, một tiến trình con. Nếu plugin mở thứ như vậy thì phải
         tự đóng ở đây, nếu không nó sống tiếp sau khi người dùng đã bấm Tắt.
@@ -488,7 +488,7 @@ class PluginContext:
 
     # ---- đường HTTP (0.64.26) ----
     #
-    # Sinh ra để "Javis trong ChatGPT" rời lõi thành một gói trong kho: gói đó phải mở cửa OAuth
+    # Sinh ra để "UNI MATE trong ChatGPT" rời lõi thành một gói trong kho: gói đó phải mở cửa OAuth
     # và một địa chỉ MCP cho máy chủ OpenAI gọi vào, mà plugin trước đây chỉ đăng ký được tool
     # và hook. Cố ý làm CHUNG chứ không may đo cho một gói: webhook của dịch vụ ngoài là cùng
     # một nhu cầu.
@@ -631,7 +631,7 @@ def shared_signature() -> tuple:
 
 def _import_entry(slug: str, source: str, entry: Path):
     """Nạp entry file thành module riêng. Chèn tạm dir vào sys.path để import phụ (nếu có)."""
-    mod_name = f"javis_plugin_{source}_{re.sub(r'[^a-z0-9_]', '_', slug.lower())}"
+    mod_name = f"unimate_plugin_{source}_{re.sub(r'[^a-z0-9_]', '_', slug.lower())}"
     spec = importlib.util.spec_from_file_location(mod_name, str(entry))
     if not spec or not spec.loader:
         raise ImportError(f"không tạo được spec cho {entry}")
@@ -688,7 +688,7 @@ def _pack_duoc_nap(pdir: Path) -> Tuple[bool, str]:
        cài, vì ai ghi được `plugin.py` thì cũng ghi được `packs.json` - một chốt chỉ nằm ở
        trình cài thì chỉ gác được trình cài, không gác được lần nạp sau.
 
-    Cổng `JAVIS_ENABLE_USER_PLUGINS` KHÔNG áp ở đây, có chủ ý. Cổng đó bịt lỗ "thư mục ghi
+    Cổng `UNIMATE_ENABLE_USER_PLUGINS` KHÔNG áp ở đây, có chủ ý. Cổng đó bịt lỗ "thư mục ghi
     được nên mã chạy mà không ai bấm gì" - đúng với `<brain>/plugins/` vì model ghi được vào
     vault. Trình cài phá bỏ đúng điều kiện đó: có người bấm, có màn hình liệt kê từng tệp .py,
     và có chữ ký ghi lại để đối chiếu. Cùng loại bảo đảm, chỉ theo TỪNG gói thay vì bật tắt
@@ -740,7 +740,7 @@ def _load_all(vault_root: Optional[str], scope_vault: bool = True) -> dict:
                 continue
             if source in ("user", "vault"):
                 if not env_ok:
-                    continue   # opted out on this machine: JAVIS_ENABLE_USER_PLUGINS=false
+                    continue   # opted out on this machine: UNIMATE_ENABLE_USER_PLUGINS=false
                 if not valid_slug(slug):
                     errors[slug] = "slug không hợp lệ"
                     continue
@@ -948,7 +948,7 @@ def _make_call(tool: dict, ctx: PluginContext, mode: str):
     async def _call(args):
         min_mode = _required_mode(tool, args)
         if str(mode or "").strip().lower() == "gated" and min_mode != "readonly":
-            # 0.207.0: a gated Team step. A plugin that writes or acts (review: `javis_task` and `javis_schedule` are
+            # 0.207.0: a gated Team step. A plugin that writes or acts (review: `unimate_task` and `unimate_schedule` are
             # `safe` yet queue work that runs at full later) needs the owner's approval of this exact call
             # (team_gate.py). Read-only plugin tools run.
             import asyncio
@@ -1018,7 +1018,7 @@ def unload(slug: str) -> dict:
                 ent["sig"] = None      # buộc dựng lại ở lần gọi sau
         an = f"_{re.sub(r'[^a-z0-9_]', '_', slug.lower())}"
         for mod in [m for m in list(sys.modules)
-                    if m.startswith("javis_plugin_") and m.endswith(an)]:
+                    if m.startswith("unimate_plugin_") and m.endswith(an)]:
             sys.modules.pop(mod, None)
             ra["modules"] += 1
     return ra
@@ -1046,7 +1046,7 @@ def set_removed(slug: str, removed: bool) -> dict:
 def plugin_tools(mode: str = "full", vault_root: Optional[str] = None, *,
                  scope_vault: bool = True) -> Tuple[List[dict], Dict[str, dict]]:
     """(tools_spec, route) từ MỌI plugin đã nạp. mcp_hub merge vào discover_all.
-    tools_spec: [{fn, server:'javis', name, description, schema}]. route: {fn: {'call': async fn}}.
+    tools_spec: [{fn, server:'unimate', name, description, schema}]. route: {fn: {'call': async fn}}.
 
     mode: mức quyền lượt chạy. vault_root: brain để ctx của plugin biết đang ở đâu.
     scope_vault=False: KHÔNG nạp plugin riêng-của-vault (chỉ bundled + global) nhưng ctx VẪN
@@ -1074,16 +1074,16 @@ def plugin_tools(mode: str = "full", vault_root: Optional[str] = None, *,
             if lp.source == "vault":
                 desc = f"[plugin {lp.slug}] {desc}"
             # `namespace` + `label` + `group_desc`: để hub xếp tool của MỖI plugin thành một
-            # nhóm RIÊNG trong thực đơn tool lười, thay vì gộp chung vào "javis".
+            # nhóm RIÊNG trong thực đơn tool lười, thay vì gộp chung vào "unimate".
             #
             # Vì sao đây không phải chuyện thẩm mỹ: khi lazy bật, thực đơn là thứ DUY NHẤT
             # model đọc được về những gì nó với tới. Thiếu ba trường này thì 20 tool của gói
-            # TTS Dropship nằm lẫn trong dòng "javis (javis, 45 tool): skill của brain, danh
+            # TTS Dropship nằm lẫn trong dòng "unimate (unimate, 45 tool): skill của brain, danh
             # sách nguồn đang đấu, tiện ích nội bộ" - không một chữ nào nhắc tới sàn, đơn hàng
             # hay dropship. Model không có lý do gì để đoán là nên tìm, nên nó kết luận thẳng
-            # rằng gói chưa kết nối, dù tool vẫn gọi được qua javis_run_tool. Đúng vụ ngày
+            # rằng gói chưa kết nối, dù tool vẫn gọi được qua unimate_run_tool. Đúng vụ ngày
             # 05/09/2026: người dùng báo "không lên đơn được" trong khi hub vẫn phục vụ đủ.
-            tools.append({"fn": fn, "server": "javis", "name": fn,
+            tools.append({"fn": fn, "server": "unimate", "name": fn,
                           "description": desc, "schema": t["schema"],
                           "namespace": lp.slug, "label": lp.name,
                           "group_desc": lp.description})
@@ -1144,7 +1144,7 @@ async def _fire_pre(vault_root: Optional[str], payload: dict) -> dict:
       - trả None / bất cứ gì khác -> không ảnh hưởng, y như trước
 
     **FAIL-OPEN là cố ý.** Hook ném lỗi thì tool VẪN CHẠY, chỉ ghi một dòng stderr. Hook là
-    thứ người dùng tự cài; để một plugin hỏng khoá được mọi tool của Javis là đổi một lỗi nhỏ
+    thứ người dùng tự cài; để một plugin hỏng khoá được mọi tool của UNI MATE là đổi một lỗi nhỏ
     lấy một hệ thống chết. Ai cần fail-closed thì tự bắt lỗi trong hook rồi trả `deny`.
 
     Nhiều hook cùng đăng ký thì hook ĐẦU TIÊN nói `deny` thắng và dừng luôn vòng lặp: đã có
@@ -1368,7 +1368,7 @@ def set_enabled(slug: str, enabled: bool, vault_root: Optional[str] = None) -> d
     gated = bool(enabled and not _env_user_enabled())
     note = localefmt.chu(
         "Đã bật trong manifest NHƯNG máy này đang tắt plugin do người dùng cài bằng "
-        "JAVIS_ENABLE_USER_PLUGINS=false. Bỏ biến đó (hoặc đặt true) rồi khởi động lại để chạy.",
+        "UNIMATE_ENABLE_USER_PLUGINS=false. Bỏ biến đó (hoặc đặt true) rồi khởi động lại để chạy.",
         "Enabled in the manifest, BUT this machine turns user-installed plugins off with "
-        "JAVIS_ENABLE_USER_PLUGINS=false. Remove it (or set it to true) and restart to run it.") if gated else ""
+        "UNIMATE_ENABLE_USER_PLUGINS=false. Remove it (or set it to true) and restart to run it.") if gated else ""
     return {"ok": True, "source": source, "gated": gated, "note": note}

@@ -23,7 +23,7 @@ check("webhooks page has an icon, meta and a renderer",
 check("page lists agree (console, ui-actions, ui_targets)",
   /"tasks", "webhooks", "learn"/.test(cons) && /"tasks", "webhooks", "learn"/.test(uia) && /"tasks", "webhooks", "learn"/.test(tgt));
 check("webhook cards in chat open the Webhooks page", /if \(kind === "webhook"\) return "webhooks";/.test(viec));
-check("the Scheduled page no longer mounts webhooks", !/JavisWebhooks\.mount\(el\.querySelector\("#whSection"\),\s*\{ brains: \(\) => allBrains/.test(cons));
+check("the Scheduled page no longer mounts webhooks", !/UniMateWebhooks\.mount\(el\.querySelector\("#whSection"\),\s*\{ brains: \(\) => allBrains/.test(cons));
 const keys = ["page.webhooks.label", "page.webhooks.sub"];
 check("strings in both languages", keys.every((k) => vi[k] && en[k]));
 check("no long dashes in the new strings", keys.every((k) => !/[–—]/.test(vi[k] + en[k])));

@@ -14,7 +14,7 @@
  *
  * Nguồn: /usage/tong-quan (khối tiền + trần + tiết kiệm), /usage/summary (số liệu theo
  * chiều), /usage/insights, /usage (số dư OpenRouter), /runtime/muc (ba mức tiết kiệm).
- * Vẽ SVG/div thuần, không thêm thư viện. window.JavisUsage.render(el).
+ * Vẽ SVG/div thuần, không thêm thư viện. window.UniMateUsage.render(el).
  */
 (function () {
   "use strict";
@@ -22,7 +22,7 @@
   // Locale để định dạng số/ngày. Lấy từ i18n chứ KHÔNG khoá "vi-VN": người dùng đổi
   // ngôn ngữ giao diện thì ngày giờ phải đổi theo, nếu không thì nửa màn hình tiếng Anh
   // mà ngày vẫn dd/mm/yyyy kiểu Việt.
-  const LOC = () => (window.JavisI18n && JavisI18n.locale()) || "vi-VN";
+  const LOC = () => (window.UniMateI18n && UniMateI18n.locale()) || "vi-VN";
   // Nhãn hiện ra màn hình phải tra từ điển LÚC VẼ chứ không lúc nạp file: từ điển về sau
   // (fetch bất đồng bộ), nên một hằng dựng sẵn sẽ đóng băng bản tiếng Việt vĩnh viễn.
   function PERIODS() {
@@ -38,7 +38,7 @@
   }
   var PROV_LABEL = { claude: "Claude Code", codex: "ChatGPT/Codex", api: "API (OpenRouter...)", "grok-cli": "Grok Build",
     "antigravity-cli": "Antigravity CLI", local: "Ollama (Local)" };
-  function SRC_LABEL() { return { manual: window.t("usage.nguon.tay"), javis: window.t("usage.nguon.javis") }; }
+  function SRC_LABEL() { return { manual: window.t("usage.nguon.tay"), unimate: window.t("usage.nguon.unimate") }; }
   function ACT_LABEL() {
     return { chat: "Chat", background: window.t("usage.hd.nen"), subagent: "Subagent", manual: window.t("usage.hd.thu_cong") };
   }
@@ -74,13 +74,13 @@
   function model(m) { return String(m || "").split("/").pop().replace(/^(claude-|gpt-)/, "").slice(0, 26); }
   function pct(x) { return Math.round((+x || 0) * 100) + "%"; }
   // (i) button from info-tip.js: explanations sit behind it, next to the title they belong to.
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(window.t("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(window.t("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
   function infoPair(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.pair(html, window.t("info.more")) : '<div class="info-body">' + html + "</div>";
   }
 
@@ -324,7 +324,7 @@
       .catch(function () { return state.viec || null; });
   }
 
-  // fetch KHÔNG reject với status 4xx/5xx, mà middleware đăng nhập của Javis lại trả 401 kèm
+  // fetch KHÔNG reject với status 4xx/5xx, mà middleware đăng nhập của UNI MATE lại trả 401 kèm
   // một THÂN JSON. Nên `.then(r => r.json())` trơn sẽ resolve ngon lành với {error:...}, khối
   // .catch không bao giờ chạy, và trang vẽ ra "0 token / $0.00 / Chưa có dữ liệu" ở mọi ô -
   // trông y hệt một tháng chưa dùng gì. Phiên hết hạn mà báo là "bạn chưa tiêu đồng nào" là
@@ -644,7 +644,7 @@
     var k = t.tiet_kiem || {};
     if (!k.du_du_lieu) {
       // Hai lý do khác hẳn nhau, và gộp làm một là nói dối theo hướng làm người ta tắt chế độ
-      // tiết kiệm đi: "chưa chạy lượt nào" với "bạn đang chỉnh tay nên Javis không biết cấu
+      // tiết kiệm đi: "chưa chạy lượt nào" với "bạn đang chỉnh tay nên UNI MATE không biết cấu
       // hình đó tốn bao nhiêu".
       if (k.khong_do_duoc) {
         // The reason is state, like "chua_luot" below, so it stays open (review 0.214.0).
@@ -705,7 +705,7 @@
   //   2. Sáng nay giờ nào đốt token. Biểu đồ theo NGÀY gộp cả ngày lại; chip "Hôm nay" chỉ ra
   //      đúng một cột.
   //   3. Giờ nào trong ngày AI dồn nhiều, giờ nào vắng: để dời việc nền sang giờ vắng.
-  // Những thứ KHÔNG lấy: "% hạn mức gói" chính thức (Javis không đọc token đăng nhập của gói,
+  // Những thứ KHÔNG lấy: "% hạn mức gói" chính thức (UNI MATE không đọc token đăng nhập của gói,
   // nên vạch mốc là trần người dùng tự khai hoặc mức cao nhất từng chạm, và nói rõ là cái nào),
   // bảng "AI đang chạy" (gần như luôn trống, đã có dải việc nền), ô màu giờ có số trần không
   // đơn vị (ở đây số nằm trong chú thích khi rê chuột, màu có thang chú giải).
@@ -1117,11 +1117,11 @@
   // Đổi ngôn ngữ giao diện: cả trang này vẽ nhãn bằng window.t() lúc paint(), nên phải
   // vẽ lại thì chữ mới đổi theo. Chỉ vẽ lại khi trang đang thật sự nằm trên màn hình
   // (state.el còn gắn vào DOM), kẻo bắn thêm mấy lượt fetch cho một trang đã đóng.
-  window.addEventListener("javis:i18n", function () {
+  window.addEventListener("unimate:i18n", function () {
     var el = state.el;
     if (!el || !el.isConnected) return;
     load(false);
   });
 
-  window.JavisUsage = { render: render };
+  window.UniMateUsage = { render: render };
 })();

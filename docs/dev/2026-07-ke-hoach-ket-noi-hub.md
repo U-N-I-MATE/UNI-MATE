@@ -1,12 +1,12 @@
 # Kế hoạch: Kho Kết nối (MCP Hub) + Agent độc lập engine
 
-> Bản kế hoạch dev, viết 2026-07-04 trên nền code v0.8.13. Mục tiêu: nâng cấp toàn bộ trải nghiệm MCP của Javis và tách Javis khỏi sự phụ thuộc cấu trúc Claude Code.
+> Bản kế hoạch dev, viết 2026-07-04 trên nền code v0.8.13. Mục tiêu: nâng cấp toàn bộ trải nghiệm MCP của UNI MATE và tách UNI MATE khỏi sự phụ thuộc cấu trúc Claude Code.
 
 ## 1. Mục tiêu (3 việc)
 
 1. **Kho MCP mẫu (catalog)**: người dùng mở trang, thấy sẵn Pancake POS, Zalo, Botcake, Webcake Landing... bấm "Kết nối" là xong. Không phải tự gõ URL, transport, header như hiện nay.
 2. **Một connector nối được NHIỀU tài khoản** (multi-account): cùng Pancake POS nhưng 3 cửa hàng, cùng Zalo nhưng 2 tài khoản. Mỗi tài khoản đăng nhập dễ như Claude: dán key hoặc quét QR hoặc bấm OAuth, có xác nhận "Đã kết nối: <tên shop>".
-3. **Mọi engine đều dùng được mọi thứ**: MCP, skill, loop, đọc/ghi file chạy như nhau dù Main Model là Claude Code, Codex, OpenRouter, OpenAI API hay Anthropic API. Javis là agent thực thụ, Claude Code chỉ là MỘT trong các bộ não.
+3. **Mọi engine đều dùng được mọi thứ**: MCP, skill, loop, đọc/ghi file chạy như nhau dù Main Model là Claude Code, Codex, OpenRouter, OpenAI API hay Anthropic API. UNI MATE là agent thực thụ, Claude Code chỉ là MỘT trong các bộ não.
 
 ## 2. Hiện trạng (đọc code ngày 2026-07-04)
 
@@ -25,13 +25,13 @@ Khoảng trống so với mục tiêu:
 - Engine matrix lệch (docs/10): Anthropic API chat thuần không MCP; ChatGPT OAuth (responses) không MCP; skill + loop chỉ Claude Code; engine API không có tool file.
 - Secrets nằm plaintext trong `mcp_servers.json` (gitignored nhưng vẫn plaintext).
 
-## 3. Kiến trúc đích: JAVIS MCP HUB
+## 3. Kiến trúc đích: UNI MATE MCP HUB
 
-Ý tưởng trung tâm: mọi engine đấu vào MỘT điểm duy nhất do Javis làm chủ. Hub lo kết nối, tài khoản, quyền, log. Engine chỉ thấy "một MCP server tên javis".
+Ý tưởng trung tâm: mọi engine đấu vào MỘT điểm duy nhất do UNI MATE làm chủ. Hub lo kết nối, tài khoản, quyền, log. Engine chỉ thấy "một MCP server tên unimate".
 
 ```
 Claude Code  --mcp-config 1 entry --\
-Codex        profile toml 1 entry ---+--> [ JAVIS MCP HUB ] --> Pancake POS (shop A) (shop B)
+Codex        profile toml 1 entry ---+--> [ UNI MATE MCP HUB ] --> Pancake POS (shop A) (shop B)
 Engine API   gọi in-process --------/          |               --> Zalo (TK 1) (TK 2)
                                                |               --> Botcake, Webcake, ...
                               catalog + permission + audit + cache + OAuth token store
@@ -105,8 +105,8 @@ Lợi ích của việc dồn về 1 điểm:
 
 - Endpoint `POST /hub/mcp` (Streamable HTTP) ngay trên FastAPI đang chạy, bind localhost.
 - `.mcp_config.json` của Claude Code và profile toml của Codex chỉ còn MỘT entry trỏ về hub (kèm token nội bộ chống tiến trình lạ trên máy gọi vào).
-- Đặt tên tool: connector có 1 connection thì giữ tên gọn `pos__pos_order`; nhiều connection thì `pos_kim-khi-ha-loc__pos_order`. Kèm meta-tool `javis_connections` (liệt kê connector + tài khoản + quyền) để model tự biết đang có nguồn nào.
-- Tuỳ chọn chống phình context khi user đấu nhiều connector: chế độ "lazy tools" (chỉ expose meta-tool `search_tools` + `run_tool`, kiểu Composio). ĐÃ LÀM (v0.9.146): `mcp_hub._apply_lazy` giấu tool pool (tool MCP có route entry `conn`) sau `javis_search_tools`/`javis_run_tool`, builtins + plugin vẫn hiện; tự bật khi số tool MCP vượt `settings.mcp.lazy_threshold` (mặc định 40), ép bật/tắt bằng `settings.mcp.lazy_tools`. Áp trong `discover_all` nên mọi engine (Claude Code, Codex, API) hưởng chung; quyền/audit giữ nguyên vì `run` đi qua `call_route` route đầy đủ.
+- Đặt tên tool: connector có 1 connection thì giữ tên gọn `pos__pos_order`; nhiều connection thì `pos_kim-khi-ha-loc__pos_order`. Kèm meta-tool `unimate_connections` (liệt kê connector + tài khoản + quyền) để model tự biết đang có nguồn nào.
+- Tuỳ chọn chống phình context khi user đấu nhiều connector: chế độ "lazy tools" (chỉ expose meta-tool `search_tools` + `run_tool`, kiểu Composio). ĐÃ LÀM (v0.9.146): `mcp_hub._apply_lazy` giấu tool pool (tool MCP có route entry `conn`) sau `unimate_search_tools`/`unimate_run_tool`, builtins + plugin vẫn hiện; tự bật khi số tool MCP vượt `settings.mcp.lazy_threshold` (mặc định 40), ép bật/tắt bằng `settings.mcp.lazy_tools`. Áp trong `discover_all` nên mọi engine (Claude Code, Codex, API) hưởng chung; quyền/audit giữ nguyên vì `run` đi qua `call_route` route đầy đủ.
 
 ### 3.4 Quyền tập trung tại hub
 
@@ -114,7 +114,7 @@ Lợi ích của việc dồn về 1 điểm:
 - Loop mode map thẳng vào hub: loop `suggest` gọi hub với ngữ cảnh chỉ-đọc (hub từ chối mọi tool ghi bất kể connection perm), `auto` chặn nhóm danger, `full` theo perm của connection. An toàn thành lớp cứng, không còn phụ thuộc prompt.
 - Audit log: mọi tools/call ghi lại (connection, tool, args rút gọn, kết quả ok/lỗi, thời gian) vào SQLite/JSONL, xem được từ UI.
 
-### 3.5 OAuth do Javis tự lo (bỏ phụ thuộc claude mcp add)
+### 3.5 OAuth do UNI MATE tự lo (bỏ phụ thuộc claude mcp add)
 
 - Implement chuẩn MCP Authorization (OAuth 2.1 + PKCE + Dynamic Client Registration): bấm "Kết nối" mở browser, callback về `http(s)://<dashboard>/connect/oauth/callback`, hub lưu + tự refresh token, gắn vào header khi gọi server.
 - Chạy được cả trên VPS vì callback đi qua chính URL dashboard user đang mở (không cần terminal, không cần màn hình máy chủ).
@@ -134,7 +134,7 @@ Flow thêm tài khoản theo auth type:
 
 - **apikey**: modal 1 ô dán key + dòng hướng dẫn lấy key ở đâu (text + link docs của hãng) -> bấm Kết nối -> hub validate ngay (gọi tool xác minh) -> hiện "✓ Đã kết nối: <tên shop>" và tự điền label -> chọn quyền (mặc định theo catalog, POS mặc định chỉ đọc). Sai key thì báo lỗi tại chỗ, kèm gợi ý.
 - **oauth**: bấm Kết nối -> mở tab đăng nhập của hãng -> quay lại thấy account đã vào danh sách.
-- **qr** (Zalo): modal hiện mã QR (Javis spawn CLI login, bắt QR đưa lên UI), poll trạng thái tới khi "✓ Đã đăng nhập: <tên Zalo>". Kèm cảnh báo rủi ro bắt buộc đọc (xem mục 6).
+- **qr** (Zalo): modal hiện mã QR (UNI MATE spawn CLI login, bắt QR đưa lên UI), poll trạng thái tới khi "✓ Đã đăng nhập: <tên Zalo>". Kèm cảnh báo rủi ro bắt buộc đọc (xem mục 6).
 - Sau connection ĐẦU TIÊN của user: chạy 1 câu demo ngay trong trang ("Hôm nay bán được bao nhiêu?") để chứng minh giá trị tức thì.
 
 Nguyên tắc: người thường không bao giờ thấy URL/transport/header. Kỹ thuật chỉ hiện trong "Tự thêm (nâng cao)" và khi mở chi tiết connection.
@@ -154,7 +154,7 @@ Việc cụ thể:
 
 1. **Anthropic API tool loop**: viết `anthropic_chat_with_mcp` trong `engine.py` (Anthropic Messages API có tool use, pattern y hệt `openai_chat_with_mcp`). Việc nhỏ, giá trị ngay: gỡ dòng "Anthropic API = chat thuần" khỏi docs.
 2. **Built-in tools cho engine API**: bộ tool file sandbox trong vault (read/list/write/append theo perm), đưa vào cùng vòng tool-calling với tool MCP. Từ đó loop/task/workflow chạy được trên engine API.
-3. **Skill router mọi engine**: inject danh sách skill (name + description từ `.claude/skills/*/SKILL.md`) vào system prompt + meta-tool `use_skill(name)` trả về nội dung SKILL.md khi model kích hoạt (progressive disclosure, đúng cách Claude Code làm nhưng do Javis tự làm nên engine nào cũng chạy).
+3. **Skill router mọi engine**: inject danh sách skill (name + description từ `.claude/skills/*/SKILL.md`) vào system prompt + meta-tool `use_skill(name)` trả về nội dung SKILL.md khi model kích hoạt (progressive disclosure, đúng cách Claude Code làm nhưng do UNI MATE tự làm nên engine nào cũng chạy).
 4. **Loop/agent/workflow nhận provider API**: trường `model` của agent mở rộng nhận cả provider API; runner map qua Engine interface chung.
 5. Chuẩn hoá interface `Engine` (capabilities: native_mcp, native_skills, file_tools...) để chỗ gọi không if/else theo tên engine rải rác như hiện nay; badge engine trên UI đọc từ capability thật.
 

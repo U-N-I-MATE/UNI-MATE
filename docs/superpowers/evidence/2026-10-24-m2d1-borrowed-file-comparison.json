@@ -12,7 +12,7 @@
     "tests/python/test_improvement_native_image.py": "8c7abdc74b1f126e93e24abce1aa2661456f4948894a33012f06b021681afd3b"
   },
   "qualified83_profile_unchanged": "04c8c77baec04d04019752bc8abc2f9a5906e094ededfbdd56cfc3c712aef126",
-  "test_command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B -m unittest discover -s tests/python -p test_improvement_native_image.py -v",
+  "test_command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B -m unittest discover -s tests/python -p test_improvement_native_image.py -v",
   "runtime": {"platform": "Windows", "python": "3.12.10"},
   "author_red": {
     "tests": 3,

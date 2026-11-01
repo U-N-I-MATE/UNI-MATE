@@ -1,14 +1,14 @@
 # Kho gói: định dạng danh mục và cách phát hành
 
-Kho gói của Javis là **đúng một file JSON công khai**. Không có máy chủ nào phải nuôi, không có
+Kho gói của UNI MATE là **đúng một file JSON công khai**. Không có máy chủ nào phải nuôi, không có
 cơ sở dữ liệu, không có tài khoản. Sửa file đó là kho đổi.
 
 Đơn giản được đến vậy vì kho chỉ làm MỘT việc: giúp người dùng **tìm ra** gói. Việc khó (mở
 gói, kiểm, hỏi, cài, gỡ sạch) nằm ở `server/pack_install.py` và nó không quan tâm gói đến từ
 đâu. Cài từ kho đi qua **đúng** màn hình xác nhận như kéo một tệp `.zip` vào.
 
-Kho nằm ở **REPO RIÊNG**: [blogminhquy/javis-store](https://github.com/blogminhquy/javis-store),
-Javis đọc `index.json` ở đó qua `raw.githubusercontent.com`. Người dùng đổi sang kho khác được ở
+Kho nằm ở **REPO RIÊNG**: [U-N-I-MATE/unimate-store](https://github.com/U-N-I-MATE/unimate-store),
+UNI MATE đọc `index.json` ở đó qua `raw.githubusercontent.com`. Người dùng đổi sang kho khác được ở
 `settings.json` khoá `packs.store_url`.
 
 Tách repo là điểm mấu chốt của cả tầng này, không phải chuyện gọn gàng. Hai thứ nó mở ra:
@@ -16,7 +16,7 @@ Tách repo là điểm mấu chốt của cả tầng này, không phải chuy�
 - **Thêm gói không còn dính tới việc ra bản mới của app.** Đẩy một commit vào repo kho là mọi
   máy đang chạy thấy ngay ở lần làm mới danh mục kế tiếp.
 - **Người lạ đóng góp được.** Họ gửi Pull Request vào repo kho, chủ kho đọc mã rồi mới trộn - mà
-  không ai phải có quyền ghi vào mã nguồn Javis.
+  không ai phải có quyền ghi vào mã nguồn UNI MATE.
 
 `system/pack-index.json` trong repo này đã **đông lại**, chỉ còn để bản 0.55.24-0.55.29 (vốn trỏ
 cứng vào đó) vẫn xem và cài được. Đừng thêm gì vào đó nữa.
@@ -27,17 +27,17 @@ cứng vào đó) vẫn xem và cài được. Đừng thêm gì vào đó nữa
 
 ```json
 {
-  "format": "javis-pack-index",
+  "format": "unimate-pack-index",
   "format_version": 1,
   "updated": "2026-09-04",
-  "store": {"name": "Kho gói Javis", "url": "https://github.com/..."},
+  "store": {"name": "Kho gói UNI MATE", "url": "https://github.com/..."},
   "packs": [
     {
-      "id": "javis.tinh-gia",
+      "id": "unimate.tinh-gia",
       "name": {"vi": "Tính giá bán", "en": "Pricing helper"},
       "description": {"vi": "Tính giá bán từ giá vốn và biên lợi nhuận."},
       "version": "1.0.0",
-      "author": {"name": "Javis"},
+      "author": {"name": "UNI MATE"},
       "kind": "tool",
       "category": "sales",
       "category_label": {"vi": "Bán hàng", "en": "Sales"},
@@ -45,9 +45,9 @@ cứng vào đó) vẫn xem và cài được. Đừng thêm gì vào đó nữa
       "verified": true,
       "updated": "2026-09-04",
       "homepage": "https://github.com/...",
-      "icon": "packs/javis.tinh-gia/assets/tinh-gia.png",
+      "icon": "packs/unimate.tinh-gia/assets/tinh-gia.png",
       "download": {
-        "url": "https://github.com/.../releases/download/v1.0.0/javis-tinh-gia.zip",
+        "url": "https://github.com/.../releases/download/v1.0.0/unimate-tinh-gia.zip",
         "sha256": "abc123...",
         "size": 3052
       },
@@ -61,10 +61,10 @@ cứng vào đó) vẫn xem và cài được. Đừng thêm gì vào đó nữa
 Bắt buộc: `id` và `download.url`. Mục thiếu một trong hai bị **bỏ qua** chứ không hiện ra, vì
 một thẻ bấm vào không cài được thì tệ hơn là không có thẻ.
 
-`download.url` viết tương đối cũng được, Javis ghép với địa chỉ của chính file index.
+`download.url` viết tương đối cũng được, UNI MATE ghép với địa chỉ của chính file index.
 
 `icon` là logo trên thẻ trong Kho cài đặt: đường dẫn **tương đối** so với file index, trỏ vào
-một ảnh `.png` / `.webp` / `.jpg` / `.gif`. Javis ghép nó như `download.url` và chỉ giữ khi kết
+một ảnh `.png` / `.webp` / `.jpg` / `.gif`. UNI MATE ghép nó như `download.url` và chỉ giữ khi kết
 quả nằm **cùng host** với index; URL tuyệt đối, `data:` hay `.svg` đều bị bỏ và thẻ rơi về ô chữ
 cái. Luật cùng host là để một mục trong kho không thành beacon gõ về máy chủ của bên thứ ba mỗi
 lần người dùng mở lưới. Kho chính đặt logo ngay trong gói (`packs/<id>/assets/`), nên thẻ trong
@@ -79,11 +79,11 @@ GitHub của tác giả và kho tự lấy bản mới mỗi ngày (`tools/theo-
              "commit": "30d4553ecd46fbc5212fd0ff006ae43af522158b", "synced": "2026-10-28"}
 ```
 
-Javis hiện các gói này ở tab **Khuyên dùng** (tab đầu, chỉ có khi kho có ít nhất một gói như
+UNI MATE hiện các gói này ở tab **Khuyên dùng** (tab đầu, chỉ có khi kho có ít nhất một gói như
 vậy), và thẻ có dòng "Cập nhật từ tác giả" dẫn tới `https://github.com/<repo>` kèm ngày lấy bản mới nhất.
 `repo` phải đúng dạng `chủ/tên`, sai thì `packs_store._upstream` bỏ cả trường và thẻ hiện như gói
 thường. `commit` là commit gốc mà nội dung bản đang phát hành được lấy từ đó; `synced` là ngày lấy.
-Cập nhật vẫn đi qua chuông báo và màn hình xác nhận như mọi gói khác: Javis không tự cài bản mới.
+Cập nhật vẫn đi qua chuông báo và màn hình xác nhận như mọi gói khác: UNI MATE không tự cài bản mới.
 
 ---
 
@@ -103,7 +103,7 @@ báo đỏ.
 **`sha256` là chốt CHỐNG ĐỔI, không phải chốt xác thực người phát hành.** Nó và địa chỉ tải
 cùng nằm trong một file, nên ai sửa được file đó thì sửa được cả hai. Cái nó thật sự bắt là
 trường hợp tệp tải về **khác** thứ kho công bố, tức đường tải bị chen ngang. Có `sha256` thì
-Javis dừng ngay ở bước tải, chưa kịp hỏi gì.
+UNI MATE dừng ngay ở bước tải, chưa kịp hỏi gì.
 
 **Mọi trường đều bị cắt và ép kiểu khi đọc.** `packs_store._lam_sach` là chỗ duy nhất quyết
 định trường nào đi tiếp; khoá lạ bị bỏ. Lý do: `name` và `description` đi thẳng vào giao diện,
@@ -121,27 +121,27 @@ Làm trong repo kho, không phải repo này.
 
 1. Đặt mã nguồn ở `packs/<id>/`, rồi đóng gói và lấy luôn dấu vân tay:
    ```bash
-   python tools/dong-goi.py javis.tinh-gia
+   python tools/dong-goi.py unimate.tinh-gia
    ```
    Lệnh in ra đường dẫn tệp và `sha256`. Đóng bằng `zip -r` cũng được, nhưng nhớ loại
    `__pycache__` ra: nó lọt vào chữ ký nội dung mã nên hai máy sẽ ra hai `sha256` khác nhau.
-   Manifest `javis-pack.yaml` phải nằm ở gốc tệp nén, hoặc trong đúng một thư mục bọc kiểu
-   zipball của GitHub, Javis tự bóc.
+   Manifest `unimate-pack.yaml` phải nằm ở gốc tệp nén, hoặc trong đúng một thư mục bọc kiểu
+   zipball của GitHub, UNI MATE tự bóc.
    Lệnh tự đặt tệp vào `dist/` với tên kèm phiên bản và in sẵn khối JSON để dán.
 
 2. Thêm một mục vào `packs[]` trong `index.json`, khai `download.url` **tương đối**
-   (`dist/javis-tinh-gia-1.0.0.zip`). Javis ghép nó với địa chỉ của chính file index.
+   (`dist/unimate-tinh-gia-1.0.0.zip`). UNI MATE ghép nó với địa chỉ của chính file index.
 
    Tệp và mục danh mục nằm trong CÙNG một commit, nên không bao giờ có cảnh index đã trỏ sang
    bản mới mà tệp thì chưa lên. Gói lớn thì dùng Release và khai địa chỉ tuyệt đối.
 
 3. Đẩy lên nhánh `main` của repo kho, hoặc mở Pull Request nếu bạn không phải chủ kho.
 
-Mã nguồn nằm cạnh tệp phát hành là có chủ ý: gói bậc `code` chạy Python thật trong máy chủ Javis
-của người cài, nên họ phải đọc được nó mà không cần tải gì về trước. `packs/javis.tinh-gia/` là
+Mã nguồn nằm cạnh tệp phát hành là có chủ ý: gói bậc `code` chạy Python thật trong máy chủ UNI MATE
+của người cài, nên họ phải đọc được nó mà không cần tải gì về trước. `packs/unimate.tinh-gia/` là
 gói chạy được để chép làm khuôn.
 
-Javis cache danh mục 6 giờ, nên sau khi đẩy thì bấm **Làm mới** trên trang Kho cài đặt để thấy ngay.
+UNI MATE cache danh mục 6 giờ, nên sau khi đẩy thì bấm **Làm mới** trên trang Kho cài đặt để thấy ngay.
 
 ---
 
@@ -152,16 +152,16 @@ tệp tự mang số bản mới), GIỮ tệp cũ trong `dist/` - người dùn
 hỏng - rồi đổi `download.url` và `sha256`.
 
 Người đã cài bản cũ sẽ thấy nút đổi thành **Có bản mới vX**. Bấm vào là đi qua đúng luồng cài
-lại: tải, mở ra xem, xác nhận. **Javis không bao giờ tự cập nhật một gói có mã** - bản mới có
+lại: tải, mở ra xem, xác nhận. **UNI MATE không bao giờ tự cập nhật một gói có mã** - bản mới có
 thể đổi mã, và mã đổi mà không ai xem thì toàn bộ chốt chữ ký nội dung ở
 `plugins_host._pack_duoc_nap` thành vô nghĩa.
 
 **MCP của bên thứ 3 thì khác** (chủ repo chốt 2026-10-05): bên đó có bản phát hành chính thức thì
 connector đi theo bản đó. Connector chạy qua `npx`/`uvx` lấy MCP từ npm/PyPI và ghi tên gói kèm
 `@latest`; để trống phiên bản là chưa đủ, vì `npx`/`uvx` dùng lại bản đã tải lần đầu. Bên thứ 3 ra
-bản mới thì máy chạy bản đó ở lần khởi động kế tiếp, không cần ra bản gói hay bản Javis. Ngoại lệ
+bản mới thì máy chạy bản đó ở lần khởi động kế tiếp, không cần ra bản gói hay bản UNI MATE. Ngoại lệ
 khai bằng `ngoai_le_ban_chinh_thuc` kèm lý do. Ngoại lệ duy nhất hiện có là Zalo: không đi theo bản
-gốc nữa, Javis chuyển sang bản CLI riêng và chỉ giữ thư viện `zca-js` đi theo bản chính thức.
+gốc nữa, UNI MATE chuyển sang bản CLI riêng và chỉ giữ thư viện `zca-js` đi theo bản chính thức.
 `tests/python/test_mcp_official_release.py` canh catalog của app, `tools/kiem-tra.py` canh kho, và
 job `soi-ban-moi` trong CI của kho chạy thử bản mới nhất thật mỗi ngày để bắt tool mới chưa phân
 loại.
@@ -170,7 +170,7 @@ loại.
 
 ## Gói mang theo agent, workflow, skill
 
-Tệp đặt ở `agents/`, `workflows/`, `skills/<slug>/` bên trong gói; Javis tìm chúng **theo thư
+Tệp đặt ở `agents/`, `workflows/`, `skills/<slug>/` bên trong gói; UNI MATE tìm chúng **theo thư
 mục**. Chỉ `provides.connectors` là bắt buộc khai trong manifest, vì mỗi connector là một tệp
 phải trỏ đúng tên; khai thêm `provides.plugins` hay `provides.skills` là để người đọc manifest
 biết gói có gì mà không phải mở từng thư mục, chứ trình cài không đọc.

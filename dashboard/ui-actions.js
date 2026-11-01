@@ -1,9 +1,9 @@
-/* ui-actions.js - dashboard NHẬN lệnh từ tool javis_ui và trả kết quả (Voice V1, spec mục 6).
+/* ui-actions.js - dashboard NHẬN lệnh từ tool unimate_ui và trả kết quả (Voice V1, spec mục 6).
 
    Server bắn frame {"type":"ui_action","id","action","target","session_id"} qua /ws khi model
-   gọi tool javis_ui. File này: kiểm lại target (không tin server tuyệt đối vì đây là bên thực
-   hiện), chạy bằng đúng những hàm dashboard đã có (JavisNav.go, JavisOpenVaultPath,
-   JavisTasks.show), rồi gửi {"action":"ui_result","id","ok","detail"} về để tool trả lời model
+   gọi tool unimate_ui. File này: kiểm lại target (không tin server tuyệt đối vì đây là bên thực
+   hiện), chạy bằng đúng những hàm dashboard đã có (UniMateNav.go, UniMateOpenVaultPath,
+   UniMateTasks.show), rồi gửi {"action":"ui_result","id","ok","detail"} về để tool trả lời model
    ngay trong lượt.
 
    Tab đang xem phiên KHÁC với session_id trong frame thì trả `skipped=true` (server bỏ qua,
@@ -13,12 +13,12 @@
 (function () {
   "use strict";
 
-  // Cùng danh sách với RAIL_ITEMS trong console.js và PAGES trong plugin javis-ui.
+  // Cùng danh sách với RAIL_ITEMS trong console.js và PAGES trong plugin unimate-ui.
   var PAGES = ["home", "chat", "settings", "workspace", "teams", "skills", "chatbots", "conversations", "files",
                "terminal", "coding", "tasks", "webhooks", "learn", "models", "channels", "mcp", "plugins",
                "packs", "logs", "account", "usage", "logins", "pet", "share"];
   // Nhóm trên thanh bên (accordion). Cùng danh sách với RAIL_GROUPS trong console.js và GROUPS
-  // trong plugin javis-ui. Mở một NHÓM khác với mở một TRANG: người dùng hay muốn bung phần
+  // trong plugin unimate-ui. Mở một NHÓM khác với mở một TRANG: người dùng hay muốn bung phần
   // đang gập lại để nhìn xem có gì, chứ chưa chọn trang nào.
   // "code" left the rail in 0.347.0 (Terminal moved into nang_luc); an old "code" still opens nang_luc.
   var GROUPS = ["bo_nao", "nang_luc", "viec", "ket_noi", "he_thong"];
@@ -31,7 +31,7 @@
   // Hàm rào dịch. validate() chạy cả dưới node (test_ui_actions.js require thẳng file này), nơi
   // `window` CHƯA KHAI BÁO: đọc thẳng là ReferenceError, nên phải hỏi bằng typeof. Ngoài trình
   // duyệt thì tra vi.json để câu báo lỗi vẫn là chữ đọc được chứ không phải mã khoá.
-  // `detail`/`error` ở đây quay về model qua tool javis_ui, theo cùng ngôn ngữ giao diện như
+  // `detail`/`error` ở đây quay về model qua tool unimate_ui, theo cùng ngôn ngữ giao diện như
   // mấy câu ui.scroll_* bên dưới.
   function tw(k, v) {
     if (typeof window !== "undefined" && window.t) return window.t(k, v);
@@ -107,19 +107,19 @@
 
   async function execute(v) {
     if (v.action === "open_page") {
-      if (window.JavisNav && typeof window.JavisNav.go === "function") { window.JavisNav.go(v.target); return { ok: true, detail: "" }; }
+      if (window.UniMateNav && typeof window.UniMateNav.go === "function") { window.UniMateNav.go(v.target); return { ok: true, detail: "" }; }
       return { ok: false, detail: tw("ui.err_nav_not_ready") };
     }
     if (v.action === "open_file") {
-      if (typeof window.JavisOpenVaultPath === "function") { window.JavisOpenVaultPath(v.target); return { ok: true, detail: "" }; }
-      if (typeof window.JavisEditFile === "function") { window.JavisEditFile(v.target); return { ok: true, detail: "" }; }
+      if (typeof window.UniMateOpenVaultPath === "function") { window.UniMateOpenVaultPath(v.target); return { ok: true, detail: "" }; }
+      if (typeof window.UniMateEditFile === "function") { window.UniMateEditFile(v.target); return { ok: true, detail: "" }; }
       return { ok: false, detail: tw("ui.err_opener_not_ready") };
     }
     if (v.action === "open_task") {
-      if (window.JavisNav && typeof window.JavisNav.go === "function") window.JavisNav.go("tasks");
+      if (window.UniMateNav && typeof window.UniMateNav.go === "function") window.UniMateNav.go("tasks");
       // 0.426.0: Kanban jobs live on the Tasks page (tasks.js, lazy). Wait up to ~3 s for it to load its data.
       for (var i = 0; i < 30; i++) {
-        var nv = window.JavisTasks;
+        var nv = window.UniMateTasks;
         if (nv && typeof nv.ready === "function" && nv.ready()) {
           var shown = false;
           try { shown = await nv.show(v.target); } catch (e) {}
@@ -130,15 +130,15 @@
       return { ok: false, detail: tw("ui.err_kanban_slow") };
     }
     if (v.action === "open_group") {
-      if (window.JavisNav && typeof window.JavisNav.openGroup === "function") {
-        return window.JavisNav.openGroup(v.target)
+      if (window.UniMateNav && typeof window.UniMateNav.openGroup === "function") {
+        return window.UniMateNav.openGroup(v.target)
           ? { ok: true, detail: "" } : { ok: false, detail: tw("ui.err_group_missing") };
       }
       return { ok: false, detail: tw("ui.err_nav_not_ready") };
     }
     if (v.action === "sidebar") {
-      if (window.JavisNav && typeof window.JavisNav.setCollapsed === "function") {
-        window.JavisNav.setCollapsed(v.target === "close");
+      if (window.UniMateNav && typeof window.UniMateNav.setCollapsed === "function") {
+        window.UniMateNav.setCollapsed(v.target === "close");
         return { ok: true, detail: "" };
       }
       return { ok: false, detail: tw("ui.err_nav_not_ready") };
@@ -173,11 +173,11 @@
   }
 
   function send(obj) {
-    try { if (typeof window.JavisWsSend === "function") window.JavisWsSend(obj); } catch (e) {}
+    try { if (typeof window.UniMateWsSend === "function") window.UniMateWsSend(obj); } catch (e) {}
   }
 
   function currentSid() {
-    try { return (window.JavisSessions && window.JavisSessions.current()) || ""; } catch (e) { return ""; }
+    try { return (window.UniMateSessions && window.UniMateSessions.current()) || ""; } catch (e) { return ""; }
   }
 
   async function handle(frame) {
@@ -191,8 +191,8 @@
     var r;
     try { r = await execute(v); } catch (e) { r = { ok: false, detail: String(e && e.message || e) }; }
     send({ action: "ui_result", id: id, ok: !!r.ok, detail: r.detail || "" });
-    try { if (window.JavisUiActions && typeof window.JavisUiActions.onDone === "function") window.JavisUiActions.onDone(v, r); } catch (e) {}
+    try { if (window.UniMateUiActions && typeof window.UniMateUiActions.onDone === "function") window.UniMateUiActions.onDone(v, r); } catch (e) {}
   }
 
-  window.JavisUiActions = { validate: validate, handle: handle, PAGES: PAGES, GROUPS: GROUPS, onDone: null };
+  window.UniMateUiActions = { validate: validate, handle: handle, PAGES: PAGES, GROUPS: GROUPS, onDone: null };
 })();

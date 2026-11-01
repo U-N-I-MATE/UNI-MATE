@@ -1,7 +1,7 @@
 """Phần dùng chung của MỌI cổng bot nhắn tin (Telegram, Zalo, và kênh nào tới sau).
 
 Vì sao có file này thay vì chép sang mỗi kênh một bản: hàng đợi lượt, luật `/stop`, cổng
-precheck và dòng vết công cụ đều là **luật hành vi của Javis**, không phải chi tiết của một
+precheck và dòng vết công cụ đều là **luật hành vi của UNI MATE**, không phải chi tiết của một
 nhà cung cấp. Chép sang bản thứ hai là bảo đảm hai bản trôi lệch, và chỗ lệch sẽ là chỗ ít
 được nhìn nhất: bot chuyên trách nói chuyện với người lạ.
 
@@ -72,7 +72,7 @@ def dong_vet(tools, giay) -> str:
     """Dòng tổng kết một lượt, thứ sẽ NẰM LẠI trong chat vĩnh viễn.
 
     Vì nó ở lại nên nó phải nói được một điều thật, chứ không phải một dòng rác. Lượt có gọi
-    công cụ thì liệt kê tên: đó đúng là bằng chứng Javis chạm vào dữ liệu thật (POS, quảng
+    công cụ thì liệt kê tên: đó đúng là bằng chứng UNI MATE chạm vào dữ liệu thật (POS, quảng
     cáo, file) chứ không trả lời chay. Lượt không gọi gì thì nói thẳng là trả lời trực tiếp -
     cũng là thông tin, và là thông tin người dùng cần để biết có nên tin con số vừa đọc không.
     """
@@ -168,7 +168,7 @@ class HangLuot:
                     await self._send(client, chat, res["reply"], res.get("reply_markup"))
                     return
                 if res and "ask" in res:
-                    text = res["ask"]   # chuyển thành câu hỏi cho Javis
+                    text = res["ask"]   # chuyển thành câu hỏi cho UNI MATE
                 # res None → coi như tin thường (gửi nguyên text)
         # Chốt chặn trước khi tốn một lượt. Đặt SAU khối lệnh có chủ ý: /id là đường chính
         # thức để lấy id nhóm, chặn nó thì chủ không còn cách nào khai nhóm cho bot.
@@ -216,7 +216,7 @@ class HangLuot:
             return
         o["texts"].append(str(text or ""))
 
-    # ---- Send more while Javis is working (0.213.0, the chat-channel side of 0.206.0) ----
+    # ---- Send more while UNI MATE is working (0.213.0, the chat-channel side of 0.206.0) ----
     def _steer_sid(self, chat):
         """The steer_inbox key of one chat on THIS bot: two bots (or two channels) can share a chat id."""
         return f"kenh:{id(self)}:{chat}"
@@ -234,10 +234,10 @@ class HangLuot:
             self._xep_hang(chat, text, meta)   # the turn has not opened its inbox yet, or too many are waiting
             live = False
         await self._send(client, chat, localefmt.chu(
-            "↪ Đã nhận, Javis đọc tin này ngay ở bước kế tiếp của việc đang làm.",
-            "↪ Got it, Javis reads this at the next step of the current work.") if live else localefmt.chu(
-            "📥 Đã nhận, Javis làm tin này ngay sau câu đang trả lời.",
-            "📥 Got it, Javis handles this right after the current answer."))
+            "↪ Đã nhận, UNI MATE đọc tin này ngay ở bước kế tiếp của việc đang làm.",
+            "↪ Got it, UNI MATE reads this at the next step of the current work.") if live else localefmt.chu(
+            "📥 Đã nhận, UNI MATE làm tin này ngay sau câu đang trả lời.",
+            "📥 Got it, UNI MATE handles this right after the current answer."))
 
     async def _turn(self, client, chat, text, meta=None):
         if self.giau_trang_thai:

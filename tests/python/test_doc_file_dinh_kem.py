@@ -3,12 +3,12 @@
     python tests/run.py doc_file_dinh_kem        (KHÔNG mạng)
 
 Người dùng báo 23/08: dán một đoạn văn dài vào khung chat (dashboard tự cắt thành
-`van-ban-dan-HHMMSS.txt` rồi tải lên) thì Javis bảo phải tự chép file vào thư mục Brain mới
+`van-ban-dan-HHMMSS.txt` rồi tải lên) thì UNI MATE bảo phải tự chép file vào thư mục Brain mới
 đọc được.
 
 Đúng là hỏng, và hỏng ở chỗ nối: dashboard chèn vào câu hỏi khối "[File đính kèm để ĐỌC
 (đường dẫn): …]" với đường dẫn tuyệt đối trong `STATE_DIR/.staging`, rồi dặn model "đọc thẳng
-file rồi trả lời". Nhưng sáu engine API không có tool đọc file nào ngoài `javis_read_file`,
+file rồi trả lời". Nhưng sáu engine API không có tool đọc file nào ngoài `unimate_read_file`,
 mà tool đó đi qua `_safe_path` khoá trong vault → mọi lượt có đính kèm đều nổ
 `ValueError: nằm ngoài vault`, và model đọc lỗi đó xong tự nghĩ ra lời khuyên "chuyển file
 vào Brain đi". (Claude Code/Codex không dính vì chúng có tool đọc file native.)
@@ -23,8 +23,8 @@ import os
 import sys
 import tempfile
 
-_TMP = tempfile.mkdtemp(prefix="javis-dinhkem-")
-os.environ.setdefault("JAVIS_STATE_DIR", _TMP)
+_TMP = tempfile.mkdtemp(prefix="unimate-dinhkem-")
+os.environ.setdefault("UNIMATE_STATE_DIR", _TMP)
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -114,17 +114,17 @@ check("_safe_path gốc KHÔNG đổi hành vi (ghi vẫn khoá trong vault)",
 
 
 # ============================================================
-# 3) Tool javis_read_file thật, qua đúng đường _builtin_tools
+# 3) Tool unimate_read_file thật, qua đúng đường _builtin_tools
 # ============================================================
 def _route(staging):
     _t, r = mcp_hub._builtin_tools("full", str(VAULT), staging=staging)
     return r
 
 
-mo = _route(True)["javis_read_file"]["call"]
-dong = _route(False)["javis_read_file"]["call"]
+mo = _route(True)["unimate_read_file"]["call"]
+dong = _route(False)["unimate_read_file"]["call"]
 
-check("bật staging: javis_read_file trả đúng nội dung file vừa dán",
+check("bật staging: unimate_read_file trả đúng nội dung file vừa dán",
       "đoạn văn dài user vừa dán" in _no(mo({"path": str(DAN)})))
 check("bật staging: file trong vault vẫn đọc bình thường",
       "nội dung trong vault" in _no(mo({"path": "Sources/ghi-chu.md"})))
@@ -141,7 +141,7 @@ check("bật staging vẫn từ chối file khác trên ổ đĩa", loi_ngoai.st
 # hai cho phiên Coding): engine Web chạy vòng tool bằng chữ, một exception bay ra giữa lô tool
 # là chết cả lượt, còn một câu lỗi thì model đọc rồi tự sửa đường dẫn ở vòng sau. Bất biến
 # "ghi ra staging bị chặn" KHÔNG đổi, chỉ đổi cách báo.
-_ghi_stage = _no(_route(True)["javis_write_file"]["call"]({"path": str(DAN), "content": "x"}))
+_ghi_stage = _no(_route(True)["unimate_write_file"]["call"]({"path": str(DAN), "content": "x"}))
 check("ghi file ra staging vẫn bị chặn (chỉ nới cho ĐỌC)",
       isinstance(_ghi_stage, str) and _ghi_stage.startswith("ERROR:"))
 check("file vừa dán KHÔNG bị ghi đè",

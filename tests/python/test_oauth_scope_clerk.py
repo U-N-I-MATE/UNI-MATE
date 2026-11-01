@@ -3,7 +3,7 @@
     python tests/run.py oauth_scope_clerk      (KHÔNG mạng)
 
 Chủ repo 16/10/2026: kết nối Higgsfield báo invalid_grant. Lỗi thật nằm ở URL callback: Higgsfield đăng nhập qua Clerk,
-Clerk trả invalid_scope "OAuth 2.0 Client is not allowed to request scope 'private_metadata'". Javis đã xin NGUYÊN danh sách
+Clerk trả invalid_scope "OAuth 2.0 Client is not allowed to request scope 'private_metadata'". UNI MATE đã xin NGUYÊN danh sách
 `scopes_supported` của máy chủ đăng nhập, rồi bỏ qua tham số error ở callback và đem code rỗng đi đổi.
 
 File này canh:
@@ -19,7 +19,7 @@ import tempfile
 import urllib.parse
 from unittest.mock import AsyncMock, patch
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-oauth-scope-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-oauth-scope-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

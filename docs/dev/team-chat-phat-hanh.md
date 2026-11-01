@@ -1,6 +1,6 @@
 # Nhóm chat team: tích hợp T0 tới T5 vào main, phát hành 0.140.0
 
-Ngày 14/10/2026. Nhánh tích hợp `claude/team-chat-release`, PR [#649](https://github.com/blogminhquy/javis-os/pull/649).
+Ngày 14/10/2026. Nhánh tích hợp `claude/team-chat-release`, PR [#649](https://github.com/U-N-I-MATE/UNI-MATE/pull/649).
 Spec: [2026-10-13-team-chat-design.md](../superpowers/specs/2026-10-13-team-chat-design.md). Biên bản từng mốc:
 `team-chat-t1.md` tới `team-chat-t5.md` (số phiên bản ghi trong các biên bản đó là số GIỮ CHỖ lúc làm, chưa từng phát hành).
 
@@ -53,7 +53,7 @@ Sửa, mỗi mục có test chạy đỏ trước:
 
 | Mục | Sửa | Test |
 |---|---|---|
-| Important: bấm thư về việc nhóm bị chặn thì mở vào khung chat chính, gõ tiếp thành tin không tác giả trong phiên nhóm | Thư kênh `team:<id>` mở đúng nhóm ở trang Nhóm qua `JavisTeams.open`; chưa ở trang Nhóm thì sang trang rồi mở khi danh sách về | `test_teams_ui.js`; smoke trình duyệt (dưới) |
+| Important: bấm thư về việc nhóm bị chặn thì mở vào khung chat chính, gõ tiếp thành tin không tác giả trong phiên nhóm | Thư kênh `team:<id>` mở đúng nhóm ở trang Nhóm qua `UniMateTeams.open`; chưa ở trang Nhóm thì sang trang rồi mở khi danh sách về | `test_teams_ui.js`; smoke trình duyệt (dưới) |
 | Important: `conversations.db.pre-0.140.0`, `.post-0.140.0-*` không bị gitignore, chép toàn bộ chat có thể lên git | `.gitignore` thêm `server/conversations.db.pre-*`, `.post-*` | `test_team_release.py` (`git check-ignore` cho cả ba kho) |
 | Nâng lên Important: bí danh giọng nói "nhom" khớp cụm con, nên "nhóm việc" mở trang Nhóm thay vì Việc (cả "nhóm code", "mở nhóm trợ lý", "nhóm hệ thống") | "nhom" chỉ khớp khi cả câu đúng là nó; bỏ "nhom tro ly" | `test_team_release.py`: câu về nhóm thanh bên ra đúng như bản trước phát hành |
 | Nâng lên Important: lời nhắc chung của trợ lý hứa "bộ công cụ của hub" mà lượt nhóm chỉ chữ, gọi công cụ là hỏng lượt | Mọi lượt nhóm nối thêm đoạn cố định `TEXT_ONLY_NOTE` sau lời nhắc của trợ lý | `test_team_ux.py` |

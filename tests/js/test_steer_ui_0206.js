@@ -1,4 +1,4 @@
-// 0.206.0: send more while Javis is working. Typed text during a running turn goes to the server as action "steer"
+// 0.206.0: send more while UNI MATE is working. Typed text during a running turn goes to the server as action "steer"
 // (no more silent return), the send button comes back next to Stop when there is text, and the message's status line
 // follows steer_ack / steer_read / steer_turn.
 const fs = require("fs");

@@ -2,7 +2,7 @@
 
 - Ngày: 22/10/2026, Asia/Saigon.
 - Trạng thái: bản đề xuất hoàn chỉnh để chủ sản phẩm xem xét; chưa triển khai mã, chưa chạy pilot.
-- Nền đã khảo sát: Javis OS **0.281.0**, `d678140467211000681805d3e2f82968a499b111` trên `origin/main`.
+- Nền đã khảo sát: UNI MATE **0.281.0**, `d678140467211000681805d3e2f82968a499b111` trên `origin/main`.
 - Bản nguồn đối chiếu trên máy: `exports/team-swot-20261022-d6781404/`. Nhánh làm việc hiện tại cũ hơn nền này; khi triển khai phải bắt đầu từ main mới và đối chiếu lại các điểm tích hợp.
 - Chủ sản phẩm và người nghiệm thu nghiệp vụ: anh. Tài liệu này đề xuất hành vi sản phẩm, dữ liệu, kiểm thử và điều kiện phát hành; không phải lệnh tự chạy model, đổi model, triển khai hay gửi ra kênh ngoài.
 
@@ -20,7 +20,7 @@ Yêu cầu trực tiếp của chủ: **không để việc eo hẹp chi phí �
 4. Tối ưu chỉ được bật khi có bằng chứng không làm giảm chất lượng và không bỏ qua công việc cần thực hiện.
 5. Giữ cổng quyền, giới hạn tài nguyên máy, điều kiện dừng của chủ, chống lặp và hạn mức thực của provider. Các cơ chế này phải có lý do riêng, không được trình bày thành một trần tiết kiệm tiền.
 
-Các con số về thời gian và tỷ lệ trong spec là **mục tiêu thử nghiệm**, chưa phải kết quả Javis đã đạt. Hai nghiệp vụ pilot được chọn làm phạm vi khởi đầu, không giả định dữ liệu bán hàng của chủ đã kết nối.
+Các con số về thời gian và tỷ lệ trong spec là **mục tiêu thử nghiệm**, chưa phải kết quả UNI MATE đã đạt. Hai nghiệp vụ pilot được chọn làm phạm vi khởi đầu, không giả định dữ liệu bán hàng của chủ đã kết nối.
 
 ## 2. Hiện trạng đã xác minh và khoảng trống
 
@@ -53,7 +53,7 @@ Ngoài phạm vi: tự thay model theo giá; hard cap tiền mới; thanh toán/
 
 ### 4.1 Áp dụng từ lúc tạo việc
 
-Mọi việc Team mới, dù tạo từ chat/Giao việc, công cụ `javis_team`, trưởng nhóm, mandate hay đường API nội bộ, đều phải có một hợp đồng nghiệm thu trước bước thực thi đầu tiên. Chat thuần không tạo sản phẩm vẫn giữ nguyên, không phát sinh hợp đồng hay việc nền.
+Mọi việc Team mới, dù tạo từ chat/Giao việc, công cụ `unimate_team`, trưởng nhóm, mandate hay đường API nội bộ, đều phải có một hợp đồng nghiệm thu trước bước thực thi đầu tiên. Chat thuần không tạo sản phẩm vẫn giữ nguyên, không phát sinh hợp đồng hay việc nền.
 
 Thứ tự lấy hợp đồng:
 
@@ -172,7 +172,7 @@ Phải xử lý cả các trần lượt cũ, không chỉ bỏ một trần USD
 - Với việc được chủ giao trong nhóm bật quality_first, các preset lượt/việc và lượt/ngày nhằm tiết kiệm của ứng dụng chuyển thành mức tham khảo, không cắt ngang việc hay bỏ kiểm chứng. Không để một gate cũ phía agent budget âm thầm tái áp cùng trần cho nghĩa vụ của việc.
 - Giữ giới hạn đồng thời, lease, timeout, độ sâu nhờ hỗ trợ và nhận diện không tiến triển vì đây là cơ chế vận hành. Không tự tăng quyền hay số agent khi vượt mức tham khảo.
 - Với hoạt động tự phát như quét, tự lên tiếng, tự sinh việc: giữ quy tắc có sự kiện hữu ích và nguồn được cấp; không biến quality_first thành nền tự gọi model không giới hạn. Hạn mức tự phát không được lấy mất quyền hoàn tất việc chủ đã giao.
-- Trần quản trị máy chủ như `JAVIS_RESONANCE_CALL_CEILING`, quota/rate limit provider, lệnh dừng và trần chủ đã đặt rõ ràng vẫn được tôn trọng. Nếu chúng chặn việc, ghi đúng loại và lý do, giữ sản phẩm, không báo Xong và không tự đổi sang model rẻ hơn.
+- Trần quản trị máy chủ như `UNIMATE_RESONANCE_CALL_CEILING`, quota/rate limit provider, lệnh dừng và trần chủ đã đặt rõ ràng vẫn được tôn trọng. Nếu chúng chặn việc, ghi đúng loại và lý do, giữ sản phẩm, không báo Xong và không tự đổi sang model rẻ hơn.
 - Nhóm cũ có số trần nhưng không biết đó là preset hay chủ đã tự đặt: migration không được tự đoán và xóa. Khi chuyển nhóm đó sang quality_first, giao diện cho chủ chọn một lần cách giữ/chuyển các trần hiện có; không hỏi lại cho từng lượt. Nhóm mới dùng mặc định quality_first sau rollout.
 
 Không làm thêm tùy chọn hard cap tiền trong phạm vi spec. Nếu sau này chủ yêu cầu một giới hạn tiền cụ thể thì đặc tả riêng, không mặc định bật dựa trên tài liệu này.

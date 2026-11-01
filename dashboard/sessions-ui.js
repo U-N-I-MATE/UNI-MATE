@@ -1,8 +1,8 @@
 // ============================================================
-// Javis - Sidebar "Lịch sử hội thoại" TRONG chat workspace (cột trái khi phóng to chat).
-// chat-zoom.js tạo khung <aside id="chatSide"> và gọi window.JavisChatSide.mount/refresh;
+// UNI MATE - Sidebar "Lịch sử hội thoại" TRONG chat workspace (cột trái khi phóng to chat).
+// chat-zoom.js tạo khung <aside id="chatSide"> và gọi window.UniMateChatSide.mount/refresh;
 // module này render nội dung: + Hội thoại mới, tìm kiếm, danh sách nhóm theo thời gian,
-// đổi tên/xoá, highlight phiên đang mở. Mở phiên qua window.JavisSessions (app.js).
+// đổi tên/xoá, highlight phiên đang mở. Mở phiên qua window.UniMateSessions (app.js).
 // (Thay panel trượt bên phải cũ - nút "Lịch sử" góc phải giờ mở thẳng workspace.)
 // ============================================================
 (function () {
@@ -11,11 +11,11 @@
   // Locale để định dạng số/ngày. Lấy từ i18n chứ KHÔNG khoá "vi-VN": người dùng đổi
   // ngôn ngữ giao diện thì ngày giờ phải đổi theo, nếu không thì nửa màn hình tiếng Anh
   // mà ngày vẫn dd/mm/yyyy kiểu Việt.
-  const LOC = () => (window.JavisI18n && JavisI18n.locale()) || "vi-VN";
+  const LOC = () => (window.UniMateI18n && UniMateI18n.locale()) || "vi-VN";
   function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
   function esc(s) { return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
-  function brain() { try { return (window.JavisSessions && window.JavisSessions.brain()) || "brain"; } catch (e) { return "brain"; } }
-  function currentId() { try { return (window.JavisSessions && window.JavisSessions.current()) || null; } catch (e) { return null; } }
+  function brain() { try { return (window.UniMateSessions && window.UniMateSessions.brain()) || "brain"; } catch (e) { return "brain"; } }
+  function currentId() { try { return (window.UniMateSessions && window.UniMateSessions.current()) || null; } catch (e) { return null; } }
 
   function fmtT(ts) {
     try {
@@ -57,7 +57,7 @@
   var hamTrangTri = null;
   // Cột trái có HAI tab: hội thoại và cây thư mục brain. Nhớ tab đã chọn qua localStorage -
   // ai dùng cây làm chính thì mỗi lần mở chat lại phải bấm sang là phiền vô ích.
-  var TAB_KEY = "javis.chatside.tab";
+  var TAB_KEY = "unimate.chatside.tab";
   var tabHienTai = "chat", cayEl = null;
 
   function tabDaLuu() {
@@ -70,7 +70,7 @@
   // nhớ ở localStorage theo brain chứ không lưu server. Ba giá trị: "" = tất cả,
   // "none" = các cuộc chưa xếp nhóm, còn lại là id project ("none" là chuỗi cố định, không
   // bao giờ đụng id thật vì id là uuid hex).
-  var PROJ_KEY = "javis.chatside.project";
+  var PROJ_KEY = "unimate.chatside.project";
   var projects = [];      // [{id,name,icon,session_count}] của brain đang xem
   var projBar = null;
 
@@ -229,9 +229,9 @@
     if (!r || !r.id) return;
     chonProject(r.id);
     // Mở sẵn một hội thoại trống: bộ lọc vừa trỏ vào project mới nên tin đầu tiên rơi đúng
-    // vào đó (JavisProjects.claim). Rồi mở luôn khung project kèm banner chào - một project
+    // vào đó (UniMateProjects.claim). Rồi mở luôn khung project kèm banner chào - một project
     // rỗng thì chưa đổi được gì cho lượt chat nào, phải nói ra chỗ để đổ hướng dẫn vào.
-    try { if (window.JavisSessions) window.JavisSessions.new(); } catch (e) {}
+    try { if (window.UniMateSessions) window.UniMateSessions.new(); } catch (e) {}
     quenPhienProj();
     pdOnboard = true;
     openProjDrawer(r.id);
@@ -269,7 +269,7 @@
   //
   // Chip nói về project CỦA LƯỢT CHAT, không phải bộ lọc cột trái. Hai thứ đó khác nhau và
   // server bơm hướng dẫn theo cái thứ nhất (`sessions.project_id`): mở lại một cuộc cũ thuộc
-  // project A trong khi cột trái đang lọc project B thì Javis vẫn nhận hướng dẫn của A. Chip
+  // project A trong khi cột trái đang lọc project B thì UNI MATE vẫn nhận hướng dẫn của A. Chip
   // mà đọc bộ lọc là nó nói dối đúng vào lúc người dùng cần tin nó nhất.
 
   var PROJ_INSTR_MAX = 4000;       // gương của PROJECT_INSTRUCTIONS_MAX (server/sessions.py)
@@ -290,7 +290,7 @@
     var sid = currentId();
     var loc = curProject();
     var locThat = (loc && loc !== "none") ? loc : "";
-    // Chưa có phiên = khung chat trống. Tin sau sẽ được JavisProjects.claim() gắn vào đúng
+    // Chưa có phiên = khung chat trống. Tin sau sẽ được UniMateProjects.claim() gắn vào đúng
     // project đang lọc, nên chip báo trước điều đó là đúng chứ không phải đoán.
     if (!sid) return locThat;
     if (phienProj.sid === sid) return phienProj.pid;
@@ -484,7 +484,7 @@
     body.querySelector('[data-csp="manage"]').onclick = function (e) {
       e.preventDefault();
       dongChiaSe();
-      try { window.JavisNav.go("share"); } catch (err) {}
+      try { window.UniMateNav.go("share"); } catch (err) {}
     };
   }
 
@@ -578,7 +578,7 @@
   // Dùng lại đúng vỏ ngăn kéo của project (đầu khung, tab, thân) chứ không dựng khung thứ
   // hai: hai danh sách này trông giống nhau, hành xử giống nhau, chỉ khác nguồn dữ liệu.
   //
-  // Danh sách của cuộc trộn HAI nguồn: phần Javis tự dò ra từ tin nhắn (`manual: false`,
+  // Danh sách của cuộc trộn HAI nguồn: phần UNI MATE tự dò ra từ tin nhắn (`manual: false`,
   // không gỡ/ghim được vì nó không phải một bản ghi) và phần người dùng TỰ GẮN (`manual:
   // true`, có id nên đủ nút như bên project). Server lo phần trộn; ở đây chỉ chia nhóm.
   var cuocTS = null;      // {files, links, dangTai, loi} của cuộc đang xem
@@ -739,7 +739,7 @@
   // repo báo 23/09 là dùng nhầm lẫn, gắn một chỗ rồi đi tìm ở chỗ kia. Nay cả hai nút mở
   // cùng một ngăn, trên đầu là công tắc hai phạm vi kèm số lượng, bấm là chuyển.
   var pdCongSu = null;     // {slug, name} khi ngăn kéo mở từ trang Cộng sự; null = không bày công tắc
-  var KHOA_PHAM_VI = "javis_pd_pham_vi";
+  var KHOA_PHAM_VI = "unimate_pd_pham_vi";
 
   function phamViDaNho() {
     try { return localStorage.getItem(KHOA_PHAM_VI) === "cuoc" ? "cuoc" : "agent"; } catch (e) { return "agent"; }
@@ -991,7 +991,7 @@
   }
 
   function hangMuc(o) {
-    // Hàng TỰ DÒ (chỉ có ở chế độ cuộc): Javis suy ra từ tin nhắn chứ không phải một bản ghi,
+    // Hàng TỰ DÒ (chỉ có ở chế độ cuộc): UNI MATE suy ra từ tin nhắn chứ không phải một bản ghi,
     // nên không có id để gỡ hay ghim. Vẫn mở ra đọc được - đó mới là việc chính của nó.
     if (o.tuDong) {
       return '<div class="pd-row' + (o.mat ? " mat" : "") + '" data-path="' + esc(o.duong || "") + '">' +
@@ -1033,7 +1033,7 @@
       "</div>";
   }
 
-  /** Mở một file của project ra đọc. Đường dẫn lưu theo TRẦN duyệt, đúng thứ JavisOpenNoteAt
+  /** Mở một file của project ra đọc. Đường dẫn lưu theo TRẦN duyệt, đúng thứ UniMateOpenNoteAt
    *  nhận, nên gọi thẳng chứ không ghép tiền tố lần nữa. Ba nấc y như chip "file đang mở"
    *  dưới khung chat (app.js reopenPinnedNote): trình sửa đính -> khung sửa bung giữa màn
    *  (điện thoại) -> trang Tệp tin. */
@@ -1041,16 +1041,16 @@
     var ten = f.name || String(f.path || "").split("/").pop();
     closeProjDrawer();          // trình sửa hiện ra SAU ngăn kéo, không đóng thì che mất
     try {
-      if (typeof window.JavisOpenNoteAt === "function" && window.JavisOpenNoteAt(f.path, ten)) return;
+      if (typeof window.UniMateOpenNoteAt === "function" && window.UniMateOpenNoteAt(f.path, ten)) return;
     } catch (e) {}
-    if (typeof window.JavisEditFile === "function") { window.JavisEditFile(f.path); return; }
-    if (typeof window.JavisOpenFiles === "function") window.JavisOpenFiles(f.path);
+    if (typeof window.UniMateEditFile === "function") { window.UniMateEditFile(f.path); return; }
+    if (typeof window.UniMateOpenFiles === "function") window.UniMateOpenFiles(f.path);
   }
 
   function dsFileHtml(p) {
     var fs = p.files || [];
     var laCuoc = pdLaCuoc();
-    // Chế độ cuộc: file người dùng GẮN TAY (có id) đứng trên, file Javis tự dò ra đứng dưới.
+    // Chế độ cuộc: file người dùng GẮN TAY (có id) đứng trên, file UNI MATE tự dò ra đứng dưới.
     // Thứ mình chủ động gắn vào thì phải nằm chỗ mắt nhìn trước, và chỉ nó mới có nút.
     var tuDong = laCuoc ? fs.filter(function (f) { return !f.manual; }) : [];
     var tay = laCuoc ? fs.filter(function (f) { return f.manual; }) : fs;
@@ -1063,7 +1063,7 @@
       return hangMuc({ id: f.id, ten: f.label || f.name || f.path,
                        sub: con ? (laCuoc ? (f.brain_path || f.path) : f.path) : pdT("cts.file_gone"),
                        // Chép đường dẫn TRONG BRAIN (brain_path), không phải đường dẫn tuyệt
-                       // đối trên máy chủ: đó mới là chuỗi mọi nơi khác của Javis nhận vào
+                       // đối trên máy chủ: đó mới là chuỗi mọi nơi khác của UNI MATE nhận vào
                        // (chat, wikilink, tool đọc file).
                        sao: f.brain_path || f.path,
                        icon: f.image ? "image" : icoFile(f.name || f.path), pinned: !!f.pinned,
@@ -1146,7 +1146,7 @@
       var sao = row.querySelector(".pd-sao");
       if (sao) sao.onclick = function (ev) {
         ev.stopPropagation();
-        if (window.JavisCopy) window.JavisCopy(sao.dataset.sao, sao);
+        if (window.UniMateCopy) window.UniMateCopy(sao.dataset.sao, sao);
       };
       // Hàng TỰ DÒ chỉ mang đường dẫn, không có bản ghi nào phía sau để gỡ hay ghim.
       if (!row.dataset.id) {
@@ -1246,7 +1246,7 @@
     var box = pdEl && pdEl.querySelector(".pd-results");
     if (!box || !p) return;
     var theoDuong = {};
-    // Chỉ file GẮN TAY mới đối chiếu được: file Javis tự dò ra không có id nên không gỡ được,
+    // Chỉ file GẮN TAY mới đối chiếu được: file UNI MATE tự dò ra không có id nên không gỡ được,
     // và người dùng vẫn có quyền gắn tay chính nó để ghim hoặc giữ lại.
     (p.files || []).forEach(function (f) { if (f.id) theoDuong[f.path] = f; });
     box.querySelectorAll(".pd-res").forEach(function (r) {
@@ -1377,7 +1377,7 @@
     };
     var veTuDong = function (l) {
       return hangMuc({ tuDong: true, icon: "link", tenHtml: aHtml(l),
-                       sub: l.vai === "user" ? pdT("cts.from_you") : pdT("cts.from_javis"),
+                       sub: l.vai === "user" ? pdT("cts.from_you") : pdT("cts.from_unimate"),
                        sao: l.url, saoTitle: pdT("common.copy_link") });
     };
     if (!ls.length) return '<div class="pd-empty">' + esc(pdT(pdK("links_empty"))) + "</div>";
@@ -1693,7 +1693,7 @@
     var nut = side.querySelector(".cside-new");
     if (nut) nut.onclick = function () {
       if (hamTaoMoi) { hamTaoMoi(); return; }
-      if (window.JavisSessions) window.JavisSessions.new();
+      if (window.UniMateSessions) window.UniMateSessions.new();
       closeDrawerIfNarrow();
     };
     if (!searchEl) return;
@@ -1723,9 +1723,9 @@
     side.querySelectorAll(".cside-pane").forEach(function (p) {
       p.classList.toggle("on", p.dataset.pane === tabHienTai);
     });
-    if (!window.JavisVaultPanel) return;
-    if (tabHienTai === "files" && cayEl) window.JavisVaultPanel.borrow(cayEl);
-    else window.JavisVaultPanel.giveBack();
+    if (!window.UniMateVaultPanel) return;
+    if (tabHienTai === "files" && cayEl) window.UniMateVaultPanel.borrow(cayEl);
+    else window.UniMateVaultPanel.giveBack();
   }
 
   function refresh() {
@@ -1757,7 +1757,7 @@
   }
 
   function openSession(id) {
-    if (window.JavisSessions) window.JavisSessions.open(id);
+    if (window.UniMateSessions) window.UniMateSessions.open(id);
     closeDrawerIfNarrow();
   }
 
@@ -1811,7 +1811,7 @@
       var ch = kenhLoc ? "" : (s.channel || "").toString();
       var chLabel = (kenhLoc && laBot) ? window.t("sess.bot_badge")
         : (ch === "telegram" ? "TG" : (ch && ch !== "web" ? ch.slice(0, 8) : ""));
-      var isRun = !!(window.JavisRunning && window.JavisRunning.has(s.id));
+      var isRun = !!(window.UniMateRunning && window.UniMateRunning.has(s.id));
       // KHÔNG có icon riêng cho từng hội thoại. Hàng nào cũng là một cuộc trò chuyện nên icon
       // ở đây không phân loại được gì, chỉ thêm một nút phải bấm và một hàng nút chật thêm.
       // Icon để PHÂN LOẠI thì nằm ở Project - xem openProjMenu.
@@ -1862,7 +1862,7 @@
       listEl.appendChild(item);
     });
     // GitHub status icon per conversation (0.365.0, github-connect.js). Only chats with GitHub work get one.
-    try { if (window.JavisGithubRepos && window.JavisGithubRepos.decorate) window.JavisGithubRepos.decorate(listEl); } catch (e) {}
+    try { if (window.UniMateGithubRepos && window.UniMateGithubRepos.decorate) window.UniMateGithubRepos.decorate(listEl); } catch (e) {}
     if (hasMore) {
       var more = el('<button class="cside-more" type="button">' + esc(window.t("sess.more", { so: PAGE })) + '</button>');
       more.onclick = function () { shown += PAGE; loadList(); };
@@ -1905,7 +1905,7 @@
   async function delSession(s) {
     if (!confirm(window.t("sess.del_q", { ten: s.title || s.preview || window.t("sess.untitled") }))) return;
     try { await fetch("/sessions/" + encodeURIComponent(s.id) + "/delete", { method: "POST" }); } catch (e) {}
-    if (s.id === currentId() && window.JavisSessions) window.JavisSessions.new();
+    if (s.id === currentId() && window.UniMateSessions) window.UniMateSessions.new();
     refresh();
   }
 
@@ -1959,7 +1959,7 @@
     loadList();
   }
 
-  window.JavisChatSide = { mount: mount, refresh: refresh, tab: chonTab,
+  window.UniMateChatSide = { mount: mount, refresh: refresh, tab: chonTab,
                            chip: renderProjChip, moKhung: openProjDrawer,
                            moKhungCuoc: openCuocDrawer,
                            // Trang Cộng sự mở đúng ngăn kéo này cho MỘT trợ lý (nút "File &
@@ -1974,7 +1974,7 @@
   // Cầu nối cho app.js: hội thoại VỪA được mint id trong lúc đang mở một project thì tự rơi
   // vào project đó. Phải gắn nhãn ngay tại lúc bấm gửi vì id sinh ở phía client, còn hàng
   // trong DB thì tới lượt server xử lý mới có - endpoint tự tạo hàng khi nhận kèm brain.
-  window.JavisProjects = {
+  window.UniMateProjects = {
     current: curProject,
     claim: function (sid) {
       var p = curProject();
@@ -1985,11 +1985,11 @@
   };
 
   // Cập nhật khi có lượt chat mới / đổi phiên / đổi brain
-  window.addEventListener("javis:sessions-changed", refresh);
+  window.addEventListener("unimate:sessions-changed", refresh);
   // Chip phải tự sống KHÔNG phụ thuộc cột trái: refresh() thoát sớm khi chưa mount sidebar,
-  // mà chip còn đứng ở màn Javis nơi cột đó chưa bao giờ mount. Đổi phiên là đổi project có
+  // mà chip còn đứng ở màn UNI MATE nơi cột đó chưa bao giờ mount. Đổi phiên là đổi project có
   // hiệu lực, nên bỏ cache rồi vẽ lại.
-  window.addEventListener("javis:sessions-changed", function () {
+  window.addEventListener("unimate:sessions-changed", function () {
     quenPhienProj();
     renderProjChip();
   });
@@ -1998,7 +1998,7 @@
   });
   // Đổi ngôn ngữ giao diện: phần khung dựng MỘT lần (nút đóng, nút đổi tên) không tự vẽ lại
   // như thân khung, nên bỏ hẳn node đi để lần mở sau dựng lại bằng từ điển mới.
-  window.addEventListener("javis:i18n", function () {
+  window.addEventListener("unimate:i18n", function () {
     // Sidebar có thể đã dựng trước khi từ điển tải xong. Các nhãn cố định mang data-i18n
     // được applyDom cập nhật; project và danh sách là dữ liệu động nên vẽ lại tại đây.
     if (side) {
@@ -2036,8 +2036,8 @@
       if (lbl) lbl.textContent = window.t("sess.hist");
     }
     veNhanBtn();
-    window.addEventListener("javis:i18n", veNhanBtn);
-    btn.onclick = function () { if (window.JavisChatStage) window.JavisChatStage.showSide(); };
+    window.addEventListener("unimate:i18n", veNhanBtn);
+    btn.onclick = function () { if (window.UniMateChatStage) window.UniMateChatStage.showSide(); };
     var host = document.querySelector(".hud-actions");
     (host || document.body).appendChild(btn);
     // Prefetch danh sách sau khi cockpit đã yên: bấm Lịch sử lần đầu là có sẵn dữ liệu.

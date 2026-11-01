@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Javis OS - watchdog cho Mac chạy dưới launchd.
+# UNI MATE - watchdog cho Mac chạy dưới launchd.
 #
 # Vì sao có file này: vụ treo 14/08/2026. Server SỐNG (vẫn giữ cổng 7777, kernel vẫn nhận
 # TCP) nhưng event loop đông cứng - /health không trả lời, SIGTERM bị phớt, phải kill -9.
@@ -8,35 +8,35 @@
 # này gọi /health mỗi phút; hỏng NGUONG lần liên tiếp thì `launchctl kickstart -k` - launchd
 # tự hạ tiến trình cũ (SIGKILL nếu lì) rồi bật bản mới, không cần ai gõ tay lúc 4h sáng.
 #
-#   ./watchdog.sh install     cài LaunchAgent com.javis.watchdog (chạy check mỗi 60 giây)
+#   ./watchdog.sh install     cài LaunchAgent com.unimate.watchdog (chạy check mỗi 60 giây)
 #   ./watchdog.sh uninstall   gỡ LaunchAgent
 #   ./watchdog.sh check       một nhát kiểm tra (launchd gọi định kỳ; chạy tay cũng được)
 #   ./watchdog.sh status      đang cài chưa + đếm hỏng + mấy dòng log cuối
 #
-# Cấu hình qua env hoặc .env cùng thư mục: JAVIS_PORT (7777), JAVIS_LAUNCHD_LABEL
-# (com.javis.os), JAVIS_STATE_DIR (./server), JAVIS_WATCHDOG_FAILS (3).
+# Cấu hình qua env hoặc .env cùng thư mục: UNIMATE_PORT (7777), UNIMATE_LAUNCHD_LABEL
+# (com.unimate.os), UNIMATE_STATE_DIR (./server), UNIMATE_WATCHDOG_FAILS (3).
 # ============================================================================
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-# Đọc .env như update.sh: nhiều bản Javis trên một máy thì mỗi bản một cổng/nhãn riêng.
+# Đọc .env như update.sh: nhiều bản UNI MATE trên một máy thì mỗi bản một cổng/nhãn riêng.
 # Env truyền vào thắng .env (`:=` chỉ gán khi biến chưa đặt).
 if [ -f .env ]; then
   _env() { sed -n "s/^[[:space:]]*$1[[:space:]]*=[[:space:]]*//p" .env | tail -1; }
-  : "${JAVIS_PORT:=$(_env JAVIS_PORT)}"
-  : "${JAVIS_LAUNCHD_LABEL:=$(_env JAVIS_LAUNCHD_LABEL)}"
-  : "${JAVIS_STATE_DIR:=$(_env JAVIS_STATE_DIR)}"
+  : "${UNIMATE_PORT:=$(_env UNIMATE_PORT)}"
+  : "${UNIMATE_LAUNCHD_LABEL:=$(_env UNIMATE_LAUNCHD_LABEL)}"
+  : "${UNIMATE_STATE_DIR:=$(_env UNIMATE_STATE_DIR)}"
 fi
-PORT="${JAVIS_PORT:-7777}"
-LABEL="${JAVIS_LAUNCHD_LABEL:-com.javis.os}"
-STATE_DIR="${JAVIS_STATE_DIR:-$PWD/server}"
+PORT="${UNIMATE_PORT:-7777}"
+LABEL="${UNIMATE_LAUNCHD_LABEL:-com.unimate.os}"
+STATE_DIR="${UNIMATE_STATE_DIR:-$PWD/server}"
 TARGET="gui/$(id -u)/$LABEL"
-NGUONG="${JAVIS_WATCHDOG_FAILS:-3}"
+NGUONG="${UNIMATE_WATCHDOG_FAILS:-3}"
 DEM_FILE="$STATE_DIR/watchdog-fails"
 LOG="$STATE_DIR/watchdog.log"
-PLIST="$HOME/Library/LaunchAgents/com.javis.watchdog.plist"
+PLIST="$HOME/Library/LaunchAgents/com.unimate.watchdog.plist"
 # Lệnh kick tách ra biến để test thay bằng `echo` được - còn lại không ai cần đổi.
-KICK_CMD="${JAVIS_WATCHDOG_KICK_CMD:-launchctl kickstart -k $TARGET}"
+KICK_CMD="${UNIMATE_WATCHDOG_KICK_CMD:-launchctl kickstart -k $TARGET}"
 
 ghi() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
@@ -91,7 +91,7 @@ install() {
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-  <key>Label</key><string>com.javis.watchdog</string>
+  <key>Label</key><string>com.unimate.watchdog</string>
   <key>ProgramArguments</key><array>
     <string>/bin/bash</string>
     <string>$PWD/watchdog.sh</string>
@@ -103,20 +103,20 @@ install() {
   <key>StandardErrorPath</key><string>$STATE_DIR/watchdog.log</string>
 </dict></plist>
 EOF
-  launchctl bootout "gui/$(id -u)/com.javis.watchdog" 2>/dev/null || true
+  launchctl bootout "gui/$(id -u)/com.unimate.watchdog" 2>/dev/null || true
   launchctl bootstrap "gui/$(id -u)" "$PLIST"
   ghi "đã cài: kiểm /health cổng $PORT mỗi 60 giây, $NGUONG lần hỏng liên tiếp → kickstart $TARGET"
   ghi "log tại: $LOG"
 }
 
 uninstall() {
-  launchctl bootout "gui/$(id -u)/com.javis.watchdog" 2>/dev/null || true
+  launchctl bootout "gui/$(id -u)/com.unimate.watchdog" 2>/dev/null || true
   rm -f "$PLIST"
-  echo "đã gỡ watchdog (com.javis.watchdog)."
+  echo "đã gỡ watchdog (com.unimate.watchdog)."
 }
 
 status() {
-  if launchctl print "gui/$(id -u)/com.javis.watchdog" >/dev/null 2>&1; then
+  if launchctl print "gui/$(id -u)/com.unimate.watchdog" >/dev/null 2>&1; then
     echo "watchdog ĐANG chạy: kiểm /health cổng $PORT mỗi 60 giây, ngưỡng $NGUONG lần → kickstart $TARGET"
   else
     echo "watchdog CHƯA cài. Cài bằng: ./watchdog.sh install"

@@ -155,7 +155,7 @@ def block(listed: List[str], loaded: List[str], folder: str, tools: bool = False
         # 0.271.0: PDF, Word and Excel go through the hub reader (doc_text), never through shell commands a gated team
         # has to approve one by one (customer report, codes 5 and 22).
         how = ("Lượt làm việc này có công cụ: mở thẳng file theo đường dẫn khi cần đọc hết hay sửa; phần nạp sẵn bên dưới "
-               "chỉ là bản đọc nhanh. File PDF, Word (.docx), Excel (.xlsx): đọc bằng tool javis_read_file (Javis bóc sẵn "
+               "chỉ là bản đọc nhanh. File PDF, Word (.docx), Excel (.xlsx): đọc bằng tool unimate_read_file (UNI MATE bóc sẵn "
                "chữ, mọi sheet, giá trị công thức và ô lỗi), ĐỪNG viết lệnh shell để giải nén hay chuyển đổi file. Trang PDF "
                "scan không có lớp chữ thì nói rõ trang nào chưa đọc được. Ảnh thì đọc tài liệu \"mô tả ảnh\" đi kèm hay mở "
                "ảnh nếu engine của bạn xem được ảnh."

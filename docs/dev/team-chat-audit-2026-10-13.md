@@ -12,7 +12,7 @@ Thiết kế dùng biên bản này: [2026-10-13-team-chat-design.md](../superpo
 
 ## 1. Kết luận ngắn
 
-- **Javis chưa có nhóm chat nội bộ.**
+- **UNI MATE chưa có nhóm chat nội bộ.**
   - Không có bảng nhóm hay thành viên. Một phiên chỉ gắn một agent (`sessions.channel`, `workflow_chat.persona_cua_phien`).
   - Tin nhắn chỉ có `role`, không có người gửi (`server/sessions.py:101-108`).
   - Dashboard chưa có @mention.
@@ -40,7 +40,7 @@ Thiết kế dùng biên bản này: [2026-10-13-team-chat-design.md](../superpo
 | Mã bền | `resonance_agents.agent_key` (`resonance_store.py:124-129`); `_insert_agent` (490) nhận `enabled=False`; `agent_set_enabled` (538) chỉ tạo mã ở lần bật đầu | Thật nhưng lười | Mã thành viên nhóm | Agent chưa từng bật Cộng hưởng không có mã |
 | Xoá rồi tạo lại cùng slug | `delete_agent` chỉ xoá file rồi `agent_retire` | Thật | | Bộ nhớ `memory/agents/<slug>/`, phiên `agent:<slug>`, gắn chatbot đi theo slug nên agent mới thừa hưởng. Chỉ Cộng hưởng tách được nhờ mã mới và phiên ghim mã (`session_agent` 606) |
 | Tag | `agent_tags.py`; `/capability/meta`, `/agents/tags/rename`, `/agents/tags/delete`; khoá `_AGENT_META_LOCK` | Thật | Lọc khi chọn thành viên | Không cấp quyền gì (đã kiểm: không dùng trong lời nhắc, cổng Cộng hưởng, chọn reviewer hay Kanban) |
-| Lời nhắc và bộ nhớ agent | `_agent_sysprompt` (9566), `_agent_chat_prompt` (9658), `_ket_luot_agent` (9680): `JAVIS_RULE` vào "Luật chủ dặn" chỉ khi chủ vừa nói trong lượt; `JAVIS_LESSON` giữ 15 dòng | Thật | Lượt của từng thành viên | Không có khối ngữ cảnh nhóm |
+| Lời nhắc và bộ nhớ agent | `_agent_sysprompt` (9566), `_agent_chat_prompt` (9658), `_ket_luot_agent` (9680): `UNIMATE_RULE` vào "Luật chủ dặn" chỉ khi chủ vừa nói trong lượt; `UNIMATE_LESSON` giữ 15 dòng | Thật | Lượt của từng thành viên | Không có khối ngữ cảnh nhóm |
 
 ## 3. Phiên, tin nhắn, WebSocket
 

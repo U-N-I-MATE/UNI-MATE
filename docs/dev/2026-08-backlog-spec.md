@@ -1,6 +1,6 @@
 # Spec: 10 ý tưởng trong sổ tay phát triển (08/2026)
 
-Chốt cách làm cho 10 ý ghi trong sổ "Ý tưởng phát triển Javis" ngày 2026-08-04, rồi làm luôn.
+Chốt cách làm cho 10 ý ghi trong sổ "Ý tưởng phát triển UNI MATE" ngày 2026-08-04, rồi làm luôn.
 Tài liệu này là **hồ sơ quyết định**: đọc để biết vì sao mỗi ý được làm theo cách đang thấy
 trong mã, và vì sao ba trong số đó hoá ra dễ hơn hẳn cái sổ tưởng.
 
@@ -24,7 +24,7 @@ Sổ tay ghi ba ý kèm câu "chưa biết có làm được không". Đào th�
 ## Quy tắc chung khi làm 10 ý này
 
 - **Không dựng bản thứ hai của thứ đã có.** Đây là bài học 0.15.0 và 0.15.1 (cây Vault) và
-  0.17.0 (Javis CLI). Ba ý trong đợt này bị nó chi phối trực tiếp: ý 7 và 8 mượn lại trình sửa
+  0.17.0 (UNI MATE CLI). Ba ý trong đợt này bị nó chi phối trực tiếp: ý 7 và 8 mượn lại trình sửa
   và cây Vault sẵn có, ý 10 mượn lại đúng khối phân trang đã viết cho trang Việc định kỳ.
 - **Cột mới trong SQLite phải có migration.** `CREATE TABLE IF NOT EXISTS` không thêm cột cho
   DB cũ. `sessions.py` đã có sẵn vòng `ALTER TABLE ... ADD COLUMN` cho việc này, cột mới đi
@@ -35,7 +35,7 @@ Sổ tay ghi ba ý kèm câu "chưa biết có làm được không". Đào th�
 
 ## 1. Tích hợp MCP NotebookLM
 
-**Vấn đề.** Muốn hỏi Javis về nội dung đang nằm trong NotebookLM (nguồn, ghi chú, chat của
+**Vấn đề.** Muốn hỏi Uni về nội dung đang nằm trong NotebookLM (nguồn, ghi chú, chat của
 notebook) mà không phải mở trình duyệt copy sang.
 
 **Quyết định.** Thêm connector `notebooklm` vào `system/mcp-catalog.json`, chạy server MCP
@@ -61,7 +61,7 @@ sẵn có của `notebooklm-py` qua `uvx`. Không viết wrapper.
 
 **Chỗ chạm.** `system/mcp-catalog.json` (thêm 1 connector), `docs/09-mcp-va-so-lieu.md`.
 
-**Không làm.** Không tự cài `notebooklm-py` vào `requirements.txt` của Javis: nó chạy trong
+**Không làm.** Không tự cài `notebooklm-py` vào `requirements.txt` của UNI MATE: nó chạy trong
 tiến trình con do `uvx` dựng, kéo vào lõi là thêm `fastmcp` + `playwright` cho một thứ đa số
 người dùng không đấu.
 
@@ -99,7 +99,7 @@ Ba hướng không loại trừ nhau: 1 và 2 ghép được, 3 nên tách hẳn
 ## 3. Gửi tin nhắn Zalo kèm ảnh
 
 **Vấn đề.** `zalo_send_message` của `zalo-agent-cli` chỉ nhận `text`. Muốn gửi ảnh (vd ảnh
-Javis vừa tạo, ảnh báo cáo) thì phải tự tay mở Zalo.
+UNI MATE vừa tạo, ảnh báo cáo) thì phải tự tay mở Zalo.
 
 **Quyết định.** Viết plugin bundled `zalo-image` phơi tool `zalo_send_image`, gọi CLI
 `zalo-agent-cli msg send-image` bằng **đúng home cô lập của kết nối Zalo đang đăng nhập**.
@@ -111,7 +111,7 @@ Javis vừa tạo, ảnh báo cáo) thì phải tự tay mở Zalo.
   phải merge tay.
 - *Gọi thẳng zca-js từ Python*: không có, zca-js là thư viện Node.
 - *Gọi CLI có sẵn*: chính `zalo-agent-cli` đã có lệnh `msg send-image <threadId> <paths...>`
-  hoạt động đúng bằng cách Javis cần. Phiên đăng nhập nằm trong thư mục HOME
+  hoạt động đúng bằng cách UNI MATE cần. Phiên đăng nhập nằm trong thư mục HOME
   (`STATE_DIR/connector-home/zalo-*`, xem `server/zalo_login.py:157`), và `mcp_store` đã đặt
   `HOME` theo `config.home_dir` khi chạy MCP (`server/mcp_store.py:424`). Nên chỉ cần đặt lại
   đúng biến đó cho tiến trình con là dùng chung phiên, không đăng nhập lại, không quét QR lại.
@@ -197,7 +197,7 @@ GET    /sessions?...&project=      lọc theo project
 - Thanh Project trên đầu cột trái: nút chọn project đang mở, nút tạo project, đổi tên, đổi
   icon, xoá.
 - Đang mở project thì danh sách lọc theo nó, và **chat mới tạo tự gắn project đó** qua
-  `window.JavisProjects.claim(sid)` mà `app.js` gọi ngay sau khi mint id.
+  `window.UniMateProjects.claim(sid)` mà `app.js` gọi ngay sau khi mint id.
 - Mỗi mục hội thoại: icon (nếu có) + tên; hover ra hàng nút ghim / icon / đổi tên / xoá.
 - Bộ chọn icon là một popover hiện **toàn bộ icon Lucide app đã vendor**, kèm ô lọc theo tên
   và nút Xoá icon. **Không dùng emoji** - chủ repo chốt ngày 2026-08-04. Lý do đúng và đáng
@@ -246,7 +246,7 @@ luật đã áp cho wikilink từ trước. Muốn sửa chữ của link thì b
   giữ nguyên đường cũ.
 - CSS `cursor: pointer` cho link trong `.ne-wys` và `.jvfe-prev`, để hover là biết bấm được.
 - **Cây tự sổ**: `_vtRevealInTree(path)` đã tồn tại từ 0.15.0 (nút "Vị trí" của khung tìm
-  kiếm, `dashboard/console.js:5016`). Phơi nó ra thành `window.JavisRevealInTree` và gọi mỗi
+  kiếm, `dashboard/console.js:5016`). Phơi nó ra thành `window.UniMateRevealInTree` và gọi mỗi
   khi điều hướng tới một file bằng link. Không viết cơ chế sổ cây thứ hai.
 
 **Trạng thái.** Đã làm.
@@ -263,16 +263,16 @@ Hai đường vào cùng một file, hai bộ mặt.
 
 **Thiết kế.**
 
-- `chat-render.js` gọi `window.JavisOpenNote(rel)` thay cho `window.JavisEditFile(rel)`.
+- `chat-render.js` gọi `window.UniMateOpenNote(rel)` thay cho `window.UniMateEditFile(rel)`.
   `openNote` tự biết: đang ở trang Trò chuyện thì mượn `#chatPageEdit` (chiếm chỗ khung chat),
   ở màn chính thì nổi lên trên visual não - chỗ đó rỗng nên đè là hợp lý.
-- **Fallback theo đúng thứ tự**: màn hẹp (dưới 860px) hoặc `JavisOpenNote` chưa nạp thì giữ
+- **Fallback theo đúng thứ tự**: màn hẹp (dưới 860px) hoặc `UniMateOpenNote` chưa nạp thì giữ
   popup cũ. Màn hẹp không đủ chỗ cho khung dính, và popup vốn đã có `@media` riêng cho nó.
 - **Loại file không sửa được** (pdf, docx, zip...) thì `openNote` đã có sẵn nhánh
   `_neRenderDownload`: hiện thẻ file kèm nút Mở tab mới và Tải về. Đúng yêu cầu "fallback
   hiện trạng thái đang tải, hoặc cho xem như file bình thường trên trình duyệt", và không phải
   viết gì thêm.
-- `JavisOpenNote` đang từ chối chạy trên màn hẹp kèm toast "sửa note trên điện thoại đã tắt".
+- `UniMateOpenNote` đang từ chối chạy trên màn hẹp kèm toast "sửa note trên điện thoại đã tắt".
   Lý do gốc là chạm nhầm node đồ thị, không áp cho việc bấm một link có chủ đích. Nhưng vì
   chat-render đã chặn màn hẹp từ trước khi gọi, không cần đụng vào luật đó.
 

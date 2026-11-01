@@ -33,15 +33,15 @@ check("merged with a red post-merge check carries the warning class and text",
 check("secondary marks have labels", ["waiting_ci", "waiting_review", "stuck"].every(s => vi["gh.sub_" + s] && en["gh.sub_" + s]));
 const sess = read("dashboard/sessions-ui.js");
 check("the chat list rows carry their session id and ask for GitHub icons",
-  /item\.setAttribute\("data-sid", s\.id\)/.test(sess) && /JavisGithubRepos\.decorate\(listEl\)/.test(sess));
+  /item\.setAttribute\("data-sid", s\.id\)/.test(sess) && /UniMateGithubRepos\.decorate\(listEl\)/.test(sess));
 check("the module loads after composer-folder.js",
   html.indexOf("/static/composer-folder.js") !== -1 && html.indexOf("/static/composer-folder.js") < html.indexOf("/static/github-connect.js"));
 check("the Connections page always mounts the GitHub card, first in the connected list",
   consoleJs.indexOf('id="mcpGithub"') !== -1 && consoleJs.indexOf('id="mcpGithub"') < consoleJs.indexOf('id="connList"')
-  && /JavisGithubRepos\.mount\(document\.getElementById\("mcpGithub"\)\)/.test(consoleJs));
+  && /UniMateGithubRepos\.mount\(document\.getElementById\("mcpGithub"\)\)/.test(consoleJs));
 check("the + menu gets a GitHub repo item right after the pinned folder (order 25)", /register\(\{ id: "github", order: 25/.test(js));
 check("app.js attaches held repos after the pin, before the first turn",
-  /_pinWait = \(_pinWait \|\| Promise\.resolve\(\)\)\.then\(\(\) => window\.JavisGithubRepos\.claimPending/.test(app));
+  /_pinWait = \(_pinWait \|\| Promise\.resolve\(\)\)\.then\(\(\) => window\.UniMateGithubRepos\.claimPending/.test(app));
 check("the token field is cleared after a submit", /data-f="token"\]'\)\.value = ""/.test(js));
 check("the card never asks the server for the token back", !/token\s*:\s*st\./.test(js));
 check("no em dash in the module", js.indexOf("\u2014") === -1 && js.indexOf("\u2013") === -1);
@@ -53,7 +53,7 @@ check("no em dash in the module", js.indexOf("\u2014") === -1 && js.indexOf("\u2
     card.includes("data-gh-repos") && card.includes("gh.repos_n") && !card.includes("data-gh-remove"));
   const pop = js.slice(js.indexOf("function openRepos"), js.indexOf("// Local check commands"));
   check("the popup carries every repo action and comes back from Checks and Numbers",
-    /JavisConnModal/.test(pop) && pop.includes("reposHtml(local)") && pop.includes('openChecks(b.getAttribute("data-gh-checks"), back)') && pop.includes('openMetrics(b.getAttribute("data-gh-metrics"), back)'));
+    /UniMateConnModal/.test(pop) && pop.includes("reposHtml(local)") && pop.includes('openChecks(b.getAttribute("data-gh-checks"), back)') && pop.includes('openMetrics(b.getAttribute("data-gh-metrics"), back)'));
 }
 
 // 0.368.0 (owner, 28/10/2026, after Claude Code's picker): the chip and + menu open "Change repo / Change branch";

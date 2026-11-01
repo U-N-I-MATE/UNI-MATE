@@ -13,7 +13,7 @@ check("parse: /notes hello", (() => { const r = S.parseSlash("/notes hello"); re
 check("parse: /notes tron -> arg rong", (() => { const r = S.parseSlash("/notes"); return r && r.cmd === "notes" && r.arg === ""; })());
 check("parse: chu HOA -> thuong", (() => { const r = S.parseSlash("/Notes X"); return r && r.cmd === "notes" && r.arg === "X"; })());
 check("parse: dau / tron -> null", S.parseSlash("/") === null);
-check("parse: khong phai lenh -> null", S.parseSlash("chao Javis") === null);
+check("parse: khong phai lenh -> null", S.parseSlash("chao UNI MATE") === null);
 check("parse: khoang trang dau -> null", S.parseSlash("  /notes") === null);
 check("parse: arg nhieu dong giu nguyen", (() => { const r = S.parseSlash("/notes dong1\ndong2"); return r && r.arg === "dong1\ndong2"; })());
 

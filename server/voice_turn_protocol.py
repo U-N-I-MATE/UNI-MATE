@@ -20,14 +20,14 @@ def answer_complete(message):
     if not message or message['role'] != 'assistant' or message.get('tool_calls'):
         return False
     text = str(message.get('content') or '').lower().strip()
-    if re.search(r'[?？]|javis_ask|xác nhận|đồng ý|muốn|cần|không|em có thể|cho phép|hãy|vui lòng|nhé|chọn|confirm|would you|do you', text):
+    if re.search(r'[?？]|unimate_ask|xác nhận|đồng ý|muốn|cần|không|em có thể|cho phép|hãy|vui lòng|nhé|chọn|confirm|would you|do you', text):
         return False
     # Free MVP has no general semantic intent classifier. Only reviewed, complete
     # definitions qualify. A prefix plus arbitrary model prose is NOT trusted intent.
     definitions = {
         'thời gian chờ là khoảng nghỉ trước khi gửi câu nói',
         'thời gian chờ là một khoảng nghỉ',
-        'điều này có nghĩa là javis đợi bạn nói hết câu trước khi trả lời',
+        'điều này có nghĩa là unimate đợi bạn nói hết câu trước khi trả lời',
         'response timing is the pause before sending your utterance',
     }
     normalized = re.sub(r'\s+', ' ', normalize(text))
@@ -72,7 +72,7 @@ def commit(store, sid, uid, text, requested='auto', continuation_of=''):
 
 def note_answer(store, mid, raw_answer):
     # Inspect BEFORE control blocks are stripped. A declarative answer followed by
-    # JAVIS_ASK is still a question, even when the readable stored text looks complete.
+    # UNIMATE_ASK is still a question, even when the readable stored text looks complete.
     intent='answer_complete' if answer_complete({'role':'assistant','content':raw_answer}) else 'unknown'
     def write(conn):
         _schema(conn)

@@ -3,7 +3,7 @@
    Owner, 16/10/2026: the memory list left the settings column, memory is handled in chat. So when a turn saves,
    changes or forgets a memory, the server pushes one small line into the chat (server/memory_receipt.py) carrying
    a hidden block:
-       <!-- JAVIS_NHO: {"brain": "<brain key>", "items": [{"slug", "title", "act": "new|updated|forgot"}]} -->
+       <!-- UNIMATE_NHO: {"brain": "<brain key>", "items": [{"slug", "title", "act": "new|updated|forgot"}]} -->
    This file takes the block out and draws the line: what was kept, and for a NEW memory an Undo button that
    forgets it (POST /memory/forget, so it is not learnt again). The block is part of the stored message, so a
    refresh draws the same line.
@@ -12,7 +12,7 @@
 (function () {
   "use strict";
 
-  var RE = /<!--\s*JAVIS_NHO:\s*([\s\S]*?)\s*-->\s*/;
+  var RE = /<!--\s*UNIMATE_NHO:\s*([\s\S]*?)\s*-->\s*/;
   var ACTS = { "new": "nho.saved", updated: "nho.updated", forgot: "nho.forgot" };
 
   function tw(khoa, bien) {
@@ -75,7 +75,7 @@
     });
   }
 
-  /* Draws one pushed message (.msg-javis) as the receipt line instead of a chat bubble. */
+  /* Draws one pushed message (.msg-unimate) as the receipt line instead of a chat bubble. */
   function ve(msgEl, nho) {
     if (!msgEl || !nho) return msgEl;
     msgEl.classList.add("msg-nho");
@@ -90,6 +90,6 @@
   }
 
   var API = { tach: tach, ve: ve, lineHtml: lineHtml };
-  if (typeof window !== "undefined") window.JavisNho = API;
+  if (typeof window !== "undefined") window.UniMateNho = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 })();

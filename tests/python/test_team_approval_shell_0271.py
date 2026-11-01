@@ -13,9 +13,9 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-shell-")
-STATE = Path(os.environ["JAVIS_STATE_DIR"])
-os.environ.setdefault("JAVIS_NO_REAL_TEAM_ENGINE", "1")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-shell-")
+STATE = Path(os.environ["UNIMATE_STATE_DIR"])
+os.environ.setdefault("UNIMATE_NO_REAL_TEAM_ENGINE", "1")
 
 import sessions  # noqa: E402
 import task_store  # noqa: E402
@@ -34,7 +34,7 @@ def check(name, cond, extra=""):
 
 
 def directive(**op):
-    return f"\n<!-- JAVIS_TEAM: {json.dumps(op, ensure_ascii=False)} -->"
+    return f"\n<!-- UNIMATE_TEAM: {json.dumps(op, ensure_ascii=False)} -->"
 
 
 def run(coro):
@@ -125,9 +125,9 @@ lbl = team_gate.native_label("PowerShell", {"command": CMD})
 check("unit: the label carries the command, shortened on one line",
       lbl.startswith("PowerShell: $wb = ") and len(lbl) <= len("PowerShell: ") + team_gate.LABEL_COMMAND_MAX
       and lbl.endswith("…") and "\n" not in lbl, lbl)
-check("unit: declared PowerShell, Bash, Write, WebFetch and outside MCP tools are native; javis hub tools are not",
+check("unit: declared PowerShell, Bash, Write, WebFetch and outside MCP tools are native; unimate hub tools are not",
       all(team_gate.is_native(t) for t in ("PowerShell", "Bash", "Write", "WebFetch", "mcp__gmail__send"))
-      and not team_gate.is_native("mcp__javis__zalo_send_message") and not team_gate.is_native("zalo_send_message"))
+      and not team_gate.is_native("mcp__unimate__zalo_send_message") and not team_gate.is_native("zalo_send_message"))
 
 # ═════ 2. A PowerShell call blocked by the gate, approved, rerun with another timeout ═════
 r, tm, ts, ss, fake, T = world("ps-gate")

@@ -47,8 +47,8 @@
   ];
   // Tiểu từ đuôi / xưng hô không mang nghĩa lệnh: "khoan đã nhé", "đợi chút nào".
   var PARTICLES = ["nhé", "nha", "nhá", "đã", "đi", "chút", "xíu", "tí", "nào", "ạ", "với", "please",
-                   "javis", "ơi", "nghen", "nhen", "hen", "đây", "cái"];
-  var LEAD = ["javis ơi", "ê javis", "này javis", "javis", "ơi", "ê", "này", "hey javis", "hey", "ok javis"];
+                   "uni", "unimate", "ơi", "nghen", "nhen", "hen", "đây", "cái"];
+  var LEAD = ["uni ơi", "ê uni", "này uni", "uni", "unimate", "ơi", "ê", "này", "hey uni", "hey", "ok uni"];
 
   // Câu kết bằng một trong các từ này thì rất có thể người dùng còn nói tiếp. Nhóm cuối là
   // tiếng ậm ừ lúc đang NGHĨ ("ừm", "ờ", "kiểu", "cái"): dừng để nghĩ, không phải dừng hẳn (V3,
@@ -156,7 +156,7 @@
     this.background = 0;
     this.slow = false;
     this.deferred = [];
-    this.interruptedAt = "";   // câu Javis đọc tới lúc bị ngắt, đi vào tin kế tiếp
+    this.interruptedAt = "";   // câu UNI MATE đọc tới lúc bị ngắt, đi vào tin kế tiếp
     this.history = [];
     this.turnAt = 0;           // mốc ms lượt hiện tại bắt đầu xử lý (V3: câu tiến độ)
     this.spoke = false;        // lượt này đã có chữ THẬT ra loa chưa
@@ -188,8 +188,8 @@
 
   VoiceTurn.prototype.delayFor = function (text) {
     // Một tiếng gọi tên thường là mở đầu câu ra lệnh. Chờ thêm một nhịp để không gửi
-    // riêng "Javis" trước khi người dùng nói tiếp; vẫn đáp nếu họ chỉ gọi tên.
-    if (/^(javis|jarvis)( ơi)?$/.test(normalize(text))) return this.opts.maxDelay;
+    // riêng "UNI MATE" trước khi người dùng nói tiếp; vẫn đáp nếu họ chỉ gọi tên.
+    if (/^(uni|unimate|uni mate)( ơi)?$/.test(normalize(text))) return this.opts.maxDelay;
     return looksUnfinished(text) ? this.opts.maxDelay : this.opts.minDelay;
   };
 
@@ -226,7 +226,7 @@
       return acts.concat(this._recompute());
     }
     if (isStopPhrase(t)) {
-      // "thôi / dừng lại" chỉ làm Javis IM (0.65.28): lượt đang chạy vẫn viết nốt câu trả lời vào
+      // "thôi / dừng lại" chỉ làm UNI MATE IM (0.65.28): lượt đang chạy vẫn viết nốt câu trả lời vào
       // khung chat. Chủ dự án chốt 02/10: trong cuộc gọi, lượt chỉ dừng khi bấm lại nút mic.
       if (this.speaking) { this.speaking = false; }
       acts.push({ type: "stop_tts" });
@@ -284,7 +284,7 @@
     return this._recompute();
   };
 
-  // Bộ rình RMS đủ 500 ms tiếng nói trong lúc Javis đang đọc.
+  // Bộ rình RMS đủ 500 ms tiếng nói trong lúc UNI MATE đang đọc.
   VoiceTurn.prototype.bargeStart = function () {
     if (!this.speaking || this.interrupted) return [];
     this.interrupted = true;
@@ -313,7 +313,7 @@
     this.speaking = false;
     this.userSpeaking = true;
     if (spokenPrefix) this.interruptedAt = String(spokenPrefix);
-    // Cắt lời chỉ làm Javis IM, KHÔNG dừng lượt đang chạy (0.65.28). Trước đây cắt lời là dừng
+    // Cắt lời chỉ làm UNI MATE IM, KHÔNG dừng lượt đang chạy (0.65.28). Trước đây cắt lời là dừng
     // luôn lượt, và chủ dự án báo 02/10: nói chen một câu là "Đã dừng lượt này", mô hình bị cắt
     // liên tục. Nay lượt viết nốt câu trả lời vào khung chat (stop_tts đánh dấu phần còn lại không
     // đọc), câu người dùng vừa nói xếp hàng ở app.js và đi sau khi lượt xong.
@@ -370,6 +370,6 @@
     normalize: normalize, coreOf: coreOf,
     isWaitPhrase: isWaitPhrase, isStopPhrase: isStopPhrase, looksUnfinished: looksUnfinished
   };
-  if (typeof window !== "undefined") window.JavisVoiceTurn = api;
+  if (typeof window !== "undefined") window.UniMateVoiceTurn = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

@@ -12,9 +12,9 @@ import os
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-timkenh-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
-os.environ["JAVIS_SESSIONS_DB"] = str(Path(_TMP) / "conv.db")
+_TMP = tempfile.mkdtemp(prefix="unimate-timkenh-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
+os.environ["UNIMATE_SESSIONS_DB"] = str(Path(_TMP) / "conv.db")
 
 import sessions  # noqa: E402
 

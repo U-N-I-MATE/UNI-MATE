@@ -3,18 +3,18 @@
     python tests/run.py project_vao_prompt      (KHÔNG mạng, không spawn engine)
 
 Đợt 1 dựng kho. Đợt này là chỗ Project thôi làm cái nhãn lọc giao diện và bắt đầu đổi hành xử
-của Javis. Hai quyết định đi KHÁC spec, cả hai đều vì cùng một lý do: một tính năng nửa vời
+của UNI MATE. Hai quyết định đi KHÁC spec, cả hai đều vì cùng một lý do: một tính năng nửa vời
 tệ hơn không có, vì người dùng tin là nó đang chạy.
 
 1. GHIM FILE = NẠP NỘI DUNG, không phải đổi thứ tự danh sách.
    Spec chỉ liệt kê tên và thêm chữ "(ghim)". Nhưng người ghim bảng giá vào project thì họ
-   nghĩ Javis đã BIẾT bảng giá, chứ không phải biết TÊN nó. Ghim mà chỉ đổi thứ tự là một cái
+   nghĩ UNI MATE đã BIẾT bảng giá, chứ không phải biết TÊN nó. Ghim mà chỉ đổi thứ tự là một cái
    nút trông như công tắc nhưng không nối vào đâu.
 
 2. HƯỚNG DẪN ĐI CẢ VÀO ĐƯỜNG TIẾT KIỆM (Phase 8), danh sách tài liệu thì không.
    Spec bỏ cả khối khi Phase 8 rút gọn. Nhưng hướng dẫn là HỢP ĐỒNG HÀNH XỬ ("luôn trả lời
    bằng tiếng Anh"), vài trăm ký tự; bỏ nó nghĩa là cùng một project, cùng một câu hỏi, lượt
-   này tuân luật lượt kia không - và người dùng không có cách nào biết vì sao, chỉ thấy Javis
+   này tuân luật lượt kia không - và người dùng không có cách nào biết vì sao, chỉ thấy UNI MATE
    bướng. Danh sách tài liệu là dữ liệu tra cứu, bỏ thì cùng lắm model phải hỏi lại.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -22,9 +22,9 @@ import os
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-pvp-")
-os.environ.setdefault("JAVIS_STATE_DIR", _STATE)
-_BRAINS = tempfile.mkdtemp(prefix="javis-pvp-brains-")
+_STATE = tempfile.mkdtemp(prefix="unimate-pvp-")
+os.environ.setdefault("UNIMATE_STATE_DIR", _STATE)
+_BRAINS = tempfile.mkdtemp(prefix="unimate-pvp-brains-")
 os.environ["BRAINS_DIR"] = _BRAINS
 
 import main  # noqa: E402
@@ -84,7 +84,7 @@ check("có tiêu đề nói rõ đây là nội dung nạp sẵn",
 st.set_project_file_pinned(pid, f_png, True)
 kh = main._project_block(pid)
 check("ảnh ghim KHÔNG bị nhét byte nhị phân vào prompt", "\x89PNG" not in kh)
-# Im lặng bỏ qua là tệ nhất: người dùng ghim xong tưởng Javis đã đọc rồi ngạc nhiên vì nó
+# Im lặng bỏ qua là tệ nhất: người dùng ghim xong tưởng UNI MATE đã đọc rồi ngạc nhiên vì nó
 # trả lời như chưa thấy gì.
 check("mà nói thẳng là tệp nhị phân, tự mở khi cần",
       "tệp nhị phân" in kh and "logo.png" in kh, kh)
@@ -133,7 +133,7 @@ khong = main.build_system_prompt("brain")
 check("không truyền project_id thì KHÔNG có khối nào (hành vi cũ nguyên vẹn)",
       "TRÁNH XANH DƯƠNG" not in khong)
 check("project_id sai cũng không làm hỏng prompt",
-      "Javis" in main.build_system_prompt("brain", project_id="bay-gio-khong-co"))
+      "UNI MATE" in main.build_system_prompt("brain", project_id="bay-gio-khong-co"))
 
 # ============================================================
 # 8. CANARY nguồn: ba chỗ gọi THẬT phải truyền project_id

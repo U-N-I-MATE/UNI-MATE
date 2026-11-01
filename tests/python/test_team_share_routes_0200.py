@@ -11,9 +11,9 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-share-")
-BR = Path(tempfile.mkdtemp(prefix="javis-team-share-src-"))
-BR2 = Path(tempfile.mkdtemp(prefix="javis-team-share-dst-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-share-")
+BR = Path(tempfile.mkdtemp(prefix="unimate-team-share-src-"))
+BR2 = Path(tempfile.mkdtemp(prefix="unimate-team-share-dst-"))
 (BR / "agents").mkdir()
 (BR / "skills" / "viet-email").mkdir(parents=True)
 (BR / "skills" / "viet-email" / "SKILL.md").write_text("---\nname: viet-email\ngroup: Marketing\n---\nViết email.\n",
@@ -46,14 +46,14 @@ tid = r.json()["team"]["team_id"]
 r = c.get(f"/teams/{tid}/export?brain={BR}")
 check("export answers a zip", r.status_code == 200 and r.headers["content-type"] == "application/zip", r.text[:200])
 z = zipfile.ZipFile(io.BytesIO(r.content))
-m = json.loads(z.read("javis-team.json"))
+m = json.loads(z.read("unimate-team.json"))
 check("manifest names members and leader", sorted(m["members"]) == ["lan", "minh"] and m["leader"] == "lan" and m["name"] == "Team Marketing")
 lan = z.read("agents/lan.md").decode()
 check("partner file cleaned", "model:" not in lan and "SECRETSECRET" not in lan)
 check("member skill included", "skills/viet-email/SKILL.md" in z.namelist())
 check("unknown team refused", c.get(f"/teams/nope/export?brain={BR}").status_code == 404)
 
-files = {"file": ("team.javis.zip", r.content, "application/zip")}
+files = {"file": ("team.unimate.zip", r.content, "application/zip")}
 pv = c.post("/teams/import", data={"brain": str(BR2), "preview": "1"}, files=files)
 check("preview lists the team", pv.status_code == 200 and sorted(pv.json().get("members") or []) == ["lan", "minh"], pv.text[:200])
 check("preview writes nothing", not (BR2 / "agents" / "lan.md").exists())

@@ -1,16 +1,16 @@
-"""Người mới vào nhóm Zalo (0.84.2, javis-zalo 1.1.0).
+"""Người mới vào nhóm Zalo (0.84.2, unimate-zalo 1.1.0).
 
     python tests/run.py zalo_vao_nhom      (KHÔNG mạng, MCP và CLI giả)
 
 Chủ repo muốn biết ai vừa vào nhóm và vào lúc nào, rồi để Agent của bot tự chào và tag người đó
-theo chỉ dẫn chủ đã viết. Javis chỉ lo phần KHẢ NĂNG, không tự có lời chào nào. javis-zalo 1.1.0
+theo chỉ dẫn chủ đã viết. UNI MATE chỉ lo phần KHẢ NĂNG, không tự có lời chào nào. unimate-zalo 1.1.0
 đưa mỗi lượt vào nhóm vào luồng tin dưới dạng tin `group.join` do chính người mới "gửi".
 
 File này canh bốn thứ:
   1. Tin `group.join` thành một sự kiện vào nhóm trong Hộp thư, mang đúng giờ Zalo báo.
   2. Sự kiện tới được Agent ở nhóm đã cho phép DÙ bot chỉ trả lời khi được gọi tên, và câu trả
      lời tag đúng người mới.
-  3. Javis không tự chào: Agent không có chỉ dẫn thì trả [IM_LANG] và không gì được gửi.
+  3. UNI MATE không tự chào: Agent không có chỉ dẫn thì trả [IM_LANG] và không gì được gửi.
   4. Không bao giờ thành câu lộ máy trước cả nhóm: nhóm chưa cho phép thì im và không tính là
      một lần gọi bot; engine lỗi cũng im, không "trục trặc". (Hạn mức câu trả lời mỗi giờ đã gỡ ở 0.85.4.)
 """
@@ -22,8 +22,8 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-zpjoin-")
-os.environ["JAVIS_REPLY_POLICY_SHADOW"] = "1"
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-zpjoin-")
+os.environ["UNIMATE_REPLY_POLICY_SHADOW"] = "1"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -46,10 +46,10 @@ def check(name, cond, them=""):
         _fails.append(name)
 
 
-CONN = {"id": "zalo-1", "label": "Javis Vũ", "connector_id": "zalo", "env": {"HOME": "/state/zalo-1"}}
+CONN = {"id": "zalo-1", "label": "Uni Vũ", "connector_id": "zalo", "env": {"HOME": "/state/zalo-1"}}
 NHOM = "6660001"
 NHOM_LA = "6660009"
-THREADS = [{"threadId": NHOM, "name": "Zoom | Javis OS", "type": "group"},
+THREADS = [{"threadId": NHOM, "name": "Zoom | UNI MATE", "type": "group"},
            {"threadId": NHOM_LA, "name": "Nhóm lạ", "type": "group"}]
 GUI, KHO_TIN, LUOT, CLI = [], [], [], []
 TRA_LOI = {"v": "Chào bạn, mừng bạn vào nhóm!"}
@@ -98,19 +98,19 @@ chatbot_runtime.wire(answer=_engine, brain_root=lambda b: str(BRAIN),
 
 
 def join_msg(uid, ten, mid, thread=NHOM, giay_truoc=2, added_by_me=False):
-    """Đúng khuôn javis-zalo 1.1.0 (`joinToBufferMessage`)."""
+    """Đúng khuôn unimate-zalo 1.1.0 (`joinToBufferMessage`)."""
     t = _ms(giay_truoc)
     return {"id": f"join:{thread}:{uid}:{t}", "threadId": thread, "threadType": "group", "senderId": uid,
             "senderName": ten, "text": f"[{ten} joined the group]", "timestamp": t, "type": "group.join",
             "attachment": None, "replyTo": None,
-            "event": {"kind": "join", "groupName": "Zoom | Javis OS", "addedBy": "1" if added_by_me else None,
+            "event": {"kind": "join", "groupName": "Zoom | UNI MATE", "addedBy": "1" if added_by_me else None,
                       "addedByMe": added_by_me, "time": t}}
 
 
 # ============================================================
 # 1. Chuẩn hoá tin `group.join`
 # ============================================================
-TEN = {NHOM: {"name": "Zoom | Javis OS", "type": "group"}}
+TEN = {NHOM: {"name": "Zoom | UNI MATE", "type": "group"}}
 m = join_msg("7001", "Thu Hà", "j0", giay_truoc=60)
 ev = zc.chuan_hoa_tin(dict(CONN), m, TEN)
 md = (ev or {}).get("metadata", {}).get("member_join")
@@ -127,7 +127,7 @@ check("tin thường KHÔNG mang cờ vào nhóm",
 cau = zalo_personal.cau_vao_nhom(ev)
 check("câu cho Agent nói rõ là sự kiện, có tên và giờ vào",
       "KHÔNG phải tin nhắn" in cau and "Thu Hà" in cau and "vừa vào nhóm lúc" in cau, cau)
-check("CANARY: câu cho Agent dặn im bằng [IM_LANG] khi chỉ dẫn không nói gì về người mới (Javis không tự chào)",
+check("CANARY: câu cho Agent dặn im bằng [IM_LANG] khi chỉ dẫn không nói gì về người mới (UNI MATE không tự chào)",
       chatbot_runtime.IM_LANG in cau, cau)
 ev_me = zc.chuan_hoa_tin(dict(CONN), join_msg("7002", "Nam", "j1", added_by_me=True), TEN)
 check("người do chính tài khoản này thêm vào thì nói rõ",
@@ -208,13 +208,13 @@ async def chay():
     TRA_LOI["v"] = "Dạ em trả lời đây ạ"
     for i, (uid, ten) in enumerate((("7201", "An"), ("7202", "Vũ Hồng Sơn"))):
         KHO_TIN.append({"threadId": NHOM, "from": uid, "senderName": ten, "type": "text",
-                        "text": "@Javis Vũ cho hỏi lịch học", "id": f"r{i}", "ts": _ms(1), "threadType": "group"})
+                        "text": "@Uni Vũ cho hỏi lịch học", "id": f"r{i}", "ts": _ms(1), "threadType": "group"})
         await doc()
     gui_ra = [c["pos"][1] for c in CLI]
     check("hai người khác nhau cùng tag bot thì cả hai đều được trả lời",
           len(LUOT) == 2 and not any("nhắn hơi nhanh" in x for x in gui_ra), gui_ra)
     KHO_TIN.append({"threadId": NHOM, "from": "7202", "senderName": "Vũ Hồng Sơn", "type": "text",
-                    "text": "@Javis Vũ hỏi thêm câu nữa", "id": "r9", "ts": _ms(1), "threadType": "group"})
+                    "text": "@Uni Vũ hỏi thêm câu nữa", "id": "r9", "ts": _ms(1), "threadType": "group"})
     await doc()
     check("CANARY: cùng một người tag bot thêm lần nữa vẫn được trả lời (không còn trần mỗi giờ)",
           len(LUOT) == 3 and not any("nhắn hơi nhanh" in c["pos"][1] for c in CLI), len(LUOT))

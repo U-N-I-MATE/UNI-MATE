@@ -348,7 +348,7 @@ class ReadonlyPathCanary:
             return self._reject(
                 trace, policy, bucket, "readonly_compile_rejected",
                 "Request vượt context budget đã xác minh cho vòng lập arguments. "
-                "Javis chưa gửi model call hoặc gọi tool.",
+                "UNI MATE chưa gửi model call hoặc gọi tool.",
             )
 
         excerpt_chars = max(500, min(_int(profile.get("excerpt_chars"), 4000), 20_000))
@@ -368,7 +368,7 @@ class ReadonlyPathCanary:
             return self._reject(
                 trace, policy, bucket, "readonly_final_compile_rejected",
                 "Evidence capsule dự kiến vượt context budget của vòng tổng hợp. "
-                "Javis chưa gửi model call hoặc gọi tool.",
+                "UNI MATE chưa gửi model call hoặc gọi tool.",
             )
 
         initial_estimate = max(1, int(report.get("estimated_input_tokens") or 0))
@@ -377,7 +377,7 @@ class ReadonlyPathCanary:
                 final_estimate > rule.hard_max_input_tokens):
             return self._reject(
                 trace, policy, bucket, "hard_input_limit",
-                "Request vượt hard context limit đã xác minh. Javis chưa gửi model call nào.",
+                "Request vượt hard context limit đã xác minh. UNI MATE chưa gửi model call nào.",
             )
         reserved_input = int(math.ceil(
             (initial_estimate + final_estimate) * policy.estimator_safety_factor
@@ -396,7 +396,7 @@ class ReadonlyPathCanary:
             return self._plan(
                 "reject", admission.reason, policy, bucket, "readonly",
                 "Model hiện tại không còn đủ ngân sách token cho hai vòng kiểm soát. "
-                "Javis chưa gửi request; bạn chờ hết cửa sổ quota hoặc đổi model/provider.",
+                "UNI MATE chưa gửi request; bạn chờ hết cửa sổ quota hoặc đổi model/provider.",
             )
         lease = self.executor.issue_lease(
             trace, actor_id, brain, capability, profile
@@ -405,7 +405,7 @@ class ReadonlyPathCanary:
             self.runtime.release_quota(trace, admission.reservation_id, "lease_issue_failed")
             return self._plan(
                 "reject", "lease_issue_failed", policy, bucket, "readonly",
-                "Capability không đạt policy lease read-only. Javis chưa gọi model hoặc tool.",
+                "Capability không đạt policy lease read-only. UNI MATE chưa gọi model hoặc tool.",
             )
         rendered = compiled.capsule.rendered_request
         return ReadonlyPathPlan(

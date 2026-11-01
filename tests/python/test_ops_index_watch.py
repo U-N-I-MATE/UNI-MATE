@@ -1,4 +1,4 @@
-"""Javis/index.md stays current in EVERY brain, rebuilt only when its inputs change (0.389.0).
+"""UniMate/index.md stays current in EVERY brain, rebuilt only when its inputs change (0.389.0).
 
     python tests/run.py ops_index_watch      (no network)
 
@@ -13,7 +13,7 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-opsidx-state-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-opsidx-state-"))
 
 import ops_index_watch as w  # noqa: E402
 
@@ -40,8 +40,8 @@ write.n = 1
 
 
 # ---- 1. The signature moves with every input the index lists, and with nothing else ----
-root = Path(tempfile.mkdtemp(prefix="javis-opsidx-brain-"))
-(root / "Javis").mkdir()
+root = Path(tempfile.mkdtemp(prefix="unimate-opsidx-brain-"))
+(root / "UNI MATE").mkdir()
 
 
 def sig():
@@ -60,11 +60,11 @@ steps = [
     ("adding a skill", lambda: write(root / "skills" / "email" / "SKILL.md", "---\nname: email\n---\n")),
     ("disabling a skill", lambda: (root / "skills" / ".disabled").mkdir() or
      (root / "skills" / "email").rename(root / "skills" / ".disabled" / "email")),
-    ("adding a loop", lambda: write(root / "Javis" / "loops" / "watch.md", "---\nname: Watch\n---\n")),
-    ("a loop pausing itself", lambda: write(root / "Javis" / "loop-state.json", "{}")),
+    ("adding a loop", lambda: write(root / "UNI MATE" / "loops" / "watch.md", "---\nname: Watch\n---\n")),
+    ("a loop pausing itself", lambda: write(root / "UNI MATE" / "loop-state.json", "{}")),
     ("adding a brain plugin", lambda: write(root / "plugins" / "calc" / "plugin.yaml", "name: calc\n")),
-    ("editing the index by hand", lambda: write(root / "Javis" / "index.md", "x")),
-    ("deleting the index by hand", lambda: (root / "Javis" / "index.md").unlink()),
+    ("editing the index by hand", lambda: write(root / "UNI MATE" / "index.md", "x")),
+    ("deleting the index by hand", lambda: (root / "UNI MATE" / "index.md").unlink()),
 ]
 for label, act in steps:
     before = sig()
@@ -126,11 +126,11 @@ check("a brain that is gone is forgotten", set(watch2._seen) == set(brains[:3]))
 # ---- 3. Through main: a brain WITHOUT any loop gets its index updated (the reported bug) ----
 import main  # noqa: E402
 
-base = Path(tempfile.mkdtemp(prefix="javis-opsidx-brains-"))
+base = Path(tempfile.mkdtemp(prefix="unimate-opsidx-brains-"))
 main.BRAINS_DIR = str(base)
 psc = base / "PSC Advisor"
 main._ensure_brain_scaffold(psc)
-idx = psc / "Javis" / "index.md"
+idx = psc / "UNI MATE" / "index.md"
 (base / "not-a-brain").mkdir()
 
 main._ops_index_sweep()
@@ -141,7 +141,7 @@ for i in range(18):
 main._ops_index_sweep()
 text = idx.read_text(encoding="utf-8")
 check("after new agents the next sweep lists all 18", "**Tổng quan:** 18 agents" in text, text[:300])
-check("a folder that is not a brain gets no index", not (base / "not-a-brain" / "Javis").exists())
+check("a folder that is not a brain gets no index", not (base / "not-a-brain" / "UNI MATE").exists())
 
 calls = []
 real = main._OPS_INDEX_WATCH._rebuild

@@ -21,10 +21,10 @@ import tempfile
 import time
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-wh-m3r-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
-os.environ["JAVIS_WH_NO_NETWORK"] = "1"
+STATE = Path(tempfile.mkdtemp(prefix="unimate-wh-m3r-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
+os.environ["UNIMATE_WH_NO_NETWORK"] = "1"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -229,7 +229,7 @@ answers = {}
 
 def handler(req):
     body = json.loads(req.content or b"{}") if req.method == "POST" else {}
-    hits.append((req.url.host, req.headers.get("x-k"), body.get("_javis", {}).get("test")))
+    hits.append((req.url.host, req.headers.get("x-k"), body.get("_unimate", {}).get("test")))
     seq = answers.get(req.url.host, [200])
     code = seq.pop(0) if len(seq) > 1 else seq[0]
     return httpx.Response(code, headers={"Retry-After": "0"})
@@ -331,7 +331,7 @@ async def main():
     await cl.post("/webhooks/test", json={"id": h["id"], "confirm": True})
     await f.wait_idle()
     await cl.aclose()
-    check("P3: an event sent from the dashboard Test button is flagged _javis.test", hits and hits[-1][2] is True, hits)
+    check("P3: an event sent from the dashboard Test button is flagged _unimate.test", hits and hits[-1][2] is True, hits)
 
     # P3: a run given up on (lease lost) is stopped
     old_hb = ws.HEARTBEAT_S

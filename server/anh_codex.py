@@ -1,9 +1,9 @@
 """anh_codex.py - Đưa ảnh Codex tự vẽ về brain để khung chat hiện được.
 
-Vì sao tồn tại (bug 2026-09-28, chị dùng Javis nhờ làm 3 ảnh công thức 9:16): Codex CLI có
+Vì sao tồn tại (bug 2026-09-28, chị dùng UNI MATE nhờ làm 3 ảnh công thức 9:16): Codex CLI có
 sẵn skill `imagegen` riêng. Khi được nhờ vẽ, model thường dùng skill đó thay vì tool
-`javis_generate_image`, và Codex lưu ảnh ở `$CODEX_HOME/generated_images/<thread_id>/`, NGOÀI
-brain. Câu trả lời dẫn link `/home/javis/.codex/generated_images/...png`, dashboard chỉ phục vụ
+`unimate_generate_image`, và Codex lưu ảnh ở `$CODEX_HOME/generated_images/<thread_id>/`, NGOÀI
+brain. Câu trả lời dẫn link `/home/unimate/.codex/generated_images/...png`, dashboard chỉ phục vụ
 file trong brain nên link hỏng, ảnh không hiện trong khung chat, và lớp soát link gắn thêm
 dòng "không tìm thấy trong brain". Người dùng phải tự đi lưu ảnh về.
 
@@ -95,7 +95,7 @@ def chep_vao_brain(src: Path, vault_root: str) -> Optional[str]:
     """Chép MỘT ảnh vào attachments/ của brain, trả đường tương đối theo gốc brain.
 
     Tên đích cố định theo tên nguồn (`codex-<thread 8 ký tự>-<tên>`), nên chạy lại lượt hay
-    resume cũng không đẻ bản sao thứ hai. PNG đi qua đúng đường gắn nhãn của ảnh Javis tự tạo."""
+    resume cũng không đẻ bản sao thứ hai. PNG đi qua đúng đường gắn nhãn của ảnh UNI MATE tự tạo."""
     try:
         vault = Path(vault_root).resolve()
         adir = image_gen._attachments_dir(vault)

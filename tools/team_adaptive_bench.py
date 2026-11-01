@@ -188,9 +188,9 @@ def install_guards(main, fakes: FakeModels | None = None) -> FakeModels:
     fakes = fakes or FakeModels()
     # Chốt trung tâm (tests/run.py, tests/python/_paths.py đặt cùng hai biến): Judge từ chối mọi hàm hỏi model chưa đánh
     # dấu giả, main dừng engine phán xử và engine lượt học trước khi dựng. Bench chạy ngoài tests/run.py nên tự đặt.
-    os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
-    os.environ["JAVIS_NO_REAL_REVIEW_ENGINE"] = "1"
-    os.environ["JAVIS_NO_REAL_TEAM_ENGINE"] = "1"
+    os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
+    os.environ["UNIMATE_NO_REAL_REVIEW_ENGINE"] = "1"
+    os.environ["UNIMATE_NO_REAL_TEAM_ENGINE"] = "1"
     import agent_judge  # noqa: WPS433
     judge_fake = agent_judge.mark_test_fake(fakes.judge_ask)
     main.team_engine.build = _no_real_engine
@@ -218,11 +218,11 @@ def guards_hold(main) -> list:
             bad.append(name)
     if main.team_engine.build is not _no_real_engine:
         bad.append("team_engine.build")
-    for env in ("JAVIS_NO_REAL_JUDGE_ENGINE", "JAVIS_NO_REAL_REVIEW_ENGINE", "JAVIS_NO_REAL_TEAM_ENGINE"):
+    for env in ("UNIMATE_NO_REAL_JUDGE_ENGINE", "UNIMATE_NO_REAL_REVIEW_ENGINE", "UNIMATE_NO_REAL_TEAM_ENGINE"):
         if os.environ.get(env) != "1":
             bad.append(env)
     judge = main._agent_judge()
-    if judge is not None and not getattr(judge.ask, "javis_test_fake", False):
+    if judge is not None and not getattr(judge.ask, "unimate_test_fake", False):
         bad.append("judge.ask (chưa đánh dấu giả)")
     return bad
 
@@ -256,7 +256,7 @@ def summarize_ms(values) -> dict:
 
 class StallWatch:
     """Chẩn đoán: luồng canh xem event loop có bị giữ quá `limit` giây không; nếu có, chụp ngăn xếp của luồng loop và
-    đếm hàm sâu nhất trong code Javis (server/). Chỉ bật bằng --stall-watch."""
+    đếm hàm sâu nhất trong code UNI MATE (server/). Chỉ bật bằng --stall-watch."""
 
     def __init__(self, limit: float = 0.05):
         self.limit = limit
@@ -342,14 +342,14 @@ def main_bench(argv=None) -> dict:
     ap.add_argument("--out", default="")
     a = ap.parse_args(argv)
 
-    base = Path(tempfile.mkdtemp(prefix="javis-t4-bench-"))
-    os.environ["JAVIS_STATE_DIR"] = str(base / "state")
-    os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-    os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"   # chốt trung tâm, như tests/run.py
-    os.environ["JAVIS_NO_REAL_REVIEW_ENGINE"] = "1"
-    os.environ["JAVIS_NO_REAL_TEAM_ENGINE"] = "1"
-    os.environ["JAVIS_PULSE_TICK_PAUSED"] = "1"       # nhịp nền của scheduler không chạy; bench gọi tick trực tiếp
-    os.environ["JAVIS_RESONANCE_TICK_PAUSED"] = "1"
+    base = Path(tempfile.mkdtemp(prefix="unimate-t4-bench-"))
+    os.environ["UNIMATE_STATE_DIR"] = str(base / "state")
+    os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+    os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"   # chốt trung tâm, như tests/run.py
+    os.environ["UNIMATE_NO_REAL_REVIEW_ENGINE"] = "1"
+    os.environ["UNIMATE_NO_REAL_TEAM_ENGINE"] = "1"
+    os.environ["UNIMATE_PULSE_TICK_PAUSED"] = "1"       # nhịp nền của scheduler không chạy; bench gọi tick trực tiếp
+    os.environ["UNIMATE_RESONANCE_TICK_PAUSED"] = "1"
     (base / "state").mkdir()
     brain, slugs = make_brain(base, a.agents)
     tally = SqlTally()
@@ -426,7 +426,7 @@ def main_bench(argv=None) -> dict:
             while drain_rounds < 200:
                 drain_rounds += 1
                 await asyncio.to_thread(proj.project_pending)
-                with sqlite3.connect(Path(os.environ["JAVIS_STATE_DIR"]) / "team.sqlite3") as cx:
+                with sqlite3.connect(Path(os.environ["UNIMATE_STATE_DIR"]) / "team.sqlite3") as cx:
                     left = cx.execute("SELECT COUNT(*) FROM team_reaction_log WHERE effect_state='pending'").fetchone()[0]
                 if not left:
                     break
@@ -436,7 +436,7 @@ def main_bench(argv=None) -> dict:
                 s_ = time.perf_counter()
                 await asyncio.to_thread(proj.project_pending)
                 steady.append((time.perf_counter() - s_) * 1000.0)
-            with sqlite3.connect(Path(os.environ["JAVIS_STATE_DIR"]) / "team.sqlite3") as cx:
+            with sqlite3.connect(Path(os.environ["UNIMATE_STATE_DIR"]) / "team.sqlite3") as cx:
                 open_n = cx.execute("SELECT COUNT(*) FROM team_reactions WHERE status IN ('pending_review','reviewing')"
                                     ).fetchone()[0]
             report["outbox"] = {"seeded_pending": min(a.reactions, len(agent_msgs)), "drain_rounds": drain_rounds,

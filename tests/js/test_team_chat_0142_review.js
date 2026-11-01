@@ -147,9 +147,9 @@ check("chữ mới của hộp chọn và gợi ý tối thiểu 16px",
 check("bàn phím ảo mở: hộp chọn co theo visualViewport", /body\.kb-open \.tmp-layer \{[^}]*var\(--vv-h/.test(css));
 
 // ───────────── kết nối lại: tải lại nhóm đang mở ─────────────
-check("socket nối lại phát team_resync", /if \(_daChao\) \{ try \{ window\.dispatchEvent\(new CustomEvent\("javis:team-event", \{ detail: \{ type: "team_resync" \} \}\)\)/.test(appJs));
+check("socket nối lại phát team_resync", /if \(_daChao\) \{ try \{ window\.dispatchEvent\(new CustomEvent\("unimate:team-event", \{ detail: \{ type: "team_resync" \} \}\)\)/.test(appJs));
 check("trang Nhóm nhận team_resync: tải lại tin, hàng việc, nhóm", /d\.type === "team_resync"\)[\s\S]{0,260}loadMsgs\(false\); loadQueue\(\); loadTeam\(\);/.test(teamsJs));
-check("Auto đổi ở nơi khác: trang Nhóm đọc lại thành viên", teamsJs.includes('addEventListener("javis:resonance-agents-changed"'));
+check("Auto đổi ở nơi khác: trang Nhóm đọc lại thành viên", teamsJs.includes('addEventListener("unimate:resonance-agents-changed"'));
 
 // ───────────── review độc lập 0.142.0 ─────────────
 const mem2 = [
@@ -195,7 +195,7 @@ check("hộp chọn không bị cuộn cả khung khi focus lại ô tick",
 check("ghi chú cho chủ đọc không bị lọc (chỉ lọc mã như daily_cap)", teamsJs.includes("return !/^[a-z_]+$/.test(n);"));
 const consoleJs = fs.readFileSync(path.join(ROOT, "dashboard", "console.js"), "utf8");
 check("Vị trí file ở trang Cộng sự: mở trang Tệp tin (không còn tab Thư mục)",
-  /if \(workspace\) \{[\s\S]{0,300}window\.JavisNav\.go\("files"\)/.test(consoleJs) && !/\[data-rtab="files"\]'\)\?\.click\(\)/.test(consoleJs));
+  /if \(workspace\) \{[\s\S]{0,300}window\.UniMateNav\.go\("files"\)/.test(consoleJs) && !/\[data-rtab="files"\]'\)\?\.click\(\)/.test(consoleJs));
 
 // ───────────── i18n đủ hai thứ tiếng ─────────────
 const need = ["teams.calls", "teams.uncall", "teams.head_people", "teams.head_leader", "teams.reply.why.timeout",

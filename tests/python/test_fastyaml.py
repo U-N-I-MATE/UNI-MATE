@@ -101,7 +101,7 @@ GOC_HIEM = {
     "chuỗi nhiều dòng dấu |": "desc: |\n  dòng một\n  dòng hai\n",
     "chuỗi gấp dấu >": "desc: >\n  câu dài\n  bị gấp\n",
     "nháy đơn trong nháy kép": 'desc: "nó bảo \'ok\' rồi đi"\n',
-    "dấu hai chấm trong giá trị": "url: https://javis.example.com/a:b\n",
+    "dấu hai chấm trong giá trị": "url: https://unimate.example.com/a:b\n",
     "danh sách lồng": "tools:\n  - a\n  - b\nmeta:\n  k: v\n",
     "giá trị rỗng": "description:\nname: x\n",
     "số và bool": "n: 007\nb: yes\nf: 1.50\nnull_val: ~\n",

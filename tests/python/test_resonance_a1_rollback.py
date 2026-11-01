@@ -18,8 +18,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a1rb-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a1rb-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import resonance_store as RS  # noqa: E402
 
@@ -53,7 +53,7 @@ _spec.loader.exec_module(OLD)
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-rb-")).resolve())
 DB = Path(_STATE) / "rollback" / "resonance.sqlite3"
 FRAME = {"understanding": "Ví dụ", "constraints": [], "criteria": [], "guards": [], "mode": "achieve"}
-op = OLD.Principal("agent", "javis", BRAIN)
+op = OLD.Principal("agent", "unimate", BRAIN)
 oo = OLD.Principal("owner", "owner", BRAIN)
 
 

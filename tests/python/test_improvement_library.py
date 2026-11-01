@@ -78,7 +78,7 @@ class ExportImportTests(unittest.TestCase):
         for bad in (dict(procedures=[{"agent_slug": "a", "text": PROCEDURE, "owner_rules": "x"}]),
                     dict(reports=[{"family": "f", "messages": ["hi"]}]),
                     dict(dependencies={"customer_phone": "1"}),
-                    dict(procedures=[{"agent_slug": "a", "text": PROCEDURE + "\nJAVIS_RULE: x"}])):
+                    dict(procedures=[{"agent_slug": "a", "text": PROCEDURE + "\nUNIMATE_RULE: x"}])):
             with self.subTest(bad=list(bad)), self.assertRaises(ValueError):
                 self.package(**bad)
 

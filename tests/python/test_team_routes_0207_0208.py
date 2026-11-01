@@ -10,9 +10,9 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-routes-")
-os.environ.setdefault("JAVIS_NO_REAL_TEAM_ENGINE", "1")
-BR = Path(tempfile.mkdtemp(prefix="javis-team-routes-brain-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-routes-")
+os.environ.setdefault("UNIMATE_NO_REAL_TEAM_ENGINE", "1")
+BR = Path(tempfile.mkdtemp(prefix="unimate-team-routes-brain-"))
 (BR / "agents").mkdir()
 for slug, name in (("lan", "Lan"), ("minh", "Minh")):
     (BR / "agents" / f"{slug}.md").write_text(f"---\nname: {name}\nrole: Thành viên\n---\nBạn là {name}.\n",

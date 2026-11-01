@@ -3,7 +3,7 @@
        node tests/js/test_nut_chia_se_trinh_sua_dinh.js
 
    Chủ dự án 18/09, ngay sau khi nhận bản 0.59.39: "mở 1 file đây, không thấy nút chia sẻ file
-   ở đâu". Đúng: Javis có HAI khung mở file khác hẳn nhau, và bản trước chỉ gắn nút vào một cái.
+   ở đâu". Đúng: UNI MATE có HAI khung mở file khác hẳn nhau, và bản trước chỉ gắn nút vào một cái.
 
      - trình sửa modal  (dashboard/file-editor.js, bung giữa màn hình, mở từ link file trong chat)
      - trình sửa ĐỊNH   (dashboard/console.js #noteEditor, mở từ cây vault ở cột trái)
@@ -90,7 +90,7 @@ function chayCommonBtns(coShareBtn) {
   };
   const win = {
     t: tt,
-    JavisShareBtn: coShareBtn
+    UniMateShareBtn: coShareBtn
       ? (b, p, host, lop) => {
           goiShare.push({ b, p, host, lop });
           const n = el("button");
@@ -105,7 +105,7 @@ function chayCommonBtns(coShareBtn) {
     "actions", "rel", "it", "document", "window", "ic", "esc",
     "_neRenameCur", "_neDeleteCur", "_vtRaw", "_dlFile", "_neSyncFull", "closeNote", "X_ICON", "fbrain",
     thanCommon);
-  fn(actions, "Javis/AGENTS.md", { name: "AGENTS.md", ext: ".md", type: "file" },
+  fn(actions, "UniMate/AGENTS.md", { name: "AGENTS.md", ext: ".md", type: "file" },
      doc, win, ic, esc,
      () => {}, () => {}, (r) => "/files/raw?path=" + r, () => {}, () => {}, () => {}, "<svg></svg>",
      () => "brain");
@@ -118,8 +118,8 @@ check("thanh nút của trình sửa định CÓ nút Chia sẻ", coNut,
   r1.actions.children.map((n) => chu(n).slice(0, 40)).join(" | "));
 check("nút Chia sẻ mang đúng chú giải", r1.actions.children.some(
   (n) => chu(n).indexOf(tt("fedit.share_title")) >= 0));
-check("gọi JavisShareBtn đúng 1 lần", r1.goiShare.length === 1, r1.goiShare.length);
-check("truyền đúng đường dẫn file đang mở", r1.goiShare[0] && r1.goiShare[0].p === "Javis/AGENTS.md",
+check("gọi UniMateShareBtn đúng 1 lần", r1.goiShare.length === 1, r1.goiShare.length);
+check("truyền đúng đường dẫn file đang mở", r1.goiShare[0] && r1.goiShare[0].p === "UniMate/AGENTS.md",
   r1.goiShare[0] && r1.goiShare[0].p);
 check("truyền ô #neShare làm chỗ vẽ thanh link", r1.goiShare[0] && r1.goiShare[0].host === r1.hopShare);
 // Mở file B ngay sau file A: thanh link của A không được dính lại.
@@ -128,7 +128,7 @@ check("dọn thanh link của file mở trước", r1.hopShare.innerHTML === "" 
 
 // Bản cũ (chưa nạp file-editor.js, hoặc bản 0.59.39 chưa có hàm) không được nổ - các nút còn lại vẫn phải dựng.
 const r0 = chayCommonBtns(false);
-check("thiếu JavisShareBtn thì bỏ qua êm, không vỡ thanh nút", r0.actions.children.length >= 6,
+check("thiếu UniMateShareBtn thì bỏ qua êm, không vỡ thanh nút", r0.actions.children.length >= 6,
   r0.actions.children.length + " nút");
 
 // ============================================================
@@ -139,7 +139,7 @@ const thanShare = bocHam(feSrc, "function shareBtn(b, ceil, hostEl, lop) {");
 check("shareBtn nhận được hostEl (ô vẽ thanh link) và lop", !!thanShare,
   thanShare ? "ok" : "chữ ký vẫn là shareBtn(b, ceil) - khung thứ hai không dùng lại được");
 
-check("file-editor.js xuất window.JavisShareBtn", /window\.JavisShareBtn\s*=\s*shareBtn/.test(feSrc));
+check("file-editor.js xuất window.UniMateShareBtn", /window\.UniMateShareBtn\s*=\s*shareBtn/.test(feSrc));
 
 // Nút Chia sẻ KHÔNG được đeo cùng icon với nút "Chèn liên kết" của thanh định dạng markdown:
 // hai nút nằm cùng một trình sửa, cách nhau vài chục pixel. Chủ dự án báo 18/09: "icon đổi lại
@@ -179,13 +179,13 @@ async function chayShareBtn() {
     if (url === "/share/create") return { json: async () => ({ ok: true, token: "abc123", path: "/s/abc123" }) };
     return { json: async () => ({ ok: true }) };
   };
-  const win = { isSecureContext: false, location: { origin: "https://javis.test" } };
+  const win = { isSecureContext: false, location: { origin: "https://unimate.test" } };
   const fn = new Function(
     "b", "ceil", "hostEl", "lop",
     "document", "window", "fetch", "location", "navigator", "setTimeout",
     "ic", "esc", "tw", "injectCss", "elShareModal", "infoBtn", "infoBody",
     thanShare + "\nreturn btn;");
-  const btn = fn("brain", "Javis/AGENTS.md", host, "",
+  const btn = fn("brain", "UniMate/AGENTS.md", host, "",
     { createElement: el }, win, fetchGia, win.location, {}, () => {},
     ic, esc, tt, () => {}, null, () => "", (h) => '<div class="info-body">' + h + "</div>");
   await new Promise((r) => setTimeout(r, 0));
@@ -200,7 +200,7 @@ async function chayShareBtn() {
     "hidden=" + host.hidden);
   const noiDung = host.children.map(chu).join(" ") + " " +
     host.children.map((h) => (h.children || []).map((c) => String(c.value || "")).join(" ")).join(" ");
-  check("thanh link chứa đường link đầy đủ", noiDung.indexOf("https://javis.test/s/abc123") >= 0,
+  check("thanh link chứa đường link đầy đủ", noiDung.indexOf("https://unimate.test/s/abc123") >= 0,
     noiDung.slice(0, 160));
   check("thanh link có nút Thu hồi", noiDung.indexOf(tt("fedit.share_revoke")) >= 0, noiDung.slice(0, 160));
 }

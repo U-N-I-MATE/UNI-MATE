@@ -25,7 +25,7 @@
 - Học từ reaction và phản hồi: để A3.
 - Adapter nguồn sự kiện ngoài (MCP, webhook, theo dõi file tức thời).
 - Quyền thay file người dùng đã sửa, và bản đề xuất tự sinh khi có xung đột (mục 5).
-- Liên kết lịch `javis_schedule` với mục tiêu, và chặn lịch trùng (mục 9).
+- Liên kết lịch `unimate_schedule` với mục tiêu, và chặn lịch trùng (mục 9).
 - Hạn mức theo trợ lý hay theo ngày (mục 14, câu 3).
 - Đường giao việc từ chat thường sang trợ lý.
 
@@ -276,7 +276,7 @@ Hiện tại, `_publish` không thay file khi hash trên đĩa khác mốc đã 
   - `drift_recheck` bắt đầu `DRIFT_RECHECK_MIN_S` (1 giờ), mỗi lần vẫn sửa ngoài luồng thì nhân đôi, tối đa `DRIFT_RECHECK_MAX_S` (24 giờ).
   - Mỗi lần đọc một file tối đa 1 MB, không gọi model.
   - Sự kiện mới (góp ý, tiếp tục) thì kiểm ngay một lần.
-  - Thẻ nói rõ: "File bị sửa ngoài Javis. Javis tự kiểm lại lúc <giờ>; góp ý để kiểm ngay." Thời gian phát hiện chậm nhất là `DRIFT_RECHECK_MAX_S`.
+  - Thẻ nói rõ: "File bị sửa ngoài UNI MATE. UNI MATE tự kiểm lại lúc <giờ>; góp ý để kiểm ngay." Thời gian phát hiện chậm nhất là `DRIFT_RECHECK_MAX_S`.
 - **Thoát trạng thái chờ:**
   - Người dùng đưa file về đúng mốc đã đăng: hết sửa ngoài luồng, đánh giá như thường. Góp ý đang gác được xử lý đúng một lần ở lần thức đó.
   - Người dùng xoá file: không còn xung đột. Bản đang hiệu lực là lượt việc nền thì `_publish_latest` đăng lại mà không gọi model. Bản đang hiệu lực là bản tiếp nhận từ chat thì hiện chưa có đường đăng lại (`_publish_latest` trả `superseded`), nên A2 coi như sửa ngoài luồng: chờ, báo một lần, không gọi model.
@@ -379,20 +379,20 @@ CREATE TABLE IF NOT EXISTS source_observations(
 
 ## 9. Một bên quản lịch: thu hẹp cam kết
 
-Review chỉ ra rằng chặn `javis_schedule` theo cờ toàn lượt (`goal_touched`) vừa chặn nhầm nhắc việc độc lập, vừa bỏ sót lịch trùng tạo ở lượt khác. A2 **bỏ** chặn đó.
+Review chỉ ra rằng chặn `unimate_schedule` theo cờ toàn lượt (`goal_touched`) vừa chặn nhầm nhắc việc độc lập, vừa bỏ sót lịch trùng tạo ở lượt khác. A2 **bỏ** chặn đó.
 
 **A2 bảo đảm:**
 - Lịch theo đuổi một mục tiêu chỉ nằm ở `wakeups` của Resonance.
 - Mỗi mục tiêu chỉ có một hẹn giờ `work` và một hẹn giờ `observe` đang chờ.
 - Hai scheduler không cùng nhận một lịch.
-- Hẹn giờ cho mục tiêu đi qua `javis_goal` (`user_schedule`).
+- Hẹn giờ cho mục tiêu đi qua `unimate_goal` (`user_schedule`).
 
 **A2 không bảo đảm:** người dùng hay model tạo thêm loop hay nhắc hẹn riêng cho cùng việc.
 - Chưa có liên kết lịch với mục tiêu do host kiểm, và không dùng model để đoán hai yêu cầu có cùng nghĩa không.
-- `_RESONANCE_GOAL_HINT` thêm một câu gợi ý (không ràng buộc): "việc đã thành mục tiêu thì Javis tự giữ lịch; chỉ tạo nhắc hẹn khi đó là việc khác".
+- `_RESONANCE_GOAL_HINT` thêm một câu gợi ý (không ràng buộc): "việc đã thành mục tiêu thì UNI MATE tự giữ lịch; chỉ tạo nhắc hẹn khi đó là việc khác".
 - Nhắc hẹn và loop độc lập dùng như cũ, ở mọi thứ tự.
 
-Liên kết rõ từ lịch tới mục tiêu (trường `goal_id` do host kiểm trong `javis_schedule`) là hạng mục sau, nằm ngoài phạm vi.
+Liên kết rõ từ lịch tới mục tiêu (trường `goal_id` do host kiểm trong `unimate_schedule`) là hạng mục sau, nằm ngoài phạm vi.
 
 ## 10. API và giao diện
 

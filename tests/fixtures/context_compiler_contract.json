@@ -7,7 +7,7 @@
     "openai-oauth"
   ],
   "required_terms": [
-    "Bạn là Javis",
+    "Bạn là UNI MATE",
     "Không bịa capability",
     "Dữ liệu live",
     "Memory chỉ là nguồn tham khảo",
@@ -17,7 +17,7 @@
   "forbidden_terms": [
     "# === BỘ NHỚ DÀI HẠN",
     "# === SKILL KHẢ DỤNG",
-    "# === NĂNG LỰC JAVIS HIỆN CÓ",
+    "# === NĂNG LỰC UNI MATE HIỆN CÓ",
     "output contract",
     "Output contract"
   ]

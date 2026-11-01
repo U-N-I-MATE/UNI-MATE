@@ -15,7 +15,7 @@ import os
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-oauth-refresh-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-oauth-refresh-")
 
 import mcp_client  # noqa: E402
 import oauth_mcp  # noqa: E402

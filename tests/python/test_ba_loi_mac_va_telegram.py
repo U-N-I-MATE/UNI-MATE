@@ -1,4 +1,4 @@
-"""Ba lỗi người dùng thật báo ngày 2026-08-12, sau khi cài Javis lên một máy macOS mới.
+"""Ba lỗi người dùng thật báo ngày 2026-08-12, sau khi cài UNI MATE lên một máy macOS mới.
 
     python tests/run.py mac_va_telegram      (KHÔNG mạng)
 
@@ -7,7 +7,7 @@ trạng thái che mất lỗi:
 
 1. KẾT NỐI CHATGPT XONG, THẺ HIỆN "0 MODEL". Con số trên thẻ đọc từ `model.catalog` trong
    settings, mà catalog chỉ được ghi SAU một lần lấy live thành công. ChatGPT là provider DUY
-   NHẤT không có catalog mặc định (danh sách model do Codex quyết, Javis cố ý không ghim
+   NHẤT không có catalog mặc định (danh sách model do Codex quyết, UNI MATE cố ý không ghim
    version), nên trên máy mới nó là danh sách rỗng và không có ai đi hỏi cho tới khi người dùng
    tự mở hộp chọn model. Máy cũ không thấy lỗi chỉ vì catalog đã có từ lần trước.
 
@@ -31,7 +31,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-mactest-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-mactest-")
 
 import claude_cli          # noqa: E402
 import config as c         # noqa: E402
@@ -85,7 +85,7 @@ _ly_do = main._vi_sao_khong_co_model("openai-oauth", _m)
 check("đã kết nối + không thấy Codex CLI -> chỉ đúng việc phải làm",
       "Codex" in _ly_do and ("npm i -g @openai/codex" in _ly_do),
       _ly_do)
-check("và nhắc được cả lối thoát cho máy cài chỗ lạ", "JAVIS_CODEX_BIN" in _ly_do)
+check("và nhắc được cả lối thoát cho máy cài chỗ lạ", "UNIMATE_CODEX_BIN" in _ly_do)
 
 _cu = main.openai_oauth.valid_creds
 try:
@@ -197,7 +197,7 @@ check("CANARY: menu truyền riêng vào không bị thay bằng menu quản tr�
 # 4. macOS: tìm binary ngoài PATH tối giản của tiến trình nền
 # ============================================================
 _path_cu = os.environ.get("PATH", "")
-_tmp = tempfile.mkdtemp(prefix="javis-brew-")
+_tmp = tempfile.mkdtemp(prefix="unimate-brew-")
 try:
     # Giả lập đúng cảnh macOS: PATH của launchd, còn binary nằm ở thư mục Homebrew.
     os.environ["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"

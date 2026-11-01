@@ -11,7 +11,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-khunggo-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-khunggo-")
 from fastapi.testclient import TestClient  # noqa: E402
 import main  # noqa: E402
 import config as cfgmod  # noqa: E402

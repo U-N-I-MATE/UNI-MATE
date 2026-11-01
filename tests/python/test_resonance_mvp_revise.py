@@ -5,7 +5,7 @@
 P1: hạn chót, chỉ tiêu và ràng buộc người dùng nêu ở tin trước là chỉ dẫn đang có hiệu lực; M2 không đổi hay
 bỏ chúng qua bản cập nhật (vòng 3: câu trích có mặt trong tin không chứng minh người dùng muốn đổi), chỉ thêm
 chỉ dẫn mới. Phần chưa áp dụng được báo lại. P2-2: tiêu chí mô tả rỗng không qua cổng M.
-Đi qua kho SQLite thật và plugin javis_goal thật (plugins_host); không gọi model.
+Đi qua kho SQLite thật và plugin unimate_goal thật (plugins_host); không gọi model.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -14,8 +14,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m2r-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m2r-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import luot_dang_chay  # noqa: E402
 import plugins_host  # noqa: E402
@@ -40,7 +40,7 @@ def raises(exc, fn):
 
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-r-")).resolve())
-P = RS.Principal("agent", "javis", BRAIN)
+P = RS.Principal("agent", "unimate", BRAIN)
 store = RS.GoalStore()
 
 MSG1 = "Theo dõi hồ sơ cho anh đến ngày 11/10/2026, cần đủ 10 hồ sơ."
@@ -246,7 +246,7 @@ check("danh sách pha trộn: chỉ giữ tiêu chí có nội dung, id đánh l
 import _resonance_agent as RA  # noqa: E402  - A1: tool chỉ chạy trong lượt của agent đã bật
 AG = RA.enable(store, BRAIN)
 _, route = plugins_host.plugin_tools("full", BRAIN, scope_vault=False)
-call = route["javis_goal"]["call"]
+call = route["unimate_goal"]["call"]
 
 
 def tool(mid, text, args):

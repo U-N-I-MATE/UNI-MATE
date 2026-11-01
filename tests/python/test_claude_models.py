@@ -4,7 +4,7 @@
 
 Không chạm mạng: chỉ kiểm phần suy alias + fallback khi không có API key.
 
-Từ 0.26.17 file này KHÔNG còn kiểm phần đọc credential, vì phần đó đã bị gỡ khỏi mã: Javis
+Từ 0.26.17 file này KHÔNG còn kiểm phần đọc credential, vì phần đó đã bị gỡ khỏi mã: UNI MATE
 không đọc token OAuth của Claude Code nữa (Anthropic cấm dùng token gói Free/Pro/Max ngoài
 Claude Code và Claude.ai - xem server/claude_auth.py). Nguồn duy nhất còn lại cho danh sách
 live là `anthropic_api_key`. Mục 3 dưới đây là canary chống hồi quy: hễ có ai đưa lại đường

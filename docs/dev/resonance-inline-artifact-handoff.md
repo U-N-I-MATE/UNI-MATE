@@ -19,7 +19,7 @@ Bộ não viết bản đầu trong lượt chat (`Write`), rồi lập mục ti
 
 **Nguồn duy nhất là sự kiện công cụ host đã thấy trong lượt, có TOÀN VĂN nội dung:**
 - engine Claude Code: sự kiện `tool_call` tên `Write`, `input` có `file_path` và `content` (`claude_sdk_engine.map_message` đã đưa `input` ra);
-- engine API và hub: `javis_write_file`, nơi host tự ghi file nên biết chính xác bytes.
+- engine API và hub: `unimate_write_file`, nơi host tự ghi file nên biết chính xác bytes.
 
 **Không lập biên nhận** cho `Edit`, `MultiEdit`, lệnh shell, hay ghi của Codex qua shell: host không có toàn văn. Phần mở rộng ở mục 6.
 
@@ -33,7 +33,7 @@ Bộ não viết bản đầu trong lượt chat (`Write`), rồi lập mục ti
 
 ## 2. Bàn giao cuối lượt (chống tranh việc với scheduler)
 
-**Khi `javis_goal` create hay update chạy trong một lượt chat web:**
+**Khi `unimate_goal` create hay update chạy trong một lượt chat web:**
 - lịch work đặt ở `now + HANDOFF_HOLD_S` (đề xuất 900 giây) thay vì `now`, với lý do "chờ bàn giao lượt chat";
 - vì vậy scheduler không chạy việc nền chen vào giữa lượt, dù bộ não viết trước rồi lập mục tiêu hay lập trước rồi mới viết.
 
@@ -65,7 +65,7 @@ Bộ não viết bản đầu trong lượt chat (`Write`), rồi lập mục ti
 
 ## 4. Hai sửa nhỏ (ĐÃ làm ở commit này)
 
-1. **Câu báo xung đột nói đúng nguyên nhân.** Payload có `had_baseline`. Chưa từng có mốc: "File ... đã có sẵn và chưa được mục tiêu này tiếp nhận, nên Javis giữ nguyên file đó. Bản Javis vừa làm chưa được đăng...". Câu "đã được sửa sau lần Javis ghi trước" chỉ dùng khi có mốc thật. Test ở `test_resonance_mvp_run.py`.
+1. **Câu báo xung đột nói đúng nguyên nhân.** Payload có `had_baseline`. Chưa từng có mốc: "File ... đã có sẵn và chưa được mục tiêu này tiếp nhận, nên UNI MATE giữ nguyên file đó. Bản UNI MATE vừa làm chưa được đăng...". Câu "đã được sửa sau lần UNI MATE ghi trước" chỉ dùng khi có mốc thật. Test ở `test_resonance_mvp_run.py`.
 2. **Bộ chạy giữ mọi đầu ra việc nền**, kể cả bản không đăng được, cạnh báo cáo, kèm receipt, hash, trạng thái đăng và sự kiện đăng. Lưu thất bại thì không dọn sandbox và báo rõ.
 
 ## 5. Test bằng engine giả (viết cùng phần lõi)
@@ -93,7 +93,7 @@ Theo tám ca review nêu:
 
 - **Biên nhận cho `Edit` và `MultiEdit`:** host có `old_string` và `new_string`, nên dựng lại được nội dung nếu có bản chụp đầu lượt. Nhưng sự kiện `tool_call` tới host gần như cùng lúc CLI thực thi công cụ, nên chụp "trước khi sửa" có thể trượt. Cần thiết kế riêng.
 - **Engine không có toàn văn** (Codex ghi bằng shell): không tiếp nhận tự động. Đường đúng là để người dùng cho phép, ví dụ một nút "Dùng bản này" trên thẻ, đây là việc giao diện.
-- **Nhắc trong kết quả của `javis_goal`:** "đã lập mục tiêu; sửa file sản phẩm thì viết trọn file bằng Write hoặc để việc nền làm". Chỉ giảm tần suất, không thay đường bàn giao. Có thể thêm sau nếu review muốn.
+- **Nhắc trong kết quả của `unimate_goal`:** "đã lập mục tiêu; sửa file sản phẩm thì viết trọn file bằng Write hoặc để việc nền làm". Chỉ giảm tần suất, không thay đường bàn giao. Có thể thêm sau nếu review muốn.
 
 ## Rủi ro và câu hỏi cho review
 
@@ -104,7 +104,7 @@ Theo tám ca review nêu:
    - năm nhánh engine trong `main.py`: gọi một helper ghi biên nhận;
    - `resonance_store`: `adopt_artifact`, mốc có `source`;
    - `resonance`: `advance`, `_human_only`, `_artifact_file`, nguồn bản trước;
-   - `javis-goal`: đặt lịch giữ chỗ;
+   - `unimate-goal`: đặt lịch giữ chỗ;
    - bộ chạy pilot: hợp đồng S2 và S5.
    Tính năng vẫn tắt mặc định. Brain chưa bật Resonance không đi qua đường nào ở trên.
 
@@ -122,7 +122,7 @@ Chốt hai câu hỏi trên theo đề xuất, review có thể đổi:
   - `_artifact_file` nhận bản tiếp nhận;
   - `form_goal` và `revise_goal` nhận `hold_until`.
 - `resonance_store.py`: `adopt_artifact` (một giao dịch); `create` và `revise` nhận `work_due_at`.
-- `javis-goal/plugin.py`: lập và cập nhật trong lượt chat thì giữ lịch.
+- `unimate-goal/plugin.py`: lập và cập nhật trong lượt chat thì giữ lịch.
 - `main.py`:
   - `_resonance_note_write` ở nhánh engine Claude (`_consume_claude`) và nhánh engine API;
   - `_resonance_after_turn` gọi bàn giao và ghi vết `resonance.handoff`.
@@ -161,7 +161,7 @@ Review trả lời ba câu hỏi:
 - Mọi công cụ không nằm trong danh sách chắc chắn chỉ đọc (Edit, Bash, MCP lạ...), nếu gọi SAU một Write, đều làm Write đó mất hiệu lực, kể cả khi nội dung cuối trùng lại.
 - Shell hay Task chạy nền làm cả lượt mất hiệu lực.
 - Bash gọi TRƯỚC Write (vd `ls`) không ảnh hưởng.
-- `javis_write_file` của engine API chưa có kết quả ghi do host xác nhận gắn đúng lời gọi, nên đã bỏ khỏi danh sách lập biên nhận. Engine API chạy như cũ.
+- `unimate_write_file` của engine API chưa có kết quả ghi do host xác nhận gắn đúng lời gọi, nên đã bỏ khỏi danh sách lập biên nhận. Engine API chạy như cũ.
 
 **P1-2, việc nền chạy trước bàn giao, đầu ra cũ đè bản tiếp nhận.** Bàn giao giờ là **trạng thái trong kho** (bảng `handoffs`), không phải giờ hẹn.
 - Một dòng cho mỗi revision lập hay sửa trong lượt chat, ghi tin nhắn và tiến trình sở hữu (`BOOT_ID`). Dòng được mở trong cùng giao dịch với `create` / `revise`.
@@ -186,7 +186,7 @@ Review trả lời ba câu hỏi:
 - `test_resonance_inline_handoff.py` viết lại theo mapper SDK thật, có các ca review tái hiện:
   - Write lỗi, thiếu kết quả, kết quả của lời gọi khác;
   - Bash sau Write, Edit rồi hoàn lại, shell chạy nền;
-  - Bash trước Write, Write rồi ToolSearch và javis_goal (đường pilot lần 3);
+  - Bash trước Write, Write rồi ToolSearch và unimate_goal (đường pilot lần 3);
   - quá 900 giây mà chat còn chạy;
   - lượt kết thúc không bàn giao, bàn giao muộn, khởi động lại;
   - đầu ra cũ không đè.
@@ -200,7 +200,7 @@ Review trả lời ba câu hỏi:
 
 **P1-1, công cụ MCP mang đuôi `Write` được coi là Write gốc.** Danh tính công cụ giờ là TÊN ĐẦY ĐỦ, không cắt đuôi.
 - Chỉ đúng `Write` của Claude Code mới tạo ứng viên. `mcp__remote__Write` là một MCP báo thành công, không phải lần ghi local.
-- Danh sách chỉ đọc gồm công cụ gốc của Claude Code và đúng các tool Javis qua hai server Javis biết rõ (`mcp__javis__...`, `mcp__javis-plugins__...`).
+- Danh sách chỉ đọc gồm công cụ gốc của Claude Code và đúng các tool UNI MATE qua hai server UNI MATE biết rõ (`mcp__unimate__...`, `mcp__unimate-plugins__...`).
 - MCP khác, kể cả `mcp__untrusted__Read`, đi nhánh bảo thủ: làm mất hiệu lực các Write trước nó.
 
 **P2-1, lượt còn sống mất quyền sau ba giờ.** `luot_dang_chay` có thêm sổ SỐNG `_SONG`.
@@ -220,7 +220,7 @@ Review trả lời ba câu hỏi:
 `adoption_contract` thêm điều kiện riêng của đường tiếp nhận (lý do `not_met`, trong trần) trên nền hợp đồng chung.
 
 **Test:**
-- `test_resonance_inline_handoff.py`: thêm MCP mang đuôi Write, MCP lạ mang đuôi Read, đối chứng tool Javis đã biết, lượt sống quá ba giờ, và lượt kết thúc thật thì gỡ khỏi sổ.
+- `test_resonance_inline_handoff.py`: thêm MCP mang đuôi Write, MCP lạ mang đuôi Read, đối chứng tool UNI MATE đã biết, lượt sống quá ba giờ, và lượt kết thúc thật thì gỡ khỏi sổ.
 - `test_resonance_e2e_achieve_harness.py`: thêm ca sai provider, provider khớp nhau nhưng khác bản duyệt, sai model, có công cụ, thiếu trường; đường sản phẩm với receipt bị sửa sai thì bị bác; soát nguồn bộ chạy.
 - Đột biến kiểm lại:
   - cắt đuôi tên lại: đỏ 4 kiểm;

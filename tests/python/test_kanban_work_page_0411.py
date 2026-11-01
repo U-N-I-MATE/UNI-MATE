@@ -378,7 +378,7 @@ def test_a_finished_run_records_how_long_it_took(tmp_path):
     feature.store.close()
 
 
-# ---------------------------------------------------------------- "Javis is asking you" vs "Javis is handling it"
+# ---------------------------------------------------------------- "UNI MATE is asking you" vs "UNI MATE is handling it"
 # Owner, 30/10/2026: "Needs you" made low-tech owners anxious about stopped jobs they could not fix, and need not.
 
 def _stopped_board(tmp_path):

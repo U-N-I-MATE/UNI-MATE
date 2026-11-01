@@ -13,7 +13,7 @@ import os
 import tempfile
 import time
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-resume-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-resume-"))
 
 import limit_resume as lr  # noqa: E402
 
@@ -128,7 +128,7 @@ for kb in (kich_ban_hen, kich_ban_khong_moc, kich_ban_tat_bat, kich_ban_huy,
 # ---- 7. Kho phiên: rút đúng câu "hết lượt" ở cuối ----
 import sessions  # noqa: E402
 
-_db = os.path.join(tempfile.mkdtemp(prefix="javis-resume-db-"), "s.db")
+_db = os.path.join(tempfile.mkdtemp(prefix="unimate-resume-db-"), "s.db")
 from pathlib import Path  # noqa: E402
 store = sessions.SessionStore(Path(_db))
 sid = store.create_session(brain="brain")

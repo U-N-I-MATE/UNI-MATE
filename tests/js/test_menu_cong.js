@@ -35,7 +35,7 @@ check("a failed brain file lookup says so instead of closing silently", src.inde
 check("Ctrl+U blocks the browser default (source check)", /key === "u"[\s\S]{0,800}preventDefault/.test(src));
 check("the commands item opens the / menu through an input event", src.indexOf('new Event("input"') !== -1);
 check("calling an assistant inserts the same token as the / menu", src.indexOf('"/agent-" + ') !== -1 && src.indexOf('"/workflow-" + ') !== -1);
-check("app.js exposes JavisAttach (pick, upload, addBrainFile, note)", /window\.JavisAttach = \{[\s\S]*pick[\s\S]*upload[\s\S]*addBrainFile[\s\S]*note/.test(app));
+check("app.js exposes UniMateAttach (pick, upload, addBrainFile, note)", /window\.UniMateAttach = \{[\s\S]*pick[\s\S]*upload[\s\S]*addBrainFile[\s\S]*note/.test(app));
 check("composer-plus.js loads after model-picker.js", html.indexOf("model-picker.js") < html.indexOf("composer-plus.js"));
 check("no Vietnamese in composer-plus.js run code",
   !/[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]/i.test(src.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "")));

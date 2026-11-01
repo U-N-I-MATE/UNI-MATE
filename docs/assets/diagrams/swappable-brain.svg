@@ -1,6 +1,6 @@
 <svg viewBox="0 0 1200 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t d">
 <title id="t">Swappable brain: change the model, keep every tool</title>
-<desc id="d">Twelve AI brains take turns plugging into the Javis core while its six tools (MCP Hub, Skills, Second Brain, Tasks, Schedules, Plugins) stay connected the whole time.</desc>
+<desc id="d">Twelve AI brains take turns plugging into the UNI MATE core while its six tools (MCP Hub, Skills, Second Brain, Tasks, Schedules, Plugins) stay connected the whole time.</desc>
 <style>
 .c{opacity:0;animation:slot 12s linear infinite}
 .c.on{opacity:1}
@@ -89,7 +89,7 @@
 <circle class="breath" cx="800" cy="360" r="140" fill="url(#coreGlow)"/>
 <polygon points="870.0,360.0 835.0,420.6 765.0,420.6 730.0,360.0 765.0,299.4 835.0,299.4" fill="url(#coreFill)" stroke="#fb923c" stroke-width="18" stroke-linejoin="round"/>
 <polygon points="870.0,360.0 835.0,420.6 765.0,420.6 730.0,360.0 765.0,299.4 835.0,299.4" fill="none" stroke="#fed7aa" stroke-opacity="0.5" stroke-width="2" stroke-linejoin="round" transform="translate(800 360) scale(0.78) translate(-800 -360)"/>
-<text x="800" y="370" text-anchor="middle" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="2" fill="#1a0f08">JAVIS</text>
+<text x="800" y="370" text-anchor="middle" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="2" fill="#1a0f08">UNI MATE</text>
 <rect x="592.0" y="175" width="196" height="50" rx="25" fill="#2dd4bf" fill-opacity="0.18" filter="url(#blur)"/>
 <rect x="592.0" y="175" width="196" height="50" rx="25" fill="#151525" stroke="#2dd4bf" stroke-opacity="0.75" stroke-width="1.5"/>
 <circle cx="616.0" cy="200" r="5" fill="#4ade80"/>

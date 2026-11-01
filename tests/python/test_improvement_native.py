@@ -35,7 +35,7 @@ def worker(root):
             pass  # Synthetic host boundary; no production ledger or inference is involved.
 
         pin = {"provider": "anthropic-cli", "model": "claude-opus-5-5", "reasoning": "medium",
-               "cli_path": os.environ["JAVIS_TEST_NATIVE_CLI"], "sdk_version": "0.2.116"}
+               "cli_path": os.environ["UNIMATE_TEST_NATIVE_CLI"], "sdk_version": "0.2.116"}
         sha = lambda text: hashlib.sha256(text.encode()).hexdigest()
         acceptance = {"version": 1, "objective": "Exercise only the synthetic fixture boundary.",
             "output": {"kind": "text", "path": "result.txt", "media_type": "text/plain"},
@@ -72,7 +72,7 @@ def worker(root):
 
 
 class NativeBoundaryTests(unittest.TestCase):
-    @unittest.skipUnless(os.environ.get("JAVIS_TEST_NATIVE_CLI"), "Explicit native binary required; no real provider fallback")
+    @unittest.skipUnless(os.environ.get("UNIMATE_TEST_NATIVE_CLI"), "Explicit native binary required; no real provider fallback")
     def test_native_profile_denies_outside_tools_and_ambient_configuration(self):
         root = Path(tempfile.mkdtemp(prefix="improvement-native-local-"))
         work, outside = root / "workspace", root / "outside"
@@ -160,7 +160,7 @@ class NativeBoundaryTests(unittest.TestCase):
             (root / name).mkdir()
         environment.update({"CLAUDE_CONFIG_DIR": str(root / "config"), "ANTHROPIC_API_KEY": "synthetic-local-provider-only",
             "ANTHROPIC_BASE_URL": endpoint, "HTTP_PROXY": endpoint, "HTTPS_PROXY": endpoint, "ALL_PROXY": endpoint,
-            "NO_PROXY": "127.0.0.1,localhost", "JAVIS_TEST_NATIVE_CLI": os.environ["JAVIS_TEST_NATIVE_CLI"]})
+            "NO_PROXY": "127.0.0.1,localhost", "UNIMATE_TEST_NATIVE_CLI": os.environ["UNIMATE_TEST_NATIVE_CLI"]})
         ambient = {"permissions": {"allow": ["Bash", "Read", "WebFetch", "mcp__live__*"]},
                    "hooks": {"SessionStart": [{"hooks": [{"type": "command", "command":
                              'echo ambient > "' + str(outside / "hook.txt") + '"'}]}]}}

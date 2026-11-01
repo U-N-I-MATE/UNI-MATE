@@ -1,6 +1,6 @@
 <svg viewBox="0 0 1200 612" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t d" font-family="Inter, 'Segoe UI', system-ui, -apple-system, Arial, sans-serif">
-<title id="t">Javis picks the smallest tool that finishes the job</title>
-<desc id="d">A chat message goes to the Javis router, which picks one option on a ladder from light to heavy: answer directly, queue a task, create a skill, agent or workflow, set a reminder, or start a loop.</desc>
+<title id="t">UNI MATE picks the smallest tool that finishes the job</title>
+<desc id="d">A chat message goes to the UNI MATE router, which picks one option on a ladder from light to heavy: answer directly, queue a task, create a skill, agent or workflow, set a reminder, or start a loop.</desc>
 <style>.b0,.b1,.h0,.h1{opacity:0}
 @keyframes kb0{0.00%{opacity:0;transform:translateY(8px)} 2.22%{opacity:1;transform:translateY(0)} 31.11%{opacity:1;transform:translateY(0)} 32.96%{opacity:0;transform:translateY(8px)} 100.00%{opacity:0;transform:translateY(8px)}}
 .b0{animation:kb0 13.5s ease-in-out infinite;}
@@ -61,14 +61,14 @@
 <rect width="1200" height="612" fill="url(#glow)"/>
 </g>
 <text x="48" y="62" font-family="ui-monospace, 'SFMono-Regular', Consolas, 'Courier New', monospace" font-size="16" letter-spacing="2.5" fill="#f97316">ONE MESSAGE, THE RIGHT TOOL</text>
-<text x="48" y="102" font-size="28" font-weight="700" fill="#e5e7eb">Javis picks the <tspan fill="#f97316">smallest tool</tspan> that finishes the job.</text>
+<text x="48" y="102" font-size="28" font-weight="700" fill="#e5e7eb">UNI MATE picks the <tspan fill="#f97316">smallest tool</tspan> that finishes the job.</text>
 <rect x="48" y="136" width="430" height="438" rx="16" fill="#151525" stroke="#2a2a40" stroke-width="1.5"/>
 <circle cx="74" cy="164" r="5" fill="#4ade80"/>
 <text x="88" y="171" font-size="19" font-weight="600" fill="#e5e7eb">Chat</text>
 <text x="456" y="171" font-size="16" fill="#9ca3af" text-anchor="end">web or Telegram</text>
 <path d="M48 192H478" stroke="#2a2a40" stroke-width="1.5"/>
 <rect x="68" y="512" width="390" height="44" rx="22" fill="#0f0f1c" stroke="#2a2a40" stroke-width="1.5"/>
-<text x="90" y="540" font-size="16" fill="#6b7280">Message Javis...</text>
+<text x="90" y="540" font-size="16" fill="#6b7280">Message UNI MATE...</text>
 <circle cx="436" cy="534" r="15" fill="#8b5cf6"/>
 <path d="M430 534h12M437 528l6 6-6 6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
 <g class="b0">
@@ -118,7 +118,7 @@
 <circle cx="588" cy="355.0" r="92" fill="url(#rglow)"/>
 <circle class="ring" cx="588" cy="355.0" r="53" fill="none" stroke="#f97316" stroke-width="2.5" opacity="0"/>
 <circle cx="588" cy="355.0" r="44" fill="#1c1530" stroke="#8b5cf6" stroke-width="2.5"/>
-<text x="588" y="362.0" font-size="21" font-weight="700" fill="#e5e7eb" text-anchor="middle">Javis</text>
+<text x="588" y="362.0" font-size="21" font-weight="700" fill="#e5e7eb" text-anchor="middle">UNI MATE</text>
 <text x="588" y="429.0" font-size="16" fill="#9ca3af" text-anchor="middle">reads the brain,</text>
 <text x="588" y="449.0" font-size="16" fill="#9ca3af" text-anchor="middle">picks one tool</text>
 <circle class="pulse" cx="458" cy="355.0" r="7" fill="#fb923c" opacity="0"/>

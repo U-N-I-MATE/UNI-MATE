@@ -11,7 +11,7 @@ import re
 
 from improvement_native_protocol import _ENV_FIXED, _ENV_OPTIONAL, _ENV_PATHS, _text, _tree
 
-_DUMMY_KEY = 'javis-native-qualification-dummy'
+_DUMMY_KEY = 'unimate-native-qualification-dummy'
 _EXTRAS = frozenset(('ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL'))
 
 

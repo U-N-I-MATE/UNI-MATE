@@ -74,7 +74,7 @@ def test_ly_do_la_tieng_viet_ngan():
 
 # ---- Tự tạo việc: TẮT hẳn theo mặc định ----
 # Chủ chốt 2026-07-28: bảng 28 việc đều do máy tự đẻ, không cái nào chủ thật sự cần.
-# Javis chỉ tạo việc khi được BẢO THẲNG ("giao việc này cho Javis" → POST /kanban/task),
+# UNI MATE chỉ tạo việc khi được BẢO THẲNG ("giao việc này cho UNI MATE" → POST /kanban/task),
 # không tự suy ra từ hội thoại nữa. Công tắc vẫn còn trong Cài đặt để bật lại nếu muốn.
 import json as _json
 from pathlib import Path as _Path

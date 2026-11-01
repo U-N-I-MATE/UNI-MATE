@@ -9,7 +9,7 @@ Chủ dự án báo 17/09, hai triệu chứng của CÙNG một gốc:
   2. "mỗi 1 lần gọi chạy nền khi nói chuyện giọng nói là nó sinh ra 1 hội thoại mới... từ đó
      sinh ra rất nhiều hội thoại chỉ có 1 tin hay 2 tin".
 
-Gốc nằm ở `_voice_ask_javis`: nó chạy lượt bộ não chính qua vỏ chung `_tg_answer` với
+Gốc nằm ở `_voice_ask_unimate`: nó chạy lượt bộ não chính qua vỏ chung `_tg_answer` với
 `chat_id` DUY NHẤT cho mỗi việc (`voice:<sid>:<uuid>`). Vỏ đó tự khớp phiên theo chat_id, mà
 chat_id chưa từng thấy nghĩa là chưa có phiên, nên `_tg_conv_sid` mở một bản ghi hội thoại
 MỚI - mỗi việc nền một cái. Và `_tg_conv_sid` lại đóng cứng `channel="telegram"` cho mọi bản
@@ -33,7 +33,7 @@ import sys
 import tempfile
 import time
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-vnkc-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-vnkc-"))
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -52,7 +52,7 @@ def check(name, cond, extra=None):
 
 
 SRC = (ROOT / "server" / "main.py").read_text(encoding="utf-8")
-BRAIN = tempfile.mkdtemp(prefix="javis-vnkc-brain-")
+BRAIN = tempfile.mkdtemp(prefix="unimate-vnkc-brain-")
 
 
 # ---------------------------------------------------------------- kho giả
@@ -206,13 +206,13 @@ check("không ghi liên kết bền chat->phiên cho khoá dùng một lần",
 
 
 # ================================================================
-# 3. `_voice_ask_javis` ghim lượt vào khung chat đang nói
+# 3. `_voice_ask_unimate` ghim lượt vào khung chat đang nói
 # ================================================================
 kho, thay = lap_gia()
 KHUNG2 = kho.create_session(brain=BRAIN, engine="codex", model="opus", channel="web")
 kho.append_message(KHUNG2, "user", "tra doanh thu tháng 6 giúp anh")
 
-out = asyncio.run(main._voice_ask_javis("tra doanh thu tháng 6", KHUNG2, BRAIN,
+out = asyncio.run(main._voice_ask_unimate("tra doanh thu tháng 6", KHUNG2, BRAIN,
                                         key=f"voice:{KHUNG2}:abcd1234"))
 check("việc nền vẫn trả về nội dung như cũ", "250k" in out, out)
 check("và vẫn không đẻ hội thoại nào", len(kho.sessions) == 1, len(kho.sessions))
@@ -231,7 +231,7 @@ kho.append_message(KHUNG3, "assistant", "Ừ, để xem ngay.")                 
 
 
 async def _mot_luot_co_viec_nen():
-    ket_qua = await main._voice_ask_javis(
+    ket_qua = await main._voice_ask_unimate(
         "kiểm tra mã nguồn có nối GitHub không", KHUNG3, BRAIN,
         key=f"voice:{KHUNG3}:abcd1234")
     # `push_to_chat` là nơi DUY NHẤT ghi kết quả việc nền xuống kho.
@@ -270,8 +270,8 @@ check("việc nền xong thì dọn khoá phiên dùng một lần khỏi _TG_SE
       "_TG_SESS.pop(" in body, body[-400:] if body else "")
 check("kết quả vẫn đi về khung chat bằng push_to_chat", "push_to_chat(conv_sid" in body)
 check("việc nền vẫn ghim vào khung chat đang nói (phien_kho=conv_sid)",
-      re.search(r"_voice_ask_javis\(request, conv_sid, brain,", body) is not None)
-check("_voice_ask_javis truyền phiên kho xuống vỏ chung",
+      re.search(r"_voice_ask_unimate\(request, conv_sid, brain,", body) is not None)
+check("_voice_ask_unimate truyền phiên kho xuống vỏ chung",
       re.search(r"phien_kho=.{0,30}conv_sid", SRC) is not None)
 
 print(("\n%d FAIL" % len(_fails)) if _fails else "\nTat ca OK")

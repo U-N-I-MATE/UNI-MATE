@@ -8,7 +8,7 @@ Vòng đó rò hai chỗ, và cả hai đều để lại DẤU VẾT RIÊNG mà
 
 1. Frontmatter `---...---` bị hiểu thành đường kẻ ngang, ghi lại thành `* * *`, mấy dòng
    metadata rơi xuống thành một đoạn văn với hai dấu cách cuối mỗi dòng. File mất frontmatter:
-   Javis, dataview và Obsidian đều đọc trượt từ đó.
+   UNI MATE, dataview và Obsidian đều đọc trượt từ đó.
 
 2. Turndown thoát `1.` đầu dòng thành `1\\.`; mdToHtml bản cũ không hiểu dấu thoát nên lần lưu
    sau thoát tiếp chính dấu gạch đó: `1\\\\.`, `1\\\\\\.`... Mỗi lần mở ra sửa là bẩn thêm một lớp.

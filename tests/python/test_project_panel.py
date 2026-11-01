@@ -3,7 +3,7 @@
     python tests/run.py project_panel      (NO network)
 
 Before this round `projects` was only a LABEL that grouped conversations to reduce clutter - it
-did not change Javis's behaviour at all. Round 1 built the store + API so a project can carry
+did not change UNI MATE's behaviour at all. Round 1 built the store + API so a project can carry
 content: its own instructions, a list of documents in the brain, a list of links.
 
 Two decisions worth guarding, because each has a wrong version that looks more reasonable:
@@ -22,7 +22,7 @@ from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-proj-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-proj-"))
 
 import sessions  # noqa: E402
 
@@ -36,7 +36,7 @@ def check(name, condition, detail=""):
         _fails.append(name)
 
 
-st = sessions.SessionStore(os.path.join(tempfile.mkdtemp(prefix="javis-proj-db-"), "s.db"))
+st = sessions.SessionStore(os.path.join(tempfile.mkdtemp(prefix="unimate-proj-db-"), "s.db"))
 
 # ============================================================
 # 1. Instructions: save, edit, clear, and TRUNCATE AT SAVE TIME
@@ -56,7 +56,7 @@ st.update_project(pid, instructions="")
 check('passing "" CLEARS the instructions', st.get_project(pid)["instructions"] == "")
 
 # Truncate in the STORE, not only when building the prompt: a cap at prompt time alone lets the
-# store grow with every edit, and the user sees their text saved while Javis quietly reads only
+# store grow with every edit, and the user sees their text saved while UNI MATE quietly reads only
 # part of it.
 st.update_project(pid, instructions="x" * (sessions.PROJECT_INSTRUCTIONS_MAX + 500))
 check(f"instructions are cut to the {sessions.PROJECT_INSTRUCTIONS_MAX} cap at save time",

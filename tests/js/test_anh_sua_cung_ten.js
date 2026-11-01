@@ -4,7 +4,7 @@
 
    Chủ dự án báo 02/10: nhờ AI sửa một ảnh nó vừa tạo, AI sửa đúng và giữ nguyên đường dẫn, thì
    khung chat vẫn hiện ảnh cũ tới khi tải lại trang. Lý do: cùng một URL /files/raw thì trình
-   duyệt dùng lại ảnh đã nạp. Nay mỗi bong bóng của Javis mang một "phiên bản" ảnh (mốc giờ của
+   duyệt dùng lại ảnh đã nạp. Nay mỗi bong bóng của UNI MATE mang một "phiên bản" ảnh (mốc giờ của
    tin), gắn thành &v= vào đường ảnh: tin mới luôn tải ảnh mới, tin cũ dựng lại vẫn đúng URL cũ
    nên tải lại trang không tải lại ảnh vô cớ.
 
@@ -55,11 +55,11 @@ check("markdownToHtml chuyển anhV sang chat-render",
   /function markdownToHtml\(text, brain, anhV\) \{[\s\S]{0,200}window\.mdToHtml\(text, brain, anhV \? \{ anhV: String\(anhV\) \} : undefined\)/.test(app));
 check("bong bóng stream có phiên bản riêng, giữ suốt lượt", /function createStreamingBubble\(\) \{[\s\S]{0,160}div\.dataset\.anhV = String\(Date\.now\(\)\);/.test(app));
 check("tin dựng lại từ lịch sử dùng mốc giờ của chính nó", /div\.dataset\.anhV = String\(ts === undefined \? Date\.now\(\) : \(ts \|\| ""\)\);/.test(app));
-check("mọi chỗ vẽ lại bong bóng của Javis đều chuyển phiên bản",
+check("mọi chỗ vẽ lại bong bóng của UNI MATE đều chuyển phiên bản",
   /markdownToHtml\(t\.text, undefined, t\.bubble\.dataset\.anhV\)/.test(app)
   && /markdownToHtml\(shownText, undefined, msgEl\.dataset\.anhV\)/.test(app)
   && /markdownToHtml\(s\.text, undefined, s\.el\.dataset\.anhV\)/.test(app)
-  && /markdownToHtml\(_liveJavisText, undefined, _liveJavisBubble\.dataset\.anhV\)/.test(app));
+  && /markdownToHtml\(_liveUniMateText, undefined, _liveUniMateBubble\.dataset\.anhV\)/.test(app));
 
 if (fails.length) { console.log("\nFAIL:", fails.length, fails); process.exit(1); }
 console.log("\nOK - ảnh sửa cùng tên hiện ảnh mới");

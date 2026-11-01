@@ -32,7 +32,7 @@ import sys
 import tempfile
 import threading
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-settings-safe-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-settings-safe-")
 import config as cfgmod  # noqa: E402
 
 try:
@@ -54,7 +54,7 @@ def seed():
     for p in cfgmod.SETTINGS_PATH.parent.glob(cfgmod.SETTINGS_PATH.name + "*"):
         p.unlink()
     c = cfgmod.read_settings()
-    c["domain"]["custom"] = "javis.example.com"
+    c["domain"]["custom"] = "unimate.example.com"
     c["workspace_name"] = "Cửa hàng A"
     c.setdefault("model", {})["openrouter_api_key"] = "sk-or-test-1234"
     c["telegram"]["chat_id"] = "111"
@@ -64,7 +64,7 @@ def seed():
 
 def con_nguyen(c, tru=()):
     hong = []
-    if c["domain"].get("custom") != "javis.example.com":
+    if c["domain"].get("custom") != "unimate.example.com":
         hong.append("domain.custom")
     if c.get("workspace_name") != "Cửa hàng A":
         hong.append("workspace_name")

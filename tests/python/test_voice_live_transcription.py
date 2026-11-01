@@ -1,7 +1,7 @@
 """Documented conversational Live frames, with input independent of model turns.
 
 https://ai.google.dev/api/live?hl=en lists text/languageCode, no finished flag.
-Javis final=True commits a received segment; it does not assert an utterance ID.
+UNI MATE final=True commits a received segment; it does not assert an utterance ID.
 """
 from _paths import ROOT, SERVER  # noqa: F401
 import asyncio

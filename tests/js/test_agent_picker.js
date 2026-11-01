@@ -78,8 +78,8 @@ const ctx = {
 };
 vm.createContext(ctx);
 vm.runInContext(SRC, ctx);
-const AP = ctx.window.JavisAgentPicker;
-check("module exposes JavisAgentPicker.enhance", AP && typeof AP.enhance === "function");
+const AP = ctx.window.UniMateAgentPicker;
+check("module exposes UniMateAgentPicker.enhance", AP && typeof AP.enhance === "function");
 
 const AGENTS = [
   { slug: "dao-dien-anh-quote", name: "Đạo diễn ảnh quote Ngọc Thu",
@@ -146,7 +146,7 @@ check("choosing the current value fires nothing", AP.choose(sel, "ke-toan") === 
 check("index.html loads agent-picker.js before studio.js and chatbots.js",
   napTruoc("agent-picker.js", ["studio.js", "chatbots.js"], INDEX));
 check("the bot form enhances #cbAgent and passes the full role",
-  CHATBOTS.includes('JavisAgentPicker.enhance(box.querySelector("#cbAgent")') && CHATBOTS.includes("data-desc="));
+  CHATBOTS.includes('UniMateAgentPicker.enhance(box.querySelector("#cbAgent")') && CHATBOTS.includes("data-desc="));
 check("workflow steps enhance both agent selects",
   STUDIO.includes('enhance(row.querySelector(".st-agent")') && STUDIO.includes('enhance(row.querySelector(".st-verify-agent")'));
 // Only the picker's own rules (selectors with .ap-): slicing to the end of the file also measured every block

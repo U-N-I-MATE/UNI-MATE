@@ -54,7 +54,7 @@ def harness():
     spawned = []
 
     def popen(*a, **kw):
-        spawned.append(kw["env"]["JAVIS_RESONANCE_CALL_CEILING"])
+        spawned.append(kw["env"]["UNIMATE_RESONANCE_CALL_CEILING"])
         return FakeProc()
     srv = H.Server(root=ROOT, port=0, base=Path(tempfile.mkdtemp(prefix="ach-h-")), env0={},
                    phase_ceiling={1: 1, 2: 2}, checks=checks, popen=popen, health=lambda: True)
@@ -214,17 +214,17 @@ check("chuẩn hoá dòng outbox đọc revision từ payload và cờ đã giao
 import asyncio  # noqa: E402
 import os  # noqa: E402
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="ach-h-state-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="ach-h-state-"))
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
 
 _B = Path(tempfile.mkdtemp(prefix="ach-h-brain-")).resolve()
-(_B / "Javis").mkdir()
+(_B / "UNI MATE").mkdir()
 _ST = RS.GoalStore(Path(tempfile.mkdtemp(prefix="ach-h-db-")) / "r.sqlite3")
 import _resonance_agent as RA  # noqa: E402  - A1: Cộng hưởng bật theo trợ lý
 RA.preapprove()  # A4: chủ dự án cho phép phạm vi ngay sau khi lập (D1); xem _resonance_agent.preapprove
 RA.enable(_ST, _B)
-_P = RS.Principal("agent", "javis", str(_B))
+_P = RS.Principal("agent", "unimate", str(_B))
 _DL = "Docs/hd.md"
 
 

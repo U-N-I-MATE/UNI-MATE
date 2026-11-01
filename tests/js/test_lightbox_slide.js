@@ -32,7 +32,7 @@ check("khung chat là danh sách cuộn gần nhất (chat chính, Nhóm, hộp 
   /\[data-lb-scope\], \.transcript, \.tm-msgs, \.tm-info-imgs/.test(src) && /oy === "auto" \|\| oy === "scroll"/.test(src));
 check("ảnh trùng chỉ tính một lần, ảnh hỏng bị bỏ", /if \(thay\[m\.url\] !== undefined\) return;/.test(src)
   && /if \(l\.classList\.contains\("hong"\)\) return;/.test(src));
-check("ảnh khách hàng ở trang Hội thoại cũng mở theo thư viện", /window\.JavisLightbox\.openFrom\(a\)/.test(htSrc)
+check("ảnh khách hàng ở trang Hội thoại cũng mở theo thư viện", /window\.UniMateLightbox\.openFrom\(a\)/.test(htSrc)
   && /openFrom: moTuLink/.test(src));
 check("phím mũi tên trái, phải đổi ảnh", /e\.key === "ArrowLeft" \|\| e\.key === "ArrowRight"/.test(src));
 check("vuốt chỉ đổi ảnh khi ảnh đang vừa màn (đang phóng to thì kéo ảnh)",

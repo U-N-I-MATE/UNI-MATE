@@ -22,7 +22,7 @@ from pathlib import Path
 
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-motep-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-motep-"))
 
 import main  # noqa: E402
 
@@ -43,7 +43,7 @@ def check(name: str, condition: bool) -> None:
 # =====================================================================
 # 1. Server: /files/list không được bỏ người dùng ở ngõ cụt
 # =====================================================================
-_TMP = Path(tempfile.mkdtemp(prefix="javis-motep-brain-")).resolve()
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-motep-brain-")).resolve()
 BRAIN = _TMP / "brains" / "Bo Nao"
 (BRAIN / "06 - Sources").mkdir(parents=True)
 (BRAIN / "06 - Sources" / "Ke Hoach SaaS Quan Ly Tai Chinh.md").write_text("# Kế hoạch", encoding="utf-8")
@@ -51,9 +51,9 @@ BRAIN = _TMP / "brains" / "Bo Nao"
 
 main._brain_root = lambda brain: str(BRAIN)
 main.BRAINS_DIR = str(_TMP / "brains")
-os.environ["JAVIS_HOST"] = "0.0.0.0"          # public → trần = gốc brain (khỏi lệ thuộc ổ đĩa máy chạy test)
-os.environ.pop("JAVIS_FILES_ROOT", None)
-os.environ.pop("JAVIS_REQUIRE_LOGIN", None)
+os.environ["UNIMATE_HOST"] = "0.0.0.0"          # public → trần = gốc brain (khỏi lệ thuộc ổ đĩa máy chạy test)
+os.environ.pop("UNIMATE_FILES_ROOT", None)
+os.environ.pop("UNIMATE_REQUIRE_LOGIN", None)
 
 
 def _list(path):

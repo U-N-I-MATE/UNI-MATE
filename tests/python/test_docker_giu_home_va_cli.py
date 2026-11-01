@@ -10,7 +10,7 @@ Hai báo cáo 16/08:
    thư mục đó vào /data/home (volume sẵn có, KHÔNG cần user sửa compose).
 2. "Người mới cài không có codex... kết nối được nhưng không sử dụng được" - hai lỗ:
    image từng phát hành với codex cài best-effort (lỗi bị nuốt bằng `|| echo`), và thẻ
-   Codex báo "Đã kết nối" thuần theo OAuth token (Javis tự lo, không cần binary) nên
+   Codex báo "Đã kết nối" thuần theo OAuth token (UNI MATE tự lo, không cần binary) nên
    thiếu binary vẫn xanh, vào chat mới vỡ. Fix: build thiếu codex phải ĐỎ, và thẻ
    Models lộ cli_found để cảnh báo ngay tại chỗ.
 """
@@ -43,7 +43,7 @@ check("entrypoint có quyền thực thi (git giữ bit +x)", os.access(EP, os.X
 def chay_ep(home, persist, cmd=("sh", "-c", "echo DA_CHAY")):
     # Tự cài agy/grok (0.85.1) TẮT ở đây: test này canh việc giữ HOME, không được ra mạng thật.
     # Phần tự cài có test riêng với curl giả: test_docker_tu_cai_cli.py.
-    env = dict(os.environ, HOME=str(home), JAVIS_HOME_PERSIST=str(persist), JAVIS_AUTO_INSTALL_CLIS="0")
+    env = dict(os.environ, HOME=str(home), UNIMATE_HOME_PERSIST=str(persist), UNIMATE_AUTO_INSTALL_CLIS="0")
     return subprocess.run(["sh", str(EP), *cmd], env=env, capture_output=True,
                           text=True, timeout=30)
 
@@ -72,7 +72,7 @@ else:
         check("entrypoint exec lệnh chính (server vẫn lên)", r.returncode == 0
               and "DA_CHAY" in r.stdout)
         # `.gemini` vào danh sách từ 0.43.0: `agy` để cấu hình MCP ở
-        # ~/.gemini/config/mcp_config.json (chỗ Javis đấu hub vào) và token OAuth của MCP
+        # ~/.gemini/config/mcp_config.json (chỗ UNI MATE đấu hub vào) và token OAuth của MCP
         # ở đó. Thiếu nó thì cập nhật xong là mất sạch kết nối MCP người dùng tự thêm.
         # `.grok` vào danh sách từ 0.50.4. Người dùng báo 29/08: "mỗi lần nâng cấp bản mới
         # là grok lại bị logout". Đúng hạng lỗi của `agy` hồi 16/08, chỉ khó thấy hơn một

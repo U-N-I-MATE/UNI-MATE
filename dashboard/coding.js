@@ -9,7 +9,7 @@
 
    2. **THƯ MỤC chứ không phải REPO.** Bản đầu bắt phải có `.git`, không có thì từ chối kèm
       câu "chạy git init trước đi" - bắt người dùng làm việc vặt cho vừa mô hình dữ liệu của
-      Javis. Nay nhận mọi thư mục; git là thứ ĐỌC RA, và ba chip phụ thuộc git (nhánh,
+      UNI MATE. Nay nhận mọi thư mục; git là thứ ĐỌC RA, và ba chip phụ thuộc git (nhánh,
       worktree, điểm hồi) chỉ hiện khi thư mục đó thật sự là repo.
 
    3. **Cột trái là DANH SÁCH PHIÊN, không phải danh sách repo.** Câu hỏi người ta mở trang
@@ -18,7 +18,7 @@
 
    0.63.2 sửa tiếp hai chỗ nữa, cũng do chủ dự án chỉ ra khi dùng thử:
 
-   4. **Cột trái là CHÍNH cột hội thoại của trang Trò chuyện**, mượn qua `JavisChatSide.mount`
+   4. **Cột trái là CHÍNH cột hội thoại của trang Trò chuyện**, mượn qua `UniMateChatSide.mount`
       với bộ lọc kênh - nguyên hàng tab Hội thoại|Thư mục, thanh gom nhóm, ô tìm, ghim, nhóm
       theo ngày, đổi tên, xoá, "Xem thêm". Bản 0.63.1 tự vẽ một danh sách rút gọn: lại đúng
       cái lỗi "dựng bản thứ hai" mà chính file này chép lời cảnh báo ở trên.
@@ -28,7 +28,7 @@
 
    0.63.4 sửa chỗ thứ sáu:
 
-   6. **Thêm thư mục là DUYỆT rồi bấm chọn**, qua `JavisFolderPicker` (hộp dùng chung, chạy
+   6. **Thêm thư mục là DUYỆT rồi bấm chọn**, qua `UniMateFolderPicker` (hộp dùng chung, chạy
       trên chính `GET /browse` mà hộp chọn brain vẫn dùng). Trước đó chỉ có một ô chữ trống:
       trên điện thoại là gõ tay cả đường dẫn tuyệt đối, sai một ký tự thì nhận câu "không phải
       thư mục" mà không biết sai ở đâu. Lại đúng cái lỗi "bắt người dùng khai dữ liệu cho vừa
@@ -55,7 +55,7 @@
       return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
     });
   }
-  function brain() { try { return W.JavisSessions ? W.JavisSessions.brain() : "brain"; } catch (e) { return "brain"; } }
+  function brain() { try { return W.UniMateSessions ? W.UniMateSessions.brain() : "brain"; } catch (e) { return "brain"; } }
   async function api(url, opt) { var r = await fetch(url, opt); return r.json(); }
   function fd(o) {
     var f = new FormData();
@@ -116,7 +116,7 @@
       ra += chip("worktree", (wt ? ic("check") : ic("folder-tree")) + " worktree", wt ? " on" : "");
       ra += chip("diemhoi", ic("history") + " " + esc(t("coding.chip_ckpt")));
     }
-    // 0.256.0: Hoàn tác về mốc TỰ ĐỘNG. Không phụ thuộc git của thư mục (kho bóng của Javis lo),
+    // 0.256.0: Hoàn tác về mốc TỰ ĐỘNG. Không phụ thuộc git của thư mục (kho bóng của UNI MATE lo),
     // nên có ở mọi thư mục đã gắn.
     ra += chip("hoantac", ic("undo-2") + " " + esc(t("coding.chip_undo")));
     return ra + chipQuyen();
@@ -144,7 +144,7 @@
             // 0.251.0: the open conversation's name, as on the Chat page (sessions-ui.js renderTitle).
             '<span class="cp-conv-host"></span>' +
             // Chip gom nhóm hội thoại của trang Trò chuyện đậu vào đây, y như thanh tiêu đề
-            // của trang đó. Thiếu ô này thì JavisChatSide.chip() không có chỗ để vẽ.
+            // của trang đó. Thiếu ô này thì UniMateChatSide.chip() không có chỗ để vẽ.
             '<span class="proj-chip-host"></span>' +
             // 0.159.0: errors get their own slot, so a chip redraw cannot wipe them.
             '<small class="cd-err ws-err" id="cdErr" role="status"></small>' +
@@ -176,8 +176,8 @@
     // sử mà không có gì xảy ra (chủ repo báo 23/09; dựng lại ở 390px: sau cú bấm cột trái vẫn
     // nằm ở x = -315). Màn hẹp chỉ hiểu lớp `side-open`, và còn cần ba đường ĐÓNG nữa mà bản
     // tự viết cũng không có.
-    var bat = W.JavisNeoCotTrai
-      ? W.JavisNeoCotTrai(el.querySelector("#cdPage"), el.querySelector("#cdSide"),
+    var bat = W.UniMateNeoCotTrai
+      ? W.UniMateNeoCotTrai(el.querySelector("#cdPage"), el.querySelector("#cdSide"),
                           el.querySelector("#cdSlot"))
       : function () { el.querySelector("#cdPage").classList.toggle("side-thu"); };
     el.querySelector("#cdLeftBtn").onclick = bat;
@@ -187,12 +187,12 @@
     // module nên có sẵn: tab Hội thoại|Thư mục, thanh gom nhóm, ô tìm, ghim, nhóm theo ngày,
     // đổi tên, xoá, "Xem thêm". `onNew` bắt buộc phải truyền, vì nút "Hội thoại mới" mặc định
     // mở một phiên chat THƯỜNG, mà phiên thường thì không chạy trong thư mục nào cả.
-    if (W.JavisChatSide && W.JavisChatSide.mount) {
-      W.JavisChatSide.mount(el.querySelector("#cdSide"), { kenh: S.kenh, onNew: moPhienMoi });
+    if (W.UniMateChatSide && W.UniMateChatSide.mount) {
+      W.UniMateChatSide.mount(el.querySelector("#cdSide"), { kenh: S.kenh, onNew: moPhienMoi });
       // The collapse/expand pair in the column itself, the same as on the Chat page. Added
       // after mount, which rewrites the column and would drop them.
-      if (W.JavisSideFoldButtons) W.JavisSideFoldButtons(el.querySelector("#cdPage"), el.querySelector("#cdSide"));
-      try { W.JavisChatSide.chip(); } catch (e) {}
+      if (W.UniMateSideFoldButtons) W.UniMateSideFoldButtons(el.querySelector("#cdPage"), el.querySelector("#cdSide"));
+      try { W.UniMateChatSide.chip(); } catch (e) {}
     }
     // Xoay ngang điện thoại, hoặc kéo cửa sổ qua ngưỡng 860px, là dải chip phải ĐỔI BÊN
     // (#modelBar <-> hàng riêng). Không nghe thì sau khi xoay nó nằm trong node đang bị ẩn và
@@ -204,7 +204,7 @@
     } catch (e) { _mqChip = null; }
 
     // The composer chip pins or unpins the working folder (0.158.0): reload the git chips.
-    W.addEventListener("javis:pinned-folder-changed", onPinned);
+    W.addEventListener("unimate:pinned-folder-changed", onPinned);
 
     bocMoPhien();
     await moPhienDau();
@@ -215,24 +215,24 @@
     if (active && d.sid && d.sid === sid()) taiRangBuoc(d.sid);
   }
 
-  /** Bọc `JavisSessions.open` trong lúc ở trang này.
+  /** Bọc `UniMateSessions.open` trong lúc ở trang này.
    *
-   *  Bấm một hội thoại ở cột trái là module lịch sử gọi thẳng `JavisSessions.open`, không đi
+   *  Bấm một hội thoại ở cột trái là module lịch sử gọi thẳng `UniMateSessions.open`, không đi
    *  qua file này, nên dải chip vẫn nói về phiên CŨ: sai thư mục, sai mức quyền, và người
    *  dùng không có cách nào biết. Module đó không phát sự kiện nào, nên chỗ móc rẻ nhất là
    *  bọc chính hàm ấy lại, và trả về nguyên trạng khi rời trang. */
   var _openGoc = null;
   function bocMoPhien() {
-    if (!W.JavisSessions || _openGoc) return;
-    _openGoc = W.JavisSessions.open;
-    W.JavisSessions.open = function (id, still) {
-      var ra = _openGoc.apply(W.JavisSessions, arguments);
+    if (!W.UniMateSessions || _openGoc) return;
+    _openGoc = W.UniMateSessions.open;
+    W.UniMateSessions.open = function (id, still) {
+      var ra = _openGoc.apply(W.UniMateSessions, arguments);
       if (id) { S.sidCoding[id] = 1; Promise.resolve(ra).then(function () { taiRangBuoc(id); }, function () {}); }
       return ra;
     };
   }
   function traMoPhien() {
-    if (_openGoc && W.JavisSessions) { W.JavisSessions.open = _openGoc; }
+    if (_openGoc && W.UniMateSessions) { W.UniMateSessions.open = _openGoc; }
     _openGoc = null;
   }
 
@@ -244,7 +244,7 @@
     // không còn tồn tại, và mỗi lần vào lại trang là chồng thêm một người nghe nữa.
     try { if (_mqChip && _mqChipFn) _mqChip.removeEventListener("change", _mqChipFn); } catch (e) {}
     _mqChip = null; _mqChipFn = null;
-    W.removeEventListener("javis:pinned-folder-changed", onPinned);
+    W.removeEventListener("unimate:pinned-folder-changed", onPinned);
   }
 
   // ============================================================
@@ -275,7 +275,7 @@
 
   function nhoPhienTruoc() {
     try {
-      var cur = W.JavisSessions && W.JavisSessions.current();
+      var cur = W.UniMateSessions && W.UniMateSessions.current();
       if (cur && !laPhienCoding(cur)) S.phienTruoc = cur;
     } catch (e) {}
   }
@@ -285,12 +285,12 @@
    *  Không trả thì tin gõ tiếp ở trang Trò chuyện rơi vào phiên Coding, tức là chạy với cwd
    *  của một thư mục chứ không phải của brain. Đúng lỗi trang Cộng sự đã gặp và đã chữa. */
   function traKhungChat() {
-    if (!W.JavisSessions) return;
-    var cur = W.JavisSessions.current();
+    if (!W.UniMateSessions) return;
+    var cur = W.UniMateSessions.current();
     if (!cur || (!laPhienCoding(cur) && cur === S.phienTruoc)) return;
-    W.JavisSessions.new();
+    W.UniMateSessions.new();
     if (S.phienTruoc && S.phienTruoc !== cur && !laPhienCoding(S.phienTruoc)) {
-      try { W.JavisSessions.open(S.phienTruoc); } catch (e) {}
+      try { W.UniMateSessions.open(S.phienTruoc); } catch (e) {}
     }
   }
 
@@ -300,7 +300,7 @@
     var still = function () { return active && ticket === opening; };
     try {
       S.sidCoding[sid] = 1;
-      if (W.JavisSessions) await W.JavisSessions.open(sid, still);
+      if (W.UniMateSessions) await W.UniMateSessions.open(sid, still);
       if (!still()) return false;
       await taiRangBuoc(sid);
       return true;
@@ -319,10 +319,10 @@
       // và không đi qua từ điển. Ghi console cho người sửa lỗi, màn hình dùng câu của mình.
       if (!n || !n.id) { try { console.warn("POST /sessions/new:", n && n.error); } catch (e2) {} throw new Error("session"); }
       S.sidCoding[n.id] = 1;
-      if (W.JavisSessions) await W.JavisSessions.open(n.id);
+      if (W.UniMateSessions) await W.UniMateSessions.open(n.id);
       await taiRangBuoc(n.id);
       // Cột trái là module lịch sử: bảo NÓ vẽ lại, không tự dựng danh sách thứ hai.
-      try { if (W.JavisChatSide && W.JavisChatSide.refresh) W.JavisChatSide.refresh(); } catch (e) {}
+      try { if (W.UniMateChatSide && W.UniMateChatSide.refresh) W.UniMateChatSide.refresh(); } catch (e) {}
       return true;
     } catch (e) {
       veLoi(t("coding.err_session"));
@@ -336,7 +336,7 @@
     if (el) el.textContent = msg || "";
   }
 
-  function sid() { return W.JavisSessions ? W.JavisSessions.current() : ""; }
+  function sid() { return W.UniMateSessions ? W.UniMateSessions.current() : ""; }
 
   async function taiRangBuoc(id) {
     var r = await api("/coding/session/" + encodeURIComponent(id));
@@ -400,7 +400,7 @@
     var r = await api("/coding/session/" + encodeURIComponent(id), { method: "POST", body: fd(body) });
     if (r && r.error) { veLoi(r.error); return; }
     await taiRangBuoc(id);
-    try { if (W.JavisChatSide && W.JavisChatSide.refresh) W.JavisChatSide.refresh(); } catch (e) {}
+    try { if (W.UniMateChatSide && W.UniMateChatSide.refresh) W.UniMateChatSide.refresh(); } catch (e) {}
   }
 
   function bamChip(loai, node) {
@@ -596,8 +596,8 @@
    *  Trang Code có chip Hoàn tác; các khung chat còn lại nhận một mục trong menu "+" của ô soạn
    *  tin, mở đúng bảng Hoàn tác ở trên cho phiên đang mở. */
   function dangKyMenuHoanTac() {
-    if (!W.JavisComposerMenu || !W.JavisComposerMenu.register) return;
-    W.JavisComposerMenu.register({
+    if (!W.UniMateComposerMenu || !W.UniMateComposerMenu.register) return;
+    W.UniMateComposerMenu.register({
       id: "undo", order: 25, icon: ic("undo-2"), label: "cp.undo", emptyKey: "coding.undo_empty",
       submenu: function () {
         var id = sid();
@@ -616,7 +616,7 @@
     else dangKyMenuHoanTac();
   }
 
-  W.JavisCoding = {
+  W.UniMateCoding = {
     render: render, roi: roi,
     // Exposed for node tests
     chipHtml: chipHtml,

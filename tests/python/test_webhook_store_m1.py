@@ -27,9 +27,9 @@ import threading
 import time
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-wh-m1-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
+STATE = Path(tempfile.mkdtemp(prefix="unimate-wh-m1-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -60,7 +60,7 @@ HOOK = {"id": "wh_test", "name": "Lead", "brain": "/b", "target": "task", "text"
 
 
 def child(code: str, env_extra: dict, state: Path) -> subprocess.CompletedProcess:
-    env = dict(os.environ, JAVIS_STATE_DIR=str(state), PYTHONPATH=str(SERVER), **env_extra)
+    env = dict(os.environ, UNIMATE_STATE_DIR=str(state), PYTHONPATH=str(SERVER), **env_extra)
     return subprocess.run([PY, "-c", code], env=env, capture_output=True, text=True, timeout=60)
 
 
@@ -76,12 +76,12 @@ def rows(db: Path, sql: str, args=()) -> list:
 # ---- 1. ACK only after commit: crash before and after the commit, in a child process ----
 INGEST = (
     "import webhook_store as ws, json, sys, os\n"
-    "st = ws.Store(os.path.join(os.environ['JAVIS_STATE_DIR'], 'e.sqlite3'))\n"
+    "st = ws.Store(os.path.join(os.environ['UNIMATE_STATE_DIR'], 'e.sqlite3'))\n"
     "h = json.loads(sys.argv[1]) if len(sys.argv) > 1 else " + repr(HOOK) + "\n"
     "code, info = st.ingest(h, b'{\"order\": 1}', 'application/json', 'key-1')\n"
     "print('ACK', code)\n")
 s1 = Path(tempfile.mkdtemp(prefix="wh-crash-"))
-r = child(INGEST, {"JAVIS_WH_CRASH_AT": "before_commit"}, s1)
+r = child(INGEST, {"UNIMATE_WH_CRASH_AT": "before_commit"}, s1)
 check("crash before commit: the process dies before answering", r.returncode == 77 and "ACK" not in r.stdout, r)
 db = s1 / "e.sqlite3"
 check("crash before commit: no event and no key were kept",
@@ -90,7 +90,7 @@ r = child(INGEST, {}, s1)
 check("the sender's retry after that crash is accepted (202), not a duplicate", "ACK 202" in r.stdout, r.stdout + r.stderr)
 
 s2 = Path(tempfile.mkdtemp(prefix="wh-crash-"))
-r = child(INGEST, {"JAVIS_WH_CRASH_AT": "after_commit"}, s2)
+r = child(INGEST, {"UNIMATE_WH_CRASH_AT": "after_commit"}, s2)
 db2 = s2 / "e.sqlite3"
 check("crash after commit, before the ACK: the event and its key are both stored",
       r.returncode == 77 and rows(db2, "SELECT status FROM events") == [("received",)]
@@ -108,7 +108,7 @@ ths = [threading.Thread(target=lambda: res.append(st3.ingest(HOOK, b"x", "text/p
 [t.join() for t in ths]
 check("8 threads, one key: exactly one 202", sorted(res) == [200] * 7 + [202], res)
 procs = [subprocess.Popen([PY, "-c", INGEST.replace("key-1", "proc-key")],
-                          env=dict(os.environ, JAVIS_STATE_DIR=str(s3), PYTHONPATH=str(SERVER)),
+                          env=dict(os.environ, UNIMATE_STATE_DIR=str(s3), PYTHONPATH=str(SERVER)),
                           stdout=subprocess.PIPE, text=True) for _ in range(5)]
 outs = [p.communicate(timeout=60)[0] for p in procs]
 codes = sorted(o.strip().split()[-1] for o in outs)
@@ -252,7 +252,7 @@ async def main():
     code = (
         "import asyncio, os, json, webhook_triggers as wt\n"
         "from pathlib import Path\n"
-        "S = Path(os.environ['JAVIS_STATE_DIR'])\n"
+        "S = Path(os.environ['UNIMATE_STATE_DIR'])\n"
         "async def run_task(b, t, l):\n"
         "    (S / 'effects.txt').open('a').write('ran\\n')\n"
         "    return 'ok', ''\n"
@@ -265,7 +265,7 @@ async def main():
         "    print('ACK', code, flush=True)\n"
         "    await f.wait_idle()\n"
         "asyncio.run(go())\n")
-    r = child(code, {"JAVIS_WH_CRASH_AT": "after_dispatch"}, FEAT_STATE)
+    r = child(code, {"UNIMATE_WH_CRASH_AT": "after_dispatch"}, FEAT_STATE)
     eff = (FEAT_STATE / "effects.txt").read_text().count("ran") if (FEAT_STATE / "effects.txt").exists() else 0
     check("child: accepted, ran the outside effect once, then died before writing the result",
           "ACK 202" in r.stdout and r.returncode == 77 and eff == 1, (r.returncode, r.stdout, r.stderr[-300:]))

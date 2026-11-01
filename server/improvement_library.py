@@ -115,14 +115,14 @@ def export_package(procedures: list, dependencies: dict, reports: list) -> dict:
     # Shapes are closed; the only free names are dependency keys, which must not smuggle private data in.
     if any(word in key.lower() for key in dependencies for word in _FORBIDDEN_EXPORT):
         raise ValueError("export_forbidden_field")
-    package = {"format": "javis-improvement-package", "version": EXPORT_VERSION, "procedures": clean_procedures,
+    package = {"format": "unimate-improvement-package", "version": EXPORT_VERSION, "procedures": clean_procedures,
                "dependencies": dict(sorted(dependencies.items())), "reports": clean_reports}
     return {**package, "package_hash": IM._hash(package)}
 
 
 def import_package(package) -> list:
     """An untrusted package -> untested candidates. Activation, grants, verdicts and scores never come along."""
-    if type(package) is not dict or package.get("format") != "javis-improvement-package" or package.get("version") != EXPORT_VERSION:
+    if type(package) is not dict or package.get("format") != "unimate-improvement-package" or package.get("version") != EXPORT_VERSION:
         raise ValueError("invalid_import_package")
     body = {k: package[k] for k in ("format", "version", "procedures", "dependencies", "reports") if k in package}
     if package.get("package_hash") != IM._hash(body):
@@ -350,7 +350,7 @@ def export_procedures(assets, principal, procedure_ids, *, version: str) -> dict
     if set(rows) != set(procedure_ids):
         raise PermissionError("export_procedure_unavailable")
     return export_package([{"agent_slug": rows[i]["agent_slug"], "text": rows[i]["text"]} for i in procedure_ids],
-                          {"javis": str(version)}, [])
+                          {"unimate": str(version)}, [])
 
 
 class Imports:

@@ -1,5 +1,5 @@
 """
-Telegram bot cho Javis - long-polling getUpdates, whitelist theo chat_id (MỘT hoặc NHIỀU ID).
+Telegram bot cho UNI MATE - long-polling getUpdates, whitelist theo chat_id (MỘT hoặc NHIỀU ID).
 - Trả lời chạy ở BACKGROUND task → vẫn nhận /stop giữa chừng.
 - Lệnh /...: command_fn(cmd, arg, chat, meta) -> {"reply": str} | {"ask": str} | None
   (chat = chat_id người gõ → /reset //stop /retry chỉ tác động PHIÊN của họ).
@@ -56,7 +56,7 @@ BOT_COMMANDS = [
     {"command": "notes", "description": "Lưu tin nhắn (kèm ảnh) vào Sources của brain"},
     {"command": "agents", "description": "Liệt kê agent + việc đang chạy"},
     # Pick the agent (partner) that answers this chat; `@<agent name> ...` does it for one message.
-    {"command": "agent", "description": "Chọn cộng sự trả lời chat này (/agent off: về Javis)"},
+    {"command": "agent", "description": "Chọn cộng sự trả lời chat này (/agent off: về UNI MATE)"},
     {"command": "workflows", "description": "Liệt kê workflow"},
     {"command": "model", "description": "Xem hoặc đổi model"},
     {"command": "brain", "description": "Xem hoặc đổi brain (vault) của phiên này"},
@@ -67,8 +67,8 @@ BOT_COMMANDS = [
     {"command": "plan", "description": "Chỉ lập kế hoạch, chưa làm gì ra ngoài"},
     {"command": "stop", "description": "Dừng câu đang trả lời"},
     {"command": "reset", "description": "Bắt đầu hội thoại mới"},
-    {"command": "cli", "description": "Engine Claude Code (MCP Javis + lệnh máy)"},
-    {"command": "or", "description": "Engine OpenRouter (MCP Javis, không lệnh máy)"},
+    {"command": "cli", "description": "Engine Claude Code (MCP UNI MATE + lệnh máy)"},
+    {"command": "or", "description": "Engine OpenRouter (MCP UNI MATE, không lệnh máy)"},
 ]
 
 IMG_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
@@ -82,7 +82,7 @@ MAX_DOWNLOAD_MB = 20  # bot API chỉ cho TẢI VỀ file ≤ 20MB
 # Chủ repo gửi ảnh chụp một nhóm Telegram (2026-08-07): bot chuyên trách đang nói chuyện như
 # một người, rồi giữa cuộc nói chuyện hiện ra "⏳ Đang xử lý câu trước. Gửi /stop để dừng rồi
 # hỏi lại." trước mặt cả nhóm. Một câu như vậy là khai ngay đây là máy, và còn dạy người lạ
-# một lệnh quản trị. Yêu cầu: "các phần trạng thái của Javis anh không muốn để lộ ra như vậy,
+# một lệnh quản trị. Yêu cầu: "các phần trạng thái của UNI MATE anh không muốn để lộ ra như vậy,
 # anh muốn ẩn đi để như cảm giác người thật nói chứ ko phải bot."
 #
 # Ở chế độ này, thứ THAY THẾ tin trạng thái là chấm "đang nhập…" của chính Telegram - đúng thứ
@@ -91,7 +91,7 @@ MAX_DOWNLOAD_MB = 20  # bot API chỉ cho TẢI VỀ file ≤ 20MB
 # trạng thái.
 TYPING_MOI_GIAY = 4.0   # Telegram tắt chấm "đang nhập" sau ~5 giây, phải nhắc lại trước đó
 # Hàng đợi lượt, luật /stop, cổng precheck và dòng vết công cụ nằm ở `bot_gateway`: chúng là
-# luật hành vi của Javis, không phải chi tiết của Telegram, nên kênh Zalo dùng chung y hệt.
+# luật hành vi của UNI MATE, không phải chi tiết của Telegram, nên kênh Zalo dùng chung y hệt.
 
 # Câu xin lỗi CŨ khi một lượt gãy ở chế độ người thật. Từ 15/10/2026 không kênh nào gửi nó nữa:
 # chủ repo chốt trục trặc kỹ thuật là việc của chủ, khách không nhận gì (xem
@@ -184,7 +184,7 @@ class TelegramBot(HangLuot):
                  download_dir=None, commands=None, precheck_fn=None, event_fn=None,
                  giau_trang_thai=False, stt_fn=None):
         self.token = token
-        # Giấu MỌI tin trạng thái/kỹ thuật của Javis, để cuộc trò chuyện đọc như người thật.
+        # Giấu MỌI tin trạng thái/kỹ thuật của UNI MATE, để cuộc trò chuyện đọc như người thật.
         # Bot của CHỦ để False (chủ cần thấy "đang gọi công cụ…", cần lệnh /stop); bot chuyên
         # trách nói với khách thì True. Xem khối chú thích ở đầu file.
         self.giau_trang_thai = bool(giau_trang_thai)
@@ -213,7 +213,7 @@ class TelegramBot(HangLuot):
         self.download_dir = download_dir    # str | callable(chat) -> str: nơi lưu file user gửi lên
         # Nghe tin thoại: async (bytes, tên file) -> dict như `stt.groq_nghe`. None = chưa đấu
         # (gửi tin thoại sẽ được trả lời là cần dán API key Groq ở trang Models). Nhận qua tham
-        # số chứ không tự đọc settings: module này cố ý không biết gì về config của Javis.
+        # số chứ không tự đọc settings: module này cố ý không biết gì về config của UNI MATE.
         self.stt_fn = stt_fn
         self._task = None
         # ĐA PHIÊN: mỗi chat_id có lượt trả lời RIÊNG → các tài khoản chạy song song,
@@ -236,8 +236,8 @@ class TelegramBot(HangLuot):
         # ĐÃ TẮT riêng tư ở BotFather, bot nhận mọi tin trong nhóm. False = còn bật (mặc định),
         # trong nhóm bot chỉ nhận tin nhắc tên nó, tin trả lời vào nó, và lệnh.
         #
-        # Cần phơi ra vì nó im lặng vô hiệu hoá một tuỳ chọn của Javis: đặt bot "trả lời mọi
-        # tin trong nhóm" mà riêng tư còn bật thì Telegram chặn từ trước khi Javis nhìn thấy,
+        # Cần phơi ra vì nó im lặng vô hiệu hoá một tuỳ chọn của UNI MATE: đặt bot "trả lời mọi
+        # tin trong nhóm" mà riêng tư còn bật thì Telegram chặn từ trước khi UNI MATE nhìn thấy,
         # và trang Chatbot cứ hiện xanh trong khi bot điếc một nửa.
         self.doc_moi_tin_nhom = False
         # getMe hỏng thì bot KHÔNG biết @username của chính nó, và lúc đó `_co_nhac_ten` trả
@@ -421,7 +421,7 @@ class TelegramBot(HangLuot):
     async def _giu_typing(self, client, chat):
         """Giữ chấm "đang nhập…" sáng suốt cả lượt trả lời (chế độ người thật).
 
-        Đây là thứ THAY THẾ tin "🤔 Javis đang xử lý…": người đang chờ vẫn thấy đầu kia có
+        Đây là thứ THAY THẾ tin "🤔 UNI MATE đang xử lý…": người đang chờ vẫn thấy đầu kia có
         động tĩnh, nhưng thấy đúng cái một người thật để lại chứ không phải một tin nhắn máy.
         Telegram tự tắt chấm sau ~5 giây nên phải nhắc lại đều.
         """
@@ -434,7 +434,7 @@ class TelegramBot(HangLuot):
         """Gửi 1 tin trạng thái (plain, không markdown) → trả message_id để sửa sau.
 
         `disable_notification` là phần quan trọng chứ không phải chi tiết làm đẹp. Trước đây
-        mỗi lượt hỏi nổ HAI thông báo lên điện thoại: một cái "🤔 Javis đang xử lý…" hoàn toàn
+        mỗi lượt hỏi nổ HAI thông báo lên điện thoại: một cái "🤔 UNI MATE đang xử lý…" hoàn toàn
         vô nghĩa, rồi mới tới câu trả lời. Tin này chỉ để NHÌN trong lúc chờ, không phải để
         gọi người ta ra xem, nên nó đi im. Sửa tin (`editMessageText`) vốn không nổ thông báo,
         nên cả lượt chỉ còn đúng một tiếng chuông: lúc câu trả lời thật được gửi.
@@ -591,7 +591,7 @@ class TelegramBot(HangLuot):
         return False
 
     async def _bao_su_kien(self, msg):
-        """Tin DỊCH VỤ của nhóm - thứ Javis nghe được BẤT KỂ chế độ riêng tư của Telegram.
+        """Tin DỊCH VỤ của nhóm - thứ UNI MATE nghe được BẤT KỂ chế độ riêng tư của Telegram.
 
         Ba loại đáng quan tâm, cả ba đều là lúc "im lặng" nghĩa là hỏng:
 
@@ -651,7 +651,7 @@ class TelegramBot(HangLuot):
     async def _nghe_tin_thoai(self, client, media, caption):
         """Trả chuỗi đưa vào lượt chat. `stt_fn` do main.py cấp: async (bytes, tên) -> dict.
 
-        Chưa cấu hình `stt_fn`, chưa đấu key, nghe hỏng: mọi ngả đều trả một dòng DẶN Javis
+        Chưa cấu hình `stt_fn`, chưa đấu key, nghe hỏng: mọi ngả đều trả một dòng DẶN UNI MATE
         nói gì, không phải câu nói sẵn - kênh nào cũng đi qua engine nên giọng còn hợp ngữ
         cảnh (chủ hay khách). Im lặng nuốt tin thoại là ngả duy nhất không được phép.
         """
@@ -668,9 +668,9 @@ class TelegramBot(HangLuot):
         try:
             kq = await self.stt_fn(data, ten)
         except Exception as e:
-            kq = {"ok": False, "noi_voi_javis": stt.loi_thanh_dong("loi", f"{type(e).__name__}: {e}")}
+            kq = {"ok": False, "noi_voi_unimate": stt.loi_thanh_dong("loi", f"{type(e).__name__}: {e}")}
         if not (kq or {}).get("ok"):
-            return (kq or {}).get("noi_voi_javis") or stt.loi_thanh_dong("loi")
+            return (kq or {}).get("noi_voi_unimate") or stt.loi_thanh_dong("loi")
         # Caption là LỆNH thì để `_caption_command_text` đưa nó lên đầu (khối này đi nguyên
         # vẹn xuống dưới); ghép ở đây nữa là lệnh xuất hiện hai lần trong cùng một lượt.
         khoi = stt.khoi_thoai(kq.get("text"), "Telegram")
@@ -690,7 +690,7 @@ class TelegramBot(HangLuot):
         if thoai:
             # Tin thoại có đường đi RIÊNG: nghe thành chữ rồi chạy như một câu hỏi, chứ không
             # tải về đĩa rồi báo "đã tải về path" như file thường - người ta ghi âm để RA LỆNH,
-            # không phải để gửi Javis một file .ogg.
+            # không phải để gửi UNI MATE một file .ogg.
             return await self._nghe_tin_thoai(client, thoai, caption)
         if doc:
             kind = "file"
@@ -704,7 +704,7 @@ class TelegramBot(HangLuot):
             name = f"photo_{msg.get('message_id')}.jpg"
             fsize = big.get("file_size") or 0
         elif media_khac:
-            return _with_cap("[Người dùng gửi video qua Telegram - Javis chưa xem được loại này. "
+            return _with_cap("[Người dùng gửi video qua Telegram - UNI MATE chưa xem được loại này. "
                              "Hãy lịch sự nhờ user gõ chữ, gửi tin thoại, hoặc gửi dạng file tài liệu.]")
         else:
             return None
@@ -757,7 +757,7 @@ class TelegramBot(HangLuot):
         if self.giau_trang_thai:
             giu = asyncio.create_task(self._giu_typing(client, chat))
         else:
-            status_mid = await self._send_status(client, chat, "🤔 Javis đang xử lý…")
+            status_mid = await self._send_status(client, chat, "🤔 UNI MATE đang xử lý…")
         _last = [0.0]
         t0 = time.monotonic()
         tools = []          # tên công cụ đã gọi trong lượt, giữ thứ tự, không trùng
@@ -882,7 +882,7 @@ class TelegramBot(HangLuot):
                         # chuyện phải biết kể cả (nhất là) khi nhóm đó chưa được cho phép.
                         await self._bao_su_kien(msg)
                         if self.chat_ids and chat not in self.chat_ids:
-                            await self._send(client, chat, "Bạn không có quyền dùng bot Javis này.")
+                            await self._send(client, chat, "Bạn không có quyền dùng bot Uni này.")
                             continue
                         text = (msg.get("text") or "").strip()
                         if not text:

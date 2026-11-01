@@ -12,7 +12,7 @@ from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="improvement-claude-"))
-for key, name in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
+for key, name in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
                   "BRAIN_PATH": "brain", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(TEST_ROOT / name)
 
@@ -37,7 +37,7 @@ class ProfileTests(unittest.TestCase):
         from claude_sdk_engine import ClaudeSDK
         engine = ClaudeSDK(system_prompt="ambient preset", cwd=str(TEST_ROOT), model="wrong-model")
         engine.trial_profile = profile
-        engine.allowed_tools = ["Bash", "mcp__javis"]
+        engine.allowed_tools = ["Bash", "mcp__unimate"]
         engine.mcp_config = "production-mcp.json"
         engine.effort = "low"
         return engine

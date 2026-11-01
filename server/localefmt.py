@@ -1,7 +1,7 @@
 """Locale: múi giờ, tiền tệ, định dạng. TÁCH KHỎI ngôn ngữ, và đó là cả điểm của file này.
 
 Ngôn ngữ và locale hay bị gộp làm một, nhưng chúng độc lập thật sự: một người dùng đọc giao
-diện tiếng Anh, bảo Javis trả lời tiếng Anh, mà vẫn ngồi ở Việt Nam nên vẫn xài UTC+7 và VND.
+diện tiếng Anh, bảo UNI MATE trả lời tiếng Anh, mà vẫn ngồi ở Việt Nam nên vẫn xài UTC+7 và VND.
 Gộp hai thứ là ép họ chọn giữa "hiểu được chữ" và "xem đúng giờ".
 
 **TÊN FILE KHÔNG PHẢI NGẪU NHIÊN.** Nó KHÔNG được đặt là `server/locale.py`: các module trong
@@ -55,11 +55,11 @@ def _cau_hinh() -> dict:
         return {}
 
 
-# Ngôn ngữ giao diện của THIẾT BỊ đang gọi (cookie `javis_lang`, middleware trong main.py đặt
+# Ngôn ngữ giao diện của THIẾT BỊ đang gọi (cookie `unimate_lang`, middleware trong main.py đặt
 # cho từng request). Cần riêng vì `ui_lang` trong settings là chung CẢ MÁY, còn ngôn ngữ giao
 # diện là theo từng trình duyệt: chủ máy đọc tiếng Việt trên điện thoại, nhân viên đọc tiếng Anh
-# trên laptop, cùng một Javis. Ngoài request (Telegram, việc nền) biến này rỗng.
-_UI_YEU_CAU: contextvars.ContextVar = contextvars.ContextVar("javis_ui_lang", default="")
+# trên laptop, cùng một UNI MATE. Ngoài request (Telegram, việc nền) biến này rỗng.
+_UI_YEU_CAU: contextvars.ContextVar = contextvars.ContextVar("unimate_ui_lang", default="")
 
 
 def dat_ngon_ngu_yeu_cau(ma: str):
@@ -104,7 +104,7 @@ def chu(vi: str, en: str, **bien) -> str:
 
 
 def ngon_ngu_tra_loi() -> str:
-    """Ngôn ngữ Javis TRẢ LỜI, theo cấu hình - KHÔNG tính phần dò từ câu người dùng vừa gõ.
+    """Ngôn ngữ UNI MATE TRẢ LỜI, theo cấu hình - KHÔNG tính phần dò từ câu người dùng vừa gõ.
 
     `reply_lang` mặc định là "auto" (bám theo người viết), và "auto" không phải một ngôn ngữ,
     nên rơi tiếp xuống `ui_lang`. Bỏ nấc đó thì máy để giao diện tiếng Anh, `reply_lang` để
@@ -148,7 +148,7 @@ def doi_mui(moc: datetime) -> datetime:
 
 # ---------------------------------------------------------------- tiền tệ
 
-# Ký hiệu và cách đặt. Chỉ khai những đồng Javis thật sự chạm tới; đồng lạ thì in mã tiền tệ
+# Ký hiệu và cách đặt. Chỉ khai những đồng UNI MATE thật sự chạm tới; đồng lạ thì in mã tiền tệ
 # đằng sau con số, một cách hiển thị đúng ở mọi nơi dù không đẹp.
 _TIEN = {
     "VND": {"ky_hieu": "đ", "sau": True, "le": 0},

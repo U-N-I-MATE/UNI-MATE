@@ -20,7 +20,7 @@ def input_bytes(data):
 
 
 def _proposal_method():
-    """Adapt upstream diagnosis/attribution to existing Javis evidence and fields."""
+    """Adapt upstream diagnosis/attribution to existing UNI MATE evidence and fields."""
     return {
         'diagnosis': {
             'lenses': {

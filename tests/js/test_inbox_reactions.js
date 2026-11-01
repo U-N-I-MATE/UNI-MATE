@@ -1,4 +1,4 @@
-/* Inbox: a customer's emoji reaction is one small line, not a bubble (0.334.0, javis-zalo 1.7.0).
+/* Inbox: a customer's emoji reaction is one small line, not a bubble (0.334.0, unimate-zalo 1.7.0).
 
        node tests/js/test_inbox_reactions.js
 

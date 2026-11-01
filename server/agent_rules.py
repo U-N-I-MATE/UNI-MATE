@@ -5,17 +5,17 @@ sent on Zalo must not use markdown" vanished after a few learning rounds). Two p
 
 1. The learn engine updated an agent by replacing its whole body with a fresh system prompt,
    written by a model that had only ever seen the agent's slug and a 100-character role.
-2. A rule the owner gave in chat could only be stored as a `JAVIS_LESSON`, and the lesson
+2. A rule the owner gave in chat could only be stored as a `UNIMATE_LESSON`, and the lesson
    section keeps the 15 newest lines, so the rule was evicted 15 lessons later.
 
 This module holds the pieces both paths now share:
 
 - `merge_bullets`: add bullets to ONE `## ` section, dedupe, optionally keep only the newest N.
   Everything outside that section is copied through untouched.
-- `extract_rules`: pull `JAVIS_RULE: ...` lines out of an agent's output (the owner-rule twin
-  of `JAVIS_LESSON`). The model proposes, code writes.
+- `extract_rules`: pull `UNIMATE_RULE: ...` lines out of an agent's output (the owner-rule twin
+  of `UNIMATE_LESSON`). The model proposes, code writes.
 - `missing_owner_lines`: the guard. Every line the owner wrote (anything outside the sections
-  Javis manages itself) must still be present after a write, or the write is refused.
+  UNI MATE manages itself) must still be present after a write, or the write is refused.
 
 Section names stay Vietnamese: they are content inside the user's brain, read by people and
 models, not identifiers.
@@ -28,11 +28,11 @@ from typing import Iterable, List, Optional, Sequence, Tuple
 # Owner rules: never evicted, never rewritten by self-learning. Lives in the agent's
 # memory file (memory/agents/<slug>/MEMORY.md), which is loaded into every run of the agent.
 OWNER_RULES_HEADER = "## Luật chủ dặn"
-# Additions the learn engine makes to an agent body. Javis-managed, capped.
+# Additions the learn engine makes to an agent body. UNI MATE-managed, capped.
 LEARNED_ADDITIONS_HEADER = "## Bổ sung (tự học)"
 LEARNED_ADDITIONS_MAX = 20
 
-RULE_MARKER_RE = re.compile(r"^[ \t]*JAVIS_RULE:[ \t]*(.+?)[ \t]*$", re.MULTILINE)
+RULE_MARKER_RE = re.compile(r"^[ \t]*UNIMATE_RULE:[ \t]*(.+?)[ \t]*$", re.MULTILINE)
 RULES_PER_TURN = 3
 RULE_MAX_CHARS = 300
 
@@ -46,7 +46,7 @@ def _section_end(lines: List[str], i0: int) -> int:
     """Index just past the managed section whose header is `lines[i0]`.
 
     The section is the header, any blank lines right under it, then ONE run of contiguous
-    `- ` bullets: exactly what Javis writes. It ends at the first line that is anything else,
+    `- ` bullets: exactly what UNI MATE writes. It ends at the first line that is anything else,
     including a blank line after the bullets.
 
     Before 0.172.0 it ran to the next `## ` heading and only its bullets were kept, so an owner
@@ -112,12 +112,12 @@ def merge_bullets(text: str, header: str, items: Iterable[str],
 
 
 def extract_rules(out: str) -> Tuple[List[str], str]:
-    """Pull `JAVIS_RULE:` lines out of an agent's output. Returns (rules, cleaned output).
+    """Pull `UNIMATE_RULE:` lines out of an agent's output. Returns (rules, cleaned output).
 
     The marker must leave the output: it flows on into `{{prev}}` of the next workflow step,
     into the chat bubble and into the voice.
     """
-    if not out or "JAVIS_RULE" not in out:
+    if not out or "UNIMATE_RULE" not in out:
         return [], out
     rules = [m.group(1).strip()[:RULE_MAX_CHARS] for m in RULE_MARKER_RE.finditer(out)]
     cleaned = re.sub(r"\n{3,}", "\n\n", RULE_MARKER_RE.sub("", out)).strip()
@@ -125,7 +125,7 @@ def extract_rules(out: str) -> Tuple[List[str], str]:
 
 
 def owner_lines(text: str, managed_headers: Sequence[str]) -> List[str]:
-    """Non-blank lines outside every Javis-managed section, i.e. what the owner wrote.
+    """Non-blank lines outside every UNI MATE-managed section, i.e. what the owner wrote.
 
     A managed section stops where `split_section` stops (see `_section_end`), so anything the
     owner wrote after its bullets counts as the owner's and the guard notices when it goes.

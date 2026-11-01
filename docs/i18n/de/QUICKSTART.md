@@ -1,26 +1,26 @@
 <!-- translated-from: QUICKSTART.en.md sha256:2f4928f341af -->
-# Javis OS - Schnellstart
+# UNI MATE - Schnellstart
 
 *[English](../../../QUICKSTART.en.md) · [Tiếng Việt](../../../QUICKSTART.md) · [简体中文](../zh/QUICKSTART.md) · [Español](../es/QUICKSTART.md) · [日本語](../ja/QUICKSTART.md) · [हिन्दी](../hi/QUICKSTART.md) · [Português](../pt-BR/QUICKSTART.md) · [한국어](../ko/QUICKSTART.md) · [Русский](../ru/QUICKSTART.md) · **Deutsch** · [Français](../fr/QUICKSTART.md) · [Bahasa Indonesia](../id/QUICKSTART.md)*
 
 > Dies ist eine automatische Übersetzung der englischen Schnellstart-Anleitung.
 
-Bring Javis OS in wenigen Minuten zum Laufen. Vollständige Anleitungen: [docs/en/](../../../docs/en/README.md).
+Bring UNI MATE in wenigen Minuten zum Laufen. Vollständige Anleitungen: [docs/en/](../../../docs/en/README.md).
 
 ## Option 1 - Hostinger VPS (Docker Manager, ein Klick)
 
-> 🛒 **Noch keinen VPS?** [Hol dir hier einen Hostinger VPS](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager ist eingebaut, Javis installiert sich also mit einem Klick. Sobald er bereit ist, mach mit den Schritten unten weiter.
+> 🛒 **Noch keinen VPS?** [Hol dir hier einen Hostinger VPS](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager ist eingebaut, UNI MATE installiert sich also mit einem Klick. Sobald er bereit ist, mach mit den Schritten unten weiter.
 
 1. hPanel → VPS → **Docker Manager** → **Compose** → **Compose from URL**.
 2. Füge diese URL ein:
    ```
-   https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+   https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.hostinger.yml
    ```
 3. (Optional, für HTTPS + eine Domain) trage dies im Feld **Environment** ein:
    ```
-   DOMAIN_NAME=javis.<vps-hostname>.hstgr.cloud
+   DOMAIN_NAME=unimate.<vps-hostname>.hstgr.cloud
    ```
-   (Den Hostnamen findest du unter hPanel → VPS, z. B. `javis.srv1782015.hstgr.cloud`.)
+   (Den Hostnamen findest du unter hPanel → VPS, z. B. `unimate.srv1782015.hstgr.cloud`.)
 4. **Deploy**. Warte 1-3 Minuten. Öffne die App über den Button **Open** (oder unter `https://<DOMAIN_NAME>`).
 5. Beim ersten Start fordert dich der Bildschirm auf, ein Admin-Konto anzulegen. Melde dich danach einmal im Terminal des Containers bei Claude Code an: `claude auth login --claudeai`.
 
@@ -39,7 +39,7 @@ docker compose -f docker-compose.yml up -d
 
 1. Installiere Python 3.12 + Node 22.
 2. Führe im Projektordner einmal `setup.bat` aus: Es legt .venv an, installiert die Abhängigkeiten und installiert für dich die beiden CLI-Engines (Claude Code, Codex).
-3. `start-javis.bat` startet Javis im Hintergrund (`stop-javis.bat` beendet es).
+3. `start-unimate.bat` startet UNI MATE im Hintergrund (`stop-unimate.bat` beendet es).
 4. Öffne http://localhost:7777.
 
 ## Sobald es läuft

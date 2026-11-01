@@ -2,20 +2,20 @@
 
     python tests/run.py cli_agent        (no network, scratch brains)
 
-An integration that runs a fixed job through Javis over HTTP wants the quick version on the
+An integration that runs a fixed job through UNI MATE over HTTP wants the quick version on the
 agent's own model (a faster one) and the full version on the main model. Before this field the
-endpoints silently ignored `agent` and every call ran Javis Core on the main model.
+endpoints silently ignored `agent` and every call ran UNI MATE Core on the main model.
 
 What is pinned, through the real endpoints and the real CLI shell (`_tg_answer`), with only the
 model engine faked:
   1. `agent` names an agent of the resolved brain: the turn runs with that agent's prompt (role,
      body, skills) and model, inside that brain. The turn ends like an agent chat on the dashboard
-     (the /chat caller is the authenticated owner): JAVIS_LESSON / JAVIS_RULE lines are stripped
+     (the /chat caller is the authenticated owner): UNIMATE_LESSON / UNIMATE_RULE lines are stripped
      from the answer and recorded (lesson store, owner rules), and the run is logged.
   2. The agent is not in the resolved brain, or the brain does not exist: 400 and no turn runs.
      A wrong brain must NOT fall back to the default brain, where an agent with the same slug
      would answer instead.
-  3. No `agent`: the turn is the old one (main model, Javis prompt, and a wrong brain still falls
+  3. No `agent`: the turn is the old one (main model, UNI MATE prompt, and a wrong brain still falls
      back to the default brain exactly as before).
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -26,10 +26,10 @@ import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-cli-agent-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-cli-agent-")
 # The default brain lives under BRAINS_DIR: point it at a scratch folder so this test never
 # writes into the repo's brains/.
-os.environ["BRAINS_DIR"] = tempfile.mkdtemp(prefix="javis-cli-agent-brains-")
+os.environ["BRAINS_DIR"] = tempfile.mkdtemp(prefix="unimate-cli-agent-brains-")
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -59,8 +59,8 @@ def write_agent(brain, slug, body, model=""):
     (d / f"{slug}.md").write_text("\n".join(lines) + "\n" + body + "\n", encoding="utf-8")
 
 
-BRAIN = tempfile.mkdtemp(prefix="javis-cli-agent-spy-")
-OTHER = tempfile.mkdtemp(prefix="javis-cli-agent-other-")
+BRAIN = tempfile.mkdtemp(prefix="unimate-cli-agent-spy-")
+OTHER = tempfile.mkdtemp(prefix="unimate-cli-agent-other-")
 DEFAULT = str(main._default_brain_dir())
 write_agent(BRAIN, "quick-check", "QUICK CHECK ROLE BODY", model="sonnet")
 write_agent(OTHER, "other-only", "OTHER BRAIN AGENT BODY", model="haiku")
@@ -98,7 +98,7 @@ class FakeClaude:
                                 "engine": id(self)})
         yield {"type": "text", "content": "Report ready."}
         yield {"type": "final",
-               "content": "Report ready.\nJAVIS_LESSON: " + LESSON + "\nJAVIS_RULE: " + RULE,
+               "content": "Report ready.\nUNIMATE_LESSON: " + LESSON + "\nUNIMATE_RULE: " + RULE,
                "session_id": "fake-1", "tokens_in": 10, "tokens_out": 5, "cost_usd": 0}
 
 
@@ -127,7 +127,7 @@ main._get_adaptive_context = lambda: ADAPTIVE
 main.claude_engine = lambda **kw: FakeClaude(**kw)
 main._apply_mcp = lambda *a, **k: None
 main._chat_provider = lambda mcfg: ("anthropic-cli", "cli", "", "opus")   # the main model
-main.build_system_prompt = lambda *a, **k: "JAVIS MAIN PROMPT"
+main.build_system_prompt = lambda *a, **k: "UNI MATE MAIN PROMPT"
 main.usage_store.record = lambda *a, **k: None
 main.channel_context.collect_turn_files = lambda *a, **k: []
 main._schedule_cancel_action = _no_schedule
@@ -160,22 +160,22 @@ check("agent: 200 and ok", r.status_code == 200 and body.get("ok") is True, r.te
 check("agent: runs on the agent's model, not the main model", run.get("model") == "sonnet", run.get("model"))
 check("agent: system prompt carries the agent's role body", "QUICK CHECK ROLE BODY" in sp, sp[:200])
 check("agent: system prompt lists the agent's skills", "check-merchant" in sp and "cpc-estimate" in sp)
-check("agent: Javis's own prompt is not used", "JAVIS MAIN PROMPT" not in sp)
+check("agent: UNI MATE's own prompt is not used", "UNI MATE MAIN PROMPT" not in sp)
 check("agent: the CLI channel block is still there", "Terminal KHÔNG render markdown" in sp, sp[-300:])
 check("agent: runs inside the chosen brain", same_dir(run.get("cwd"), BRAIN), run.get("cwd"))
-check("agent: fast path and adaptive context are skipped (both answer in Javis's voice)",
+check("agent: fast path and adaptive context are skipped (both answer in UNI MATE's voice)",
       FAST.calls == 0 and ADAPTIVE.calls == 0, (FAST.calls, ADAPTIVE.calls))
-check("agent: JAVIS_LESSON / JAVIS_RULE never reach the client",
+check("agent: UNIMATE_LESSON / UNIMATE_RULE never reach the client",
       body.get("text") == "Report ready.", body.get("text"))
 # The turn ends through the dashboard's agent handler (_ket_luot_agent): lessons go to the agent's
 # private-chat lesson store, owner rules to its MEMORY.md, and the run to its run log.
 check("precondition: learning is on for the test brain",
       main.memory_control.learning_enabled(main._brain_memory_dir(BRAIN)))
-check("agent: the JAVIS_LESSON line is recorded in the agent's lesson store",
+check("agent: the UNIMATE_LESSON line is recorded in the agent's lesson store",
       LESSON in main._dm_lessons_prompt(BRAIN, "quick-check", ""))
 _agent_mem = main._brain_memory_dir(BRAIN) / "agents" / "quick-check"
 _mem_txt = (_agent_mem / "MEMORY.md").read_text(encoding="utf-8") if (_agent_mem / "MEMORY.md").is_file() else ""
-check("agent: the JAVIS_RULE line is recorded as an owner rule",
+check("agent: the UNIMATE_RULE line is recorded as an owner rule",
       RULE in _mem_txt and main.agent_rules.OWNER_RULES_HEADER in _mem_txt, _mem_txt[:300])
 _runs = "".join(f.read_text(encoding="utf-8") for f in (_agent_mem / "runs").glob("*.md")) \
     if (_agent_mem / "runs").is_dir() else ""
@@ -183,7 +183,7 @@ check("agent: the run is logged in the agent's run log", "analyse merchant.examp
 _sid_s1 = main._TG_SID_MAP.get("cli:s1@quick-check")
 _stored = [m.get("content") or "" for m in main.get_store().get_messages(_sid_s1)] if _sid_s1 else []
 check("agent: the stored conversation holds the stripped answer",
-      "Report ready." in _stored and not any("JAVIS_LESSON" in m or "JAVIS_RULE" in m for m in _stored),
+      "Report ready." in _stored and not any("UNIMATE_LESSON" in m or "UNIMATE_RULE" in m for m in _stored),
       _stored)
 
 r = chat("/chat/stream", brain=BRAIN, session="s2", agent="quick-check")
@@ -236,7 +236,7 @@ r = chat(brain=BRAIN, session="s4")
 run = FakeClaude.runs[-1]
 check("no agent: 200 and ok", r.status_code == 200 and r.json().get("ok") is True, r.text[:200])
 check("no agent: main model as before", run.get("model") == "opus", run.get("model"))
-check("no agent: Javis's prompt as before", "JAVIS MAIN PROMPT" in run.get("system_prompt", ""))
+check("no agent: UNI MATE's prompt as before", "UNI MATE MAIN PROMPT" in run.get("system_prompt", ""))
 check("no agent: no agent role leaks in", "QUICK CHECK ROLE BODY" not in run.get("system_prompt", ""))
 check("no agent: fast path and adaptive context still consulted",
       FAST.calls >= 1 and ADAPTIVE.calls >= 1, (FAST.calls, ADAPTIVE.calls))
@@ -255,7 +255,7 @@ check("no agent stream: main model", FakeClaude.runs[-1].get("model") == "opus")
 # 4. Session isolation: the same `session` with and without `agent`, and with two agents
 # ================================================================
 # Claude Code keeps one engine object per RAM session and resumes its native thread, so a shared
-# session would run the agent turn inside Javis's thread (and the reverse).
+# session would run the agent turn inside UNI MATE's thread (and the reverse).
 r1 = chat(brain=BRAIN, session="iso", message="plain question")
 plain_run = FakeClaude.runs[-1]
 r2 = chat(brain=BRAIN, session="iso", agent="quick-check", message="agent question")
@@ -268,8 +268,8 @@ check("isolation (Claude Code): the agent turn gets its own engine, not the plai
       agent_run["engine"] != plain_run["engine"], (agent_run["engine"], plain_run["engine"]))
 check("isolation (Claude Code): the plain session keeps its engine after an agent turn",
       plain_again["engine"] == plain_run["engine"])
-check("isolation (Claude Code): the plain turn after an agent turn has Javis's prompt, no agent role",
-      "JAVIS MAIN PROMPT" in plain_again["system_prompt"]
+check("isolation (Claude Code): the plain turn after an agent turn has UNI MATE's prompt, no agent role",
+      "UNI MATE MAIN PROMPT" in plain_again["system_prompt"]
       and "QUICK CHECK ROLE BODY" not in plain_again["system_prompt"])
 _sid_plain = main._TG_SID_MAP.get("cli:iso")
 _sid_agent = main._TG_SID_MAP.get("cli:iso@quick-check")
@@ -321,13 +321,13 @@ with api_engine():
     chat(brain=BRAIN, session="apiiso", message="api plain 2")
     api_plain2 = API_RUNS[-1]
 check("isolation (API): plain turn first, then agent: the agent turn runs with the agent's prompt",
-      "API ONE ROLE BODY" in api_one["system"] and "JAVIS MAIN PROMPT" not in api_one["system"],
+      "API ONE ROLE BODY" in api_one["system"] and "UNI MATE MAIN PROMPT" not in api_one["system"],
       api_one["system"][:200])
 check("isolation (API): agent one then agent two: agent two runs with its own prompt, not agent one's",
       "API TWO ROLE BODY" in api_two["system"] and "API ONE ROLE BODY" not in api_two["system"],
       api_two["system"][:200])
-check("isolation (API): the plain session keeps Javis's prompt and none of the agent turns",
-      "JAVIS MAIN PROMPT" in api_plain2["system"] and "API ONE ROLE BODY" not in api_plain2["system"]
+check("isolation (API): the plain session keeps UNI MATE's prompt and none of the agent turns",
+      "UNI MATE MAIN PROMPT" in api_plain2["system"] and "API ONE ROLE BODY" not in api_plain2["system"]
       and api_plain2["user"] == ["api plain 1", "api plain 2"], api_plain2["user"])
 check("isolation (API): each agent's history holds only its own turn",
       api_one["user"] == ["api agent one"] and api_two["user"] == ["api agent two"],
@@ -340,7 +340,7 @@ check("isolation (API): each agent's history holds only its own turn",
 # The CLI agent turn must get what an agent chat on the Partners page gets: the builder block
 # (where to write agents/workflows/skills), the lesson rule and the agent's learned lessons.
 main._ket_luot_agent(BRAIN, "api-one", "earlier dashboard question",
-                     "ok\nJAVIS_LESSON: PARITY LESSON MARKER", conv_sid="")
+                     "ok\nUNIMATE_LESSON: PARITY LESSON MARKER", conv_sid="")
 _dash = main._agent_turn_system_prompt(BRAIN, "api-one", "")
 with api_engine():
     chat(brain=BRAIN, session="parity", agent="api-one", message="parity question")
@@ -352,9 +352,9 @@ check("parity: the CLI agent prompt has the lesson rule", main.agent_lessons.DM_
 check("parity: the CLI agent prompt has the agent's learned lessons", "PARITY LESSON MARKER" in _cli_sp,
       _cli_sp[-600:])
 check("parity: the CLI agent prompt names the CLI, not the Partners page",
-      "trang Cộng sự). Trả lời" not in _cli_sp and "qua Javis CLI" in _cli_sp)
+      "trang Cộng sự). Trả lời" not in _cli_sp and "qua UNI MATE CLI" in _cli_sp)
 check("parity: the dashboard agent prompt still names the Partners page",
-      "trên dashboard Javis (trang Cộng sự). Trả lời" in _dash)
+      "trên dashboard UNI MATE (trang Cộng sự). Trả lời" in _dash)
 
 
 # ================================================================

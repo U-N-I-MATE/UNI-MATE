@@ -14,7 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-ghb-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-ghb-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -23,7 +23,7 @@ except Exception:
 from _fake_github import FakeGitHub, GOOD_TOKEN, git  # noqa: E402
 
 fake = FakeGitHub()
-os.environ["JAVIS_GITHUB_API"] = fake.url
+os.environ["UNIMATE_GITHUB_API"] = fake.url
 
 import github_repos as r  # noqa: E402
 import github_store  # noqa: E402
@@ -66,10 +66,10 @@ fake.add_branch("acme/app", "dev", "DEV.md")
 fake.add_branch("acme/app", "release/1.0", "REL.md")
 
 # ---- the list ----
-fake.add_branch("acme/app", "javis/old-work", "OLD.md")
+fake.add_branch("acme/app", "unimate/old-work", "OLD.md")
 b = r.branches("acme/app")
 check("the default branch comes first, the rest by name", b["items"] == ["main", "dev", "release/1.0"] and b["default"] == "main")
-check("Javis's own working branches are not offered as a base", not any(x.startswith("javis/") for x in b["items"]))
+check("UNI MATE's own working branches are not offered as a base", not any(x.startswith("unimate/") for x in b["items"]))
 
 # ---- switch a fresh chat onto dev ----
 r.attach("c1", BRAIN, BRAIN, ["acme/app"])

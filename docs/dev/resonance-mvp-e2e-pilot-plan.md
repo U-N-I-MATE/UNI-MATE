@@ -4,22 +4,22 @@
 
 ## Mục đích
 
-Nghiệm thu điều kiện MVP còn thiếu (plan 00-mvp, "Điều kiện hoàn thành MVP", mục 1): một yêu cầu cần theo đuổi đi hết vòng trên host thật, gồm **tự hình thành mục tiêu** từ một tin chat thật, hành động có receipt, kiểm chứng, tiếp tục sau gián đoạn và trả kết quả đúng phiên. Các pilot M3 và M5 đều dựng mục tiêu bằng đề xuất soạn sẵn; pilot này để chính bộ não quyết định có gọi `javis_goal` hay không.
+Nghiệm thu điều kiện MVP còn thiếu (plan 00-mvp, "Điều kiện hoàn thành MVP", mục 1): một yêu cầu cần theo đuổi đi hết vòng trên host thật, gồm **tự hình thành mục tiêu** từ một tin chat thật, hành động có receipt, kiểm chứng, tiếp tục sau gián đoạn và trả kết quả đúng phiên. Các pilot M3 và M5 đều dựng mục tiêu bằng đề xuất soạn sẵn; pilot này để chính bộ não quyết định có gọi `unimate_goal` hay không.
 
 ## Bộ chạy
 
-`tests/python/test_resonance_mvp_e2e_pilot.py`, opt-in bằng `JAVIS_RESONANCE_E2E` (`dry` hoặc `real`); cổng an toàn ở `tests/python/_e2e_pilot_guard.py` (test riêng `test_resonance_e2e_guard.py`, luôn chạy, không gọi CLI hay model).
+`tests/python/test_resonance_mvp_e2e_pilot.py`, opt-in bằng `UNIMATE_RESONANCE_E2E` (`dry` hoặc `real`); cổng an toàn ở `tests/python/_e2e_pilot_guard.py` (test riêng `test_resonance_e2e_guard.py`, luôn chạy, không gọi CLI hay model).
 
-- **Server thật** của checkout đang review, tiến trình riêng, cổng 7791; `JAVIS_STATE_DIR` và `BRAINS_DIR` tạm ở đường dẫn ngắn; brain mặc định (`Brain Default`, dashboard gọi tắt là `"brain"`) bật Resonance.
+- **Server thật** của checkout đang review, tiến trình riêng, cổng 7791; `UNIMATE_STATE_DIR` và `BRAINS_DIR` tạm ở đường dẫn ngắn; brain mặc định (`Brain Default`, dashboard gọi tắt là `"brain"`) bật Resonance.
 - **Chỉ chép các ô chọn engine** (`auxiliary`, `main`, `engine`, `claude_model`); settings sandbox bị kiểm là không có `claude_auth` hay `anthropic_api_key`. Không kênh, không tài khoản: không gửi gì ra ngoài.
 - **Đường thật:** tin gửi qua WebSocket `/ws` đúng khuôn dashboard; thẻ và phản hồi đi qua HTTP thật (kiểm Origin); việc nền chạy qua nhịp lập lịch thật (30 giây).
-- **Gián đoạn thật và tất định:** server A chạy với `JAVIS_RESONANCE_TICK_PAUSED=1` (nhịp Resonance tạm dừng, lượt chat vẫn lập được mục tiêu), nên chắc chắn chưa có lượt việc nền nào trước khi bị giết; giết CẢ CÂY tiến trình, không tắt êm. Mọi biến của pilot thừa kế từ shell cha (nhịp tạm dừng, trần, binary, thư mục) bị XOÁ trước khi dựng mỗi server rồi đặt lại đúng giá trị; báo cáo ghi trạng thái hiệu lực của từng server (`servers`).
+- **Gián đoạn thật và tất định:** server A chạy với `UNIMATE_RESONANCE_TICK_PAUSED=1` (nhịp Resonance tạm dừng, lượt chat vẫn lập được mục tiêu), nên chắc chắn chưa có lượt việc nền nào trước khi bị giết; giết CẢ CÂY tiến trình, không tắt êm. Mọi biến của pilot thừa kế từ shell cha (nhịp tạm dừng, trần, binary, thư mục) bị XOÁ trước khi dựng mỗi server rồi đặt lại đúng giá trị; báo cáo ghi trạng thái hiệu lực của từng server (`servers`).
 
 ### Cổng an toàn chi phí (kiểm TRƯỚC khi gửi tin, không gọi model)
 
 0. **Engine sẽ chạy đúng cấu hình đã duyệt** (review e2e vòng 2): resolve bộ não chính và việc nền bằng chính luật runtime (`aux_engine.main_spec`, `read_spec`, kèm `claude_model`) trên settings sandbox, so với cấu hình người dùng duyệt (lần 2: `anthropic-cli` / `claude-opus-5-5` cho bộ não, `anthropic-cli` / `sonnet` cho việc nền). Khác hoặc không resolve được thì dừng, không tự đổi model. Báo cáo ghi lựa chọn đã resolve. Chế độ `dry` kỳ vọng riêng: việc nền là provider bị chặn.
 1. **Môi trường:** bỏ mọi biến của phiên Claude Code chạy bộ chạy (`CLAUDE*`, `ANTHROPIC*`), khoá (`*_API_KEY`, `*_AUTH_TOKEN`, `*_ACCESS_TOKEN`) và bộ chọn nhà cung cấp (`AWS_*`, `GOOGLE_*`, `AZURE_*`, Vertex, Bedrock, gcloud). GIỮ `CLAUDE_CONFIG_DIR` nếu người dùng có đặt (bỏ nó thì tiến trình quay về thư mục mặc định, không phải hồ sơ sạch).
-2. **Binary:** tìm `claude` đúng cách engine tìm (`claude_cli.tim_binary`) trong môi trường đã lọc, rồi ghim cho server bằng `JAVIS_CLAUDE_CLI`, nên cổng và engine dùng CÙNG một binary.
+2. **Binary:** tìm `claude` đúng cách engine tìm (`claude_cli.tim_binary`) trong môi trường đã lọc, rồi ghim cho server bằng `UNIMATE_CLAUDE_CLI`, nên cổng và engine dùng CÙNG một binary.
 3. **Xác thực:** `claude auth status --json` chạy bằng binary đó, môi trường đã lọc, ở CẢ HAI cwd: brain (lượt chat) và `STATE/resonance_cwd` (lượt việc nền, cấu hình công cụ khác lượt chat). Chỉ nhận `loggedIn`, `authMethod` = `claude.ai`, `apiProvider` = `firstParty`, có `subscriptionType`. Báo cáo chỉ lưu bốn trường đó và phiên bản binary, không lưu email, id hay token.
 4. **Nguồn settings người dùng và dự án:** engine chat bật `setting_sources = user, project, local`, nên cổng soát `settings.json` và `settings.local.json` ở thư mục cấu hình mà chính `auth status` báo, cùng `.claude/settings*.json` của CẢ HAI cwd. Có `apiKeyHelper`, lệnh làm mới credential đám mây, hay `env` chọn khoá/nhà cung cấp/đường gọi thì DỪNG. File không đọc được tính là rủi ro. Chỉ ghi TÊN khoá, không ghi giá trị.
 5. **Nguồn do quản trị đặt** (review e2e vòng 2): `managed-settings.json`, thư mục `managed-settings.d/*.json` ở các vị trí hệ thống, khoá registry `SOFTWARE\Policies\ClaudeCode` (HKLM, HKCU), và file cache kiểu managed/remote trong thư mục cấu hình. Cổng KHÔNG đánh giá nội dung các nguồn này: có bất kỳ nguồn nào thì môi trường **chưa hỗ trợ**, DỪNG. Máy hiện tại không có nguồn nào.
@@ -31,11 +31,11 @@ Không chứng minh được các điều trên thì dừng, không gửi tin. C
 ### Trần lượt gọi
 
 - **Đơn vị:** lượt engine ở cấp host. Một lượt bộ não có thể gồm nhiều request nội bộ của SDK (vòng công cụ); trần này KHÔNG phải số request gửi nhà cung cấp, không phải token hay chi phí, và không có dữ liệu để đếm số request đó.
-- **Tổng 3** (`JAVIS_RESONANCE_E2E_MAX_CALLS`). Lượt bộ não tính trước khi gửi (bộ chạy gửi đúng một tin). Phần còn lại server chặn TRƯỚC lượt gọi vượt trần bằng `JAVIS_RESONANCE_CALL_CEILING`: kiểm trong cùng giao dịch giữ chỗ, đếm MỌI đường Resonance gọi engine (lượt việc nền, phép thử, bộ lập mục tiêu qua sổ `call_ledger`), số đã dùng trong SQLite nên giữ qua khởi động lại; bộ chạy truyền biến cho MỌI tiến trình server (tiến trình không có biến thì không có trần chung).
+- **Tổng 3** (`UNIMATE_RESONANCE_E2E_MAX_CALLS`). Lượt bộ não tính trước khi gửi (bộ chạy gửi đúng một tin). Phần còn lại server chặn TRƯỚC lượt gọi vượt trần bằng `UNIMATE_RESONANCE_CALL_CEILING`: kiểm trong cùng giao dịch giữ chỗ, đếm MỌI đường Resonance gọi engine (lượt việc nền, phép thử, bộ lập mục tiêu qua sổ `call_ledger`), số đã dùng trong SQLite nên giữ qua khởi động lại; bộ chạy truyền biến cho MỌI tiến trình server (tiến trình không có biến thì không có trần chung).
 
 ## Kịch bản (chế độ `real`), lần chạy 2
 
-Lời người dùng, loại **duy trì** (đúng nhóm `javis_goal` theo luật định tuyến hiện hành), dữ liệu mô phỏng, không nêu tên công cụ:
+Lời người dùng, loại **duy trì** (đúng nhóm `unimate_goal` theo luật định tuyến hiện hành), dữ liệu mô phỏng, không nêu tên công cụ:
 
 > (Dữ liệu mô phỏng để thử nghiệm.) Từ giờ duy trì giúp mình ghi chú Inbox/viec-dang-do.md: lúc nào cũng liệt kê đủ các việc đang dở bên dưới, mỗi việc ghi người phụ trách và hạn chót. Khi mình báo thêm việc thì cập nhật vào, có bản mới thì báo mình xem. Đừng đụng tới Notes/ghi-chu-cu.md.
 > Việc đang dở: Lan soạn kế hoạch bài viết tháng 11, hạn 09/10. Minh kiểm lại lịch đăng, hạn 10/10. Hà gửi bảng số liệu cho cả nhóm, hạn 12/10.
@@ -51,7 +51,7 @@ Lời người dùng, loại **duy trì** (đúng nhóm `javis_goal` theo luật
 **Nghiệm thu nội dung do NGƯỜI REVIEW chốt** (điều chỉnh quy trình nghiệm thu theo review e2e vòng 4, phương án 1; không đổi luật đánh giá của Resonance trong sản phẩm). Khớp cụm từ không hiểu được phủ định ("không gửi"), hành động trái nghĩa ("hủy lịch đăng"), sai tháng hay chỉ đúng chủ đề ("kiểm tra số liệu"), nên không dùng làm căn cứ nghiệm thu:
 
 - Bộ chạy tính **chỉ báo hỗ trợ** `content_candidate` (`_e2e_pilot_guard.content_contract`) theo đơn vị trình bày (hàng bảng, mục danh sách cùng dòng tiếp nối, đoạn văn, từng dòng; KHÔNG gộp mục dưới tiêu đề), chỉ đơn vị nói về đúng một người. Kết quả: `met` (các cụm, người, hạn cùng một đơn vị), `not_met` (có bằng chứng sai rõ: không thấy tên, việc của người khác, đúng việc mà khác hạn, có người và hạn mà không có việc), `unverified` (không trích được quan hệ: câu nhắc nhiều người, tiêu đề, việc không kèm ngày, cách nói chưa hỗ trợ). Chỉ báo được ghi vào báo cáo để người review tham khảo.
-- Bộ chạy **lưu NGUYÊN VẸN** file sản phẩm ra ngoài thư mục tạm (cạnh báo cáo, `<tên báo cáo>-deliverable.md`) trước khi dọn, kiểm hash bản chép bằng hash nguồn; báo cáo trỏ đúng tên file và hash. Chế độ real bắt buộc có `JAVIS_RESONANCE_E2E_OUT`.
+- Bộ chạy **lưu NGUYÊN VẸN** file sản phẩm ra ngoài thư mục tạm (cạnh báo cáo, `<tên báo cáo>-deliverable.md`) trước khi dọn, kiểm hash bản chép bằng hash nguồn; báo cáo trỏ đúng tên file và hash. Chế độ real bắt buộc có `UNIMATE_RESONANCE_E2E_OUT`.
 - Mọi kiểm kỹ thuật đạt thì kết luận của lần chạy là `acceptance: pending_content_review` và `content_review: pending`: **chưa nghiệm thu pilot**. Người review đối chiếu ba bộ việc, người, hạn trên đúng file và hash đó rồi mới chốt; không bao giờ tự suy ra từ chỉ báo. Kỹ thuật không đạt thì `technical_failed`; dừng giữa chừng thì `stopped`.
 
 Mục tiêu hiểu sai về kiểu hay file vẫn là lỗi kỹ thuật cứng (pilot FAIL); sai về nội dung do người review bắt.
@@ -61,14 +61,14 @@ Mọi điều kiện dưới đây là lỗi CỨNG (một điều không đạt
 | Bước | Việc | Kiểm |
 |---|---|---|
 | 0 | Server A lên (nhịp tạm dừng); cổng an toàn | Đúng binary, gói thuê bao gốc, settings sạch; WebSocket nhận kết nối |
-| 1 | Gửi MỘT tin qua `/ws`, chờ `turn_done` | Bộ não lập ĐÚNG MỘT mục tiêu qua `javis_goal`, gắn đúng phiên; **kiểu là `maintain`**; **file sản phẩm của mục tiêu đúng file người dùng nêu**; ý định gốc TRÙNG KHỚP toàn bộ lời người dùng; thẻ đặt vào đúng phiên có biên nhận; chưa có lượt việc nền nào. Không lập mục tiêu: ghi kết quả, DỪNG |
+| 1 | Gửi MỘT tin qua `/ws`, chờ `turn_done` | Bộ não lập ĐÚNG MỘT mục tiêu qua `unimate_goal`, gắn đúng phiên; **kiểu là `maintain`**; **file sản phẩm của mục tiêu đúng file người dùng nêu**; ý định gốc TRÙNG KHỚP toàn bộ lời người dùng; thẻ đặt vào đúng phiên có biên nhận; chưa có lượt việc nền nào. Không lập mục tiêu: ghi kết quả, DỪNG |
 | 2 | Giết A, dựng B (nhịp chạy) | Nhịp lập lịch tự làm lượt việc nền; receipt succeeded, đúng provider, 0 lần gọi công cụ; **file người dùng nêu** tồn tại và bytes khớp hash host ghi khi đăng; sản phẩm được **lưu nguyên vẹn** ra ngoài thư mục tạm, hash khớp; chỉ báo nội dung được ghi (không quyết định); tin báo về đúng phiên có biên nhận |
 | 3 | Giết B, dựng C, chờ hơn hai nhịp | Không báo lặp; không gọi thêm |
 | 4 | Nếu mục tiêu có tiêu chí người dùng duyệt | BẮT BUỘC có sản phẩm để duyệt (`artifact_ref`); bấm "Đạt yêu cầu" qua API như nút trên thẻ: 200 |
 | 5 | Khép vòng theo KIỂU KỊCH BẢN (không theo kiểu bộ não chọn) | Đánh giá met, vẫn active, đã báo `goal.maintained` về phiên có biên nhận, lịch xem lại nằm trong **[6 giờ, 24 giờ] sau mốc đánh giá (cả hai đầu)**; rồi người dùng **tạm dừng qua API** để không còn việc nền. Không gọi thêm model ở bước 4, 5 |
 | Cuối | | Ghi chú cũ còn nguyên (hash); tổng lượt trong trần; kết luận `pending_content_review` nếu mọi kiểm kỹ thuật đạt. **Người review chốt nội dung** trên file đã lưu |
 
-Bằng chứng lưu thêm: khung `tool_call` / `tool_result` (gồm `ToolSearch`; engine chỉ chuyển kết quả công cụ đã cắt còn 500 ký tự), câu trả lời cuối, việc Kanban nếu có, hash phiên bản `CLAUDE.md` của repo và của brain cùng plugin `javis_goal` (luật định tuyến đang dùng).
+Bằng chứng lưu thêm: khung `tool_call` / `tool_result` (gồm `ToolSearch`; engine chỉ chuyển kết quả công cụ đã cắt còn 500 ký tự), câu trả lời cuối, việc Kanban nếu có, hash phiên bản `CLAUDE.md` của repo và của brain cùng plugin `unimate_goal` (luật định tuyến đang dùng).
 
 ## Hạn mức đề xuất cho lần chạy 2
 
@@ -96,7 +96,7 @@ Bộ chạy sau sửa vòng 2: **14/14 kiểm xanh, 0 lượt engine**, khoảng
 ## Lệnh chạy khi được duyệt
 
 ```bash
-JAVIS_RESONANCE_E2E=real JAVIS_RESONANCE_PILOT_SETTINGS=D:/Project/Javis-OS/server/settings.json JAVIS_RESONANCE_E2E_MAX_CALLS=3 JAVIS_RESONANCE_E2E_OUT=docs/dev/resonance-mvp-e2e-pilot-2.json D:/Project/Javis-OS/.venv/Scripts/python.exe tests/python/test_resonance_mvp_e2e_pilot.py
+UNIMATE_RESONANCE_E2E=real UNIMATE_RESONANCE_PILOT_SETTINGS=D:/Project/UNI-MATE/server/settings.json UNIMATE_RESONANCE_E2E_MAX_CALLS=3 UNIMATE_RESONANCE_E2E_OUT=docs/dev/resonance-mvp-e2e-pilot-2.json D:/Project/UNI-MATE/.venv/Scripts/python.exe tests/python/test_resonance_mvp_e2e_pilot.py
 ```
 
 ## Sửa theo review e2e (PR #579, diff `d38d033a..2ba6f74b`)
@@ -139,14 +139,14 @@ Trả lời ba câu hỏi của review vòng 1: **giữ luật định tuyến h
 | Commit | `c0ab3d66`, cây `server/` và `system/` sạch |
 | Người duyệt | Người dùng duyệt một lần chạy, tối đa 3 lượt, engine và gói thuê bao hiện có |
 | Engine chính | `anthropic-cli` / `claude-opus-5-5`. **Phương thức xác thực thực dùng KHÔNG được xác minh độc lập ở lần này** (chưa có cổng `auth status` và soát settings). Môi trường server đã lọc biến `CLAUDE*`, `ANTHROPIC*` và khoá nhà cung cấp, nhưng như review chỉ ra, điều đó tự nó không chứng minh chỉ dùng gói thuê bao |
-| Trần | 3 tổng; 1 lượt bộ não tính trước khi gửi; việc nền chặn trước lượt gọi bằng `JAVIS_RESONANCE_CALL_CEILING=2` |
+| Trần | 3 tổng; 1 lượt bộ não tính trước khi gửi; việc nền chặn trước lượt gọi bằng `UNIMATE_RESONANCE_CALL_CEILING=2` |
 | Lượt đã dùng | **1 lượt engine cấp host** (lượt bộ não; số request nội bộ không đo được), 0 lượt việc nền |
 | Thời gian | Lượt chat 29,9 giây; tổng 38,1 giây |
 | Bằng chứng | [`resonance-mvp-e2e-pilot.json`](resonance-mvp-e2e-pilot.json): tên công cụ và loại khung; không có nội dung việc Kanban hay câu trả lời (bộ chạy lúc đó chưa lưu, nay đã lưu). Nội dung nêu dưới đây đọc từ sandbox trước khi xoá, chưa được lưu thành bằng chứng kiểm độc lập được |
 
-**Bộ não đã làm gì:** gọi `ToolSearch` rồi `javis_task`, tạo một việc Kanban (trạng thái `triage`) lập ghi chú `Inbox/viec-tu-bien-ban.md`, không đụng `Notes/ghi-chu-cu.md`, không ghi đè. Câu trả lời nói đúng: việc đã vào hàng đợi nhưng chưa chạy vì chế độ điều phối việc nền đang tắt. Không có mục tiêu, không file nào vào brain, không lượt gọi nào khác.
+**Bộ não đã làm gì:** gọi `ToolSearch` rồi `unimate_task`, tạo một việc Kanban (trạng thái `triage`) lập ghi chú `Inbox/viec-tu-bien-ban.md`, không đụng `Notes/ghi-chu-cu.md`, không ghi đè. Câu trả lời nói đúng: việc đã vào hàng đợi nhưng chưa chạy vì chế độ điều phối việc nền đang tắt. Không có mục tiêu, không file nào vào brain, không lượt gọi nào khác.
 
-**Đánh giá:** lựa chọn đó khớp luật hiện hành (CLAUDE.md và mô tả `javis_goal` đều đưa việc nền một lần có duyệt sang Kanban); kịch bản lần 1 chọn sai loại yêu cầu. Lần chạy không chứng minh, cũng không bác, việc bộ não gọi `javis_goal` đúng lúc. Không biết bộ não có thấy `javis_goal` trong `ToolSearch` không (lần đó chưa lưu kết quả công cụ).
+**Đánh giá:** lựa chọn đó khớp luật hiện hành (CLAUDE.md và mô tả `unimate_goal` đều đưa việc nền một lần có duyệt sang Kanban); kịch bản lần 1 chọn sai loại yêu cầu. Lần chạy không chứng minh, cũng không bác, việc bộ não gọi `unimate_goal` đúng lúc. Không biết bộ não có thấy `unimate_goal` trong `ToolSearch` không (lần đó chưa lưu kết quả công cụ).
 
 **Điều kiện MVP thứ nhất vẫn CHƯA đạt.**
 
@@ -164,12 +164,12 @@ Trả lời ba câu hỏi của review vòng 1: **giữ luật định tuyến h
 | Thời gian | Tổng 41,1 giây |
 | Bằng chứng | [`resonance-mvp-e2e-pilot-2.json`](resonance-mvp-e2e-pilot-2.json): cổng, khung công cụ, câu trả lời cuối, việc Kanban (không có), trạng thái server |
 
-**Bộ não đã làm gì** (khung công cụ trong báo cáo): `Bash` xem thư mục `Inbox` và `Notes`; `Write` tạo `Inbox/viec-dang-do.md`; `Bash` đọc chỉ mục bộ nhớ; `Write` một ký ức `memory/facts/duy-tri-viec-dang-do.md`; `Edit` `memory/MEMORY.md`. **Không gọi `ToolSearch` hay `javis_search_tools`**, nên không lúc nào thấy `javis_goal`. Câu trả lời cuối có bảng đủ ba việc, người, hạn (Lan 09/10, Minh 10/10, Hà 12/10, kèm năm 2026), nói không đụng `Notes/ghi-chu-cu.md`, và nói rõ: file chỉ được cập nhật khi người dùng nhắn, "không tự theo dõi ở nền".
+**Bộ não đã làm gì** (khung công cụ trong báo cáo): `Bash` xem thư mục `Inbox` và `Notes`; `Write` tạo `Inbox/viec-dang-do.md`; `Bash` đọc chỉ mục bộ nhớ; `Write` một ký ức `memory/facts/duy-tri-viec-dang-do.md`; `Edit` `memory/MEMORY.md`. **Không gọi `ToolSearch` hay `unimate_search_tools`**, nên không lúc nào thấy `unimate_goal`. Câu trả lời cuối có bảng đủ ba việc, người, hạn (Lan 09/10, Minh 10/10, Hà 12/10, kèm năm 2026), nói không đụng `Notes/ghi-chu-cu.md`, và nói rõ: file chỉ được cập nhật khi người dùng nhắn, "không tự theo dõi ở nền".
 
 **Đánh giá:**
-1. Prompt của brain đã bật Resonance CÓ dòng định tuyến (main.py: "duy trì, theo dõi, chờ sự kiện, làm tới khi đạt thì gọi tool javis_goal op=create ... Chưa thấy tool thì tìm bằng javis_search_tools"). Bộ não không làm theo dòng đó; `javis_goal` là tool phải tìm mới thấy, và bộ não không tìm.
-2. Nhưng đọc kỹ, lời giao lần 2 cũng KHÔNG thật sự cần làm gì sau lượt: "khi mình báo thêm việc thì cập nhật vào" là phản ứng theo tin nhắn mới, không có trạng thái nào đổi ở nền giữa hai tin. Bộ não làm xong ngay trong lượt và nói đúng giới hạn của mình. Như lần 1, lần chạy này không chứng minh, cũng không bác, việc bộ não dùng `javis_goal` khi một việc THẬT SỰ cần theo đuổi sau lượt.
-3. Hai lần cho thấy một khó khăn thiết kế, không chỉ của kịch bản: với bộ thực thi việc nền chỉ chữ, không đọc được dữ liệu, rất khó dựng một yêu cầu tự nhiên vừa cần làm sau lượt, vừa làm được bằng Resonance MVP, mà lại không thuộc Kanban (việc nền một lần) hay `javis_schedule` (giờ cố định).
+1. Prompt của brain đã bật Resonance CÓ dòng định tuyến (main.py: "duy trì, theo dõi, chờ sự kiện, làm tới khi đạt thì gọi tool unimate_goal op=create ... Chưa thấy tool thì tìm bằng unimate_search_tools"). Bộ não không làm theo dòng đó; `unimate_goal` là tool phải tìm mới thấy, và bộ não không tìm.
+2. Nhưng đọc kỹ, lời giao lần 2 cũng KHÔNG thật sự cần làm gì sau lượt: "khi mình báo thêm việc thì cập nhật vào" là phản ứng theo tin nhắn mới, không có trạng thái nào đổi ở nền giữa hai tin. Bộ não làm xong ngay trong lượt và nói đúng giới hạn của mình. Như lần 1, lần chạy này không chứng minh, cũng không bác, việc bộ não dùng `unimate_goal` khi một việc THẬT SỰ cần theo đuổi sau lượt.
+3. Hai lần cho thấy một khó khăn thiết kế, không chỉ của kịch bản: với bộ thực thi việc nền chỉ chữ, không đọc được dữ liệu, rất khó dựng một yêu cầu tự nhiên vừa cần làm sau lượt, vừa làm được bằng Resonance MVP, mà lại không thuộc Kanban (việc nền một lần) hay `unimate_schedule` (giờ cố định).
 
 **Điều kiện MVP thứ nhất vẫn CHƯA đạt. Không chạy thêm.** Hướng tiếp theo cần người dùng quyết (xem báo cáo gửi người dùng).
 
@@ -182,11 +182,11 @@ Làm theo đánh giá `PR-579-pilot-2-assessment.md`: chưa chạy thêm, chưa 
 | Loại | Khi nào | Đường | Ví dụ |
 |---|---|---|---|
 | Làm ngay | Làm xong và trả kết quả trong lượt | Trả lời, có thể ghi file | "Tóm tắt ghi chú này thành ba ý"; "Lập bảng việc từ tin dưới, lưu vào Inbox" |
-| Việc nền một lần | Chạy một lần ở nền, xong là hết trách nhiệm | `javis_task` (Kanban) | "Dịch hết 40 file trong thư mục này, xong báo anh" |
-| Theo đuổi kết quả | Giữ trách nhiệm qua nhiều vòng làm, tự kiểm, sửa theo phản hồi; giữ việc mở tới khi đạt. Lúc chờ phản hồi không gọi model | `javis_goal` (Resonance) | "Lo giúp anh bản hướng dẫn này tới khi anh thấy dùng được, anh góp ý dần" |
-| Nhắc giờ cố định | Một thông báo nhắc đơn thuần vào một thời điểm (không phải mọi việc có hạn chót) | `javis_schedule` | "8 giờ sáng mai nhắc anh gọi nhà cung cấp" |
+| Việc nền một lần | Chạy một lần ở nền, xong là hết trách nhiệm | `unimate_task` (Kanban) | "Dịch hết 40 file trong thư mục này, xong báo anh" |
+| Theo đuổi kết quả | Giữ trách nhiệm qua nhiều vòng làm, tự kiểm, sửa theo phản hồi; giữ việc mở tới khi đạt. Lúc chờ phản hồi không gọi model | `unimate_goal` (Resonance) | "Lo giúp anh bản hướng dẫn này tới khi anh thấy dùng được, anh góp ý dần" |
+| Nhắc giờ cố định | Một thông báo nhắc đơn thuần vào một thời điểm (không phải mọi việc có hạn chót) | `unimate_schedule` | "8 giờ sáng mai nhắc anh gọi nhà cung cấp" |
 
-Thêm hai ca không lập gì mới: **nối mục tiêu đang mở** (chỉ góp ý làm thay đổi mục tiêu đang mở mới nối vào nó bằng `javis_goal op=update`; "cảm ơn" hay câu hỏi bên lề thì không) và **chat thường** (câu hỏi, tư vấn, lập kế hoạch: chỉ trả lời).
+Thêm hai ca không lập gì mới: **nối mục tiêu đang mở** (chỉ góp ý làm thay đổi mục tiêu đang mở mới nối vào nó bằng `unimate_goal op=update`; "cảm ơn" hay câu hỏi bên lề thì không) và **chat thường** (câu hỏi, tư vấn, lập kế hoạch: chỉ trả lời).
 
 Điểm phân biệt là trách nhiệm tiếp tục theo đuổi kết quả, không phải số lần gọi model hay chữ "duy trì". Lời giao lần 2 ("khi mình báo thêm việc thì cập nhật vào") nằm ở vùng giao: mỗi lần cập nhật là phản ứng với một tin mới, làm ngay trong lượt đó vẫn hợp lý. Ngược lại, viết bản đầu ngay trong lượt KHÔNG phủ định Resonance: bộ não có thể làm phần hữu ích ngay và vẫn lưu trách nhiệm vào mục tiêu.
 
@@ -194,26 +194,26 @@ Thêm hai ca không lập gì mới: **nối mục tiêu đang mở** (chỉ gó
 
 Script `exports/reviews/PR-579-tool-path-probe.py` (ngoài repo), sau đó thành test `tests/python/test_resonance_tool_path.py`:
 
-1. **Đăng ký đúng brain: đạt.** `javis_goal` chỉ có trong `plugins_host.plugin_tools` khi brain bật Resonance; brain tắt hoặc không rõ brain thì không có. `javis_task` luôn có.
-2. **Danh sách tới engine: đạt.** Engine Claude nhận plugin qua MCP in-process `javis-plugins` (32 tool, có `javis_goal`). Đường chat đặt `javis_vault` trong `main._apply_mcp`; thiếu nó thì `javis_goal` không có mặt.
-3. **Đường tìm: sai trên Claude Code.** Khi engine Claude dựng được server plugin in-process, nó báo hub bỏ nhóm plugin (`X-Javis-No-Plugins: 1`) để khỏi trùng tool, nên `javis_search_tools` của hub không trả về `javis_goal`. Kết luận chỉ áp cho đường đó; nhánh lùi khi server in-process lỗi (hub giữ nhóm plugin) không được kiểm ở đây. Với engine API hay Codex, hub có nhóm plugin nên `javis_search_tools` tìm ra. Dòng gợi ý cũ chỉ nêu `javis_search_tools`.
+1. **Đăng ký đúng brain: đạt.** `unimate_goal` chỉ có trong `plugins_host.plugin_tools` khi brain bật Resonance; brain tắt hoặc không rõ brain thì không có. `unimate_task` luôn có.
+2. **Danh sách tới engine: đạt.** Engine Claude nhận plugin qua MCP in-process `unimate-plugins` (32 tool, có `unimate_goal`). Đường chat đặt `unimate_vault` trong `main._apply_mcp`; thiếu nó thì `unimate_goal` không có mặt.
+3. **Đường tìm: sai trên Claude Code.** Khi engine Claude dựng được server plugin in-process, nó báo hub bỏ nhóm plugin (`X-UniMate-No-Plugins: 1`) để khỏi trùng tool, nên `unimate_search_tools` của hub không trả về `unimate_goal`. Kết luận chỉ áp cho đường đó; nhánh lùi khi server in-process lỗi (hub giữ nhóm plugin) không được kiểm ở đây. Với engine API hay Codex, hub có nhóm plugin nên `unimate_search_tools` tìm ra. Dòng gợi ý cũ chỉ nêu `unimate_search_tools`.
 4. **Nguồn tin người dùng: đạt.** `luot_dang_chay` trả đúng phiên, id tin và lời người dùng của lượt đang chạy; hết lượt thì không còn.
 
-**Chưa kiểm được khi không gọi model:** ToolSearch của SDK có luôn sẵn không, và Claude Code có hoãn nạp tool `mcp__javis-plugins__*` không. Bằng chứng gián tiếp duy nhất là lần chạy 1 (bộ não tìm thấy `mcp__javis-plugins__javis_task` qua ToolSearch). Chỗ sai ở mục 3 có thật, nhưng **chưa chứng minh nó là nguyên nhân** của lần chạy 2.
+**Chưa kiểm được khi không gọi model:** ToolSearch của SDK có luôn sẵn không, và Claude Code có hoãn nạp tool `mcp__unimate-plugins__*` không. Bằng chứng gián tiếp duy nhất là lần chạy 1 (bộ não tìm thấy `mcp__unimate-plugins__unimate_task` qua ToolSearch). Chỗ sai ở mục 3 có thật, nhưng **chưa chứng minh nó là nguyên nhân** của lần chạy 2.
 
 ### Sửa tối thiểu
 
-- `server/main.py` (dòng gợi ý, chỉ khi brain bật Resonance): nêu đủ bốn loại theo bảng trên và chỉ đường tìm cho từng engine: Claude Code dùng ToolSearch (`mcp__javis-plugins__javis_goal`), engine khác dùng `javis_search_tools`. Comment ghi đúng mức bằng chứng (việc hoãn nạp chưa xác minh). Trần độ dài dòng gợi ý trong test nâng từ 450 lên 650 ký tự.
-- `system/plugins/javis-goal/plugin.py`: thêm "tự kiểm, sửa theo phản hồi, giữ việc mở tới khi đạt" vào điều kiện lập mục tiêu; ghi rõ "việc nền một lần, xong là hết trách nhiệm: javis_task". Mô tả này chỉ tới engine khi brain bật.
-- **Mô tả `javis_task` giữ nguyên** (review đường công cụ, P2). Bản `9c62b9a0` từng thêm câu ranh giới vào đó, và câu này tới cả brain chưa bật Resonance; đã gỡ. Ranh giới nay chỉ nằm ở hai chỗ chỉ có khi bật.
+- `server/main.py` (dòng gợi ý, chỉ khi brain bật Resonance): nêu đủ bốn loại theo bảng trên và chỉ đường tìm cho từng engine: Claude Code dùng ToolSearch (`mcp__unimate-plugins__unimate_goal`), engine khác dùng `unimate_search_tools`. Comment ghi đúng mức bằng chứng (việc hoãn nạp chưa xác minh). Trần độ dài dòng gợi ý trong test nâng từ 450 lên 650 ký tự.
+- `system/plugins/unimate-goal/plugin.py`: thêm "tự kiểm, sửa theo phản hồi, giữ việc mở tới khi đạt" vào điều kiện lập mục tiêu; ghi rõ "việc nền một lần, xong là hết trách nhiệm: unimate_task". Mô tả này chỉ tới engine khi brain bật.
+- **Mô tả `unimate_task` giữ nguyên** (review đường công cụ, P2). Bản `9c62b9a0` từng thêm câu ranh giới vào đó, và câu này tới cả brain chưa bật Resonance; đã gỡ. Ranh giới nay chỉ nằm ở hai chỗ chỉ có khi bật.
 
-`test_resonance_tool_path.py` (20 kiểm) đọc mô tả tool **thật sự tới engine Claude** (metadata của server in-process) ở brain bật và tắt. Mô tả `javis_task` phải giống hệt nhau và không nhắc `javis_goal`; đặt lại câu cũ thì đỏ. Không thêm từ khoá nào nhắm vào lời giao của pilot. Không có bằng chứng sửa này đủ để bộ não lập mục tiêu.
+`test_resonance_tool_path.py` (20 kiểm) đọc mô tả tool **thật sự tới engine Claude** (metadata của server in-process) ở brain bật và tắt. Mô tả `unimate_task` phải giống hệt nhau và không nhắc `unimate_goal`; đặt lại câu cũ thì đỏ. Không thêm từ khoá nào nhắm vào lời giao của pilot. Không có bằng chứng sửa này đủ để bộ não lập mục tiêu.
 
 **Hai điều kiện thật của `op=update`** (tìm ra khi viết test engine giả): đề xuất phải có `relevant_quote` trích nguyên văn lời GÓP Ý, và phải đổi ít nhất một trường (ràng buộc, tiêu chí, cách hiểu). Thiếu trích dẫn thì host từ chối; không đổi gì thì host trả "không có thay đổi nào được áp dụng", không ghi ý định mới, việc nền không chạy lại.
 
 ### Lần chạy 3 (CHƯA chạy, chờ review bộ chạy rồi chờ người dùng duyệt)
 
-**Kịch bản: hoàn thiện một bản hướng dẫn qua phản hồi** (mục tiêu `achieve`, sản phẩm chữ). Bộ chạy riêng: `tests/python/test_resonance_mvp_e2e_achieve.py` (biến `JAVIS_RESONANCE_E2E_ACHIEVE=dry|real`, cổng 7792). Bộ chạy maintain cũ giữ nguyên làm hồ sơ lần 1 và lần 2.
+**Kịch bản: hoàn thiện một bản hướng dẫn qua phản hồi** (mục tiêu `achieve`, sản phẩm chữ). Bộ chạy riêng: `tests/python/test_resonance_mvp_e2e_achieve.py` (biến `UNIMATE_RESONANCE_E2E_ACHIEVE=dry|real`, cổng 7792). Bộ chạy maintain cũ giữ nguyên làm hồ sơ lần 1 và lần 2.
 
 **Đầu vào đóng băng** (nguyên văn trong bộ chạy, báo cáo ghi kèm sha256): lời giao gồm yêu cầu, đường dẫn `Docs/huong-dan-nhan-hang.md`, ba điều dặn (cho người chưa làm, bước đánh số, mục "Lỗi hay gặp") và sáu dòng ghi chú (đếm kiện trước khi cho tài xế đi; đối chiếu từng dòng phiếu giao về mã hàng và số lượng; thùng móp, ướt, rách để riêng và ghi hàng hỏng; chỉ ký sau khi đếm và đối chiếu, thiếu hay hỏng ghi cạnh chữ ký; nhập sổ kho trong ngày; không chắc thì gọi anh Tùng). Tin góp ý: "Anh xem bản đầu rồi. Bước đối chiếu phiếu giao khó hiểu quá, em thêm một ví dụ cụ thể, và thêm bước chụp ảnh hàng hỏng trước khi ký." Không có tên tool, API hay schema trong lời người dùng.
 
@@ -231,7 +231,7 @@ Script `exports/reviews/PR-579-tool-path-probe.py` (ngoài repo), sau đó thàn
 
 - **Lượt chat:** sổ `TurnLedger` giữ chỗ TRƯỚC mỗi lần gửi và ghi xuống đĩa ngay. Lượt hết giờ hay lỗi vẫn được tính, không có đường thử lại, tối đa 2.
 - **Việc nền:** trần TÍCH LUỸ 1 cho mọi server tới hết S4, 2 cho server E. Sổ trong SQLite không bao giờ đặt lại. Lượt chat góp ý chạy trên server nhịp dừng, nên lịch làm lại chỉ được nhận khi E lên. Nếu nhịp chạy với trần 1 sau góp ý, lịch đó bị chặn vì hạn mức và bộ chạy không được sửa kho để gỡ.
-- Không thử lại, không nâng trần, không chuyển API trả phí. Tool javis_goal lập mục tiêu không gọi model (framer `CallBudget(0)`); bộ thử cách làm M5 không có đường gọi trong sản phẩm.
+- Không thử lại, không nâng trần, không chuyển API trả phí. Tool unimate_goal lập mục tiêu không gọi model (framer `CallBudget(0)`); bộ thử cách làm M5 không có đường gọi trong sản phẩm.
 
 **Kết luận của lần chạy** tách bốn loại: `technical_failed` (host hay bộ chạy), `contract_failed` (đã đi đường mục tiêu nhưng lệch kịch bản), `stopped` (bộ não không đi đường mục tiêu ở S1 hay S4), `pending_content_review` (kỹ thuật đạt).
 
@@ -242,7 +242,7 @@ Script `exports/reviews/PR-579-tool-path-probe.py` (ngoài repo), sau đó thàn
 Nút "Đạt yêu cầu" ở S6 là thao tác **mô phỏng** (`simulated_acceptance: true`), chỉ kiểm đường API, không phải con người đã duyệt.
 
 **Bằng chứng ghi thêm:**
-- mọi khung công cụ, riêng các khung dính ToolSearch hay `javis_search_tools` (`search_calls`) và các khung dính `javis_goal` hay `javis_task`;
+- mọi khung công cụ, riêng các khung dính ToolSearch hay `unimate_search_tools` (`search_calls`) và các khung dính `unimate_goal` hay `unimate_task`;
 - file bộ não ghi trong từng lượt chat (ảnh chụp trước và sau);
 - file sản phẩm lưu sau S1 và S4, kể cả khi dừng sớm.
 
@@ -291,7 +291,7 @@ Danh sách tool trong tin `init` của Claude Code không đọc được từ n
 | Bằng chứng | [`resonance-mvp-e2e-pilot-3.json`](resonance-mvp-e2e-pilot-3.json), bản bộ não viết [`resonance-mvp-e2e-pilot-3-s1-chat.md`](resonance-mvp-e2e-pilot-3-s1-chat.md) (`draft1` và `final` là cùng file đó, cùng hash `c30c9443...`) |
 
 **S1 đạt: lần đầu bộ não tự định tuyến sang mục tiêu.**
-- Thứ tự công cụ: `Write` (viết luôn bản đầu vào `Docs/huong-dan-nhan-hang.md`), `ToolSearch` với `select:mcp__javis-plugins__javis_goal`, rồi hai lần gọi `javis_goal` trong CÙNG lượt chat: lần đầu host từ chối vì chân trời review thiếu `at_iso` đọc được, bộ não sửa đề xuất và lần sau lập được mục tiêu (kết quả có trong `tool_frames` của JSON; bản ghi trước đây nói trace không có kết quả là SAI, review pilot lần 3 đã chỉ ra). Kết quả của ToolSearch thì trace không có nội dung.
+- Thứ tự công cụ: `Write` (viết luôn bản đầu vào `Docs/huong-dan-nhan-hang.md`), `ToolSearch` với `select:mcp__unimate-plugins__unimate_goal`, rồi hai lần gọi `unimate_goal` trong CÙNG lượt chat: lần đầu host từ chối vì chân trời review thiếu `at_iso` đọc được, bộ não sửa đề xuất và lần sau lập được mục tiêu (kết quả có trong `tool_frames` của JSON; bản ghi trước đây nói trace không có kết quả là SAI, review pilot lần 3 đã chỉ ra). Kết quả của ToolSearch thì trace không có nội dung.
 - Mục tiêu khớp hợp đồng:
   - `achieve`, đúng file;
   - tiêu chí `c1` tự kiểm (có "Lỗi hay gặp", "1.", "anh Tùng", tối thiểu 800 ký tự), tiêu chí `c2` người dùng xác nhận;
@@ -306,14 +306,14 @@ Danh sách tool trong tin `init` của Claude Code không đọc được từ n
 - Tin `goal.waiting_human` về đúng phiên có biên nhận. Không có bản đăng nào, nên kiểm "bytes khớp hash host đã ghi khi đăng" hỏng đúng. Cổng chi phí chặn mọi bước sau.
 
 **Đánh giá (chờ review):**
-1. **Định tuyến đi được trên engine Claude Code** sau khi dòng gợi ý chỉ đúng ToolSearch: bộ não gọi đúng `select:mcp__javis-plugins__javis_goal`. Một mẫu, chưa chứng minh ổn định.
+1. **Định tuyến đi được trên engine Claude Code** sau khi dòng gợi ý chỉ đúng ToolSearch: bộ não gọi đúng `select:mcp__unimate-plugins__unimate_goal`. Một mẫu, chưa chứng minh ổn định.
 2. **Lộ một chỗ hở thật của sản phẩm**, đúng ca review đã lường ("làm phần hữu ích ngay và vẫn lưu trách nhiệm vào mục tiêu"). Khi bộ não viết bản đầu trong lượt rồi lập mục tiêu:
    - host vẫn tiêu một lượt việc nền làm lại bản đầu;
    - bản đó không đăng được vì xung đột;
-   - tin báo nói sai nguồn gốc ("file đã được sửa sau lần Javis ghi trước", trong khi Javis chưa từng ghi).
+   - tin báo nói sai nguồn gốc ("file đã được sửa sau lần UNI MATE ghi trước", trong khi UNI MATE chưa từng ghi).
    Hướng sửa cần review trước khi làm, ví dụ: lúc lập mục tiêu, host nhận file bộ não vừa ghi trong chính lượt đó làm bản đầu (có hash, đúng phiên, đúng file của tiêu chí) và không xếp lượt việc nền cho tới khi có góp ý.
 3. **Bản Sonnet bị mất** vì vùng làm việc nằm trong sandbox. Bộ chạy nên lưu cả đầu ra việc nền khi không đăng được.
-4. ~~Trace thiếu kết quả của khung công cụ~~ (sai, xem trên): `javis_goal` gọi hai lần vì lần đầu thiếu `at_iso`.
+4. ~~Trace thiếu kết quả của khung công cụ~~ (sai, xem trên): `unimate_goal` gọi hai lần vì lần đầu thiếu `at_iso`.
 
 Tách hai kết luận (review pilot lần 3): **tự định tuyến từ chat ĐẠT cho một mẫu** (S1: tự tìm và gọi công cụ mục tiêu, đúng một mục tiêu achieve, không Kanban). **Vòng đầu-cuối CHƯA đạt** (dừng ở S2), nên điều kiện MVP thứ nhất trọn vẹn vẫn chưa đạt.
 
@@ -423,13 +423,13 @@ Kết quả:
 
 **Diễn biến:**
 - **S1:**
-  - Công cụ theo thứ tự: `Glob`, `ToolSearch` (`select:mcp__javis-plugins__javis_goal`), `Write` bản đầu vào `Docs/huong-dan-nhan-hang.md`, rồi `javis_goal` (lập được ngay lần đầu).
+  - Công cụ theo thứ tự: `Glob`, `ToolSearch` (`select:mcp__unimate-plugins__unimate_goal`), `Write` bản đầu vào `Docs/huong-dan-nhan-hang.md`, rồi `unimate_goal` (lập được ngay lần đầu).
   - Mục tiêu `achieve` với hai tiêu chí: `c1` tự kiểm (Lỗi hay gặp, "1.", anh Tùng, phiếu giao, sổ kho, tối thiểu 1500 ký tự) và `c2` người dùng xác nhận.
   - Bốn ràng buộc đúng lời dặn. Mốc xem lại nội bộ 15/10, ghi rõ không phải hạn chót.
 - **S2:** host tiếp nhận bản chat bằng biên nhận ghi (Write thành công, bytes khớp). Bản đạt phần khách quan nên KHÔNG gọi việc nền; mục tiêu chờ người dùng; tin báo về đúng phiên.
 - **S3:** dựng lại server; mục tiêu, revision, bản trên đĩa giữ nguyên; không báo lặp, không gọi thêm.
 - **S4:**
-  - Lượt góp ý: `Write` bản sửa, rồi `javis_goal op=update` trên cùng mục tiêu.
+  - Lượt góp ý: `Write` bản sửa, rồi `unimate_goal op=update` trên cùng mục tiêu.
   - Revision lên 2. Ý định mới là đúng lời góp ý, nối về ý định trước.
   - Thêm hai ràng buộc: ví dụ cụ thể cho bước đối chiếu, chụp ảnh hàng hỏng trước khi ký.
 - **S5:** host tiếp nhận bản sửa cho revision 2; không gọi việc nền; hash khác bản đầu; tin báo bản sửa về đúng phiên.
@@ -516,11 +516,11 @@ Mục này ghi trạng thái LÚC CHẠY (`pending_content_review`). Kết luậ
   - engine của trợ lý lập được mục tiêu và nhận bản chat.
 - **S1** (phiên `agent:tro-ly-tai-lieu`, 60 giây, `engine_status ok`, `turn_status completed`):
   - bộ não liệt kê thư mục bằng `Bash` (chỉ đọc), `Write` bản đầu;
-  - rồi `ToolSearch select:mcp__javis-plugins__javis_goal` và gọi `javis_goal`.
+  - rồi `ToolSearch select:mcp__unimate-plugins__unimate_goal` và gọi `unimate_goal`.
   - Đúng một mục tiêu, gắn đúng trợ lý của phiên, không giao Kanban.
 - **S2:** bản đầu tiếp nhận từ chat đúng một lần, không có lượt việc nền viết lại. Chờ người dùng. Tin báo về đúng phiên, có biên nhận.
 - **S3:** dựng lại server: trạng thái còn, không báo lặp, không gọi thêm.
-- **S4** (48 giây): `Write` bản sửa rồi `javis_goal` (update), lần này không cần `ToolSearch`. Nối vào cùng mục tiêu, revision 1 lên 2; ý định mới là đúng lời góp ý; giữ ràng buộc cũ.
+- **S4** (48 giây): `Write` bản sửa rồi `unimate_goal` (update), lần này không cần `ToolSearch`. Nối vào cùng mục tiêu, revision 1 lên 2; ý định mới là đúng lời góp ý; giữ ràng buộc cũ.
 - **S5:** bản sửa tiếp nhận từ chat, không có lượt việc nền viết lại. Đã đăng, khác bản đầu, tin báo đúng phiên.
 - **S6:** bấm "Đạt yêu cầu" qua API (mô phỏng). Mục tiêu `succeeded`, tin thành công về đúng phiên.
 

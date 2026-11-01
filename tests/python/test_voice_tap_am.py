@@ -3,7 +3,7 @@ from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-tapam-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-tapam-"))
 
 import voice_brain as vb  # noqa: E402
 import sessions  # noqa: E402
@@ -19,26 +19,26 @@ def check(name, cond):
 
 # ---- 1. parse_bo_qua ----
 check("bỏ lượt: lấy được lý do",
-      vb.parse_bo_qua("JAVIS_BO_QUA: tiếng TV trong phòng") == "tiếng TV trong phòng")
+      vb.parse_bo_qua("UNIMATE_BO_QUA: tiếng TV trong phòng") == "tiếng TV trong phòng")
 check("không có marker -> None",
-      vb.parse_bo_qua("JAVIS_NGHE: xin chào\nChào anh, em nghe đây.") is None)
+      vb.parse_bo_qua("UNIMATE_NGHE: xin chào\nChào anh, em nghe đây.") is None)
 # Lý do rỗng vẫn là BỎ: dòng lệnh có mặt đã là quyết định. Trả "" chứ không None, nên chỗ gọi
 # phải hỏi `is not None` - hỏi truthy là lượt tạp âm lọt thẳng vào khung chat.
 check("lý do rỗng vẫn là bỏ (chuỗi rỗng, không phải None)",
-      vb.parse_bo_qua("JAVIS_BO_QUA:") == "")
+      vb.parse_bo_qua("UNIMATE_BO_QUA:") == "")
 check("marker không ở dòng đầu vẫn bắt được",
-      vb.parse_bo_qua("JAVIS_NGHE: abc\nJAVIS_BO_QUA: hai người nói chuyện") == "hai người nói chuyện")
+      vb.parse_bo_qua("UNIMATE_NGHE: abc\nUNIMATE_BO_QUA: hai người nói chuyện") == "hai người nói chuyện")
 check("marker giữa câu KHÔNG tính (phải đứng đầu dòng)",
-      vb.parse_bo_qua("anh bảo JAVIS_BO_QUA: gì cơ") is None)
+      vb.parse_bo_qua("anh bảo UNIMATE_BO_QUA: gì cơ") is None)
 check("BO_QUA_MARKER nằm trong MARKERS", vb.BO_QUA_MARKER in vb.MARKERS)
 
 # ---- 2. Không bao giờ ra loa ----
 check("final: dòng bỏ lượt không ra loa",
-      vb.split_speakable("JAVIS_BO_QUA: tiếng TV", 0, True)[0] == [])
+      vb.split_speakable("UNIMATE_BO_QUA: tiếng TV", 0, True)[0] == [])
 check("đang stream: chưa biết là marker thì giữ lại, không đọc",
-      vb.split_speakable("JAVIS_BO", 0, False)[0] == [])
+      vb.split_speakable("UNIMATE_BO", 0, False)[0] == [])
 check("bỏ lượt sau một dòng khác: chỉ dòng kia ra loa",
-      vb.split_speakable("Ừ.\nJAVIS_BO_QUA: tiếng TV\n", 0, True)[0] == ["Ừ.\n"])
+      vb.split_speakable("Ừ.\nUNIMATE_BO_QUA: tiếng TV\n", 0, True)[0] == ["Ừ.\n"])
 
 # Text alone cannot identify the speaker. Legacy markers are still parsed/suppressed,
 # but the model no longer has permission to delete accepted user speech.
@@ -50,7 +50,7 @@ for value in (None, False, True):
           vb.config_from_settings({"voice": {"loc_tap_am": value}})["loc_tap_am"] is False)
 
 # ---- 5. Xoá tin cuối khỏi kho phiên ----
-_db = os.path.join(tempfile.mkdtemp(prefix="javis-tapam-db-"), "sessions.db")
+_db = os.path.join(tempfile.mkdtemp(prefix="unimate-tapam-db-"), "sessions.db")
 store = sessions.SessionStore(_db)
 sid = store.get_or_create(None, brain="brain", engine="cli", model="")
 store.append_message(sid, "user", "câu thật")
@@ -83,7 +83,7 @@ check("guard sent on every turn", "voice_brain.GHI_CHU_TAT_LOC" in MAIN)
 VOICE_JS = (ROOT / "dashboard" / "voice.js").read_text(encoding="utf-8")
 check("voice.js có trần cho một lượt", "TRAN_LUOT_MS" in VOICE_JS)
 check("quá trần thì chốt ngay, không hẹn tiếp",
-      "if (Date.now() - this._batDauLuot >= JavisVoice.TRAN_LUOT_MS) { this.stopListening(); return; }" in VOICE_JS)
+      "if (Date.now() - this._batDauLuot >= UniMateVoice.TRAN_LUOT_MS) { this.stopListening(); return; }" in VOICE_JS)
 APP_JS = (ROOT / "dashboard" / "app.js").read_text(encoding="utf-8")
 # Bubble removal and stale raw-text guards are exercised by test_voice_app_session.js.
 check("app.js để lại dòng ghi chú thoáng qua", 'ghiChuThoang(window.t("app.tap_am_bo_qua"))' in APP_JS)

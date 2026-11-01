@@ -18,7 +18,7 @@ post-GREEN/no intervening edits, not pre-run; retain timing limitation for final
 wholebranch. Proof2026-10-24-m2-future-schema-controls.json
 SHA74a92878248c7a22f3d49e13b06a7c57c88f88688406daf1760a5d02569cf6fa.
 
-- Work only in C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS; never modify/reset/clean D:/Project/Javis-OS. Its .venv Python may execute with -B. VERSION0.299.0 unchanged.
+- Work only in C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE; never modify/reset/clean D:/Project/UNI-MATE. Its .venv Python may execute with -B. VERSION0.299.0 unchanged.
 - Direct owner Goal18 ends current Goal at M2 engineering plus committed Claude Opus5.5 handoff. No M3–M8 expansion, new Goal, real account/model/business/pilot/canary run, deploy/restart or activation.
 - Exactly two fixture SQL statements change; no production source, schema literals, historical fixtures, error assertions, mocks, native profile, protected reservation test or other tests change. No new test or warning suppression.
 - Use actual tests/run.py chay_mot isolation and no-real judge/review/team flags. One serial local app/native slot; no background/helper/model process left owned.

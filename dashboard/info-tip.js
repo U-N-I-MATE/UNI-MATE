@@ -5,15 +5,15 @@
  * câu giải thích nằm trong một khối `.info-body` ẩn ngay dưới tiêu đề, nút `.info-i` cạnh tiêu đề mở hoặc đóng nó.
  *
  * Cách dùng trong một mô-đun vẽ HTML:
- *   tiêu đề: '<div class="...">Tên mục' + JavisInfo.btn(nhãn) + '</div>'
- *   ngay sau (anh em kế tiếp, có thể cách vài phần tử): JavisInfo.body(htmlĐãEscape)
+ *   tiêu đề: '<div class="...">Tên mục' + UniMateInfo.btn(nhãn) + '</div>'
+ *   ngay sau (anh em kế tiếp, có thể cách vài phần tử): UniMateInfo.body(htmlĐãEscape)
  * Nút tìm khối `.info-body` ĐẦU TIÊN đứng sau phần tử chứa nó (hay sau tầng cha gần nhất có khối đó). Từ 0.399.0 khối đó luôn ẩn:
  * bấm nút là mở một popup cạnh nút (điện thoại: bảng từ dưới lên) với đúng nội dung khối, xem cuối file.
  * Mô-đun nào chạy không có file này (test Node) thì tự vẽ lời giải thích ra luôn, không mất chữ.
  *
  * 0.214.0, owner 2026-10-18: the rule now covers the whole dashboard ("các dòng giải thích gọn lại trong chữ (i) chứ không
  * để xổ hết ra bên ngoài"), written in docs/quy-uoc-dev.md and enforced by tests/python/test_info_tip_rule.py.
- *   JavisInfo.pair(html, label)  button and its hidden block side by side, for a spot with no title to sit next to.
+ *   UniMateInfo.pair(html, label)  button and its hidden block side by side, for a spot with no title to sit next to.
  * In static HTML: <button type="button" class="info-i" aria-expanded="false" data-i18n-aria="info.more" data-i18n-title="info.more"><i data-ic="info"></i></button>
  * followed (as a sibling, or a sibling of a parent up to three levels) by <div class="info-body" hidden>...</div>. */
 (function () {
@@ -117,5 +117,5 @@
     // Any scroll (the page or a panel inside it) moves the button: follow it, or close when it left the page.
     document.addEventListener("scroll", place, true);
   }
-  window.JavisInfo = { btn: btn, body: body, pair: pair, close: close };
+  window.UniMateInfo = { btn: btn, body: body, pair: pair, close: close };
 })();

@@ -46,7 +46,7 @@ def check(name: str, condition: bool) -> None:
 
 # --- Nguồn cần quét: đúng những file dựng nên giao diện app. ------------------
 # Bỏ vendor/ (mã của người khác), bỏ docs/ và voice-test.html (trang lẻ đứng
-# riêng, không phải giao diện Javis).
+# riêng, không phải giao diện UNI MATE).
 SCAN = sorted(p for p in DASH.glob("*.js")) + [INDEX and DASH / "index.html"]
 SCAN += [DASH / "style.css", DASH / "console.css"]
 SCAN = [p for p in SCAN if p.is_file() and p.name != "icons.js"]
@@ -219,7 +219,7 @@ def _ham_nhan_html(text):
 
     Gọi hàm đó kèm chuỗi icon là icon hiện thành chữ, mà chỗ gán lại nằm ở file
     khác hoặc cách đó vài trăm dòng nên đọc code rất khó thấy. Hai đường lọt thật:
-    showActivity() (textContent) và appendJavisMessage() (markdownToHtml).
+    showActivity() (textContent) và appendUniMateMessage() (markdownToHtml).
     """
     ra = {}
     for mau in HAM_KHAI:

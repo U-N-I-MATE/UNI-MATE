@@ -16,7 +16,7 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-review-removed-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-review-removed-")
 
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402

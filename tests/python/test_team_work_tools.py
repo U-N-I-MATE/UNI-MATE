@@ -13,8 +13,8 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-tools-")
-TEMP = Path(tempfile.mkdtemp(prefix="javis-team-tools-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-tools-")
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-team-tools-w-"))
 
 import main  # noqa: E402
 import aux_engine  # noqa: E402
@@ -121,11 +121,11 @@ tb = seen["tools"][0]["base"] if seen["tools"] else None
 check("the tool engine runs in the brain (no pinned folder), like a private chat",
       tb is not None and Path(tb.cwd).resolve() == Path(main._brain_root(t["brain_id"])).resolve(), getattr(tb, "cwd", None))
 check("the tool engine has the hub attached at the private chat level (full) and knows its brain",
-      tb is not None and tb.javis_mode == "full" and seen["tools"][0]["mode"] == "full"
-      and Path(tb.javis_vault).resolve() == Path(main._brain_root(t["brain_id"])).resolve()
-      and not getattr(tb, "allowed_tools", None), (getattr(tb, "javis_mode", None), getattr(tb, "allowed_tools", None)))
+      tb is not None and tb.unimate_mode == "full" and seen["tools"][0]["mode"] == "full"
+      and Path(tb.unimate_vault).resolve() == Path(main._brain_root(t["brain_id"])).resolve()
+      and not getattr(tb, "allowed_tools", None), (getattr(tb, "unimate_mode", None), getattr(tb, "allowed_tools", None)))
 check("the tool engine is not the empty team sandbox", tb is not None and "team_cwd" not in str(tb.cwd))
-check("Codex tool turns get the Javis MCP profile", seen["tools"] and seen["tools"][0]["codex_profile"] is main._write_codex_profile)
+check("Codex tool turns get the UNI MATE MCP profile", seen["tools"] and seen["tools"][0]["codex_profile"] is main._write_codex_profile)
 check("the Work prompt carries the tool note, not the text-only note",
       tb is not None and TR.WORK_TOOLS_NOTE in (tb.system_prompt or "") and TR.TEXT_ONLY_NOTE not in (tb.system_prompt or ""))
 turns = tm.turns(t["team_id"])
@@ -145,7 +145,7 @@ with patch.object(main, "_team_agent_info", side_effect=ident), \
     run(r.dispatch_once())
 check("with a pinned folder the Work step runs inside that folder, files still belong to the brain",
       seen["tools"] and Path(seen["tools"][0]["base"].cwd) == proj
-      and Path(seen["tools"][0]["base"].javis_vault).resolve() == Path(main._brain_root(t["brain_id"])).resolve(),
+      and Path(seen["tools"][0]["base"].unimate_vault).resolve() == Path(main._brain_root(t["brain_id"])).resolve(),
       [getattr(x["base"], "cwd", None) for x in seen["tools"]])
 
 # Chat replies stay text only: built through `build`, a tool call breaks the turn.
@@ -166,7 +166,7 @@ with patch.object(main, "_team_agent_info", side_effect=ident), \
         patch.object(team_engine, "build", fake_build):
     job = r.submit(t["team_id"], "Làm", mentions=["agent-two"], as_job=True, client_msg_id="g1")["task_id"]
     run(r.dispatch_once())
-check("JAVIS_NO_REAL_TEAM_ENGINE stops a real tool engine too (job blocked, nothing built)",
+check("UNIMATE_NO_REAL_TEAM_ENGINE stops a real tool engine too (job blocked, nothing built)",
       ts.get_task(job)["status"] == "team_blocked", ts.get_task(job))
 
 # ═════ The outcome contract of a tool turn ═════
@@ -200,7 +200,7 @@ check("choose_spec without tools still moves Grok Build to the main model (text-
 class Base:
     def __init__(self):
         self.cwd, self.tag, self.system_prompt = str(TEMP), "t", "SYS"
-        self.javis_vault, self.javis_mode, self.model = str(TEMP), "full", None
+        self.unimate_vault, self.unimate_mode, self.model = str(TEMP), "full", None
 
 
 b = Base()
@@ -210,7 +210,7 @@ with patch.object(aux_engine, "availability", return_value=(True, "")):
     eng = team_engine.build_tools({"provider": "openrouter", "model": "m"}, Base(), "t", mode="full")
 check("build_tools API: a tool-calling API engine on the brain at the full level",
       isinstance(eng, aux_engine._ApiAuxEngine) and not getattr(eng, "no_tools", False)
-      and eng.javis_mode == "full" and eng.vault_root == str(TEMP), vars(eng))
+      and eng.unimate_mode == "full" and eng.vault_root == str(TEMP), vars(eng))
 with patch.object(aux_engine, "availability", return_value=(True, "")), \
         patch.object(aux_engine, "_build_codex", side_effect=lambda sp, base, mode, tag, prof: ("codex", mode, prof)):
     eng = team_engine.build_tools({"provider": "openai-oauth", "model": "gpt"}, Base(), "t", mode="full",
@@ -273,7 +273,7 @@ ctl = two_jobs("slots-default")
 ov = two_jobs("slots-one", slots=1)
 own = two_jobs("slots-one-own-folders", slots=1, own_folders=True)
 check("default: Work steps of two teams in one brain run side by side", ctl.peak == 2, (ctl.peak, ctl.roles))
-check("one slot (JAVIS_TEAM_TOOL_SLOTS=1): Work steps in one folder run one at a time", ov.peak == 1
+check("one slot (UNIMATE_TEAM_TOOL_SLOTS=1): Work steps in one folder run one at a time", ov.peak == 1
       and len(ov.roles) >= 2, (ov.peak, ov.roles))
 check("one slot, each team has its own pinned folder: they still run side by side", own.peak == 2,
       (own.peak, own.roles))

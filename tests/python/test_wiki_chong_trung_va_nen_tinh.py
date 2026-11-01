@@ -29,7 +29,7 @@ CÁI BẪY khi vá, và là lý do file test này tồn tại: bật `GZipMiddle
 Starlette NUỐT TRỌN response streaming. Đo trên SSE 5 chunk cách nhau 0,3 giây:
     không nén: 0,01s / 0,31s / 0,61s / 0,91s / 1,21s
     có nén   : CẢ NĂM cùng về ở 1,50s
-Javis có 4 endpoint text/event-stream. Bật nén toàn cục là người dùng gõ câu hỏi rồi nhìn
+UNI MATE có 4 endpoint text/event-stream. Bật nén toàn cục là người dùng gõ câu hỏi rồi nhìn
 màn hình trống tới khi trả lời xong - đổi lỗi chậm lấy lỗi nặng hơn hẳn.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -38,8 +38,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-wikidup-")
-os.environ.setdefault("JAVIS_STATE_DIR", _TMP)
+_TMP = tempfile.mkdtemp(prefix="unimate-wikidup-")
+os.environ.setdefault("UNIMATE_STATE_DIR", _TMP)
 
 import learn  # noqa: E402
 

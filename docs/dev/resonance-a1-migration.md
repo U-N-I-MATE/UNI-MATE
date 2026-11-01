@@ -5,7 +5,7 @@
 ## Cách dùng
 
 1. Vào trang **Cộng sự**, chọn một trợ lý, mở tab **Cài đặt** ở cột phải. Khối **Cộng hưởng** nằm trên cùng.
-2. Bật công tắc. Lần bật đầu, Javis cấp cho trợ lý một mã riêng (không ghi vào file trợ lý).
+2. Bật công tắc. Lần bật đầu, UNI MATE cấp cho trợ lý một mã riêng (không ghi vào file trợ lý).
 3. Trò chuyện với trợ lý đó. Khi giao việc cần theo đuổi tới khi đạt, trợ lý lập mục tiêu. Khung **Mục tiêu của trợ lý** ở cùng chỗ hiện cách hiểu, tiêu chí, sản phẩm, điều đang chờ, lần làm tiếp, số lượt đã dùng, cùng các nút Tạm dừng và Huỷ.
 4. Trang **Cài đặt** có danh sách mọi trợ lý kèm công tắc, và mục **Chờ gán**.
 
@@ -22,9 +22,9 @@ Những điều cần biết:
 
 ## Nâng cấp từ 0.86.x
 
-- Không phải làm gì tay. Lần đầu mở kho, Javis chép `resonance.sqlite3` thành `resonance.sqlite3.pre-a1.bak` cạnh file gốc (thư mục `JAVIS_STATE_DIR`), chỉ một lần.
+- Không phải làm gì tay. Lần đầu mở kho, UNI MATE chép `resonance.sqlite3` thành `resonance.sqlite3.pre-a1.bak` cạnh file gốc (thư mục `UNIMATE_STATE_DIR`), chỉ một lần.
 - Kho chỉ có thêm bảng mới (`resonance_agents`, `resonance_agent_events`, `session_agents`, `goal_agents`, `handoff_agents`). Không bảng cũ nào đổi cột.
-- Công tắc theo brain cũ (`<brain>/Javis/resonance.json`) không còn cấp quyền gì. File không bị xoá.
+- Công tắc theo brain cũ (`<brain>/UniMate/resonance.json`) không còn cấp quyền gì. File không bị xoá.
 - Mục tiêu có từ trước (chưa thuộc trợ lý nào) chuyển sang trạng thái chờ gán:
   - không tự chạy, không tự gán theo tên;
   - vào **Cài đặt → Chờ gán**, chọn trợ lý, bấm **Gán**;
@@ -35,7 +35,7 @@ Những điều cần biết:
 
 Bản 0.86.1 chạy được trên kho đã nâng: nó bỏ qua các bảng mới. Đã kiểm bằng mã 0.86.1 thật trong `tests/python/test_resonance_a1_rollback.py`. Trước khi quay về:
 
-1. **Tắt công tắc brain cũ** (`Javis/resonance.json` của mọi brain, hay để tắt). Bản 0.86.x không biết công tắc theo trợ lý và lại dùng công tắc brain; không tắt thì mục tiêu có thể tự chạy trong lúc chuyển.
+1. **Tắt công tắc brain cũ** (`UniMate/resonance.json` của mọi brain, hay để tắt). Bản 0.86.x không biết công tắc theo trợ lý và lại dùng công tắc brain; không tắt thì mục tiêu có thể tự chạy trong lúc chuyển.
 2. Quay về image hay bản 0.86.x như thường.
 3. Chỉ bật lại công tắc brain khi chủ dự án quyết định.
 

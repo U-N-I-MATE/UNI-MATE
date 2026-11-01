@@ -12,7 +12,7 @@
 
    NHƯNG KHÔNG ĐƯỢC MẤT THÔNG TIN. Badge cũ nói engine+model THẬT SỰ đã chạy (máy chủ khai),
    khác hẳn thanh model dưới ô chat - thanh đó nói model đang được CẤU HÌNH. Hai thứ trùng
-   nhau lúc bình thường, và lệch nhau đúng lúc cần biết nhất: model chính quá tải, Javis đẩy
+   nhau lúc bình thường, và lệch nhau đúng lúc cần biết nhất: model chính quá tải, UNI MATE đẩy
    sang model dự phòng. Chủ repo chốt 01/09: dời thông tin đó xuống dòng nhỏ dưới TỪNG câu trả
    lời, chỗ đang hiện mức token. Đặt ở đó còn đúng hơn badge cũ: badge chỉ nói về lượt cuối,
    nên cuộn ngược lên một hội thoại từng đổi model là nó nói sai về mọi tin phía trên. */
@@ -54,7 +54,7 @@ check("và không còn CSS .cp-engine", !/\.cp-engine\b/.test(CONSOLE));
 // bắn, và người đọc code sau này tưởng badge vẫn đang được đồng bộ.
 check("không còn MutationObserver rình badge", !/_chatEngObs/.test(CONSOLE));
 // Mục "tiêu đề được trả lại bề ngang" ĐÃ BỎ: 0.53.1 gỡ hẳn tiêu đề tĩnh "Trò chuyện với
-// Javis" khỏi thanh (chủ repo yêu cầu 01/09) nên không còn bề ngang nào để trả. Chỗ trống đó
+// UNI MATE" khỏi thanh (chủ repo yêu cầu 01/09) nên không còn bề ngang nào để trả. Chỗ trống đó
 // giờ là của chip project - xem tests/js/test_khung_project.js.
 check("thanh tiêu đề trang Trò chuyện không còn tiêu đề tĩnh", !/cp-title/.test(CONSOLE));
 

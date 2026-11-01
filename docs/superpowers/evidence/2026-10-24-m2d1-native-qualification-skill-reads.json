@@ -112,7 +112,7 @@
   "results": [
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_native_qualification.py",
         "-v"
       ],
@@ -126,7 +126,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_runtime_qualification.py",
         "-v"
       ],
@@ -140,7 +140,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_role_qualification.py",
         "-v"
       ],
@@ -154,7 +154,7 @@
     },
     {
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_worker_quiescence.py",
         "-v"
       ],

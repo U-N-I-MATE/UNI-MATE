@@ -33,7 +33,7 @@ const win = { t: (k, v) => k + (v ? "#" + Object.keys(v).map((x) => v[x]).join("
 const ctx = { window: win, console, encodeURIComponent, String, Object, Array, Number, JSON };
 vm.createContext(ctx);
 vm.runInContext(MOD, ctx);
-const F = win.JavisConvFilters;
+const F = win.UniMateConvFilters;
 
 (function () {
   // ---- 2. tags and the new filter choices (pure module) ----
@@ -52,7 +52,7 @@ const F = win.JavisConvFilters;
   check("tag filters go to the server as comma lists", F.query({ tagsAny: ["7"], tagsNone: ["8", "9"], bot: "b" }) === "&bot_id=b&tags_any=7&tags_none=8,9");
   check("each tag counts as an active filter", F.activeCount({ tagsAny: ["7"], tagsNone: ["8"] }) === 2 && F.activeCount({ tagsAny: ["x"] }) === 0);
   vm.runInContext(src("dashboard/inbox-v5.js"), ctx);
-  const V = win.JavisInboxV5;
+  const V = win.UniMateInboxV5;
   const so = V.filterMenuHtml({}, "status", [], { status: { need_reply: 4 }, has_contact: 2 }, []);
   check("Filter menu status holds 'waiting longest' (need-reply count) and not 'has phone/email'",
     so.indexOf('data-v="waiting"> <span>ht.f_st_wait#4') > 0 && so.slice(so.indexOf("ib-fm-opts")).indexOf("contact") < 0, so);
@@ -87,7 +87,7 @@ const F = win.JavisConvFilters;
 
   // ---- 3. drag the list column ----
   check("list column uses the shared col-resize handle with snap to a strip, remembered width",
-    /CR\.attach\(col, o\)/.test(CV) && /key: "javis_ht_list_w"/.test(CV) && /snap: \{ below: CR\.FOLD_AT\(LIST_MIN_W\), to: LIST_MINI_W/.test(CV) &&
+    /CR\.attach\(col, o\)/.test(CV) && /key: "unimate_ht_list_w"/.test(CV) && /snap: \{ below: CR\.FOLD_AT\(LIST_MIN_W\), to: LIST_MINI_W/.test(CV) &&
     /wrap\.classList\.toggle\("ht-mini", !!on\)/.test(CV));
   check("CSS: width var and handle on wide screens only; the strip shows initials", /\.ht-listcol \{ width: var\(--ht-list-w, 320px\)/.test(CSS) &&
     /\.ht-listcol > \.col-resize \{ display: block;/.test(CSS) && /\.ht-mini \.ht-item-ava \{/.test(CSS) &&

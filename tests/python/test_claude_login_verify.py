@@ -3,7 +3,7 @@
     python tests/run.py claude_login_verify      (no network: a fake `claude` stands in for the CLI)
 
 Why this file exists: `claude auth login` prints "Login successful." and exits 0 even when it could not SAVE the
-credentials (on a Mac they go to the Keychain). Javis believed that line, told the card the sign-in worked, and the
+credentials (on a Mac they go to the Keychain). UNI MATE believed that line, told the card the sign-in worked, and the
 card's own check then read "Not signed in" with no reason given. A customer on a MacBook tried 4-5 times
 (28/10/2026). Also pinned: a bare "logged in" no longer counts as success (it matched "not logged in"), and a wrong
 code followed by a right one is not answered with the first code's error.
@@ -30,7 +30,7 @@ if os.name == "nt":
     print("skip: the fake CLI is a POSIX script")
     sys.exit(0)
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-claude-login-"))
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-claude-login-"))
 _STATE = _TMP / "main-state"
 _FAKE = _TMP / "claude"
 # auth login: prints like the real 2.1.x CLI, then reads codes. "good#s" saves and succeeds, "nosave#s" says

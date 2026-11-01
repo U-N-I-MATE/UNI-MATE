@@ -1,6 +1,6 @@
-"""Remote access through a Cloudflare Tunnel that Javis runs itself (0.242.0).
+"""Remote access through a Cloudflare Tunnel that UNI MATE runs itself (0.242.0).
 
-Owner request 2026-10-20: someone who runs Javis on a Windows or macOS computer should reach it from anywhere by
+Owner request 2026-10-20: someone who runs UNI MATE on a Windows or macOS computer should reach it from anywhere by
 filling in a form in Settings. No VPS, no open port, no router setup and no terminal. The Caddy wizard in
 routes/domain.py cannot do that: it needs a public IP with ports 80/443 open, which a home computer behind a router
 almost never has. A tunnel works the other way round: `cloudflared` dials out to Cloudflare, and Cloudflare forwards
@@ -11,11 +11,11 @@ Three modes, picked in Settings:
   domain needed, but the address changes every time the tunnel restarts.
 - token: a named tunnel the owner creates in Cloudflare Zero Trust. They paste its token (or the whole install command
   Cloudflare shows, we pick the token out of it), and the public hostname they set there stays fixed.
-- tailscale (0.244.0): the owner installs Tailscale and signs in themselves; Javis asks the local tailscaled to proxy
+- tailscale (0.244.0): the owner installs Tailscale and signs in themselves; UNI MATE asks the local tailscaled to proxy
   https://<machine>.<tailnet>.ts.net to this server (`tailscale serve`). Only devices in the owner's tailnet can open
   it, so nothing is exposed to the Internet at all.
 
-Javis downloads the right `cloudflared` build for the machine on first use (Windows x64/ARM, macOS Intel/Apple
+UNI MATE downloads the right `cloudflared` build for the machine on first use (Windows x64/ARM, macOS Intel/Apple
 Silicon, Linux), keeps it in <state>/bin, starts it with the server and restarts it when it drops.
 
 Safety rails, because a tunnel puts a dashboard that can run shell commands on the Internet:
@@ -141,7 +141,7 @@ def local_binary() -> Path:
 
 
 def find_binary() -> str:
-    """The copy Javis downloaded first (known to work), then one the owner installed (brew, winget, apt)."""
+    """The copy UNI MATE downloaded first (known to work), then one the owner installed (brew, winget, apt)."""
     p = local_binary()
     if p.is_file():
         return str(p)
@@ -210,14 +210,14 @@ def install_binary() -> str:
 
 def local_port() -> int:
     try:
-        return int(os.getenv("JAVIS_PORT", "7777"))
+        return int(os.getenv("UNIMATE_PORT", "7777"))
     except ValueError:
         return 7777
 
 
 def local_target() -> str:
     """Where cloudflared should send visitors: this server, by an address it actually listens on."""
-    host = (os.getenv("JAVIS_HOST", "127.0.0.1") or "").strip()
+    host = (os.getenv("UNIMATE_HOST", "127.0.0.1") or "").strip()
     if host in ("", "0.0.0.0", "::", "[::]", "localhost"):
         host = "127.0.0.1"
     if ":" in host and not host.startswith("["):
@@ -237,7 +237,7 @@ def parse_ingress(line: str):
     """[(hostname, service)] from the "Updated to new configuration" line of a token tunnel, or None.
 
     cloudflared logs the ingress rules the owner set in the Cloudflare dashboard as an escaped JSON string:
-    config="{\\"ingress\\":[{\\"hostname\\":\\"javis.example.com\\", \\"service\\":\\"http://localhost:7777\\"}, ...]}"
+    config="{\\"ingress\\":[{\\"hostname\\":\\"unimate.example.com\\", \\"service\\":\\"http://localhost:7777\\"}, ...]}"
     Reading them back lets Settings show the real address without asking the owner to type it a second time.
     """
     if "Updated to new configuration" not in (line or ""):
@@ -253,13 +253,13 @@ def parse_ingress(line: str):
 
 
 def service_points_here(service: str) -> bool:
-    """Whether an ingress service such as http://localhost:7777 reaches this Javis."""
+    """Whether an ingress service such as http://localhost:7777 reaches this UNI MATE."""
     m = re.match(r"^https?://(\[[^\]]+\]|[^/:]+)(?::(\d+))?", (service or "").strip().lower())
     if not m:
         return False
     host, port = m.group(1).strip("[]"), m.group(2)
     if host not in ("localhost", "127.0.0.1", "::1", "0.0.0.0"):
-        own = (os.getenv("JAVIS_HOST", "") or "").strip().strip("[]").lower()
+        own = (os.getenv("UNIMATE_HOST", "") or "").strip().strip("[]").lower()
         if host != own:
             return False
     return (int(port) if port else 80) == local_port()
@@ -288,7 +288,7 @@ def _looks_like_cloudflared(pid: int) -> bool:
 
 
 def kill_stray() -> bool:
-    """Kill the cloudflared an earlier Javis left behind (crash, killed from Task Manager).
+    """Kill the cloudflared an earlier UNI MATE left behind (crash, killed from Task Manager).
 
     A child survives its parent on every OS, so without this a restart would leave two connectors running: the old
     quick tunnel keeps a dead address alive, and the old named-tunnel connector keeps using a token the owner may
@@ -318,9 +318,9 @@ def kill_stray() -> bool:
 
 
 # ---------------------------------------------------------------- Tailscale (0.244.0)
-# Tailscale needs a system service and an account sign-in, so Javis never installs it; it only drives the CLI of an
+# Tailscale needs a system service and an account sign-in, so UNI MATE never installs it; it only drives the CLI of an
 # install the owner made. `tailscale serve --bg` stores the proxy in tailscaled itself, so it keeps working while
-# Javis restarts and Javis has no process to supervise, only a config to switch on and off.
+# UNI MATE restarts and UNI MATE has no process to supervise, only a config to switch on and off.
 
 TS_SERVE_TIMEOUT = 25
 TS_ENABLE_RE = re.compile(r"https://login\.tailscale\.com/\S+")
@@ -401,7 +401,7 @@ def tailscale_serve_on(binary: str, target: str) -> dict:
 
 
 def tailscale_serve_off(binary: str) -> bool:
-    """Remove only the :443 handler Javis added, never the owner's other serve or funnel entries (`serve reset` would)."""
+    """Remove only the :443 handler UNI MATE added, never the owner's other serve or funnel entries (`serve reset` would)."""
     rc, _ = _ts_run(binary, ["serve", "--https=443", "off"], timeout=15)
     return rc == 0
 
@@ -542,9 +542,9 @@ class TunnelManager:
                                        "Cloudflare rejected this token. Paste it again or create a new tunnel.")
         elif "failed to request quick tunnel" in low or "failed to unmarshal quick tunnel" in low:
             self.error = localefmt.chu("Cloudflare chưa cấp được link nhanh (mạng chặn hoặc Cloudflare bận), "
-                                       "Javis sẽ thử lại.",
+                                       "UNI MATE sẽ thử lại.",
                                        "Cloudflare could not hand out a quick link (network blocked or Cloudflare "
-                                       "busy); Javis will retry.")
+                                       "busy); UNI MATE will retry.")
 
     def _command(self, binary: str, sec: dict):
         env = dict(os.environ)
@@ -567,8 +567,8 @@ class TunnelManager:
             self.mode = sec.get("mode") if sec.get("mode") in MODES else "quick"
             if not cfgmod.auth_enabled():
                 self.state = "error"
-                self.error = localefmt.chu("Cần đặt mật khẩu đăng nhập trước khi mở Javis ra Internet.",
-                                           "Set a login password before opening Javis to the Internet.")
+                self.error = localefmt.chu("Cần đặt mật khẩu đăng nhập trước khi mở UNI MATE ra Internet.",
+                                           "Set a login password before opening UNI MATE to the Internet.")
                 return
             if self.mode == "tailscale":
                 self._run_tailscale(stop)
@@ -665,9 +665,9 @@ class TunnelManager:
             if info.get("backend") != "Running":
                 self.state = "waiting"
                 self.error = localefmt.chu("Tailscale trên máy này chưa đăng nhập hoặc đang tắt. Mở app Tailscale "
-                                           "để đăng nhập, Javis tự thử lại.",
+                                           "để đăng nhập, UNI MATE tự thử lại.",
                                            "Tailscale on this computer is signed out or off. Open the Tailscale app "
-                                           "to sign in; Javis retries on its own.")
+                                           "to sign in; UNI MATE retries on its own.")
                 if self._wait(stop, TS_RETRY_EVERY) or not self._still_allowed():
                     return
                 continue
@@ -683,9 +683,9 @@ class TunnelManager:
                 if self.enable_url:
                     self.state = "waiting"
                     self.error = localefmt.chu("Tailscale cần bật HTTPS cho mạng của bạn (làm một lần). Mở link "
-                                               "bên dưới, bấm Enable, Javis tự thử lại.",
+                                               "bên dưới, bấm Enable, UNI MATE tự thử lại.",
                                                "Tailscale needs HTTPS switched on for your network (once). Open the "
-                                               "link below, click Enable, and Javis retries on its own.")
+                                               "link below, click Enable, and UNI MATE retries on its own.")
                 else:
                     tail = res["output"].splitlines()[-1] if res["output"] else ""
                     self.state = "error"

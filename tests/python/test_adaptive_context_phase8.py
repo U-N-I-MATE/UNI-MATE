@@ -5,8 +5,8 @@ from pathlib import Path
 
 # Chốt chung của bộ test (review T3 J P2-2): file này nạp server/ mà không qua _paths.py, nên tự đặt chốt không dựng engine
 # phán xử hay lượt học thật trước mọi import của máy chủ.
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
-os.environ["JAVIS_NO_REAL_REVIEW_ENGINE"] = "1"
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
+os.environ["UNIMATE_NO_REAL_REVIEW_ENGINE"] = "1"
 
 import pytest
 
@@ -215,7 +215,7 @@ def test_three_phase8_canaries_are_independent(tmp_path, feature, expected_flags
 
     def base(include_memory, include_skills):
         calls.append((include_memory, include_skills))
-        return "Javis base contract"
+        return "UNI MATE base contract"
 
     plan = canary.prepare(None, objective, brain, "session-1", _messages(),
                           "dashboard", "groq", "llama-test", "api", base)
@@ -254,7 +254,7 @@ def test_phase8_small_base_does_not_wrap_full_claude_prompt(tmp_path, monkeypatc
     fake_claude.write_text("FULL_CLAUDE_MARKER_MUST_NOT_LOAD", encoding="utf-8")
     monkeypatch.setattr(main, "CLAUDE_MD_PATH", fake_claude)
     prompt = main.build_adaptive_source_prompt(str(brain), False, False)
-    assert "# Javis adaptive source contract" in prompt
+    assert "# UNI MATE adaptive source contract" in prompt
     assert "FULL_CLAUDE_MARKER_MUST_NOT_LOAD" not in prompt
 
 

@@ -13,11 +13,11 @@
 - Tuyệt đối KHÔNG ký tự em dash (U+2014) trong mọi file/code/comment. Dùng "-".
 - Timezone tính ngày: Asia/Ho_Chi_Minh (UTC+7). JSONL Claude là UTC (hậu tố Z) nên phải convert trước khi bucket ngày.
 - Không phá `usage_store.py` / `/usage` / trang "Mức dùng" hiện có (chúng vẫn chạy).
-- Test theo mẫu dự án: script python thuần, `os.environ["JAVIS_STATE_DIR"]=tempdir`, chạy `cd server && ../.venv/Scripts/python.exe test_x.py`, exit code != 0 nếu fail.
-- Nguồn dữ liệu phải override được qua env để test: `JAVIS_CLAUDE_PROJECTS_DIR`, `JAVIS_CODEX_SESSIONS_DIR` (mặc định `~/.claude/projects`, `~/.codex/sessions`).
+- Test theo mẫu dự án: script python thuần, `os.environ["UNIMATE_STATE_DIR"]=tempdir`, chạy `cd server && ../.venv/Scripts/python.exe test_x.py`, exit code != 0 nếu fail.
+- Nguồn dữ liệu phải override được qua env để test: `UNIMATE_CLAUDE_PROJECTS_DIR`, `UNIMATE_CODEX_SESSIONS_DIR` (mặc định `~/.claude/projects`, `~/.codex/sessions`).
 - Provider raw-log = authoritative cho `claude` + `codex`. `usage-events.jsonl` = authoritative CHỈ cho provider API (openrouter/openai/anthropic-api/oauth). Không double-count.
 - Không commit dữ liệu dẫn xuất: thêm `.gitignore` cho `usage_index.db*`, `usage-events.jsonl*`.
-- STATE_DIR mặc định = thư mục `server/` (config.py: `JAVIS_STATE_DIR` fallback `__file__.parent`).
+- STATE_DIR mặc định = thư mục `server/` (config.py: `UNIMATE_STATE_DIR` fallback `__file__.parent`).
 
 ---
 
@@ -38,7 +38,7 @@
 ```
 { ts:int(epoch), day:'YYYY-MM-DD'(local), provider:'claude'|'codex'|'api',
   engine:str, model:str, project:str, session_id:str,
-  source:'javis'|'manual', activity:'chat'|'background'|'subagent'|'manual',
+  source:'unimate'|'manual', activity:'chat'|'background'|'subagent'|'manual',
   input:int, output:int, cache_read:int, cache_create:int }
 ```
 `billable_in = input + cache_read + cache_create`.
@@ -51,12 +51,12 @@
 
 **Produces:** `parse_claude_line(obj: dict, chat_sessions: set[str]) -> dict | None`
 - obj = một dòng JSONL đã json.loads. Trả None nếu: type != 'assistant', model == '<synthetic>', không có message.usage, hoặc tổng token = 0.
-- source: 'javis' nếu entrypoint bắt đầu 'sdk', else 'manual'.
+- source: 'unimate' nếu entrypoint bắt đầu 'sdk', else 'manual'.
 - activity: 'subagent' nếu isSidechain; else nếu source manual -> 'manual'; else 'chat' nесли session_id in chat_sessions else 'background'.
 - day: đổi timestamp UTC -> UTC+7 -> 'YYYY-MM-DD'.
 - project: basename của cwd (giữ cả path đầy đủ ở field riêng nếu cần); provider 'claude'.
 
-- [ ] Step 1: viết test `test_parse_claude_line` với 1 dòng mẫu thật (sdk-cli, có cache) -> assert provider claude, source javis, activity background (session không thuộc chat set), billable gồm cache, day đúng UTC+7 (dùng timestamp gần nửa đêm UTC để bắt lỗi tz).
+- [ ] Step 1: viết test `test_parse_claude_line` với 1 dòng mẫu thật (sdk-cli, có cache) -> assert provider claude, source unimate, activity background (session không thuộc chat set), billable gồm cache, day đúng UTC+7 (dùng timestamp gần nửa đêm UTC để bắt lỗi tz).
 - [ ] Step 2: chạy test, thấy FAIL (hàm chưa có).
 - [ ] Step 3: viết `parse_claude_line`.
 - [ ] Step 4: chạy test, PASS.
@@ -69,7 +69,7 @@
 
 **Produces:** `parse_codex_file(path: str) -> dict | None`
 - Đọc file rollout JSONL. Lấy `total_token_usage` (cộng dồn) - dùng dòng CUỐI có total_token_usage làm tổng phiên (input_tokens, cached_input_tokens, output_tokens). Nếu không có -> None.
-- ts: từ timestamp event đầu/cuối hoặc parse tên file `rollout-YYYY-MM-DDTHH-...`. model: từ event nếu có, else 'codex'. provider 'codex', source 'javis', activity 'background' (Codex chạy nền theo mặc định; nếu về sau map được sang chat thì chỉnh). session_id = tên file.
+- ts: từ timestamp event đầu/cuối hoặc parse tên file `rollout-YYYY-MM-DDTHH-...`. model: từ event nếu có, else 'codex'. provider 'codex', source 'unimate', activity 'background' (Codex chạy nền theo mặc định; nếu về sau map được sang chat thì chỉnh). session_id = tên file.
 - Map: input = input_tokens - cached_input_tokens (token mới), cache_read = cached_input_tokens, output = output_tokens, cache_create = 0.
 
 - [ ] Step 1: viết fixture nhỏ (2-3 dòng jsonl có total_token_usage tăng dần) + test assert lấy đúng tổng phiên (không cộng mọi dòng), day đúng.
@@ -104,7 +104,7 @@
 - `refresh() -> dict{claude_files, codex_files, events}`: quét 2 nguồn (path từ env override), bỏ file có (path,size,mtime) đã thấy trong bảng `files_seen`, parse, cộng vào bảng `usage_daily(day, provider, source, activity, model, project, input, output, cache_read, cache_create, sessions)` (UPSERT cộng dồn; đếm session distinct qua bảng phụ hoặc set trong RAM khi build). Ghi files_seen. Idempotent.
 - Schema `files_seen(path PK, size, mtime, provider)`; `usage_daily` khoá tổng hợp (day,provider,source,activity,model,project).
 
-- [ ] Step 1: test dựng temp: tạo `JAVIS_CLAUDE_PROJECTS_DIR` với 1 file jsonl 2 dòng assistant (1 background, 1 subagent) + `JAVIS_CODEX_SESSIONS_DIR` 1 rollout. Chạy `refresh()`; assert tổng token khớp tay + phân loại đúng. Chạy `refresh()` lần 2; assert KHÔNG tăng (idempotent, files_seen chặn).
+- [ ] Step 1: test dựng temp: tạo `UNIMATE_CLAUDE_PROJECTS_DIR` với 1 file jsonl 2 dòng assistant (1 background, 1 subagent) + `UNIMATE_CODEX_SESSIONS_DIR` 1 rollout. Chạy `refresh()`; assert tổng token khớp tay + phân loại đúng. Chạy `refresh()` lần 2; assert KHÔNG tăng (idempotent, files_seen chặn).
 - [ ] Step 2: FAIL.
 - [ ] Step 3: viết usage_index (schema + refresh + classify).
 - [ ] Step 4: PASS (cả idempotent).
@@ -117,7 +117,7 @@
 
 **Produces:**
 - `usage_store.record(...)`: thêm append 1 dòng JSON `{ts, provider, model, in, out, cost}` vào `STATE_DIR/usage-events.jsonl` (append-only, best-effort try/except, không phá luồng chat). usage.json giữ nguyên hành vi (30 ngày) cho panel cũ.
-- `usage_index`: trong refresh, đọc `usage-events.jsonl`, CHỈ lấy dòng provider in {openrouter, openai, anthropic, anthropic-api, oauth} (map về provider 'api'), cộng vào usage_daily (source javis, activity chat, project '(api)'). Theo dõi offset đã đọc trong files_seen (dùng size làm offset) để không đọc lại.
+- `usage_index`: trong refresh, đọc `usage-events.jsonl`, CHỈ lấy dòng provider in {openrouter, openai, anthropic, anthropic-api, oauth} (map về provider 'api'), cộng vào usage_daily (source unimate, activity chat, project '(api)'). Theo dõi offset đã đọc trong files_seen (dùng size làm offset) để không đọc lại.
 
 - [ ] Step 1: test: gọi `usage_store.record('openrouter','x/y',100,50)`; assert `usage-events.jsonl` có 1 dòng đúng. Rồi `usage_index.refresh()`; assert provider 'api' xuất hiện với 150 token. record thêm 1 dòng -> refresh -> chỉ cộng phần mới.
 - [ ] Step 2: FAIL.

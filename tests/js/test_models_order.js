@@ -74,7 +74,7 @@ check("removing a plan account names it, a stale page never drops one (0.355.0)"
   /const gone = l\.splice\(i, 1\)\[0\];\s*saveAcc\(pid, l, \[gone\.id\]\);/.test(B));
 check("removing the last key warns that the provider leaves the order", /models\.acct_rm_last_q/.test(B));
 check("the background picker lists signed-in providers only", /openModelPicker\(c\.connList,/.test(B) && /connectedOnly: true/.test(B));
-check("on a phone the background picker is the composer-style list", /matchMedia\("\(max-width: 600px\)"\)/.test(B) && /JavisModelList\.render\(o\)/.test(B));
+check("on a phone the background picker is the composer-style list", /matchMedia\("\(max-width: 600px\)"\)/.test(B) && /UniMateModelList\.render\(o\)/.test(B));
 check("every popover is placed (opens upward, clamped)", /MO\.place\(pop\)/.test(B));
 check("Escape and a tap outside close the popover", /e\.key === "Escape"/.test(B) && /closest\("\.ord-chips"\)/.test(B));
 

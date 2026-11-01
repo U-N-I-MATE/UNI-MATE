@@ -66,7 +66,7 @@ def cancel_all(tag=None):
             else:
                 # Every registrant starts its child with start_new_session, so the child leads its own process group:
                 # signal the whole group so a CLI's own children (agy, codex tools) do not outlive Stop. Checked first,
-                # because a child sharing Javis's group would take Javis down with it.
+                # because a child sharing UNI MATE's group would take UNI MATE down with it.
                 import signal as _signal
                 if os.getpgid(p.pid) == p.pid:
                     os.killpg(p.pid, _signal.SIGTERM)
@@ -151,11 +151,11 @@ _THU_MUC_BIN_THEM = (
 # WINDOWS: y hệt câu chuyện trên nhưng đau hơn một bậc, vì PATH trên Windows nằm trong
 # REGISTRY và bị ghi bởi mọi installer. Ba đường hỏng thật, chủ dự án gặp đủ cả ba khi cài
 # mới trên Windows (16/09):
-#   1. Server chạy nền (start-javis.vbs / JAVIS OS.bat) giữ PATH của LÚC NÓ BẬT. Cài CLI sau
+#   1. Server chạy nền (start-unimate.vbs / UNI MATE.bat) giữ PATH của LÚC NÓ BẬT. Cài CLI sau
 #      đó thì tiến trình đang chạy không thấy, dù gõ trong terminal mới vẫn chạy ngon.
 #   2. `setx PATH ...` CẮT ở 1024 ký tự. Một installer dùng setx trên máy có PATH dài là
 #      PATH người dùng bị cắt cụt vĩnh viễn - đúng lúc cài Antigravity CLI xong thì
-#      `%APPDATA%\npm` bay khỏi PATH và Javis báo cau_thieu_cli("claude", "Claude") cho một CLI vẫn
+#      `%APPDATA%\npm` bay khỏi PATH và UNI MATE báo cau_thieu_cli("claude", "Claude") cho một CLI vẫn
 #      đang nằm nguyên trên ổ đĩa.
 #   3. npm global, nvm-windows, volta, scoop, bun, pnpm mỗi thứ một thư mục khác nhau.
 # Nên: soi thêm các thư mục dưới đây, VÀ ghi nhớ chỗ đã từng thấy (xem _nho_binary).
@@ -251,8 +251,8 @@ _BIN_NHO = {"data": None}
 
 
 def _state_dir() -> Path:
-    """Thư mục state của Javis. Đọc env trực tiếp để claude_cli không phải import config."""
-    d = os.getenv("JAVIS_STATE_DIR", "").strip()
+    """Thư mục state của UNI MATE. Đọc env trực tiếp để claude_cli không phải import config."""
+    d = os.getenv("UNIMATE_STATE_DIR", "").strip()
     return Path(d) if d else Path(__file__).resolve().parent
 
 
@@ -304,12 +304,12 @@ def tim_binary(ten: str) -> Optional[str]:
 
 
 def find_claude_cli() -> Optional[str]:
-    """Tìm claude CLI trên máy. Cửa thoát JAVIS_CLAUDE_BIN cho máy cài chỗ lạ.
+    """Tìm claude CLI trên máy. Cửa thoát UNIMATE_CLAUDE_BIN cho máy cài chỗ lạ.
 
-    Có env override để ĐỒNG BỘ với `grok` (JAVIS_GROK_BIN), `agy` (JAVIS_AGY_BIN) và `codex`
-    (JAVIS_CODEX_BIN): trước đây đúng cái CLI quan trọng nhất lại là cái duy nhất không có
+    Có env override để ĐỒNG BỘ với `grok` (UNIMATE_GROK_BIN), `agy` (UNIMATE_AGY_BIN) và `codex`
+    (UNIMATE_CODEX_BIN): trước đây đúng cái CLI quan trọng nhất lại là cái duy nhất không có
     đường chỉ tay, nên máy cài vào chỗ lạ thì hết cách ngoài sửa PATH."""
-    envp = (os.environ.get("JAVIS_CLAUDE_BIN") or "").strip()
+    envp = (os.environ.get("UNIMATE_CLAUDE_BIN") or "").strip()
     if envp:
         try:
             if Path(envp).exists():
@@ -348,15 +348,15 @@ def find_claude_cli() -> Optional[str]:
 
 
 # Câu nói khi KHÔNG tìm thấy một CLI. Phải nói ba thứ, vì thiếu thứ nào người dùng cũng tắc:
-# cài bằng lệnh nào, PHẢI KHỞI ĐỘNG LẠI JAVIS sau khi cài (tiến trình đang chạy giữ PATH cũ,
+# cài bằng lệnh nào, PHẢI KHỞI ĐỘNG LẠI UNI MATE sau khi cài (tiến trình đang chạy giữ PATH cũ,
 # đây là chỗ mọi người mắc đúng một lần rồi tưởng cài hỏng), và cửa thoát khi máy cài chỗ lạ.
 _LENH_CAI_CLI = {
-    "claude": ("npm install -g @anthropic-ai/claude-code", "JAVIS_CLAUDE_BIN"),
-    "codex": ("npm install -g @openai/codex", "JAVIS_CODEX_BIN"),
+    "claude": ("npm install -g @anthropic-ai/claude-code", "UNIMATE_CLAUDE_BIN"),
+    "codex": ("npm install -g @openai/codex", "UNIMATE_CODEX_BIN"),
     "agy": ("irm https://antigravity.google/cli/install.ps1 | iex  (Windows) hoặc "
-            "curl -fsSL https://antigravity.google/cli/install.sh | bash", "JAVIS_AGY_BIN"),
+            "curl -fsSL https://antigravity.google/cli/install.sh | bash", "UNIMATE_AGY_BIN"),
     "grok": ("irm https://x.ai/cli/install.ps1 | iex  (Windows) hoặc "
-             "curl -fsSL https://x.ai/cli/install.sh | bash", "JAVIS_GROK_BIN"),
+             "curl -fsSL https://x.ai/cli/install.sh | bash", "UNIMATE_GROK_BIN"),
 }
 
 
@@ -369,9 +369,9 @@ def cau_thieu_cli(ten: str, nhan: str = "") -> str:
     if lenh:
         cau += f". Cài: {lenh}"
         en += ". Install: " + lenh.replace("  (Windows) hoặc ", "  (Windows) or ")
-    cau += (". Cài rồi vẫn thấy dòng này thì KHỞI ĐỘNG LẠI JAVIS: tiến trình đang chạy giữ "
+    cau += (". Cài rồi vẫn thấy dòng này thì KHỞI ĐỘNG LẠI UNI MATE: tiến trình đang chạy giữ "
             "PATH của lúc nó bật nên không thấy binary vừa cài")
-    en += (". Still seeing this after installing? RESTART JAVIS: the running process keeps the "
+    en += (". Still seeing this after installing? RESTART UNI MATE: the running process keeps the "
            "PATH from when it started, so it cannot see the newly installed binary")
     if os.name == "nt":
         cau += (". Windows: một số installer ghi PATH bằng `setx` và cắt PATH ở 1024 ký tự, "
@@ -385,18 +385,18 @@ def cau_thieu_cli(ten: str, nhan: str = "") -> str:
 
 # ---- Danh sách model của gói Claude Code, đọc từ CHÍNH BINARY `claude` ----
 #
-# Vì sao phải có: provider `anthropic-cli` chạy bằng đăng nhập của Claude Code, mà Javis KHÔNG
+# Vì sao phải có: provider `anthropic-cli` chạy bằng đăng nhập của Claude Code, mà UNI MATE KHÔNG
 # được đọc token đó (Anthropic cấm - xem claude_auth.py), nên từ 0.26.17 nó không còn nguồn
 # danh sách model nào ngoài `anthropic_api_key`. Phần đông người dùng chạy gói thuê bao và
 # không có key, nên trình chọn model rơi về mấy alias ghi cứng trong config.py - và một khi
 # `settings.json` đã nhớ một danh sách cũ thì danh sách ĐÓ đè luôn bản mặc định mới, tức là
-# nâng cấp Javis cũng không thấy dòng model mới. Đúng lỗi chủ repo báo 05/09: cài xong bản
+# nâng cấp UNI MATE cũng không thấy dòng model mới. Đúng lỗi chủ repo báo 05/09: cài xong bản
 # mới vẫn không có Fable 5.1.
 #
 # Nguồn mới ở đây KHÔNG đụng vào bất cứ thứ gì của người dùng: binary `claude` nhúng sẵn danh
 # mục model của chính nó (thử `claude --model tên-bậy` là nó tự nói "isn't described by this
 # version's model catalog"), nên đọc file binary ra là biết bản CLI đang cài hiểu những model
-# nào. Cập nhật Claude Code là danh sách tự mới theo, khỏi sửa code Javis - đúng thứ đường
+# nào. Cập nhật Claude Code là danh sách tự mới theo, khỏi sửa code UNI MATE - đúng thứ đường
 # mượn token ngày trước làm được, mà lần này không chạm credential của ai.
 #
 # Đây là HEURISTIC trên dữ liệu nội bộ của CLI, nên nó fail-soft: đọc không ra thì trả None và
@@ -597,7 +597,7 @@ import tempfile as _tempfile
 
 def _empty_mcp_file() -> Optional[str]:
     try:
-        p = Path(_tempfile.gettempdir()) / "javis-empty-mcp.json"
+        p = Path(_tempfile.gettempdir()) / "unimate-empty-mcp.json"
         if not (p.exists() and p.stat().st_size > 0):
             p.write_text('{"mcpServers":{}}', encoding="utf-8")
         return str(p) if p.stat().st_size > 0 else None
@@ -718,9 +718,9 @@ def auth_quen_cache():
 
 # ---- Vệ sĩ credentials (16/08): chống "tự nhiên bị đăng xuất" ----
 # Claude CLI TỰ quản token trong ~/.claude/.credentials.json và tự ghi lại file đó mỗi lần
-# refresh OAuth. Javis chạy nhiều tiến trình claude song song và có watchdog giết tiến trình
+# refresh OAuth. UNI MATE chạy nhiều tiến trình claude song song và có watchdog giết tiến trình
 # treo - kill rơi đúng lúc CLI đang ghi là file cụt nửa chừng, lượt sau CLI đọc không ra và
-# coi như chưa đăng nhập. Codex không bao giờ bị vì token ChatGPT do CHÍNH JAVIS giữ và ghi
+# coi như chưa đăng nhập. Codex không bao giờ bị vì token ChatGPT do CHÍNH UNI MATE giữ và ghi
 # nguyên tử. Vệ sĩ: thấy bản lành thì sao lưu; thấy file HỎNG/MẤT mà có bản sao lưu thì phục
 # hồi + hô to. Đăng xuất CHỦ ĐỘNG (file lành nhưng không còn token, hoặc bấm Ngắt trên UI)
 # thì xoá bản sao lưu - tôn trọng ý người dùng, không "hồi sinh" phiên họ vừa ngắt.
@@ -729,7 +729,7 @@ def _cred_path() -> Path:
 
 
 def _cred_bak_path() -> Path:
-    return _cred_path().with_name(".credentials.json.javis-bak")
+    return _cred_path().with_name(".credentials.json.unimate-bak")
 
 
 def _cred_co_token(raw: str) -> bool:
@@ -892,17 +892,17 @@ def _login_verify() -> dict:
     if sys.platform == "darwin":
         msg = localefmt.chu(
             "Claude báo đăng nhập xong nhưng không lưu được phiên vào Keychain của Mac, nên máy vẫn chưa đăng nhập. "
-            "Mở Terminal trên máy chạy Javis, gõ: claude auth login (nếu Keychain đang khoá thì mở khoá trước: "
+            "Mở Terminal trên máy chạy UNI MATE, gõ: claude auth login (nếu Keychain đang khoá thì mở khoá trước: "
             "security unlock-keychain), xong bấm Kiểm tra lại.",
             "Claude said the sign-in worked but could not save it to the Mac Keychain, so this machine is still "
-            "signed out. Open Terminal on the machine running Javis and run: claude auth login (if the Keychain is "
+            "signed out. Open Terminal on the machine running UNI MATE and run: claude auth login (if the Keychain is "
             "locked, unlock it first: security unlock-keychain), then click Check again.")
     else:
         msg = localefmt.chu(
             "Claude báo đăng nhập xong nhưng không lưu được phiên đăng nhập, nên máy vẫn chưa đăng nhập. Mở terminal "
-            "trên máy chạy Javis, gõ: claude auth login, xong bấm Kiểm tra lại.",
+            "trên máy chạy UNI MATE, gõ: claude auth login, xong bấm Kiểm tra lại.",
             "Claude said the sign-in worked but could not save it, so this machine is still signed out. Open a "
-            "terminal on the machine running Javis and run: claude auth login, then click Check again.")
+            "terminal on the machine running UNI MATE and run: claude auth login, then click Check again.")
     tail = _login_tail()
     return {"ok": False, "error": msg + (f" ({tail})" if tail else "")}
 
@@ -1096,7 +1096,7 @@ def mcp_open_auth_terminal():
         return {"ok": False, "error": cau_thieu_cli("claude", "Claude")}
     try:
         if os.name == "nt":
-            subprocess.Popen('start "Javis - Xac thuc MCP (go /mcp)" cmd /k claude', shell=True)
+            subprocess.Popen('start "UNI MATE - Xac thuc MCP (go /mcp)" cmd /k claude', shell=True)
         else:
             for term in ("x-terminal-emulator", "gnome-terminal", "konsole", "xterm"):
                 if shutil.which(term):
@@ -1117,12 +1117,12 @@ def claude_engine(system_prompt=None, cwd=None, tag="chat", allowed_tools=None, 
     CHỈ chạy qua claude-agent-sdk (claude_sdk_engine.ClaudeSDK); nhánh Popen ClaudeCLI cũ
     đã gỡ sau khi bake ổn (nhật ký ở docs/dev/2026-07-ke-hoach-agent-sdk.md mục 8).
     SDK chưa cài thì ClaudeSDK tự báo lỗi rõ trong .query() (hướng dẫn pip install).
-    Env JAVIS_CLAUDE_ENGINE=cli|sdk-loops chỉ còn giá trị lịch sử - bị bỏ qua kèm log 1 lần."""
+    Env UNIMATE_CLAUDE_ENGINE=cli|sdk-loops chỉ còn giá trị lịch sử - bị bỏ qua kèm log 1 lần."""
     global _engine_env_warned
-    mode = os.getenv("JAVIS_CLAUDE_ENGINE", "sdk").strip().lower()
+    mode = os.getenv("UNIMATE_CLAUDE_ENGINE", "sdk").strip().lower()
     if mode in ("cli", "sdk-loops") and not _engine_env_warned:
         _engine_env_warned = True
-        print(f"[claude engine] JAVIS_CLAUDE_ENGINE={mode} đã gỡ từ v0.9.37 - engine Claude "
+        print(f"[claude engine] UNIMATE_CLAUDE_ENGINE={mode} đã gỡ từ v0.9.37 - engine Claude "
               "luôn chạy Agent SDK. Gặp lỗi hãy báo issue kèm log.", file=sys.stderr)
     from claude_sdk_engine import ClaudeSDK
     # 0.329.0: Claude Code's rate_limit_event -> the plan usage ring. Hooked here, when the SDK is loaded
@@ -1142,7 +1142,7 @@ def claude_engine(system_prompt=None, cwd=None, tag="chat", allowed_tools=None, 
                     allowed_tools=allowed_tools, model=model)
     # Every run (chat, loops, reminders, bots) skips the repo CLAUDE.md and compacts at ~180k;
     # main._cli_fast keeps both.
-    eng.fast_settings = javis_claude_settings()
+    eng.fast_settings = unimate_claude_settings()
     return eng
 
 
@@ -1156,12 +1156,12 @@ def _claude_md_repo() -> list:
 # follows the model's context window, which measured 980,000 on a 1M-context model: a long chat then
 # re-reads close to a million tokens on every turn. 200k is the classic Claude window, so a 200k
 # model behaves exactly as before and a 1M model compacts at ~180k (Claude Code keeps a 20k buffer)
-# with its own summary, keeping the thread. `JAVIS_CLAUDE_COMPACT_WINDOW=auto` restores the default.
+# with its own summary, keeping the thread. `UNIMATE_CLAUDE_COMPACT_WINDOW=auto` restores the default.
 CLAUDE_COMPACT_WINDOW = 200_000
 
 
 def _compact_window():
-    v = os.getenv("JAVIS_CLAUDE_COMPACT_WINDOW", "").strip().lower()
+    v = os.getenv("UNIMATE_CLAUDE_COMPACT_WINDOW", "").strip().lower()
     if v in ("auto", "0", "off"):
         return None
     try:
@@ -1172,12 +1172,12 @@ def _compact_window():
     return max(100_000, min(n, 1_000_000))
 
 
-def javis_claude_settings(settings: str = None) -> str:
-    """Claude Code settings JSON for every Javis run (0.345.0), merged over `settings`.
+def unimate_claude_settings(settings: str = None) -> str:
+    """Claude Code settings JSON for every UNI MATE run (0.345.0), merged over `settings`.
 
     - `claudeMdExcludes`: a native install keeps brains under the repo (BRAINS_DIR defaults to
       <repo>/brains), and Claude Code walks up from its cwd loading every CLAUDE.md it meets. The
-      repo one IS the Javis system prompt, which Javis already appends, so each turn paid for it
+      repo one IS the UNI MATE system prompt, which UNI MATE already appends, so each turn paid for it
       twice (about 12k tokens, measured on a plain "chào em").
     - `autoCompactWindow`: see CLAUDE_COMPACT_WINDOW. Must be a number: "200k" is ignored here.
     - `fastMode` stays explicit false unless the caller set it.
@@ -1240,7 +1240,7 @@ def _home_dir() -> Path:
 
     Không dựa mỗi USERPROFILE: khi server được bật lại bởi tự-cập-nhật, dịch vụ Windows
     hay tác vụ nền, biến này có thể trống - lúc đó home thành Path("") nên mọi đường dẫn
-    ~/.codex/... hoá ra tương đối và không tồn tại, khiến Javis báo nhầm "chưa cài Codex CLI"
+    ~/.codex/... hoá ra tương đối và không tồn tại, khiến UNI MATE báo nhầm "chưa cài Codex CLI"
     dù binary vẫn nằm đó. Thử lần lượt các nguồn rồi mới chịu thua.
     """
     cands = [os.environ.get("USERPROFILE"), os.environ.get("HOME")]
@@ -1284,7 +1284,7 @@ def _codex_version(path: str) -> Optional[tuple]:
 
 
 def find_codex_cli() -> Optional[str]:
-    envp = os.environ.get("JAVIS_CODEX_BIN")     # cửa thoát: chỉ thẳng chỗ cài lạ
+    envp = os.environ.get("UNIMATE_CODEX_BIN")     # cửa thoát: chỉ thẳng chỗ cài lạ
     if envp:
         try:
             if Path(envp).exists():
@@ -1337,9 +1337,9 @@ def find_codex_cli() -> Optional[str]:
 
 # ---- MCP NATIVE của Codex (kho gốc ~/.codex/config.toml, quản bằng `codex mcp ...`) ----
 # Đối xứng với bộ mcp_native_* của Claude ở trên: Codex cũng có kho MCP gốc riêng (user tự
-# `codex mcp add`, hoặc app khác ghi vào config.toml). Javis chạy `codex exec -p javis` mà
+# `codex mcp add`, hoặc app khác ghi vào config.toml). UNI MATE chạy `codex exec -p unimate` mà
 # profile chỉ PHỦ THÊM lên config gốc nên kho này vẫn được engine ChatGPT nạp - các hàm dưới
-# cho Javis liệt kê/thêm/gỡ/kiểm tra nó, và mở `codex mcp login <tên>` cho server OAuth.
+# cho UNI MATE liệt kê/thêm/gỡ/kiểm tra nó, và mở `codex mcp login <tên>` cho server OAuth.
 def _codex_run(sub_args, timeout=30):
     """Chạy `codex <sub_args...>` trả CompletedProcess; None nếu chưa cài Codex CLI."""
     cli = find_codex_cli()
@@ -1510,7 +1510,7 @@ def codex_mcp_open_login_terminal(name):
         return {"ok": False, "error": localefmt.chu("Tên server không hợp lệ", "Invalid server name")}
     try:
         if os.name == "nt":
-            subprocess.Popen(f'start "Javis - Dang nhap MCP Codex" cmd /k codex mcp login {safe}',
+            subprocess.Popen(f'start "UNI MATE - Dang nhap MCP Codex" cmd /k codex mcp login {safe}',
                              shell=True, env=codex_env())
         else:
             for term in ("x-terminal-emulator", "gnome-terminal", "konsole", "xterm"):
@@ -1528,8 +1528,8 @@ def codex_mcp_open_login_terminal(name):
 #
 # Chủ repo báo 2026-08-07 kèm ảnh: loop nền chạy bằng ChatGPT, mọi lệnh đọc/ghi file đều trả
 # `bwrap: Failed to make / slave: Permission denied`, và bản báo cáo gửi về Telegram là một
-# bài dài model tự kể lại nỗi bối rối của nó. Nguyên nhân nằm ngoài Javis: bubblewrap cần tạo
-# được user namespace + đổi propagation của `/`, mà container Javis chạy user thường, không có
+# bài dài model tự kể lại nỗi bối rối của nó. Nguyên nhân nằm ngoài UNI MATE: bubblewrap cần tạo
+# được user namespace + đổi propagation của `/`, mà container UNI MATE chạy user thường, không có
 # CAP_SYS_ADMIN, và Ubuntu 24.04 còn chặn user namespace không đặc quyền bằng AppArmor.
 #
 # Hệ quả: TRONG DOCKER, hai mức sandbox `read-only` (mode suggest) và `workspace-write` (mode
@@ -1538,30 +1538,30 @@ def codex_mcp_open_login_terminal(name):
 _SANDBOX_HONG = re.compile(r"bwrap:|Failed to make / slave", re.I)
 
 _NOTE_SANDBOX_HONG = (
-    "⚠ Javis tự kiểm: rào sandbox riêng của Codex (ChatGPT) KHÔNG khởi động được trong môi "
+    "⚠ UNI MATE tự kiểm: rào sandbox riêng của Codex (ChatGPT) KHÔNG khởi động được trong môi "
     "trường này, nên mọi lệnh đọc/ghi file của nó đều bị chặn ngay từ đầu. Đây là giới hạn của "
     "container chứ không phải lỗi của lượt chạy, và thử lại bao nhiêu lần cũng vậy. Hai lối ra: "
-    "đặt biến môi trường JAVIS_CODEX_SANDBOX=off để Codex chạy không có rào riêng (chính "
+    "đặt biến môi trường UNIMATE_CODEX_SANDBOX=off để Codex chạy không có rào riêng (chính "
     "container vẫn là rào), hoặc chuyển việc nền này sang bộ não Claude."
 )
 _NOTE_SANDBOX_HONG_EN = (
-    "⚠ Javis self-check: Codex's own sandbox (ChatGPT) CANNOT start in this "
+    "⚠ UNI MATE self-check: Codex's own sandbox (ChatGPT) CANNOT start in this "
     "environment, so every file read/write command it runs is blocked from the start. This is a limit of "
     "the container, not a failure of this run, and retrying will not change it. Two ways out: "
-    "set the environment variable JAVIS_CODEX_SANDBOX=off so Codex runs without its own sandbox (the "
+    "set the environment variable UNIMATE_CODEX_SANDBOX=off so Codex runs without its own sandbox (the "
     "container itself is still the sandbox), or move this background work to the Claude brain."
 )
 
 
 def codex_sandbox_cho_mode(mode: str) -> Optional[str]:
-    """Cờ `--sandbox` của Codex cho một mức quyền của Javis. None = không đặt rào riêng.
+    """Cờ `--sandbox` của Codex cho một mức quyền của UNI MATE. None = không đặt rào riêng.
 
-    `JAVIS_CODEX_SANDBOX=off` bỏ hẳn rào của Codex ở MỌI mức. Cần cho Docker, nơi bubblewrap
+    `UNIMATE_CODEX_SANDBOX=off` bỏ hẳn rào của Codex ở MỌI mức. Cần cho Docker, nơi bubblewrap
     không chạy nổi nên rào đó không phải là "chặt hơn" mà là "chết hẳn". Đánh đổi phải nói rõ:
     lúc đó mức `suggest` không còn thứ gì chặn Codex ghi file, vì Codex không có allowlist
     per-call như Claude. Ai đặt cờ này là đang chọn "container là rào duy nhất".
     """
-    if str(os.getenv("JAVIS_CODEX_SANDBOX", "auto")).strip().lower() in ("off", "0", "false", "none"):
+    if str(os.getenv("UNIMATE_CODEX_SANDBOX", "auto")).strip().lower() in ("off", "0", "false", "none"):
         return None
     return {"suggest": "read-only", "auto": "workspace-write", "full": None}.get(mode or "full")
 
@@ -1578,9 +1578,9 @@ def codex_sandbox_cho_mode(mode: str) -> Optional[str]:
 # supports_websockets=false. Đã thử thật với 0.147: trả lời được, resume thread tạo từ provider
 # `openai` vẫn giữ đủ ngữ cảnh.
 #
-# JAVIS_CODEX_TRANSPORT: auto (mặc định) = WebSocket như Codex, trừ khi máy này vừa thấy
+# UNIMATE_CODEX_TRANSPORT: auto (mặc định) = WebSocket như Codex, trừ khi máy này vừa thấy
 # WebSocket hỏng thì đi HTTPS một thời gian; http = luôn HTTPS; ws = luôn để Codex tự quyết.
-CODEX_HTTP_PROVIDER = "javis-chatgpt-http"
+CODEX_HTTP_PROVIDER = "unimate-chatgpt-http"
 _WS_HONG_FILE = "codex_ws_hong.json"
 _WS_HONG_TTL = 3 * 86400        # hết hạn thì thử lại WebSocket: lỗi phía mạng hay phía OpenAI đều có lúc hết
 _RECONNECT_RE = re.compile(r"^\s*(Reconnecting\.\.\.|Falling back from WebSockets)", re.I)
@@ -1595,11 +1595,11 @@ def _codex_home() -> Path:
 # WARNING: proceeding, even though we could not create PATH aliases: Could not find home
 # directory". Codex tự tìm home bằng `dirs::home_dir()`: trên Windows hàm đó hỏi thẳng hồ sơ người
 # dùng của Windows (SHGetKnownFolderPath), KHÔNG đọc USERPROFILE, nên hồ sơ hỏng, hồ sơ tạm hay
-# tài khoản không có hồ sơ là Codex mù home, không thấy auth.json, trong khi Javis (đọc
+# tài khoản không có hồ sơ là Codex mù home, không thấy auth.json, trong khi UNI MATE (đọc
 # USERPROFILE/HOME qua `_home_dir`) vẫn thấy đăng nhập ChatGPT đầy đủ. Đặt CODEX_HOME thì Codex
 # bỏ qua hẳn bước hỏi Windows, và cả hai bên nhìn cùng một thư mục.
 def codex_env(codex_home: Optional[str] = None) -> dict:
-    """Biến môi trường cho MỌI tiến trình Codex mà Javis bật.
+    """Biến môi trường cho MỌI tiến trình Codex mà UNI MATE bật.
 
     `codex_home`: the folder of an extra ChatGPT account (plan_accounts, 0.353.0). None = account 1, as before."""
     env = dict(os.environ)
@@ -1610,7 +1610,7 @@ def codex_env(codex_home: Optional[str] = None) -> dict:
         return env                      # người dùng tự trỏ chỗ khác: tôn trọng
     home = _home_dir()
     if str(home) in ("", "."):
-        return env                      # Javis cũng không biết home: để Codex tự xoay như cũ
+        return env                      # UNI MATE cũng không biết home: để Codex tự xoay như cũ
     codex_home = home / ".codex"
     try:
         # Codex bắt CODEX_HOME phải tồn tại sẵn (nó canonicalize), máy chưa từng đăng nhập thì chưa có.
@@ -1646,29 +1646,29 @@ def codex_error_text(returncode, stderr_lines) -> str:
     hub = next((str(l).strip() for l in stderr_lines if CODEX_REQUIRED_FAIL in str(l)), "")
     if hub:
         return localefmt.chu(
-            "Cổng công cụ của Javis (hub) không lên kịp nên Codex không mở phiên, việc chưa chạy. "
+            "Cổng công cụ của UNI MATE (hub) không lên kịp nên Codex không mở phiên, việc chưa chạy. "
             "Chi tiết từ Codex (exit {code}): {ly_do}",
-            "The Javis tool hub did not come up in time, so Codex did not open a session and the job "
+            "The UNI MATE tool hub did not come up in time, so Codex did not open a session and the job "
             "did not run. Details from Codex (exit {code}): {ly_do}",
             code=returncode, ly_do=hub[hub.find(CODEX_REQUIRED_FAIL):][:240])
     if any("could not find home directory" in str(l).lower() for l in stderr_lines):
         return localefmt.chu(
             "Codex không tìm thấy thư mục người dùng trên máy này nên không đọc được đăng nhập "
-            "ChatGPT. Hay gặp khi Windows đang dùng hồ sơ tạm hoặc Javis được bật bằng một tài "
+            "ChatGPT. Hay gặp khi Windows đang dùng hồ sơ tạm hoặc UNI MATE được bật bằng một tài "
             "khoản khác. Đăng xuất Windows rồi đăng nhập lại (hoặc khởi động lại máy), sau đó bật "
-            "lại Javis bằng chính tài khoản đó.\n\nChi tiết từ Codex (exit "
+            "lại UNI MATE bằng chính tài khoản đó.\n\nChi tiết từ Codex (exit "
             + str(returncode) + "):\n" + raw,
             "Codex could not find the user folder on this computer, so it cannot read the ChatGPT "
-            "sign-in. This usually happens when Windows is on a temporary profile or Javis was "
+            "sign-in. This usually happens when Windows is on a temporary profile or UNI MATE was "
             "started under another account. Sign out of Windows and back in (or restart), then "
-            "start Javis again from that same account.\n\nDetails from Codex (exit "
+            "start UNI MATE again from that same account.\n\nDetails from Codex (exit "
             + str(returncode) + "):\n" + raw)
     return "Codex lỗi (exit " + str(returncode) + "):\n" + raw
 
 
 def _codex_dung_provider_rieng() -> bool:
     """Người dùng tự trỏ Codex sang provider khác (proxy, Ollama...) trong config.toml thì
-    Javis không được giành lấy: provider HTTPS của Javis chỉ thay cho `openai` mặc định."""
+    UNI MATE không được giành lấy: provider HTTPS của UNI MATE chỉ thay cho `openai` mặc định."""
     try:
         import tomllib
         with open(_codex_home() / "config.toml", "rb") as f:
@@ -1690,7 +1690,7 @@ def ghi_codex_ws_hong(ly_do: str = "") -> None:
 
 def codex_transport() -> str:
     """'http' hoặc 'ws' cho lượt Codex sắp chạy."""
-    chon = str(os.getenv("JAVIS_CODEX_TRANSPORT", "auto")).strip().lower()
+    chon = str(os.getenv("UNIMATE_CODEX_TRANSPORT", "auto")).strip().lower()
     if chon in ("http", "https", "sse"):
         return "http" if not _codex_dung_provider_rieng() else "ws"
     if chon in ("ws", "websocket", "websockets", "off"):
@@ -1704,7 +1704,7 @@ def codex_transport() -> str:
 
 
 def codex_http_config() -> list:
-    """Các `-c` khai provider HTTPS của Javis và chọn nó."""
+    """Các `-c` khai provider HTTPS của UNI MATE và chọn nó."""
     p = f"model_providers.{CODEX_HTTP_PROVIDER}"
     return [f'{p}.name="OpenAI"',
             f'{p}.base_url="https://chatgpt.com/backend-api/codex"',
@@ -1781,7 +1781,7 @@ class CodexCLI:
         self.model = model              # gpt-5.5 / gpt-5.4 ...
         self.instructions = instructions
         self.extra_config = []          # list '-c key=value' (override config, vd thêm mcp_servers)
-        self.profile = None             # tên profile codex (-p) - Javis ghi javis.config.toml để thêm MCP
+        self.profile = None             # tên profile codex (-p) - UNI MATE ghi unimate.config.toml để thêm MCP
         self.session_id = None          # Codex thread_id; có giá trị → `codex exec resume <id>`
         # Sandbox của Codex: None = toàn quyền (mặc định, giữ nguyên hành vi cũ của chat/workflow).
         # Việc nền đặt 'read-only' / 'workspace-write' để khớp mode suggest/auto của loop -
@@ -1792,9 +1792,9 @@ class CodexCLI:
         self.vault_root = None
         # 'http' / 'ws' ép đường truyền; None = codex_transport() tự chọn mỗi lượt.
         self.transport = None
-        # True only when the profile's `javis` entry is the hub (main._apply_codex_hub): then each
+        # True only when the profile's `unimate` entry is the hub (main._apply_codex_hub): then each
         # query carries the current turn's key so hub hooks know who is talking (turn_context).
-        # Off otherwise, because an override under mcp_servers.javis with no hub entry would
+        # Off otherwise, because an override under mcp_servers.unimate with no hub entry would
         # create a broken half-entry.
         self.hub_turn = False
         # True only on the main engine of a chat turn (web or chat channel, set by main.py): the turn then runs on
@@ -1892,9 +1892,9 @@ class CodexCLI:
             # hai trần đo sự IM LẶNG của model đều bỏ trần (im lặng không phải treo - xem
             # `tran_watchdog`), riêng trần chờ TOOL giữ 1 tiếng vì nó đo một tiến trình con
             # có thật đang sống ngoài kia.
-            IDLE = tran_watchdog("JAVIS_CLAUDE_IDLE_TIMEOUT", "0")
-            TOOL_IDLE = tran_watchdog("JAVIS_CLAUDE_TOOL_TIMEOUT", "3600")
-            FIRST_IDLE = tran_watchdog("JAVIS_CLAUDE_FIRST_TIMEOUT", "0")
+            IDLE = tran_watchdog("UNIMATE_CLAUDE_IDLE_TIMEOUT", "0")
+            TOOL_IDLE = tran_watchdog("UNIMATE_CLAUDE_TOOL_TIMEOUT", "3600")
+            FIRST_IDLE = tran_watchdog("UNIMATE_CLAUDE_FIRST_TIMEOUT", "0")
             busy = {"n": 0}   # số item tool/lệnh đã started mà chưa completed
             seen = {"dong_dau": False}   # đã có dòng đầu tiên chưa (quyết định dùng trần nào)
             _TOOL_ITEMS = ("command_execution", "mcp_tool_call", "function_call",
@@ -1910,7 +1910,7 @@ class CodexCLI:
                 with _PROC_LOCK:
                     _ACTIVE_PROCS[proc] = self.tag
                 # Nhớ pid (= mã nhóm tiến trình) theo tag lượt: hết lượt mà nhóm còn sống là Codex
-                # đã bỏ lại lệnh chạy ngầm, Javis nhận theo dõi (tien_trinh_nen, 0.64.66).
+                # đã bỏ lại lệnh chạy ngầm, UNI MATE nhận theo dõi (tien_trinh_nen, 0.64.66).
                 try:
                     import tien_trinh_nen
                     tien_trinh_nen.ghi_nhom(self.tag, proc.pid)
@@ -1941,27 +1941,27 @@ class CodexCLI:
                             if ly_do == "tool":
                                 err = localefmt.chu(
                                     f"Tool chạy quá {int(TOOL_IDLE)}s chưa xong - đã dừng để tránh treo "
-                                    f"server. (tăng JAVIS_CLAUDE_TOOL_TIMEOUT nếu tác vụ thật sự dài hơn, "
+                                    f"server. (tăng UNIMATE_CLAUDE_TOOL_TIMEOUT nếu tác vụ thật sự dài hơn, "
                                     f"đặt 0 để bỏ hẳn trần)",
                                     f"A tool ran over {int(TOOL_IDLE)}s without finishing - stopped to avoid hanging the "
-                                    f"server. (raise JAVIS_CLAUDE_TOOL_TIMEOUT if the job really takes longer, "
+                                    f"server. (raise UNIMATE_CLAUDE_TOOL_TIMEOUT if the job really takes longer, "
                                     f"set 0 to remove the limit)")
                             elif ly_do == "dau":
                                 err = localefmt.chu(
                                     f"Codex chưa trả lời gì sau {int(FIRST_IDLE)}s - đã dừng để tránh treo "
                                     f"server. Hay gặp khi hội thoại đã rất dài: lượt đầu phải nạp lại toàn "
                                     f"bộ ngữ cảnh nên lâu. Mở hội thoại mới thường hết ngay. "
-                                    f"(JAVIS_CLAUDE_FIRST_TIMEOUT=0 để bỏ hẳn trần này)",
+                                    f"(UNIMATE_CLAUDE_FIRST_TIMEOUT=0 để bỏ hẳn trần này)",
                                     f"Codex had not answered after {int(FIRST_IDLE)}s - stopped to avoid hanging the "
                                     f"server. Common when the conversation is very long: the first turn must reload the whole "
                                     f"context, which is slow. A new conversation usually fixes it. "
-                                    f"(JAVIS_CLAUDE_FIRST_TIMEOUT=0 removes this limit)")
+                                    f"(UNIMATE_CLAUDE_FIRST_TIMEOUT=0 removes this limit)")
                             else:
                                 err = localefmt.chu(
                                     f"Codex đang trả lời rồi im {int(IDLE)}s - đã dừng để tránh treo server. "
-                                    f"(JAVIS_CLAUDE_IDLE_TIMEOUT=0 để bỏ hẳn trần này)",
+                                    f"(UNIMATE_CLAUDE_IDLE_TIMEOUT=0 để bỏ hẳn trần này)",
                                     f"Codex went silent for {int(IDLE)}s mid-answer - stopped to avoid hanging the server. "
-                                    f"(JAVIS_CLAUDE_IDLE_TIMEOUT=0 removes this limit)")
+                                    f"(UNIMATE_CLAUDE_IDLE_TIMEOUT=0 removes this limit)")
                             asyncio.run_coroutine_threadsafe(queue.put({"__error__": err}), loop)
                             return
                         time.sleep(5)
@@ -2039,7 +2039,7 @@ class CodexCLI:
                     yield {"type": "session", "session_id": thread_id}
             elif t == "item.started":
                 # Codex báo lúc một bước BẮT ĐẦU (đo 08/10, Codex 0.160: lệnh `ping` 5 giây có
-                # item.started ở giây 8,8, item.completed ở giây 14). Trước 0.86.1 Javis chỉ nghe
+                # item.started ở giây 8,8, item.completed ở giây 14). Trước 0.86.1 UNI MATE chỉ nghe
                 # item.completed, nên suốt lúc một lệnh dài chạy, khung chat im hẳn và người dùng
                 # tưởng treo (khách báo 08/10). Phát `progress` để trang hiện ngay bước đang chạy;
                 # nơi nào không biết loại này thì bỏ qua, `tool_call` lúc xong vẫn y như cũ.

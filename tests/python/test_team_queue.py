@@ -11,7 +11,7 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-queue-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-queue-")
 
 import task_store as TS  # noqa: E402
 
@@ -24,7 +24,7 @@ def check(name, cond, extra=""):
         fails.append(name)
 
 
-st = TS.TaskStore(Path(os.environ["JAVIS_STATE_DIR"]) / "kanban.sqlite3")
+st = TS.TaskStore(Path(os.environ["UNIMATE_STATE_DIR"]) / "kanban.sqlite3")
 B = "D:/brain"
 
 

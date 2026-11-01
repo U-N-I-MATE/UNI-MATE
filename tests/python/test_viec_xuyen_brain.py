@@ -6,7 +6,7 @@ Phủ 5 mảnh:
 - Di chuyển loop giữa brain: thành công (file dời + state theo), va chạm slug (từ chối, KHÔNG
   ghi đè), brain trùng (từ chối).
 - Di chuyển nhắc hẹn: record sang đúng brain đích, giữ id + chat_id; brain trùng từ chối.
-- javis_schedule: câu xác nhận create có TÊN BRAIN (mảnh 4 - bịt rối ngay lúc tạo).
+- unimate_schedule: câu xác nhận create có TÊN BRAIN (mảnh 4 - bịt rối ngay lúc tạo).
 - Nhớ bền /brain Telegram: set -> đọc lại sau "restart" trả đúng brain; brain xoá -> về mặc
   định + dọn entry (mảnh 5).
 - GET /viec/all: mỗi item gắn đúng brain_name/brain_path (mảnh 1 - gộp mọi brain).
@@ -22,11 +22,11 @@ import tempfile
 from pathlib import Path
 
 # PHẢI set BRAINS_DIR + STATE_DIR sang thư mục tạm TRƯỚC khi import main (main đọc env lúc import).
-_STATE = tempfile.mkdtemp(prefix="javis-viec-state-")
-_BRAINS = tempfile.mkdtemp(prefix="javis-viec-brains-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-viec-state-")
+_BRAINS = tempfile.mkdtemp(prefix="unimate-viec-brains-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 os.environ["BRAINS_DIR"] = _BRAINS
-sys.path.insert(0, str(ROOT / "system" / "plugins" / "javis-schedule"))
+sys.path.insert(0, str(ROOT / "system" / "plugins" / "unimate-schedule"))
 
 import main            # noqa: E402
 import self_improve    # noqa: E402
@@ -60,8 +60,8 @@ _loop_deps = self_improve.LoopDeps(
 )
 _lf = self_improve.LoopFeature(_loop_deps)
 
-_bA = tempfile.mkdtemp(prefix="javis-brainA-")
-_bB = tempfile.mkdtemp(prefix="javis-brainB-")
+_bA = tempfile.mkdtemp(prefix="unimate-brainA-")
+_bB = tempfile.mkdtemp(prefix="unimate-brainB-")
 
 sched._create_loop_file(_bA, name="Quet don", prompt="Moi vong quet don moi.", schedule="120m")
 _slug = "quet-don"
@@ -72,8 +72,8 @@ _mv = _lf.move_loop(_bA, _bB, _slug)
 check("A: move_loop trả ok", _mv.get("ok") is True)
 check("A: loop BIẾN MẤT khỏi brain nguồn", _lf.get_loop(_bA, _slug) is None)
 check("A: loop XUẤT HIỆN ở brain đích", bool(_lf.get_loop(_bB, _slug)))
-check("A: file .md nguồn đã xoá", not (Path(_bA) / "Javis" / "loops" / f"{_slug}.md").exists())
-check("A: file .md đích tồn tại", (Path(_bB) / "Javis" / "loops" / f"{_slug}.md").exists())
+check("A: file .md nguồn đã xoá", not (Path(_bA) / "UNI MATE" / "loops" / f"{_slug}.md").exists())
+check("A: file .md đích tồn tại", (Path(_bB) / "UNI MATE" / "loops" / f"{_slug}.md").exists())
 check("A: state runtime (last_run) theo sang đích",
       _lf.read_state(_bB).get(_slug, {}).get("last_run") == 12345.0)
 
@@ -109,8 +109,8 @@ _rem_deps = reminders_mod.RemindersDeps(
 )
 _rf = reminders_mod.RemindersFeature(_rem_deps)
 
-_rA = tempfile.mkdtemp(prefix="javis-remA-")
-_rB = tempfile.mkdtemp(prefix="javis-remB-")
+_rA = tempfile.mkdtemp(prefix="unimate-remA-")
+_rB = tempfile.mkdtemp(prefix="unimate-remB-")
 _rem = _rf._create(_rA, "goi khach X", delay_min=30, chat_id="777", label="Goi khach")
 _rid = _rem["id"]
 check("B: nhắc tạo ở brain A đọc được",
@@ -128,15 +128,15 @@ check("B: move nguồn==đích -> từ chối", _rf.move(_rB, _rB, _rid).get("ok
 check("B: move id không tồn tại -> lỗi", _rf.move(_rA, _rB, "khong-co").get("ok") is False)
 
 
-# ══════════════════════ C. javis_schedule báo tên brain (mảnh 4) ══════════════════════
-_vault_kk = os.path.join(tempfile.mkdtemp(prefix="javis-vault-kk-"), "KimKhiHaLoc")
+# ══════════════════════ C. unimate_schedule báo tên brain (mảnh 4) ══════════════════════
+_vault_kk = os.path.join(tempfile.mkdtemp(prefix="unimate-vault-kk-"), "KimKhiHaLoc")
 os.makedirs(_vault_kk)
 _res_loop = asyncio.run(sched._do_create(_vault_kk, {
     "name": "Quet don kho", "prompt": "quet don moi 2 tieng", "schedule": "120m"}))
 check("C: câu tạo LOOP nêu tên brain", "KimKhiHaLoc" in _res_loop)
 check("C: _create_loop_file có brain_name -> chuỗi chứa brain",
       "trong brain MyBrain" in sched._create_loop_file(
-          tempfile.mkdtemp(prefix="javis-vault-mb-"), name="Viec X",
+          tempfile.mkdtemp(prefix="unimate-vault-mb-"), name="Viec X",
           prompt="lam gi do", schedule="120m", brain_name="MyBrain"))
 
 
@@ -165,8 +165,8 @@ check("D: entry brain đã xoá được dọn khỏi map", "chat999" not in mai
 
 # ══════════════════════ E. GET /viec/all gắn đúng brain cho item (mảnh 1) ══════════════════════
 _vb = Path(main.BRAINS_DIR) / "ViecBrain"
-(_vb / "Javis" / "loops").mkdir(parents=True, exist_ok=True)
-(_vb / "Javis" / "loops" / "test-loop.md").write_text(
+(_vb / "UNI MATE" / "loops").mkdir(parents=True, exist_ok=True)
+(_vb / "UNI MATE" / "loops" / "test-loop.md").write_text(
     "---\ntype: loop\nname: Test Loop\nslug: test-loop\nenabled: false\n"
     "goal: custom\nmode: suggest\ninterval_min: 120\n---\n\nlam viec gi do moi vong\n",
     encoding="utf-8")

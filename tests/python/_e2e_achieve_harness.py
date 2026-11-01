@@ -45,7 +45,7 @@ class Checks:
 
 
 class Server:
-    """Server Javis thật của checkout. start() đi qua cổng chi phí TRƯỚC khi dựng tiến trình; kill() không qua cổng
+    """Server UNI MATE thật của checkout. start() đi qua cổng chi phí TRƯỚC khi dựng tiến trình; kill() không qua cổng
     (dừng luôn được phép). popen/health thay được trong test."""
 
     def __init__(self, *, root, port, base, env0, phase_ceiling, checks, cli="", popen=None, health=None):
@@ -63,12 +63,12 @@ class Server:
             return False
 
     def env_for(self, phase: int, tick_paused: bool, extra: dict) -> dict:
-        env = {**self.env0, **extra, "JAVIS_PORT": str(self.port), "JAVIS_REQUIRE_LOGIN": "0", "PYTHONUTF8": "1",
-               "JAVIS_RESONANCE_CALL_CEILING": str(self.phase_ceiling[phase])}
+        env = {**self.env0, **extra, "UNIMATE_PORT": str(self.port), "UNIMATE_REQUIRE_LOGIN": "0", "PYTHONUTF8": "1",
+               "UNIMATE_RESONANCE_CALL_CEILING": str(self.phase_ceiling[phase])}
         if self.cli:
-            env["JAVIS_CLAUDE_CLI"] = self.cli
+            env["UNIMATE_CLAUDE_CLI"] = self.cli
         if tick_paused:
-            env["JAVIS_RESONANCE_TICK_PAUSED"] = "1"
+            env["UNIMATE_RESONANCE_TICK_PAUSED"] = "1"
         return env
 
     def start(self, phase: int, tick_paused: bool, extra: dict, wait_s=120):
@@ -76,7 +76,7 @@ class Server:
         self.n += 1
         env = self.env_for(phase, tick_paused, extra)
         self.started.append({"n": self.n, "phase": phase, "tick_paused": tick_paused,
-                             "call_ceiling": env["JAVIS_RESONANCE_CALL_CEILING"], "cli_pinned": bool(self.cli)})
+                             "call_ceiling": env["UNIMATE_RESONANCE_CALL_CEILING"], "cli_pinned": bool(self.cli)})
         log = open(os.path.join(str(self.base), f"server-{self.n}.log"), "w", encoding="utf-8")
         flags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
         self.proc = self.popen([sys.executable, "server/main.py"], cwd=str(self.root), env=env, stdout=log,

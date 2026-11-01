@@ -9,7 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 SCRATCH = Path(tempfile.mkdtemp(prefix="trial-catalog-"))
-for key, child in {"JAVIS_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
+for key, child in {"UNIMATE_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
                    "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(SCRATCH / child)
 
@@ -53,14 +53,14 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(value["capabilities"]["skills"], expected)
         self.assertEqual(len([item for item in value["files"] if item["present"]]), 3)
         self.assertEqual([item["relative"] for item in value["files"] if not item["present"]],
-                         ["Javis/loop-state.json", "Javis/skill-usage.json"])
+                         ["UniMate/loop-state.json", "UniMate/skill-usage.json"])
         self.assertNotIn("private body", str(value))
         self.assertNotIn("Fallback body", str(value))
 
     def test_new_membership_and_legacy_to_canonical_layout_are_observed(self):
-        self.write("Javis/agents/old.md", "---\nname: Legacy\n---\nbody")
+        self.write("UniMate/agents/old.md", "---\nname: Legacy\n---\nbody")
         old = self.capture()
-        self.assertEqual(old["layout"]["agents"], "Javis/agents")
+        self.assertEqual(old["layout"]["agents"], "UniMate/agents")
         self.write("agents/new.md", "---\nname: Canonical\n---\nbody")
         current = self.capture()
         self.assertEqual(current["layout"]["agents"], "agents")
@@ -79,8 +79,8 @@ class CatalogTests(unittest.TestCase):
 
     def test_workflow_and_loop_projection_match_current_normalization(self):
         self.write("workflows/w.md", "---\nname: W\nstatus: on\nsteps:\n  - agent: a\n  - task: x\n---\nprivate")
-        self.write("Javis/loops/daily.md", "---\nname: D\nenabled: false\ninterval_min: 1\nmode: invalid\ngoal: invalid\n---\nprivate")
-        self.write("Javis/loop-state.json", '{"daily":{"auto_paused_reason":"owner paused"}}')
+        self.write("UniMate/loops/daily.md", "---\nname: D\nenabled: false\ninterval_min: 1\nmode: invalid\ngoal: invalid\n---\nprivate")
+        self.write("UniMate/loop-state.json", '{"daily":{"auto_paused_reason":"owner paused"}}')
         value = self.capture()
         self.assertEqual(value["capabilities"]["workflows"][0], {
             "slug": "w", "name": "W", "status": "active", "description": "", "group": "Chung",
@@ -92,7 +92,7 @@ class CatalogTests(unittest.TestCase):
     def test_router_priority_uses_captured_sidecar_without_live_reads(self):
         for slug in ("a", "b"):
             self.write(f"skills/{slug}/SKILL.md", f"---\nname: {slug}\ndescription: trigger\n---\nbody")
-        self.write("Javis/skill-usage.json", '{"b":{"pinned":true,"use_count":2,"last_used_at":10}}')
+        self.write("UniMate/skill-usage.json", '{"b":{"pinned":true,"use_count":2,"last_used_at":10}}')
         value = self.capture()
         self.assertEqual([item["slug"] for item in value["router"]["visible"]], ["b", "a"])
         self.assertEqual(value["router"]["hidden_count"], 0)
@@ -101,7 +101,7 @@ class CatalogTests(unittest.TestCase):
     def test_malformed_or_duplicate_json_is_rejected_instead_of_empty_fallback(self):
         for text in ('{"a":1,"a":2}', '{bad', '{"a":NaN}', '[]'):
             with self.subTest(text=text):
-                self.write("Javis/skill-usage.json", text)
+                self.write("UniMate/skill-usage.json", text)
                 with self.assertRaises(ValueError):
                     self.capture()
 
@@ -160,14 +160,14 @@ class CatalogTests(unittest.TestCase):
     def test_ordinary_yaml_dates_match_production_loop_normalization(self):
         import self_improve
 
-        self.write("Javis/loops/daily.md", "---\nname: Daily\nenabled: true\nupdated: 2026-10-22\ncreated: 2026-10-22T12:00:00Z\n---\nprivate")
+        self.write("UniMate/loops/daily.md", "---\nname: Daily\nenabled: true\nupdated: 2026-10-22\ncreated: 2026-10-22T12:00:00Z\n---\nprivate")
         value = self.capture()
         normalized = self_improve.LoopFeature._norm_loop(None, {"name": "Daily", "enabled": True,
             "updated": __import__("datetime").date(2026, 10, 22)}, "private", "daily")
         expected = {key: normalized[key] for key in ("slug", "name", "enabled", "mode", "interval_min", "goal")}
         expected["paused"] = False
         self.assertEqual(value["capabilities"]["loops"][0], expected)
-        record = next(item for item in value["files"] if item["relative"] == "Javis/loops/daily.md")
+        record = next(item for item in value["files"] if item["relative"] == "UniMate/loops/daily.md")
         self.assertEqual(record["projection"]["updated"], "2026-10-22")
         self.assertEqual(record["projection"]["created"], "2026-10-22T12:00:00+00:00")
 

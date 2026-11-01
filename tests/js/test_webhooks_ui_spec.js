@@ -13,7 +13,7 @@ let fails = 0;
 function check(name, ok) { console.log((ok ? "ok   " : "FAIL ") + name); if (!ok) fails++; }
 
 const base = { id: "wh_1", name: "Đơn", target: "task", text: "x", level: "full", brain: "/b", url: "https://x/hooks/wh_1",
-  enabled: true, paused: false, revision: 3, history: [], token_header: "X-Javis-Token" };
+  enabled: true, paused: false, revision: 3, history: [], token_header: "X-UniMate-Token" };
 const calm = W.cardHtml(base, []);
 check("three parts: Configuration, Events, Health", ["wh.tab_cfg", "wh.tab_events", "wh.tab_health"].every((k) => calm.includes(k))
   && (calm.match(/class="whPane"/g) || []).length === 3);

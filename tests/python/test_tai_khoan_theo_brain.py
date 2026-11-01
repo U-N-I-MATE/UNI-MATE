@@ -21,8 +21,8 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-tkbrain-"))
-os.environ.setdefault("BRAINS_DIR", tempfile.mkdtemp(prefix="javis-tkbrains-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-tkbrain-"))
+os.environ.setdefault("BRAINS_DIR", tempfile.mkdtemp(prefix="unimate-tkbrains-"))
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

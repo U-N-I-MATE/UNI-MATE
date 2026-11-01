@@ -1,4 +1,4 @@
-/* task-suggest.js - goi y task kieu plugin obsidian-tasks, BAN GON cho editor Javis.
+/* task-suggest.js - goi y task kieu plugin obsidian-tasks, BAN GON cho editor UNI MATE.
    Hoat dong trong ban render dang sua (.ne-wys, ca editor cay lan khung sua tu chat):
 
    1) Go "- [ ]" roi AN CACH o dau mot dong thuong -> tu bien thanh task that (checkbox).

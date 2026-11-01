@@ -1,9 +1,9 @@
 """Bộ não GIỌNG NÓI riêng (Voice V2, docs/dev/2026-10-voice-call-spec.md phụ lục A3).
 
-Khi người dùng NÓI với Javis, lượt đi qua một bộ não nhanh và nhẹ ở đây thay vì bộ não chính
+Khi người dùng NÓI với UNI MATE, lượt đi qua một bộ não nhanh và nhẹ ở đây thay vì bộ não chính
 (vốn dựng tiến trình, nạp MCP và prompt dài, mất 5-10 giây mới ra chữ đầu). Bộ não giọng trả
 lời ngắn, và khi câu hỏi cần dữ liệu, tool, file, ký ức hay hành động thì nó trả đúng một dòng
-`JAVIS_ASK_MAIN: <yêu cầu>`; main.py đọc dòng đó rồi chạy lượt bộ não chính như thường.
+`UNIMATE_ASK_MAIN: <yêu cầu>`; main.py đọc dòng đó rồi chạy lượt bộ não chính như thường.
 
 Hai loại bộ não:
   - AntigravityVoiceBrain: MỘT tiến trình `agy --input-format stream-json` sống suốt phiên
@@ -30,21 +30,21 @@ import localefmt
 import nghe_sua
 import phien_am
 
-MARKER = "JAVIS_ASK_MAIN:"
+MARKER = "UNIMATE_ASK_MAIN:"
 # Đường TẮT cho việc chỉ đụng tới giao diện: bộ não giọng tự phát, server gọi thẳng dashboard,
 # không phải đánh thức bộ não chính (xem parse_ui).
-UI_MARKER = "JAVIS_UI:"
+UI_MARKER = "UNIMATE_UI:"
 UI_ACTIONS = ("open_page", "open_group", "sidebar", "scroll")
 # Dòng ĐẦU của mọi câu trả lời: câu người dùng đã DIỄN GIẢI (máy nghe chép sai từ tiếng Anh,
 # bộ não giọng viết lại đúng ý). Server bóc dòng này ra: thay tin người dùng trong kho phiên
 # và trong khung chat, không bao giờ đọc ra loa (xem parse_nghe, split_speakable).
-NGHE_MARKER = "JAVIS_NGHE:"
+NGHE_MARKER = "UNIMATE_NGHE:"
 # CỬA TẠP ÂM: mic bật liên tục nên tiếng TV, người khác trong phòng hay tiếng lẩm bẩm cũng
 # được chép thành chữ rồi chốt thành một lượt. Bộ não giọng đã đọc mọi lượt để viết dòng
-# JAVIS_NGHE, nên nó xét luôn: cắt phần tạp âm ngay trong dòng ấy, còn cả lượt không có gì
-# nói với Javis thì trả đúng một dòng này. Server bỏ lượt, không đọc loa, không để lại bong
+# UNIMATE_NGHE, nên nó xét luôn: cắt phần tạp âm ngay trong dòng ấy, còn cả lượt không có gì
+# nói với UNI MATE thì trả đúng một dòng này. Server bỏ lượt, không đọc loa, không để lại bong
 # bóng (xem run_voice_turn trong main.py).
-BO_QUA_MARKER = "JAVIS_BO_QUA:"
+BO_QUA_MARKER = "UNIMATE_BO_QUA:"
 # Mọi dòng lệnh: không bao giờ ra loa (split_speakable), luôn bị bóc khỏi câu trả lời.
 MARKERS = (MARKER, UI_MARKER, NGHE_MARKER, BO_QUA_MARKER)
 IDLE_S = 300.0
@@ -79,7 +79,7 @@ STT_PROVIDERS = {
 PROVIDERS = tuple(k for k, p in BRAIN_PROVIDERS.items() if p["key_field"])
 
 SYSTEM_PROMPT = (
-    "Bạn là Javis, trợ lý cá nhân, đang NÓI CHUYỆN BẰNG GIỌNG với người dùng. Trả lời như người "
+    "Bạn là UNI MATE, trợ lý cá nhân, đang NÓI CHUYỆN BẰNG GIỌNG với người dùng. Trả lời như người "
     "đang nói: ngắn (1 đến 3 câu), tự nhiên, không markdown, không gạch đầu dòng, không emoji, "
     "không dấu gạch dài. Mặc định trả lời bằng tiếng Việt. Chỉ đổi ngôn ngữ khi người dùng nói "
     "rõ một câu có nghĩa bằng ngôn ngữ khác hoặc yêu cầu đổi; câu chép âm thanh pha tiếng lạ "
@@ -96,17 +96,17 @@ SYSTEM_PROMPT = (
     "ngay.', 'Rồi, kiểm tra ngay đây.', xưng hô theo người dùng), rồi một dòng riêng bắt đầu bằng "
     + MARKER + " theo sau là "
     "yêu cầu ĐẦY ĐỦ, tự đứng được (bộ não chính không nghe cuộc nói chuyện này) để bộ não chính của "
-    "Javis thực hiện. Không viết gì sau dòng đó. Việc đó chạy NỀN như một việc riêng: kết quả tự "
+    "UNI MATE thực hiện. Không viết gì sau dòng đó. Việc đó chạy NỀN như một việc riêng: kết quả tự "
     "hiện trong khung chat khi xong, còn bạn vẫn trò chuyện tiếp bình thường. Mỗi lời nhờ chỉ giao "
     "MỘT lần: câu nói tiếp, câu nhắc lại, câu hỏi tiến độ hay câu cảm ơn về một việc đã giao thì "
     "KHÔNG giao lại. Người dùng hỏi tiến độ thì nói việc đang chạy, KHÔNG bịa kết quả.\n"
     "NGOẠI LỆ, làm NGAY không nhờ bộ não chính: khi người dùng chỉ bảo ĐIỀU KHIỂN MÀN HÌNH, hãy "
     "trả lời một câu ngắn xác nhận rồi xuống dòng ghi " + UI_MARKER + " kèm lệnh:\n"
     "  " + UI_MARKER + " open_page <id trang>   (mở một tab. Viết ID tiếng Anh; trong ngoặc là nhãn "
-    "người dùng nhìn thấy và hay đọc lên: home (Javis), chat (trò chuyện), files (tệp tin), "
+    "người dùng nhìn thấy và hay đọc lên: home (UNI MATE), chat (trò chuyện), files (tệp tin), "
     "learn (tự học), terminal, workspace (cộng sự, trợ lý, quy trình), chatbots (chatbot), "
     "skills (kỹ năng), plugins (công cụ), tasks (nhiệm vụ: việc, việc định kỳ, nhắc hẹn), "
-    "mcp (kết nối), packs (Javis Store), channels (kênh), models, usage (mức dùng), "
+    "mcp (kết nối), packs (UNI MATE Store), channels (kênh), models, usage (mức dùng), "
     "settings (cài đặt), pet (linh vật), logs (cập nhật), account (tài khoản))\n"
     "  " + UI_MARKER + " open_group <id nhóm>   (BUNG một mục đang gập trên thanh bên mà không đổi "
     "trang: bo_nao (Bộ não), code (Code), nang_luc (Năng lực), viec (Việc), "
@@ -122,8 +122,8 @@ SYSTEM_PROMPT = (
     "không kèm dòng lệnh nào; hệ thống đã tự huỷ trước khi bạn kịp nói.\n"
     "Chuyện trò thường, hỏi ý kiến, giải thích khái niệm, tính nhẩm, chuyển ngữ: trả lời thẳng.\n"
     "Câu của người dùng đến từ MÁY NGHE GIỌNG NÓI, và họ hay nói lẫn tiếng Việt với tiếng "
-    "Anh, nên từ hay bị chép thành từ GẦN ÂM: tên bạn (Javis) thành 'David', 'Jarvis', 'Gia "
-    "vít'; từ tiếng Anh, tên công cụ, tên dự án, tên sản phẩm thành một từ nghe na ná. Hãy "
+    "Anh, nên từ hay bị chép thành từ GẦN ÂM: tên gọi bạn (Uni) thành 'Ưu ni', 'Yu ni', 'Diu ni', "
+    "tên UNI MATE thành 'U ni mết'; từ tiếng Anh, tên công cụ, tên dự án, tên sản phẩm thành một từ nghe na ná. Hãy "
     "HIỂU CÂU THEO NGỮ CẢNH cuộc trò chuyện. DÒNG ĐẦU TIÊN luôn là " + NGHE_MARKER + " rồi "
     "câu người dùng ĐÚNG NHƯ HỌ ĐỊNH NÓI trên một dòng, bỏ khối ngữ cảnh giao diện nếu có: "
     "chép lại nguyên văn, CHỈ thay từ nghe sai bằng từ gần âm đúng với ngữ cảnh (từ tiếng Anh "
@@ -132,7 +132,7 @@ SYSTEM_PROMPT = (
     "không dịch, không tóm tắt, không thêm bớt ý; không chắc thì chép y nguyên. Hệ thống tự "
     "kiểm lại dòng này, sửa quá tay thì bị bỏ. Từ dòng thứ hai mới trả lời hoặc dùng "
     + MARKER + " hay " + UI_MARKER + ", và trả lời theo câu đã hiểu đó: không bám nghĩa đen "
-    "của từ nghe sai, không nói người dùng đã nói 'David', không bình luận về từ nghe sai. "
+    "của từ nghe sai, không nói người dùng đã nói 'Diu ni', không bình luận về từ nghe sai. "
     "Câu vẫn không rõ nghĩa thì hỏi lại ngắn bằng tiếng Việt, không tự đoán tên người khác hay đổi "
     "giọng đọc. Người dùng nói dùng 'vâng' thay 'ừ' là yêu cầu cách đáp lễ phép; không suy "
     "thành đổi danh tính sang người tên Vân. Ưu tiên xưng em, gọi người dùng là anh và đáp vâng.\n"
@@ -210,7 +210,7 @@ def _giong_doc(cu: list, moi: list) -> float:
 
 def _giong_am(cu: list, moi: list) -> float:
     """Độ giống âm giữa cụm máy nghe và cụm bộ não sửa, lấy cách so CAO HƠN trong hai:
-      - theo mặt chữ (nghe_sua.khoa_am) như trước: "David" với "Javis";
+      - theo mặt chữ (nghe_sua.khoa_am) như trước: "Yu ni" với "Uni";
       - theo cách người Việt ĐỌC từ tiếng Anh (phien_am): "action" viết một đằng đọc một
         nẻo, so mặt chữ "huyết áp Action" với "GitHub Actions" chỉ được 0,6 và bị chặn,
         còn so cách đọc ("ghít hắp ác sừn") thì khớp (0.64.68).
@@ -220,8 +220,8 @@ def _giong_am(cu: list, moi: list) -> float:
     try:
         # Chữ cũ là tiếng Việt, chữ mới là tiếng Anh: so MẶT CHỮ là so hai thứ khác loại
         # ("việc" với chính tả "Webhook" được 0,67 và từng lọt, đổi hẳn trang cần mở). Khi đó
-        # chỉ tin cách ĐỌC ("việc" với "quép húc" 0,44). Hai bên cùng tiếng Anh ("David" ->
-        # "Javis") hay cùng tiếng Việt thì mặt chữ vẫn có nghĩa, lấy điểm cao hơn.
+        # chỉ tin cách ĐỌC ("việc" với "quép húc" 0,44). Hai bên cùng tiếng Anh ("Unik" ->
+        # "Uni") hay cùng tiếng Việt thì mặt chữ vẫn có nghĩa, lấy điểm cao hơn.
         anh_moi = all(phien_am.la_tu_tieng_anh(w) for w in moi)
         anh_cu = all(phien_am.la_tu_tieng_anh(w) for w in cu)
         doc = _giong_doc(cu, moi)
@@ -298,7 +298,7 @@ def safe_transcript_rewrite(original: str, proposed: str) -> str:
 
 
 def parse_nghe(text: str):
-    """(phần còn lại, câu đã diễn giải | None) cho dòng `JAVIS_NGHE:` (dòng ĐẦU TIÊN chỉ được
+    """(phần còn lại, câu đã diễn giải | None) cho dòng `UNIMATE_NGHE:` (dòng ĐẦU TIÊN chỉ được
     tìm ở bất kỳ đâu vì model nhỏ có khi đặt nó sau câu xác nhận). Bóc cả dòng khỏi phần còn
     lại, kể cả dấu xuống dòng của nó. Câu diễn giải rỗng thì coi như không có."""
     t = str(text or "")
@@ -314,9 +314,9 @@ _BO_QUA_RE = re.compile(r"^[ \t]*" + re.escape(BO_QUA_MARKER) + r"[ \t]*(.*?)[ \
 
 
 def parse_bo_qua(text: str):
-    """Lý do bỏ lượt (chuỗi, có thể rỗng) nếu bộ não giọng ra dòng `JAVIS_BO_QUA:`, không thì None.
+    """Lý do bỏ lượt (chuỗi, có thể rỗng) nếu bộ não giọng ra dòng `UNIMATE_BO_QUA:`, không thì None.
 
-    Tìm ở BẤT KỲ đâu chứ không chỉ dòng đầu: model nhỏ có khi viết dòng JAVIS_NGHE trước rồi mới
+    Tìm ở BẤT KỲ đâu chứ không chỉ dòng đầu: model nhỏ có khi viết dòng UNIMATE_NGHE trước rồi mới
     chốt bỏ. Lý do rỗng vẫn là bỏ - dòng lệnh có mặt đã là quyết định, lý do chỉ để ghi log.
 
     Không trả phần còn lại như parse_nghe/parse_marker: lượt bị bỏ thì cả câu trả lời bị vứt,
@@ -352,10 +352,10 @@ def parse_marker(text: str):
 
 
 def parse_ui(text: str):
-    """(câu nói, (action, target) | None) cho dòng `JAVIS_UI:`.
+    """(câu nói, (action, target) | None) cho dòng `UNIMATE_UI:`.
 
     Vì sao có đường tắt này: mở một tab là việc KHÔNG cần dữ liệu gì. Trước đây nó vẫn phải đi
-    `JAVIS_ASK_MAIN` sang bộ não chính, mà bộ não chính mang cả ngữ cảnh hội thoại (có lúc hơn
+    `UNIMATE_ASK_MAIN` sang bộ não chính, mà bộ não chính mang cả ngữ cảnh hội thoại (có lúc hơn
     200 nghìn token) nên một câu "mở trang Models" mất hàng chục giây. Bộ não giọng tự phát
     dòng này thì server gọi thẳng dashboard, còn đúng độ trễ của chính bộ não giọng.
     """
@@ -388,7 +388,7 @@ def split_speakable(text: str, start: int, final: bool = False):
     Nay chỉ phát khi CÂU đã khép (dấu . ! ? … hoặc xuống dòng), hoặc khi đoạn dở dài quá
     SPEAK_MAX thì cắt ở dấu phẩy/khoảng trắng cuối; `final` thì đẩy nốt phần đuôi.
 
-    Dòng marker `JAVIS_ASK_MAIN:` không bao giờ ra loa: dòng mới mà chữ đầu trùng đầu marker
+    Dòng marker `UNIMATE_ASK_MAIN:` không bao giờ ra loa: dòng mới mà chữ đầu trùng đầu marker
     thì giữ lại tới khi biết chắc; đã là marker thì bỏ cả dòng.
     """
     out: List[str] = []
@@ -444,7 +444,7 @@ def seed_text(history: List[dict], text: str, with_prompt: bool = True) -> str:
     if h:
         parts.append("[MẤY LƯỢT GẦN NHẤT TRONG PHIÊN NÀY]")
         for x in h:
-            ai = "Javis" if x.get("role") == "assistant" else "Người dùng"
+            ai = "UNI MATE" if x.get("role") == "assistant" else "Người dùng"
             parts.append(f"{ai}: {str(x.get('content'))[:1500]}")
     parts.append("[NGƯỜI DÙNG VỪA NÓI]\n" + str(text or ""))
     return "\n\n".join(parts)
@@ -733,7 +733,7 @@ class ClaudeVoiceBrain(VoiceBrain):
             kw["model"] = self.model
         try:
             import claude_cli
-            _cli = (os.environ.get("JAVIS_CLAUDE_CLI") or "").strip() or (claude_cli.tim_binary("claude") or "")
+            _cli = (os.environ.get("UNIMATE_CLAUDE_CLI") or "").strip() or (claude_cli.tim_binary("claude") or "")
             if _cli and "_bundled" not in _cli.replace("\\", "/") and "cli_path" in fields:
                 kw["cli_path"] = _cli
         except Exception:
@@ -876,7 +876,7 @@ class GrokVoiceBrain(VoiceBrain):
 # ============================================================
 # Việc nền đang chạy của mỗi phiên nói (Voice V3, spec mục 14: tách NÓI khỏi LÀM)
 # ============================================================
-# Khi bộ não giọng phát JAVIS_ASK_MAIN, main.py giao yêu cầu đó cho bộ não chính chạy NỀN rồi
+# Khi bộ não giọng phát UNIMATE_ASK_MAIN, main.py giao yêu cầu đó cho bộ não chính chạy NỀN rồi
 # kết thúc lượt giọng ngay, để người dùng nói tiếp được. Sổ này cho bộ não giọng biết còn việc
 # gì đang chạy, để nó trả lời "đang chạy" thay vì bịa kết quả hay giao lại việc cũ.
 _PENDING: Dict[str, List[dict]] = {}
@@ -905,7 +905,7 @@ def pending_tasks(session_id: str) -> List[dict]:
 
 # ---- "Dừng việc nền đi" là LỆNH, không phải một việc mới ----
 # Chủ dự án 15/09 gặp vòng lặp cười ra nước mắt: bảo "tạm dừng cái việc tìm kiếm ngầm đi nhé"
-# thì Javis dạ vâng rồi GIAO THÊM một việc nền mới với nội dung "dừng việc nền đang chạy". Nói
+# thì UNI MATE dạ vâng rồi GIAO THÊM một việc nền mới với nội dung "dừng việc nền đang chạy". Nói
 # lần nữa lại đẻ thêm một việc nữa. Gốc ở chỗ luật của bộ não giọng bảo mọi thứ cần HÀNH ĐỘNG
 # thì đẩy sang bộ não chính, mà "dừng việc" nghe đúng là một hành động.
 #
@@ -921,7 +921,7 @@ _DUNG_TU = (
 # Cụm chỉ ĐÍCH DANH việc chạy nền. 0.64.48 bỏ các từ đơn "nền", "nen", "đang chạy", "task",
 # "job": chúng làm câu hỏi thường bị nuốt thành lệnh dừng. Chủ repo báo 24/09, dò lại thấy
 # "Thôi được rồi, quảng cáo đang chạy thế nào?", "tắt nhạc nền đi", "bỏ qua chuyện đó, nền
-# tảng nào bán tốt" đều bị coi là lệnh: câu hỏi mất, Javis đáp "không có việc nền nào".
+# tảng nào bán tốt" đều bị coi là lệnh: câu hỏi mất, UNI MATE đáp "không có việc nền nào".
 _VIEC_TU = (
     "việc nền", "viec nen", "việc ngầm", "viec ngam", "chạy nền", "chay nen", "chạy ngầm",
     "chay ngam", "tác vụ", "tac vu", "background",
@@ -1003,7 +1003,7 @@ def pending_note(session_id: str, now: Optional[float] = None) -> str:
 # ============================================================
 # Vì sao có (0.59.23): khi bộ não giọng hỏng (chưa cài CLI, hết key, hết hạn mức, mất mạng),
 # run_voice_turn rơi về bộ não chính để lượt không câm. Đúng, nhưng trước đây cú rơi đó chỉ để
-# lại một dòng stderr và một status bị dòng "Javis đang suy nghĩ..." của bộ não chính đè lên
+# lại một dòng stderr và một status bị dòng "UNI MATE đang suy nghĩ..." của bộ não chính đè lên
 # trong vài mili giây. Người dùng chỉ thấy: bật mic, nói, rồi chờ hàng chục giây như chưa từng
 # có làn nhanh - và không có cách nào biết vì sao (chủ dự án gặp 16/09 sau vài bản cập nhật).
 # Nên giữ lại lỗi gần nhất ở đây: khung chat nói ra ngay lượt đó, và thẻ Giọng nói ở trang

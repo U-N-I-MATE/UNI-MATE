@@ -7,7 +7,7 @@
 
   // Cả thẻ tên miền (wizard 3 bước + badge DNS/SSL) lẫn dòng trạng thái ảnh đại diện đều
   // được VẼ MỘT LẦN bằng JS, nên đổi ngôn ngữ giao diện là chúng đứng nguyên tiếng cũ.
-  // Nhớ lại dữ liệu đã vẽ để lượt "javis:i18n" dựng lại y hệt bằng từ điển mới, khỏi phải
+  // Nhớ lại dữ liệu đã vẽ để lượt "unimate:i18n" dựng lại y hệt bằng từ điển mới, khỏi phải
   // gọi lại /domain/status (một lượt tra DNS thật, chậm và vô cớ).
   var _domCache = null;      // JSON /domain/status lần vẽ gần nhất; null = chưa vẽ lần nào
   var _logoCustom = null;    // true/false = đang dùng ảnh riêng / ảnh mặc định; null = chưa biết
@@ -70,7 +70,7 @@
     var v = "/brand-logo?v=" + Date.now();
     document.querySelectorAll('img[src^="/brand-logo"]').forEach(function (img) { img.src = v; });
     doiFavicon(v);
-    try { if (window.JavisPet) window.JavisPet.setLogoRieng(rieng); } catch (e) {}
+    try { if (window.UniMatePet) window.UniMatePet.setLogoRieng(rieng); } catch (e) {}
   }
 
   // ICON TRÊN TAB cũng phải đổi theo logo. Ảnh nằm trong trang thì đổi `src` là xong, nhưng
@@ -84,7 +84,7 @@
   //      nhiều bản Safari/Firefox làm ngơ. Cách ăn chắc là GỠ thẻ cũ ra rồi gắn thẻ mới vào.
   //
   // Gắn lại cả `apple-touch-icon` vì index.html khai cả hai, và đó là icon dùng khi người ta
-  // thêm Javis vào màn hình chính iPhone.
+  // thêm UNI MATE vào màn hình chính iPhone.
   function doiFavicon(v) {
     try {
       var head = document.head;
@@ -191,7 +191,7 @@
     // the broken step instead of one "via Hostinger" label for every failure.
     var SSL_CODE_BADGE = {
       no_route: ["brand.ssl_no_route", "bad"], cert_pending: ["brand.ssl_cert_pending", "warn"],
-      bad_gateway: ["brand.ssl_bad_gateway", "bad"], other_javis: ["brand.ssl_elsewhere", "bad"],
+      bad_gateway: ["brand.ssl_bad_gateway", "bad"], other_unimate: ["brand.ssl_elsewhere", "bad"],
       other_site: ["brand.ssl_elsewhere", "bad"], cert_invalid: ["brand.ssl_elsewhere", "bad"],
       unreachable: ["brand.ssl_unreachable", "bad"]
     };
@@ -337,7 +337,7 @@
   // Đổi ngôn ngữ giao diện (hoặc từ điển vừa nạp xong): dựng lại phần chữ do JS vẽ.
   // Chỉ dựng lại thứ đã từng vẽ, để không tự dưng in "Chưa đặt tên miền" lên một trang
   // chưa hề mở phần tên miền.
-  window.addEventListener("javis:i18n", function () {
+  window.addEventListener("unimate:i18n", function () {
     if (_logoCustom !== null) {
       setStatus("brandLogoStatus", _logoCustom ? window.t("brand.using_custom_image") : window.t("brand.using_default_image"), false);
     }
@@ -345,7 +345,7 @@
   });
 
   // Cho trang Cài đặt (console.js) gọi nạp lại giá trị avatar/tên miền khi mở trang.
-  window.__javisRefreshExtras = loadExtras;
+  window.__unimateRefreshExtras = loadExtras;
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", bind);

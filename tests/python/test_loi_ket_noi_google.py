@@ -8,7 +8,7 @@ Không cần pytest, không chạm mạng.
 Bối cảnh: server MCP hosted của Google (calendarmcp/gmailmcp.googleapis.com) là API RIÊNG,
 phải bật THÊM bên cạnh API thường và phải ghi danh Google Workspace Developer Preview Program.
 Người dùng theo guide cũ chỉ bật Google Calendar API nên OAuth xong vẫn bị 403 khi gọi tool,
-và Javis chỉ báo "Key chưa đúng hoặc chưa đủ quyền" - khách hiểu nhầm là hỏng key, có người
+và UNI MATE chỉ báo "Key chưa đúng hoặc chưa đủ quyền" - khách hiểu nhầm là hỏng key, có người
 còn nghi tại não OpenRouter free. Test này giữ cho thông báo lỗi chỉ đúng chỗ cần sửa.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path (xem tests/python/_paths.py)
@@ -75,13 +75,13 @@ check("CANARY: lỗi lạ không bị gán nhầm thành 'API chưa bật'", "ch
 
 # ---- 4b. 403 PERMISSION_DENIED không kèm chữ scope: chưa ghi danh Developer Preview ----
 # Vụ 2026-07-30: Google trả "The caller does not have permission" khi gọi create_event/
-# list_calendars. Javis đọc xong kết luận NHẦM là "hub của Javis chặn quyền" rồi đòi sửa tầng
+# list_calendars. UNI MATE đọc xong kết luận NHẦM là "hub của UNI MATE chặn quyền" rồi đòi sửa tầng
 # permission, trong khi hub không hề chặn: kết nối đang mức full nên allowed() cho qua ngay,
-# và thông báo chặn của Javis là TIẾNG VIỆT kèm chữ "bị chặn" chứ không phải tiếng Anh.
+# và thông báo chặn của UNI MATE là TIẾNG VIỆT kèm chữ "bị chặn" chứ không phải tiếng Anh.
 msg_perm = mcp_hub.chan_doan_loi("The caller does not have permission")
 check("403 caller-no-permission -> nhận ra, không trả rỗng", bool(msg_perm))
-check("nói thẳng ĐÂY KHÔNG PHẢI Javis chặn (chống chẩn nhầm sang tầng quyền)",
-      "KHÔNG phải Javis chặn" in msg_perm or "không phải Javis chặn" in msg_perm.lower())
+check("nói thẳng ĐÂY KHÔNG PHẢI UNI MATE chặn (chống chẩn nhầm sang tầng quyền)",
+      "KHÔNG phải UNI MATE chặn" in msg_perm or "không phải UNI MATE chặn" in msg_perm.lower())
 check("chỉ đúng thuốc: ghi danh Developer Preview", "workspace/preview" in msg_perm)
 check("nhắc ghi danh tính theo TỪNG tài khoản (đổi tài khoản là phải ghi danh lại)",
       "TỪNG tài khoản" in msg_perm)
@@ -104,7 +104,7 @@ src = Path(mcp_hub.__file__).read_text(encoding="utf-8")
 than_guard = src.split("def _guard(")[1].split("\n# =====")[0]
 check("_guard có gắn chẩn đoán vào kết quả lỗi của tool", "chan_doan_loi" in than_guard)
 check("_guard GIỮ nguyên văn lỗi gốc (chỉ gắn thêm, không thay thế)",
-      "[Javis chẩn đoán]" in than_guard and "{result}" in than_guard)
+      "[UNI MATE chẩn đoán]" in than_guard and "{result}" in than_guard)
 check("chỉ gắn khi thật sự là lỗi", 'startswith("ERROR:")' in than_guard)
 
 # ---- 5. validate_connection phải THẬT SỰ đi qua bộ dịch này ----

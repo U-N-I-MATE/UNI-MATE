@@ -23,12 +23,12 @@ import sys
 import tempfile
 from datetime import date, datetime, timedelta, timezone
 
-_TMP = tempfile.mkdtemp(prefix="javis-mdm-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
-os.environ["JAVIS_CLAUDE_PROJECTS_DIR"] = os.path.join(_TMP, "claude-projects")
-os.environ["JAVIS_CODEX_SESSIONS_DIR"] = os.path.join(_TMP, "codex-sessions")
-os.makedirs(os.environ["JAVIS_CLAUDE_PROJECTS_DIR"], exist_ok=True)
-os.makedirs(os.environ["JAVIS_CODEX_SESSIONS_DIR"], exist_ok=True)
+_TMP = tempfile.mkdtemp(prefix="unimate-mdm-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
+os.environ["UNIMATE_CLAUDE_PROJECTS_DIR"] = os.path.join(_TMP, "claude-projects")
+os.environ["UNIMATE_CODEX_SESSIONS_DIR"] = os.path.join(_TMP, "codex-sessions")
+os.makedirs(os.environ["UNIMATE_CLAUDE_PROJECTS_DIR"], exist_ok=True)
+os.makedirs(os.environ["UNIMATE_CODEX_SESSIONS_DIR"], exist_ok=True)
 
 import aux_engine  # noqa: E402
 import usage_index as ui  # noqa: E402
@@ -64,7 +64,7 @@ _ev = up.parse_claude_line(
 check("mỗi dòng assistant của Claude là MỘT lượt", (_ev or {}).get("turns") == 1)
 check("và mang theo mốc thời gian để dựng cửa sổ trượt", (_ev or {}).get("ts", 0) > 0)
 
-_rollout = os.path.join(os.environ["JAVIS_CODEX_SESSIONS_DIR"], "rollout-test.jsonl")
+_rollout = os.path.join(os.environ["UNIMATE_CODEX_SESSIONS_DIR"], "rollout-test.jsonl")
 with open(_rollout, "w", encoding="utf-8") as fh:
     fh.write(json.dumps({"type": "session_meta", "payload": {"cwd": "/x/duan"}}) + "\n")
     for i, tot in enumerate((100, 400, 900)):
@@ -101,7 +101,7 @@ _now = datetime.now(_TZ)
 
 
 def _seed(hour_dt, tokens, turns, provider="claude", path="p1", day=None, activity="chat",
-          model="claude-opus-5", inp=None, source="javis"):
+          model="claude-opus-5", inp=None, source="unimate"):
     c = ui._connect()
     try:
         c.execute("INSERT INTO file_hourly(path,hour,provider,tokens,turns) VALUES(?,?,?,?,?)",
@@ -136,7 +136,7 @@ check("CANARY: đỉnh không cộng dồn những giờ cách xa nhau",
 # trùng chuyện đó, và nó phải khử ở CẢ HAI bảng. Bản đầu chỉ khử ở bảng ngày, nên bảng ngày
 # đúng còn cửa sổ 5 giờ báo GẤP ĐÔI - sai đúng về hướng nguy hiểm nhất, vì đó là con số dùng
 # để đoán xem sắp chạm trần gói chưa.
-_D2 = tempfile.mkdtemp(prefix="javis-dup-")
+_D2 = tempfile.mkdtemp(prefix="unimate-dup-")
 _CP2 = os.path.join(_D2, "cp")
 os.makedirs(_CP2, exist_ok=True)
 _now2 = datetime.now(_TZ)
@@ -156,16 +156,16 @@ def _quet_rieng(state_dir, claude_dir):
     """Chạy indexer trên một kho tạm khác, rồi trả (tokens_ngay, tokens_cua_so)."""
     import importlib
     import config as _cfg
-    cu = (os.environ.get("JAVIS_STATE_DIR"), os.environ.get("JAVIS_CLAUDE_PROJECTS_DIR"))
-    os.environ["JAVIS_STATE_DIR"] = state_dir
-    os.environ["JAVIS_CLAUDE_PROJECTS_DIR"] = claude_dir
+    cu = (os.environ.get("UNIMATE_STATE_DIR"), os.environ.get("UNIMATE_CLAUDE_PROJECTS_DIR"))
+    os.environ["UNIMATE_STATE_DIR"] = state_dir
+    os.environ["UNIMATE_CLAUDE_PROJECTS_DIR"] = claude_dir
     try:
         importlib.reload(_cfg)
         importlib.reload(ui)
         ui.refresh()
         return ui.summary("today")["kpi"]["tokens"], ui.cua_so(5.0)["tokens"]
     finally:
-        os.environ["JAVIS_STATE_DIR"], os.environ["JAVIS_CLAUDE_PROJECTS_DIR"] = cu
+        os.environ["UNIMATE_STATE_DIR"], os.environ["UNIMATE_CLAUDE_PROJECTS_DIR"] = cu
         importlib.reload(_cfg)
         importlib.reload(ui)
 
@@ -174,7 +174,7 @@ _ngay, _cua = _quet_rieng(_D2, _CP2)
 check("CANARY: một lượt ghi hai nguồn thì cửa sổ trượt KHÔNG đếm đôi", _cua == 1000)
 check("và bảng theo ngày vẫn đúng như trước", _ngay == 1000)
 
-_D3 = tempfile.mkdtemp(prefix="javis-dp-")
+_D3 = tempfile.mkdtemp(prefix="unimate-dp-")
 _CP3 = os.path.join(_D3, "cp")
 os.makedirs(_CP3, exist_ok=True)
 with open(os.path.join(_D3, "usage-events.jsonl"), "w", encoding="utf-8") as _fh:
@@ -447,15 +447,15 @@ check("bản trả phí cùng họ thì vẫn tính tiền",
 
 # Cửa sổ hiện tại và đỉnh đối chiếu phải đếm CÙNG số mốc giờ. Lệch một mốc là tỉ lệ phồng
 # ~20% trên một nhịp dùng đều, và ô đó hiện "100%" trong khi thực tế mới dùng 80%.
-_D4 = tempfile.mkdtemp(prefix="javis-cs-")
+_D4 = tempfile.mkdtemp(prefix="unimate-cs-")
 _dem = {"cua_so": 0, "dinh": 0}
 
 
 def _do_moc():
     import importlib
     import config as _cfg
-    cu = os.environ.get("JAVIS_STATE_DIR")
-    os.environ["JAVIS_STATE_DIR"] = _D4
+    cu = os.environ.get("UNIMATE_STATE_DIR")
+    os.environ["UNIMATE_STATE_DIR"] = _D4
     try:
         importlib.reload(_cfg)
         importlib.reload(ui)
@@ -471,7 +471,7 @@ def _do_moc():
             c.close()
         return ui.cua_so(5.0, now=moc)["tokens"], ui.dinh_cua_so(5.0, 60, now=moc)["tokens"]
     finally:
-        os.environ["JAVIS_STATE_DIR"] = cu
+        os.environ["UNIMATE_STATE_DIR"] = cu
         importlib.reload(_cfg)
         importlib.reload(ui)
 
@@ -484,11 +484,11 @@ check("CANARY: cửa sổ hiện tại và đỉnh đếm cùng số mốc giờ
 for _pv in ("groq", "gemini", "openrouter", "openai", "anthropic-api", "ollama"):
     check(f"nhánh API '{_pv}' được indexer nhận", _pv in ui._API_PROVIDERS)
 
-# Mẫu số của tiết kiệm phải là lượt CỦA JAVIS. Lượt người dùng tự gõ `claude` trong terminal
-# không đi qua prompt của Javis nên chế độ tiết kiệm không làm chúng rẻ đi.
-# Neo MỘT lượt Javis đúng thời điểm hiện tại: mọi seed phía trên đều lùi 1-4 giờ, và ở
+# Mẫu số của tiết kiệm phải là lượt CỦA UNI MATE. Lượt người dùng tự gõ `claude` trong terminal
+# không đi qua prompt của UNI MATE nên chế độ tiết kiệm không làm chúng rẻ đi.
+# Neo MỘT lượt UNI MATE đúng thời điểm hiện tại: mọi seed phía trên đều lùi 1-4 giờ, và ở
 # khung 0h-4h sáng (giờ locale) chúng rơi sang NGÀY HÔM TRƯỚC - "today" hết sạch lượt
-# Javis và check "_tong_moi > 0" đỏ oan mỗi đêm (bắt được 17/08 lúc 00:24 +07, test đỏ
+# UNI MATE và check "_tong_moi > 0" đỏ oan mỗi đêm (bắt được 17/08 lúc 00:24 +07, test đỏ
 # cả trên bản sạch). Neo tại _now thì bất biến đúng ở mọi giờ chạy.
 _seed(_now, 1000, 7, path="p-neo-hom-nay")
 _seed(_now, 5000, 100, provider="claude", path="p-manual", activity="manual", source="manual")
@@ -496,9 +496,9 @@ _luot = ui.luot_theo_ngay("today")
 _tong_moi = sum(x["turns"] for x in _luot)
 _tong_tat = sum(x["turns"] for x in ui.summary("today")["timeseries"])
 check("CANARY: lượt người dùng tự gõ KHÔNG được tính vào tiết kiệm", _tong_moi < _tong_tat)
-check("và lượt của Javis thì vẫn được tính", _tong_moi > 0)
+check("và lượt của UNI MATE thì vẫn được tính", _tong_moi > 0)
 
-# Người tự chỉnh tay từng đường (preset 'custom'): Javis không biết cấu hình đó tốn bao nhiêu
+# Người tự chỉnh tay từng đường (preset 'custom'): UNI MATE không biết cấu hình đó tốn bao nhiêu
 # mỗi lượt. Báo "tiết kiệm 0" kèm du_du_lieu=True là nói "chế độ của anh chẳng đáng gì".
 _tk_custom = us.tiet_kiem([{"day": "2026-08-12", "turns": 10}], _PHI, "custom")
 check("CANARY: cấu hình tự chỉnh thì nói KHÔNG ĐO ĐƯỢC, không nói tiết kiệm 0",
@@ -533,8 +533,8 @@ check("CANARY: thông báo tan sau khi hiện, không dính lại mãi",
       'state.toast = "";' in _USAGE and 'state.nsToast = "";' in _USAGE)
 check("số đang gõ dở trong form không bị xoá khi trang vẽ lại",
       "function nhoForm(" in _USAGE and "state.nsForm" in _USAGE)
-check("nói rõ chỉ đếm lượt của Javis",
-      "usage.tk.qua_luot" in _USAGE and "lượt của Javis" in _VI.get("usage.tk.qua_luot", ""))
+check("nói rõ chỉ đếm lượt của UNI MATE",
+      "usage.tk.qua_luot" in _USAGE and "lượt của UNI MATE" in _VI.get("usage.tk.qua_luot", ""))
 
 # Việc nền chạy bằng API key phải ghi mức dùng, không thì trần tiền không thấy chính khoản
 # chi mà nó sinh ra để chặn.

@@ -3,7 +3,7 @@
     python tests/run.py sdk_engine
 
 KHÔNG cần Claude CLI hay đăng nhập - chỉ test phần thuần logic:
-- factory claude_engine chọn đúng engine theo env JAVIS_CLAUDE_ENGINE (mặc định cli).
+- factory claude_engine chọn đúng engine theo env UNIMATE_CLAUDE_ENGINE (mặc định cli).
 - map_message: message SDK → event dict đúng 'hợp đồng ClaudeCLI' (text/tool_call/
   tool_result/final + session_id/token/cost).
 - _permission_gate: whitelist per-call allow/deny + pattern fnmatch + ghi audit JSONL.
@@ -16,7 +16,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-sdktest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-sdktest-"))
 
 _fails = []
 
@@ -28,7 +28,7 @@ def check(name, cond):
 
 
 # ---- 1. Factory: engine Claude LUÔN là SDK (nhánh Popen ClaudeCLI đã gỡ v0.9.37) ----
-os.environ.pop("JAVIS_CLAUDE_ENGINE", None)
+os.environ.pop("UNIMATE_CLAUDE_ENGINE", None)
 import claude_cli                                         # noqa: E402
 from claude_cli import claude_engine                      # noqa: E402
 import claude_sdk_engine                                  # noqa: E402
@@ -38,12 +38,12 @@ eng = claude_engine(system_prompt="x", cwd=".", tag="t", allowed_tools=["Read"],
 check("factory: mặc định → ClaudeSDK", isinstance(eng, ClaudeSDK))
 check("factory: truyền đủ tham số", eng.system_prompt == "x" and eng.allowed_tools == ["Read"]
       and eng.model == "haiku" and eng.tag == "t")
-os.environ["JAVIS_CLAUDE_ENGINE"] = "cli"
+os.environ["UNIMATE_CLAUDE_ENGINE"] = "cli"
 check("factory: env=cli (đã gỡ) → vẫn ClaudeSDK", isinstance(claude_engine(), ClaudeSDK))
-os.environ["JAVIS_CLAUDE_ENGINE"] = "sdk-loops"
+os.environ["UNIMATE_CLAUDE_ENGINE"] = "sdk-loops"
 check("factory: env=sdk-loops (đã gỡ) → vẫn ClaudeSDK", isinstance(claude_engine(tag="chat:abc12"), ClaudeSDK))
 check("factory: class ClaudeCLI đã bị xoá hẳn", not hasattr(claude_cli, "ClaudeCLI"))
-os.environ.pop("JAVIS_CLAUDE_ENGINE", None)
+os.environ.pop("UNIMATE_CLAUDE_ENGINE", None)
 
 # ---- 2. map_message: parity hợp đồng event ----
 from claude_agent_sdk import (AssistantMessage, UserMessage, SystemMessage, ResultMessage,  # noqa: E402
@@ -96,15 +96,15 @@ check("map: result rỗng nhưng KHÔNG lỗi → không thêm error", len(evs) 
 
 
 async def gate_tests():
-    e = ClaudeSDK(tag="loop-test", allowed_tools=["Read", "Glob", "mcp__javis__pos_*"])
+    e = ClaudeSDK(tag="loop-test", allowed_tools=["Read", "Glob", "mcp__unimate__pos_*"])
     r1 = await e._permission_gate("Read", {}, None)
     r2 = await e._permission_gate("Write", {"file_path": "x"}, None)
-    r3 = await e._permission_gate("mcp__javis__pos_order", {}, None)
+    r3 = await e._permission_gate("mcp__unimate__pos_order", {}, None)
     r4 = await e._permission_gate("Bash", {"command": "rm -rf"}, None)
     check("gate: tool trong whitelist → allow", r1.behavior == "allow")
     check("gate: tool ngoài whitelist → deny kèm lý do",
           r2.behavior == "deny" and "Write" in r2.message)
-    check("gate: pattern mcp__javis__pos_* khớp", r3.behavior == "allow")
+    check("gate: pattern mcp__unimate__pos_* khớp", r3.behavior == "allow")
     check("gate: Bash bị chặn", r4.behavior == "deny")
 
 
@@ -117,22 +117,22 @@ check("audit: ghi đủ 4 quyết định JSONL", len(lines) == 4
 
 
 # ---- 3b. _permission_gate: pattern PREFIX kiểu Claude CLI (mcp__<server> = mọi tool của server) ----
-# Bug thật ngoài đời: lane nền (kanban mcp-read, loop) nhận allow pattern "mcp__javis" từ
+# Bug thật ngoài đời: lane nền (kanban mcp-read, loop) nhận allow pattern "mcp__unimate" từ
 # mcp_hub.allow_patterns() theo ngữ nghĩa --allowedTools của Claude CLI, nhưng gate so bằng
-# fnmatch nên "mcp__javis" KHÔNG khớp "mcp__javis__javis_search_tools" → mọi tool MCP nền bị
+# fnmatch nên "mcp__unimate" KHÔNG khớp "mcp__unimate__unimate_search_tools" → mọi tool MCP nền bị
 # từ chối ("user cancelled MCP tool call"), task báo connector hỏng dù connector sống.
 
 
 async def gate_prefix_tests():
-    e = ClaudeSDK(tag="loop-prefix", allowed_tools=["Read", "mcp__javis"])
-    r1 = await e._permission_gate("mcp__javis__javis_search_tools", {}, None)
-    r2 = await e._permission_gate("mcp__javis__pos_statistics", {}, None)
+    e = ClaudeSDK(tag="loop-prefix", allowed_tools=["Read", "mcp__unimate"])
+    r1 = await e._permission_gate("mcp__unimate__unimate_search_tools", {}, None)
+    r2 = await e._permission_gate("mcp__unimate__pos_statistics", {}, None)
     r3 = await e._permission_gate("mcp__khac__tool_x", {}, None)
-    r4 = await e._permission_gate("mcp__javisfake__tool_x", {}, None)
-    check("gate: prefix mcp__javis khớp tool hub javis_search_tools", r1.behavior == "allow")
-    check("gate: prefix mcp__javis khớp tool hub pos_statistics", r2.behavior == "allow")
+    r4 = await e._permission_gate("mcp__unimatefake__tool_x", {}, None)
+    check("gate: prefix mcp__unimate khớp tool hub unimate_search_tools", r1.behavior == "allow")
+    check("gate: prefix mcp__unimate khớp tool hub pos_statistics", r2.behavior == "allow")
     check("gate: prefix KHÔNG khớp server khác", r3.behavior == "deny")
-    check("gate: prefix KHÔNG khớp server tên gần giống (javisfake)", r4.behavior == "deny")
+    check("gate: prefix KHÔNG khớp server tên gần giống (unimatefake)", r4.behavior == "deny")
     check("gate: deny tool MCP nói rõ connector KHÔNG hỏng (chống agent suy diễn OAuth chết)",
           r3.behavior == "deny" and "KHÔNG hỏng" in r3.message
           and "rào quyền phiên nền" in r3.message)
@@ -151,7 +151,7 @@ _orig_pt, _orig_hooks = plugins_host.plugin_tools, plugins_host.has_tool_hooks
 # chữ ký thật giờ có thêm keyword-only scope_vault (xem plugins_host.plugin_tools) -
 # mock phải nhận được, không thì _plugins_server gọi kèm scope_vault=False sẽ vỡ TypeError.
 plugins_host.plugin_tools = lambda mode, vr, *, scope_vault=True: (
-    [{"fn": "vd_tool", "server": "javis", "name": "vd_tool", "description": "tool ví dụ",
+    [{"fn": "vd_tool", "server": "unimate", "name": "vd_tool", "description": "tool ví dụ",
       "schema": {"type": "object", "properties": {"x": {"type": "string"}}}}],
     {"vd_tool": {"call": _fake_call}})
 plugins_host.has_tool_hooks = lambda vr: False
@@ -159,27 +159,27 @@ try:
     import tempfile as _tf
     from pathlib import Path as _P
     cfg = _P(_tf.mkdtemp(prefix="sdk-mcp-")) / "hub.json"
-    cfg.write_text(json.dumps({"mcpServers": {"javis": {
+    cfg.write_text(json.dumps({"mcpServers": {"unimate": {
         "type": "http", "url": "http://127.0.0.1:7777/hub/mcp",
-        "headers": {"Authorization": "Bearer t", "X-Javis-Mode": "full"}}}}), encoding="utf-8")
+        "headers": {"Authorization": "Bearer t", "X-UniMate-Mode": "full"}}}}), encoding="utf-8")
 
-    e = ClaudeSDK(tag="chat"); e.mcp_config = str(cfg); e.javis_mode = "full"
+    e = ClaudeSDK(tag="chat"); e.mcp_config = str(cfg); e.unimate_mode = "full"
     servers, strict = e._mcp_servers()
-    check("phase3: có javis-plugins in-process", "javis-plugins" in servers
-          and servers["javis-plugins"].get("type") == "sdk")
-    check("phase3: hub entry được gắn X-Javis-No-Plugins",
-          servers["javis"]["headers"].get("X-Javis-No-Plugins") == "1")
+    check("phase3: có unimate-plugins in-process", "unimate-plugins" in servers
+          and servers["unimate-plugins"].get("type") == "sdk")
+    check("phase3: hub entry được gắn X-UniMate-No-Plugins",
+          servers["unimate"]["headers"].get("X-UniMate-No-Plugins") == "1")
     check("phase3: file config gốc KHÔNG bị sửa",
-          "X-Javis-No-Plugins" not in cfg.read_text(encoding="utf-8"))
+          "X-UniMate-No-Plugins" not in cfg.read_text(encoding="utf-8"))
 
     g = ClaudeSDK(tag="loop", allowed_tools=["Read"]); g.mcp_config = str(cfg)
     gs, _ = g._mcp_servers()
     check("phase3: fork GATED không đấu plugin in-process (giữ cô lập)",
-          "javis-plugins" not in (gs or {}))
+          "unimate-plugins" not in (gs or {}))
 
     e2 = ClaudeSDK(tag="chat")   # không mcp_config (0 connection) → vẫn có plugin in-process
     s2, _ = e2._mcp_servers()
-    check("phase3: không hub vẫn có plugin in-process", s2 and "javis-plugins" in s2)
+    check("phase3: không hub vẫn có plugin in-process", s2 and "unimate-plugins" in s2)
 
     opts = e._options()
     check("phase3: chat nạp settings máy (parity CLI)",
@@ -248,9 +248,9 @@ async def _gen_treo_ngay_tu_dau():
     yield _rm(sid="s-treo-dau")
 
 
-os.environ["JAVIS_CLAUDE_IDLE_TIMEOUT"] = "0.3"
-os.environ["JAVIS_CLAUDE_TOOL_TIMEOUT"] = "10"
-os.environ["JAVIS_CLAUDE_FIRST_TIMEOUT"] = "1.5"
+os.environ["UNIMATE_CLAUDE_IDLE_TIMEOUT"] = "0.3"
+os.environ["UNIMATE_CLAUDE_TOOL_TIMEOUT"] = "10"
+os.environ["UNIMATE_CLAUDE_FIRST_TIMEOUT"] = "1.5"
 _orig_client_cls = claude_agent_sdk.ClaudeSDKClient
 _orig_avail = ClaudeSDK.is_available
 ClaudeSDK.is_available = lambda self: True
@@ -282,10 +282,10 @@ try:
           errs and "Mở hội thoại mới" in errs[0]["content"])
 
     # v0.25.6: đặt 0 = BỎ HẲN trần, và đây là MẶC ĐỊNH của hai trần đo sự im lặng của model.
-    # Ca thật của chủ repo: bảo Javis viết một file .md dài, Javis soạn nội dung file để đưa
+    # Ca thật của chủ repo: bảo UNI MATE viết một file .md dài, UNI MATE soạn nội dung file để đưa
     # vào tool Write - suốt lúc đó SDK không phát message nào và lượt bị chém ở giây 180.
-    os.environ["JAVIS_CLAUDE_IDLE_TIMEOUT"] = "0"
-    os.environ["JAVIS_CLAUDE_FIRST_TIMEOUT"] = "0"
+    os.environ["UNIMATE_CLAUDE_IDLE_TIMEOUT"] = "0"
+    os.environ["UNIMATE_CLAUDE_FIRST_TIMEOUT"] = "0"
     claude_agent_sdk.ClaudeSDKClient = _fake_client(_gen_treo_giua)
     evs = asyncio.run(_run_query())
     check("watchdog: IDLE=0 thì im bao lâu cũng KHÔNG bị chém (soạn file dài)",
@@ -297,7 +297,7 @@ try:
 
     # Trần chờ TOOL vẫn còn tác dụng khi hai trần kia đã tắt: nó đo một tiến trình con CÓ THẬT
     # đang sống, không phải đo sự im lặng của model.
-    os.environ["JAVIS_CLAUDE_TOOL_TIMEOUT"] = "0.3"
+    os.environ["UNIMATE_CLAUDE_TOOL_TIMEOUT"] = "0.3"
     claude_agent_sdk.ClaudeSDKClient = _fake_client(_gen_slow_tool)
     evs = asyncio.run(_run_query())
     errs = [e for e in evs if e["type"] == "error"]
@@ -305,7 +305,7 @@ try:
           len(errs) == 1 and "Tool chạy quá" in errs[0]["content"])
 
     # Trần wall-clock của việc nền vẫn phải chặn được, không thì loop/Kanban treo vô hạn.
-    os.environ.pop("JAVIS_CLAUDE_TOOL_TIMEOUT", None)
+    os.environ.pop("UNIMATE_CLAUDE_TOOL_TIMEOUT", None)
 
     async def _run_fork():
         e = ClaudeSDK(tag="wd-fork")
@@ -320,16 +320,16 @@ try:
 finally:
     claude_agent_sdk.ClaudeSDKClient = _orig_client_cls
     ClaudeSDK.is_available = _orig_avail
-    os.environ.pop("JAVIS_CLAUDE_IDLE_TIMEOUT", None)
-    os.environ.pop("JAVIS_CLAUDE_TOOL_TIMEOUT", None)
-    os.environ.pop("JAVIS_CLAUDE_FIRST_TIMEOUT", None)
+    os.environ.pop("UNIMATE_CLAUDE_IDLE_TIMEOUT", None)
+    os.environ.pop("UNIMATE_CLAUDE_TOOL_TIMEOUT", None)
+    os.environ.pop("UNIMATE_CLAUDE_FIRST_TIMEOUT", None)
 
 # ---- 6. System prompt DÀI đẩy qua FILE, không nhét vào argv (lỗi CLINotFound trên Windows) ----
 # Gốc lỗi: SDK để --append-system-prompt <prompt> trên dòng lệnh; > 32767 ký tự thì Windows
 # CreateProcess chết -> FileNotFoundError bị dán nhãn "Claude Code not found at ...\\_bundled\\claude.exe".
 from pathlib import Path as _Path6  # noqa: E402
 
-_big = "Bạn là Javis.\n" + ("- một dòng hướng dẫn dài để độn kích thước prompt. " * 900)
+_big = "Bạn là UNI MATE.\n" + ("- một dòng hướng dẫn dài để độn kích thước prompt. " * 900)
 _e6 = ClaudeSDK(system_prompt=_big, tag="t6")
 _opts6 = _e6._options()
 _ea6 = getattr(_opts6, "extra_args", None) or {}

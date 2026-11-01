@@ -18,8 +18,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-gh-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-gh-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -29,7 +29,7 @@ except Exception:
 from _fake_github import FakeGitHub, GOOD_TOKEN, git  # noqa: E402
 
 fake = FakeGitHub()
-os.environ["JAVIS_GITHUB_API"] = fake.url
+os.environ["UNIMATE_GITHUB_API"] = fake.url
 
 import config  # noqa: E402
 import coding_store  # noqa: E402
@@ -96,7 +96,7 @@ check("origin has no token in it", GOOD_TOKEN not in remote and "x-access-token"
 check("git config of the clone has no token", GOOD_TOKEN not in (clone / ".git" / "config").read_text())
 wt1 = Path(repos[0]["worktree"])
 check("this chat has its own worktree", wt1.is_dir() and wt1 != clone)
-check("on branch javis/<chat>", repos[0]["branch"] == "javis/chatone")
+check("on branch unimate/<chat>", repos[0]["branch"] == "unimate/chatone")
 check("the engine runs in the worktree", coding_store.cwd_cua_phien("chat-one") == str(wt1))
 
 calls_before = len([c for c in fake.calls if c[1] == "/repos/acme/app"])

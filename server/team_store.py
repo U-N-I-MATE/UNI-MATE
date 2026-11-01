@@ -255,7 +255,7 @@ class TeamStore:
                 c.execute("ALTER TABLE teams ADD COLUMN pinned_at REAL")
             tcols = {r[1] for r in c.execute("PRAGMA table_info(teams)").fetchall()}
             if "created_by" not in tcols:
-                # Người tạo nhóm (0.142.0): người thật, lấy từ phiên xác thực của server, không từ client. Javis hiện chỉ
+                # Người tạo nhóm (0.142.0): người thật, lấy từ phiên xác thực của server, không từ client. UNI MATE hiện chỉ
                 # có một tài khoản chủ máy nên nhóm cũ nhận đúng chủ đó ("owner"), không giả lập đa người dùng.
                 c.execute("ALTER TABLE teams ADD COLUMN created_by TEXT NOT NULL DEFAULT 'owner'")
             if "avatar_image" not in tcols:
@@ -615,7 +615,7 @@ class TeamStore:
             return self._drop_member(c, team_id, agent_key, "removed", by, time.time())
 
     def mark_agent_gone(self, brain_id: str, agent_key: str) -> list:
-        """Agent bị xoá khỏi Javis (mã nghỉ): mọi nhóm của brain đánh dấu `agent_gone`. Trả danh sách nhóm bị ảnh hưởng."""
+        """Agent bị xoá khỏi UNI MATE (mã nghỉ): mọi nhóm của brain đánh dấu `agent_gone`. Trả danh sách nhóm bị ảnh hưởng."""
         out = []
         now = time.time()
         with self._Tx(self) as c:

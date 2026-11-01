@@ -34,7 +34,7 @@ def check(ten, dieu_kien, them=""):
         loi.append(ten)
 
 
-# ---- 1. Quy bảng chữ về MỘT: Zalo viết hoa, phần còn lại của Javis viết thường ----
+# ---- 1. Quy bảng chữ về MỘT: Zalo viết hoa, phần còn lại của UNI MATE viết thường ----
 
 check("PRIVATE -> private", zalo_bot._chat_type("PRIVATE") == "private")
 check("GROUP -> group", zalo_bot._chat_type("GROUP") == "group")
@@ -106,16 +106,16 @@ check("chưa biết tên mình thì không nhận bừa", not bot()._co_nhac_ten
 check("nhận hơi rộng là CỐ Ý (tên nối bằng khoảng trắng vẫn tính là được gọi)",
       b5._co_nhac_ten({"text": "Bot Shop VN cho hỏi giá"}))
 
-# #885: getMe only gives the handle; a group tag carries the display name, matched against the bot's Javis names.
+# #885: getMe only gives the handle; a group tag carries the display name, matched against the bot's UNI MATE names.
 cfg = {"name": "Nori VQT Piano", "reply_policy": {"aliases": ["cô Nori"]}}
 b7 = bot(cfg_fn=lambda: cfg)
 b7.bot_username = "bot.baMmUmzw"
-check("#885: a tag by display name (Zalo's 'Bot ' prefix + Javis name) is a call",
+check("#885: a tag by display name (Zalo's 'Bot ' prefix + UNI MATE name) is a call",
       b7._co_nhac_ten({"text": "@Bot Nori VQT Piano cho hỏi lịch học"}))
 check("#885: double spaces inside the tag still match", b7._co_nhac_ten({"text": "@Bot  Nori   VQT Piano ơi"}))
-check("#885: a tag by the exact Javis name or an owner alias is a call",
+check("#885: a tag by the exact UNI MATE name or an owner alias is a call",
       b7._co_nhac_ten({"text": "@Nori VQT Piano"}) and b7._co_nhac_ten({"text": "hỏi @cô Nori nhé"}))
-check("#885: the Javis name without '@' is not a tag (a person may share it)",
+check("#885: the UNI MATE name without '@' is not a tag (a person may share it)",
       not b7._co_nhac_ten({"text": "Nori VQT Piano học hôm nay vui lắm"}))
 check("#885: a longer name glued on is not this bot", not b7._co_nhac_ten({"text": "@Bot Nori VQT PianoX"}))
 check("#885: the handle still works", b7._co_nhac_ten({"text": "bot.baMmUmzw ơi"}))

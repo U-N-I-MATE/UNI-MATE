@@ -16,7 +16,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-looptest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-looptest-"))
 
 import self_improve
 
@@ -30,7 +30,7 @@ def check(name, cond):
 
 
 # ── stub deps (không đụng mạng / CLI) ──
-_BRAIN_ROOT = tempfile.mkdtemp(prefix="javis-loopbrain-")
+_BRAIN_ROOT = tempfile.mkdtemp(prefix="unimate-loopbrain-")
 _applied = []   # ghi lại mode mỗi lần apply_mcp được gọi
 
 
@@ -55,11 +55,11 @@ deps = self_improve.LoopDeps(
     aux_model=lambda: None,
     atomic_write_text=_atomic_write,
     project_root=Path("."),
-    state_dir=Path(os.environ["JAVIS_STATE_DIR"]),
+    state_dir=Path(os.environ["UNIMATE_STATE_DIR"]),
     safe_tools=["Read", "Write", "Edit", "Glob", "Grep"],
     readonly_tools=["Read", "Glob", "Grep", "LS"],
     apply_mcp=_apply_mcp,
-    mcp_allow_patterns=lambda: ["mcp__javis"],
+    mcp_allow_patterns=lambda: ["mcp__unimate"],
 )
 feat = self_improve.LoopFeature(deps)
 
@@ -80,14 +80,14 @@ feat.save_loop("brain", {"name": "Loop Ambient", "slug": "loop-ambient", "mode":
                          "ambient_mcp": True, "body": "đọc gmail mỗi vòng"})
 got = feat.get_loop("brain", "loop-ambient")
 check("save: BẬT → đọc lại True", bool(got) and got["ambient_mcp"] is True)
-raw_amb = (Path(_BRAIN_ROOT) / "Javis" / "loops" / "loop-ambient.md").read_text(encoding="utf-8")
+raw_amb = (Path(_BRAIN_ROOT) / "UNI MATE" / "loops" / "loop-ambient.md").read_text(encoding="utf-8")
 check("save: file BẬT có dòng ambient_mcp: true", "ambient_mcp: true" in raw_amb)
 
 feat.save_loop("brain", {"name": "Loop Thuong", "slug": "loop-thuong", "mode": "suggest",
                          "body": "việc thường"})
 got2 = feat.get_loop("brain", "loop-thuong")
 check("save: mặc định → đọc lại False", bool(got2) and got2["ambient_mcp"] is False)
-raw_thuong = (Path(_BRAIN_ROOT) / "Javis" / "loops" / "loop-thuong.md").read_text(encoding="utf-8")
+raw_thuong = (Path(_BRAIN_ROOT) / "UNI MATE" / "loops" / "loop-thuong.md").read_text(encoding="utf-8")
 check("save: file mặc định KHÔNG có dòng ambient_mcp", "ambient_mcp" not in raw_thuong)
 
 

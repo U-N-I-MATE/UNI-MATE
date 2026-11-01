@@ -51,9 +51,9 @@ DENY = (
         r"api|mcp|tool|tools|vault|obsidian|slack|notion|airtable|facebook|instagram|"
         r"tiktok|zalo|telegram|shopify|stripe|pos)\b"
     )),
-    # Đối xứng với `javis_asset` bản tiếng Việt: câu trỏ vào chính bộ não hoặc chính năng
-    # lực của Javis. Đi tắt là trả về một lời từ chối trên cái brain đang có đủ thứ đó.
-    ("javis_asset", re.compile(
+    # Đối xứng với `unimate_asset` bản tiếng Việt: câu trỏ vào chính bộ não hoặc chính năng
+    # lực của UNI MATE. Đi tắt là trả về một lời từ chối trên cái brain đang có đủ thứ đó.
+    ("unimate_asset", re.compile(
         r"\b(workflows?|skills?|agents?|plugins?|kanban|second brain|brain|wiki|"
         r"my notes|the notes|project data|my project|my data|our data)\b"
     )),
@@ -138,7 +138,7 @@ ACTION_VERBS = (
 # "I already sent" đều bắt được nhưng "I have already sent the report" thì LỌT - mà đó lại là
 # cách nói tự nhiên nhất trong tiếng Anh.
 #
-# Đây là cổng bắt Javis KHAI MAN đã làm một việc nó chưa làm, nên bỏ sót là rào chắn mất tác
+# Đây là cổng bắt UNI MATE KHAI MAN đã làm một việc nó chưa làm, nên bỏ sót là rào chắn mất tác
 # dụng trong im lặng. Bản tiếng Việt không dính vì tiếng Việt hiếm khi xếp chồng ("đã vừa
 # gửi" không ai nói), nên lỗi này chỉ có ở một ngôn ngữ - đúng kiểu lệch mà tầng đa ngôn ngữ
 # phải đi tìm chứ không đợi nó tự lộ.
@@ -149,7 +149,7 @@ FALSE_ACTION = re.compile(
     r"\bi\s+" + _TRO_DONG_TU + ACTION_VERBS + r"\b"
     r"|\bi've\s+" + _TRO_DONG_TU + ACTION_VERBS + r"\b"
     r"|\bwe\s+" + _TRO_DONG_TU + ACTION_VERBS + r"\b"
-    r"|\bjavis\s+" + _TRO_DONG_TU + ACTION_VERBS + r"\b"
+    r"|\buni(?:\s*mate)?\s+" + _TRO_DONG_TU + ACTION_VERBS + r"\b"
     r"|\bsuccessfully\s+" + ACTION_VERBS + r"\b"
     r"|\b(?:was|were|has been|have been)\s+(?:sent|deleted|removed|created|updated|"
     r"published|posted|booked|scheduled|uploaded|saved|cancelled|canceled)\b"

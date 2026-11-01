@@ -38,7 +38,7 @@ def _registry(tmp_path, extra=0):
     route = {
         "calendar_list": {"source_type": "mcp", "source_id": "calendar", "effect": "read",
                           "required_mode": "readonly", "health": "healthy"},
-        "vault_write": {"source_type": "builtin", "source_id": "javis", "effect": "write",
+        "vault_write": {"source_type": "builtin", "source_id": "unimate", "effect": "write",
                         "required_mode": "safe", "health": "healthy"},
     }
     for i in range(extra):
@@ -189,7 +189,7 @@ def test_quality_gate_baselines_legacy_output_without_changing_it():
     gate = DeterministicQualityGate()
     assert gate.evaluate("q", "Câu trả lời bình thường", "dashboard").status == "pass"
     assert gate.evaluate("q", "", "dashboard").status == "fail"
-    leaked = gate.evaluate("q", "[JAVIS_ASK] raw control", "dashboard")
+    leaked = gate.evaluate("q", "[UNIMATE_ASK] raw control", "dashboard")
     assert leaked.status == "revise" and "control_block_leak" in leaked.reasons
     denied = gate.evaluate(
         "q", "Em không có tool để đọc lịch", "dashboard",

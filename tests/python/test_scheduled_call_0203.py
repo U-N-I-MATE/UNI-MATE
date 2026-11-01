@@ -1,8 +1,8 @@
-"""0.203.0: Javis calls you at a set time.
+"""0.203.0: UNI MATE calls you at a set time.
 
 A reminder created with `call` keeps the flag, shows it, can be switched off, and when it fires its
-JAVIS_VIEC block carries "call" so the open dashboard rings (dashboard/incoming-call.js). A failed run
-or a script job never rings. The javis_schedule tool passes `call` on create and update.
+UNIMATE_VIEC block carries "call" so the open dashboard rings (dashboard/incoming-call.js). A failed run
+or a script job never rings. The unimate_schedule tool passes `call` on create and update.
 
 Run:
     python tests/run.py scheduled_call
@@ -14,8 +14,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-call-")
-sys.path.insert(0, str(ROOT / "system" / "plugins" / "javis-schedule"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-call-")
+sys.path.insert(0, str(ROOT / "system" / "plugins" / "unimate-schedule"))
 
 import reminders  # noqa: E402
 import plugin as sched  # noqa: E402
@@ -29,7 +29,7 @@ def check(name, cond):
         fails.append(name)
 
 
-brain = Path(tempfile.mkdtemp(prefix="javis-call-brain-"))
+brain = Path(tempfile.mkdtemp(prefix="unimate-call-brain-"))
 sent = []
 
 
@@ -70,10 +70,10 @@ asyncio.run(main())
 
 import main as app_main  # noqa: E402
 blk = app_main.khoi_viec({"kind": "reminder", "status": "done", "title": "T", "id": "r", "call": "1"})
-check("JAVIS_VIEC block keeps the call flag", '"call": "1"' in blk)
+check("UNIMATE_VIEC block keeps the call flag", '"call": "1"' in blk)
 check("block without call stays as before", "call" not in app_main.khoi_viec({"kind": "reminder", "status": "done"}))
 
-# javis_schedule tool: create and update pass `call`
+# unimate_schedule tool: create and update pass `call`
 captured = {}
 
 
@@ -89,7 +89,7 @@ async def fake_update(vault_root, rid, fields):
     return "ok"
 
 
-vault = tempfile.mkdtemp(prefix="javis-call-vault-")
+vault = tempfile.mkdtemp(prefix="unimate-call-vault-")
 real_post, real_upd = sched._post_reminder, sched._update_reminder
 sched._post_reminder, sched._update_reminder = fake_post, fake_update
 try:
@@ -102,7 +102,7 @@ try:
     check("tool update can switch call alone", captured.get("call") == "false")
 finally:
     sched._post_reminder, sched._update_reminder = real_post, real_upd
-schema_src = (ROOT / "system" / "plugins" / "javis-schedule" / "plugin.py").read_text(encoding="utf-8")
+schema_src = (ROOT / "system" / "plugins" / "unimate-schedule" / "plugin.py").read_text(encoding="utf-8")
 check("tool schema documents call", '"call": {"type": "boolean"' in schema_src)
 
 print()

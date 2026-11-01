@@ -840,7 +840,7 @@ def register(app, deps: PulseRouteDeps) -> None:
 
     @app.post("/seen")
     async def pulse_seen(request: Request):
-        """Tin của agent đã nằm trong khung nhìn ≥ 1,5 giây khi tab hiển thị (6.2). Chỉ tin của agent trong Javis; ghi lần
+        """Tin của agent đã nằm trong khung nhìn ≥ 1,5 giây khi tab hiển thị (6.2). Chỉ tin của agent trong UNI MATE; ghi lần
         đầu. Không theo dõi gì khác."""
         b = await body_of(request)
         ctx = str(b.get("context_ref") or "").strip()

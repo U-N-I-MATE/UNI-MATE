@@ -20,7 +20,7 @@ class PairedPilot(unittest.TestCase):
         spec = importlib.util.spec_from_file_location('paired_evaluation', MODULE)
         self.module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.module)
-        self.out = Path(tempfile.mkdtemp(prefix='javis-paired-'))
+        self.out = Path(tempfile.mkdtemp(prefix='unimate-paired-'))
 
     def test_twenty_pairs_and_forty_isolated_dry_runs(self):
         manifest = self.module.synthetic_manifest()

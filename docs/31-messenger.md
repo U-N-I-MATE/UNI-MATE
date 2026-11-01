@@ -6,12 +6,12 @@ Từ 0.134.0 một Bot chuyên trách trả lời được hộp thư Fanpage Fa
 
 | | Messenger |
 |---|---|
-| Javis kết nối thế nào | Webhook: Meta gọi vào Javis, **cần tên miền HTTPS** |
+| UNI MATE kết nối thế nào | Webhook: Meta gọi vào UNI MATE, **cần tên miền HTTPS** |
 | Nhóm | Không, chỉ chat riêng với Page |
 | File | Ảnh và tài liệu, cả hai chiều |
 | Tin thoại | Chép thành chữ (cần key Groq ở trang Models) |
 | Trả lời | Chỉ trong 24 giờ kể từ tin cuối của khách |
-| Định dạng | Chữ thường: Messenger không hiện Markdown, Javis tự bỏ ký hiệu |
+| Định dạng | Chữ thường: Messenger không hiện Markdown, UNI MATE tự bỏ ký hiệu |
 
 ## Cách nhanh: thẻ Facebook Messenger ở trang Kết nối (từ 0.311.0)
 
@@ -19,8 +19,8 @@ Phần dễ sai nhất khi tự làm là token: dán token người dùng thay v
 
 1. Trên Meta, tạo app có trường hợp sử dụng Messenger và kết nối Trang (bước 1.1 đến 1.3 bên dưới, chưa cần bấm Generate).
 2. Mở [Graph API Explorer](https://developers.facebook.com/tools/explorer), chọn đúng app, thêm quyền `pages_show_list`, `pages_messaging`, `pages_manage_metadata`, `pages_read_engagement`, bấm **Generate Access Token** và tick đúng Trang. Chép chuỗi `EAA...`.
-3. Mở Javis bằng tên miền HTTPS, vào **Kết nối**, thẻ **Facebook Messenger**, bấm **Kết nối Fanpage**. Dán Page ID, App ID, App secret và token vừa chép, bấm **Kết nối và kiểm tra**.
-4. Javis đổi sang token Trang không hết hạn, khai webhook của app với `messages` và `messaging_postbacks`, gắn Trang vào app, lưu kênh rồi hiện bảng kiểm tra từng dòng xanh hoặc đỏ kèm cách sửa.
+3. Mở UNI MATE bằng tên miền HTTPS, vào **Kết nối**, thẻ **Facebook Messenger**, bấm **Kết nối Fanpage**. Dán Page ID, App ID, App secret và token vừa chép, bấm **Kết nối và kiểm tra**.
+4. UNI MATE đổi sang token Trang không hết hạn, khai webhook của app với `messages` và `messaging_postbacks`, gắn Trang vào app, lưu kênh rồi hiện bảng kiểm tra từng dòng xanh hoặc đỏ kèm cách sửa.
 5. Vào **Chatbot**, **Bot** để tạo bot cho kênh vừa nối (mục 3).
 
 Mỗi Trang đã nối có nút **Kiểm tra**, **Sửa tự động** (khai lại webhook và gắn lại Trang) và **Đổi token**. Bộ não nào cũng gọi được tool `messenger_check` và `messenger_repair` khi bot im lặng. Xác minh doanh nghiệp và nộp duyệt `pages_messaging` (mục 4) vẫn làm trên trang Meta.
@@ -35,18 +35,18 @@ Cách làm tay bên dưới vẫn dùng được.
 4. Vào **App settings → Basic**, bấm **Show** ở **App secret**. Chép lại.
 5. Lấy **Page ID**: hiện ngay cạnh tên Page ở bước 3, hoặc ở mục Giới thiệu → Minh bạch trang của Fanpage.
 
-## 2. Thêm tài khoản Messenger trong Javis
+## 2. Thêm tài khoản Messenger trong UNI MATE
 
-1. Mở Javis **bằng tên miền HTTPS** (không phải localhost hay IP), vào trang **Chatbot**, tab **Bot**, bấm **Thêm kênh**, chọn **Messenger**.
+1. Mở UNI MATE **bằng tên miền HTTPS** (không phải localhost hay IP), vào trang **Chatbot**, tab **Bot**, bấm **Thêm kênh**, chọn **Messenger**.
 2. Form hiện **Địa chỉ webhook** và **Mã xác minh**. Quay lại app Meta, mục **Configure webhooks** của Messenger: dán hai thứ này vào Callback URL và Verify token, bấm **Verify and save**. Tick hai trường **messages** và **messaging_postbacks**.
-3. Về Javis, dán vào ô token ba thứ cách nhau dấu cách: `Page ID`, `Page access token`, `App secret`. Bấm **Kiểm tra** (Javis hỏi Meta tên Page), rồi **Lưu**.
+3. Về UNI MATE, dán vào ô token ba thứ cách nhau dấu cách: `Page ID`, `Page access token`, `App secret`. Bấm **Kiểm tra** (UNI MATE hỏi Meta tên Page), rồi **Lưu**.
 
 ## 3. Gắn bot
 
 - **Dùng lại bot đang trực Zalo:** mở bot đó ở trang Chatbot, bấm **Sửa**, tick thêm tài khoản Messenger vừa tạo, **Lưu**. Bot trả lời cả Zalo lẫn Messenger bằng cùng một Agent và cùng giờ trực.
 - **Hoặc tạo bot mới** chỉ cho Messenger.
 
-Bật bot. Lúc bật, Javis tự đăng ký Page với webhook của app (bạn không phải làm bước này tay); lỗi gì thì thẻ bot báo bằng lời. Nếu token thiếu quyền để tự đăng ký, bot vẫn chạy và thẻ bot nhắc bạn gắn tay một lần: app Meta, Messenger, Webhooks, **Add Subscriptions** cho Page.
+Bật bot. Lúc bật, UNI MATE tự đăng ký Page với webhook của app (bạn không phải làm bước này tay); lỗi gì thì thẻ bot báo bằng lời. Nếu token thiếu quyền để tự đăng ký, bot vẫn chạy và thẻ bot nhắc bạn gắn tay một lần: app Meta, Messenger, Webhooks, **Add Subscriptions** cho Page.
 
 ## 4. Thử, rồi mở cho mọi người
 
@@ -55,11 +55,11 @@ Bật bot. Lúc bật, Javis tự đăng ký Page với webhook của app (bạn
 
 ## Lỗi hay gặp
 
-| Javis báo | Nghĩa là | Cách sửa |
+| UNI MATE báo | Nghĩa là | Cách sửa |
 |---|---|---|
 | quá 24 giờ kể từ tin cuối | Khách nhắn đã hơn một ngày | Chờ khách nhắn lại, hoặc trả lời từ Meta Business Suite |
 | app chưa có quyền nhắn tin cho người ngoài (200) | Chưa qua App Review | Thử bằng tài khoản có vai trò trong app, hoặc nộp xét duyệt pages_messaging |
 | Page access token hết hạn hoặc sai (190) | Token tạm hoặc đã bị thu hồi | Tạo lại token ở bước 1.3, dán lại vào tài khoản kênh |
-| Javis chưa tự gắn được Page vào webhook | Token thiếu quyền pages_manage_metadata | Bot vẫn chạy nếu Page đã gắn tay; chưa thì bấm Add Subscriptions cho Page ở Messenger, Webhooks, hoặc tạo lại token khi đang là quản trị viên Page |
-| App secret không khớp với app đã tạo Page access token | Chép App secret của app khác | Lấy lại App secret ở App settings, Basic của đúng app đã tạo token. Sai secret thì Meta gửi tin tới mà Javis không tin được chữ ký, nên Javis chặn ngay từ lúc lưu |
-| Meta báo không verify được webhook | Callback URL không phải HTTPS, hoặc sai mã | Mở Javis bằng tên miền HTTPS rồi lấy lại địa chỉ ở form |
+| UNI MATE chưa tự gắn được Page vào webhook | Token thiếu quyền pages_manage_metadata | Bot vẫn chạy nếu Page đã gắn tay; chưa thì bấm Add Subscriptions cho Page ở Messenger, Webhooks, hoặc tạo lại token khi đang là quản trị viên Page |
+| App secret không khớp với app đã tạo Page access token | Chép App secret của app khác | Lấy lại App secret ở App settings, Basic của đúng app đã tạo token. Sai secret thì Meta gửi tin tới mà UNI MATE không tin được chữ ký, nên UNI MATE chặn ngay từ lúc lưu |
+| Meta báo không verify được webhook | Callback URL không phải HTTPS, hoặc sai mã | Mở UNI MATE bằng tên miền HTTPS rồi lấy lại địa chỉ ở form |

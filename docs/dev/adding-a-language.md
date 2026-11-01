@@ -1,4 +1,4 @@
-# Adding a language to Javis
+# Adding a language to UNI MATE
 
 *[Tiếng Việt](them-mot-ngon-ngu.md) · **English***
 
@@ -15,7 +15,7 @@ Running example throughout: adding **Thai (`th`)**.
 
 ---
 
-## READ FIRST: Javis already answers in Thai
+## READ FIRST: UNI MATE already answers in Thai
 
 Without registering anything, a user who types in Thai gets an answer in Thai. Since 0.35.0
 the REPLY language is handled by the **model**: the prompt tells it to follow the language the
@@ -31,7 +31,7 @@ in the loop**:
 | A matching number format (`number_locale`) | numbers formatted the Vietnamese way. Time zone and currency are NOT derived from the language either way: they stay at the Vietnamese defaults until the user changes them (see "What you do **not** need to do") |
 | The token-saving shortcut can switch on | still works, only costs more |
 
-In other words this is work you **should** do, not work you **must** do before Javis can speak
+In other words this is work you **should** do, not work you **must** do before UNI MATE can speak
 that language. Do not make anyone wait for all four steps below before inviting Thai users in.
 
 ---
@@ -113,7 +113,7 @@ This is the easiest place to go wrong in the whole multilingual layer, so here i
 
 - **No `th.py`**: `lexicon.get("th")` returns `None`, the gates know they are blind, the
   token-saving shortcut turns itself off, and the guard rails fall back to the secondary-model
-  layer. Javis runs **correctly**, it just costs more.
+  layer. UNI MATE runs **correctly**, it just costs more.
 - **A `th.py` whose sets exist but are thin**, `DENY` above all: the gate believes it can read
   Thai. A sentence that matches `ALLOW` goes straight through, and nothing stops it. **A leak,
   and a silent one.** (This is the real bug that created the layer: English `DENY` had no
@@ -182,7 +182,7 @@ every description key, not just the original one.
 ### 6. Server-side text, Connections store, starter brain
 
 Since 0.67.0, server-side text follows the interface language of the DEVICE making the request
-(cookie `javis_lang`, set by `dashboard/i18n/index.js`). Anything with no Thai version yet is
+(cookie `unimate_lang`, set by `dashboard/i18n/index.js`). Anything with no Thai version yet is
 shown in English (the order is: chosen language, then English, then Vietnamese, see
 `lang_registry.chon_ban_dich`), so none of the steps below is required before inviting Thai
 users in.
@@ -224,7 +224,7 @@ which checks those links.
 Listed here because this is where people tend to overdo it:
 
 - **Do not** translate the system prompt or `CLAUDE.md`. The prompt stays in Vietnamese; the
-  `# === NGÔN NGỮ ===` (language) block at the end is what decides which language Javis answers
+  `# === NGÔN NGỮ ===` (language) block at the end is what decides which language UNI MATE answers
   in. The model reads Vietnamese instructions and answers in Thai, which is perfectly normal,
   and one prompt set per language is one more set to drift out of sync.
 - **Do not** translate the section labels in the prompt (`# === SKILL KHẢ DỤNG` (available
@@ -244,7 +244,7 @@ Listed here because this is where people tend to overdo it:
 
 ## REGISTERED languages
 
-Again: this is NOT the list of languages Javis can speak. Javis can answer in any language.
+Again: this is NOT the list of languages UNI MATE can speak. UNI MATE can answer in any language.
 This is the list of languages that have their own interface, voice and safety gates.
 
 | Code | Name | Interface dictionary | Gate vocabulary | Skill descriptions |

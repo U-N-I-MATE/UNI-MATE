@@ -1,6 +1,6 @@
 # Rolling the webhook platform back (0.274.0, spec §13)
 
-**What a rollback can and cannot do.** Going back to an older Javis build changes the program. It does not undo what
+**What a rollback can and cannot do.** Going back to an older UNI MATE build changes the program. It does not undo what
 actions already did outside: an order written to a sheet, a Zalo message sent, a CRM record created. Reconcile those
 from the receipts before resending anything. The new store (`webhook_events.sqlite3`) is kept as it is, so a later
 upgrade picks up where it stopped.
@@ -14,7 +14,7 @@ old configuration beside the new store. A deliberate rollback writes a list the 
 
 ## Steps
 
-1. **Stop the server** (`systemctl stop javis`, or close the app). The tool refuses while an event is running under a
+1. **Stop the server** (`systemctl stop unimate`, or close the app). The tool refuses while an event is running under a
    live lease. Pass `--force` only if the server is certainly stopped (for example, it crashed).
 2. **See what will happen**, writing nothing:
 
@@ -43,7 +43,7 @@ old configuration beside the new store. A deliberate rollback writes a list the 
 4. **Install the older build** and start it. Hooks without new features work as before. The ones written off stay off:
    they need what the older build does not have.
 5. **Reconcile the backlog** from `backlog.jsonl`. For each event, check the outside system for its delivery id
-   (`X-Javis-Event-Id`, `_javis.delivery_id`, the plugin's job id). Resend from the source, or by hand, only what did
+   (`X-UniMate-Event-Id`, `_unimate.delivery_id`, the plugin's job id). Resend from the source, or by hand, only what did
    not happen.
 
 ## Coming back to 0.274.0 or later

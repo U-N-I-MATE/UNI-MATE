@@ -1,7 +1,7 @@
 // Điều khiển lớp thông tin phủ trên brain.
 // Nút mắt chỉ ẩn nhãn thư mục/% và thanh Agents/Skills/Workflows; graph + trạng thái vẫn giữ.
 (function () {
-  var STORAGE_KEY = "javis.brainOverlaysHidden";
+  var STORAGE_KEY = "unimate.brainOverlaysHidden";
 
   function init() {
     var root = document.querySelector(".hud-center");
@@ -28,16 +28,16 @@
     apply(readHidden(), false);
     // Từ điển i18n nạp bằng fetch, tức là VỀ SAU DOMContentLoaded. apply() chạy ngay ở đây
     // nên window.t() lúc đó trả về chính cái khoá, và aria-label/title của nút mắt đọng lại
-    // đúng chuỗi "bview.overlay_show_aria". Nghe "javis:i18n" để viết lại bằng chữ thật -
+    // đúng chuỗi "bview.overlay_show_aria". Nghe "unimate:i18n" để viết lại bằng chữ thật -
     // sự kiện này cũng bắn khi người dùng đổi ngôn ngữ giao diện.
-    window.addEventListener("javis:i18n", function () {
+    window.addEventListener("unimate:i18n", function () {
       apply(root.classList.contains("brain-overlays-hidden"), false);
     });
     button.addEventListener("click", function () {
       apply(!root.classList.contains("brain-overlays-hidden"), true);
     });
 
-    // Đồng bộ nếu người dùng mở Javis ở nhiều tab.
+    // Đồng bộ nếu người dùng mở UNI MATE ở nhiều tab.
     window.addEventListener("storage", function (event) {
       if (event.key === STORAGE_KEY) apply(event.newValue === "1", false);
     });
@@ -58,7 +58,7 @@
     }
 
     btn.addEventListener("click", function () {
-      var g = window.__javisGraph;
+      var g = window.__unimateGraph;
       if (!g || typeof g.startTimelapse !== "function") {
         btn.title = window.t("bview.graph_not_ready");
         return;
@@ -68,10 +68,10 @@
     });
 
     // Hết phim (hoặc bấm dừng) → nút về trạng thái nghỉ
-    window.addEventListener("javis-timelapse-end", function () { setPlaying(false); });
+    window.addEventListener("unimate-timelapse-end", function () { setPlaying(false); });
 
     // Cùng lý do như nút mắt: tooltip do JS ghi thì phải ghi lại khi từ điển về / đổi ngôn ngữ.
-    window.addEventListener("javis:i18n", function () {
+    window.addEventListener("unimate:i18n", function () {
       setPlaying(btn.classList.contains("playing"));
     });
   }

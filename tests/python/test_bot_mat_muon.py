@@ -18,7 +18,7 @@ import tempfile
 import types
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-matmuon-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-matmuon-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -70,7 +70,7 @@ def cdn(request):
 mt = httpx.MockTransport(cdn)
 _goc_httpx = iv.httpx
 iv.httpx = types.SimpleNamespace(AsyncClient=lambda **kw: httpx.AsyncClient(transport=mt, **kw), Timeout=httpx.Timeout)
-D = Path(tempfile.mkdtemp(prefix="javis-matmuon-dl-"))
+D = Path(tempfile.mkdtemp(prefix="unimate-matmuon-dl-"))
 p, why = asyncio.run(iv.fetch_image("https://f21-zpc.zdn.vn/octet-jpg", D, "m1"))
 check("Zalo photo labelled octet-stream: saved as .jpg", p is not None and p.suffix == ".jpg" and p.read_bytes() == JPEG, why)
 p, why = asyncio.run(iv.fetch_image("https://f21-zpc.zdn.vn/octet-png.jpg", D, "m2"))
@@ -238,7 +238,7 @@ try:
                                   reasoning="off", progress=noop, runtime_trace=None, chat_id="u3", images=[str(IMG)]))
     check("a model that sees looks itself: no second model is asked", LOOKS == [] and len(SENT) == 1
           and isinstance(SENT[0][-1]["content"], list), (LOOKS, len(SENT)))
-    # (e) TOOL PATH, the real "Javis Vũ" case: the ChatGPT tool loop comes back empty (129 times that day). That is NOT the photo's
+    # (e) TOOL PATH, the real "Uni Vũ" case: the ChatGPT tool loop comes back empty (129 times that day). That is NOT the photo's
     #     fault: the same turn without tools must keep the photo, and no second model is asked.
     TOOL_CALLS = []
 

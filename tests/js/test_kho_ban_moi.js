@@ -8,7 +8,7 @@
 // mot ham ve nut, nen no la thu duy nhat trong ca giao dien biet chuyen do: khong dem duoc,
 // khong loc duoc, va khong thay duoc tu tab khac. Luoi loc theo `_kho.loai` va tab mac dinh la
 // "Ket noi", nen mot goi Ky nang co ban moi thi khong co gi noi ra - phai tinh co bam dung tab
-// moi thay. Chu repo bao lai dung nguyen van: "khong thay Javis co tinh nang cap nhat goi".
+// moi thay. Chu repo bao lai dung nguyen van: "khong thay UNI MATE co tinh nang cap nhat goi".
 //
 // Test nay GOI THAT `coBanMoi`, `nutThe`, `theKho` chu khong quet chuoi, cung ly do da viet ro
 // trong test_kho_cai_dat.js: mot canary doc chu van xanh y nguyen khi phep so bi dao nguoc, va
@@ -35,15 +35,15 @@ globalThis.Alpine = win.Alpine;
 new Function("window", "document", "fetch",
   fs.readFileSync(path.join(ROOT, "dashboard", "packs.js"), "utf8"))(
   win, doc, () => Promise.resolve({}));
-const P = win.JavisPacks || {};
+const P = win.UniMatePacks || {};
 
 check("packs.js phoi ra coBanMoi / nutThe / theKho",
   typeof P.coBanMoi === "function" && typeof P.nutThe === "function"
   && typeof P.theKho === "function");
 
 const goi = (o) => Object.assign(
-  { id: "javis.x", kind: "connector", name: { vi: "X" }, description: { vi: "mo ta" },
-    tier: "data", verified: true, nguon: "kho", author: { name: "Javis" } }, o);
+  { id: "unimate.x", kind: "connector", name: { vi: "X" }, description: { vi: "mo ta" },
+    tier: "data", verified: true, nguon: "kho", author: { name: "UNI MATE" } }, o);
 
 // ---- 1. Phep so: dung 4 tinh huong, khong phai 1 ----
 check("da cai ban cu + kho co ban moi -> CO ban moi",

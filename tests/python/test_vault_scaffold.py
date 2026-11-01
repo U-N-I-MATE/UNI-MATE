@@ -14,7 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-scaftest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-scaftest-"))
 
 import main  # noqa: E402
 
@@ -37,23 +37,23 @@ def present_keys(root):
 
 try:
     # ---- 1. Nhận diện các biến thể tên ----
-    v1 = Path(tempfile.mkdtemp(prefix="javis-scaf1-"))
+    v1 = Path(tempfile.mkdtemp(prefix="unimate-scaf1-"))
     for d in LOG_DIRS:
         (v1 / d).mkdir()
     check("detect: tên chuẩn '01 - Daily Log'...", set(LOG_KEYS) <= present_keys(v1))
 
-    v2 = Path(tempfile.mkdtemp(prefix="javis-scaf2-"))
+    v2 = Path(tempfile.mkdtemp(prefix="unimate-scaf2-"))
     for d in ("Daily Log", "weekly", "Monthly", "future log"):
         (v2 / d).mkdir()
     check("detect: tên không số / viết thường vẫn tính là có", set(LOG_KEYS) <= present_keys(v2))
 
-    v3 = Path(tempfile.mkdtemp(prefix="javis-scaf3-"))
+    v3 = Path(tempfile.mkdtemp(prefix="unimate-scaf3-"))
     check("detect: vault trống báo thiếu cả 4", not (set(LOG_KEYS) & present_keys(v3)))
     check("detect: log là mục tuỳ chọn, không essential",
           all(not i["essential"] for i in main._check_structure(v3) if i["key"] in LOG_KEYS))
 
     # ---- 2. Chuẩn hoá (/vault/init) tạo đủ 4 sổ ----
-    v4 = Path(tempfile.mkdtemp(prefix="javis-scaf4-")) / "brains" / "vault"
+    v4 = Path(tempfile.mkdtemp(prefix="unimate-scaf4-")) / "brains" / "vault"
     main._brain_root = lambda brain: str(v4)
     r = asyncio.run(main.vault_init(brain="brain"))
     check("init: chạy ok", isinstance(r, dict) and r.get("ok"))
@@ -77,7 +77,7 @@ try:
           isinstance(r2, dict) and not any("log" in c for c in r2.get("created", [])))
 
     # ---- 3. Vault đã có sổ tên khác -> không đẻ bản trùng ----
-    v5 = Path(tempfile.mkdtemp(prefix="javis-scaf5-")) / "brains" / "vault"
+    v5 = Path(tempfile.mkdtemp(prefix="unimate-scaf5-")) / "brains" / "vault"
     (v5 / "Daily Log").mkdir(parents=True)
     main._brain_root = lambda brain: str(v5)
     asyncio.run(main.vault_init(brain="brain"))

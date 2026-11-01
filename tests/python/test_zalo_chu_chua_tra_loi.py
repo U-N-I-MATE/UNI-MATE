@@ -15,7 +15,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-zpchu-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-zpchu-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -172,7 +172,7 @@ async def chay():
     lui_gio(610)
     await xa()
     check("ba tin chờ thành MỘT lượt, giữ thứ tự, kèm ghi chú ở cuối",
-          len(LUOT) == 1 and LUOT[0][0].startswith("Thầy ơi\ncon em học lớp 8\ncòn chỗ không ạ\n[Ghi chú của Javis"), LUOT)
+          len(LUOT) == 1 and LUOT[0][0].startswith("Thầy ơi\ncon em học lớp 8\ncòn chỗ không ạ\n[Ghi chú của UNI MATE"), LUOT)
     check("không có file thì ghi chú không nhắc file", LUOT and "gửi kèm" not in LUOT[0][0], LUOT)
 
     # ---- 5. chủ không nhắn tay: đường cũ (chờ khách 5 giây) không đổi ------------------------------

@@ -1,4 +1,4 @@
-"""Memory and lessons from chat: tool `javis_memory` (0.190.0).
+"""Memory and lessons from chat: tool `unimate_memory` (0.190.0).
 
     python tests/python/test_memory_chat.py
 
@@ -14,9 +14,9 @@ import os
 import tempfile
 from pathlib import Path
 
-STATE = tempfile.mkdtemp(prefix="javis-memchat-")
-os.environ["JAVIS_STATE_DIR"] = STATE
-BR = Path(tempfile.mkdtemp(prefix="javis-memchat-brain-"))
+STATE = tempfile.mkdtemp(prefix="unimate-memchat-")
+os.environ["UNIMATE_STATE_DIR"] = STATE
+BR = Path(tempfile.mkdtemp(prefix="unimate-memchat-brain-"))
 (BR / "agents").mkdir()
 (BR / "agents" / "viet-bai.md").write_text("---\nname: Viết bài\nrole: Viết bài Facebook\n---\nViết ngắn.\n",
                                            encoding="utf-8")
@@ -35,7 +35,7 @@ def check(name, cond, extra=""):
         fails.append(name)
 
 
-spec = importlib.util.spec_from_file_location("javis_memory_plugin", ROOT / "system" / "plugins" / "javis-memory" / "plugin.py")
+spec = importlib.util.spec_from_file_location("unimate_memory_plugin", ROOT / "system" / "plugins" / "unimate-memory" / "plugin.py")
 plugin = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(plugin)
 regs = []
@@ -44,7 +44,7 @@ regs = []
 class Ctx:
     def __init__(self, vault_root):
         self.vault_root = vault_root
-        self.slug = "javis-memory"
+        self.slug = "unimate-memory"
 
     def register_tool(self, *a, **kw):
         regs.append((a, kw))
@@ -61,12 +61,12 @@ def call(args, root=BR):
     return asyncio.new_event_loop().run_until_complete(handler(args, Ctx(str(root))))
 
 
-check("one tool, javis_memory, at level safe", name == "javis_memory" and kw.get("min_mode") == "safe")
-check("owner only: a customer-facing bot never sees it", "javis_memory" in mcp_hub.OWNER_ONLY_TOOLS)
+check("one tool, unimate_memory, at level safe", name == "unimate_memory" and kw.get("min_mode") == "safe")
+check("owner only: a customer-facing bot never sees it", "unimate_memory" in mcp_hub.OWNER_ONLY_TOOLS)
 check("description is plain and says the person has no other screen for this",
       "không có màn hình nào" in desc and "\u2014" not in desc and "\u2013" not in desc)
-man = (ROOT / "system" / "plugins" / "javis-memory" / "plugin.yaml").read_text(encoding="utf-8")
-check("manifest: bundled, on, lists the tool", "enabled: true" in man and "- javis_memory" in man)
+man = (ROOT / "system" / "plugins" / "unimate-memory" / "plugin.yaml").read_text(encoding="utf-8")
+check("manifest: bundled, on, lists the tool", "enabled: true" in man and "- unimate_memory" in man)
 
 # ---- memory of the brain ----
 mem = main._brain_memory_dir(str(BR))
@@ -144,8 +144,8 @@ check("the receipt knows what was saved, changed and forgotten in the turn, with
       and d.get("xung-ho", {}).get("act") == "updated" and d.get("gio-mo-cua", {}).get("act") == "forgot"
       and d["gio-mo-cua"]["title"] == "Giờ mở cửa", d)
 blk = R.receipt_block(list(d.values()), "/brain/x")
-check("hidden block the dashboard draws, with the brain for Undo", blk.startswith("<!-- JAVIS_NHO: ")
-      and json.loads(blk[len("<!-- JAVIS_NHO: "):-4])["brain"] == "/brain/x")
+check("hidden block the dashboard draws, with the brain for Undo", blk.startswith("<!-- UNIMATE_NHO: ")
+      and json.loads(blk[len("<!-- UNIMATE_NHO: "):-4])["brain"] == "/brain/x")
 check("plain fallback line", "Bán thêm qua TikTok." in R.receipt_text(list(d.values())))
 snap2 = R.snapshot(mem)
 check("a lesson added through the tool counts as a change (no file moves)",
@@ -189,7 +189,7 @@ ws = (ROOT / "dashboard" / "workspace.js").read_text(encoding="utf-8")
 html = (ROOT / "dashboard" / "index.html").read_text(encoding="utf-8")
 ra = (ROOT / "dashboard" / "resonance-agent.js").read_text(encoding="utf-8")
 lui = (ROOT / "dashboard" / "agent-lessons-ui.js").read_text(encoding="utf-8")
-check("the Javis Core card has no memory list", "JavisCoreMemory" not in ws and "core-memory.js" not in html
+check("the UNI MATE Core card has no memory list", "UniMateCoreMemory" not in ws and "core-memory.js" not in html
       and not (ROOT / "dashboard" / "core-memory.js").exists())
 check("the Auto panel has no lessons list", "/resonance/lessons?" not in ra and "lessonsHtml" not in ra)
 check("the pulse part keeps only the daily limit", "/revoke" not in lui and "/promote" not in lui and "legacy" not in lui

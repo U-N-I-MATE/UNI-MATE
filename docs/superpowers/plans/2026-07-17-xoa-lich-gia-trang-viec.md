@@ -20,9 +20,9 @@ Spec: `docs/superpowers/specs/2026-07-17-hop-nhat-viec-dinh-ky-design.md`
 - Tiếng Việt là ngôn ngữ chính cho comment, docstring, tên hiển thị, thông báo lỗi.
 - Test là **script thuần, không pytest**. Quy ước nhà: `server/test_*.py`, có `def check(name, cond)`, gom `_fails`, `sys.exit(1)` khi có lỗi. CI chạy `for f in test_*.py; do python "$f"; done` (`.github/workflows/ci.yml:35-37`), nên mọi file `server/test_*.py` tự động vào CI.
 - Chạy test bằng venv: `.venv/Scripts/python.exe` (python hệ thống thiếu lib).
-- Test phải tự cô lập: `os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="..."))` **trước** khi import module Javis.
+- Test phải tự cô lập: `os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="..."))` **trước** khi import module UNI MATE.
 - **Helper của `dashboard/console.js`** (dùng cho Task 2): chỉ có `esc(s)` (`:116`) và `fbrain()` (`:363`), gọi HTTP bằng `fetch()` trần với `FormData` dựng tại chỗ. **KHÔNG** có `api()`, `fd()`, `brain()` - đó là helper của `studio.js`, không dùng được ở console.js.
-- Không chạm `Javis/loops/*.md`, `loop-state.json`, hay `system_sync.LEGACY_HASHES` trong giai đoạn này. Loop giữ nguyên hành vi.
+- Không chạm `UniMate/loops/*.md`, `loop-state.json`, hay `system_sync.LEGACY_HASHES` trong giai đoạn này. Loop giữ nguyên hành vi.
 - Không sửa `self_improve.py:105-113` (`_isolate`). Nó là nhánh chết trong production (`main.py:3029` luôn inject `apply_mcp`) nhưng `test_loop_ambient.py` đang dựa vào nó.
 
 ## File Structure
@@ -37,7 +37,7 @@ Spec: `docs/superpowers/specs/2026-07-17-hop-nhat-viec-dinh-ky-design.md`
 | `dashboard/index.html` | Chỉ bỏ panel loop cũ đã chết (`:160-192`, Task 3). **Không** có `panel-automations` ở đây - nó do `console.js:222` dựng động từ `STUDIO_PAGES`. |
 | `dashboard/app.js` | Bỏ fetch `/loop/config` của panel chết (`:1497`). |
 
-**Ghi chú decomposition:** khối registry + khối caps **phải cùng một task**. `_gather_capabilities` (`main.py:3352`) gọi `_read_automations`; xoá helper mà để lại lời gọi thì `rebuild_javis_index` ném `NameError` **mỗi tick scheduler** (`main.py:3650-3651`). Reviewer không thể duyệt cái này mà từ chối cái kia, nên chúng là một deliverable.
+**Ghi chú decomposition:** khối registry + khối caps **phải cùng một task**. `_gather_capabilities` (`main.py:3352`) gọi `_read_automations`; xoá helper mà để lại lời gọi thì `rebuild_unimate_index` ném `NameError` **mỗi tick scheduler** (`main.py:3650-3651`). Reviewer không thể duyệt cái này mà từ chối cái kia, nên chúng là một deliverable.
 
 ---
 
@@ -75,8 +75,8 @@ KHÔNG thêm endpoint nào: trang Việc dùng thẳng /loops + /reminders đã 
 Phủ:
 - 4 path /automations* đã biến mất khỏi app.routes.
 - 3 helper registry + 2 lớp chiếu đã xoá (caller duy nhất của chúng là /automations GET).
-- caps: key 'automations' đã xoá, và _gather_capabilities/_render_javis_index còn chạy được
-  (nếu xoá helper mà để lại lời gọi thì rebuild_javis_index NameError MỖI tick scheduler).
+- caps: key 'automations' đã xoá, và _gather_capabilities/_render_unimate_index còn chạy được
+  (nếu xoá helper mà để lại lời gọi thì rebuild_unimate_index NameError MỖI tick scheduler).
 - Các endpoint THẬT mà trang Việc dựa vào vẫn còn sống.
 """
 import os
@@ -84,7 +84,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-jobstest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-jobstest-"))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import main  # noqa: E402
@@ -113,7 +113,7 @@ check("helper: _automations_path đã xoá", not hasattr(main, "_automations_pat
 # tử), và comment mới ở đầu khối cũng nhắc nó để giải thích vì sao đã xoá. Assert trần sẽ
 # BẤT KHẢ THI dù code đã đúng.
 check("nguồn: không còn code dựng đường dẫn tới automations.json",
-      '"Javis" / "automations.json"' not in src)
+      '"UNI MATE" / "automations.json"' not in src)
 
 # ---- 2b. Hai lớp chiếu vào hình dạng Lịch giả cũng chết theo ----
 # Caller duy nhất của cả hai là /automations GET (main.py:3199). Chúng chiếu loop/nhắc hẹn
@@ -124,13 +124,13 @@ check("chiếu: pending_as_automations đã xoá",
 
 # ---- 3. caps sạch VÀ còn chạy được ----
 # Đây là assert quan trọng nhất của task: xoá _read_automations mà để lại lời gọi ở
-# _gather_capabilities:3352 → rebuild_javis_index (main.py:3650-3651) ném NameError mỗi tick.
+# _gather_capabilities:3352 → rebuild_unimate_index (main.py:3650-3651) ném NameError mỗi tick.
 caps = main._gather_capabilities("brain")
 check("caps: không còn key 'automations'", "automations" not in caps)
 check("caps: _gather_capabilities vẫn chạy (không NameError)", isinstance(caps, dict))
-check("caps: _render_javis_index vẫn chạy", isinstance(main._render_javis_index(caps), str))
+check("caps: _render_unimate_index vẫn chạy", isinstance(main._render_unimate_index(caps), str))
 check("caps: index không còn mục 'Lịch (automations)'",
-      "Lịch (automations)" not in main._render_javis_index(caps))
+      "Lịch (automations)" not in main._render_unimate_index(caps))
 
 # ---- 4. Endpoint THẬT mà trang Việc dựa vào phải còn sống ----
 # Xoá Lịch KHÔNG được kéo theo hai nguồn thật. Task 2 (UI) gọi đúng ba cái này; nếu task này
@@ -178,7 +178,7 @@ Giữ nguyên mọi thứ khác trong file, đặc biệt là `cancel` (`:300`),
 
 Kiểm tra `List` còn được dùng chỗ khác không trước khi động vào import:
 
-Run: `cd /d/Project/Javis-OS && grep -c "List\[" server/reminders.py`
+Run: `cd /d/Project/UNI-MATE && grep -c "List\[" server/reminders.py`
 
 Nếu kết quả > 0 thì **giữ** `from typing import ... List`. Không xoá import đang có người dùng.
 
@@ -209,7 +209,7 @@ Ba sửa trong `server/main.py`:
             L.append(f"- **{a['name']}** - {a['type']} · {a['schedule']} · {a['status']}")
 ```
 
-Ghi chú: khối này **không** rác vào system prompt. Nó đi vào `Javis/index.md` qua `rebuild_javis_index` (`main.py:3462`), và vì list luôn rỗng nên `if caps["automations"]:` luôn falsy → section chưa từng render. Đây là dọn code chết. `_javis_capability_summary` (`:3477`) không hề nhắc automations.
+Ghi chú: khối này **không** rác vào system prompt. Nó đi vào `UniMate/index.md` qua `rebuild_unimate_index` (`main.py:3462`), và vì list luôn rỗng nên `if caps["automations"]:` luôn falsy → section chưa từng render. Đây là dọn code chết. `_unimate_capability_summary` (`:3477`) không hề nhắc automations.
 
 - [ ] **Step 6: Chạy test để xác nhận PASS**
 
@@ -219,7 +219,7 @@ Expected: PASS, in `OK - test_jobs: tất cả pass`.
 
 - [ ] **Step 7: Xác nhận không còn ai gọi thứ đã xoá trong server/**
 
-Run: `cd /d/Project/Javis-OS && grep -rn "/automations\|_read_automations\|_loops_as_routines\|pending_as_automations" server/ --include=*.py`
+Run: `cd /d/Project/UNI-MATE && grep -rn "/automations\|_read_automations\|_loops_as_routines\|pending_as_automations" server/ --include=*.py`
 
 Expected: **0 hit** (trừ `server/test_jobs.py`, nơi chúng là chuỗi trong assert). Nếu còn hit code thật, xoá nốt trước khi commit.
 
@@ -285,7 +285,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 Run:
 
 ```bash
-cd /d/Project/Javis-OS
+cd /d/Project/UNI-MATE
 git status --short dashboard/
 grep -rc "automations" dashboard/console.js dashboard/studio.js dashboard/index.html
 ```
@@ -325,7 +325,7 @@ Trong `dashboard/console.js`:
 
 `dashboard/console.js:683` hiện kết thúc bằng: `Loop bật sẽ hiện ở tab <b>Lịch</b>.` Tab đó sắp không tồn tại. Bỏ đúng câu cuối đó, giữ nguyên phần còn lại của đoạn văn.
 
-Run kiểm chứng: `cd /d/Project/Javis-OS && grep -n "tab <b>Lịch</b>" dashboard/console.js`
+Run kiểm chứng: `cd /d/Project/UNI-MATE && grep -n "tab <b>Lịch</b>" dashboard/console.js`
 
 Expected sau khi sửa: 0 hit.
 
@@ -390,7 +390,7 @@ Rồi gọi nó ở cuối `loadLoops` (`:809-826`), ngay trước dòng `clearT
 Trước tiên lấy vị trí thật (số dòng trong plan đã trôi, xem cảnh báo tranh chấp ở đầu task):
 
 ```bash
-cd /d/Project/Javis-OS
+cd /d/Project/UNI-MATE
 git status --short dashboard/studio.js
 grep -n "function loadAutomations\|function editAutomation\|automations" dashboard/studio.js
 ```
@@ -408,7 +408,7 @@ Trong `dashboard/studio.js` (ba chỗ đầu vẫn ở đúng dòng cũ vì nằ
 
 - [ ] **Step 7: Xác nhận không còn tham chiếu**
 
-Run: `cd /d/Project/Javis-OS && grep -rn "automations" dashboard/console.js dashboard/studio.js dashboard/index.html`
+Run: `cd /d/Project/UNI-MATE && grep -rn "automations" dashboard/console.js dashboard/studio.js dashboard/index.html`
 
 Expected: **0 hit** ở ba file này. (So với ba con số ghi ở Step 1.)
 
@@ -455,7 +455,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 - [ ] **Step 1: Xác nhận panel thật sự chết**
 
-Run: `cd /d/Project/Javis-OS && sed -n '160,192p' dashboard/index.html | grep -n "display:none"; grep -rn "loop/config" dashboard/*.js`
+Run: `cd /d/Project/UNI-MATE && sed -n '160,192p' dashboard/index.html | grep -n "display:none"; grep -rn "loop/config" dashboard/*.js`
 
 Expected: thấy `display:none` trong panel, và hit `loop/config` ở `app.js:1497`. Nếu **không** thấy `display:none`, DỪNG - panel đang sống, task này sai giả định, báo lại người review.
 
@@ -470,7 +470,7 @@ Run:
 ```bash
 cd server && ../.venv/Scripts/python.exe -c "
 import os, sys, tempfile
-os.environ.setdefault('JAVIS_STATE_DIR', tempfile.mkdtemp())
+os.environ.setdefault('UNIMATE_STATE_DIR', tempfile.mkdtemp())
 sys.path.insert(0, '.')
 import main
 paths = {getattr(r,'path','') for r in main.app.routes}
@@ -503,7 +503,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `CLAUDE.md` (bỏ nhắc tab Lịch ở mục điều phối)
-- Modify: `.claude/skills/javis-builder/SKILL.md` (nếu có nhắc automations/Lịch)
+- Modify: `.claude/skills/unimate-builder/SKILL.md` (nếu có nhắc automations/Lịch)
 - Modify: `CHANGELOG.md`, `VERSION`
 
 **Interfaces:**
@@ -518,19 +518,19 @@ Expected: mọi file in `OK - ...`. Không file nào FAIL. Đặc biệt chú ý
 
 - [ ] **Step 2: Chạy compileall như CI**
 
-Run: `cd /d/Project/Javis-OS && .venv/Scripts/python.exe -m compileall -q server system/plugins`
+Run: `cd /d/Project/UNI-MATE && .venv/Scripts/python.exe -m compileall -q server system/plugins`
 
 Expected: không output (thành công).
 
 - [ ] **Step 3: Chạy test JS của CI**
 
-Run: `cd /d/Project/Javis-OS && node dashboard/test_chat_ask.js`
+Run: `cd /d/Project/UNI-MATE && node dashboard/test_chat_ask.js`
 
 Expected: pass. (CI chạy đúng lệnh này ở `.github/workflows/ci.yml:27`.)
 
 - [ ] **Step 4: Sửa CLAUDE.md**
 
-Run: `cd /d/Project/Javis-OS && grep -n "tab Lịch\|automations" CLAUDE.md`
+Run: `cd /d/Project/UNI-MATE && grep -n "tab Lịch\|automations" CLAUDE.md`
 
 Ở mục "Điều phối", bậc 6 hiện ghi: `**Tạo Lịch** - nhắc nhở / job có MỐC GIỜ cố định → qua automations (tab Lịch).` Sửa thành:
 
@@ -540,9 +540,9 @@ Run: `cd /d/Project/Javis-OS && grep -n "tab Lịch\|automations" CLAUDE.md`
 
 Giữ nguyên 8 bậc, không đánh số lại, để khỏi vỡ các chỗ khác tham chiếu tới thang này.
 
-- [ ] **Step 5: Kiểm tra javis-builder skill**
+- [ ] **Step 5: Kiểm tra unimate-builder skill**
 
-Run: `cd /d/Project/Javis-OS && grep -rn "automations\|tab Lịch" .claude/skills/javis-builder/SKILL.md skills/javis-builder/SKILL.md 2>/dev/null`
+Run: `cd /d/Project/UNI-MATE && grep -rn "automations\|tab Lịch" .claude/skills/unimate-builder/SKILL.md skills/unimate-builder/SKILL.md 2>/dev/null`
 
 Nếu có hit, sửa theo cùng cách Step 4. Nếu không có hit, bỏ qua step này.
 
@@ -561,7 +561,7 @@ Nếu có hit, sửa theo cùng cách Step 4. Nếu không có hit, bỏ qua ste
 - [ ] **Step 7: Commit + push**
 
 ```bash
-git add CLAUDE.md CHANGELOG.md VERSION .claude/skills/javis-builder/SKILL.md
+git add CLAUDE.md CHANGELOG.md VERSION .claude/skills/unimate-builder/SKILL.md
 git commit -m "docs: cap nhat tai lieu sau khi xoa tab Lich
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
@@ -576,9 +576,9 @@ Không làm trong plan này, ghi ra để khỏi quên:
 
 - `parse_schedule()` dùng chung: một field `schedule` → `{kind: once|interval|cron}` kiểu Hermes.
 - `cron` trong `_eligible_overdue` (`self_improve.py:455-466`) + jitter theo `hash(slug)`.
-- Hub `X-Javis-Connectors` + `connectors: [...]` trên frontmatter loop (rủi ro cao nhất: hub là lớp cứng, phải fail-closed).
+- Hub `X-UniMate-Connectors` + `connectors: [...]` trên frontmatter loop (rủi ro cao nhất: hub là lớp cứng, phải fail-closed).
 - `allow_real_actions` thay dial 3 nấc, map vào `effective_perm` (`mcp_hub.py:314`) sẵn có.
-- Tool `javis_schedule` route hai kho; `op: list`/`cancel` phải nhìn union cả hai.
+- Tool `unimate_schedule` route hai kho; `op: list`/`cancel` phải nhìn union cả hai.
 - Số phận 5 route shim legacy `/loop/*` (`self_improve.py:988-1036`).
 
 ## Bug độc lập phát hiện khi soạn plan (tách issue riêng)

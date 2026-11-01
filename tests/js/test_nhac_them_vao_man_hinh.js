@@ -1,4 +1,4 @@
-/* Nhắc thêm Javis vào Màn hình chính trên điện thoại - MỖI NGÀY MỘT LẦN.
+/* Nhắc thêm UNI MATE vào Màn hình chính trên điện thoại - MỖI NGÀY MỘT LẦN.
 
        node tests/js/test_nhac_them_vao_man_hinh.js
 
@@ -6,7 +6,7 @@
    lại popup đó 1 lần".
 
    Vì sao chuyện này đáng làm chứ không phải quảng cáo cài app: iOS CHỈ cho nhận thông báo
-   đẩy khi trang đã được "Thêm vào MH chính" (iOS 16.4+). Ai dùng Javis bằng Safari thường
+   đẩy khi trang đã được "Thêm vào MH chính" (iOS 16.4+). Ai dùng UNI MATE bằng Safari thường
    sẽ không bao giờ nhận được kết quả việc nền, mà cũng không có gì nói cho họ biết vì sao.
    Nút "Mở như app" trên thanh trạng thái lại chỉ hiện ở trình duyệt có beforeinstallprompt
    (Chrome/Edge) - tức là đúng iOS, nơi cần nhất, là nơi không có nút nào.
@@ -24,7 +24,7 @@
 
    Năm ca đã dựng thật bằng Chromium giả lập iPhone/Android lúc làm (lần đầu hiện sau đúng
    12 giây, nhắc 2h trước thì im, 25h trước thì hiện lại, đã tắt thì không bao giờ, và bấm
-   "Cài Javis" gọi đúng prompt() rồi thôi nhắc hẳn).
+   "Cài UNI MATE" gọi đúng prompt() rồi thôi nhắc hẳn).
 */
 const fs = require("fs");
 const path = require("path");
@@ -69,7 +69,7 @@ function check(name, cond, extra) {
 // ---- 1. Nhịp một ngày ----
 check("mốc một ngày tính bằng 24 giờ thật",
   /MOT_NGAY\s*=\s*24 \* 60 \* 60 \* 1000/.test(nudge));
-check("nhớ lần nhắc gần nhất trong localStorage", nudge.indexOf("javis.install.nhac_luc") !== -1);
+check("nhớ lần nhắc gần nhất trong localStorage", nudge.indexOf("unimate.install.nhac_luc") !== -1);
 check("chỉ hiện lại khi đã qua đủ một ngày",
   /Date\.now\(\) - luc\) >= MOT_NGAY/.test(nudge));
 check("CANARY: ghi mốc NGAY LÚC HIỆN, không đợi người dùng bấm nút nào",
@@ -108,15 +108,15 @@ check("trình duyệt không có hộp cài thì chỉ đường qua menu, khôn
   noiDung("instl.menu2_b", "Thêm vào màn hình chính"), VI["instl.menu2_b"]);
 
 // ---- 5. Dùng CHUNG một event beforeinstallprompt với nút trên thanh trạng thái ----
-check("app.js mở JavisInstall cho nơi khác dùng chung", /window\.JavisInstall = \{/.test(app));
+check("app.js mở UniMateInstall cho nơi khác dùng chung", /window\.UniMateInstall = \{/.test(app));
 // Soi ĐÚNG lời đăng ký listener, không soi chữ: file có nhắc tên event trong chú thích
 // giải thích vì sao iOS không có nút cài, và đó không phải cái đáng cấm.
 check("CANARY: install-nudge KHÔNG tự bắt beforeinstallprompt (bắt hai nơi là mất một nơi)",
   !/addEventListener\(\s*["']beforeinstallprompt["']/.test(nudge));
 check("và app.js vẫn là nơi DUY NHẤT bắt event đó",
   (app.match(/addEventListener\("beforeinstallprompt"/g) || []).length === 1);
-check("popup mượn hộp cài qua JavisInstall.moHopCai",
-  /window\.JavisInstall\.moHopCai\(\)/.test(nudge));
+check("popup mượn hộp cài qua UniMateInstall.moHopCai",
+  /window\.UniMateInstall\.moHopCai\(\)/.test(nudge));
 check("moHopCai trả về CÓ CÀI HAY KHÔNG để còn quyết định thôi nhắc",
   /ket && ket\.outcome === "accepted"/.test(app));
 

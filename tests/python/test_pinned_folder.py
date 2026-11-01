@@ -8,8 +8,8 @@ import shutil
 import sys
 import tempfile
 
-STATE = tempfile.mkdtemp(prefix="javis-pin-")
-os.environ["JAVIS_STATE_DIR"] = STATE
+STATE = tempfile.mkdtemp(prefix="unimate-pin-")
+os.environ["UNIMATE_STATE_DIR"] = STATE
 from fastapi.testclient import TestClient  # noqa: E402
 import coding_store  # noqa: E402
 import main  # noqa: E402
@@ -27,8 +27,8 @@ def real(p):
     return os.path.realpath(p)
 
 
-brain = tempfile.mkdtemp(prefix="javis-pin-brain-")
-outside = tempfile.mkdtemp(prefix="javis-pin-out-")
+brain = tempfile.mkdtemp(prefix="unimate-pin-brain-")
+outside = tempfile.mkdtemp(prefix="unimate-pin-out-")
 try:
     proj = os.path.join(brain, "projects", "shop-site")
     os.makedirs(proj)

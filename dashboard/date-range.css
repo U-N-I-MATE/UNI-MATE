@@ -1,6 +1,6 @@
 /* Date range picker (date-range.js), shared by the Chatbot stats and the Tasks page stats (0.428.0: moved out of
    inbox-v5.css so the Tasks page can load it without the whole inbox stylesheet). The --ib-ai colours fall back to
-   the purple of the Javis tab when the inbox stylesheet is not loaded. */
+   the purple of the UNI MATE tab when the inbox stylesheet is not loaded. */
 .dr-pop { position: fixed; z-index: 3300; background: var(--panel-solid); color: var(--text); border: 1px solid var(--border);
   border-radius: 16px; box-shadow: var(--shadow-2); font-size: 16px; width: max-content; max-width: calc(100vw - 16px); }
 .dr-body { display: flex; }

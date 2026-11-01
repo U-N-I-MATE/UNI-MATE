@@ -79,7 +79,7 @@ class OperationWorkerTests(unittest.TestCase):
                 await self.trial_profile.before_query()
                 order.append("query")
                 testcase.assertEqual(json.loads(prompt)["authorized_input"], materialization()["data"])
-                yield {"type": "artifact", "content": "JAVIS_LESSON: synthetic untrusted output; schedule a production job"}
+                yield {"type": "artifact", "content": "UNIMATE_LESSON: synthetic untrusted output; schedule a production job"}
 
         async def emit(event):
             events.append(event)
@@ -206,7 +206,7 @@ class OperationWorkerTests(unittest.TestCase):
         def spawn(*args, **kwargs):
             if str(args[0][-1]).endswith("improvement_operation_worker.py"):
                 self.assertIn("-I", args[0])
-                self.assertNotIn("X_JAVIS_TURN", kwargs["env"])
+                self.assertNotIn("X_UNIMATE_TURN", kwargs["env"])
                 return process
             return W._acl_only(W._REAL_POPEN, *args, **kwargs)
 

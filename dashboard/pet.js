@@ -1,11 +1,11 @@
-/* pet.js - LINH VẬT của Javis: một khuôn mặt nhỏ nép ở mép màn hình, lấp ló nửa người.
+/* pet.js - LINH VẬT của UNI MATE: một khuôn mặt nhỏ nép ở mép màn hình, lấp ló nửa người.
 
-   Đây KHÔNG phải đồ trang trí. Nó là "sự hiện diện" của Javis ở mọi trang: nhìn theo con trỏ,
+   Đây KHÔNG phải đồ trang trí. Nó là "sự hiện diện" của UNI MATE ở mọi trang: nhìn theo con trỏ,
    chớp mắt, và đổi biểu cảm theo đúng trạng thái thật của lượt trả lời (nghe / nghĩ / nói /
-   lỗi). Trạng thái không tự bịa: app.js gọi JavisPet.setState() ngay trong setOrbState(), tức
+   lỗi). Trạng thái không tự bịa: app.js gọi UniMatePet.setState() ngay trong setOrbState(), tức
    là pet và chữ trên orb luôn nói cùng một điều.
 
-   Hình học và bảng màu lấy nguyên từ bản mẫu javis-avatar-v3.html (chủ dự án chốt), rút gọn
+   Hình học và bảng màu lấy nguyên từ bản mẫu unimate-avatar-v3.html (chủ dự án chốt), rút gọn
    cho cỡ nhỏ: vành quỹ đạo ở đây là MỘT path có dash xoay, không phải 144 mảnh như bản mẫu.
    Ở 56px thì vệt mờ dần của bản mẫu không ai nhìn thấy, mà 576 lượt ghi style mỗi khung hình
    thì máy nào cũng thấy.
@@ -18,7 +18,7 @@
 (function () {
   "use strict";
 
-  var KHOA = "javis.pet";
+  var KHOA = "unimate.pet";
   var NGUONG_KEO = 16;   // px di chuyển tối thiểu mới coi là KÉO chứ không phải bấm
 
   // ---- Hình dáng (path trong viewBox 320x320, tâm 160/160) ----
@@ -43,7 +43,7 @@
   };
 
   // Mỗi bảng màu tự mang cả hai tông: [thân, vành quỹ đạo, dự phòng]. Tông theo giao diện đang bật
-  // (javisTheme), nên pet không bao giờ chói lên giữa nền tối.
+  // (unimateTheme), nên pet không bao giờ chói lên giữa nền tối.
   //
   // TÔNG TỐI SUY TỪ TÔNG SÁNG, GIỮ NGUYÊN SẮC (0.59.36). Bản cũ đặt tay từng cặp, và tay thì
   // trôi: tông tối của `amber` rơi từ 30 độ (cam) sang 43 độ (vàng), nên chọn "Hổ phách" ở
@@ -354,7 +354,7 @@
     return (MAU_MAT[eye] || {}).mau || "";
   }
   function noiSuy(a, b, k) { return a + (b - a) * k; }
-  function sang() { try { return !!(window.javisTheme && window.javisTheme.isLight()); } catch (e) { return false; } }
+  function sang() { try { return !!(window.unimateTheme && window.unimateTheme.isLight()); } catch (e) { return false; } }
   // Mắt phải tương phản với THÂN, không với nền trang: thân sáng thì mắt than chì, thân tối
   // thì mắt trắng. Tính bằng độ chói tương đối (WCAG) chứ không đoán bằng mắt.
   // Đây là đường TỰ ĐỘNG, nay chỉ còn dùng cho avatar trợ lý; con pet đi theo cfg.eye.
@@ -438,12 +438,12 @@
   function dung() {
     if (el) return;
     el = document.createElement("div");
-    el.id = "javisPet";
+    el.id = "unimatePet";
     el.className = "pet";
     el.dataset.out = "0";
     el.dataset.menu = "0";
     el.innerHTML =
-      '<button type="button" class="pet-body" aria-label="Javis">' +
+      '<button type="button" class="pet-body" aria-label="UNI MATE">' +
         '<svg viewBox="0 0 320 320" aria-hidden="true">' +
           '<g class="pet-rig">' +
             '<path class="pet-ring" pathLength="360"></path>' +
@@ -488,7 +488,7 @@
       { id: "mic", ic: icon("mic"), nhan: mic ? t("pet.menu.mic_off", "Turn mic off") : t("pet.menu.mic_on", "Turn mic on") },
       { id: "pet", ic: icon("settings"), nhan: t("pet.menu.settings", "Mascot settings") },
       // Team chat sits on the last row (issue #755). "teams" is a page id, so the default
-      // JavisNav.go branch of the click handler opens it with no extra case.
+      // UniMateNav.go branch of the click handler opens it with no extra case.
       { id: "teams", ic: icon("users"), nhan: t("pet.menu.teams", "Team chat") },
     ];
     menu.innerHTML = muc.map(function (m) {
@@ -938,13 +938,13 @@
         return;
       }
       // Trợ lý và Quy trình là HAI TAB của cùng trang Cộng sự, không phải hai trang: đi qua
-      // openTab() để mở đúng tab, chứ JavisNav.go("workspace") thì rơi vào tab đang nhớ dở
+      // openTab() để mở đúng tab, chứ UniMateNav.go("workspace") thì rơi vào tab đang nhớ dở
       // từ lần trước và cú bấm "Quy trình" có khi mở ra danh sách trợ lý.
       if (id === "agent" || id === "workflow") {
-        try { if (window.JavisWorkspace) { window.JavisWorkspace.openTab(id); return; } } catch (err) {}
+        try { if (window.UniMateWorkspace) { window.UniMateWorkspace.openTab(id); return; } } catch (err) {}
         id = "workspace";
       }
-      try { window.JavisNav && window.JavisNav.go(id); } catch (err) {}
+      try { window.UniMateNav && window.UniMateNav.go(id); } catch (err) {}
     });
 
     // Bấm ra chỗ khác thì ĐÓNG MENU, và chỉ đóng menu. Pet đứng nguyên chỗ nó đang đứng.
@@ -1041,7 +1041,7 @@
     if (!tam) { ghiLocal(); ghiServer(); }
     if (el) { apDung(); chay(); }
     veDauAn();
-    try { window.dispatchEvent(new CustomEvent("javis:pet", { detail: Object.assign({}, cfg) })); } catch (e) {}
+    try { window.dispatchEvent(new CustomEvent("unimate:pet", { detail: Object.assign({}, cfg) })); } catch (e) {}
   }
   function setEnabled(on) { setCfg({ enabled: !!on }); }
 
@@ -1058,8 +1058,8 @@
     ngoCongDangNhap();
     chay();
     veDauAn();
-    try { window.javisTheme && window.javisTheme.on(function () { apDung(); veDauAn(); }); } catch (e) {}
-    window.addEventListener("javis:i18n", function () { veMenu(); });
+    try { window.unimateTheme && window.unimateTheme.on(function () { apDung(); veDauAn(); }); } catch (e) {}
+    window.addEventListener("unimate:i18n", function () { veMenu(); });
     // Logo riêng của người dùng thắng linh vật, nên phải hỏi máy chủ một lượt. Hỏi SAU khi
     // đã vẽ bằng localStorage: chờ mạng xong mới vẽ thì thanh bên nháy một nhịp lúc mở trang.
     fetch("/settings").then(function (r) { return r.json(); }).then(function (j) {
@@ -1300,7 +1300,7 @@
   // Bật linh vật thì chỗ logo hiện chính khuôn mặt ấy, để cả app nói cùng một nhân dạng.
   // TẮT linh vật, HOẶC người dùng đã tải logo riêng lên, thì trả lại thẻ <img src="/brand-logo">
   // nguyên bản: logo của người ta thì người ta quyết, một con vật không được đè lên.
-  // Chỉ thay RUỘT của ô dấu ấn, không thay cả khối thương hiệu: chữ "JAVIS OS" nằm cạnh đó
+  // Chỉ thay RUỘT của ô dấu ấn, không thay cả khối thương hiệu: chữ "UNI MATE" nằm cạnh đó
   // trong cùng khối, thay cả khối là mỗi lần đổi hình dáng hay bảng màu lại xoá mất chữ.
   var LO_DAU_AN = ".rail-brand .brand-mark, .brand .brand-icon";
   var _logoRieng = false;      // người dùng đã tải logo riêng lên chưa
@@ -1321,7 +1321,7 @@
     });
   }
 
-  window.JavisPet = {
+  window.UniMatePet = {
     setState: setState,
     react: react,
     setCfg: setCfg,

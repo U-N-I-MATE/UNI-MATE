@@ -2,10 +2,10 @@
 
        node tests/js/test_ngat_loi_nha_tieng.js
 
-   Chủ dự án báo 15/09: đang nghe Javis đọc một đoạn dài mà nói chen vào thì nó KHÔNG dừng;
+   Chủ dự án báo 15/09: đang nghe UNI MATE đọc một đoạn dài mà nói chen vào thì nó KHÔNG dừng;
    còn nếu chỉnh cho nhạy hơn thì nó bắt chính tiếng loa ngoài của mình rồi tự câm giữa câu.
 
-   Hai triệu chứng, một gốc: lúc đang đọc, Javis giết hẳn nhận dạng giọng (Web Speech chép
+   Hai triệu chứng, một gốc: lúc đang đọc, UNI MATE giết hẳn nhận dạng giọng (Web Speech chép
    chính giọng TTS thành tin của người dùng) nên chỉ còn ĐỘ TO của mic làm bằng chứng, mà độ
    to thì giống hệt nhau giữa giọng người và tiếng vọng. Ngưỡng thấp thì nghi oan, ngưỡng cao
    thì điếc. Đường cũ chữa bằng cách tạm dừng rồi đòi nhận dạng trả chữ trong 2 giây, nhưng
@@ -17,7 +17,7 @@
    nhá với mức trước khi nhá là biết, trong 400 ms, không cần chữ.
 
    Test khoá:
-     1. Phép phân biệt (JavisVoice.laNguoiThat) đúng trên các mẫu thật.
+     1. Phép phân biệt (UniMateVoice.laNguoiThat) đúng trên các mẫu thật.
      2. Ngưỡng nghi ngờ TỰ HỌC theo nền vọng, không còn đo một lần trong 600 ms đầu.
      3. Nhá tiếng xong mà là vọng thì NÂNG nền rồi đọc tiếp, không dừng.
      4. Âm lượng được áp cho MỌI khúc audio mới, và mọi đường dừng đều trả âm lượng về đầy.
@@ -39,39 +39,39 @@ const has = (acts, t) => acts.some(a => a.type === t);
 
 // ---- 1. Phép phân biệt vọng / người, chạy THẬT ----
 // Nhấc class ra chạy bằng node: voice.js đụng window ở dòng cuối nên nạp phần class thôi.
-const classSrc = voiceSrc.slice(voiceSrc.indexOf("class JavisVoice"), voiceSrc.lastIndexOf("window.JavisVoice"));
-const JavisVoice = new Function("window", "localStorage", classSrc + "\nreturn JavisVoice;")(
+const classSrc = voiceSrc.slice(voiceSrc.indexOf("class UniMateVoice"), voiceSrc.lastIndexOf("window.UniMateVoice"));
+const UniMateVoice = new Function("window", "localStorage", classSrc + "\nreturn UniMateVoice;")(
   { speechSynthesis: {}, AudioContext: function () {} },
   { getItem: () => null, setItem: () => {} });
 
 check("hằng số nhá tiếng có mặt",
-  JavisVoice.NHA_GAIN === 0.12 && JavisVoice.NHA_TICKS === 4 && JavisVoice.NHA_MIN_HIT === 2);
+  UniMateVoice.NHA_GAIN === 0.12 && UniMateVoice.NHA_TICKS === 4 && UniMateVoice.NHA_MIN_HIT === 2);
 
 // Vọng của loa: hạ còn 12% âm lượng thì mức mic tụt theo (0.09 -> ~0.011).
 check("vọng loa: nhá xong mức sập -> KHÔNG phải người",
-  JavisVoice.laNguoiThat(0.09, [0.012, 0.010, 0.011, 0.009]) === false);
+  UniMateVoice.laNguoiThat(0.09, [0.012, 0.010, 0.011, 0.009]) === false);
 // Giọng người: nhá âm lượng không ảnh hưởng gì tới giọng họ.
 check("giọng người: nhá xong mức giữ nguyên -> là người",
-  JavisVoice.laNguoiThat(0.09, [0.085, 0.09, 0.08, 0.075]) === true);
+  UniMateVoice.laNguoiThat(0.09, [0.085, 0.09, 0.08, 0.075]) === true);
 // Tiếng "thôi" ngắn: còn tiếng ở 2 nhịp đầu rồi im. Đây chính là ca đường cũ bỏ lọt.
 check("tiếng 'thôi' ngắn (2 nhịp rồi im) vẫn tính là người",
-  JavisVoice.laNguoiThat(0.09, [0.08, 0.07, 0.008, 0.006]) === true);
+  UniMateVoice.laNguoiThat(0.09, [0.08, 0.07, 0.008, 0.006]) === true);
 // Tiếng ho tắt ngay khi vừa nhá: chỉ 1 nhịp, không đủ.
 check("tiếng ho tắt ngay -> không phải người",
-  JavisVoice.laNguoiThat(0.09, [0.07, 0.008, 0.006, 0.005]) === false);
+  UniMateVoice.laNguoiThat(0.09, [0.07, 0.008, 0.006, 0.005]) === false);
 // Phòng im hẳn trong lúc nhá.
 check("phòng im -> không phải người",
-  JavisVoice.laNguoiThat(0.05, [0.004, 0.003, 0.004, 0.003]) === false);
+  UniMateVoice.laNguoiThat(0.05, [0.004, 0.003, 0.004, 0.003]) === false);
 // Loa rất nhỏ (preLevel thấp) thì sàn tuyệt đối giữ cho tiếng ồn lí nhí không thành "người".
 check("mức nền lí nhí không vượt sàn NHA_SAN",
-  JavisVoice.laNguoiThat(0.01, [0.015, 0.016, 0.014, 0.015]) === false);
+  UniMateVoice.laNguoiThat(0.01, [0.015, 0.016, 0.014, 0.015]) === false);
 
 // ---- 2. Ngưỡng tự học, không còn hiệu chỉnh một lần ----
 check("CANARY: bỏ hẳn kiểu đo nền 600 ms đầu rồi thôi", !/ticks <= 6/.test(voiceSrc));
 check("CANARY: bỏ hẳn ngưỡng chết 0.045 viết thẳng trong vòng đo",
   !/Math\.max\(0\.045, baseline/.test(voiceSrc));
 check("ngưỡng tính từ nền tự học _echoFloor",
-  /const thresh = Math\.max\(JavisVoice\.BARGE_SAN, this\._echoFloor \* 1\.8 \+ 0\.01\);/.test(voiceSrc));
+  /const thresh = Math\.max\(UniMateVoice\.BARGE_SAN, this\._echoFloor \* 1\.8 \+ 0\.01\);/.test(voiceSrc));
 check("nền CHỈ học ở nhịp không nghi ngờ (không kéo theo giọng người)",
   /hits = 0; gan = \[\];\s*\n\s*this\._echoFloor = this\._echoFloor \* 0\.9 \+ rms \* 0\.1;/.test(voiceSrc));
 check("nghi ngờ đủ nhịp thì NHÁ TIẾNG, không gọi thẳng _bargeIn",
@@ -86,8 +86,8 @@ check("là vọng -> nâng nền THEO BẬC, không nhảy thẳng tới mức v
 check("là vọng -> mở lại bộ rình, KHÔNG dừng đọc",
   /this\._nhoNenVong\(\);\s*\n\s*this\._startBargeMonitor\(\);/.test(voiceSrc));
 check("nền vọng được nhớ qua các lần mở trang, có chặn trên chống giá trị rác",
-  /localStorage\.setItem\("javis\.nenVong"/.test(voiceSrc)
-  && /Math\.min\(0\.3, parseFloat\(localStorage\.getItem\("javis\.nenVong"\)\) \|\| 0\)/.test(voiceSrc));
+  /localStorage\.setItem\("unimate\.nenVong"/.test(voiceSrc)
+  && /Math\.min\(0\.3, parseFloat\(localStorage\.getItem\("unimate\.nenVong"\)\) \|\| 0\)/.test(voiceSrc));
 
 // Leo bậc chạy thật: một tiếng ho to (0.2) chỉ đẩy được một bậc nhỏ, không treo nền lên 0.21.
 const leo = (nen, pre) => Math.max(nen, Math.min(pre * 1.05, nen * 1.6 + 0.02));
@@ -109,7 +109,7 @@ check("stopSpeaking huỷ cuộc thăm dò dở", /this\._stopBargeMonitor\(\);\
 check("pauseSpeaking cũng huỷ", (voiceSrc.match(/this\._huyNha\(\);/g) || []).length >= 2);
 
 // Chạy thật _apAmLuong để chắc con số đúng chiều.
-const v = Object.create(JavisVoice.prototype);
+const v = Object.create(UniMateVoice.prototype);
 v._dangNha = true;
 const fake = { volume: 1 };
 v._apAmLuong(fake);
@@ -166,7 +166,7 @@ function dungDongHo() {
 
 const dh = dungDongHo();
 const Lop = new Function("window", "localStorage", "setInterval", "clearInterval", "setTimeout", "clearTimeout",
-  classSrc + "\nreturn JavisVoice;")(
+  classSrc + "\nreturn UniMateVoice;")(
   // SpeechRecognition giả: chỉ để _initRecognition không kêu "trình duyệt không hỗ trợ".
   // Ngắt lời KHÔNG dùng tới nhận dạng nữa, đó chính là điểm của đợt sửa này.
   { speechSynthesis: { getVoices: () => [], speak() {}, cancel() {} },
@@ -198,11 +198,11 @@ function dungPhong(mucVong) {
   return v;
 }
 
-// Ca 1: loa ngoài vọng liên tục, KHÔNG có ai nói. Javis phải đọc hết, không tự ngắt lời mình.
+// Ca 1: loa ngoài vọng liên tục, KHÔNG có ai nói. UNI MATE phải đọc hết, không tự ngắt lời mình.
 const p1 = dungPhong(0.078);
 p1._startBargeMonitor();
 dh.chay(3000);
-check("vọng loa suốt 3 giây: Javis KHÔNG tự ngắt lời mình", p1.dungLuc === 0);
+check("vọng loa suốt 3 giây: UNI MATE KHÔNG tự ngắt lời mình", p1.dungLuc === 0);
 check("vọng loa: nền tự học lên đủ cao để thôi nghi ngờ", p1._echoFloor > 0.03, p1._echoFloor);
 check("vọng loa: chỉ nhá tiếng vài lần rồi yên", p1.soLanNha <= 3, p1.soLanNha);
 check("vọng loa: âm lượng đã trả về đầy", p1.currentAudio.volume === 1);
@@ -219,7 +219,7 @@ p2.giongNguoi = 0.15;
 dh.chay(400);
 p2.giongNguoi = 0;
 dh.chay(900);
-check("nói 'thôi' 400 ms: Javis DỪNG đọc", p2.dungLuc > 0);
+check("nói 'thôi' 400 ms: UNI MATE DỪNG đọc", p2.dungLuc > 0);
 check("dừng trong vòng 700 ms kể từ lúc bắt đầu nói",
   p2.dungLuc > 0 && p2.dungLuc - batDauNoi <= 700, p2.dungLuc - batDauNoi);
 check("dừng rồi thì âm lượng trả về đầy (khúc sau không bị câm)", p2.currentAudio.volume === 1);
@@ -237,7 +237,7 @@ check("vẫn rình được nhờ cờ rảnh tay", p2b._bargeTimer !== null && 
 p2b._stopBargeMonitor();
 p2b.handsFree = false;
 p2b._startBargeMonitor();
-check("tắt rảnh tay thì KHÔNG rình (quay về gõ chữ là Javis đọc trong im lặng)",
+check("tắt rảnh tay thì KHÔNG rình (quay về gõ chữ là UNI MATE đọc trong im lặng)",
   !p2b._bargeTimer);
 p2b._stopBargeMonitor(); p2b._huyNha();
 check("_pumpQueue giữ luồng mic sống khi đang rảnh tay", /this\._giuTaiKhiDoc\(\);/.test(voiceSrc));

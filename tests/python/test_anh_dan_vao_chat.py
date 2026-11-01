@@ -2,7 +2,7 @@
 
     python tests/run.py anh_dan_vao_chat      (KHÔNG mạng)
 
-Chủ repo báo 01/09: *"gửi ảnh vào javis để javis đọc thì sẽ không lưu lại tấm ảnh đó ở đoạn
+Chủ repo báo 01/09: *"gửi ảnh vào unimate để unimate đọc thì sẽ không lưu lại tấm ảnh đó ở đoạn
 chat, và khi dán ảnh vào cũng không zoom lên được"*.
 
 Bong bóng tin của người dùng hiện ảnh bằng `URL.createObjectURL(file)` - một URL chỉ sống
@@ -19,7 +19,7 @@ from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-anhchat-test-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-anhchat-test-")
 
 import main  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402

@@ -645,7 +645,7 @@ ordinary native profile until all its read/policy/resume gates are satisfied.
 
 ### Installed source inspected without importing it
 
-Package root: `D:/Project/Javis-OS/.venv/Lib/site-packages/claude_agent_sdk`.
+Package root: `D:/Project/UNI-MATE/.venv/Lib/site-packages/claude_agent_sdk`.
 Sibling `claude_agent_sdk-0.2.116.dist-info/METADATA` identifies Version0.2.116.
 This is the actual installed project venv, not current remote SDK assumed to match.
 
@@ -656,7 +656,7 @@ This is the actual installed project venv, not current remote SDK assumed to mat
 | types.py825-832,1997 | SdkPluginConfig supports only local type+path; actual plugins option exists. |
 | _internal/transport/subprocess_cli.py244-280 | _apply_skills_defaults copies original options, adds Skill(name) allow entries for list, and defaults user/project sources ONLY when sources is None. Explicit user/project/local or [] is not overwritten. |
 | _internal/transport/subprocess_cli.py313-318,413-420 | Serializes effective allow rules, exact setting sources and local --plugin-dir. This is not the entire skills filter. |
-| client.py229-241 | ClaudeSDKClient passes options.skills into actual Query, covering Javis's actual SDK client route. |
+| client.py229-241 | ClaudeSDKClient passes options.skills into actual Query, covering UNI MATE's actual SDK client route. |
 | _internal/query.py200-218 | initialize includes request.skills for an explicit list, including []; None/all omit it. Thus [] is not accidentally equivalent to no --allowedTools. |
 | types.py1893-1910 | can_use_tool handles prompting, not every call; existing allows/permission mode can bypass it. PreToolUse is the per-call hook. |
 | types.py413-420 | PreToolUse output supports deny/ask/allow/defer and updatedInput. These are available in0.2.116, not invented fields. |
@@ -708,19 +708,19 @@ do not constrain arbitrary Python/Node subprocess opens or every recursive read.
 
 The sandbox applies OS enforcement to shell processes on supported systems;
 native Windows commands run unsandboxed. File tools, MCP and hooks are outside
-that shell boundary. Switching Javis to WSL2 would change its engine profile and
+that shell boundary. Switching UNI MATE to WSL2 would change its engine profile and
 is not authorized implicitly by this design.
 [Anthropic sandbox platform and scope](https://code.claude.com/docs/en/sandboxing)
 
 Session resume restores conversation, not filesystem snapshots; explicit resume
-selects a recorded session. Therefore Javis must retain the same immutable plugin
+selects a recorded session. Therefore UNI MATE must retain the same immutable plugin
 and pin itself and must reject a foreign or missing mapping.
 [Anthropic sessions](https://code.claude.com/docs/en/agent-sdk/sessions)
 
 ### Concrete discovery candidate and collision handling
 
 Use a task/session-specific host-generated plugin name such as
-`javis-effective-<pin-prefix>` (illustrative only), with manifest name and path
+`unimate-effective-<pin-prefix>` (illustrative only), with manifest name and path
 bound to full pin hash. Never use a reserved/vendor namespace. Keep the selected
 SKILL.md bytes/frontmatter unchanged; plugin namespace is runtime identity, not
 an improver edit. Derive actual last-segment name from validated frontmatter and
@@ -863,7 +863,7 @@ apply to candidate loading, and its actual host owner/session binding is in scop
 The existence of `allowed_tools` or a deny-list comment does not satisfy these
 conditions. No additional profiles or routing expansion are proposed now.
 
-Normal native baseline remains the existing Javis behavior. “Effective native
+Normal native baseline remains the existing UNI MATE behavior. “Effective native
 profile unavailable” means do not select an overlay for that consumer; it does
 not disable or rewrite the owner's ordinary native configuration, tools, settings
 or sessions. API D2/E/Q engineering proceeds independently, while full D2 native

@@ -3,14 +3,14 @@
     python tests/run.py image_vision      (NO network: httpx MockTransport for the ChatGPT stream)
 
 The owner (2026-10-04): "the Zalo MCP cannot read images in group chats". The Zalo tools that read, send and tag now live in
-the store pack `javis.zalo` (its own tests are in the javis-store repo, tests/javis.zalo/). What stays in the app, and is
+the store pack `unimate.zalo` (its own tests are in the unimate-store repo, tests/unimate.zalo/). What stays in the app, and is
 pinned here:
   1. `image_vision`: ChatGPT on the signed-in plan looks at brain images and describes them, the only eyes the six API
      engines have. Images outside the brain are never sent; more than 4 per look is refused.
-  2. `javis_describe_image` in the bundled `image-chatgpt` plugin, read only.
-  3. `javis_read_file` on a photo explains how to see it instead of returning mojibake.
-  4. The Zalo plugins are no longer bundled, and the Zalo connector names `javis.zalo` as its companion pack so the QR flow
-     and the Connect page can offer it. Javis never installs it silently: the state is reported, nothing more.
+  2. `unimate_describe_image` in the bundled `image-chatgpt` plugin, read only.
+  3. `unimate_read_file` on a photo explains how to see it instead of returning mojibake.
+  4. The Zalo plugins are no longer bundled, and the Zalo connector names `unimate.zalo` as its companion pack so the QR flow
+     and the Connect page can offer it. UNI MATE never installs it silently: the state is reported, nothing more.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -22,7 +22,7 @@ import tempfile
 import types
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-iv-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-iv-"))
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -43,7 +43,7 @@ def check(name, cond, them=""):
 
 
 JPEG = b"\xff\xd8\xff\xe0" + b"x" * 200
-vault = Path(tempfile.mkdtemp(prefix="javis-iv-vault-"))
+vault = Path(tempfile.mkdtemp(prefix="unimate-iv-vault-"))
 (vault / "attachments").mkdir()
 (vault / "attachments" / "x.jpg").write_bytes(JPEG)
 
@@ -82,7 +82,7 @@ r = asyncio.run(iv.describe_images(["attachments/x.jpg"], "có gì", vault_root=
 check("ChatGPT stream deltas are joined into the answer", r.get("ok") and r["text"] == "Ảnh 1: một hoá đơn", r)
 check("the image goes as a data URL, with the plan's token", SEEN["body"]["input"][0]["content"][1]["image_url"]
       .startswith("data:image/jpeg;base64,") and SEEN["auth"] == "Bearer tok")
-outside = Path(tempfile.mkdtemp(prefix="javis-iv-out-")) / "secret.jpg"
+outside = Path(tempfile.mkdtemp(prefix="unimate-iv-out-")) / "secret.jpg"
 outside.write_bytes(JPEG)
 SEEN.clear()
 r = asyncio.run(iv.describe_images([str(outside)], vault_root=str(vault)))
@@ -123,7 +123,7 @@ iv.image_gen._catalog_models = real_cat
 iv.openai_oauth, iv.httpx = real_oauth, real_httpx
 
 # ============================================================
-# 2. javis_describe_image in the bundled image-chatgpt plugin
+# 2. unimate_describe_image in the bundled image-chatgpt plugin
 # ============================================================
 class Ctx:
     def __init__(self):
@@ -141,10 +141,10 @@ c = Ctx()
 IC.register(c)
 y = yaml.safe_load((ROOT / "system" / "plugins" / "image-chatgpt" / "plugin.yaml").read_text(encoding="utf-8"))
 by = {t["name"]: t for t in c.tools}
-check("image-chatgpt: tools match plugin.yaml", sorted(by) == sorted(y["tools"]) == ["javis_describe_image", "javis_generate_image"],
+check("image-chatgpt: tools match plugin.yaml", sorted(by) == sorted(y["tools"]) == ["unimate_describe_image", "unimate_generate_image"],
       sorted(by))
-check("describing is read only, generating stays a write", by["javis_describe_image"]["min_mode"] == "readonly"
-      and by["javis_generate_image"]["min_mode"] == "safe")
+check("describing is read only, generating stays a write", by["unimate_describe_image"]["min_mode"] == "readonly"
+      and by["unimate_generate_image"]["min_mode"] == "safe")
 calls = []
 
 
@@ -154,12 +154,12 @@ async def fake_describe(paths, question="", vault_root=None, labels=None, timeou
 
 real_describe = iv.describe_images
 iv.describe_images = fake_describe
-kq = asyncio.run(by["javis_describe_image"]["handler"]({"images": "attachments/x.jpg", "question": "con gì"},
+kq = asyncio.run(by["unimate_describe_image"]["handler"]({"images": "attachments/x.jpg", "question": "con gì"},
                                                        types.SimpleNamespace(vault_root="V")))
-check("javis_describe_image accepts one path as a string and passes the brain", calls == [(["attachments/x.jpg"], "con gì", "V")]
+check("unimate_describe_image accepts one path as a string and passes the brain", calls == [(["attachments/x.jpg"], "con gì", "V")]
       and "một con mèo" in kq, kq)
-check("javis_describe_image without images is an ERROR",
-      asyncio.run(by["javis_describe_image"]["handler"]({}, types.SimpleNamespace(vault_root="V"))).startswith("ERROR"))
+check("unimate_describe_image without images is an ERROR",
+      asyncio.run(by["unimate_describe_image"]["handler"]({}, types.SimpleNamespace(vault_root="V"))).startswith("ERROR"))
 iv.describe_images = real_describe
 
 # ============================================================
@@ -167,43 +167,43 @@ iv.describe_images = real_describe
 # ============================================================
 import mcp_hub  # noqa: E402
 _tools, route = mcp_hub._builtin_tools("full", str(vault))
-kq = asyncio.run(route["javis_read_file"]["call"]({"path": "attachments/x.jpg"}))
-check("reading a photo as text explains how to see it instead of mojibake", "javis_describe_image" in kq
+kq = asyncio.run(route["unimate_read_file"]["call"]({"path": "attachments/x.jpg"}))
+check("reading a photo as text explains how to see it instead of mojibake", "unimate_describe_image" in kq
       and "�" not in kq and "![](attachments/x.jpg)" in kq, kq[:200])
 (vault / "note.md").write_text("xin chào", encoding="utf-8")
-check("text files still read as before", asyncio.run(route["javis_read_file"]["call"]({"path": "note.md"})) == "xin chào")
+check("text files still read as before", asyncio.run(route["unimate_read_file"]["call"]({"path": "note.md"})) == "xin chào")
 
 # ============================================================
-# 4. Zalo tools moved to the store pack javis.zalo
+# 4. Zalo tools moved to the store pack unimate.zalo
 # ============================================================
 bundled = {d.name for d in (ROOT / "system" / "plugins").iterdir() if d.is_dir()}
 check("the Zalo plugins are no longer bundled (a pack plugin may not reuse a bundled slug)",
       not ({"zalo-image", "zalo-group", "zalo-read-images"} & bundled), sorted(bundled))
 cat = json.loads((ROOT / "system" / "mcp-catalog.json").read_text(encoding="utf-8"))
 zalo = next(c for c in cat["connectors"] if c["id"] == "zalo")
-check("the Zalo connector stays in the app and names its companion pack", zalo.get("companion_pack") == "javis.zalo"
+check("the Zalo connector stays in the app and names its companion pack", zalo.get("companion_pack") == "unimate.zalo"
       and zalo.get("auth", {}).get("type") == "qr")
 import mcp_catalog  # noqa: E402
 pub = {c["id"]: c for c in mcp_catalog.public_catalog()}
 check("the dashboard sees the companion pack (the QR flow offers it after sign-in)",
-      pub.get("zalo", {}).get("companion_pack") == "javis.zalo")
+      pub.get("zalo", {}).get("companion_pack") == "unimate.zalo")
 
 import pack_install  # noqa: E402
 import packs  # noqa: E402
-CAT = {"zalo": {"name": "Zalo Agent MCP", "companion_pack": "javis.zalo"}, "gmail": {"name": "Gmail"}}
+CAT = {"zalo": {"name": "Zalo Agent MCP", "companion_pack": "unimate.zalo"}, "gmail": {"name": "Gmail"}}
 pack_install.doc_so = lambda: {}
 check("no Zalo connection: nothing to offer", pack_install.companion_packs(CAT, {"gmail"}) == [])
 st = pack_install.companion_packs(CAT, {"zalo", "gmail"})
 check("Zalo connected, pack missing: reported as missing", st == [{"connector_id": "zalo", "name": "Zalo Agent MCP",
-                                                                   "pack": "javis.zalo", "state": "missing"}], st)
-pack_install.doc_so = lambda: {"javis.zalo": {"enabled": False}}
+                                                                   "pack": "unimate.zalo", "state": "missing"}], st)
+pack_install.doc_so = lambda: {"unimate.zalo": {"enabled": False}}
 check("installed but off: reported as disabled", pack_install.companion_packs(CAT, {"zalo"})[0]["state"] == "disabled")
-pack_install.doc_so = lambda: {"javis.zalo": {"enabled": True}}
+pack_install.doc_so = lambda: {"unimate.zalo": {"enabled": True}}
 check("installed and on: reported as installed", pack_install.companion_packs(CAT, {"zalo"})[0]["state"] == "installed")
 pack_install.doc_so = lambda: {}
 real_dir = packs.PACKS_DIR
-packs.PACKS_DIR = Path(tempfile.mkdtemp(prefix="javis-iv-packs-"))
-(packs.PACKS_DIR / "javis.zalo").mkdir()
+packs.PACKS_DIR = Path(tempfile.mkdtemp(prefix="unimate-iv-packs-"))
+(packs.PACKS_DIR / "unimate.zalo").mkdir()
 check("dropped in by hand (no ledger row) counts as installed",
       pack_install.companion_packs(CAT, {"zalo"})[0]["state"] == "installed")
 packs.PACKS_DIR = real_dir
@@ -213,7 +213,7 @@ check("the Connect catalog route carries the companion states", '"companions": _
 
 claude_md = (ROOT / "CLAUDE.md").read_text(encoding="utf-8")
 check("system prompt points the brain at zalo_read_images and says where it comes from",
-      "zalo_read_images" in claude_md and "javis.zalo" in claude_md)
+      "zalo_read_images" in claude_md and "unimate.zalo" in claude_md)
 for f in (Path(__file__), ROOT / "server" / "image_vision.py", ROOT / "system" / "plugins" / "image-chatgpt" / "plugin.py"):
     check(f"no em dash in {f.name}", chr(0x2014) not in f.read_text(encoding="utf-8"))
 

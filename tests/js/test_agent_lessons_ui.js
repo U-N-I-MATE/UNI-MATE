@@ -3,8 +3,8 @@
 //     python tests/run.py --js agent_lessons_ui -v
 //
 // 0.190.0 (chủ repo 16/10/2026): danh sách bài học theo phạm vi, nút Thu hồi / Dùng ở mọi nơi, "bài học cũ chưa có phạm
-// vi", thay đổi của tự rà soát và đề xuất rời màn hình; bài học làm qua chat (tool javis_memory, test_memory_chat.py).
-// Mục chỉ còn hạn mức lượt tự phát hôm nay và ô chọn. Hàm thuần dưới node, cộng chỗ nối: sổ JavisPulseParts, script
+// vi", thay đổi của tự rà soát và đề xuất rời màn hình; bài học làm qua chat (tool unimate_memory, test_memory_chat.py).
+// Mục chỉ còn hạn mức lượt tự phát hôm nay và ô chọn. Hàm thuần dưới node, cộng chỗ nối: sổ UniMatePulseParts, script
 // trong index.html, CSS 16px, i18n hai thứ tiếng, dòng bảng giới hạn của teams.js.
 "use strict";
 const fs = require("fs");
@@ -61,7 +61,7 @@ check("Hạn mức -> POST /agents/{slug}/budget, Không giới hạn gửi 'unl
   r.url === "/agents/vi%E1%BB%87t/budget?brain=b" && r.body.daily_calls === "unlimited"
   && LUI.actionRequest("viet", "b", "4").body.daily_calls === 4);
 
-// Sổ JavisPulseParts: agent-pulse.js gọi render(view) và bọc trong .pulse-part
+// Sổ UniMatePulseParts: agent-pulse.js gọi render(view) và bọc trong .pulse-part
 const wrapped = P.partsHtml(view, [LUI.part]);
 check("góp vào bảng Nhịp qua sổ đăng ký (render(view) -> HTML)", wrapped.includes('data-part="lessons"') &&
   wrapped.includes(vi["lessons.title"]));
@@ -94,7 +94,7 @@ const comp = P.compactHtml(Object.assign({}, view, { proposals: [
 check("bảng Nhịp bản gọn: dòng hạn mức + đề xuất ĐANG CHỜ (nút Nhận/Bác), không nhịp, không đề xuất đã quyết",
   comp.includes(vi["lessons.cap_before"]) && comp.includes("Mở việc tuần") && comp.includes('data-pulse-act="proposal_accept"')
   && !comp.includes("Đã bác") && !comp.includes("pulse-max-sel") && !comp.includes(vi["pulse.title"]), comp);
-check("cột Cài đặt gắn bảng Nhịp ở bản gọn", /JavisPulse\.mount\(ph, \{ slug: item\.slug, brain: brain\(\), compact: true \}\)/
+check("cột Cài đặt gắn bảng Nhịp ở bản gọn", /UniMatePulse\.mount\(ph, \{ slug: item\.slug, brain: brain\(\), compact: true \}\)/
   .test(read("workspace.js")) && /o\.compact \? compactHtml\(view, o\) : panelHtml\(view, o\)/.test(read("agent-pulse.js")));
 
 // Smoke T3: Auto đang bật mà chưa có nhịp thì không khuyên bật Auto.

@@ -4,7 +4,7 @@
 
 Bệnh thật đo được trên mã trước khi có tầng này (0.34.1):
 
-    "tóm tắt đơn hàng"    -> bị chặn đúng, đi đường đầy đủ, Javis gọi tool lấy số thật
+    "tóm tắt đơn hàng"    -> bị chặn đúng, đi đường đầy đủ, UNI MATE gọi tool lấy số thật
     "summarize my orders" -> LỌT qua đường tắt tiết kiệm token. Đường tắt cố ý KHÔNG phát
                              tool nào, nên model không có cách nào biết số đơn hàng, và nó
                              làm cái tệ nhất: bịa ra một con số nghe hợp lý.
@@ -163,7 +163,7 @@ check("chưa rõ ngôn ngữ thì không đi tắt, dù câu có chữ hợp l�
       not _gate.classify("translate zbcd qwerty mnop vlkx").eligible)
 
 # Tiếng Việt CÓ DẤU và tiếng Âu có dấu phải tách được nhau ra: một chữ "de" trong câu tiếng
-# Pháp từng đủ để cả câu bị chấm thành tiếng Việt, rồi Javis trả lời người Pháp bằng tiếng Việt.
+# Pháp từng đủ để cả câu bị chấm thành tiếng Việt, rồi UNI MATE trả lời người Pháp bằng tiếng Việt.
 check("tiếng Pháp KHÔNG bị nhận thành tiếng Việt",
       lang_mod.detect("Peux-tu me résumer les ventes du mois de juin ?")[0] != "vi")
 check("tiếng Tây Ban Nha cũng vậy",
@@ -180,7 +180,7 @@ check("dò được từ chính lượt thì cổng dùng luôn",
                                                   lang=_dq.lang_cau_hoi).eligible)
 check("câu quá ngắn thì cổng KHÔNG có ngôn ngữ, và phải suy biến an toàn",
       lang_mod.resolve(turn_text="cho anh xem").lang_cau_hoi == "")
-# Ngôn ngữ GHIM tuyệt đối không rò xuống cổng: nó nói Javis trả lời tiếng gì, không nói người
+# Ngôn ngữ GHIM tuyệt đối không rò xuống cổng: nó nói UNI MATE trả lời tiếng gì, không nói người
 # dùng đang viết tiếng gì.
 check("ngôn ngữ ghim KHÔNG rò xuống cổng",
       lang_mod.resolve(turn_text="cho anh xem", reply_pref="en").lang_cau_hoi == "")
@@ -190,7 +190,7 @@ check("và ghim cũng không che mất ngôn ngữ THẬT của câu hỏi",
 
 
 # ============================================================
-# 4. Luật suy biến: thiếu bộ từ vựng làm Javis TỐN HƠN, không làm Javis LỎNG HƠN
+# 4. Luật suy biến: thiếu bộ từ vựng làm UNI MATE TỐN HƠN, không làm UNI MATE LỎNG HƠN
 # ============================================================
 _th = _gate.classify("สรุปยอดขายวันนี้ให้หน่อยครับ")
 check("ngôn ngữ chưa có lexicon thì KHÔNG được đi tắt", not _th.eligible)

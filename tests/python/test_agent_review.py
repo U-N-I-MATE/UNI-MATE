@@ -20,9 +20,9 @@ import tempfile
 from contextlib import closing
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-review-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-TEMP = Path(tempfile.mkdtemp(prefix="javis-review-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-review-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-review-w-"))
 
 import agent_budget as AB  # noqa: E402
 import agent_ledger as ALG  # noqa: E402

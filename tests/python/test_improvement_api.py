@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="imp-api-"))
-for key, value in {"JAVIS_STATE_DIR": TEST_ROOT / "state", "BRAINS_DIR": TEST_ROOT / "brains",
+for key, value in {"UNIMATE_STATE_DIR": TEST_ROOT / "state", "BRAINS_DIR": TEST_ROOT / "brains",
                    "OBSIDIAN_VAULT_PATH": TEST_ROOT / "vault", "BRAIN_PATH": TEST_ROOT / "brain",
                    "SOURCES_PATH": TEST_ROOT / "sources"}.items():
     os.environ[key] = str(value)
@@ -138,10 +138,10 @@ class MainSecurityTests(unittest.TestCase):
              patch.object(main.cfgmod, "gate_active", return_value=True), \
              patch.object(main.cfgmod, "valid_session", return_value=True):
             client = TestClient(main.app, base_url="http://testserver")
-            response = client.get("/improvement-policy", cookies={"javis_session": "owner-cookie"})
+            response = client.get("/improvement-policy", cookies={"unimate_session": "owner-cookie"})
             self.assertEqual(response.status_code, 200, response.text)
             self.assertEqual(response.json()["policy"], {"mode": "off", "version": 1})
-            self.assertEqual(client.get("/improvement-targets", cookies={"javis_session": "owner-cookie"}).json()["targets"], [])
+            self.assertEqual(client.get("/improvement-targets", cookies={"unimate_session": "owner-cookie"}).json()["targets"], [])
 
     def test_real_status_does_not_migrate_an_existing_legacy_database(self):
         self.assertIsNotNone(IA)
@@ -155,7 +155,7 @@ class MainSecurityTests(unittest.TestCase):
              patch.object(main.cfgmod, "gate_active", return_value=True), \
              patch.object(main.cfgmod, "valid_session", return_value=True):
             client = TestClient(main.app, base_url="http://testserver")
-            response = client.get("/improvement-policy", cookies={"javis_session": "owner-cookie"})
+            response = client.get("/improvement-policy", cookies={"unimate_session": "owner-cookie"})
             self.assertEqual(response.status_code, 200, response.text)
             self.assertEqual(response.json()["policy"], {"mode": "suggest", "version": 0})
         with sqlite3.connect(database) as connection:
@@ -172,13 +172,13 @@ class MainSecurityTests(unittest.TestCase):
             response = client.get("/improvement-policy")
             self.assertEqual(response.status_code, 401)
             response = client.put("/improvement-policy", headers={"origin": "https://foreign.example"},
-                                  cookies={"javis_session": "owner-cookie"},
+                                  cookies={"unimate_session": "owner-cookie"},
                                   json={"mode": "off", "expected_version": 0, "event_key": "csrf-rejected-0001"})
             self.assertEqual(response.status_code, 403)
-            response = client.get("/improvement-policy", cookies={"javis_session": "owner-cookie"})
+            response = client.get("/improvement-policy", cookies={"unimate_session": "owner-cookie"})
             self.assertEqual(response.status_code, 200, response.text)
             response = client.get("/improvement-policy", params={"brain": str(TEST_ROOT / "missing")},
-                                  cookies={"javis_session": "owner-cookie"})
+                                  cookies={"unimate_session": "owner-cookie"})
             self.assertEqual(response.status_code, 404)
 
 

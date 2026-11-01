@@ -26,7 +26,7 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-taofile-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-taofile-")
 
 import main  # noqa: E402
 import claude_sdk_engine  # noqa: E402
@@ -81,12 +81,12 @@ check("hub của ba engine CLI vẫn trỏ gốc brain kể cả khi cwd là rep
 # ============================================================
 # 2. Chuẩn hoá link: hành vi THẬT trên đĩa
 # ============================================================
-brain = Path(tempfile.mkdtemp(prefix="javis-brain-")).resolve()
+brain = Path(tempfile.mkdtemp(prefix="unimate-brain-")).resolve()
 (brain / "bai-viet").mkdir()
 (brain / "bai-viet" / "bai-1.txt").write_text("x", encoding="utf-8")
 (brain / "06 - Sources").mkdir()
 (brain / "06 - Sources" / "ghi chu.md").write_text("y", encoding="utf-8")
-ngoai = Path(tempfile.mkdtemp(prefix="javis-ngoai-")).resolve()
+ngoai = Path(tempfile.mkdtemp(prefix="unimate-ngoai-")).resolve()
 (ngoai / "lac.md").write_text("z", encoding="utf-8")
 
 
@@ -134,7 +134,7 @@ check("sai thư mục mà KHÔNG có file nào trùng tên thì giữ nguyên (�
 check("ảnh markdown cũng được chuẩn hoá",
       H(f"![sơ đồ]({brain}/bai-viet/bai-1.txt)") == "![sơ đồ](bai-viet/bai-1.txt)")
 check("không có gì để đổi thì trả nguyên văn", H("chào anh, hôm nay 3/5 bài xong rồi") == "chào anh, hôm nay 3/5 bài xong rồi")
-check("backtick chứa lệnh/tên tool không bị đụng", H("gọi `javis_write_file` rồi `ls -la`") == "gọi `javis_write_file` rồi `ls -la`")
+check("backtick chứa lệnh/tên tool không bị đụng", H("gọi `unimate_write_file` rồi `ls -la`") == "gọi `unimate_write_file` rồi `ls -la`")
 
 # ============================================================
 # 3. Link trỏ vào hư không → nói ra, không im
@@ -194,14 +194,14 @@ check("engine: id chết bị bỏ ngay trong vòng đọc sự kiện",
       (ROOT / "server" / "claude_sdk_engine.py").read_text(encoding="utf-8"))
 check("dashboard: mất mạch thì mồi lại từ kho phiên (cùng cách Codex)",
       "_resume_failed = await _consume_claude(" in MAIN
-      and "Javis đang khôi phục ngữ cảnh từ lịch sử đã lưu" in MAIN)
+      and "UNI MATE đang khôi phục ngữ cảnh từ lịch sử đã lưu" in MAIN)
 check("telegram: mất mạch thì mồi lại", "_rf = await _chay_claude(_cli_prompt)" in MAIN)
 
 # ============================================================
 # 6. Prompt: dặn ghi file vào TRONG vault, link tương đối, đếm file bằng tool
 # ============================================================
 _agentic = main.main_prompt_rendering.render_agentic_paths(
-    str(brain), brain / "agents", brain / "workflows", brain / "Javis/loops", brain / "skills")
+    str(brain), brain / "agents", brain / "workflows", brain / "UniMate/loops", brain / "skills")
 check("production nối đúng renderer LỚP AGENTIC dùng chung",
       "base += main_prompt_rendering.render_agentic_paths(root, ag, wf, lp, sk)" in MAIN)
 check("LỚP AGENTIC dặn ghi FILE THƯỜNG vào trong vault bằng đường dẫn tuyệt đối",

@@ -8,8 +8,8 @@ and never anything of another customer: not a chunk in the prompt, not a search 
 Proposal from a user (2026-10-26); its acceptance checks are pinned here as written:
 
   - files A and B both say "cọc": a search in group A shows only A, in group B only B;
-  - in group A, javis_docs_read of B's path answers "không có tài liệu";
-  - in group A, javis_docs_list does not name B;
+  - in group A, unimate_docs_read of B's path answers "không có tài liệu";
+  - in group A, unimate_docs_list does not name B;
   - the same through the in-process path (API engines) and the hub over HTTP (Claude Code, Codex).
 
 Plus the rules that keep it fail-closed: the chat id comes from the turn the server bound, never from a tool
@@ -23,8 +23,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-scoped-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-scoped-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -49,7 +49,7 @@ def run(c):
     return asyncio.run(c)
 
 
-BRAIN = Path(tempfile.mkdtemp(prefix="javis-scoped-brain-")).resolve()
+BRAIN = Path(tempfile.mkdtemp(prefix="unimate-scoped-brain-")).resolve()
 A, B, C = "7012345678901234567", "7098765432109876543", "-1001234567"
 
 
@@ -158,34 +158,34 @@ def in_turn(chat, fn):
         turn_context.reset(tok)
 
 
-s_a = in_turn(A, lambda: call("javis_docs_search", {"query": "cọc"}))
-s_b = in_turn(B, lambda: call("javis_docs_search", {"query": "cọc"}))
+s_a = in_turn(A, lambda: call("unimate_docs_search", {"query": "cọc"}))
+s_b = in_turn(B, lambda: call("unimate_docs_search", {"query": "cọc"}))
 check("search 'cọc' in group A: A only", "ho-so-lan" in s_a and "ho-so-hoa" not in s_a and "8 triệu" not in s_a, s_a)
 check("search 'cọc' in group B: B only", "ho-so-hoa" in s_b and "ho-so-lan" not in s_b and "5 triệu" not in s_b, s_b)
-r_ab = in_turn(A, lambda: call("javis_docs_read", {"path": f"rieng-theo-nhom/{B}/ho-so-hoa.md"}))
+r_ab = in_turn(A, lambda: call("unimate_docs_read", {"path": f"rieng-theo-nhom/{B}/ho-so-hoa.md"}))
 check("read B's file from group A: 'không có tài liệu'", r_ab.startswith("ERROR: không có tài liệu"), r_ab)
 check("read B by bare file name from group A: no", in_turn(A, lambda: call(
-    "javis_docs_read", {"path": "ho-so-hoa.md"})).startswith("ERROR"))
+    "unimate_docs_read", {"path": "ho-so-hoa.md"})).startswith("ERROR"))
 check("read B with ../ tricks from group A: no", in_turn(A, lambda: call(
-    "javis_docs_read", {"path": f"rieng-theo-nhom/{A}/../{B}/ho-so-hoa.md"})).startswith("ERROR"))
-r_aa = in_turn(A, lambda: call("javis_docs_read", {"path": "ho-so-lan.md"}))
+    "unimate_docs_read", {"path": f"rieng-theo-nhom/{A}/../{B}/ho-so-hoa.md"})).startswith("ERROR"))
+r_aa = in_turn(A, lambda: call("unimate_docs_read", {"path": "ho-so-lan.md"}))
 check("read own file in group A: whole file, frontmatter stripped", "Hẹn gửi album thử" in r_aa
       and "type: ho-so" not in r_aa, r_aa[:200])
-l_a = in_turn(A, lambda: call("javis_docs_list"))
+l_a = in_turn(A, lambda: call("unimate_docs_list"))
 check("list in group A: own files, never B's name", "ho-so-lan" in l_a and "phu-luc-lan" in l_a
       and "ho-so-hoa" not in l_a and "ho-so-tuan" not in l_a and "ho-so-minh" not in l_a, l_a)
-l_none = call("javis_docs_list")
+l_none = call("unimate_docs_list")
 check("list with no turn: shared documents only", "bang-gia" in l_none and "ho-so" not in l_none, l_none)
 check("read with no turn: a scoped file does not open", call(
-    "javis_docs_read", {"path": f"rieng-theo-nhom/{A}/ho-so-lan.md"}).startswith("ERROR"))
-check("a 'chat_id' tool argument is ignored", "ho-so-hoa" not in call("javis_docs_search", {"query": "cọc", "chat_id": B}))
+    "unimate_docs_read", {"path": f"rieng-theo-nhom/{A}/ho-so-lan.md"}).startswith("ERROR"))
+check("a 'chat_id' tool argument is ignored", "ho-so-hoa" not in call("unimate_docs_search", {"query": "cọc", "chat_id": B}))
 toc_a = dt.table_of_contents(BRAIN, chat_id=A)
 check("reply judge's table of contents in group A: A's file, not B's", "ho-so-lan" in toc_a and "ho-so-hoa" not in toc_a,
       toc_a)
 check("table of contents with no chat: no scoped file", "ho-so" not in dt.table_of_contents(BRAIN))
 
 # ============================================================
-# 5. The hub over HTTP (Claude Code / Codex): the chat comes from the X-Javis-Turn key
+# 5. The hub over HTTP (Claude Code / Codex): the chat comes from the X-UniMate-Turn key
 # ============================================================
 class _HttpReq:
     def __init__(self, body, headers):
@@ -197,8 +197,8 @@ class _HttpReq:
 
 
 def http_call(name, args, turn_key):
-    hdr = {"authorization": f"Bearer {mcp_hub.hub_token()}", "x-javis-mode": "read_docs",
-           "x-javis-vault": str(BRAIN), "x-javis-bot": "1"}
+    hdr = {"authorization": f"Bearer {mcp_hub.hub_token()}", "x-unimate-mode": "read_docs",
+           "x-unimate-vault": str(BRAIN), "x-unimate-bot": "1"}
     if turn_key:
         hdr[turn_context.HEADER] = turn_key
     body = {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": name, "arguments": args}}
@@ -213,9 +213,9 @@ def key_for(chat):
 
 tok_a, key_a = key_for(A)
 try:
-    h_a = http_call("javis_docs_search", {"query": "cọc"}, key_a)
-    h_read = http_call("javis_docs_read", {"path": f"rieng-theo-nhom/{B}/ho-so-hoa.md"}, key_a)
-    h_list = http_call("javis_docs_list", {}, key_a)
+    h_a = http_call("unimate_docs_search", {"query": "cọc"}, key_a)
+    h_read = http_call("unimate_docs_read", {"path": f"rieng-theo-nhom/{B}/ho-so-hoa.md"}, key_a)
+    h_list = http_call("unimate_docs_list", {}, key_a)
 finally:
     turn_context.reset(tok_a)
 check("HTTP search 'cọc' with group A's key: A only", "ho-so-lan" in h_a and "ho-so-hoa" not in h_a, h_a)
@@ -223,13 +223,13 @@ check("HTTP read of B with group A's key: 'không có tài liệu'", h_read.star
 check("HTTP list with group A's key: never B's name", "ho-so-lan" in h_list and "ho-so-hoa" not in h_list, h_list)
 tok_b, key_b = key_for(B)
 try:
-    h_b = http_call("javis_docs_search", {"query": "cọc"}, key_b)
+    h_b = http_call("unimate_docs_search", {"query": "cọc"}, key_b)
 finally:
     turn_context.reset(tok_b)
 check("HTTP search 'cọc' with group B's key: B only", "ho-so-hoa" in h_b and "ho-so-lan" not in h_b, h_b)
-check("HTTP with no key: no scoped file", "ho-so" not in http_call("javis_docs_list", {}, None))
-check("HTTP with a forged key: no scoped file", "ho-so" not in http_call("javis_docs_list", {}, "gia-mao-khoa"))
-check("HTTP with a key whose turn ended: no scoped file", "ho-so" not in http_call("javis_docs_list", {}, key_a))
+check("HTTP with no key: no scoped file", "ho-so" not in http_call("unimate_docs_list", {}, None))
+check("HTTP with a forged key: no scoped file", "ho-so" not in http_call("unimate_docs_list", {}, "gia-mao-khoa"))
+check("HTTP with a key whose turn ended: no scoped file", "ho-so" not in http_call("unimate_docs_list", {}, key_a))
 
 # ============================================================
 # 6. The role profile (shared by every chat) never lists a customer's file

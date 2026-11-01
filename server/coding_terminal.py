@@ -6,14 +6,14 @@ Vì sao có file này
 lệnh, không chạy nền, và chặn cả `rm`, `curl`, `chmod`, `kill` ở mọi mức. Đủ cho mức Tự động
 (chạy test, đọc repo), nhưng không đủ để LẬP TRÌNH: không `cd` được, không pipe được, không
 bật được dev server để thử, không cài được gói. Claude Code, Codex và Hermes Agent đều có
-terminal thật; engine API của Javis thì không, nên cùng một model mà làm kém hẳn.
+terminal thật; engine API của UNI MATE thì không, nên cùng một model mà làm kém hẳn.
 
 File này cho mức Toàn quyền một terminal thật, học thiết kế từ Hermes Agent
 (github.com/NousResearch/hermes-agent, MIT): `tools/terminal_tool.py`, `tools/environments/
 base.py` (mỗi lệnh một bash mới nhưng nhớ cwd và biến môi trường qua file snapshot),
 `tools/process_registry.py` (chạy nền, xem log, dừng), `tools/approval_detection.py` (rào cứng
 cho lệnh phá cả máy), `tools/tool_output_truncate.py` (cắt 40% đầu, 60% đuôi). Viết lại theo
-kiểu Javis.
+kiểu UNI MATE.
 
 Ranh giới an toàn, nói thẳng
 ----------------------------
@@ -27,11 +27,11 @@ Ranh giới an toàn, nói thẳng
        sudo/su. Quét cả lớp `bash -c '...'` và `eval`.
     2. Mốc khôi phục trước lượt có lệnh thay đổi (`coding_checkpoint`), nên lỡ hỏng thì bấm
        Hoàn tác trên trang Coding là về.
-    3. Môi trường lệnh KHÔNG thừa kế env của máy chủ (trong đó có API key của Javis): dựng từ
+    3. Môi trường lệnh KHÔNG thừa kế env của máy chủ (trong đó có API key của UNI MATE): dựng từ
        danh sách trắng, rồi lọc thêm mọi tên trông như bí mật.
     4. Output che bí mật (`secret_redact`) trước khi đưa model đọc.
     5. Mọi lệnh ghi nhật ký (mcp_hub ghi vào mcp_audit.jsonl).
-  Trên VPS Javis chạy trong Docker, nên "cả máy" ở đây là container.
+  Trên VPS UNI MATE chạy trong Docker, nên "cả máy" ở đây là container.
 
 Windows: không có bash thì chạy PowerShell, chỉ nhớ được thư mục (không nhớ biến môi trường),
 và việc nền không có thông báo tự động khi xong (tien_trinh_nen chỉ chạy trên POSIX).
@@ -100,7 +100,7 @@ def env_sach() -> Dict[str, str]:
     # Không màu, không trình phân trang, không hỏi mật khẩu: output là để model đọc, và một lệnh
     # đứng chờ nhập mật khẩu git là một lệnh treo tới hết giờ.
     env.update({"TERM": "dumb", "PAGER": "cat", "GIT_PAGER": "cat", "NO_COLOR": "1",
-                "GIT_TERMINAL_PROMPT": "0", "PYTHONUNBUFFERED": "1", "JAVIS_TERMINAL": "1"})
+                "GIT_TERMINAL_PROMPT": "0", "PYTHONUNBUFFERED": "1", "UNIMATE_TERMINAL": "1"})
     return env
 
 
@@ -305,11 +305,11 @@ def can_chay_nen(cmd: str) -> str:
     if re.search(r"(^|\s)(nohup|setsid|disown)(\s|$)", s) or re.search(r"[^&]&\s*$", s):
         return ("Lệnh tự đẩy mình xuống nền (&, nohup, setsid). Ở đây tiến trình đó sẽ bị dọn khi "
                 "lệnh kết thúc và không ai thấy log. Gọi lại với background=true (bỏ & và nohup), "
-                "rồi xem log bằng javis_process.")
+                "rồi xem log bằng unimate_process.")
     for p in _CAN_CHAY_NEN:
         if p.search(s):
             return ("Lệnh này chạy mãi không tự thoát (dev server, watch, tail -f). Chạy tiền cảnh là "
-                    "treo tới hết giờ. Gọi lại với background=true, rồi dùng javis_process "
+                    "treo tới hết giờ. Gọi lại với background=true, rồi dùng unimate_process "
                     "action=log để xem nó in gì.")
     return ""
 
@@ -333,7 +333,7 @@ def cat_output(text: str, duong_dan_day_du: str = "") -> str:
         return text
     dau = int(OUTPUT_TOI_DA * TY_LE_DAU)
     duoi = OUTPUT_TOI_DA - dau
-    goi_y = (f" Bản đầy đủ: {duong_dan_day_du} (đọc bằng javis_terminal, ví dụ "
+    goi_y = (f" Bản đầy đủ: {duong_dan_day_du} (đọc bằng unimate_terminal, ví dụ "
              f"sed -n '1,200p' hoặc grep trên file đó)." if duong_dan_day_du else "")
     return (text[:dau] + f"\n\n… [đã cắt {len(text) - OUTPUT_TOI_DA:,} trên {len(text):,} ký tự ở "
             f"giữa.{goi_y}] …\n\n" + text[-duoi:])
@@ -475,11 +475,11 @@ def _kich_ban_posix(command: str, sid: str, cwd: str, goc0: str, ghi_trang_thai:
     dong.append(f"cd -- {q(cwd)} 2>/dev/null || cd -- {q(goc0)}")
     dong.append(command)
     if ghi_trang_thai:
-        dong += ["__javis_rc=$?",
+        dong += ["__unimate_rc=$?",
                  f"pwd -P > {q(str(d / 'cwd'))} 2>/dev/null",
                  f"export -p > {q(str(d / 'env.sh.tmp'))} 2>/dev/null && "
                  f"mv -f {q(str(d / 'env.sh.tmp'))} {q(str(snap))}",
-                 "exit $__javis_rc"]
+                 "exit $__unimate_rc"]
     f = d / f"cmd-{uuid.uuid4().hex[:8]}.sh"
     f.write_text("\n".join(dong) + "\n", encoding="utf-8")
     return f
@@ -501,7 +501,7 @@ def _argv(command: str, sid: str, cwd: str, goc0: str, ghi_trang_thai: bool) -> 
                    f"{q(d / 'cwd')}\nexit $__c\n")
         return [ps, "-NoProfile", "-NonInteractive", "-Command", kb], None, ""
     return [], None, ("Máy này không có bash lẫn PowerShell nên không có terminal. Dùng "
-                      "javis_run_command (chạy một chương trình, không qua shell).")
+                      "unimate_run_command (chạy một chương trình, không qua shell).")
 
 
 # ---------------------------------------------------------------------------------------
@@ -518,7 +518,7 @@ def chay(command: str, sid: str, goc: List[str], timeout: Optional[float] = None
         return "ERROR: phiên này chưa gắn thư mục làm việc nào."
     ly_do = kiem_rao_cung(cmd)
     if ly_do:
-        return (f"ERROR: chặn cứng: {ly_do}. Javis không cho model chạy lệnh có thể phá cả máy, ở "
+        return (f"ERROR: chặn cứng: {ly_do}. UNI MATE không cho model chạy lệnh có thể phá cả máy, ở "
                 f"mọi mức quyền. Cần thật thì chủ máy tự chạy trong tab Terminal.")
     nen = can_chay_nen(cmd)
     if nen:
@@ -608,7 +608,7 @@ def chay(command: str, sid: str, goc: List[str], timeout: Optional[float] = None
     dau = [f"exit={rc} ({giay:.1f}s)"]
     if het_gio:
         dau.append(f"HẾT GIỜ: lệnh chạy quá {int(tran)} giây nên đã bị dừng. Lệnh dài thì chạy nền "
-                   f"(background=true) rồi xem log bằng javis_process.")
+                   f"(background=true) rồi xem log bằng unimate_process.")
     if bao:
         dau.append(bao)
     if not rieng:
@@ -686,7 +686,7 @@ def chay_nen(command: str, sid: str, goc: List[str], workdir: str = "", brain_ro
         return "ERROR: phiên này chưa gắn thư mục làm việc nào."
     ly_do = kiem_rao_cung(cmd)
     if ly_do:
-        return (f"ERROR: chặn cứng: {ly_do}. Javis không cho model chạy lệnh có thể phá cả máy, ở "
+        return (f"ERROR: chặn cứng: {ly_do}. UNI MATE không cho model chạy lệnh có thể phá cả máy, ở "
                 f"mọi mức quyền.")
     _don_nen()
     with _NEN_KHOA:
@@ -694,9 +694,9 @@ def chay_nen(command: str, sid: str, goc: List[str], workdir: str = "", brain_ro
         tong = [v for v in _NEN.values() if v.dang_chay]
     if len(cua_phien) >= NEN_MOI_PHIEN:
         return (f"ERROR: phiên này đã có {len(cua_phien)} tiến trình nền đang chạy (trần "
-                f"{NEN_MOI_PHIEN}). Dừng bớt bằng javis_process action=kill.")
+                f"{NEN_MOI_PHIEN}). Dừng bớt bằng unimate_process action=kill.")
     if len(tong) >= NEN_TOAN_HE:
-        return f"ERROR: cả máy đã có {len(tong)} tiến trình nền của Javis (trần {NEN_TOAN_HE})."
+        return f"ERROR: cả máy đã có {len(tong)} tiến trình nền của UNI MATE (trần {NEN_TOAN_HE})."
     cwd, _ = _cwd_phien(sid, goc)
     if str(workdir or "").strip():
         w = str(workdir).strip()
@@ -739,10 +739,10 @@ def chay_nen(command: str, sid: str, goc: List[str], workdir: str = "", brain_ro
     time.sleep(0.3)
     tt.cap_nhat()
     trang = "đã thoát ngay" if tt.rc is not None else "đang chạy"
-    them = ("Xong là Javis tự báo vào khung chat này." if job_id else
-            "Javis không tự báo khi nó xong; dùng javis_process action=wait hoặc poll để biết.")
+    them = ("Xong là UNI MATE tự báo vào khung chat này." if job_id else
+            "UNI MATE không tự báo khi nó xong; dùng unimate_process action=wait hoặc poll để biết.")
     out = [f"Đã bật nền: {tt.id} ({trang}, pid {p.pid}). Log: {tt.log}",
-           f"Xem: javis_process action=log process_id={tt.id}. Dừng: action=kill. {them}"]
+           f"Xem: unimate_process action=log process_id={tt.id}. Dừng: action=kill. {them}"]
     if tt.rc is not None:
         out.append(f"exit={tt.rc}\n" + _duoi_log(tt, 40))
     return "\n".join(out)
@@ -774,7 +774,7 @@ def _mo_ta(tt: TienTrinh) -> str:
 
 def quan_ly(action: str, sid: str, process_id: str = "", offset: int = 0, limit: int = 0,
             timeout: float = 0) -> str:
-    """javis_process: list | poll | log | wait | kill."""
+    """unimate_process: list | poll | log | wait | kill."""
     a = str(action or "list").strip().lower()
     _don_nen()
     if a == "list":
@@ -857,7 +857,7 @@ def don_phien(sid: str) -> None:
 
 @atexit.register
 def _tat_het() -> None:
-    """Javis tắt: tiến trình nền chạy nhóm riêng nên sẽ sống sót nếu không dọn. Dọn."""
+    """UNI MATE tắt: tiến trình nền chạy nhóm riêng nên sẽ sống sót nếu không dọn. Dọn."""
     with _NEN_KHOA:
         ds = list(_NEN.values())
     for v in ds:

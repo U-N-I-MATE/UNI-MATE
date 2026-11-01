@@ -27,9 +27,9 @@ import tempfile
 import time
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-wh-matrix-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"      # incident triage raises instead of building an engine
+STATE = Path(tempfile.mkdtemp(prefix="unimate-wh-matrix-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"      # incident triage raises instead of building an engine
 for k in ("HTTPS_PROXY", "HTTP_PROXY", "https_proxy", "http_proxy", "ALL_PROXY", "all_proxy"):
     os.environ.pop(k, None)                         # the pinned transport is only used without an outgoing proxy
 try:
@@ -115,7 +115,7 @@ async def call_tool(brain, level, name, args):
 
 def make(state=None, **kw):
     deps = dict(state_dir=lambda: state or STATE, run_task=run_task, run_workflow=run_workflow, send=send,
-                base_url=lambda _r: "https://javis.example", workflow_exists=lambda b, s: True,
+                base_url=lambda _r: "https://unimate.example", workflow_exists=lambda b, s: True,
                 incident_hook=lambda *a, **k: INCIDENTS.append(a), plugin_handler=plugin_handler,
                 http_transport=httpx.MockTransport(handler), resolve=lambda h: ["93.184.216.34"], call_tool=call_tool,
                 brain_exists=lambda b: True)
@@ -136,14 +136,14 @@ async def drain(f, rounds=15):
 
 
 def child(code: str, state: Path, env_extra=None) -> subprocess.CompletedProcess:
-    env = dict(os.environ, JAVIS_STATE_DIR=str(state), PYTHONPATH=str(SERVER), **(env_extra or {}))
+    env = dict(os.environ, UNIMATE_STATE_DIR=str(state), PYTHONPATH=str(SERVER), **(env_extra or {}))
     return subprocess.run([PY, "-c", code], env=env, capture_output=True, text=True, timeout=120)
 
 
 ORDER = {"shop_id": 7, "id": 1001, "status": 1, "bill_full_name": "Nguyễn Lan", "bill_phone_number": "0912345678",
-         "items": [{"name": "Nước mắm"}, {"name": "Gói TRỢ LÝ AI JAVIS 12 tháng"}]}
+         "items": [{"name": "Nước mắm"}, {"name": "Gói TRỢ LÝ AI UNI MATE 12 tháng"}]}
 SPEC_RULES = {"filter": {"all": [{"path": "status", "op": "eq", "value": 1},
-                                 {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI JAVIS",
+                                 {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI UNI MATE",
                                   "quantifier": "any", "case_sensitive": False, "reason": "product_not_found"}]},
               "dedup": {"policy_version": 1, "business_paths": ["shop_id", "id", "status"], "ttl_s": 604800,
                         "missing": "quarantine"},
@@ -175,7 +175,7 @@ async def matrix():
     sd = Path(tempfile.mkdtemp(prefix="mx-durable-"))
     f0 = make(sd)
     h0, t0, _ = f0.create("/b1", name="Bền", target="task", text="x")
-    code = ("import asyncio, os, webhook_triggers as wt\nfrom pathlib import Path\nS = Path(os.environ['JAVIS_STATE_DIR'])\n"
+    code = ("import asyncio, os, webhook_triggers as wt\nfrom pathlib import Path\nS = Path(os.environ['UNIMATE_STATE_DIR'])\n"
             "async def nop(*a, **k): return 'ok', ''\nasync def snd(*a, **k): return True, ''\n"
             "f = wt.WebhookFeature(wt.WebhookDeps(state_dir=lambda: S, run_task=nop, run_workflow=nop, send=snd,"
             " base_url=lambda r: ''))\n"
@@ -185,7 +185,7 @@ async def matrix():
             "asyncio.run(go())\n")
     f0.store().close()
     f0._store = None
-    r = child(code, sd, {"JAVIS_WH_CRASH_AT": "after_commit"})
+    r = child(code, sd, {"UNIMATE_WH_CRASH_AT": "after_commit"})
     f1 = make(sd)
     rows = f1.store()._db.execute("SELECT id, status FROM events").fetchall()
     c2, rr = await f1.accept(h0["id"], t0, b'{"o": 1}', "application/json", "dur-1")
@@ -201,7 +201,7 @@ async def matrix():
     f2.store().close()
     f2._store = None
     code2 = code.replace(repr(h0["id"]), repr(h2["id"])).replace(repr(t0), repr(t2))
-    r = child(code2, sd2, {"JAVIS_WH_CRASH_AT": "before_commit"})
+    r = child(code2, sd2, {"UNIMATE_WH_CRASH_AT": "before_commit"})
     db2 = sqlite3.connect(str(sd2 / "webhook_events.sqlite3"))
     ev_n = db2.execute("SELECT COUNT(*) FROM events").fetchone()[0]
     key_n = db2.execute("SELECT COUNT(*) FROM dedup").fetchone()[0]
@@ -315,7 +315,7 @@ async def matrix():
                                                                                                 "filtered"),
              "null status": (dict(ORDER, status=None), "filtered"),
              "missing status": ({k: v for k, v in ORDER.items() if k != "status"}, "filtered"),
-             "unicode case": (dict(ORDER, items=[{"name": "trợ lý ai javis"}]), "done")}
+             "unicode case": (dict(ORDER, items=[{"name": "trợ lý ai unimate"}]), "done")}
     got = {}
     for n, (o, _) in cases.items():
         got[n] = (await send_order(hfl, tfl, o, "")).get("status")
@@ -447,7 +447,7 @@ async def matrix():
     check("§15 Chuyển tiếp: raw bytes and their content type forwarded unchanged; the sender's cookie and token never "
           "forwarded", rr.status_code == 202 and fw["body"] == raw and fw["headers"]["content-type"].startswith(
               "application/json") and "cookie" not in fw["headers"] and tfw not in json.dumps(fw["headers"])
-          and fw["headers"]["x-javis-event-id"] == rr.json()["event_id"], fw["headers"])
+          and fw["headers"]["x-unimate-event-id"] == rr.json()["event_id"], fw["headers"])
     act = wa.validate([{"id": "x", "kind": "http", "url": "https://rebind.example/h"}])[0]
     ctx = {"event_id": "ev_m", "hook_id": "wh_m", "action_id": "x", "received_at": 1.0, "delivery_id": "dlv_m",
            "fields": {}, "payload": {}, "body": b"{}", "content_type": "application/json"}
@@ -473,7 +473,7 @@ async def matrix():
     def gas(req):
         if req.url.host == "script.google.com":
             q = dict(httpx.QueryParams(req.url.query))
-            did = q.get("javis_delivery")
+            did = q.get("unimate_delivery")
             dup = did in rows_gas
             rows_gas.setdefault(did, len(rows_gas) + 1)
             echo = "https://script.googleusercontent.com/macros/echo?k=" + ("dup" if dup else "new") + "&d=" + str(did)
@@ -574,7 +574,7 @@ async def matrix():
     fp._store = None
     jobs = sp / "jobs.json"
     code = ("import asyncio, os, json, webhook_triggers as wt\nfrom pathlib import Path\n"
-            "S = Path(os.environ['JAVIS_STATE_DIR'])\nJ = S / 'jobs.json'\n"
+            "S = Path(os.environ['UNIMATE_STATE_DIR'])\nJ = S / 'jobs.json'\n"
             "def h(env, ctx):\n"
             "    jobs = json.loads(J.read_text()) if J.exists() else {}\n"
             "    job = jobs.setdefault(env['delivery_id'], 'job-%d' % (len(jobs) + 1))\n"
@@ -591,7 +591,7 @@ async def matrix():
             "    print('ACK', c, r['event_id'], flush=True)\n"
             "    await f.wait_idle()\n"
             "asyncio.run(go())\n")
-    r = child(code, sp, {"JAVIS_WH_CRASH_AT": "after_dispatch"})
+    r = child(code, sp, {"UNIMATE_WH_CRASH_AT": "after_dispatch"})
     eid = [ln.split()[2] for ln in r.stdout.splitlines() if ln.startswith("ACK")][0]
     first = json.loads(jobs.read_text())
     seen_after = {}
@@ -664,13 +664,13 @@ async def matrix():
                                      "args": {"threadId": "{{payload.thread}}", "message": "Đơn {{payload.id}} đã nhận",
                                               "items": "{{payload.items}}"}}])
     TOOL_CALLS.clear()
-    c, r = await f.accept(htl["id"], ttl, body_of({"thread": "t-1", "id": 55, "items": [1, 2], "tool": "javis_run_tool",
+    c, r = await f.accept(htl["id"], ttl, body_of({"thread": "t-1", "id": 55, "items": [1, 2], "tool": "unimate_run_tool",
                                                    "level": "full"}), "application/json", "")
     c2, r2 = await f.accept(htl["id"], ttl, body_of({"id": 56}), "application/json", "")
     await f.wait_idle()
     bad_meta = ""
     try:
-        wa.validate([{"id": "t", "kind": "tool", "tool": "javis_run_tool", "args": {"name": "{{payload.tool}}"}}])
+        wa.validate([{"id": "t", "kind": "tool", "tool": "unimate_run_tool", "args": {"name": "{{payload.tool}}"}}])
     except wa.ActionError as e:
         bad_meta = str(e)
     check("§15 Tool: called through the dispatcher at the hook's level; arguments from {{payload.x}} keep their type; a "
@@ -962,7 +962,7 @@ async def matrix():
 
 
 # ---- §16.7: the real host app: the public door is /hooks/ only; admin, raw and replay need the login ----
-os.environ["JAVIS_REQUIRE_LOGIN"] = "1"
+os.environ["UNIMATE_REQUIRE_LOGIN"] = "1"
 import main  # noqa: E402
 
 

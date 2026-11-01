@@ -29,7 +29,7 @@ check("app.js: khung WS mang voice: _tuGiong (V3: hoặc đang rảnh tay)", /co
 check("app.js: commit từ đạo diễn bật cờ _tuGiong", /if \(c\) _tuGiong = true;/.test(app));
 check("app.js: gửi xong hạ cờ", /_tuGiong = false;\s*\n\}/.test(app));
 check("app.js: chế độ theo đường gọi /voice/call, tai từ /voice/ear", /fetch\("\/voice\/call"\)/.test(app) && /voiceMode = mode;/.test(app) && /fetch\("\/voice\/ear"\)/.test(app) && /voice\.sttUpload = upload;/.test(app));
-check("app.js: xuất JavisVoiceMode.refresh cho trang Cài đặt", /window\.JavisVoiceMode = \{ refresh: napCaiDatGiong/.test(app));
+check("app.js: xuất UniMateVoiceMode.refresh cho trang Cài đặt", /window\.UniMateVoiceMode = \{ refresh: napCaiDatGiong/.test(app));
 check("server: nhánh voice chỉ khi payload.voice + mode fast", /payload\.get\("voice"\)/.test(main) && /_vconf\.get\("mode"\) == "fast"/.test(main));
 
 // 2
@@ -54,15 +54,15 @@ check("live: bị ngắt thì đo ms đã phát TRƯỚC khi xả rồi gửi kh
       /var ms = playedMs\(\);[\s\S]{0,80}flushPlayback\(\);[\s\S]{0,80}sendJson\(\{ type: "played", ms: ms \}\)/.test(live));
 check("live: sendContext chỉ gửi khi đổi", /if \(text === lastCtx/.test(live) && /type: "context"/.test(live) && /sendContext: sendContext/.test(live));
 check("live: nhận reconnected", /d\.type === "reconnected"/.test(live));
-check("app.js: phiên Live gửi ngữ cảnh giao diện định kỳ", /setInterval\(guiNguCanhLive, 1500\)/.test(app) && /JavisVoiceLive\.sendContext\(ctx\)/.test(app));
-check("server: ask_javis chạy nền bằng create_task, không await trong vòng đọc", /asyncio\.create_task\(_run_tool\(ev\)\)/.test(main));
+check("app.js: phiên Live gửi ngữ cảnh giao diện định kỳ", /setInterval\(guiNguCanhLive, 1500\)/.test(app) && /UniMateVoiceLive\.sendContext\(ctx\)/.test(app));
+check("server: ask_unimate chạy nền bằng create_task, không await trong vòng đọc", /asyncio\.create_task\(_run_tool\(ev\)\)/.test(main));
 check("server: nhận khung context và played", /d\.get\("type"\) == "context"/.test(main) && /d\.get\("type"\) == "played"/.test(main));
 check("server: goaway -> reconnect", /if ev\.get\("type"\) == "goaway":/.test(main) && /await prov\.reconnect\(\)/.test(main));
 
 // 4
 check("app.js: chế độ live -> batLive/tatRanhTay ở nút mic", /if \(voiceMode === "live"\) \{/.test(app) && /batLive\((?:layMoDauGoiDen\(\))?\)/.test(app) && /else tatRanhTay\(\);/.test(app));
 check("app.js: keep-alive không mở Web Speech khi live", /handsFree && voiceMode !== "live" && !voice\.isListening/.test(app));
-check("app.js: bản ghi Javis khi live ghi vào hội thoại", /recordTurn\("javis", _liveJavisText\.trim\(\)/.test(app));
+check("app.js: bản ghi UNI MATE khi live ghi vào hội thoại", /recordTurn\("unimate", _liveUniMateText\.trim\(\)/.test(app));
 check("app.js: Esc hủy toàn bộ phiên giọng", /e\.code === "Escape"[\s\S]{0,500}tatRanhTay\(\)/.test(app));
 
 // 5

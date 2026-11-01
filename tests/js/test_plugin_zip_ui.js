@@ -85,7 +85,7 @@ function load(inspectResult) {
   globalThis.Alpine = win.Alpine;
   new Function("window", "document", "fetch", SRC)(win, doc, fakeFetch);
   globalThis.Alpine = oldAlpine;
-  return { P: win.JavisPacks || {}, calls, box, doc };
+  return { P: win.UniMatePacks || {}, calls, box, doc };
 }
 const tick = () => new Promise(r => setTimeout(r, 0));
 

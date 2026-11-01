@@ -1,6 +1,6 @@
 """Nghe tin thoại: file âm thanh -> chữ (speech-to-text), qua Whisper của Groq.
 
-Vì sao Groq: Javis đã có sẵn ô nhập `groq_api_key` ở trang Models (Groq là một trong tám bộ
+Vì sao Groq: UNI MATE đã có sẵn ô nhập `groq_api_key` ở trang Models (Groq là một trong tám bộ
 não), và Groq phục vụ Whisper trên CÙNG endpoint OpenAI-compat với model chat. Ai đã đấu Groq
 để chat thì không phải đăng ký thêm nhà cung cấp nào nữa mới ra lệnh bằng giọng nói được.
 
@@ -8,7 +8,7 @@ Module này KHÔNG đọc settings và KHÔNG biết Telegram/Zalo là gì: nh�
 Chỗ gọi (main.py) lo lấy key, kênh chat lo lời thoại với người dùng. Nhờ vậy kênh Zalo đấu
 vào sau này dùng lại nguyên module chứ không phải chép bản thứ hai.
 
-Trả về LUÔN là dict có khoá `ok`. Hỏng thì kèm `ly_do` (mã máy đọc) và `noi_voi_javis` (một
+Trả về LUÔN là dict có khoá `ok`. Hỏng thì kèm `ly_do` (mã máy đọc) và `noi_voi_unimate` (một
 dòng tiếng Việt để đưa thẳng vào lượt chat) - chứ không ném ngoại lệ: một tin thoại nghe hụt
 không được phép làm gãy vòng nhận tin của bot.
 """
@@ -22,7 +22,7 @@ import httpx
 # rõ là nó "nhớ lại" mấy câu outro dày đặc trong dữ liệu học. Tiếng Việt nổi tiếng nhất là
 # "Hãy subscribe cho kênh Ghiền Mì Gõ Để không bỏ lỡ những video hấp dẫn". Đây là thứ nguy hiểm
 # một cách âm thầm: không phải lỗi mạng nên không có gì báo, nó lặng lẽ thành tin nhắn của
-# người dùng và Javis trả lời nó một cách nghiêm túc. Whisper cũng hay dán câu bịa vào TRƯỚC
+# người dùng và UNI MATE trả lời nó một cách nghiêm túc. Whisper cũng hay dán câu bịa vào TRƯỚC
 # lời thật, nên phải cắt theo từng câu chứ không vứt cả lượt.
 #
 # Ranh giới: mẫu phải ĐỦ HẸP để không đụng lời nói thật. Người dùng bàn chuyện marketing hằng
@@ -60,7 +60,7 @@ _CHU_THICH = re.compile(
     r"[\[\(]\s*(music|nhạc|nhạc\s*nền|applause|vỗ\s*tay|laughter|cười|silence|im\s*lặng|"
     r"blank[_\s]*audio|inaudible|sound|tiếng\s*động)[^\]\)]{0,20}[\]\)]", re.I)
 _NOT_NHAC = re.compile("[♪♫♬♩]+")
-# Tách "câu" để soi từng mảnh. XUỐNG DÒNG cũng là ranh giới: khối điều khiển của Javis
+# Tách "câu" để soi từng mảnh. XUỐNG DÒNG cũng là ranh giới: khối điều khiển của UNI MATE
 # (`[NGỮ CẢNH GIAO DIỆN: ...]`) đứng riêng một dòng, không tách ra thì nó dính vào câu bịa ngay
 # sau và bị cắt oan. Ba nhánh phủ HẾT mọi ký tự nên ghép lại là nguyên văn.
 _CAU = re.compile(r"[^.!?…\n]+[.!?…]*|[.!?…]+|\n")
@@ -183,10 +183,10 @@ STT_MODEL_MAC_DINH = "whisper-large-v3"
 MAX_STT_MB = 24          # Groq chặn ở 25MB; chừa biên cho phần multipart bọc ngoài
 STT_TIMEOUT = 120.0      # tin thoại dài vài phút vẫn phải kịp, mạng VPS có lúc chậm
 
-# Câu Javis nói khi chưa đấu key. Để ở đây (không rải trong từng kênh) vì mọi kênh nói CÙNG
+# Câu UNI MATE nói khi chưa đấu key. Để ở đây (không rải trong từng kênh) vì mọi kênh nói CÙNG
 # một chuyện: thiếu đúng một thứ, và thứ đó nằm ở đúng một chỗ trong dashboard.
 _HD_THIEU_KEY = (
-    "[Người dùng vừa gửi TIN THOẠI. Javis chưa nghe được vì chưa đấu API key của Groq - "
+    "[Người dùng vừa gửi TIN THOẠI. UNI MATE chưa nghe được vì chưa đấu API key của Groq - "
     "đó là thứ chuyển giọng nói thành chữ. Hãy nói với họ: muốn ra lệnh bằng ghi âm thì vào "
     "trang Models trong dashboard, mục nhà cung cấp Groq (API), dán API key lấy ở "
     "console.groq.com rồi lưu lại; xong là gửi tin thoại dùng được ngay, không cần cài gì thêm. "
@@ -207,7 +207,7 @@ def khoi_thoai(nghe, kenh):
     thật (gửi tin, đăng bài, đặt lịch, tiêu tiền) là loại sai không rút lại được. Đọc lại
     câu nghe được TRƯỚC khi làm là chỗ duy nhất người dùng bắt lỗi được.
     """
-    dan = (MARK_THOAI + f" qua {kenh}. Javis đã nghe thành chữ (có thể nhầm vài từ) - câu ở "
+    dan = (MARK_THOAI + f" qua {kenh}. UNI MATE đã nghe thành chữ (có thể nhầm vài từ) - câu ở "
            "dưới. Cứ làm theo như user gõ tay. Nếu việc sắp làm có tác động RA NGOÀI (gửi "
            "tin, đăng bài, đặt lịch, tiêu tiền, sửa file) thì mở đầu bằng một dòng "
            "\"Mình nghe: ...\" rồi hỏi xác nhận trước khi làm.]")
@@ -219,18 +219,18 @@ def _mb(n):
 
 
 def loi_thanh_dong(ly_do, chi_tiet=""):
-    """Mã lỗi -> một dòng cho engine. Nội dung là LỜI DẶN Javis nói gì, không phải câu nói sẵn:
+    """Mã lỗi -> một dòng cho engine. Nội dung là LỜI DẶN UNI MATE nói gì, không phải câu nói sẵn:
     kênh nào cũng đi qua engine nên giọng vẫn hợp ngữ cảnh (chủ hay khách, tiếng Việt hay không).
     """
     if ly_do == "thieu_key":
         return _HD_THIEU_KEY
     if ly_do == "qua_lon":
-        return ("[Người dùng gửi một tin thoại quá dài để Javis nghe " + chi_tiet + ". "
+        return ("[Người dùng gửi một tin thoại quá dài để UNI MATE nghe " + chi_tiet + ". "
                 "Nhờ họ thu ngắn lại hoặc gõ chữ.]")
     if ly_do == "khong_nghe_ro":
-        return ("[Người dùng gửi tin thoại nhưng Javis nghe không ra chữ nào (có thể im lặng "
+        return ("[Người dùng gửi tin thoại nhưng UNI MATE nghe không ra chữ nào (có thể im lặng "
                 "hoặc quá ồn). Nhờ họ thu lại gần micro hơn, hoặc gõ chữ.]")
-    return ("[Người dùng gửi tin thoại nhưng Javis nghe hỏng: " + (chi_tiet or "lỗi không rõ") +
+    return ("[Người dùng gửi tin thoại nhưng UNI MATE nghe hỏng: " + (chi_tiet or "lỗi không rõ") +
             ". Nhờ họ gõ chữ, và báo là chỗ nghe giọng đang trục trặc.]")
 
 
@@ -238,10 +238,10 @@ async def groq_nghe(data, ten_file, api_key, model="", ngon_ngu=None, hotwords="
     """Chuyển bytes âm thanh thành chữ. Trả dict:
 
         {"ok": True,  "text": "...", "model": "..."}
-        {"ok": False, "ly_do": "thieu_key|rong|qua_lon|khong_nghe_ro|loi", "noi_voi_javis": "..."}
+        {"ok": False, "ly_do": "thieu_key|rong|qua_lon|khong_nghe_ro|loi", "noi_voi_unimate": "..."}
 
     `hotwords` là tham số `prompt` của Whisper: một danh sách tên riêng (hotwords) để nó ưu tiên
-    chép đúng chính tả "Javis", tên công cụ, tên dự án thay vì từ gần âm ("David"). Chỗ gọi
+    chép đúng chính tả "Uni", "UNI MATE", tên công cụ, tên dự án thay vì từ gần âm ("Diu ni", "U ni mết"). Chỗ gọi
     lấy từ `nghe_sua.goi_y_whisper(nghe_sua.tu_vung(cfg))`; rỗng thì không gửi.
 
     `ngon_ngu` gợi ý cho Whisper. Ba giá trị có ý nghĩa KHÁC NHAU, đừng gộp:
@@ -271,12 +271,12 @@ async def openai_nghe(data, ten_file, api_key, model="", ngon_ngu=None, hotwords
 
 async def _api_nghe(url, ten, data, ten_file, api_key, mdl, ngon_ngu, hotwords):
     if not api_key:
-        return {"ok": False, "ly_do": "thieu_key", "noi_voi_javis": loi_thanh_dong("thieu_key")}
+        return {"ok": False, "ly_do": "thieu_key", "noi_voi_unimate": loi_thanh_dong("thieu_key")}
     if not data:
-        return {"ok": False, "ly_do": "rong", "noi_voi_javis": loi_thanh_dong("loi", "file rỗng")}
+        return {"ok": False, "ly_do": "rong", "noi_voi_unimate": loi_thanh_dong("loi", "file rỗng")}
     if len(data) > MAX_STT_MB * 1024 * 1024:
         ct = f"({_mb(len(data))}MB, trần {MAX_STT_MB}MB)"
-        return {"ok": False, "ly_do": "qua_lon", "noi_voi_javis": loi_thanh_dong("qua_lon", ct)}
+        return {"ok": False, "ly_do": "qua_lon", "noi_voi_unimate": loi_thanh_dong("qua_lon", ct)}
 
     form = {"model": mdl, "response_format": "json"}
     goi_y = STT_MAC_DINH if ngon_ngu is None else ngon_ngu
@@ -300,7 +300,7 @@ async def _api_nghe(url, ten, data, ten_file, api_key, mdl, ngon_ngu, hotwords):
             ly = ((d.get("error") or {}).get("message") if isinstance(d.get("error"), dict)
                   else d.get("error")) or f"{ten} HTTP {r.status_code}"
             print(f"[stt {ten}] {ly}", file=sys.stderr)
-            return {"ok": False, "ly_do": "loi", "noi_voi_javis": loi_thanh_dong("loi", str(ly)[:200])}
+            return {"ok": False, "ly_do": "loi", "noi_voi_unimate": loi_thanh_dong("loi", str(ly)[:200])}
         # Lọc câu bịa TRƯỚC khi trả: lọc xong rỗng thì đúng nghĩa là không nghe được gì, đi
         # chung một đường với im lặng thật để chỗ gọi chỉ phải xử một trường hợp.
         text = loc_ao_giac(d.get("text"))
@@ -308,9 +308,9 @@ async def _api_nghe(url, ten, data, ten_file, api_key, mdl, ngon_ngu, hotwords):
             text = ""
         if not text:
             return {"ok": False, "ly_do": "khong_nghe_ro",
-                    "noi_voi_javis": loi_thanh_dong("khong_nghe_ro")}
+                    "noi_voi_unimate": loi_thanh_dong("khong_nghe_ro")}
         return {"ok": True, "text": text, "model": mdl}
     except Exception as e:
         loi = f"{type(e).__name__}: {e}"
         print(f"[stt {ten}] {loi}", file=sys.stderr)
-        return {"ok": False, "ly_do": "loi", "noi_voi_javis": loi_thanh_dong("loi", loi[:200])}
+        return {"ok": False, "ly_do": "loi", "noi_voi_unimate": loi_thanh_dong("loi", loi[:200])}

@@ -1,17 +1,17 @@
-"""Javis Core, the notification commander (0.403.0; owner 29/10/2026: "trao quyền quyết định đấy cho bộ phán xử của
+"""UNI MATE Core, the notification commander (0.403.0; owner 29/10/2026: "trao quyền quyết định đấy cho bộ phán xử của
 Jarvis Core", "1. Tự động  2. Mặc định chỉ tin khẩn", "chấm theo hệ thống resonance về việc phản hồi của emoji").
 
     python tests/run.py notify_commander
 
-Spec: docs/dev/2026-10-javis-core-chi-huy-thong-bao.md sections 3 to 6. No network, no model.
-- every group defaults to "urgent only"; reminders, questions, customers waiting and "Javis is not usable" ring;
-  the rest is kept in the bell as filtered (read, no push, not copied to Javis Core's chat or the owner's Telegram);
+Spec: docs/dev/2026-10-unimate-core-chi-huy-thong-bao.md sections 3 to 6. No network, no model.
+- every group defaults to "urgent only"; reminders, questions, customers waiting and "UNI MATE is not usable" ring;
+  the rest is kept in the bell as filtered (read, no push, not copied to UNI MATE Core's chat or the owner's Telegram);
   a chat that asked for the work still gets it;
 - groups and levels from the producer; the same kind ringing a 4th time in 6 hours is filtered (never an urgent one);
-- feedback in the Resonance emoji set plus "Needed" / "Not needed": Javis Core changes rules on its own, says so in
+- feedback in the Resonance emoji set plus "Needed" / "Not needed": UNI MATE Core changes rules on its own, says so in
   its chat, never silences an urgent kind by itself, and every change can be undone;
 - the owner's "off" drops a group; Core's "off" still lets urgent notices ring;
-- routes /inbox/react and /notify/policy*, the `javis_notify` chat tool (owner only), the bell's filter UI.
+- routes /inbox/react and /notify/policy*, the `unimate_notify` chat tool (owner only), the bell's filter UI.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -22,8 +22,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-STATE = tempfile.mkdtemp(prefix="javis-notify-cmd-")
-os.environ["JAVIS_STATE_DIR"] = STATE
+STATE = tempfile.mkdtemp(prefix="unimate-notify-cmd-")
+os.environ["UNIMATE_STATE_DIR"] = STATE
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -55,7 +55,7 @@ def run(coro):
 
 main.cfgmod.gate_active = lambda: False
 client = TestClient(main.app, base_url="http://127.0.0.1")
-BR = Path(tempfile.mkdtemp(prefix="javis-notify-brain-"))
+BR = Path(tempfile.mkdtemp(prefix="unimate-notify-brain-"))
 KB = main._brain_key(str(BR))
 cfg = main.cfgmod.read_settings()
 cfg.setdefault("telegram", {}).update({"enabled": True, "token": "123:abc", "chat_id": "111"})
@@ -74,7 +74,7 @@ async def fake_push(*a, **k):
 
 main._gui_qua_kenh = fake_channel
 main.webpush.gui_het = fake_push
-core = main.javis_core.default_session(main.get_store(), KB, same_brain=main._cung_brain)
+core = main.unimate_core.default_session(main.get_store(), KB, same_brain=main._cung_brain)
 
 
 def items():
@@ -106,7 +106,7 @@ check("an important system notice: filtered, read, no push, no Telegram",
       not pushes and not sent, (it, sent, pushes))
 run(main._notify_owner("", "Nhắc bạn: gọi nhà cung cấp", kind="report", source="reminder", brain=str(BR)))
 it = items().get("Nhắc bạn: gọi nhà cung cấp") or {}
-check("a reminder: urgent, rings, reaches Javis Core's chat and the owner's Telegram",
+check("a reminder: urgent, rings, reaches UNI MATE Core's chat and the owner's Telegram",
       not it.get("filtered") and not it.get("read") and it.get("level") == "urgent" and
       ("web:" + core) in [s[0] for s in sent] and "111" in [s[0] for s in sent], (it, sent))
 sent.clear()
@@ -140,14 +140,14 @@ rep = [x for x in inbox.danh_sach(300) if x["title"].startswith("Kết nối POS
 check("the same kind rings 3 times in 6 hours, then is filtered as a repeat",
       sum(1 for x in rep if not x.get("filtered")) == 3 and sum(1 for x in rep if x.get("why") == "repeat") == 2, rep)
 for i in range(5):
-    run(main._bo_vao_hom_thu("", f"Javis chưa dùng được lần {i + 1}", kind="system", source="engine", level="urgent"))
-rep = [x for x in inbox.danh_sach(300) if x["title"].startswith("Javis chưa dùng được")]
+    run(main._bo_vao_hom_thu("", f"UNI MATE chưa dùng được lần {i + 1}", kind="system", source="engine", level="urgent"))
+rep = [x for x in inbox.danh_sach(300) if x["title"].startswith("UNI MATE chưa dùng được")]
 check("an urgent notice is never filtered as a repeat", len(rep) == 5 and not any(x.get("filtered") for x in rep), rep)
 
-# ---- 3. feedback and Javis Core's own changes ----
+# ---- 3. feedback and UNI MATE Core's own changes ----
 sent.clear()
-# A system notice has no brain: Javis Core speaks in the default brain's Core chat.
-core0 = main.javis_core.default_session(main.get_store(), main._brain_key("brain"), same_brain=main._cung_brain)
+# A system notice has no brain: UNI MATE Core speaks in the default brain's Core chat.
+core0 = main.unimate_core.default_session(main.get_store(), main._brain_key("brain"), same_brain=main._cung_brain)
 pos = next(x for x in inbox.danh_sach(300) if x["title"] == "Kết nối POS hỏng lần 1")
 r = client.post("/inbox/react", json={"id": pos["id"], "value": "angry", "axis": "not_needed"}).json()
 check("'Not needed' on a kind: Core filters that kind and says so in its chat",
@@ -158,13 +158,13 @@ run(main._bo_vao_hom_thu("", "Kết nối POS hỏng lần 99", kind="system", s
 check("...and the next one of that kind is filtered as muted", items()["Kết nối POS hỏng lần 99"].get("why") == "muted")
 check("an invalid reaction is refused", client.post("/inbox/react", json={"id": pos["id"], "value": "fire"}).status_code == 400)
 
-eng = next(x for x in inbox.danh_sach(300) if x["title"] == "Javis chưa dùng được lần 1")
+eng = next(x for x in inbox.danh_sach(300) if x["title"] == "UNI MATE chưa dùng được lần 1")
 r = client.post("/inbox/react", json={"id": eng["id"], "axis": "not_needed"}).json()
 mute = next((c for c in r.get("changes") or [] if c["kind"] == "kind"), {})
 check("'Not needed' on an urgent kind is the owner's own rule (Core never silences urgent by itself)",
       mute.get("set_by") == "owner" and mute.get("to") == "mute", r)
-run(main._bo_vao_hom_thu("", "Javis chưa dùng được lần 100", kind="system", source="engine", level="urgent"))
-check("...so that urgent kind is now filtered", items()["Javis chưa dùng được lần 100"].get("why") == "muted")
+run(main._bo_vao_hom_thu("", "UNI MATE chưa dùng được lần 100", kind="system", source="engine", level="urgent"))
+check("...so that urgent kind is now filtered", items()["UNI MATE chưa dùng được lần 100"].get("why") == "muted")
 check("undo puts the rule back", client.post("/notify/policy/undo", json={"id": mute.get("id")}).json().get("ok") and
       not [x for x in NP.status()["rules"] if x["key"] == mute.get("target")])
 
@@ -193,18 +193,18 @@ check("'Needed' on a filtered notice: that kind always rings from now on",
 run(main._notify_owner("", "Ngân sách API đã dùng 85%", kind="system", source="cost", level="important"))
 check("...and rings", not items()["Ngân sách API đã dùng 85%"].get("filtered"))
 
-# emoji on a notice opened in Javis Core's chat are Javis Core's feedback on that notice (owner, 2026-10-29)
+# emoji on a notice opened in UNI MATE Core's chat are UNI MATE Core's feedback on that notice (owner, 2026-10-29)
 NP.set_mode("job", "all", set_by="owner")
 run(main._notify_owner("", "Việc 'Sao lưu ảnh' xong", kind="answer", quiet=True))
 bk = items()["Việc 'Sao lưu ảnh' xong"]
-cite = client.post("/javis-core/cite", json={"source": "inbox", "id": bk["id"], "brain": "brain"}).json()
+cite = client.post("/unimate-core/cite", json={"source": "inbox", "id": bk["id"], "brain": "brain"}).json()
 csid = cite.get("id")
-cmsg = [m for m in main.get_store().get_messages(csid) if f"javis-cite:inbox:{bk['id']}" in str(m.get("content") or "")]
-check("'Open in Javis Core' puts the notice in Core's chat with the item's marker", cite.get("ok") and len(cmsg) == 1, cite)
+cmsg = [m for m in main.get_store().get_messages(csid) if f"unimate-cite:inbox:{bk['id']}" in str(m.get("content") or "")]
+check("'Open in UNI MATE Core' puts the notice in Core's chat with the item's marker", cite.get("ok") and len(cmsg) == 1, cite)
 sent.clear()
 rr = client.post(f"/sessions/{csid}/messages/{cmsg[0]['id']}/reaction?brain=brain",
                  json={"value": "angry", "reasons": [], "axis": "should_silent", "comment": "", "nonce": "n-cite-1"})
-check("an emoji (and 'should stay quiet') on that chat message reaches Javis Core's judge: that kind is muted",
+check("an emoji (and 'should stay quiet') on that chat message reaches UNI MATE Core's judge: that kind is muted",
       rr.status_code == 200 and any(r["rule"] == "mute" and "sao lưu ảnh" in r["sig"] for r in NP.status()["rules"]) and
       any("Sao lưu ảnh" in t for _c, t in sent), (rr.text, NP.status()["rules"], sent))
 rr = client.post(f"/sessions/{csid}/messages/{cmsg[0]['id']}/reaction?brain=brain",
@@ -212,7 +212,7 @@ rr = client.post(f"/sessions/{csid}/messages/{cmsg[0]['id']}/reaction?brain=brai
 check("the same nonce sent again is a replay and changes nothing more", rr.status_code == 200 and
       len([c for c in NP.status(100)["changes"] if "sao lưu ảnh" in str(c.get("target"))]) == 1)
 plain = main.get_store().create_session(brain=KB)
-main.get_store().append_message(plain, "assistant", f"Không phải chat Core <!-- javis-cite:inbox:{bk['id']} -->")
+main.get_store().append_message(plain, "assistant", f"Không phải chat Core <!-- unimate-cite:inbox:{bk['id']} -->")
 pm = main.get_store().get_messages(plain)[-1]
 n0 = len(NP.status(100)["changes"])
 client.post(f"/sessions/{plain}/messages/{pm['id']}/reaction?brain=brain",
@@ -222,9 +222,9 @@ NP.set_mode("reminder", "urgent", set_by="owner")
 sent.clear()
 run(main._notify_owner("", "Nhắc bạn: kiểm kho", kind="report", source="reminder", brain=str(BR)))
 rem = items()["Nhắc bạn: kiểm kho"]
-check("a notice that lands in Javis Core's chat carries its marker there (so it can take emoji), not on Telegram",
-      any(c == "web:" + core and f"javis-cite:inbox:{rem['id']}" in t for c, t in sent) and
-      all("javis-cite" not in t for c, t in sent if c == "111"), sent)
+check("a notice that lands in UNI MATE Core's chat carries its marker there (so it can take emoji), not on Telegram",
+      any(c == "web:" + core and f"unimate-cite:inbox:{rem['id']}" in t for c, t in sent) and
+      all("unimate-cite" not in t for c, t in sent if c == "111"), sent)
 
 # ---- 4. off ----
 NP.set_mode("update", "off", set_by="owner")
@@ -243,7 +243,7 @@ check("route: the policy lists groups, rules and changes with a sentence each",
 check("the rules store is in the state dir", (Path(STATE) / "notify_policy.json").is_file())
 
 # ---- 5. the chat tool ----
-spec = importlib.util.spec_from_file_location("javis_notify_plugin", ROOT / "system/plugins/javis-notify/plugin.py")
+spec = importlib.util.spec_from_file_location("unimate_notify_plugin", ROOT / "system/plugins/unimate-notify/plugin.py")
 plug = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(plug)
 out = plug._chay({"op": "set", "group": "Kết nối", "mode": "off"}, None)
@@ -260,11 +260,11 @@ cid = NP.status()["changes"][0]["id"]
 check("tool: undo by id", plug._chay({"op": "undo", "id": cid}, None).startswith("Đã hoàn tác"))
 check("tool: bad input is an error", plug._chay({"op": "set", "group": "xyz", "mode": "all"}, None).startswith("ERROR") and
       plug._chay({"op": "nope"}, None).startswith("ERROR"))
-check("the tool is the owner's only (a customer bot never sees it)", "javis_notify" in mcp_hub.OWNER_ONLY_TOOLS)
-yml = (ROOT / "system/plugins/javis-notify/plugin.yaml").read_text(encoding="utf-8")
-check("the plugin ships enabled at the safe level", "slug: javis-notify" in yml and "enabled: true" in yml and "min_mode: safe" in yml)
-core_md = (ROOT / "system/agents/javis-core.md").read_text(encoding="utf-8")
-check("Javis Core's role says it is the notification commander and uses javis_notify", "javis_notify" in core_md)
+check("the tool is the owner's only (a customer bot never sees it)", "unimate_notify" in mcp_hub.OWNER_ONLY_TOOLS)
+yml = (ROOT / "system/plugins/unimate-notify/plugin.yaml").read_text(encoding="utf-8")
+check("the plugin ships enabled at the safe level", "slug: unimate-notify" in yml and "enabled: true" in yml and "min_mode: safe" in yml)
+core_md = (ROOT / "system/agents/unimate-core.md").read_text(encoding="utf-8")
+check("UNI MATE Core's role says it is the notification commander and uses unimate_notify", "unimate_notify" in core_md)
 
 # ---- 6. the bell ----
 js = (ROOT / "dashboard/notifications.js").read_text(encoding="utf-8")
@@ -273,9 +273,9 @@ vi = json.loads((ROOT / "dashboard/i18n/vi.json").read_text(encoding="utf-8"))
 en = json.loads((ROOT / "dashboard/i18n/en.json").read_text(encoding="utf-8"))
 check("bell: filtered notices leave the main list for a 'Filtered (N)' view",
       "!!x.filtered === loc" in js and '"noti.filtered_n"' in js and "data-noti-filtered" in js)
-check("bell: only Needed / Not needed on a notice, sent to /inbox/react; no emoji there (they go on it in Javis Core)",
+check("bell: only Needed / Not needed on a notice, sent to /inbox/react; no emoji there (they go on it in UNI MATE Core)",
       'data-react-a="needed"' in js and 'data-react-a="not_needed"' in js and '"/inbox/react"' in js and
-      "JavisReactions" not in js and "data-react-v" not in js and "noti-emo" not in js)
+      "UniMateReactions" not in js and "data-react-v" not in js and "noti-emo" not in js)
 check("bell: a Filter tab with each group's mode, rules and undo", 'id="notiTabFilter"' in html and '"/notify/policy/group"' in js and
       '"/notify/policy/undo"' in js and '"/notify/policy/rule"' in js)
 keys = set()
@@ -285,7 +285,7 @@ for m in re.finditer(r'"(noti\.[a-z_]*[a-z])"', js):
 keys |= {f"noti.grp_{g}" for g in NP.GROUPS} | {f"noti.mode_{m}" for m in NP.MODES} | {"noti.filter_btn"}
 miss = sorted(k for k in keys if k not in vi or k not in en)
 check("every noti.* key the bell uses is in vi and en", not miss, miss)
-check("long explanations sit behind (i): the filter's text is only in an info pair", "JavisInfo.pair(" in js and
+check("long explanations sit behind (i): the filter's text is only in an info pair", "UniMateInfo.pair(" in js and
       len(vi["noti.filter_info"]) > 100)
 check("short texts stay under 100 characters", all(len(vi[k]) <= 100 and len(en[k]) <= 100 for k in keys if k != "noti.filter_info"),
       [k for k in keys if k != "noti.filter_info" and (len(vi.get(k, "")) > 100 or len(en.get(k, "")) > 100)])
@@ -300,7 +300,7 @@ check("cache versions bumped", _ver("notifications.js") >= 11 and _ver("style.cs
 
 dashes = [chr(0x2014), chr(0x2013)]
 texts = [Path(__file__).read_text(encoding="utf-8"), (SERVER / "notify_policy.py").read_text(encoding="utf-8"),
-         (ROOT / "system/plugins/javis-notify/plugin.py").read_text(encoding="utf-8"), yml] + [vi[k] + en[k] for k in keys]
+         (ROOT / "system/plugins/unimate-notify/plugin.py").read_text(encoding="utf-8"), yml] + [vi[k] + en[k] for k in keys]
 check("no em or en dash in the new code and strings", not any(d in t for t in texts for d in dashes))
 
 print()

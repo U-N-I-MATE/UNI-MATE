@@ -2,7 +2,7 @@
 
     python tests/run.py zalo_ranh      (KHÔNG mạng, Zalo giả lập)
 
-Chủ repo gửi ảnh thẻ bot "Javis Vũ" (2026-08-09): chấm đỏ **Lỗi**, kèm một ô xám ghi đúng hai
+Chủ repo gửi ảnh thẻ bot "Uni Vũ" (2026-08-09): chấm đỏ **Lỗi**, kèm một ô xám ghi đúng hai
 chữ "Request timeout". Con bot đó vẫn sống, vẫn trả lời được (thẻ ghi "1 lượt trả lời").
 
 Gốc rễ: `getUpdates` của Zalo KHÔNG cư xử như Telegram. Telegram hết giờ chờ thì trả
@@ -17,7 +17,7 @@ Vòng lặp đọc nhầm nhịp đó thành hỏng, và cái giá có hai phầ
    khoảng đó không mất, nhưng phải chờ tới vòng sau mới được đọc.
 
 Phần khó của bản sửa không nằm ở chỗ nhận ra chữ "timeout", mà ở chỗ KHÔNG nuốt nhầm lỗi
-thật: máy chủ Javis mất mạng cũng đẻ ra một chuỗi có chữ timeout, và đó là hỏng thật. Ranh
+thật: máy chủ UNI MATE mất mạng cũng đẻ ra một chuỗi có chữ timeout, và đó là hỏng thật. Ranh
 giới là ai đang nói: Zalo đáp bằng một body JSON, còn mất mạng thì chỉ có ngoại lệ phía mình.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -26,7 +26,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-zaloranh-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-zaloranh-"))
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")

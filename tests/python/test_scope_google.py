@@ -7,12 +7,12 @@ Không cần pytest, không chạm mạng.
 Bối cảnh (báo từ người dùng thật, 2026-07-30): đấu Google Calendar xong, hỏi "tạo lịch sáng
 mai 9h" trên bộ não ChatGPT thì Google trả ACCESS_TOKEN_SCOPE_INSUFFICIENT ở bước kiểm tra
 rảnh bận. Xoá kết nối cài lại chục lần vẫn y nguyên - vì chỗ sai không nằm ở lần cài, mà ở
-DANH SÁCH SCOPE Javis xin: server MCP Lịch của Google đòi các scope hạt nhỏ
+DANH SÁCH SCOPE UNI MATE xin: server MCP Lịch của Google đòi các scope hạt nhỏ
 (calendar.calendarlist.readonly, calendar.events.readonly, calendar.events.freebusy) chứ
 không nhận mỗi scope gộp 'auth/calendar'. Thiếu freebusy thì suggest_time chết, trong khi
 đăng nhập vẫn xanh và list_calendars (tool validate) vẫn chạy - nên nút Test cũng báo xanh.
 
-Test này khoá 3 thứ: catalog xin đủ scope, Javis lưu và so được scope THẬT ĐƯỢC CẤP, và mọi
+Test này khoá 3 thứ: catalog xin đủ scope, UNI MATE lưu và so được scope THẬT ĐƯỢC CẤP, và mọi
 đường báo lỗi (Test, health, lỗi tool) đều nói thẳng thiếu quyền gì.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path

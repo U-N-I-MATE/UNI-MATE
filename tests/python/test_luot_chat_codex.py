@@ -27,7 +27,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-codex-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-codex-"))
 
 from fastapi import WebSocketDisconnect  # noqa: E402
 
@@ -92,16 +92,16 @@ class _CodexGia:
         # Codex tự thử lại giữa lượt (bug 2026-09-28): phải thành dòng trạng thái, không lỗi.
         yield {"type": "retry", "content": "Reconnecting... 2/5 (stream disconnected before "
                "completion: websocket closed by server before response.completed)"}
-        yield {"type": "text", "content": "Vâng anh, Javis đây."}
+        yield {"type": "text", "content": "Vâng anh, UNI MATE đây."}
         # Gói 'final' CÓ tokens_in chính là gói kích hoạt dòng `_ctx_in += ...`.
-        yield {"type": "final", "content": "Vâng anh, Javis đây.",
+        yield {"type": "final", "content": "Vâng anh, UNI MATE đây.",
                "session_id": "thread-codex-1", "tokens_in": 1234, "tokens_out": 56}
 
 
 def _chay_mot_luot(monkeypatch, tmpdir):
     runtime = ChatRuntime()
     store = SessionStore(tmpdir / "conversations.db")
-    ws = _WSGia({"message": "Chào buổi chiều javis", "brain": "brain",
+    ws = _WSGia({"message": "Chào buổi chiều unimate", "brain": "brain",
                  "session_id": "phien-codex"})
 
     monkeypatch.setattr(main, "_CHAT_RUNTIME", runtime)
@@ -157,7 +157,7 @@ def main_test(monkeypatch, tmp_path):
     check("có gói 'response' trả về", len(resp) == 1)
     if resp:
         check("gói response mang đúng câu trả lời",
-              resp[0].get("content") == "Vâng anh, Javis đây.")
+              resp[0].get("content") == "Vâng anh, UNI MATE đây.")
         check("gói response khai đúng engine codex", resp[0].get("engine") == "codex")
         # 1234 là tokens_in của gói 'final' giả. Con số này chỉ tới được đây nếu dòng
         # `_ctx_in += ...` chạy được, tức đúng dòng từng nổ UnboundLocalError.
@@ -171,7 +171,7 @@ def main_test(monkeypatch, tmp_path):
     check("lượt được lưu đủ cả hỏi lẫn đáp",
           [m["role"] for m in tin] == ["user", "assistant"])
     check("nội dung lưu đúng là câu trả lời",
-          bool(tin) and tin[-1]["content"] == "Vâng anh, Javis đây.")
+          bool(tin) and tin[-1]["content"] == "Vâng anh, UNI MATE đây.")
     check("thread Codex được ghi lại để lượt sau resume",
           (store.get_session("phien-codex") or {}).get("codex_thread_id") == "thread-codex-1")
     check("có stream chữ ra trước khi chốt", "stream" in loai)
@@ -204,7 +204,7 @@ if __name__ == "__main__":
                 setattr(obj, name, old)
 
     mp = _Patch()
-    tmp = pathlib.Path(tempfile.mkdtemp(prefix="javis-codex-run-"))
+    tmp = pathlib.Path(tempfile.mkdtemp(prefix="unimate-codex-run-"))
     try:
         main_test(mp, tmp)
     finally:

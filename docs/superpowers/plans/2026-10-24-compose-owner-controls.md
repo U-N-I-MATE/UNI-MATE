@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Only the managed checkout/branch; never modify the original D:\Project\Javis-OS.
+- Only the managed checkout/branch; never modify the original D:\Project\UNI-MATE.
 - VERSION0.299.0 remains reserved; no task-branch integration before required review/CI.
 - Keep old closed requests/history/default budget2 exact. Explicit new candidate_policy=two_proposals_and_one_compose reserves3 before observations; statistical budget is not compose consent.
 - One compose, ordinary proposal cap2, no structural repair or semantic resampling of compose output. No model/provider/reasoning/account changes.
@@ -77,7 +77,7 @@
 
 ## Reuse decision before code
 
-Pinned Harness² remains1cfe254e8d25b15f37048c3730134686abe60335. prompts.compose_round is already actual unchanged vendor code; recursion.py _run_stage/run_sequential (blobdda6b98cd5af100b8941f33cbb079462299c5280) has benchmark filesystem ownership, retries and accounting, but no Javis owner-session API, revocable consent, browser lifetime or durable stop/replay contract. Adapt the existing Javis owner/API/panel around the actual composer rather than importing a second executor or benchmarking controller. Preserve upstream provenance/license, all new-content checks and the explicit source-profile qualification gap. This plan adds no new upstream copy and makes no quality/token savings claim.
+Pinned Harness² remains1cfe254e8d25b15f37048c3730134686abe60335. prompts.compose_round is already actual unchanged vendor code; recursion.py _run_stage/run_sequential (blobdda6b98cd5af100b8941f33cbb079462299c5280) has benchmark filesystem ownership, retries and accounting, but no UNI MATE owner-session API, revocable consent, browser lifetime or durable stop/replay contract. Adapt the existing UNI MATE owner/API/panel around the actual composer rather than importing a second executor or benchmarking controller. Preserve upstream provenance/license, all new-content checks and the explicit source-profile qualification gap. This plan adds no new upstream copy and makes no quality/token savings claim.
 
 ## Open gates after this plan
 

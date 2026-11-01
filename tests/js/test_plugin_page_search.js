@@ -50,7 +50,7 @@ check("user and vault plugins both land in 'yours'",
 check("on/off is a switch with role=switch and a label", /class="pl-sw" role="switch" aria-checked=/.test(page) && /cs\.pl_sw_aria/.test(page));
 check("store plugins are managed in the store, not switched here: no switch on their card",
   /const right = p\.source === "pack" \|\| p\.removed \? ""/.test(page));
-// 0.420.0, owner's iPhone screenshot: a "Manage in Javis Store" button on every store card took half the phone's width and
+// 0.420.0, owner's iPhone screenshot: a "Manage in UNI MATE Store" button on every store card took half the phone's width and
 // squeezed the name and description into a sliver. One link on the store group's heading, the card text gets the width.
 check("one 'manage in the store' link on the store group heading", /g === "pack" \? `<button type="button" class="pl-act pl-goto" data-goto-packs="1">/.test(page));
 check("a card with no switch drops the right column", /\$\{right \? `<div class="pl-right">\$\{right\}<\/div>` : ""\}/.test(page));

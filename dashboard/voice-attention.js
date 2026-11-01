@@ -3,16 +3,16 @@
    0.65.22 (chủ dự án chốt 01/10): bỏ công tắc "Tập trung" và bỏ luật phải gọi tên. Rào chỉ còn
    bật ở đường Live (app.js đặt enabled theo đường gọi): im IDLE_MS thì ngắt nhà cung cấp cho đỡ
    tốn hạn mức, rồi CÂU NÓI THẬT đầu tiên (wakes) là nối lại. Đường Cơ bản không có gì để ngắt nên
-   nghe suốt cuộc gọi. Không dùng Groq: chữ "Javis" trình duyệt hay chép thành "David", bắt buộc gọi
+   nghe suốt cuộc gọi. Không dùng Groq: tên gọi "Uni" trình duyệt hay chép thành "Diu ni", "Yu ni", bắt buộc gọi
    tên là đúng khâu từng làm cuộc gọi không nối lại được. */
 (function (root) {
   "use strict";
-  const wake = /^(?:(?:hey|hi|hello|ê|này|alo|chào)\s+)?(?:javis|jarvis)(?=$|[\s,.!?:;])/iu;
-  // Câu mở đầu GẦN GIỐNG tên gọi mà Web Speech hay chép lệch ("David ơi", "Gia vít"). KHÔNG mở
+  const wake = /^(?:(?:hey|hi|hello|ê|này|alo|chào)\s+)?(?:uni|unimate|uni\s+mate)(?=$|[\s,.!?:;])/iu;
+  // Câu mở đầu GẦN GIỐNG tên gọi mà Web Speech hay chép lệch ("Diu ni ơi", "Ưu ni"). KHÔNG mở
   // rào: chỉ cho phép đưa âm thanh cho tai nghe lại, rồi rào xét lại trên chữ của tai (0.65.15).
   const IDLE_MS = 30000;      // chủ dự án 01/10: 20 giây hơi ít
   const WAKE_MIN_WORDS = 2;   // "ừ", tiếng ho không đủ; "mở lịch" là đủ
-  const nearWake = /^(?:(?:hey|hi|hello|ê|này|alo|chào)\s+)?(?:david|davis|javix|jarvix|đa\s*vít|gia\s*vít|ja\s*vít|ja\s*vịt|giá\s*vít|chavis)(?=$|[\s,.!?:;])/iu;
+  const nearWake = /^(?:(?:hey|hi|hello|ê|này|alo|chào)\s+)?(?:ưu\s*ni|yu\s*ni|iu\s*ni|diu\s*ni|giu\s*ni|du\s*ni|zu\s*ni|you\s*ni|yuni|iuni|u\s+ni)(?=$|[\s,.!?:;])/iu;
   class Attention {
     constructor({ now = Date.now, idleMs = IDLE_MS, candidateMs = 120000 } = {}) {
       this.now = now; this.idleMs = idleMs; this.candidateMs = candidateMs;
@@ -70,5 +70,5 @@
   }
   const api = { Attention, SpeechLevel, IDLE_MS };
   if (typeof module === 'object' && module.exports) module.exports = api;
-  else root.JavisVoiceAttention = api;
+  else root.UniMateVoiceAttention = api;
 })(typeof window !== 'undefined' ? window : globalThis);

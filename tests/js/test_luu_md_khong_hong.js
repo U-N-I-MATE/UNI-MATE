@@ -19,7 +19,7 @@
 
      1. Frontmatter `---...---` rơi vào luật "--- = đường kẻ ngang" của markdown, nên turndown
         ghi lại thành `* * *`. Từ giây đó file KHÔNG còn frontmatter: type, status, created đều
-        thành mấy dòng chữ rời, và Javis, dataview lẫn Obsidian đều đọc trượt.
+        thành mấy dòng chữ rời, và UNI MATE, dataview lẫn Obsidian đều đọc trượt.
      2. Turndown thoát "1." đầu dòng thành "1\.", mà mdToHtml lại KHÔNG hiểu dấu thoát markdown
         nên lần render sau nó là chữ thật, rồi turndown thoát tiếp chính dấu gạch đó: "1\\.",
         "1\\\."... Mỗi lần mở ra sửa là file bẩn thêm một lớp - lỗi dồn, không tự khỏi.

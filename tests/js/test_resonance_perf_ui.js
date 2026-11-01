@@ -34,7 +34,7 @@ function world(goals) {
     } };
   vm.createContext(ctx);
   vm.runInContext(SRC, ctx);
-  st.api = ctx.window.JavisResonance;
+  st.api = ctx.window.UniMateResonance;
   st.add = (gid) => st.api.ve({ querySelector: () => null, appendChild: (e) => st.els.push(e) }, { goal_id: gid });
   st.flush = async () => { const rs = st.resolvers.splice(0); rs.forEach((f) => f()); for (let i = 0; i < 5; i++) await new Promise((r) => setImmediate(r)); };
   return st;

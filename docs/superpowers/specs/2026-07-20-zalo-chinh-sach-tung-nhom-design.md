@@ -4,9 +4,9 @@ Ngày: 2026-07-20
 Trạng thái: đã chốt thiết kế, đang thực thi
 Tiếp nối: [2026-07-20-zalo-listener-design.md](2026-07-20-zalo-listener-design.md)
 
-> **CẬP NHẬT 2026-07-21 - đã BỎ chế độ `chatbot` (tự phản hồi).** Chủ quyết định Javis
+> **CẬP NHẬT 2026-07-21 - đã BỎ chế độ `chatbot` (tự phản hồi).** Chủ quyết định UNI MATE
 > KHÔNG tự trả lời khách trên Zalo: nó chỉ ĐỌC và BÁO về Telegram. Mọi tin gửi ra đều do
-> chủ yêu cầu trực tiếp (tool `javis_zalo_send`). Bốn chế độ còn lại (im-lang, bao-het,
+> chủ yêu cầu trực tiếp (tool `unimate_zalo_send`). Bốn chế độ còn lại (im-lang, bao-het,
 > tu-khoa, nhac-quen) giữ nguyên; file luật cũ `mode: chatbot` tự hạ về `im-lang` (im
 > lặng) khi đọc. Phần "chatbot" bên dưới chỉ còn giá trị lịch sử.
 
@@ -19,18 +19,18 @@ Cái chủ thật sự cần là **chính sách riêng cho từng cuộc chat**:
 
 - Nhóm này: bất kỳ tin nào cũng báo.
 - Nhóm kia: chỉ nhắc khi chủ quên trả lời quá 30 phút.
-- Nhóm nọ: Javis tự trả lời như một chatbot, chỉ báo khi gặp việc vượt khả năng.
+- Nhóm nọ: UNI MATE tự trả lời như một chatbot, chỉ báo khi gặp việc vượt khả năng.
 
 Ba chỗ cấu trúc cũ không đáp ứng được: cấu hình toàn cục thay vì theo cuộc chat;
 listener không nhớ gì nên không làm được luật theo thời gian; và không có đường
-nào để Javis trả lời.
+nào để UNI MATE trả lời.
 
-## Bối cảnh quan trọng: Javis có tài khoản Zalo RIÊNG
+## Bối cảnh quan trọng: UNI MATE có tài khoản Zalo RIÊNG
 
-Chủ đã tạo một tài khoản Zalo riêng cho Javis (không phải tài khoản cá nhân).
+Chủ đã tạo một tài khoản Zalo riêng cho UNI MATE (không phải tài khoản cá nhân).
 Điều này thay đổi mấy thứ:
 
-- Người trong nhóm thấy đúng một tài khoản tên Javis, nên chuyện "không biết đang
+- Người trong nhóm thấy đúng một tài khoản tên UNI MATE, nên chuyện "không biết đang
   nói chuyện với máy" gần như hết.
 - Chủ chấp nhận rủi ro bot trả lời sai.
 - Bot chỉ được trả lời trong những cuộc chat đã bật, không phải mọi nơi trên tài khoản.
@@ -47,8 +47,8 @@ loại với rủi ro trả lời sai.
 | Điểm | Chốt |
 |---|---|
 | Đơn vị cấu hình | Một file luật cho mỗi cuộc chat |
-| Nơi lưu | `<brain>/Javis/zalo/<slug>.md` (như loop/agent/skill) |
-| Cách đặt luật | Nói bằng lời qua chat hoặc Telegram, Javis ghi file |
+| Nơi lưu | `<brain>/UniMate/zalo/<slug>.md` (như loop/agent/skill) |
+| Cách đặt luật | Nói bằng lời qua chat hoặc Telegram, UNI MATE ghi file |
 | Giao diện | CHỈ hiển thị để xem lại, không có form nhập |
 | Tri thức của bot | Kịch bản riêng từng nhóm, không chạm brain/POS |
 
@@ -67,7 +67,7 @@ Chỉ `chatbot` mở rào, nên nó có rào riêng ở mục dưới.
 
 ## File luật
 
-`<brain>/Javis/zalo/<slug>.md`:
+`<brain>/UniMate/zalo/<slug>.md`:
 
 ```yaml
 ---
@@ -92,7 +92,7 @@ sinh ra), có git nên lần lại được mọi thay đổi, và sửa tay đ�
 
 ## Đặt luật bằng lời
 
-Tool `javis_zalo_rule` (plugin bundled) để engine gọi khi chủ nói bằng lời:
+Tool `unimate_zalo_rule` (plugin bundled) để engine gọi khi chủ nói bằng lời:
 
 - `op=list` - liệt kê luật đang có.
 - `op=show` - xem chi tiết một luật.
@@ -147,7 +147,7 @@ thật rơi vào `_permission_gate` → bị từ chối thật từng lần. C�
   không kèm brain, không kèm CLAUDE.md của chủ.
 - Nội dung khách được rào giữa hai vạch có nhãn, y như cách làm với Telegram.
 - **Model không có tool nào nên không thể chọn người nhận.** Nó chỉ sinh ra CHỮ; code
-  Javis quyết định gửi đi đâu, và luôn gửi về đúng cuộc chat vừa phát sinh tin. Dù bị
+  UNI MATE quyết định gửi đi đâu, và luôn gửi về đúng cuộc chat vừa phát sinh tin. Dù bị
   dụ hoàn toàn cũng không nhắn được cho người khác. Đây là khác biệt giữa rào thật và
   lời dặn trong prompt.
 - Đầu ra bắt đầu bằng `[CHUYEN CHU]` → không gửi cho khách, đẩy về Telegram cho chủ.
@@ -167,7 +167,7 @@ gửi, bật lại. Không đoán trước, để lộ ra rồi xử.
 - Bot chỉ trả lời trong cuộc chat có luật `mode: chatbot` **và** `enabled: true`.
   Kiểm bằng code trước khi gọi engine, không phải bằng lời dặn.
 - Bốn chế độ còn lại không gọi engine.
-- Tin của chính tài khoản Javis không kích hoạt gì (tránh bot tự nói chuyện với mình).
+- Tin của chính tài khoản UNI MATE không kích hoạt gì (tránh bot tự nói chuyện với mình).
 - Rào XSS trên giao diện giữ nguyên: tên nhóm và tên người gửi vẫn bọc `esc()`.
 
 ## Test

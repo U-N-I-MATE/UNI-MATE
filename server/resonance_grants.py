@@ -117,7 +117,7 @@ def fingerprint(binding_id: str, key: str, sha256: str, source: str) -> str:
 
 
 # Khả năng thật của từng engine (mục 6.1). `turn_key`: mang được khoá lượt tới hub; `submit_tool`: nộp qua
-# `javis_submit_deliverable`; `observed_write`: biên nhận Write có id (chỉ Claude Code). Việc nền giữ nguyên danh sách
+# `unimate_submit_deliverable`; `observed_write`: biên nhận Write có id (chỉ Claude Code). Việc nền giữ nguyên danh sách
 # của A1 tới A3 (D5). Grok và Antigravity không truyền khoá lượt nên không nhận bàn giao chat (D4).
 ENGINE_CAPS = {
     "anthropic-cli": {"turn_key": True, "submit_tool": True, "observed_write": True},

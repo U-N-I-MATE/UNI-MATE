@@ -14,7 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-dvtest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-dvtest-"))
 
 import main  # noqa: E402
 
@@ -27,12 +27,12 @@ def check(name, cond):
         _fails.append(name)
 
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-dvbrain-")).resolve()
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-dvbrain-")).resolve()
 BRAIN = _TMP / "brains" / "vault"
 (BRAIN / "05 - Việc").mkdir(parents=True)
 main._brain_root = lambda brain: str(BRAIN)
-os.environ["JAVIS_HOST"] = "127.0.0.1"
-os.environ.pop("JAVIS_REQUIRE_LOGIN", None)
+os.environ["UNIMATE_HOST"] = "127.0.0.1"
+os.environ.pop("UNIMATE_REQUIRE_LOGIN", None)
 
 NOTE = """---
 type: project

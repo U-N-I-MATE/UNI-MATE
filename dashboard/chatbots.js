@@ -1,6 +1,6 @@
 // ============================================================
-// Javis - Trang Chatbot: quản lý các Bot chuyên trách (mỗi bot một Agent, một brain,
-// một token Telegram riêng). console.js gọi window.JavisChatbots.render(el).
+// UNI MATE - Trang Chatbot: quản lý các Bot chuyên trách (mỗi bot một Agent, một brain,
+// một token Telegram riêng). console.js gọi window.UniMateChatbots.render(el).
 //
 // UX dựng theo hướng NHIỀU BOT ngay từ đầu dù lần đầu chỉ chạy một con: lưới thẻ, ô tìm,
 // thêm/sửa/xoá, bật/tắt tại chỗ. Thêm bot thứ hai không phải sửa lại giao diện.
@@ -13,15 +13,15 @@
   // Locale để định dạng số/ngày. Lấy từ i18n chứ KHÔNG khoá "vi-VN": người dùng đổi
   // ngôn ngữ giao diện thì ngày giờ phải đổi theo, nếu không thì nửa màn hình tiếng Anh
   // mà ngày vẫn dd/mm/yyyy kiểu Việt.
-  const LOC = () => (window.JavisI18n && JavisI18n.locale()) || "vi-VN";
+  const LOC = () => (window.UniMateI18n && UniMateI18n.locale()) || "vi-VN";
   function esc(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
   // (i) button (info-tip.js, 0.214.0): explanations sit behind it; without the helper (Node tests) they draw open.
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(window.t("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(window.t("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
   function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
@@ -309,7 +309,7 @@
     // trong khi thẻ vẫn xanh và bot vẫn trả lời bình thường.
     if (st.loi_menu_lenh)
       loiTen += '<div class="cb-err">' + ic("triangle-alert") + ' ' + esc(st.loi_menu_lenh) + '</div>';
-    // Chế độ riêng tư của Telegram chặn Ở PHÍA TELEGRAM, trước khi Javis nhìn thấy tin nào.
+    // Chế độ riêng tư của Telegram chặn Ở PHÍA TELEGRAM, trước khi UNI MATE nhìn thấy tin nào.
     // Hiện cho MỌI bot có dùng nhóm, không riêng bot đặt "trả lời mọi tin": nó là nguyên nhân
     // số một của "nhắn riêng thì được, trong nhóm tag tên thì im re", và người dùng không có
     // cách nào đoán ra vì mọi dấu hiệu trên trang này đều xanh.
@@ -361,8 +361,8 @@
         '<div class="cb-meta cb-tt">' +
           '<span class="cb-tt-t">' + ic("users") + ' <b>' + esc(window.t("cb2.tra_loi")) + '</b> ' +
             esc(tomTatDoiTuong(b)) +
-            (window.JavisReplyPolicy && window.JavisReplyPolicy.summary(b) && !(b.audience === "all" && b.reply_when === "auto")
-              ? ' · ' + esc(window.JavisReplyPolicy.summary(b)) : '') + '</span>' +
+            (window.UniMateReplyPolicy && window.UniMateReplyPolicy.summary(b) && !(b.audience === "all" && b.reply_when === "auto")
+              ? ' · ' + esc(window.UniMateReplyPolicy.summary(b)) : '') + '</span>' +
         '</div>' +
         '<div class="cb-meta">' +
           '<span>' + esc(b.nguon_tra_loi === "tai_lieu" ? window.t("cb.nguon_tl_ngan")
@@ -420,27 +420,27 @@
     c.querySelector(".cb-toggle").onclick = function () { bat(b, !b.enabled); };
     c.querySelector(".cb-log").onclick = function () { moNhatKy(b); };
     var nutRp = c.querySelector(".cb-rp");
-    if (nutRp) nutRp.onclick = function () { window.JavisReplyPolicy.openPanel(b); };
+    if (nutRp) nutRp.onclick = function () { window.UniMateReplyPolicy.openPanel(b); };
     c.querySelector(".cb-hoi-thoai").onclick = function () {
-      if (window.JavisConversations) window.JavisConversations.mo({ bot_id: b.id });
+      if (window.UniMateConversations) window.UniMateConversations.mo({ bot_id: b.id });
     };
     c.querySelector(".cb-edit").onclick = function () { moForm(b); };
     // Thử bot (0.78.0): chạy một tin giả, không gửi gì ra ngoài. Xem chatbots-try.js.
     c.querySelector(".cb-try").onclick = function () {
       // Bot chưa gắn kênh nào vẫn thử được "Trong nhóm": chỉnh bot cho ổn rồi mới gắn kênh.
-      if (window.JavisTryBot) window.JavisTryBot.open(b, { groups: coNhom(b) || !(b.accounts || []).length });
+      if (window.UniMateTryBot) window.UniMateTryBot.open(b, { groups: coNhom(b) || !(b.accounts || []).length });
     };
     c.querySelector(".cb-kenh-them").onclick = function () { moForm(b, { buoc: 1 }); };
     c.querySelectorAll(".cb-kenh-nhap-cu, .cb-nhap-cu").forEach(function (n) {
       n.onclick = function () {
-        var fn = window.JavisConversations && window.JavisConversations.nhapTinCu;
+        var fn = window.UniMateConversations && window.UniMateConversations.nhapTinCu;
         var a = (b.accounts || []).filter(function (x) { return x.id === n.dataset.tk; })[0];
         if (fn && a) fn(a, n);
       };
     });
     c.querySelectorAll(".cb-kenh-sua").forEach(function (n) {
       n.onclick = function () {
-        var fn = window.JavisConversations && window.JavisConversations.suaKenh;
+        var fn = window.UniMateConversations && window.UniMateConversations.suaKenh;
         if (fn) fn(n.dataset.tk);
       };
     });
@@ -783,7 +783,7 @@
     // Kênh đang do bot KHÁC trực: hiện mờ, không tick được, ghi rõ bot nào (và brain nào nếu khác brain đang mở).
     var khoa = _tkBan.filter(function (a) { return !da[a.id]; }).map(function (a) {
       var k = kenhCua(a.channel);
-      var tb = window.JavisConversations && window.JavisConversations.tenBrain;
+      var tb = window.UniMateConversations && window.UniMateConversations.tenBrain;
       var khac = a.bot_brain && a.bot_brain !== brain();
       return '<div class="cb-tk cb-tk-khoa" aria-disabled="true">' +
         '<span class="cb-tk-logo">' + logoKenh(a.channel, "18px") + '</span>' +
@@ -818,7 +818,7 @@
   // và tích sẵn con vừa nối - đường đi tự nhiên là nối kênh xong dùng luôn, không phải tự tìm
   // lại nó trong danh sách.
   function noiKenhMoi(xong) {
-    var fn = window.JavisConversations && window.JavisConversations.themTaiKhoan;
+    var fn = window.UniMateConversations && window.UniMateConversations.themTaiKhoan;
     if (!fn) return alert(window.t("cb.chua_mo_duoc_kenh"));
     fn({ onXong: async function (tk) {
       try {
@@ -861,7 +861,7 @@
     // "Tự động hóa tất cả" không phải một giá trị lưu riêng: nó là "mọi cuộc chat" cộng "tự đánh giá" gộp làm MỘT cú chọn
     // (lưu xuống vẫn là audience=all, reply_when=auto), nên bot đã cài như vậy từ trước tự hiện đúng thẻ này.
     var card0 = (aud0 === "all" && rw0 === "auto") ? "auto" : aud0;
-    var RP = window.JavisReplyPolicy;      // bộ phán xử hội thoại nhóm (0.65.0), file chatbots-reply-policy.js
+    var RP = window.UniMateReplyPolicy;      // bộ phán xử hội thoại nhóm (0.65.0), file chatbots-reply-policy.js
     // Người/nhóm ĐANG được chọn (sự thật của form). Danh sách cuộc chat từ server chỉ là nguồn để
     // chọn; tick hay bỏ tick sửa ở đây, và lúc Lưu mới đổ ra hai danh sách groups/people.
     var chon = { group: {}, private: {} };
@@ -1010,7 +1010,7 @@
           '</div>' +
 
           // Nâng cao: chỉ ngôn ngữ trả lời. Ngôn ngữ của bot ĐỘC LẬP với ngôn ngữ của chủ: bot nói
-          // chuyện với NGƯỜI NGOÀI, và chủ dùng Javis bằng tiếng Việt mà người nhắn tới nói tiếng khác
+          // chuyện với NGƯỜI NGOÀI, và chủ dùng UNI MATE bằng tiếng Việt mà người nhắn tới nói tiếng khác
           // là chuyện bình thường, nên suy ngôn ngữ của bot từ ngôn ngữ của chủ là suy sai.
           '<details class="cb-nangcao">' +
             '<summary>' + ic("settings") + ' ' + esc(window.t("cb.nang_cao")) + '</summary>' +
@@ -1034,14 +1034,14 @@
     box.onmousedown = function (e) { if (e.target === box) dong(); };
 
     // Searchable agent picker instead of the native list of "name - truncated role" lines (owner, 25/10/2026).
-    if (window.JavisAgentPicker) {
-      window.JavisAgentPicker.enhance(box.querySelector("#cbAgent"), { title: window.t("ap.title") });
+    if (window.UniMateAgentPicker) {
+      window.UniMateAgentPicker.enhance(box.querySelector("#cbAgent"), { title: window.t("ap.title") });
     }
 
     // Sang thẳng trang Cộng sự. Đóng form trước để quay lại không bị hai lớp modal chồng nhau.
     box.querySelector("#cbNewAgent").onclick = function () {
       dong();
-      try { window.JavisNav.go("workspace"); } catch (e) {}
+      try { window.UniMateNav.go("workspace"); } catch (e) {}
     };
 
     function giaTri(ten) {
@@ -1496,14 +1496,14 @@
 
   // Tab Kênh bấm "Tạo bot trực" trên một tài khoản: mở form với tài khoản đó tích sẵn. Đợi
   // trang nạp xong danh sách kênh (tai) rồi mới mở, để ô chọn có đủ dữ liệu.
-  document.addEventListener("javis:chatbot-new", function (e) {
+  document.addEventListener("unimate:chatbot-new", function (e) {
     var aid = (e.detail || {}).account_id;
     doiNap(function () { moForm(null, { account_id: aid }); });
   });
 
   // Chatbot v5 (2026-10-28): "Open the settings of bot X" in a chat's Info panel. The bot of a chat may belong to another
   // brain than the one open (this page only loads the open brain's bots); then say so instead of opening nothing.
-  document.addEventListener("javis:chatbot-open", function (e) {
+  document.addEventListener("unimate:chatbot-open", function (e) {
     var id = (e.detail || {}).bot_id;
     if (!id) return;
     var lan = 0;
@@ -1515,7 +1515,7 @@
     })();
   });
 
-  // (0.62.2 đã bỏ tay bắt "javis:chatbot-edit" ở đây. Tab Kênh từng bấm Xoá là nhảy sang đây
+  // (0.62.2 đã bỏ tay bắt "unimate:chatbot-edit" ở đây. Tab Kênh từng bấm Xoá là nhảy sang đây
   // mở form Sửa của con bot đang giữ tài khoản, nhưng trang này chỉ nạp bot của BRAIN ĐANG MỞ
   // còn tài khoản kênh thì toàn cục - nên với con bot ở brain khác, đường đó luôn kết thúc
   // bằng câu "đổi brain rồi thử lại" mà không nói đổi sang brain nào. Nay tab Tài khoản bot tự gỡ tài
@@ -1531,5 +1531,5 @@
     })();
   }
 
-  window.JavisChatbots = { render: render };
+  window.UniMateChatbots = { render: render };
 })();

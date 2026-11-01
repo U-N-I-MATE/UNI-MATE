@@ -10,11 +10,11 @@ How, and why this way rather than through an MCP connector:
 1. **Only links the OWNER wrote.** URLs come from the Agent file (its `assets.links` plus links in its
    text), never from a customer message. A customer pasting a link gets nothing fetched.
 2. **Only Google's public export endpoint, rebuilt from the document id.** The owner's URL is parsed
-   for a document id and Javis requests `docs.google.com/<kind>/d/<id>/export?...` itself, so the URL
+   for a document id and UNI MATE requests `docs.google.com/<kind>/d/<id>/export?...` itself, so the URL
    cannot steer the request anywhere else. This needs the document shared as "Anyone with the link can
    view"; a private one comes back as a Google sign-in page, which is reported to the owner as exactly
    that, so the fix is one click in Google, not a guess.
-3. **No connector, no extra permission level.** Fetching happens in Javis' own code before the turn,
+3. **No connector, no extra permission level.** Fetching happens in UNI MATE' own code before the turn,
    like the keyword search, so it works at every bot level including the default read-only one, on
    every engine, on every fork. Going through a hub connector would hand a stranger-steered turn a
    live data source, which is what the "read_docs" level was built to avoid.
@@ -291,8 +291,8 @@ def fetch(url: str) -> dict:
     p = parse(url)
     if not p:
         raise LinkError(chu(
-            "chưa đọc được: Javis mới đọc link Google Docs và Google Sheets dạng docs.google.com/.../d/...",
-            "cannot be read: Javis reads Google Docs and Google Sheets links of the form "
+            "chưa đọc được: UNI MATE mới đọc link Google Docs và Google Sheets dạng docs.google.com/.../d/...",
+            "cannot be read: UNI MATE reads Google Docs and Google Sheets links of the form "
             "docs.google.com/.../d/..."))
     if p["kind"] == "doc":
         data, _ = _get(_export_url(p, "md"))

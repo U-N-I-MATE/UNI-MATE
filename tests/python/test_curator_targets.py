@@ -9,7 +9,7 @@ lần hết 97M token trên 4 brain, trong đó 1 brain là đường dẫn khô
 người dùng đã bỏ gần 3 tuần.
 
 Bẫy đã tránh: KHÔNG đo độ mới bằng mtime thư mục brain, vì chính curator ghi
-Javis/learn-log mỗi vòng - lấy mtime thư mục thì brain nào cũng "vừa hoạt động" và
+UniMate/learn-log mỗi vòng - lấy mtime thư mục thì brain nào cũng "vừa hoạt động" và
 curator tự nuôi lý do chạy tiếp mãi. Chỉ đọc Memory/conversations (dấu vết người thật).
 
 Phủ:
@@ -27,8 +27,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-curator-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-curator-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 
 import learn  # noqa: E402
 
@@ -47,7 +47,7 @@ ROOT = Path(_TMP) / "brains"
 def make_brain(name, conv_days_ago=None, learnlog_days_ago=None):
     """Dựng brain giả. conv_days_ago=None → không có Memory/conversations."""
     root = ROOT / name
-    (root / "Javis").mkdir(parents=True, exist_ok=True)
+    (root / "UNI MATE").mkdir(parents=True, exist_ok=True)
     if conv_days_ago is not None:
         d = root / "Memory" / "conversations"
         d.mkdir(parents=True, exist_ok=True)
@@ -56,7 +56,7 @@ def make_brain(name, conv_days_ago=None, learnlog_days_ago=None):
         t = time.time() - conv_days_ago * 86400
         os.utime(f, (t, t))
     if learnlog_days_ago is not None:
-        d = root / "Javis" / "learn-log"
+        d = root / "UNI MATE" / "learn-log"
         d.mkdir(parents=True, exist_ok=True)
         f = d / "2026-07-25.md"
         f.write_text("curator ghi", encoding="utf-8")

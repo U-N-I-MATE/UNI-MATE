@@ -2,7 +2,7 @@
 
     python tests/run.py go_chatgpt_web
 
-Vì sao gỡ: model này lái một trình duyệt vào chatgpt.com, mà Javis chạy trên máy chủ thuê nên
+Vì sao gỡ: model này lái một trình duyệt vào chatgpt.com, mà UNI MATE chạy trên máy chủ thuê nên
 Cloudflare chặn theo IP. Chủ repo đưa hai dự án làm cùng việc để đối chiếu
 (`miuuyy/codex-chatgpt-web`, `XiaoDuoYa/codex-with-chatgpt`): CẢ HAI đều chạy trình duyệt
 trên máy của người dùng, không dự án nào có đường qua Cloudflare từ máy chủ. Chủ repo chốt gỡ
@@ -25,7 +25,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-gocgw-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-gocgw-")
 
 import config as cfg  # noqa: E402
 import main  # noqa: E402
@@ -121,8 +121,8 @@ _docker = (ROOT / "Dockerfile").read_text(encoding="utf-8")
 check("ảnh Docker không còn cài xvfb (chỉ ChatGPT Web cần)", "xvfb" not in _docker)
 
 for _doc in ("docs/16-cau-hinh-env.md", "docs/en/16-env-configuration.md"):
-    check(f"{_doc} không còn biến JAVIS_ENABLE_WEB_CHAT",
-          "JAVIS_ENABLE_WEB_CHAT" not in (ROOT / _doc).read_text(encoding="utf-8"))
+    check(f"{_doc} không còn biến UNIMATE_ENABLE_WEB_CHAT",
+          "UNIMATE_ENABLE_WEB_CHAT" not in (ROOT / _doc).read_text(encoding="utf-8"))
 check("tài liệu hướng dẫn cũ đã xoá", not (ROOT / "docs" / "29-chatgpt-web.md").exists())
 check("spec cũ còn lại làm hồ sơ, có ghi rõ ĐÃ GỠ",
       "ĐÃ GỠ ở 0.64.20" in (ROOT / "docs/dev/2026-09-chatgpt-web-model-spec.md").read_text(encoding="utf-8"))

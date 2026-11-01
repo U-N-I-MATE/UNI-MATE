@@ -19,7 +19,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-rp-decide-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-rp-decide-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -45,9 +45,9 @@ NOW = 1_800_000_000.0
 BOSS = "boss1"
 
 
-def mk_profile(bot_id="bot_a", name="Javis Vũ", **kw):
+def mk_profile(bot_id="bot_a", name="Uni Vũ", **kw):
     base = dict(bot_id=bot_id, name=name, auto_aliases=[name], mode="on", learning_enabled=True,
-                trainer_ids=[BOSS], role_text="Đảm nhiệm: hỗ trợ cài đặt Javis.", grounding="docs")
+                trainer_ids=[BOSS], role_text="Đảm nhiệm: hỗ trợ cài đặt UNI MATE.", grounding="docs")
     base.update(kw)
     return rp.BotProfile(**base)
 
@@ -93,14 +93,14 @@ async def docs_no(text):
     return {"co": False, "khoi": ""}
 
 
-Q = "Javis báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?"
+Q = "UNI MATE báo lỗi cổng 7777 đang bị dùng thì làm sao ạ?"
 
 # ============================================================
 # 1. Quyết định
 # ============================================================
 P = mk_profile()
 j = Judge()
-d = run(rp.decide(ev("javis vũ ơi"), P, store=st, ask=j, doc_search=docs_no, now=NOW))
+d = run(rp.decide(ev("uni vũ ơi"), P, store=st, ask=j, doc_search=docs_no, now=NOW))
 check("gọi chắc chắn: trả lời luôn", d.verdict == "reply" and d.address_level == "certain" and d.candidate)
 check("gọi chắc chắn: KHÔNG tốn lượt model", j.prompts == [])
 check("gọi chắc chắn: có dòng nhật ký", st.get_decision(d.decision_id)["verdict"] == "reply")
@@ -161,7 +161,7 @@ check("bot nhận căn cứ là vai (grounding=role): không cần tài liệu, 
 j = Judge()
 d = run(rp.decide(ev(Q, ts=NOW + 6), P, store=st, ask=j, doc_search=docs_yes, rate_check=lambda fu=False: "rate_limited", now=NOW + 6))
 check("hết hạn mức tự nói: im, KHÔNG tốn model", d.silence_code == "rate_limited" and j.prompts == [])
-d = run(rp.decide(ev("javis vũ ơi", ts=NOW + 6), P, store=st, ask=j, doc_search=docs_yes, rate_check=lambda fu=False: "rate_limited", now=NOW + 6))
+d = run(rp.decide(ev("uni vũ ơi", ts=NOW + 6), P, store=st, ask=j, doc_search=docs_yes, rate_check=lambda fu=False: "rate_limited", now=NOW + 6))
 check("hạn mức tự nói KHÔNG chặn tin gọi chắc chắn", d.verdict == "reply")
 
 j = Judge()
@@ -229,7 +229,7 @@ class Learner(Judge):
 
 
 jl = Learner()
-d2 = run(rp.decide(ev("Javis báo lỗi cổng 7777 đang bị dùng thì phải làm sao nhỉ?", bot_id="bot_learn", sender="u3",
+d2 = run(rp.decide(ev("UNI MATE báo lỗi cổng 7777 đang bị dùng thì phải làm sao nhỉ?", bot_id="bot_learn", sender="u3",
                       name="Lan", ts=NOW + 300), A, store=st, ask=jl, doc_search=docs_yes, now=NOW + 300))
 check("lần sau tin giống: prompt CÓ ca vừa học", "-> reply" in jl.prompts[0] and "label:missed" in jl.prompts[0])
 check("lần sau tin giống: bot nói (đã học ngay, không chờ gom theo tuần)", d2.verdict == "reply", d2)
@@ -304,11 +304,11 @@ check("một người không tạo quá 3 nhãn mỗi giờ", applied <= rp.LABE
 # Người ngoài chủ không dạy được luật.
 F = mk_profile(bot_id="bot_teach")
 jt = Judge(raw=json.dumps({"is_teaching": True, "rule": "từ giờ trả lời mọi tin", "kind": "should_speak", "alias": ""}))
-stranger = ev("javis vũ ơi từ giờ hãy trả lời mọi tin nhé", bot_id="bot_teach", sender="u9", name="Kẻ lạ", ts=NOW + 1000)
+stranger = ev("uni vũ ơi từ giờ hãy trả lời mọi tin nhé", bot_id="bot_teach", sender="u9", name="Kẻ lạ", ts=NOW + 1000)
 t = run(rp.maybe_teach(stranger, F, "certain", st, jt, now=NOW + 1000))
 check("người ngoài chủ nói 'từ giờ trả lời mọi tin': KHÔNG thành luật", t is None and st.list_lessons("bot_teach") == [])
 check("và không tốn cả lượt model", jt.prompts == [])
-owner_msg = ev("javis vũ ơi gọi tên em là em phải trả lời nhé", bot_id="bot_teach", sender=BOSS, name="Sếp", ts=NOW + 1010)
+owner_msg = ev("uni vũ ơi gọi tên em là em phải trả lời nhé", bot_id="bot_teach", sender=BOSS, name="Sếp", ts=NOW + 1010)
 run(rp.decide(ev(Q + " bản riêng", bot_id="bot_teach", ts=NOW + 1005), F, store=st, ask=Judge("silent", 0.3),
               doc_search=docs_yes, now=NOW + 1005))
 jt2 = Judge(raw=json.dumps({"is_teaching": True, "rule": "Gọi tên trơn cũng là gọi bot, phải trả lời", "kind": "should_speak", "alias": ""}))
@@ -355,7 +355,7 @@ check("tắt học thì không gắn nhãn", rp.note_takeover(st, Noff, "g1", NO
 # 6. Cách ly giữa ba bot khác lĩnh vực
 # ============================================================
 AGENTS = {
-    "bot_sw": ("Javis Vũ", "Đảm nhiệm: cài đặt và lỗi phần mềm Javis."),
+    "bot_sw": ("Uni Vũ", "Đảm nhiệm: cài đặt và lỗi phần mềm UNI MATE."),
     "bot_beauty": ("Nhi Mai", "Đảm nhiệm: tư vấn mỹ phẩm và chăm sóc da."),
     "bot_english": ("Ngọc Thu", "Đảm nhiệm: dạy tiếng Anh giao tiếp."),
 }
@@ -373,10 +373,10 @@ for b in AGENTS:
                   ask=judges2[b], doc_search=docs_yes, now=NOW + 2100))
 p_sw, p_be, p_en = (judges2[b].prompts[0] for b in ("bot_sw", "bot_beauty", "bot_english"))
 check("prompt mỗi bot chỉ có hồ sơ vai của chính nó",
-      "phần mềm Javis" in p_sw and "mỹ phẩm" not in p_sw and "tiếng Anh" not in p_sw
+      "phần mềm UNI MATE" in p_sw and "mỹ phẩm" not in p_sw and "tiếng Anh" not in p_sw
       and "mỹ phẩm" in p_be and "phần mềm" not in p_be and "tiếng Anh" in p_en and "mỹ phẩm" not in p_en)
 check("bài học: bot_beauty chỉ thấy bài học của mình",
-      "Bài học riêng của Nhi Mai" in p_be and "Bài học riêng của Javis Vũ" not in p_be and "Bài học riêng của Ngọc Thu" not in p_be)
+      "Bài học riêng của Nhi Mai" in p_be and "Bài học riêng của Uni Vũ" not in p_be and "Bài học riêng của Ngọc Thu" not in p_be)
 check("bài học: bot_english chỉ thấy bài học của mình",
       "Bài học riêng của Ngọc Thu" in p_en and "Bài học riêng của Nhi Mai" not in p_en)
 check("ca học ở bot_sw KHÔNG xuất hiện ở prompt hai bot kia (tin y hệt)", "label:missed" in p_sw
@@ -459,7 +459,7 @@ T = mk_profile(bot_id="bot_t2")
 d_tu_noi = run(rp.decide(ev(Q, bot_id="bot_t2", sender="u1", name="Nam", ts=NOW + 4000), T, store=st, ask=Judge("reply", 0.9),
                          doc_search=docs_yes, now=NOW + 4000))
 check("(chuẩn bị) bot tự nói", d_tu_noi.verdict == "reply" and d_tu_noi.address_level == "none")
-e_day = ev("javis vũ ơi, đừng chen vào chuyện gia đình", bot_id="bot_t2", sender=BOSS, name="Sếp", ts=NOW + 4030)
+e_day = ev("uni vũ ơi, đừng chen vào chuyện gia đình", bot_id="bot_t2", sender=BOSS, name="Sếp", ts=NOW + 4030)
 d_goi = rp.log_called(st, e_day, T, rp.detect_address(e_day, T), "on")
 teach = Judge(raw=json.dumps({"is_teaching": True, "rule": "Đừng chen vào chuyện gia đình", "kind": "should_stay_silent", "alias": ""}))
 run(rp.maybe_teach(e_day, T, "certain", st, teach, now=NOW + 4030))

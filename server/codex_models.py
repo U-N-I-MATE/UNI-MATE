@@ -1,7 +1,7 @@
 """Danh sách model LIVE từ chính Codex CLI.
 
 Codex app-server là giao diện ổn định mà các client Codex dùng để dựng model
-picker.  Hỏi ``model/list`` ở đây giúp Javis tự thấy model mới, model mặc định
+picker.  Hỏi ``model/list`` ở đây giúp UNI MATE tự thấy model mới, model mặc định
 và các đợt ẩn/deprecate mà không phải ghim version model trong source.
 """
 from __future__ import annotations
@@ -63,28 +63,28 @@ def _nho_efforts(items) -> None:
 _THANG = ("minimal", "low", "medium", "high", "xhigh", "max")
 
 
-def muc_cho(model: str, muc_javis: str) -> str:
-    """Mức của Javis -> mức effort của Codex, lấy từ THANG CỦA CHÍNH MODEL ĐÓ. "" = đừng truyền.
+def muc_cho(model: str, muc_unimate: str) -> str:
+    """Mức của UNI MATE -> mức effort của Codex, lấy từ THANG CỦA CHÍNH MODEL ĐÓ. "" = đừng truyền.
 
     Không có bảng dịch chép tay, và đó là chủ ý: Codex đổi thang theo từng model và từng đợt
     (`minimal` chỉ vài model có, `xhigh` mới thêm sau). Bảng chép tay thì sai lặng lẽ, còn giá
     trị model không nhận thì hỏng cả lượt chat. Ở đây mọi giá trị trả ra đều LẤY TỪ danh sách
     mà chính Codex vừa khai cho model đó, nên không bao giờ gửi một mức nó không hiểu.
 
-    Luật: "ultra" là nấc trên cùng của Javis nên luôn ra nấc CAO NHẤT model có. Mấy nấc còn
+    Luật: "ultra" là nấc trên cùng của UNI MATE nên luôn ra nấc CAO NHẤT model có. Mấy nấc còn
     lại lấy đúng tên nếu model có, không thì lùi xuống nấc thấp hơn gần nhất - lùi chứ không
     tiến, vì tiến là tiêu nhiều tiền hơn mức người dùng chọn.
     """
     thang = [m for m in _THANG if m in efforts_for(model)]
-    if not thang or not muc_javis or muc_javis == "off":
+    if not thang or not muc_unimate or muc_unimate == "off":
         return ""
-    if muc_javis == "ultra":
+    if muc_unimate == "ultra":
         return thang[-1]
-    if muc_javis in thang:
-        return muc_javis
-    if muc_javis not in _THANG:
+    if muc_unimate in thang:
+        return muc_unimate
+    if muc_unimate not in _THANG:
         return ""
-    i = _THANG.index(muc_javis)
+    i = _THANG.index(muc_unimate)
     thap_hon = [m for m in thang if _THANG.index(m) < i]
     return thap_hon[-1] if thap_hon else thang[0]
 
@@ -122,7 +122,7 @@ def _normalize_items(items: Any) -> list[dict]:
             "default_service_tier": raw.get("defaultServiceTier"),
         })
     # Codex thường đã xếp default đầu tiên. Bảo đảm điều đó để fallback của
-    # Javis cũng dùng đúng default hiện hành nếu upstream đổi thứ tự.
+    # UNI MATE cũng dùng đúng default hiện hành nếu upstream đổi thứ tự.
     out.sort(key=lambda x: not x["is_default"])
     return out
 
@@ -186,14 +186,14 @@ def list_models(timeout: float = 20.0, cli_path: Optional[str] = None,
             creationflags=_no_window(),
             env=codex_env(),
         )
-        threading.Thread(target=reader, name="javis-codex-models", daemon=True).start()
+        threading.Thread(target=reader, name="unimate-codex-models", daemon=True).start()
         send({
             "method": "initialize",
             "id": 0,
             "params": {
                 "clientInfo": {
-                    "name": "javis_os",
-                    "title": "Javis OS",
+                    "name": "unimate_os",
+                    "title": "UNI MATE",
                     "version": "1.0",
                 }
             },

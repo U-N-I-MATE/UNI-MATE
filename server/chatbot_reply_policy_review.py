@@ -13,7 +13,7 @@ about class times and the bot stayed silent every time"). This module does that 
   3. Every change is logged with its before/after, so it can be undone, and the review measures itself: if the
      error rate got worse after a review, that whole review is undone automatically.
   4. The owner gets one short message per review that changed something. "Undo it" in chat goes through the same
-     `revert_*` functions, via the `javis_reply_policy_tune` hub tool.
+     `revert_*` functions, via the `unimate_reply_policy_tune` hub tool.
 
 What it never touches (hard rails from the original spec): rate limits, yielding to the owner, permissions, and the
 content of what the bot says. Learning only moves "speak or stay silent".
@@ -37,7 +37,7 @@ import chatbot_reply_policy as rp
 # ============================================================
 # Constants
 # ============================================================
-REVIEW_ENV = "JAVIS_REPLY_POLICY_REVIEW"      # "0" turns the background review off (operator switch, not a setting)
+REVIEW_ENV = "UNIMATE_REPLY_POLICY_REVIEW"      # "0" turns the background review off (operator switch, not a setting)
 MIN_GAP_S = 24 * 3600
 MIN_NEW_LABELS = 8
 MIN_NEW_SILENT = 40
@@ -637,12 +637,12 @@ def review_message(res: dict) -> str:
                           b=name, n=len(res["applied"])))
         parts += [f"- {x}" for x in res["applied"]]
     if res.get("feedback"):
-        parts.append(_chu("Có một chỗ phải sửa trong mã (đã ghi vào Javis/gop-y-bo-phan-xu.md): {f}",
-                          "One issue needs a code change (written to Javis/gop-y-bo-phan-xu.md): {f}",
+        parts.append(_chu("Có một chỗ phải sửa trong mã (đã ghi vào UniMate/gop-y-bo-phan-xu.md): {f}",
+                          "One issue needs a code change (written to UniMate/gop-y-bo-phan-xu.md): {f}",
                           f=untrusted_text(res["feedback"], 240)))
     if res.get("applied"):
-        parts.append(_chu('Không vừa ý thì nhắn Javis: "hoàn lại lần tự soát {r} của {b}".',
-                          'If you do not like it, tell Javis: "undo review {r} of {b}".', r=res["review_id"], b=name))
+        parts.append(_chu('Không vừa ý thì nhắn UNI MATE: "hoàn lại lần tự soát {r} của {b}".',
+                          'If you do not like it, tell UNI MATE: "undo review {r} of {b}".', r=res["review_id"], b=name))
     return "\n".join(parts)
 
 

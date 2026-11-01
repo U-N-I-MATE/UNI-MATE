@@ -12,7 +12,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-pathtest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-pathtest-"))
 
 import main  # noqa: E402
 
@@ -25,7 +25,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-pathexists-")).resolve()
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-pathexists-")).resolve()
 _DIR = _TMP / "brain-that"
 _DIR.mkdir()
 _FILE = _TMP / "la-file.md"

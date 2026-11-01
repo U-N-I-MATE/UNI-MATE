@@ -1,4 +1,4 @@
-"""The bot reads the Zalo tags (labels) of a chat (0.281.0, javis-zalo 1.6.0 `zalo_get_labels`).
+"""The bot reads the Zalo tags (labels) of a chat (0.281.0, unimate-zalo 1.6.0 `zalo_get_labels`).
 
     python tests/run.py zalo_labels      (no network, fake MCP and engine)
 
@@ -18,7 +18,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-labels-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-labels-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

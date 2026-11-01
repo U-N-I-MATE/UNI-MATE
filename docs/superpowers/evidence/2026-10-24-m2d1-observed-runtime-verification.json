@@ -4,10 +4,10 @@
   "source_sha256": "39c6e1ce63d03101e12b02ad5f6aa9e8b6e3c61cbfe11f549af92efbeb2fe053",
   "test_sha256": "0023a135e3a533c8caf000684c59feb6a4caca55f753c538041f4f6125e9ff8f",
   "protocol_dependency_sha256": "9ddcd57cd81378e814a96f5d3f2a29278e967a45e4a1c581e22ac45999ad3744",
-  "command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe tests/python/test_improvement_observed_verification.py",
+  "command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe tests/python/test_improvement_observed_verification.py",
   "author": {"tests": 7, "seconds": 0.020, "exit": 0, "log_sha256": "bf41a56ff8ffbc57ed73e2a5fd65b13754cdf95ffc3f4d5cd5b7366d4d5c86ac"},
   "independent": {"tests": 7, "seconds": 0.018, "exit": 0, "log_sha256": "586e7f7a80e772701844683b339cd382ccb031bb3ce7a1d6d755ed769d6d21de"},
-  "legacy_regression": {"command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe tests/python/test_improvement_claude.py", "tests": 22, "seconds": 1.488, "exit": 0, "log_sha256": "1be5eb9ee973f46b7b869fb1570462e9e0a381cef3635c4f3489b979e2f05967"},
+  "legacy_regression": {"command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe tests/python/test_improvement_claude.py", "tests": 22, "seconds": 1.488, "exit": 0, "log_sha256": "1be5eb9ee973f46b7b869fb1570462e9e0a381cef3635c4f3489b979e2f05967"},
   "behavior": [
     "verify() delegates to its same existing observer, configuration/registration/runtime/policy/auth gates and capability result",
     "verify_observed(runtime) accepts only bounded strict builtin closed runtime/auth data and defensively copies before the same verification gates",

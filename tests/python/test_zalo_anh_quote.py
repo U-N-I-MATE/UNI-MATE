@@ -4,7 +4,7 @@
 
 Field report 2026-10-14: in a group someone quoted a product photo and tagged the bot ("@bot xem ảnh này"); the
 bot only got the text and said it could not see the photo. The owner's workaround was to send the photo again and
-tag the bot within 3 minutes. The quote carries the photo's message id (`replyTo.msgId`), and Javis stored that
+tag the bot within 3 minutes. The quote carries the photo's message id (`replyTo.msgId`), and UNI MATE stored that
 photo, link included, when it read it.
 
 Pinned:
@@ -24,7 +24,7 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-anhquote-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-anhquote-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -116,7 +116,7 @@ check("payload link http (không https) bị bỏ",
 check("replyTo không phải dict", zc.anh_duoc_quote("conn-1", "g1", {"replyTo": "777"}) == "")
 
 # ---- 5. The bot's turn says the photo is the quoted one ----
-BRAIN = Path(tempfile.mkdtemp(prefix="javis-brain-anhquote-"))
+BRAIN = Path(tempfile.mkdtemp(prefix="unimate-brain-anhquote-"))
 cr._deps["brain_root"] = lambda b: BRAIN
 goc_fetch = image_vision.fetch_image
 

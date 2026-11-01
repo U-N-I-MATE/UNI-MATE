@@ -1,4 +1,4 @@
-"""Keep every brain's operations index (Javis/index.md) current without rebuilding it blindly (0.389.0).
+"""Keep every brain's operations index (UniMate/index.md) current without rebuilding it blindly (0.389.0).
 
 Before this, the scheduler rebuilt the index every 30 s, but only for the brains the loop scheduler knew about: the
 default brain plus brains that once had a loop or a reminder. Any other brain kept the index written the day it was
@@ -13,7 +13,7 @@ manifest, again and again, growing with the number of brains. So instead:
   longest ago first, so a burst of changes across many brains spreads over a few ticks instead of one long one.
 - Inputs the signature cannot see (a plugin tool shown only when a per-brain setting is on, say) are covered by
   `refresh_s`: a brain is rebuilt anyway once that much time has passed. The write itself stays change-gated in
-  `rebuild_javis_index`, so a refresh that finds nothing new never touches the disk.
+  `rebuild_unimate_index`, so a refresh that finds nothing new never touches the disk.
 
 The module knows nothing about main.py: the caller passes how to sign one brain, how to sign what all brains share,
 and how to rebuild one brain. That keeps it testable with plain folders.
@@ -87,10 +87,10 @@ def brain_signature(root, agents_dir, workflows_dir, plugins_dir: Optional[Path]
     for base in SKILL_BASES:
         _child_manifests(parts, root / base, ("SKILL.md",))
         _child_manifests(parts, root / base / ".disabled", ("SKILL.md",))
-    _md_files(parts, root / "Javis" / "loops")
-    _stat(parts, root / "Javis" / "loop-state.json")   # a loop that paused itself shows in the index
+    _md_files(parts, root / "UNI MATE" / "loops")
+    _stat(parts, root / "UNI MATE" / "loop-state.json")   # a loop that paused itself shows in the index
     _child_manifests(parts, plugins_dir, PLUGIN_FILES)
-    _stat(parts, root / "Javis" / "index.md")          # deleted or edited by hand: write it again
+    _stat(parts, root / "UNI MATE" / "index.md")          # deleted or edited by hand: write it again
     return hashlib.blake2b(repr(parts).encode("utf-8"), digest_size=16).hexdigest()
 
 

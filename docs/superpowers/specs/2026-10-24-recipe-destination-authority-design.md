@@ -20,7 +20,7 @@ Immutable evidence: 2026-10-24-recipe-archive-views.json,
 SHAd632b12330bce64cdb4537f6963d6c2644a6065d8a2cb928f8d1aeedd7fa4196.
 The actual Harness² Library component9e098a52 is a checked derived serializer;
 canonical encrypted archive, source rights and immutable Trial history remain
-owned by Javis. PROFILE_SOURCES98 is UNQUALIFIED and registries remain closed.
+owned by UNI MATE. PROFILE_SOURCES98 is UNQUALIFIED and registries remain closed.
 
 Actual source constraints:
 
@@ -62,7 +62,7 @@ This is a new recipe-guidance contract; it grants no execution of an old view.
 
 ## Global constraints
 
-- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS only. Never modify/reset/clean D:/Project/Javis-OS; its .venv Python may execute with -B. English code/comments/commits; VERSION0.299.0 unchanged.
+- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE only. Never modify/reset/clean D:/Project/UNI-MATE; its .venv Python may execute with -B. English code/comments/commits; VERSION0.299.0 unchanged.
 - Preserve historical SQL1–10 literals, immutable events/rows/ciphertext and old sealed recipes=[] input bytes. Preserve two ordinary candidates, one compose, repair limits and baseline/unknown behavior; no model/reasoning/owner-rule/guardrail change.
 - No actual CLI/SDKClient/provider/account/model query, qualification registration, deploy/restart, real-brain migration, activation or physical erasure. Fixture/DI engineering is not business/native proof. Full M0–M8 Goal stays active.
 - Never modify tests/python/test_improvement_view_reservations.py (rawSHA0577b5181fb090ba897ec8c3d0fce10fe88d2d09d03839497150cdacf6e793e0). New actual native dependencies enter PROFILE_SOURCES; changed footprint stays UNQUALIFIED and both reviewed registries stay closed.

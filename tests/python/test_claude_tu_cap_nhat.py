@@ -1,10 +1,10 @@
-"""Claude Code phải tự lên bản mới, để model mới tự hiện trong Javis.
+"""Claude Code phải tự lên bản mới, để model mới tự hiện trong UNI MATE.
 
     python tests/run.py claude_tu_cap_nhat
 
-Lỗi thật chủ repo báo 29/09/2026: "có sonnet 5.5 rồi mà trên javis chưa update, anh tưởng là
+Lỗi thật chủ repo báo 29/09/2026: "có sonnet 5.5 rồi mà trên unimate chưa update, anh tưởng là
 đã update tự động các mô hình rồi chứ?". Đường đọc danh mục model từ binary `claude` vẫn chạy
-đúng; cái kẹt là chính binary. Claude Code chỉ tự cập nhật khi người ta mở nó gõ tay, còn Javis
+đúng; cái kẹt là chính binary. Claude Code chỉ tự cập nhật khi người ta mở nó gõ tay, còn UNI MATE
 gọi nó chạy ngầm, nên máy đứng ở 2.1.232 (14/08) suốt sáu tuần. Bản Docker kẹt theo kiểu khác:
 cache gha giữ nguyên lớp `npm install -g @anthropic-ai/claude-code@latest` vì chuỗi lệnh
 không đổi.
@@ -17,7 +17,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-claude-upd-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-claude-upd-")
 
 import claude_cli  # noqa: E402
 import claude_update as cu  # noqa: E402
@@ -83,7 +83,7 @@ try:
     deploy_info.deploy_mode = lambda: "docker"
     cu._chay, _t = _gia_chay("1", "2")
     _kq = cu.cap_nhat()
-    check("Docker không chạy `claude update` (CLI của root, user javis không ghi được)",
+    check("Docker không chạy `claude update` (CLI của root, user unimate không ghi được)",
           _kq.get("docker") and not _t["lenh"], _kq)
     deploy_info.deploy_mode = lambda: "windows"
 
@@ -100,9 +100,9 @@ check("gỡ DISABLE_AUTOUPDATER khỏi môi trường của lệnh con", _r.stdo
 os.environ.pop("DISABLE_AUTOUPDATER", None)
 
 # 7. Tắt được bằng biến môi trường
-os.environ["JAVIS_CLAUDE_AUTO_UPDATE"] = "0"
-check("JAVIS_CLAUDE_AUTO_UPDATE=0 tắt vòng hằng ngày", not cu.bat())
-os.environ.pop("JAVIS_CLAUDE_AUTO_UPDATE")
+os.environ["UNIMATE_CLAUDE_AUTO_UPDATE"] = "0"
+check("UNIMATE_CLAUDE_AUTO_UPDATE=0 tắt vòng hằng ngày", not cu.bat())
+os.environ.pop("UNIMATE_CLAUDE_AUTO_UPDATE")
 check("mặc định bật", cu.bat())
 
 # 7b. On/off switch on the Models page (customer report 0.270, code 18). The env var stays an
@@ -112,13 +112,13 @@ import json  # noqa: E402
 check("the switch defaults to on in config", cfgmod._DEFAULT["model"].get(cu.SETTING_KEY) is True)
 cfgmod.update_settings({"model": {cu.SETTING_KEY: False}})
 check("the saved switch turns the daily update off", not cu.bat())
-os.environ["JAVIS_CLAUDE_AUTO_UPDATE"] = "1"
+os.environ["UNIMATE_CLAUDE_AUTO_UPDATE"] = "1"
 check("env set to 1 does not override a switch the user turned off", not cu.bat())
 cfgmod.update_settings({"model": {cu.SETTING_KEY: True}})
 check("switch on and env 1 means on", cu.bat())
-os.environ["JAVIS_CLAUDE_AUTO_UPDATE"] = "off"
+os.environ["UNIMATE_CLAUDE_AUTO_UPDATE"] = "off"
 check("env off still forces it off over a switch that is on", not cu.bat() and cu.env_off())
-os.environ.pop("JAVIS_CLAUDE_AUTO_UPDATE")
+os.environ.pop("UNIMATE_CLAUDE_AUTO_UPDATE")
 check("no env var: env_off is False", not cu.env_off())
 
 # POST /settings has a per-key allowlist: the new key needs its own branch or it is dropped.
@@ -137,10 +137,10 @@ try:
     _st = main.claude_status()
     check("/claude/status reports auto_update=false and no env lock",
           _st.get("auto_update") is False and _st.get("auto_update_env_off") is False, _st)
-    os.environ["JAVIS_CLAUDE_AUTO_UPDATE"] = "0"
+    os.environ["UNIMATE_CLAUDE_AUTO_UPDATE"] = "0"
     _st = main.claude_status()
     check("/claude/status reports the env lock", _st.get("auto_update_env_off") is True, _st)
-    os.environ.pop("JAVIS_CLAUDE_AUTO_UPDATE")
+    os.environ.pop("UNIMATE_CLAUDE_AUTO_UPDATE")
 finally:
     main.claude_auth_status = _goc_st
 

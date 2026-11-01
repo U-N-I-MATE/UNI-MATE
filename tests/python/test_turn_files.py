@@ -1,9 +1,9 @@
 """Test collect_turn_files bắt được file NHÚNG dạng đường dẫn TƯƠNG ĐỐI trong vault
-(vd ảnh Javis tạo: ![](attachments/x.png)) để tự đính kèm về ĐÚNG phiên chat. Chạy tay / CI:
+(vd ảnh UNI MATE tạo: ![](attachments/x.png)) để tự đính kèm về ĐÚNG phiên chat. Chạy tay / CI:
 
     python tests/run.py turn_files
 
-KHÔNG mạng. Hồi quy cho lỗi: ảnh Javis tạo (lưu attachments/ dạng path tương đối) không
+KHÔNG mạng. Hồi quy cho lỗi: ảnh UNI MATE tạo (lưu attachments/ dạng path tương đối) không
 được auto-attach nên engine phải curl -> rơi về ID Telegram đầu tiên (chủ bot).
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path (xem tests/python/_paths.py)
@@ -14,7 +14,7 @@ import time
 import asyncio
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-turnfiles-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-turnfiles-"))
 
 import channel_context  # noqa: E402
 from telegram_bot import TelegramBot  # noqa: E402
@@ -29,10 +29,10 @@ def check(name, cond):
 
 
 # ---- Vault tạm với attachments/ + 1 ảnh vừa tạo ----
-vault = Path(tempfile.mkdtemp(prefix="javis-vault-"))
+vault = Path(tempfile.mkdtemp(prefix="unimate-vault-"))
 adir = vault / "attachments"
 adir.mkdir(parents=True, exist_ok=True)
-img = adir / "javis-img-20260720-abc123.png"
+img = adir / "unimate-img-20260720-abc123.png"
 img.write_bytes(b"\x89PNG\r\n\x1a\n" + b"0" * 64)   # PNG giả, đủ để is_file + size > 0
 img_abs = os.path.normpath(str(img))
 t0 = time.time() - 1   # ảnh vừa tạo (mtime >= t0-2)
@@ -57,7 +57,7 @@ out4 = channel_context.collect_turn_files(reply_url, [], t0, cwd=os.getcwd(), va
 check("URL không bị thu làm file", out4 == [])
 
 # ---- 5. Chống thoát vault: ../ ra ngoài KHÔNG được nhận ----
-outside = Path(tempfile.mkdtemp(prefix="javis-outside-")) / "secret.txt"
+outside = Path(tempfile.mkdtemp(prefix="unimate-outside-")) / "secret.txt"
 outside.write_text("bí mật", encoding="utf-8")
 rel_escape = os.path.relpath(outside, vault).replace(os.sep, "/")
 reply_escape = f"tài liệu ![x]({rel_escape})"

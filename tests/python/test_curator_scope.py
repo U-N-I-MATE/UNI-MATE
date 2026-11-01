@@ -24,8 +24,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-cscope-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-cscope-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 
 import learn  # noqa: E402
 

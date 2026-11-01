@@ -37,7 +37,7 @@
     {
       "script": "test_improvement_view_sources.py",
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_sources.py",
         "-v"
       ],
@@ -50,7 +50,7 @@
     {
       "script": "test_improvement_view_authority.py",
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_view_authority.py",
         "-v"
       ],
@@ -63,7 +63,7 @@
     {
       "script": "test_improvement_views.py",
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_views.py",
         "-v"
       ],
@@ -76,7 +76,7 @@
     {
       "script": "test_improvement_dependency_identity.py",
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_dependency_identity.py",
         "-v"
       ],
@@ -89,7 +89,7 @@
     {
       "script": "test_improvement_comparison_plans.py",
       "command": [
-        "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+        "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
         "tests/python/test_improvement_comparison_plans.py",
         "-v"
       ],

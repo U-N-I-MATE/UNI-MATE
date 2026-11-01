@@ -37,7 +37,7 @@ def _snapshot():
             "required_mode": "full", "health": "healthy",
         },
         "vault_write": {
-            "source_type": "builtin", "source_id": "javis-core", "effect": "write",
+            "source_type": "builtin", "source_id": "unimate-core", "effect": "write",
             "required_mode": "safe", "health": "healthy",
         },
     }
@@ -86,7 +86,7 @@ def test_builtin_source_adapter_matches_hub_snapshot(tmp_path):
     assert tools
     assert set(route) == {tool["fn"] for tool in tools}
     assert all(route[name]["source_type"] == "builtin" for name in route)
-    assert route["javis_write_file"]["effect"] == "write"
+    assert route["unimate_write_file"]["effect"] == "write"
     registry = CapabilityRegistry(tmp_path / "state")
     result = registry.refresh_tools(str(vault), tools, route)
     assert result["capability_count"] == len(tools)

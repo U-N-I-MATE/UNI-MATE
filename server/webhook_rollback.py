@@ -69,7 +69,7 @@ def legacy_hook(h: dict, keys: list) -> tuple:
         why.append("rules (filter, mapping, business keys)")
     if (h.get("verify") or {}).get("provider") not in (None, "", "none"):
         why.append(f"signature check {h['verify']['provider']}")
-    if h.get("token_header") and str(h["token_header"]).lower() != "x-javis-token":
+    if h.get("token_header") and str(h["token_header"]).lower() != "x-unimate-token":
         why.append(f"token header {h['token_header']}")
     if h.get("target") not in ("task", "workflow"):
         why.append("no task or workflow of its own")
@@ -150,7 +150,7 @@ def run(state_dir: Path, check: bool = False, force: bool = False, now: float = 
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description="Prepare a rollback of the Javis webhook platform to an older build.")
+    ap = argparse.ArgumentParser(description="Prepare a rollback of the UNI MATE webhook platform to an older build.")
     ap.add_argument("--state-dir", required=True)
     ap.add_argument("--check", action="store_true", help="only print what would happen")
     ap.add_argument("--force", action="store_true", help="go on although a lease looks live (server certainly stopped)")

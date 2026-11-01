@@ -1,10 +1,10 @@
-"""Hồi quy: phiên Codex (hoặc bất kỳ client MCP nào) gọi tool Javis mà KHÔNG tự chèn header.
+"""Hồi quy: phiên Codex (hoặc bất kỳ client MCP nào) gọi tool UNI MATE mà KHÔNG tự chèn header.
 
-Bối cảnh (sự cố 2026-09-21): hub chỉ biết brain qua header `X-Javis-Vault`, và chỗ DUY NHẤT
-ghi header đó là khi CHÍNH Javis khởi động tiến trình engine (`mcp_hub.codex_vault_override`
+Bối cảnh (sự cố 2026-09-21): hub chỉ biết brain qua header `X-UniMate-Vault`, và chỗ DUY NHẤT
+ghi header đó là khi CHÍNH UNI MATE khởi động tiến trình engine (`mcp_hub.codex_vault_override`
 nhét vào argv `-c`, các engine khác ghi file cấu hình riêng từng lượt). Profile dùng chung
 `~/.codex/<tên>.config.toml` thì cố ý không mang header - nên MỌI phiên Codex do người dùng tự
-mở đều tới hub với `vault_root = None`, và `javis_task` fail-closed với câu "chưa biết đang làm
+mở đều tới hub với `vault_root = None`, và `unimate_task` fail-closed với câu "chưa biết đang làm
 việc trên brain nào". Người dùng không có cách nào biết thiếu cái gì.
 
 Luật sau khi sửa:
@@ -25,13 +25,13 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-hub-brain-"))
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-hub-brain-"))
 _BRAINS = _TMP / "brains"
-(_BRAINS / "Brain Default" / "Javis").mkdir(parents=True, exist_ok=True)
-(_BRAINS / "Brain Phu" / "Javis").mkdir(parents=True, exist_ok=True)
+(_BRAINS / "Brain Default" / "UNI MATE").mkdir(parents=True, exist_ok=True)
+(_BRAINS / "Brain Phu" / "UNI MATE").mkdir(parents=True, exist_ok=True)
 
-os.environ["JAVIS_STATE_DIR"] = str(_TMP / "state")
-os.environ["JAVIS_SESSIONS_DB"] = str(_TMP / "conversations.db")
+os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
+os.environ["UNIMATE_SESSIONS_DB"] = str(_TMP / "conversations.db")
 os.environ["BRAINS_DIR"] = str(_BRAINS)
 (_TMP / "state").mkdir(parents=True, exist_ok=True)
 
@@ -69,9 +69,9 @@ class Req:
 
     def __init__(self, vault, body):
         self.headers = {"authorization": f"Bearer {mcp_hub.hub_token()}",
-                        "x-javis-mode": "full"}
+                        "x-unimate-mode": "full"}
         if vault is not None:
-            self.headers["x-javis-vault"] = vault
+            self.headers["x-unimate-vault"] = vault
         self._body = body
 
     async def json(self):
@@ -79,10 +79,10 @@ class Req:
 
 
 def _goi_body(name, args):
-    # Lazy đang bật (nhiều connector) thì tool plugin nấp sau `javis_run_tool`; gọi thẳng qua
+    # Lazy đang bật (nhiều connector) thì tool plugin nấp sau `unimate_run_tool`; gọi thẳng qua
     # meta-tool cho cả hai chế độ đều chạy một đường.
     return {"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-            "params": {"name": "javis_run_tool", "arguments": {"name": name, "args": args}}}
+            "params": {"name": "unimate_run_tool", "arguments": {"name": name, "args": args}}}
 
 
 async def goi(vault, name, args):
@@ -96,14 +96,14 @@ async def goi(vault, name, args):
 
 async def chay():
     # ── 1. Chưa có phiên chat nào, BRAINS_DIR có 2 brain -> không đoán bừa ──
-    ra = await goi(None, "javis_task", {"op": "list"})
+    ra = await goi(None, "unimate_task", {"op": "list"})
     check("nhiều brain + chưa có phiên nào -> vẫn từ chối, không chạy nhầm brain",
           ra.startswith("ERROR:"))
-    check("lỗi nêu đích danh header còn thiếu", "X-Javis-Vault" in ra)
+    check("lỗi nêu đích danh header còn thiếu", "X-UniMate-Vault" in ra)
     check("lỗi chỉ ra nguồn gây thiếu (cấu hình MCP phía client)", "cấu hình MCP" in ra)
 
     # ── 2. Có header -> chạy, và KHÔNG kèm dòng ghi chú brain ──
-    ra = await goi(MAC_DINH, "javis_task", {"op": "list"})
+    ra = await goi(MAC_DINH, "unimate_task", {"op": "list"})
     check("có header -> qua được cổng brain", not ra.startswith("ERROR: chưa biết"))
     check("có header -> không thêm dòng ghi chú thừa", "brain đang mở" not in ra)
 
@@ -118,19 +118,19 @@ async def chay():
     # "lấy phiên đầu danh sách" sẽ rơi vào - nó trả Brain Phu thay vì brain đang nói.
     store.set_pinned(sid_cu, True)
 
-    ra = await goi(None, "javis_task", {"op": "list"})
+    ra = await goi(None, "unimate_task", {"op": "list"})
     check("không header -> chạy được bằng brain đang mở", not ra.startswith("ERROR:"))
     check("nói rõ đang chạy trên brain nào", "Brain Default" in ra)
     check("mục ghim không cướp mất brain đang mở", "Brain Phu" not in ra)
 
     # ── 4. op=add cũng phải chạy (tiêu chí nghiệm thu của sự cố) ──
-    ra = await goi(None, "javis_task", {"op": "add", "title": "việc thử từ phiên Codex"})
+    ra = await goi(None, "unimate_task", {"op": "add", "title": "việc thử từ phiên Codex"})
     check("op=add chạy được mà không cần người dùng tự chèn header",
           "Mã việc:" in ra or "Đã giao việc" in ra)
     check("op=add cũng nói rõ brain", "Brain Default" in ra)
 
     # ── 5. Header trỏ vào thư mục không tồn tại -> vẫn rơi về, và nói rõ header hỏng ──
-    ra = await goi(str(_TMP / "khong-co-that"), "javis_task", {"op": "list"})
+    ra = await goi(str(_TMP / "khong-co-that"), "unimate_task", {"op": "list"})
     check("header trỏ đường dẫn không có thật -> không chết câm",
           not ra.startswith("ERROR: chưa biết"))
     check("báo rõ header có gửi nhưng không dùng được", "không có thật" in ra or "không dùng được" in ra)
@@ -141,7 +141,7 @@ asyncio.run(chay())
 
 # ── 5b. Cột sessions.brain giữ BÍ DANH chứ không phải đường dẫn (#610) ────────
 # Dashboard gửi "brain" cho brain mặc định; phiên tạo trước 0.43.1 hay tạo sớm qua
-# /sessions/{id}/model|project giữ nguyên chữ đó. Hub phải hiểu nó như phần còn lại của Javis,
+# /sessions/{id}/model|project giữ nguyên chữ đó. Hub phải hiểu nó như phần còn lại của UNI MATE,
 # và một giá trị TƯƠNG ĐỐI như "." tuyệt đối không được resolve theo cwd thành một "brain".
 def _phien_moi_nhat(brain):
     import time

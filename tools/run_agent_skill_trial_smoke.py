@@ -94,13 +94,13 @@ def _prepare_root(root):
                 or getattr(info, "st_file_attributes", 0) & 0x400):
             raise ValueError("unsafe_smoke_output_parent")
     root.mkdir(mode=0o700, exist_ok=False)
-    for key, child in {"JAVIS_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
+    for key, child in {"UNIMATE_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
                        "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources",
-                       "JAVIS_SESSIONS_DB": "state/sessions.sqlite3",
-                       "JAVIS_CLAUDE_PROJECTS_DIR": "native-logs"}.items():
+                       "UNIMATE_SESSIONS_DB": "state/sessions.sqlite3",
+                       "UNIMATE_CLAUDE_PROJECTS_DIR": "native-logs"}.items():
         os.environ[key] = str(root / child)
     # The fresh ledger may contain one baseline and cannot borrow a production cap.
-    os.environ["JAVIS_RESONANCE_CALL_CEILING"] = "1"
+    os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = "1"
     sys.path.insert(0, str(ROOT / "server"))
     from improvement_sandbox import _private_directory
     _private_directory(root)

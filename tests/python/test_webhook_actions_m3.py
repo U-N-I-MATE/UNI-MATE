@@ -29,9 +29,9 @@ import tempfile
 import time
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-wh-m3-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
+STATE = Path(tempfile.mkdtemp(prefix="unimate-wh-m3-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -77,7 +77,7 @@ check("plain http refused", "https" in refused([{"id": "a", "kind": "http", "url
 check("credentials in the address refused", "bad address" in refused([{"id": "a", "kind": "http", "url": "https://u:p@x.vn"}]))
 check("Apps Script must be a /exec web app", "/exec" in refused([{"id": "a", "kind": "apps_script", "url": "https://evil.com/macros/s/x/exec"}])
       and not refused([{"id": "a", "kind": "apps_script", "url": SCRIPT}]))
-for hname in ("Cookie", "Host", "Idempotency-Key", "X-Javis-Delivery", "Content-Length"):
+for hname in ("Cookie", "Host", "Idempotency-Key", "X-UniMate-Delivery", "Content-Length"):
     check(f"header {hname} cannot be set by the owner", "not allowed" in refused(
         [{"id": "a", "kind": "http", "url": "https://x.vn", "headers": {hname: "v"}}]))
 check("header injection refused", "one line" in refused([{"id": "a", "kind": "http", "url": "https://x.vn",
@@ -114,7 +114,7 @@ check("a name that resolves to ANY private address is refused", "private" in asy
 CTX = {"event_id": "ev_1", "hook_id": "wh_1", "action_id": "crm", "received_at": 1.0, "delivery_id": wa.delivery_id("ev_1", "crm"),
        "fields": {"order_id": "A1"}, "payload": {"x": 1}, "body": b'{"x":1}', "content_type": "application/json", "brain": "/b"}
 b, ct = wa.build_body({"body": "fields"}, CTX)
-check("body `fields`: mapped fields plus _javis with the delivery id", json.loads(b) == {"order_id": "A1", "_javis": {
+check("body `fields`: mapped fields plus _unimate with the delivery id", json.loads(b) == {"order_id": "A1", "_unimate": {
     "delivery_id": CTX["delivery_id"], "event_id": "ev_1", "hook_id": "wh_1", "action_id": "crm", "received_at": 1.0}}
       and ct == "application/json")
 check("body `raw`: the original body unchanged", wa.build_body({"body": "raw"}, CTX) == (b'{"x":1}', "application/json"))
@@ -146,8 +146,8 @@ seen.clear()
 o = http(lambda r: httpx.Response(200, text="ok"), headers={"X-Api-Key": "k"})
 req = seen[-1]
 check("200 -> completed, receipt kept", o.status == "completed" and o.receipt["status"] == 200)
-check("delivery id sent as Idempotency-Key and X-Javis-Delivery; owner header sent; no cookie or auth forwarded",
-      req.headers["idempotency-key"] == CTX["delivery_id"] == req.headers["x-javis-delivery"] and req.headers["x-api-key"] == "k"
+check("delivery id sent as Idempotency-Key and X-UniMate-Delivery; owner header sent; no cookie or auth forwarded",
+      req.headers["idempotency-key"] == CTX["delivery_id"] == req.headers["x-unimate-delivery"] and req.headers["x-api-key"] == "k"
       and "cookie" not in req.headers and "authorization" not in req.headers)
 check("202 -> accepted", http(lambda r: httpx.Response(202)).status == "accepted")
 o = http(lambda r: httpx.Response(429, headers={"Retry-After": "40"}))
@@ -160,7 +160,7 @@ check("401 / 403 -> blocked (fix the credential), never retried in a loop",
       http(lambda r: httpx.Response(401)).status == "blocked" and http(lambda r: httpx.Response(403)).status == "blocked")
 seen.clear()
 http(lambda r: httpx.Response(200))
-check("the event id rides along as X-Javis-Event-Id", seen[-1].headers["x-javis-event-id"] == "ev_1")
+check("the event id rides along as X-UniMate-Event-Id", seen[-1].headers["x-unimate-event-id"] == "ev_1")
 check("500 -> unknown (it may have been done)", http(lambda r: httpx.Response(500)).status == "unknown")
 check("500 with retry=safe -> retry (the receiver dedups on the delivery id)",
       http(lambda r: httpx.Response(500), retry="safe").status == "retry")
@@ -178,9 +178,9 @@ seen.clear()
 act = wa.validate([{"id": "crm", "kind": "http", "url": "https://crm.example/h"}])[0]
 o = asyncio.run(wa.run_http(act, CTX, transport(lambda r: httpx.Response(200)), lambda h: ["10.1.2.3"]))
 check("an address resolving to a private IP is refused before any request", o.status == "failed" and not seen)
-os.environ["JAVIS_WH_NO_NETWORK"] = "1"
+os.environ["UNIMATE_WH_NO_NETWORK"] = "1"
 o = asyncio.run(wa.run_http(act, CTX, None, PUBLIC))
-check("JAVIS_WH_NO_NETWORK: the default transport refuses (tests cannot reach the network)",
+check("UNIMATE_WH_NO_NETWORK: the default transport refuses (tests cannot reach the network)",
       o.status == "retry" and "not sent" in o.detail, o)
 
 # ---- 3. Apps Script ----
@@ -295,7 +295,7 @@ check("plugin host: handler listing for the dashboard",
       any(x["plugin"] == "wh-test" and x["handler"] == "new_order" for x in plugins_host.webhook_handlers(str(vault_a))))
 check("plugin host: a bad handler name is refused at registration", "register_webhook_handler" in
       (SERVER / "plugins_host.py").read_text(encoding="utf-8") and plugins_host._TOOL_RE.match("Bad-Name") is None)
-del os.environ["JAVIS_WH_NO_NETWORK"]
+del os.environ["UNIMATE_WH_NO_NETWORK"]
 
 # ---- 5..7 through the feature ----
 FEAT = Path(tempfile.mkdtemp(prefix="wh-m3-feat-"))
@@ -535,7 +535,7 @@ CRASH_STATE = Path(tempfile.mkdtemp(prefix="wh-m3-crash-"))
 CHILD = (
     "import asyncio, os, json, httpx, webhook_triggers as wt, webhook_store as ws\n"
     "from pathlib import Path\n"
-    "S = Path(os.environ['JAVIS_STATE_DIR'])\n"
+    "S = Path(os.environ['UNIMATE_STATE_DIR'])\n"
     "async def h(req):\n"
     "    await asyncio.sleep(1.0)   # let the AI branch be dispatched first, so the crash finds both dispatched\n"
     "    (S / 'effects.txt').open('a').write(req.url.host + '\\n')\n"
@@ -555,8 +555,8 @@ CHILD = (
     "    print('ACK', code, resp['run_id'], flush=True)\n"
     "    await f.wait_idle()\n"
     "asyncio.run(go())\n")
-r = subprocess.run([sys.executable, "-c", CHILD], env=dict(os.environ, JAVIS_STATE_DIR=str(CRASH_STATE), PYTHONPATH=str(SERVER),
-                                                     JAVIS_WH_CRASH_AT="after_dispatch"),
+r = subprocess.run([sys.executable, "-c", CHILD], env=dict(os.environ, UNIMATE_STATE_DIR=str(CRASH_STATE), PYTHONPATH=str(SERVER),
+                                                     UNIMATE_WH_CRASH_AT="after_dispatch"),
                    capture_output=True, text=True, timeout=90)
 eff = (CRASH_STATE / "effects.txt").read_text().splitlines() if (CRASH_STATE / "effects.txt").exists() else []
 check("child: the HTTP branch reached the receiver once, then the process died mid-event",

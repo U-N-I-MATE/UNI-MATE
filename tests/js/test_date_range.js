@@ -24,7 +24,7 @@ const win = { t: (k, v) => k + (v ? "#" + Object.keys(v).map((x) => v[x]).join("
 const ctx = { window: win, document: {}, console, String, Object, Array, Number, JSON, Math, Date, isNaN };
 vm.createContext(ctx);
 vm.runInContext(DRS, ctx);
-const D = win.JavisDateRange;
+const D = win.UniMateDateRange;
 const R = (p, now) => JSON.stringify(D.resolve(p, now));
 
 // ---- 1. quick ranges on Wednesday 2026-10-28 ----

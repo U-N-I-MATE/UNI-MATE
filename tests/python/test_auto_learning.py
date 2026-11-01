@@ -96,7 +96,7 @@ class AutoLearningTests(unittest.TestCase):
         self.assertEqual(A.skill_from_tool("Skill", {"skill": "bao-gia"}), "bao-gia")
         self.assertEqual(A.skill_from_tool("Read", {"file_path": "D:\\b\\skills\\bao-gia\\SKILL.md"}), "bao-gia")
         self.assertEqual(A.skill_from_tool("Read", {"file_path": "/b/skills/x/notes.md"}), "")
-        self.assertEqual(A.skill_from_tool("mcp__javis__javis_use_skill", {"name": "bao-gia"}), "")  # hub records it
+        self.assertEqual(A.skill_from_tool("mcp__unimate__unimate_use_skill", {"name": "bao-gia"}), "")  # hub records it
 
     def test_turns_become_episodes_with_follow_ups(self):
         first = self.turn()
@@ -271,7 +271,7 @@ class AutoLearningTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "placeholders"):
             A.check_candidate("workflow", "Write a quote. RULE-X", "Write a quote for {{input}}")
         with self.assertRaisesRegex(ValueError, "marker"):
-            A.check_candidate("skill", "Do it.\n<!-- JAVIS_ASK: {} -->", "Do it.")
+            A.check_candidate("skill", "Do it.\n<!-- UNIMATE_ASK: {} -->", "Do it.")
 
     def test_policy_off_mid_run_applies_nothing(self):
         self.mistakes()

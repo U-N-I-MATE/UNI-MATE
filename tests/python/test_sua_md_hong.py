@@ -18,7 +18,7 @@ from pathlib import Path
 
 from _paths import ROOT, SERVER  # noqa: E402,F401
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-suamd-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-suamd-"))
 
 import main  # noqa: E402
 import md_repair as M  # noqa: E402
@@ -80,7 +80,7 @@ check("file rỗng / chỉ có chữ: không nhận nhầm",
 # =====================================================================
 # 3. Endpoint: soi thì KHÔNG ghi, chữa thì ghi đúng file
 # =====================================================================
-_TMP = Path(tempfile.mkdtemp(prefix="javis-suamd-brain-")).resolve()
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-suamd-brain-")).resolve()
 BRAIN = _TMP / "brains" / "Bộ Não"
 (BRAIN / "06 - Sources").mkdir(parents=True)
 F_HONG = BRAIN / "06 - Sources" / "ke-hoach.md"
@@ -92,9 +92,9 @@ F_HR.write_text("# Bài\n\n* * *\n\nĐoạn sau.\n", encoding="utf-8")
 
 main._brain_root = lambda brain: str(BRAIN)
 main.BRAINS_DIR = str(_TMP / "brains")
-os.environ["JAVIS_HOST"] = "0.0.0.0"          # public → trần = gốc brain
-os.environ.pop("JAVIS_FILES_ROOT", None)
-os.environ.pop("JAVIS_REQUIRE_LOGIN", None)
+os.environ["UNIMATE_HOST"] = "0.0.0.0"          # public → trần = gốc brain
+os.environ.pop("UNIMATE_FILES_ROOT", None)
+os.environ.pop("UNIMATE_REQUIRE_LOGIN", None)
 
 soi = asyncio.run(main.files_md_hong(brain="brain"))
 check("soi: chỉ liệt file thật sự hỏng",

@@ -25,8 +25,8 @@ A hook without `actions` has one branch, `main` of kind `ai` (its task or workfl
 
 | Field | Meaning |
 |---|---|
-| `body` | `fields` (the M2 mapped fields plus `_javis`), `event` (`fields`, `payload`, `_javis`), `raw` (the original body and content type) |
-| `headers` | the action's own headers (at most 10). `Cookie`, `Host`, `Content-Length`, `Idempotency-Key`, `X-Javis-Delivery` are refused. Values are masked in the dashboard, never copied into the event store, and taken from the hook at run time (a rotated key applies to waiting events) |
+| `body` | `fields` (the M2 mapped fields plus `_unimate`), `event` (`fields`, `payload`, `_unimate`), `raw` (the original body and content type) |
+| `headers` | the action's own headers (at most 10). `Cookie`, `Host`, `Content-Length`, `Idempotency-Key`, `X-UniMate-Delivery` are refused. Values are masked in the dashboard, never copied into the event store, and taken from the hook at run time (a rotated key applies to waiting events) |
 | `retry` | `never` (default) or `safe`: the receiver drops a second copy with the same `Idempotency-Key`, so an ambiguous failure may be re-sent |
 | `timeout_s` | 1 to 60 (default 15; Apps Script 30) |
 | `allow_private` | allows a loopback/private address (and `http://`) for a receiver on the owner's own network |
@@ -34,8 +34,8 @@ A hook without `actions` has one branch, `main` of kind `ai` (its task or workfl
 ## Delivery id
 
 Each branch has a delivery id, `dlv_<hash of event id and action id>`. It never changes for that branch: not on an
-automatic re-send, not on the owner's Retry. It is sent as `Idempotency-Key`, as `X-Javis-Delivery`, and as
-`_javis.delivery_id` in the body. Javis does not promise exactly-once delivery: a receiver that keeps the delivery id
+automatic re-send, not on the owner's Retry. It is sent as `Idempotency-Key`, as `X-UniMate-Delivery`, and as
+`_unimate.delivery_id` in the body. UNI MATE does not promise exactly-once delivery: a receiver that keeps the delivery id
 can drop the second copy.
 
 ## Outcomes
@@ -59,7 +59,7 @@ others keep their outcome.
 ## Apps Script: redirect and receipt
 
 `doPost` runs when Google receives the POST. Google then answers `302` to a one-time address on
-`script.googleusercontent.com` that holds the script's output. Javis:
+`script.googleusercontent.com` that holds the script's output. UNI MATE:
 
 1. POSTs once to the `/exec` address and does not follow redirects. A POST is never repeated.
 2. Reads the `Location` with a plain GET (no body, none of the action's headers), and only on
@@ -73,7 +73,7 @@ A script that keeps the delivery id makes a second copy harmless:
 ```javascript
 function doPost(e) {
   var body = JSON.parse(e.postData.contents);
-  var id = body._javis && body._javis.delivery_id;
+  var id = body._unimate && body._unimate.delivery_id;
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
@@ -131,8 +131,8 @@ def register(ctx):
   address), CGNAT, multicast, reserved and IPv4-mapped forms are refused unless `allow_private`. Redirects are not
   followed. Residual risk: DNS can change between the check and the connection (rebinding). The check reduces
   this risk but does not remove it.
-- `JAVIS_WH_NO_NETWORK=1` makes the default transport refuse every request. Tests use it as a fail-fast guard.
-- Only an `ai` branch reaches Javis Core's incident triage. A hook with only outside actions never calls a model.
+- `UNIMATE_WH_NO_NETWORK=1` makes the default transport refuse every request. Tests use it as a fail-fast guard.
+- Only an `ai` branch reaches UNI MATE Core's incident triage. A hook with only outside actions never calls a model.
 
 ## Where it sits
 
@@ -161,7 +161,7 @@ All in `tests/python/test_webhook_actions_m3.py` unless noted.
 | No cross-brain plugin | a handler visible to another brain is not found; a vault plugin's handler is found only for its brain |
 | No SSRF to private ranges | 127/8, 10/8, 192.168/16, 169.254.169.254, ::1, ::ffff:127.0.0.1, 100.64/10, 0.0.0.0, fd00::/8 refused; a name resolving to any private address is refused |
 | Non-AI never calls a model | a hook with only an HTTP action: model runners raise if called, no incident triage |
-| No network in tests | `JAVIS_WH_NO_NETWORK=1`: the default transport refuses |
+| No network in tests | `UNIMATE_WH_NO_NETWORK=1`: the default transport refuses |
 | UI | `tests/js/test_webhooks_ui_m3.js` |
 
 ## Assumptions to reconcile with the spec
@@ -192,7 +192,7 @@ regression tests in `tests/python/test_webhook_m3_review.py`, which fail on the 
 | P2 Apps Script timed out at 15 s; a sign-in redirect was `unknown` | 30 s default; the sign-in redirect is `failed` with the "Anyone" hint |
 | P2 an unknown branch stopped a sibling's resend; Mark done then made the event failed | runnable branches first in `summarize`; resolve requeues when a branch still has to run |
 | P2 302/303 after a POST counted as refused | 301/302/303 are `unknown`; 307/308 are `failed` |
-| P3 (fixed) | a late outcome is kept next to its branch; a run whose lease was taken over is stopped (no two runs at once); `[SILENT]` text never reaches the notice; the owner's retry resets tries; `Retry-After` as an HTTP date; `allow_private` only as boolean `true`; header values printable ASCII; the owner's `Content-Type`/`User-Agent` not duplicated; Test events carry `_javis.test`; answers read up to 64 KB; a receipt is never cut mid-JSON; a branch refused before dispatch releases the business key once the event dies; a gone brain folder looks up no brain's vault plugins; the unknown notice gives the receiver's reason |
+| P3 (fixed) | a late outcome is kept next to its branch; a run whose lease was taken over is stopped (no two runs at once); `[SILENT]` text never reaches the notice; the owner's retry resets tries; `Retry-After` as an HTTP date; `allow_private` only as boolean `true`; header values printable ASCII; the owner's `Content-Type`/`User-Agent` not duplicated; Test events carry `_unimate.test`; answers read up to 64 KB; a receipt is never cut mid-JSON; a branch refused before dispatch releases the business key once the event dies; a gone brain folder looks up no brain's vault plugins; the unknown notice gives the receiver's reason |
 | P3 (kept, noted) | action URLs (an Apps Script `/exec` address is a bearer secret too) are stored in the event snapshot and shown in the actions box: put real secrets in headers, which are encrypted (M4) |
 
 ## Rollback

@@ -15,7 +15,7 @@
 
 ### 1.1 Trải nghiệm
 
-Anh làm việc với nhiều agent trong các nhóm chat, quen như nhóm Zalo nhưng nằm trong Javis:
+Anh làm việc với nhiều agent trong các nhóm chat, quen như nhóm Zalo nhưng nằm trong UNI MATE:
 - **Danh sách nhóm**, tạo được nhiều nhóm theo việc hay chủ đề. Mỗi nhóm có tên, mô tả, thành viên, lịch sử và công việc riêng.
 - **Thành viên:** thêm agent có sẵn, hoặc tạo agent mới rồi đưa vào nhóm. Một agent ở được nhiều nhóm.
 - **Trưởng nhóm:** mỗi nhóm có một trưởng nhóm là agent do anh chọn.
@@ -118,7 +118,7 @@ Hệ quả:
 
 ### 5.2 Kho nhóm mới: `team.sqlite3`
 
-File mới ở `JAVIS_STATE_DIR`, module mới `server/team_store.py`. Mã cũ bỏ qua file này nên hạ phiên bản an toàn (mục 18).
+File mới ở `UNIMATE_STATE_DIR`, module mới `server/team_store.py`. Mã cũ bỏ qua file này nên hạ phiên bản an toàn (mục 18).
 
 | Bảng | Cột chính | Ghi chú |
 |---|---|---|
@@ -179,7 +179,7 @@ Các cột thêm đều cho phép null, mã cũ bỏ qua:
 
 - Bản đầu không có nhiều tài khoản: "chủ nhóm" là owner đã đăng nhập dashboard.
 - Mọi route quản lý nhóm đi qua lớp auth và CSRF như các route owner hiện có.
-- Agent chỉ hành động qua công cụ `javis_team` (mục 15.2), với danh tính lấy từ `turn_context`, không từ tham số model.
+- Agent chỉ hành động qua công cụ `unimate_team` (mục 15.2), với danh tính lấy từ `turn_context`, không từ tham số model.
 
 ### 6.2 Ma trận quyền
 
@@ -211,7 +211,7 @@ Các cột thêm đều cho phép null, mã cũ bỏ qua:
   - Việc @ trực tiếp vẫn chạy.
   - Việc chung mới vẫn vào hàng nhưng không bắt đầu.
   - Không bao giờ âm thầm mất điều phối.
-- **Khi trưởng nhóm bị xoá khỏi Javis:** xử lý như bỏ trưởng nhóm.
+- **Khi trưởng nhóm bị xoá khỏi UNI MATE:** xử lý như bỏ trưởng nhóm.
 
 ### 6.4 Bỏ thành viên đang có việc
 
@@ -219,7 +219,7 @@ Các cột thêm đều cho phép null, mã cũ bỏ qua:
 - **Bước đã gọi engine:** chạy hết, kết quả lưu với `applied=0` và nhãn "thành viên đã rời nhóm".
 - Việc quay về điểm điều phối để trưởng nhóm phân công lại.
 - Nếu việc được giao trực tiếp cho người đó, việc vào `team_blocked` với lý do `assignee_removed`; chủ chọn giao lại hay huỷ.
-- Bỏ khỏi nhóm không xoá agent khỏi Javis hay khỏi nhóm khác. Bộ nhớ của agent giữ nguyên.
+- Bỏ khỏi nhóm không xoá agent khỏi UNI MATE hay khỏi nhóm khác. Bộ nhớ của agent giữ nguyên.
 
 ## 7. Luồng chat và phối hợp
 
@@ -233,7 +233,7 @@ Khung soạn có công tắc **"Giao việc"**, mặc định tắt.
 | Vào hàng đợi | Không | Có |
 | Lượt model | Lượt trả lời ngắn (mục 7.2) | Theo việc |
 
-Trưởng nhóm có thể **đề xuất** biến một trao đổi thành việc, bằng `javis_team op=propose_job`:
+Trưởng nhóm có thể **đề xuất** biến một trao đổi thành việc, bằng `unimate_team op=propose_job`:
 - Quyền giới hạn: đề xuất hiện thành thẻ "Trưởng nhóm đề xuất giao việc: ..." với hai nút Tạo việc và Bỏ qua. Chưa bấm thì không có việc nào.
 - Toàn quyền: trưởng nhóm mở việc thẳng, trong phạm vi được giao. Thẻ vẫn hiện để chủ nhìn thấy và huỷ được.
 
@@ -249,7 +249,7 @@ Trưởng nhóm có thể **đề xuất** biến một trao đổi thành việ
 | Quá số @ cho phép | Từ chối gửi, nói rõ trần | 0 |
 | @ không còn hợp lệ (đã rời, đã xoá, `missing`) | Bỏ qua người đó, hiện "X không còn trong nhóm"; người hợp lệ vẫn trả lời | Bằng số @ hợp lệ |
 
-- **Tin của agent không đánh thức ai.** Chữ "@Y" trong câu trả lời của agent chỉ là chữ. Agent muốn nhờ người khác phải gọi `javis_team op=request_help` trong một việc đang chạy (mục 7.4).
+- **Tin của agent không đánh thức ai.** Chữ "@Y" trong câu trả lời của agent chỉ là chữ. Agent muốn nhờ người khác phải gọi `unimate_team op=request_help` trong một việc đang chạy (mục 7.4).
 - Lượt trả lời trò chuyện chạy ngay khi agent rảnh. Không đi qua hàng việc nhóm, nhưng phải đợi khoá bận của agent (mục 8.7).
 - Lượt trả lời trò chuyện không được mở việc, không được nhờ người khác. Nó chỉ trả lời, hoặc đề xuất việc (mục 7.1).
 
@@ -265,14 +265,14 @@ Trưởng nhóm có thể **đề xuất** biến một trao đổi thành việ
 - **Ví dụ luồng B (giao chung):**
   1. Chủ gửi "Giao việc: soạn kế hoạch ra mắt".
   2. Việc `team_queued` vào hàng.
-  3. Tới lượt, bước `plan` của trưởng nhóm gọi `javis_team op=assign` cho thành viên 1 và 2, mỗi người kèm brief và đầu vào.
+  3. Tới lượt, bước `plan` của trưởng nhóm gọi `unimate_team op=assign` cho thành viên 1 và 2, mỗi người kèm brief và đầu vào.
   4. Host ghi hai bước `work`.
   5. Từng bước chạy (tuần tự mặc định); kết quả đăng vào nhóm với tác giả là thành viên và nhãn việc.
   6. Bước `synthesize` của trưởng nhóm đăng bản tổng hợp; việc `done`.
 
 ### 7.4 Nhờ hỗ trợ (luồng D)
 
-1. Đang ở bước `work`, agent A gọi `javis_team op=request_help(B, câu hỏi, đầu vào)`.
+1. Đang ở bước `work`, agent A gọi `unimate_team op=request_help(B, câu hỏi, đầu vào)`.
 2. Host ghi bước `help` cho B, với `parent_step` là bước của A. Bước của A kết thúc với trạng thái chờ.
 3. Bước của B chạy, trả lời được lưu.
 4. Host tạo lượt tiếp của A với câu trả lời của B làm đầu vào. A làm tiếp.
@@ -422,15 +422,15 @@ Việc nhóm **không phụ thuộc công tắc "AI tự vận hành"** của b�
    - khối phản hồi (mục 14.4).
 4. **Mốc gọi engine:** ghi `engine_at` ngay trước lời gọi. Lỗi trước mốc thì hoàn lượt (`refunded`).
 5. **Công cụ:**
-   - bộ công cụ của agent như chat riêng, cộng `javis_team`;
-   - `javis_task` ẩn trong lượt nhóm, vì giao việc nền trong nhóm đi qua `javis_team`, một chỗ;
-   - `javis_goal` chỉ có khi agent bật Cộng hưởng.
+   - bộ công cụ của agent như chat riêng, cộng `unimate_team`;
+   - `unimate_task` ẩn trong lượt nhóm, vì giao việc nền trong nhóm đi qua `unimate_team`, một chỗ;
+   - `unimate_goal` chỉ có khi agent bật Cộng hưởng.
 6. **Kết thúc:**
    - kiểm lại thành viên, revision, việc chưa huỷ, trưởng nhóm chưa đổi (nếu là lượt điều phối);
    - đủ điều kiện thì đăng tin vào phiên `team:` với tác giả là agent, `applied=1`;
    - không đủ thì đăng với nhãn đến muộn, `applied=0`;
    - ghi token và chi phí; nhả khoá;
-   - `_ket_luot_agent` xử lý `JAVIS_LESSON` / `JAVIS_RULE` như hiện nay: luật chỉ ghi khi chính chủ nói trong lượt đó.
+   - `_ket_luot_agent` xử lý `UNIMATE_LESSON` / `UNIMATE_RULE` như hiện nay: luật chỉ ghi khi chính chủ nói trong lượt đó.
 
 ### 9.2 Kết quả dễ hiểu
 
@@ -463,7 +463,7 @@ Bản tổng hợp cuối có nhãn "Kết quả việc".
   - Chỉ báo thành công khi server xác nhận.
   - Lỗi hay 409 thì tải lại `GET /resonance/agents` và vẽ theo trạng thái thật (sửa lỗi hiện tại: 409 chỉ hiện chữ).
 - **Đồng bộ hai tab:**
-  - sau mỗi lần đổi, phát sự kiện `javis:resonance-agents-changed` trong tab;
+  - sau mỗi lần đổi, phát sự kiện `unimate:resonance-agents-changed` trong tab;
   - server phát gói `{"type":"resonance_agents"}` qua WebSocket để tab khác tải lại.
 - **Tắt agent đang có việc:** hộp xác nhận nêu tác động thật:
   - số mục tiêu Cộng hưởng đang mở sẽ dừng ở bước kế tiếp (hợp đồng A1);
@@ -479,7 +479,7 @@ Bản tổng hợp cuối có nhãn "Kết quả việc".
 | Trò chuyện trong nhóm, trả lời khi được @ | Có | Có |
 | Làm bước trong việc nhóm (lượt chat có công cụ của agent) | Có | Có |
 | Là trưởng nhóm | Có | Có |
-| Tạo và theo đuổi mục tiêu Cộng hưởng (`javis_goal`), bàn giao sản phẩm theo A4 | Không | Có; báo cáo của goal tạo trong lượt nhóm về đúng phiên `team:` đó |
+| Tạo và theo đuổi mục tiêu Cộng hưởng (`unimate_goal`), bàn giao sản phẩm theo A4 | Không | Có; báo cáo của goal tạo trong lượt nhóm về đúng phiên `team:` đó |
 | Là reviewer A5 | Không | Có |
 
 Tư cách thành viên **không** tự cấp quyền Cộng hưởng.
@@ -626,7 +626,7 @@ Trong lượt nhóm, model của agent được đọc từ file agent **mỗi l
 - "Không giới hạn" lưu là `null` kèm cờ `unlimited=true`. Mã kiểm trần coi đó là không có trần, **không thay bằng một số lớn**.
 - **Chủ đặt trần trần (ceiling) cho từng mục.** Trưởng nhóm Toàn quyền đổi được trần của nhóm trong mức trần trần đó. Trần trần là "Không giới hạn" thì trưởng nhóm đặt được bất kỳ giá trị nào.
 - **Trần không bỏ được, luôn hiện trong hộp cấp quyền:**
-  - `JAVIS_RESONANCE_CALL_CEILING` do máy chủ đặt (chỉ ảnh hưởng goal);
+  - `UNIMATE_RESONANCE_CALL_CEILING` do máy chủ đặt (chỉ ảnh hưởng goal);
   - hạn mức của gói thuê bao hay của nhà cung cấp;
   - quyền của tài khoản;
   - giới hạn kỹ thuật (mục 13.6, nhóm c).
@@ -650,7 +650,7 @@ Một agent có thể ở nhiều nhóm, nên đổi cấu hình chung (lời nh
 ### 13.5 Thu hồi
 
 Chủ thu hồi bất cứ lúc nào: tắt Toàn quyền, đổi trưởng nhóm hay dừng nhóm.
-- Ghi `revoked_at`. Mọi lời gọi `javis_team` sau mốc đó kiểm lại chế độ trong giao dịch và bị từ chối.
+- Ghi `revoked_at`. Mọi lời gọi `unimate_team` sau mốc đó kiểm lại chế độ trong giao dịch và bị từ chối.
 - Lượt đang chạy của trưởng nhóm chạy hết. Hành động quản trị nó yêu cầu sau mốc thu hồi bị từ chối. Kết quả nội dung vẫn áp dụng nếu hợp lệ ở Quyền giới hạn.
 - Trần quay về mức của Quyền giới hạn. Việc đang chạy vượt trần mới vào `team_blocked`, lý do `cap_reached`, chờ chủ.
 - Agent do nhóm quản lý vẫn tồn tại; trưởng nhóm hết quyền sửa chúng.
@@ -667,9 +667,9 @@ Nhóm: (a) trần sản phẩm, (b) bảo đảm toàn vẹn, (c) giới hạn k
 | Lượt review tính trên một bản ghim | 3 | `resonance_heartbeat.py:57` | a | Theo cài đặt nhóm | Có |
 | Thử lại, lùi, nhịp kiểm (15 phút, 1 h/4 h/24 h, 6 h tới 7 ngày) | | `resonance_heartbeat.py:28-38` | a | Giữ trong bản đầu | Có nếu muốn mở |
 | Không còn lệnh nâng ngân sách goal đã hết | | | a | Thêm lệnh "Cho thêm lượt" cho chủ, và cho trưởng nhóm Toàn quyền trong trần trần | Có |
-| Trần toàn máy `JAVIS_RESONANCE_CALL_CEILING` | env | `resonance_store.py:32-59` | a (cấp máy chủ) | Không bỏ; hiện trong hộp cấp quyền | Không |
+| Trần toàn máy `UNIMATE_RESONANCE_CALL_CEILING` | env | `resonance_store.py:32-59` | a (cấp máy chủ) | Không bỏ; hiện trong hộp cấp quyền | Không |
 | Engine chỉ chữ cho goal | | `main._resonance_engine` | b | Giữ | Không |
-| Thư mục cấm đăng (`javis`, `plugins`, `skills`, `agents`, `workflows`, `memory`, dotfile) | | `resonance.py:2268-2280` | b | Giữ | Không |
+| Thư mục cấm đăng (`unimate`, `plugins`, `skills`, `agents`, `workflows`, `memory`, dotfile) | | `resonance.py:2268-2280` | b | Giữ | Không |
 | Loại file sản phẩm `.md`/`.txt`, 1 MB | | `resonance.py:1025-1026` | b/a | Giữ trong bản đầu | Có nếu muốn mở |
 | Duyệt phạm vi ghi A4 trên thẻ | chỉ chủ | `approve_scope` | b | Chỉ thư mục nhóm nếu chủ chọn (D4) | Có: nguồn cấp mới `team_full` cho đúng thư mục |
 | Cổng review A5 | | `resonance_store.py:2425-2430` | b | Giữ; trưởng nhóm không bỏ được yêu cầu review | Không |
@@ -784,7 +784,7 @@ Gửi tin đi qua `/ws` như chat hiện nay. Gói tin thêm các trường:
 - `mentions:[agent_key]`;
 - `as_job: bool`.
 
-### 15.2 Công cụ `javis_team` (chỉ trong lượt nhóm)
+### 15.2 Công cụ `unimate_team` (chỉ trong lượt nhóm)
 
 | `op` | Ai | Việc |
 |---|---|---|
@@ -855,7 +855,7 @@ Mọi ca chạy bằng **engine giả** trừ khi ghi khác. Mã ca: TC. "Mốc"
 | Mã | Ca | Mốc | Đường mã dự kiến | Bằng chứng |
 |---|---|---|---|---|
 | TC1 | Tạo ba nhóm; cùng một agent ở hai nhóm, làm trưởng nhóm ở một nhóm, thành viên ở nhóm kia | T1 | `team_store.create`, `add_member`, `agent_register` | Test kho và route; ảnh chụp danh sách nhóm |
-| TC2 | Thêm agent có sẵn; tạo agent mới trong cài đặt nhóm (qua `POST /agents`) rồi thêm; bỏ thành viên; agent vẫn còn ở Javis và nhóm khác | T1 | route `members` | Test |
+| TC2 | Thêm agent có sẵn; tạo agent mới trong cài đặt nhóm (qua `POST /agents`) rồi thêm; bỏ thành viên; agent vẫn còn ở UNI MATE và nhóm khác | T1 | route `members` | Test |
 | TC3 | Tạo agent trùng slug trả 409, không ghi đè file cũ | T1 | `POST /agents` | Test so bytes file cũ |
 | TC4 | Đổi tag của thành viên: tư cách thành viên, trưởng nhóm, quyền không đổi | T1 | `/capability/meta` | Test |
 | TC5 | Đổi tên agent: vẫn là thành viên; xoá rồi tạo lại cùng slug: mã mới, không là thành viên, không nhận việc cũ | T1 | `agent_retire`, `team_members.status` | Test |
@@ -876,7 +876,7 @@ Mọi ca chạy bằng **engine giả** trừ khi ghi khác. Mã ca: TC. "Mốc"
 | TC20 | Sửa yêu cầu và huỷ việc giữa chừng; kết quả muộn có nhãn, `applied=0` | T1 | mục 7.6 | Test |
 | TC21 | Cùng agent ở hai nhóm cùng có việc: khoá bận, chờ FIFO, mỗi kết quả về đúng nhóm, ngữ cảnh không lẫn | T1 | `agent_busy`, mạch thành viên | Test kiểm lời nhắc gửi engine giả |
 | TC22 | Không lẫn dữ liệu: lời nhắc của lượt nhóm không chứa tin nhóm khác, chat riêng hay bộ nhớ chủ | T1 | khối nhóm mục 11.2 | Test so lời nhắc |
-| TC23 | Agent chưa bật Cộng hưởng làm được bước nhóm nhưng không có `javis_goal`; goal tạo trong lượt nhóm báo về đúng phiên `team:` | T1 | | Test |
+| TC23 | Agent chưa bật Cộng hưởng làm được bước nhóm nhưng không có `unimate_goal`; goal tạo trong lượt nhóm báo về đúng phiên `team:` | T1 | | Test |
 | TC24 | Cổng A4 và A5 giữ nguyên: tin nhắn không cấp quyền ghi; goal có đội vẫn cần reviewer đạt | T1 | test A4, A5 hiện có chạy lại | Test hồi quy |
 | TC25 | Công tắc Cộng hưởng trên dòng trợ lý: chỉ báo thành công khi server xác nhận; 409 thì tải lại; hai tab đồng bộ; danh sách thành viên nhóm hiện cùng trạng thái | T0/T1 | `workspace.js`, route toggle | Test JS, smoke giao diện |
 | TC26 | Tắt agent đang có việc: hộp xác nhận nêu goal và các nhóm; việc nhóm không dừng | T0/T1 | | Smoke giao diện |
@@ -884,7 +884,7 @@ Mọi ca chạy bằng **engine giả** trừ khi ghi khác. Mã ca: TC. "Mốc"
 | TC28 | Sáu reaction: chọn, đổi, bỏ; desktop và điện thoại; giữ qua F5, restart; đúng người, tin, agent, nhóm, `content_sha` | T2 | `team_reactions` | Test kho, smoke giao diện |
 | TC29 | Reaction không đổi trạng thái việc, goal, hàng đợi, không mở lượt, không gọi model | T2 | | Sổ lượt = 0 |
 | TC30 | Khối phản hồi ở lượt kế giữ emoji gốc, lý do, góp ý; có câu dặn; chỉ trong đúng nhóm; bỏ reaction thì rời khối | T2 | | Test so lời nhắc |
-| TC31 | Toàn quyền: trưởng nhóm không tự bật được; chủ bật thì ghi `team_authority`; trưởng nhóm thêm thành viên, tạo agent, đổi thứ tự việc chờ; mọi thao tác có sự kiện | T3 | `javis_team` op quản trị | Test |
+| TC31 | Toàn quyền: trưởng nhóm không tự bật được; chủ bật thì ghi `team_authority`; trưởng nhóm thêm thành viên, tạo agent, đổi thứ tự việc chờ; mọi thao tác có sự kiện | T3 | `unimate_team` op quản trị | Test |
 | TC32 | "Không giới hạn" là `null` + cờ, không phải số; trần máy chủ và hạn mức nhà cung cấp vẫn hiện và vẫn áp | T3 | | Test |
 | TC33 | Trưởng nhóm Toàn quyền không sửa được cấu hình agent không do nhóm quản lý; sửa agent do nhóm quản lý thì báo các nhóm khác bị ảnh hưởng | T3 | | Test |
 | TC34 | Thu hồi Toàn quyền giữa lượt: công cụ quản trị sau mốc bị từ chối; trần về mức giới hạn; việc vượt trần bị chặn | T3 | | Test |
@@ -917,7 +917,7 @@ Mọi ca chạy bằng **engine giả** trừ khi ghi khác. Mã ca: TC. "Mốc"
 | M5 | Bước đã gọi engine bị gián đoạn khi restart: không tự chạy lại | Tránh trả tiền hai lần |
 | M6 | Trần mặc định ở mục 12.3 | Đủ cho một việc vừa (lập kế hoạch, ba người làm, hỗ trợ, tổng hợp) |
 | M7 | Model của agent đọc mỗi lượt từ file agent | Mạch thành viên là phiên ẩn, ảnh chụp sẽ cũ |
-| M8 | `javis_task` ẩn trong lượt nhóm | Một chỗ giao việc trong nhóm |
+| M8 | `unimate_task` ẩn trong lượt nhóm | Một chỗ giao việc trong nhóm |
 | M9 | Bỏ công tắc trùng ở cột phải và trang Cài đặt | Không hai công tắc cho một agent |
 | M10 | Bảng reaction riêng cho nhóm, không dùng bảng A3 | Bảng A3 gắn goal và tin báo |
 | M11 | Toàn quyền không chuyển theo khi đổi trưởng nhóm | Quyền gắn người, không gắn chức danh |

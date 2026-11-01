@@ -9,7 +9,7 @@ What is proven here (spec of record: docs/superpowers/specs/2026-10-19-webhook-e
   2. strict types (spec §5): `1` is not `"1"`, a missing field is missing (never null, 0 or ""), `contains` on an
      array names any/all, an object is never stringified; a rule that cannot apply quarantines the event (it never
      reads as match-all); each failing condition has a reason code; the STORED trace holds no values;
-  3. the spec's POSCake example filter works as written (status 1 and an item named "TRỢ LÝ AI JAVIS", any case);
+  3. the spec's POSCake example filter works as written (status 1 and an item named "TRỢ LÝ AI UNI MATE", any case);
   4. business keys (spec §6.2): the typed tuple of several paths, serialised then hashed (`1+23` vs `12+3` and `1`
      vs `"1"` differ), only the hash stored, a missing part quarantines by default, TTL 7 days by default, the hook's
      own key space unless a namespace is shared on purpose, never across brains;
@@ -32,9 +32,9 @@ import threading
 import time
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-wh-m2-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
+STATE = Path(tempfile.mkdtemp(prefix="unimate-wh-m2-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -167,11 +167,11 @@ check("empty / not_empty", dec({"filter": {"path": "a", "op": "empty"}}, {"a": "
 # ---- 3. the spec's POSCake example (§5, §9) ----
 SPEC_FILTER = {"all": [
     {"path": "status", "op": "eq", "value": 1},
-    {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI JAVIS", "quantifier": "any", "case_sensitive": False}]}
-order = {"shop_id": 7, "id": 1001, "status": 1, "items": [{"name": "Nước mắm"}, {"name": "Gói Trợ lý AI Javis 12 tháng"}]}
-check("spec example: status 1 with a Javis item matches", dec({"filter": SPEC_FILTER}, order) == "run")
+    {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI UNI MATE", "quantifier": "any", "case_sensitive": False}]}
+order = {"shop_id": 7, "id": 1001, "status": 1, "items": [{"name": "Nước mắm"}, {"name": "Gói Trợ lý AI UNI MATE 12 tháng"}]}
+check("spec example: status 1 with a UNI MATE item matches", dec({"filter": SPEC_FILTER}, order) == "run")
 r = ev({"filter": SPEC_FILTER}, dict(order, items=[{"name": "Nước mắm"}]))
-check("spec example: no Javis item -> ignored with items_mismatch (or the owner's label)", r["decision"] == "filtered"
+check("spec example: no UNI MATE item -> ignored with items_mismatch (or the owner's label)", r["decision"] == "filtered"
       and r["reason"] == "name_mismatch", r)
 lab = {"all": [SPEC_FILTER["all"][0], dict(SPEC_FILTER["all"][1], reason="product_not_found")]}
 check("spec example: the owner's reason label product_not_found", ev({"filter": lab}, dict(order, items=[]))["reason"]
@@ -179,7 +179,7 @@ check("spec example: the owner's reason label product_not_found", ev({"filter": 
       == "product_not_found")
 check("spec example: status \"1\" (a string) does not match status 1",
       ev({"filter": SPEC_FILTER}, dict(order, status="1"))["reason"] == "status_mismatch")
-r = ev({"filter": SPEC_FILTER}, {"id": 5, "items": [{"name": "TRỢ LÝ AI JAVIS"}]})
+r = ev({"filter": SPEC_FILTER}, {"id": 5, "items": [{"name": "TRỢ LÝ AI UNI MATE"}]})
 check("spec example: a missing status is missing_field", r["reason"] == "missing_field", r)
 r = ev({"filter": SPEC_FILTER}, order)
 check("the STORED trace keeps types and results, never the values", all("actual" not in s and "value" not in s
@@ -399,15 +399,15 @@ check("a second decision on an event already decided is a no-op", again == [""] 
 
 # crash inside the triage transaction: neither the decision nor the key
 CH = ("import webhook_store as ws, webhook_rules as wr, os\n"
-      "st = ws.Store(os.path.join(os.environ['JAVIS_STATE_DIR'], 'e.sqlite3'))\n"
+      "st = ws.Store(os.path.join(os.environ['UNIMATE_STATE_DIR'], 'e.sqlite3'))\n"
       "if not st.triage_candidates(10):\n"
       "    st.ingest({'id': 'wh_c', 'brain': '/b'}, b'{\"k\":\"go\",\"id\":\"X\"}', 'application/json', '')\n"
       "r = st.triage_candidates(10)[0]\n"
       "pre = wr.evaluate(wr.validate(" + repr(R) + "), r['body'], 'application/json')\n"
       "print('DECIDED', st.triage_commit(r['id'], pre, []))\n")
 s5 = Path(tempfile.mkdtemp(prefix="wh-m2-crash-"))
-env = dict(os.environ, JAVIS_STATE_DIR=str(s5), PYTHONPATH=str(SERVER))
-r = subprocess.run([PY, "-c", CH], env=dict(env, JAVIS_WH_CRASH_AT="triage_before_commit"), capture_output=True, text=True,
+env = dict(os.environ, UNIMATE_STATE_DIR=str(s5), PYTHONPATH=str(SERVER))
+r = subprocess.run([PY, "-c", CH], env=dict(env, UNIMATE_WH_CRASH_AT="triage_before_commit"), capture_output=True, text=True,
                    timeout=60)
 c = sqlite3.connect(str(s5 / "e.sqlite3"))
 check("crash inside triage: the event is still received, no business key", r.returncode == 77

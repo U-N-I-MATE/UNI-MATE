@@ -1,6 +1,6 @@
 """Kho gói: đọc một file index công khai, cache lại, và hỏng thì hỏng cho tử tế.
 
-Kho là gì trong Javis
+Kho là gì trong UNI MATE
 ---------------------
 Đúng một file JSON đặt ở đâu đó công khai (mặc định là repo GitHub của người phát hành). Không
 có máy chủ nào phải nuôi, không có cơ sở dữ liệu, không có tài khoản. Người phát hành sửa file
@@ -26,7 +26,7 @@ Hỏng thì hỏng cho tử tế
 -----------------------
 Ba trạng thái, không cái nào là một cục lỗi ném vào mặt người dùng: còn cache thì vẫn vẽ được
 lưới kèm một dòng nói số liệu đã cũ; không cache thì trạng thái rỗng kèm lời nhắc vẫn cài được
-từ tệp; `format_version` lạ thì nói thẳng là kho cần bản Javis mới hơn, chứ không đọc nửa vời
+từ tệp; `format_version` lạ thì nói thẳng là kho cần bản UNI MATE mới hơn, chứ không đọc nửa vời
 rồi hiện sai.
 """
 from __future__ import annotations
@@ -41,18 +41,18 @@ import localefmt
 
 CACHE = STATE_DIR / "packs-store-cache.json"
 TTL = 6 * 3600
-FORMAT = "javis-pack-index"
+FORMAT = "unimate-pack-index"
 FORMAT_VERSION = 1
 
 # Kho mặc định. Người dùng đổi được trong Cài đặt, nên đây chỉ là điểm khởi đầu.
 #
-# Kho nằm ở REPO RIÊNG chứ không trong repo Javis OS, và đó là điểm mấu chốt của cả tầng này:
+# Kho nằm ở REPO RIÊNG chứ không trong repo UNI MATE, và đó là điểm mấu chốt của cả tầng này:
 # thêm một gói vào kho không còn dính gì tới việc ra bản mới của app. Người phát hành đẩy một
-# commit vào `javis-store`, và mọi máy đang chạy Javis thấy ngay ở lần làm mới danh mục kế tiếp.
+# commit vào `unimate-store`, và mọi máy đang chạy UNI MATE thấy ngay ở lần làm mới danh mục kế tiếp.
 #
 # Tách repo còn mở được đường đóng góp: người lạ gửi Pull Request vào kho, chủ kho đọc mã rồi mới
-# trộn - mà không ai phải có quyền ghi vào mã nguồn Javis.
-STORE_MAC_DINH = ("https://raw.githubusercontent.com/blogminhquy/javis-store/"
+# trộn - mà không ai phải có quyền ghi vào mã nguồn UNI MATE.
+STORE_MAC_DINH = ("https://raw.githubusercontent.com/U-N-I-MATE/unimate-store/"
                   "main/index.json")
 
 # Loại năng lực một mục trong kho mang lại. Đây là thứ chia lưới thành các tab "Trợ lý /
@@ -94,7 +94,7 @@ def _upstream(v) -> dict:
     The Store shows it as a "Follows the source repo" line with a link to github.com/<repo>, so the repo
     has to be a plain owner/name before it becomes a link: anything else drops the field and the card
     shows as an ordinary pack. The store refreshes these packs from the source daily
-    (javis-store `tools/theo-goc.py`); updating still goes through the usual confirm screen."""
+    (unimate-store `tools/theo-goc.py`); updating still goes through the usual confirm screen."""
     if not isinstance(v, dict):
         return {}
     repo = _chuoi(v.get("repo"), 201)
@@ -110,9 +110,9 @@ def _upstream(v) -> dict:
 
 
 def _lam_sach(m: dict) -> dict:
-    """Giữ đúng những trường Javis biết dùng. Trường lạ bị bỏ, không bao giờ đi tiếp.
+    """Giữ đúng những trường UNI MATE biết dùng. Trường lạ bị bỏ, không bao giờ đi tiếp.
 
-    Đây là ranh giới giữa "dữ liệu người khác viết" và "thứ Javis hiển thị"."""
+    Đây là ranh giới giữa "dữ liệu người khác viết" và "thứ UNI MATE hiển thị"."""
     tai = m.get("download") or {}
     return {
         "id": _chuoi(m.get("id"), 64),
@@ -198,12 +198,12 @@ async def lay(lam_moi: bool = False) -> dict:
         if not isinstance(d, dict):
             raise ValueError(localefmt.chu("gốc phải là object", "the root must be an object"))
         if str(d.get("format")) != FORMAT:
-            raise ValueError(localefmt.chu("tệp này không phải danh mục gói của Javis", "this file is not a Javis pack catalog"))
+            raise ValueError(localefmt.chu("tệp này không phải danh mục gói của UNI MATE", "this file is not a UNI MATE pack catalog"))
         fv = int(d.get("format_version") or 0)
         if fv > FORMAT_VERSION:
             # Đọc nửa vời một định dạng mới hơn là cách chắc chắn để hiện sai. Nói thẳng.
-            raise ValueError(localefmt.chu(f"kho này cần bản Javis mới hơn (định dạng v{fv})",
-                                           f"this store needs a newer Javis (format v{fv})"))
+            raise ValueError(localefmt.chu(f"kho này cần bản UNI MATE mới hơn (định dạng v{fv})",
+                                           f"this store needs a newer UNI MATE (format v{fv})"))
         goi = [_lam_sach(x) for x in (d.get("packs") or [])[:MAX_GOI] if isinstance(x, dict)]
         # Mục thiếu id hoặc thiếu chỗ tải thì bỏ: hiện một thẻ bấm vào không cài được thì tệ
         # hơn là không hiện.

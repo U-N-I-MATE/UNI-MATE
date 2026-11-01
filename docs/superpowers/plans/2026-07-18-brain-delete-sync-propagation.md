@@ -42,7 +42,7 @@
 
 **Interfaces:**
 - Produces:
-  - `TOMBSTONE_DIR = ".javis-tombstones"` (str, hằng)
+  - `TOMBSTONE_DIR = ".unimate-tombstones"` (str, hằng)
   - `write_tombstone(brains_dir: str, name: str) -> None`
   - `clear_tombstone(brains_dir: str, name: str) -> None`
   - `_read_tombstones(root: str) -> list[dict]` (mỗi dict có `name`, `deleted_at`, `host`, `v`, và `_file` = tên file)
@@ -120,10 +120,10 @@ import time
 ```python
 # ============================================================
 # GIẤY BÁO TỬ (tombstone) - đánh dấu não bị xóa CÓ CHỦ ĐÍCH để lan việc xóa sang mọi máy.
-# Một file cho mỗi não trong <brains_dir>/.javis-tombstones/<tên não>.json. Đồng bộ theo repo
+# Một file cho mỗi não trong <brains_dir>/.unimate-tombstones/<tên não>.json. Đồng bộ theo repo
 # (không nằm trong _backup_skip), KHÔNG hiện thành não (/brains bỏ tên bắt đầu bằng '.').
 # ============================================================
-TOMBSTONE_DIR = ".javis-tombstones"
+TOMBSTONE_DIR = ".unimate-tombstones"
 _TOMBSTONE_TTL = 180 * 86400   # giữ 180 ngày: lâu hơn thùng rác để máy offline lâu quay lại không hồi sinh
 
 
@@ -154,7 +154,7 @@ def clear_tombstone(brains_dir: str, name: str) -> None:
 
 
 def _read_tombstones(root: str) -> List[dict]:
-    """Đọc mọi giấy báo tử trong <root>/.javis-tombstones/. Bỏ file hỏng. Gắn _file = tên file."""
+    """Đọc mọi giấy báo tử trong <root>/.unimate-tombstones/. Bỏ file hỏng. Gắn _file = tên file."""
     d = Path(root) / TOMBSTONE_DIR
     out: List[dict] = []
     if not d.is_dir():
@@ -619,7 +619,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
     cd server && ../.venv/Scripts/python.exe test_brain_delete_endpoint.py"""
 import os, sys, asyncio, tempfile
 from pathlib import Path
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="jv-del-state-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="jv-del-state-"))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import main  # noqa: E402
 import git_brain as gb  # noqa: E402
@@ -856,7 +856,7 @@ Expected: mỗi test in `TẤT CẢ PASS` (hoặc `SKIP` nếu thiếu git).
 ## [0.9.76] - 2026-07-18
 Xoá não giờ LAN sang mọi máy đồng bộ (không còn bị "hồi sinh"), và giữ bản sao trong thùng rác cục bộ 30 ngày. **Cần khởi động lại server** (đổi luồng sync + endpoint xoá); giao diện tự nạp lại nhờ bump `?v=7`.
 ### Thêm mới
-- **Giấy báo tử (tombstone) đồng bộ để lan việc xoá não**: khi xoá 1 não (đã gõ đúng tên xác nhận), Javis ghi một file nhỏ `<BRAINS_DIR>/.javis-tombstones/<tên>.json` đồng bộ theo repo. Bước `_apply_tombstones` mới trong sync đọc tombstone và xoá dứt khoát não đó ở mọi máy, ghi đè đúng chính sách "xoá không thắng bản còn sống" - NHƯNG chỉ cho lần xoá cố ý. Có chốt thời gian: não được tạo/sửa lại sau khi xoá thì không bị giết oan (tombstone tự gỡ). Não mặc định miễn nhiễm.
+- **Giấy báo tử (tombstone) đồng bộ để lan việc xoá não**: khi xoá 1 não (đã gõ đúng tên xác nhận), UNI MATE ghi một file nhỏ `<BRAINS_DIR>/.unimate-tombstones/<tên>.json` đồng bộ theo repo. Bước `_apply_tombstones` mới trong sync đọc tombstone và xoá dứt khoát não đó ở mọi máy, ghi đè đúng chính sách "xoá không thắng bản còn sống" - NHƯNG chỉ cho lần xoá cố ý. Có chốt thời gian: não được tạo/sửa lại sau khi xoá thì không bị giết oan (tombstone tự gỡ). Não mặc định miễn nhiễm.
 - **Thùng rác cục bộ 30 ngày**: xoá não giờ CHUYỂN dữ liệu vào `<STATE_DIR>/brain-trash/<tên>__<thời-gian>/` (ngoài vùng đồng bộ, mỗi máy một thùng riêng) thay vì xoá cứng; tự dọn mục quá 30 ngày ở đầu mỗi lần sync. Lời xác nhận khi xoá báo rõ điều này. Khôi phục bằng tay (chuyển folder từ thùng rác về `brains/`).
 ### Sửa lỗi
 - **Não đã xoá bị "hồi sinh" khi sync/update**: chính sách sync cũ cố tình không cho việc xoá thắng bản còn sống (chống mất dữ liệu), nên một não xoá ở máy này bị máy/remote khác đẩy ngược lại. Nay lần xoá cố ý lan đi qua tombstone; lá chắn chống mất dữ liệu chung vẫn nguyên vẹn cho mọi trường hợp KHÔNG có tombstone (folder biến mất do volume chưa mount, engine ghi dở...).
@@ -878,7 +878,7 @@ git push origin main
 
 - [ ] **Step 5: Khởi động lại + kiểm chứng live**
 
-Run: `wscript //nologo start-javis.vbs` (chờ ~8s) rồi kiểm tra server lên (`curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:7777/` = 200) và log không traceback (`tail -15 server/javis.log`).
+Run: `wscript //nologo start-unimate.vbs` (chờ ~8s) rồi kiểm tra server lên (`curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:7777/` = 200) và log không traceback (`tail -15 server/unimate.log`).
 Expected: server lên PID mới, không lỗi. Xác nhận `curl -s http://127.0.0.1:7777/static/index.html | grep brains-ui` = `?v=7`.
 
 ---

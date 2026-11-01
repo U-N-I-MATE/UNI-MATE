@@ -13,7 +13,7 @@ Mọi engine nộp sản phẩm qua cùng một cửa: host xác định lượt
 | Luật thuần: khoá đường, `narrow`, `allows`, dấu vân tay, bảng khả năng engine | `server/resonance_grants.py` (mới) |
 | Kho: sáu bảng A4, snapshot `.pre-0.96.0`, đóng băng legacy, phạm vi theo revision, liên kết, bản nộp, bốn bước đăng, Cho phép, Không, Thu hồi, Cấp lại, đăng lại | `server/resonance_store.py` (mục "A4" cuối class) |
 | `host_publish`, đối soát đăng, `_publish_latest` theo bản nộp, `_work_post_core` chèn bản nộp trước đăng, bàn giao cuối lượt, `submit_deliverable`, cổng phạm vi trong `_gate`, lệnh chủ dự án, khối `scope` của thẻ | `server/resonance.py` |
-| Công cụ hub `javis_submit_deliverable`, ghi chú phạm vi và mã `handoff` trong kết quả `javis_goal` | `system/plugins/javis-goal/plugin.py`, `plugin.yaml` |
+| Công cụ hub `unimate_submit_deliverable`, ghi chú phạm vi và mã `handoff` trong kết quả `unimate_goal` | `system/plugins/unimate-goal/plugin.py`, `plugin.yaml` |
 | Ảnh chụp thứ tự quyền đầu lượt, provider của lượt | `server/turn_context.py`, `server/main.py` (`_resonance_turn_agent`) |
 | Bàn giao mọi mục tiêu của một tin; đăng ký phụ thuộc cho công cụ trong tiến trình | `server/main.py` (`_resonance_after_turn`, `resonance.set_deps_provider`) |
 | Xem trước bản nháp | `server/resonance_api.py` (`GET /goals/{id}/drafts/{submission_id}`) |
@@ -54,8 +54,8 @@ Mọi engine nộp sản phẩm qua cùng một cửa: host xác định lượt
 - Mục tiêu mới có đường sản phẩm luôn chờ chủ dự án cho phép, kể cả khi lời giao nêu đích. Write của bộ não trong lượt LẬP mục tiêu không được tiếp nhận (lượt đó chưa có phạm vi lúc bắt đầu); bản nộp qua công cụ được giữ làm nháp và Cho phép đăng nó.
 - Tắt Cộng hưởng của trợ lý không thu hồi phạm vi (I1): bật lại thì làm tiếp dưới gốc cũ. Nhưng tắt rồi bật giữa lượt làm bản nộp của lượt đó `stale`, không đăng lại dưới version mới (trước đây A1 đăng lại đầu ra giữ bằng ý định mới). Lần thức sau làm lại một lượt.
 - `_publish_latest` chỉ đăng bản `candidate`; không còn đăng đầu ra hành động trần. File đích bị xoá thì đăng lại bản đã đăng dưới liên kết `republish` mới (quyền hiện hành).
-- Codex và engine API nhận bàn giao chat qua `javis_submit_deliverable` (`engine_support` có thêm `submit_tool`, `observed_write`).
+- Codex và engine API nhận bàn giao chat qua `unimate_submit_deliverable` (`engine_support` có thêm `submit_tool`, `observed_write`).
 
 ## Hạ phiên bản
 
-Lần đầu mã A4 mở một kho có từ trước, `_backup_before("grants", ".pre-0.96.0")` chép kho bằng SQLite backup API, rồi một giao dịch tạo bảng và đóng băng legacy. Hạ về 0.95.1 chỉ hỗ trợ bằng `tools/resonance_restore_pre_a4.py --yes` khi Javis đã tắt: chép kho hiện tại sang `resonance.sqlite3.post-0.96.0-<thời điểm>`, rồi ghi snapshot vào. Chạy 0.95.1 trên kho A4 mà không khôi phục là không hỗ trợ (mã cũ gỡ tạm dừng của mục tiêu đã thu hồi; test G48 ghi nhận đúng giới hạn này).
+Lần đầu mã A4 mở một kho có từ trước, `_backup_before("grants", ".pre-0.96.0")` chép kho bằng SQLite backup API, rồi một giao dịch tạo bảng và đóng băng legacy. Hạ về 0.95.1 chỉ hỗ trợ bằng `tools/resonance_restore_pre_a4.py --yes` khi UNI MATE đã tắt: chép kho hiện tại sang `resonance.sqlite3.post-0.96.0-<thời điểm>`, rồi ghi snapshot vào. Chạy 0.95.1 trên kho A4 mà không khôi phục là không hỗ trợ (mã cũ gỡ tạm dừng của mục tiêu đã thu hồi; test G48 ghi nhận đúng giới hạn này).

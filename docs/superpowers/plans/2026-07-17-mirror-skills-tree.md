@@ -19,7 +19,7 @@
 - **Test mới phải đặt tên `server/test_*.py`** thì CI (`.github/workflows/ci.yml:29-39`) mới glob thấy.
 - **Preamble test, thứ tự load-bearing** (env TRƯỚC import):
   ```python
-  os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-synctest-"))
+  os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-synctest-"))
   sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
   import system_sync  # noqa: E402
   ```
@@ -71,7 +71,7 @@ import tempfile
 import threading
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-synctest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-synctest-"))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import system_sync  # noqa: E402
@@ -103,7 +103,7 @@ def _mk_brain(prefix):
 
 
 # ---- copy đệ quy ----
-_ROOT, _SK, _MIR = _mk_brain("javis-mirror-")
+_ROOT, _SK, _MIR = _mk_brain("unimate-mirror-")
 system_sync.mirror_skills(_ROOT)
 check("mirror có SKILL.md", (_MIR / "SKILL.md").is_file())
 check("mirror có references/chi-tiet.md", (_MIR / "references" / "chi-tiet.md").is_file())
@@ -184,7 +184,7 @@ check(f"không đổi gì -> KHÔNG còn đọc-và-băm SKILL.md (đếm đư�
       len(_reads) == 0)
 
 # ---- hai luồng đồng thời trên cùng root -> không treo ----
-_R2, _SK2, _MIR2 = _mk_brain("javis-mirrorpar-")
+_R2, _SK2, _MIR2 = _mk_brain("unimate-mirrorpar-")
 _done = []
 
 
@@ -448,7 +448,7 @@ Expected: mỗi brain dưới ~10ms. Số nền trước khi làm plan này: My 
 
 Run:
 ```bash
-cd "D:/Project/Javis-OS" && ./.venv/Scripts/python.exe -c "
+cd "D:/Project/UNI-MATE" && ./.venv/Scripts/python.exe -c "
 from pathlib import Path
 n = 0
 for b in Path('brains').iterdir():
@@ -481,18 +481,18 @@ Thêm khối này vào `CHANGELOG.md`, NGAY TRƯỚC dòng `## [0.9.63] - 2026-0
 ```markdown
 ## [0.9.64] - 2026-07-17
 ### Sửa lỗi
-- **Javis tốn ~52ms mỗi lượt chat chỉ để đồng bộ skill, và nó chặn cả tiến trình**: hàm mirror skill đọc và băm lại `SKILL.md` của MỌI skill (cả bản nguồn lẫn bản đích) mỗi lần dựng system prompt, tức mỗi lượt chat, mỗi tin Telegram, mỗi task Kanban, mỗi vòng loop, mỗi nhắc hẹn. Đo thật trên brain 27 skill: 52,48ms mỗi lượt, chạy đồng bộ trên event loop nên làm đứng luôn các kết nối khác. Nay thay bằng cổng chữ ký chỉ dùng `stat` (không đọc nội dung file nào): còn khoảng 6ms, tức nhanh hơn 9 lần, và chỉ copy thật khi cây skill có thay đổi. Lỗi có sẵn, không ai biết cho tới khi đo.
+- **UNI MATE tốn ~52ms mỗi lượt chat chỉ để đồng bộ skill, và nó chặn cả tiến trình**: hàm mirror skill đọc và băm lại `SKILL.md` của MỌI skill (cả bản nguồn lẫn bản đích) mỗi lần dựng system prompt, tức mỗi lượt chat, mỗi tin Telegram, mỗi task Kanban, mỗi vòng loop, mỗi nhắc hẹn. Đo thật trên brain 27 skill: 52,48ms mỗi lượt, chạy đồng bộ trên event loop nên làm đứng luôn các kết nối khác. Nay thay bằng cổng chữ ký chỉ dùng `stat` (không đọc nội dung file nào): còn khoảng 6ms, tức nhanh hơn 9 lần, và chỉ copy thật khi cây skill có thay đổi. Lỗi có sẵn, không ai biết cho tới khi đo.
 - **File phụ trong skill đổi nội dung mà bản mirror không bao giờ nhận**: cổng bỏ qua chỉ băm `SKILL.md`, nên sửa một file ảnh hay tài liệu ngang hàng trong thư mục skill thì bản Claude Code nạp native vẫn giữ bản cũ mãi. Chữ ký mới phủ mọi file nên hết lỗi này.
 ### Thêm mới
 - **Skill mang theo được `references/` và `scripts/`**: bản mirror sang `.claude/skills` nay copy cả cây con, nên skill có tài liệu tách riêng hay script đi kèm chạy được cả trên đường Claude Code nạp native, không chỉ đường router. 10 skill trong các brain hiện có đã dùng `references/` từ trước và tới giờ vẫn chưa tới được đường native.
 ### Đã biết, chưa sửa
 - **Skill hệ thống vẫn chưa ship được cây con**: `html-to-webcake` ship kèm `tools/` và `examples/` nhưng cơ chế cài skill hệ thống chỉ chuyển mỗi `SKILL.md`, nên cây con chưa bao giờ tới brain nào. Bản này KHÔNG sửa lỗi đó: nó nằm ở tầng cài đặt, phía trên tầng mirror.
-- **Bản mirror bị phá từ bên ngoài sẽ không tự lành cho tới khi khởi động lại**: cổng chữ ký tính trên cây nguồn và nhớ trong bộ nhớ, nên nếu ai đó xoá tay file trong `.claude/skills` mà không đụng vào skill gốc thì Javis sẽ không nhận ra. Đánh đổi có chủ đích để lấy tốc độ; tắt/bật skill hay khởi động lại đều đưa nó về đúng.
+- **Bản mirror bị phá từ bên ngoài sẽ không tự lành cho tới khi khởi động lại**: cổng chữ ký tính trên cây nguồn và nhớ trong bộ nhớ, nên nếu ai đó xoá tay file trong `.claude/skills` mà không đụng vào skill gốc thì UNI MATE sẽ không nhận ra. Đánh đổi có chủ đích để lấy tốc độ; tắt/bật skill hay khởi động lại đều đưa nó về đúng.
 ```
 
 - [ ] **Step 5: Kiểm em dash**
 
-Run: `cd "D:/Project/Javis-OS" && ./.venv/Scripts/python.exe -c "import pathlib; print('em dash:', pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8').count(chr(8212)))"`
+Run: `cd "D:/Project/UNI-MATE" && ./.venv/Scripts/python.exe -c "import pathlib; print('em dash:', pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8').count(chr(8212)))"`
 Expected: `em dash: 0`
 
 - [ ] **Step 6: Commit + push**

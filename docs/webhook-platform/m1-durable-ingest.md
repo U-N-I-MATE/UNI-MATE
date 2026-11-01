@@ -53,7 +53,7 @@ States: `queued -> running -> done | silent | waiting | failed | unknown | dead`
 | Retry of the failed branch only | a failed run is not retried alone; owner retry runs it once more; done is not retryable |
 | Permissions of now | waiting event received at `full` runs at the hook's new `suggest`; deleted hook -> `cancelled` (0.274.0: a dead event is kept for a retry a deleted hook can never get) |
 | Notice not lost | finished-but-unnotified event notified at the next sweep, once, with its own dedup key |
-| No model in the webhook core | source check (no engine imports); runners are fakes; `JAVIS_NO_REAL_JUDGE_ENGINE=1` |
+| No model in the webhook core | source check (no engine imports); runners are fakes; `UNIMATE_NO_REAL_JUDGE_ENGINE=1` |
 | UI | `tests/js/test_webhooks_ui_m1.js`: actions per state, escaping, both languages |
 
 ## Assumptions to reconcile with the spec

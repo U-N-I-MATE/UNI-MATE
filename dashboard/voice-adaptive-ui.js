@@ -1,8 +1,8 @@
 /* Adapter to the app. DOM work lives here; decisions remain in the pure controller. */
 (function(root) {
   'use strict';
-  root.JavisAdaptiveUI = function(d) {
-    const controller = new root.JavisVoiceAdaptive.Controller();
+  root.UniMateAdaptiveUI = function(d) {
+    const controller = new root.UniMateVoiceAdaptive.Controller();
     // Nhịp hội thoại thích nghi đã GỠ khỏi giao diện (0.65.19, spec mục 5): luôn 'off', kể cả máy
     // từng lưu 'natural' trong localStorage. Code điều khiển còn lại chỉ để gỡ hẳn ở PR riêng.
     let mode='off', prefix='', lastState='', active=false;
@@ -41,7 +41,7 @@
       if(!configured()) return false;
       if(!text) return running();
       if(controller.state==='SAVED_DRAFT') return running(); // wake is accepted only on final
-      const full=prefix?root.JavisVoice.ghepDuoiTam(prefix,text):text;
+      const full=prefix?root.UniMateVoice.ghepDuoiTam(prefix,text):text;
       if(running() && full!==controller.text) d.interrupt();
       actions(controller.update(full,{learn:!document.hidden && d.connected() && !d.speaking()}));
       return running();
@@ -82,8 +82,8 @@
         if(mode==='observe'){controller.reset();return false;}
         if(!running())return false;
         if(controller.state==='SAVED_DRAFT') {
-          if(/^(?:javis|jarvis)(?:\s|[,!?]|$)/i.test(text.trim())) {
-            const addition=text.trim().replace(/^(?:javis|jarvis)(?:\s+ơi)?[\s,!?]*/i,'');
+          if(/^(?:uni(?:\s*mate)?|unimate)(?:\s|[,!?]|$)/i.test(text.trim())) {
+            const addition=text.trim().replace(/^(?:uni(?:\s*mate)?|unimate)(?:\s+ơi)?[\s,!?]*/i,'');
             resume();
             if(addition) input(addition);
           }

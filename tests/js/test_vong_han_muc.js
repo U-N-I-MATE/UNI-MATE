@@ -30,7 +30,7 @@ check("no plan name: the brand alone, never a guess", L.whoText("agy", "") === "
 check("each brain has its own empty-state line", ["claude", "codex", "grok", "agy"].every(b => vi[L.NONE_KEY[b]] && en[L.NONE_KEY[b]]));
 check("the popover asks for plan names, the ring after each turn does not", src.indexOf('"?goi=1"') !== -1 && /refresh\(true, true\)/.test(src));
 ["anthropic-api", "openai", "openrouter", "gemini", "groq", "deepseek", "ollama"].forEach(p =>
-  check(p + " has no ring (no plan meter Javis can read)", L.brainOf(p, {}) === ""));
+  check(p + " has no ring (no plan meter UNI MATE can read)", L.brainOf(p, {}) === ""));
 
 check("under 50% is green", L.level(49) === "ok");
 check("50% turns amber", L.level(50) === "warn");
@@ -49,8 +49,8 @@ check("the ring sits right after the Effort chip, hidden until a plan brain is c
   /id="effBtn"[\s\S]*?<\/button>\s*<!--[\s\S]*?-->\s*<button type="button" class="cp-limit" id="limitBtn" hidden/.test(html));
 check("the popover lives next to the Effort popover", /id="effPop"[^>]*><\/div>\s*<div class="eff-pop lim-pop" id="limitPop"/.test(html));
 check("plan-limit.js is loaded", /<script src="\/static\/plan-limit\.js\?v=\d+"><\/script>/.test(html));
-check("the picker tells the ring which brain is in use", picker.indexOf("JavisPlanLimit.setProvider(eff.provider)") !== -1);
-check("each finished turn re-reads the meters", app.indexOf("window.JavisPlanLimit.refresh()") !== -1);
+check("the picker tells the ring which brain is in use", picker.indexOf("UniMatePlanLimit.setProvider(eff.provider)") !== -1);
+check("each finished turn re-reads the meters", app.indexOf("window.UniMatePlanLimit.refresh()") !== -1);
 check("numbers come from GET /plan-limits", src.indexOf('fetch("/plan-limits"') !== -1);
 check("CSS colours the ring green, amber, red", ['[data-muc="ok"]', '[data-muc="warn"]', '[data-muc="bad"]'].every(k => css.indexOf(".cp-limit" + k) !== -1));
 const keys = ["lim.title", "lim.session", "lim.week", "lim.used", "lim.reset_hm", "lim.reset_m", "lim.reset_at", "lim.fresh",

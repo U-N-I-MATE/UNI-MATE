@@ -2,7 +2,7 @@
 
     python tests/run.py t3_fix_judge_guard -v
 
-Trước bản sửa, JAVIS_NO_REAL_JUDGE_ENGINE chỉ được kiểm trong `main._agent_judge_ask`; engine do người gọi tiêm vào
+Trước bản sửa, UNIMATE_NO_REAL_JUDGE_ENGINE chỉ được kiểm trong `main._agent_judge_ask`; engine do người gọi tiêm vào
 (`judge_proactive(engine=...)`, `ctx["ask"]`) và `Judge(ask=...)` đi thẳng tới model. Nay `Judge._run_engine` và
 `_run_engine_claimed` từ chối MỌI hàm hỏi chưa đánh dấu `agent_judge.mark_test_fake`, lượt được hoàn, không gọi gì.
 Engine ở đây đều là hàm GIẢ đếm lời gọi: nếu chốt hỏng, test đỏ chứ không có model thật nào được gọi.
@@ -11,12 +11,12 @@ import asyncio
 import json
 import os
 
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 from _judge_world import ROOT, World, batch, check, finish, keys_in  # noqa: E402
 import agent_judge as AJ  # noqa: E402
 
-check("_paths đặt chốt JAVIS_NO_REAL_JUDGE_ENGINE=1", os.environ.get("JAVIS_NO_REAL_JUDGE_ENGINE") == "1")
+check("_paths đặt chốt UNIMATE_NO_REAL_JUDGE_ENGINE=1", os.environ.get("UNIMATE_NO_REAL_JUDGE_ENGINE") == "1")
 
 
 class Counting:
@@ -95,19 +95,19 @@ check("real_engine_blocked: hàm thường bị chặn, hàm đã đánh dấu k
 
 # ═════ 6. chốt đặt tập trung và nhất quán ═════
 run_src = (ROOT / "tests" / "run.py").read_text(encoding="utf-8")
-check("tests/run.py đặt JAVIS_NO_REAL_JUDGE_ENGINE=1 cho MỌI tiến trình test",
-      'JAVIS_NO_REAL_JUDGE_ENGINE="1"' in run_src and 'JAVIS_NO_REAL_REVIEW_ENGINE="1"' in run_src)
+check("tests/run.py đặt UNIMATE_NO_REAL_JUDGE_ENGINE=1 cho MỌI tiến trình test",
+      'UNIMATE_NO_REAL_JUDGE_ENGINE="1"' in run_src and 'UNIMATE_NO_REAL_REVIEW_ENGINE="1"' in run_src)
 main_src = (ROOT / "server" / "main.py").read_text(encoding="utf-8")
 ask_src = main_src[main_src.index("async def _agent_judge_ask"):main_src.index("def _agent_judge_engine_label")]
 check("main._agent_judge_ask so `== \"1\"` (cùng phép so với agent_judge và _learn_engine_for)",
-      'os.environ.get("JAVIS_NO_REAL_JUDGE_ENGINE") == "1"' in ask_src)
+      'os.environ.get("UNIMATE_NO_REAL_JUDGE_ENGINE") == "1"' in ask_src)
 p8 = (ROOT / "tests" / "python" / "test_adaptive_context_phase8.py").read_text(encoding="utf-8")
 check("test_adaptive_context_phase8 đặt chốt trước khi nạp máy chủ",
-      'os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"' in p8
-      and p8.index('os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"]') < p8.index("import config"))
+      'os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"' in p8
+      and p8.index('os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"]') < p8.index("import config"))
 pilot = (ROOT / "tests" / "python" / "_a5_pilot_server.py").read_text(encoding="utf-8")
 check("pilot A5 dry đặt chốt trước khi nạp main",
-      'os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"' in pilot
-      and pilot.index('os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"]') < pilot.index("import main"))
+      'os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"' in pilot
+      and pilot.index('os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"]') < pilot.index("import main"))
 
 finish()

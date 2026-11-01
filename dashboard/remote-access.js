@@ -26,8 +26,8 @@
   }
   function icon(name) { return typeof window.ic === "function" ? window.ic(name) : ""; }
   // The (i) helpers; without info-tip.js (Node tests) the text is drawn open so nothing is lost.
-  function infoBtn() { return window.JavisInfo ? window.JavisInfo.btn(t("info.more")) : ""; }
-  function infoBody(html) { return window.JavisInfo ? window.JavisInfo.body(html) : "<div>" + html + "</div>"; }
+  function infoBtn() { return window.UniMateInfo ? window.UniMateInfo.btn(t("info.more")) : ""; }
+  function infoBody(html) { return window.UniMateInfo ? window.UniMateInfo.body(html) : "<div>" + html + "</div>"; }
 
   function injectCss() {
     if ($("raCss")) return;
@@ -216,15 +216,15 @@
       if (e.key === "Enter" && e.target && e.target.id === "raToken") { e.preventDefault(); turnOn(); }
     });
     document.addEventListener("visibilitychange", function () { if (!document.hidden) schedule(); });
-    // Settings calls __javisRefreshExtras (branding.js) when its General tab opens: refresh this block with it.
-    var prev = window.__javisRefreshExtras;
-    window.__javisRefreshExtras = function () {
+    // Settings calls __unimateRefreshExtras (branding.js) when its General tab opens: refresh this block with it.
+    var prev = window.__unimateRefreshExtras;
+    window.__unimateRefreshExtras = function () {
       try { if (prev) prev.apply(this, arguments); } finally { load(); }
     };
     load();
   }
 
-  window.addEventListener("javis:i18n", function () { if (_st) render(); });
+  window.addEventListener("unimate:i18n", function () { if (_st) render(); });
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind);
   else bind();

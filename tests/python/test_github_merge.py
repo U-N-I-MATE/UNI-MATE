@@ -1,4 +1,4 @@
-"""GitHub inside chat, phase G4: merge policy, merge queue, post-merge checks, next jobs, the javis_github tool.
+"""GitHub inside chat, phase G4: merge policy, merge queue, post-merge checks, next jobs, the unimate_github tool.
 
     python tests/run.py github_merge      (no network: local fake GitHub and bare repos; needs git and bash)
 
@@ -17,7 +17,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-ghm-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-ghm-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -26,7 +26,7 @@ except Exception:
 from _fake_github import FakeGitHub, GOOD_TOKEN, git  # noqa: E402
 
 fake = FakeGitHub()
-os.environ["JAVIS_GITHUB_API"] = fake.url
+os.environ["UNIMATE_GITHUB_API"] = fake.url
 
 import github_repos  # noqa: E402
 import github_store  # noqa: E402
@@ -109,11 +109,11 @@ run(w.after_turn("c1", BRAIN, "không đổi gì"))
 check("criterion 10: repeated ticks and a restart after the merge make no second PR, merge or next job",
       n_calls == 1 and len(merge_calls()) == 1 and len(fake.pulls["acme/app"]) == 1 and len(turns) == 1)
 check("after the merge the worktree moved to a fresh branch from the new base",
-      git(["rev-parse", "--abbrev-ref", "HEAD"], wt).stdout.strip() == "javis/c1-r2"
+      git(["rev-parse", "--abbrev-ref", "HEAD"], wt).stdout.strip() == "unimate/c1-r2"
       and git(["merge-base", "--is-ancestor", "origin/main", "HEAD"], wt, check=False).returncode == 0)
 r2 = push_change("c1", "acme/app", wt, "src/b.py", "b = 1\n")
 check("new work after a merge opens a new PR on the fresh branch",
-      r2["pr_number"] == 2 and r2["branch"] == "javis/c1-r2" and r2["integ"] == "pr_open" and r2["ci"] == "pending")
+      r2["pr_number"] == 2 and r2["branch"] == "unimate/c1-r2" and r2["integ"] == "pr_open" and r2["ci"] == "pending")
 
 # ---- criterion 14: post-merge red keeps merged, with a warning; next job does not start ----
 w.queue_next("c1", "Việc thứ ba")
@@ -138,7 +138,7 @@ green(r["head_sha"])
 run(w.tick())
 r = S().get("c3", "acme/off")
 check("auto-merge off: ready, not merged", r["integ"] == "ready" and not fake.pulls["acme/off"][0]["merged"])
-check("the chat is told why Javis did not merge", any("acme/off" in t and ("tắt" in t or "off" in t) for _, t, _ in posted))
+check("the chat is told why UNI MATE did not merge", any("acme/off" in t and ("tắt" in t or "off" in t) for _, t, _ in posted))
 out = run(w.merge_by_person("c3", "acme/off"))
 check("a person can merge a ready PR", out["row"]["integ"] == "merged" and fake.pulls["acme/off"][0]["merged"])
 
@@ -157,7 +157,7 @@ r = push_change("c5", "acme/noci", wt5, "src/a.py", "a = 6\n")
 w.NO_CI_GRACE_S = 0
 run(w.tick())
 w.NO_CI_GRACE_S = 180
-check("no CI: ready for a person, never merged by Javis", S().get("c5", "acme/noci")["integ"] == "ready"
+check("no CI: ready for a person, never merged by UNI MATE", S().get("c5", "acme/noci")["integ"] == "ready"
       and not fake.pulls["acme/noci"][0]["merged"])
 
 # ---- merge method not allowed: next allowed one ----
@@ -209,8 +209,8 @@ check("two ready PRs of one repo both merge, one after the other",
       S().get("ca", "acme/q")["integ"] == "merged" and S().get("cb", "acme/q")["integ"] == "merged"
       and len([p for p in fake.pulls["acme/q"] if p["merged"]]) == 2)
 
-# ---- the javis_github tool ----
-spec = importlib.util.spec_from_file_location("javis_github_plugin", ROOT / "system/plugins/javis-github/plugin.py")
+# ---- the unimate_github tool ----
+spec = importlib.util.spec_from_file_location("unimate_github_plugin", ROOT / "system/plugins/unimate-github/plugin.py")
 plug = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(plug)
 

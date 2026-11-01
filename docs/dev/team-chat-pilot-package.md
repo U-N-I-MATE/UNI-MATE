@@ -11,13 +11,13 @@ engine giả KHÔNG chứng minh chất lượng thảo luận, phán xử hay h
   đồng đội, tự rà soát) đã ghép ở nhánh T3 (cuối `054975b3`, review xác minh đạt).
 - Checkout sạch (`git status` rỗng), `.venv` của repo, state MỚI trong thư mục tạm (không dùng state thật của chủ), brain pilot
   riêng gồm 4 trợ lý có vai khác nhau: điều phối (Lan), số liệu (Minh), nội dung (Hoa), kiểm chứng (Tuấn).
-- Server sandbox trên cổng 7788 (không bao giờ 7777), `JAVIS_STATE_DIR` trỏ state tạm. Tắt bằng cổng
+- Server sandbox trên cổng 7788 (không bao giờ 7777), `UNIMATE_STATE_DIR` trỏ state tạm. Tắt bằng cổng
   (`Get-NetTCPConnection -LocalPort 7788 | Stop-Process`), không theo dòng lệnh.
-- Engine và provider do chủ chọn trên trang Models của sandbox (Javis không tự chọn model). Ghi lại: engine nhóm (model riêng
+- Engine và provider do chủ chọn trên trang Models của sandbox (UNI MATE không tự chọn model). Ghi lại: engine nhóm (model riêng
   của từng trợ lý hay model chính), engine việc nền (lô phán xử, lượt quét). Không API trả phí nếu chủ không nói rõ.
-- `JAVIS_PULSE_TICK_PAUSED=0` chỉ khi kịch bản P4 chạy; các kịch bản khác để nhịp nền dừng (`=1`) và gọi tick bằng tay để đếm
+- `UNIMATE_PULSE_TICK_PAUSED=0` chỉ khi kịch bản P4 chạy; các kịch bản khác để nhịp nền dừng (`=1`) và gọi tick bằng tay để đếm
   được lượt.
-- **Nhịp nền dừng khi MỘT TRONG HAI cờ bằng 1:** `JAVIS_PULSE_TICK_PAUSED` hay `JAVIS_RESONANCE_TICK_PAUSED` (`_pulse_tick` trong
+- **Nhịp nền dừng khi MỘT TRONG HAI cờ bằng 1:** `UNIMATE_PULSE_TICK_PAUSED` hay `UNIMATE_RESONANCE_TICK_PAUSED` (`_pulse_tick` trong
   `server/main.py`). Kịch bản cần nhịp (P4, lượt chủ động của P5, lượt xem xét phản hồi của P6) phải đặt CẢ HAI bằng 0. Pilot
   2026-10-16 phần 2 chỉ đặt cờ thứ nhất nên 4 tick không chạy lượt nào, lý do `reaction_review` nằm chờ.
 
@@ -27,10 +27,10 @@ Gửi chủ đúng một tin gồm: SHA, danh sách kịch bản (mục 4), tr�
 Chỉ bắt đầu khi chủ trả lời duyệt rõ ràng trong chat. Ghi nguyên văn câu duyệt và thời điểm vào hồ sơ. Mỗi lần chạy lại (kể cả
 sau lỗi kỹ thuật) là một lần xin duyệt mới.
 
-## 3. Trần lượt (`JAVIS_RESONANCE_CALL_CEILING`)
+## 3. Trần lượt (`UNIMATE_RESONANCE_CALL_CEILING`)
 
 Trần chung tính trọn đời trên state (thiết kế 9.1): mọi lượt nhóm, lô phán xử, lượt quét, xem xét, tự rà soát. State mới nên
-bắt đầu từ 0. Đề xuất **`JAVIS_RESONANCE_CALL_CEILING=60`**:
+bắt đầu từ 0. Đề xuất **`UNIMATE_RESONANCE_CALL_CEILING=60`**:
 
 | Kịch bản | Lượt dự kiến | Gồm |
 |---|---|---|
@@ -44,7 +44,7 @@ bắt đầu từ 0. Đề xuất **`JAVIS_RESONANCE_CALL_CEILING=60`**:
 | Dự phòng 20% nghĩa vụ | (tự động) | lượt tự phát chỉ dùng tới floor(60 x 0.8) = 48 |
 
 Thêm: `daily_turns` của nhóm pilot 40, `judge_daily` 20, `agent_daily_calls` 6 mặc định. Hạn giờ mỗi lượt nhóm giữ mặc định
-(`JAVIS_TEAM_TURN_TIMEOUT=600`).
+(`UNIMATE_TEAM_TURN_TIMEOUT=600`).
 
 ## 4. Kịch bản và ca của ma trận
 

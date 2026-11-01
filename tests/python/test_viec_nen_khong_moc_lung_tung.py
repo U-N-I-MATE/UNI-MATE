@@ -6,7 +6,7 @@ Chủ repo báo 2026-09-24: ở giao diện giọng nói "cứ nói đến chữ
 cơ chế tạo việc khó hiểu và hay làm sai. Audit ra bốn chỗ, test này khoá cả bốn:
 
 1. Bộ nhận lệnh "dừng việc nền" bắt nhầm câu hỏi thường ("Thôi được rồi, quảng cáo đang chạy
-   thế nào?", "tắt nhạc nền đi"): câu bị nuốt, Javis đáp "không có việc nền nào".
+   thế nào?", "tắt nhạc nền đi"): câu bị nuốt, UNI MATE đáp "không có việc nền nào".
 2. Luật của bộ não giọng liệt kê "giao việc" như một thứ phải đẩy đi, không nói rõ nhắc tới
    chữ "việc" KHÔNG phải lời nhờ, và không bảo hỏi lại khi không chắc.
 3. "Đừng giao lại việc trùng" chỉ là lời dặn model; máy chủ không chặn trùng, không chặn dồn.
@@ -89,7 +89,7 @@ check("nhấc được khoi_viec", m is not None)
 ns = {"json": __import__("json")}
 exec(m.group(0) if m else "", ns)
 k = ns["khoi_viec"]({"kind": "task", "status": "done", "title": "Lấy giá -->x", "id": "t1"})
-check("khối đúng khuôn JAVIS_VIEC", k.startswith("<!-- JAVIS_VIEC: {") and k.endswith(" -->"), k)
+check("khối đúng khuôn UNIMATE_VIEC", k.startswith("<!-- UNIMATE_VIEC: {") and k.endswith(" -->"), k)
 check("tên việc chứa '-->' không làm vỡ khối", k.count("-->") == 1, k)
 check("strip_control_blocks bóc khối cho Telegram/Zalo/hòm thư",
       channel_context.strip_control_blocks(k + "\nKết quả") == "Kết quả")
@@ -138,7 +138,7 @@ check("bản web bỏ câu đầu emoji và câu 'xem ở trang Việc'",
 check("bản đầy đủ (hòm thư) vẫn giữ tiêu đề", "Tổng hợp" in text)
 
 # Luồng Cộng sự: có cổng "chỉ khi chủ bảo"
-check("Cộng sự: việc nền chỉ khi chủ bảo rõ", "Việc nền (`javis_task`) CHỈ khi chủ bảo" in MAIN)
+check("Cộng sự: việc nền chỉ khi chủ bảo rõ", "Việc nền (`unimate_task`) CHỈ khi chủ bảo" in MAIN)
 
 print(f"\n{len(fails)} FAIL" if fails else "\nTất cả xanh")
 sys.exit(1 if fails else 0)

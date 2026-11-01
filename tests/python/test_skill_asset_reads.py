@@ -12,7 +12,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 _STATE = tempfile.TemporaryDirectory(prefix='skill-read-import-')
-os.environ['JAVIS_STATE_DIR'] = _STATE.name
+os.environ['UNIMATE_STATE_DIR'] = _STATE.name
 os.environ['BRAIN_PATH'] = str(Path(_STATE.name) / 'brain')
 os.environ['BRAINS_DIR'] = str(Path(_STATE.name) / 'brains')
 
@@ -44,7 +44,7 @@ class SkillAssetReadTests(unittest.TestCase):
 
     def handler(self):
         _, routes = mcp_hub._builtin_tools('auto', str(self.root))
-        return routes['javis_use_skill']['call']
+        return routes['unimate_use_skill']['call']
 
     def read_mutation(self, source, mutation):
         """Change the real source after bytes arrive but before its final stat."""

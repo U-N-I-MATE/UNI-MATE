@@ -114,24 +114,24 @@
     } catch (e) { return ""; }
   }
 
-  // Clicking a customer's photo opens it inside Javis (the chat lightbox, with a close button and Back closing it)
+  // Clicking a customer's photo opens it inside UNI MATE (the chat lightbox, with a close button and Back closing it)
   // instead of a new tab (owner 2026-10-19: easier to go back to the customer's messages). Ctrl/Cmd/middle click
   // and a photo that failed to load keep the link's own new-tab behaviour.
   if (typeof document !== "undefined") {
     document.addEventListener("click", function (e) {
       var a = e.target && e.target.closest ? e.target.closest("a.ht-anh") : null;
-      if (!a || a.classList.contains("hong") || !window.JavisLightbox) return;
+      if (!a || a.classList.contains("hong") || !window.UniMateLightbox) return;
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button > 0) return;
       e.preventDefault();
       e.stopPropagation();
       // 0.358.0: with every photo of this conversation, swipe or arrows go to the others.
-      if (window.JavisLightbox.openFrom) { window.JavisLightbox.openFrom(a); return; }
+      if (window.UniMateLightbox.openFrom) { window.UniMateLightbox.openFrom(a); return; }
       var href = a.getAttribute("href") || "";
-      window.JavisLightbox.open(href, tenAnh(href));
+      window.UniMateLightbox.open(href, tenAnh(href));
     }, true);
   }
 
   var API = { phanTich: phanTich, html: html, chuThich: chuThich, coDungLuong: coDungLuong, tomTat: tomTat, tenAnh: tenAnh };
-  if (typeof window !== "undefined") window.JavisHtMedia = API;
+  if (typeof window !== "undefined") window.UniMateHtMedia = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 })();

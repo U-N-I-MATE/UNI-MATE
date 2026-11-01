@@ -6,17 +6,17 @@
 
    Loaded twice: by AudioWorklet.addModule (registers the processor) and by node tests through
    module.exports (the pure helpers). Neither environment has the other's globals. */
-var JAVIS_MIC_BLOCK = 4096, JAVIS_MIC_RATE = 16000;
+var UNIMATE_MIC_BLOCK = 4096, UNIMATE_MIC_RATE = 16000;
 
 // Nearest-sample decimation, as voice-live.js did on the main thread.
-function javisDownsample(f32, from, to) {
+function unimateDownsample(f32, from, to) {
   if (from === to) return f32;
   var ratio = from / to, n = Math.floor(f32.length / ratio), out = new Float32Array(n);
   for (var i = 0; i < n; i++) out[i] = f32[Math.floor(i * ratio)];
   return out;
 }
 
-function javisToPcm16(f32) {
+function unimateToPcm16(f32) {
   var out = new Int16Array(f32.length);
   for (var i = 0; i < f32.length; i++) {
     var s = Math.max(-1, Math.min(1, f32[i]));
@@ -26,10 +26,10 @@ function javisToPcm16(f32) {
 }
 
 if (typeof registerProcessor === "function") {
-  class JavisMicProcessor extends AudioWorkletProcessor {
+  class UniMateMicProcessor extends AudioWorkletProcessor {
     constructor() {
       super();
-      this.buf = new Float32Array(JAVIS_MIC_BLOCK);
+      this.buf = new Float32Array(UNIMATE_MIC_BLOCK);
       this.n = 0;
       this.alive = true;
       this.port.onmessage = (e) => { if (e.data === "stop") this.alive = false; };
@@ -40,11 +40,11 @@ if (typeof registerProcessor === "function") {
       if (ch) {
         for (var i = 0; i < ch.length; i++) {
           this.buf[this.n++] = ch[i];
-          if (this.n === JAVIS_MIC_BLOCK) {
+          if (this.n === UNIMATE_MIC_BLOCK) {
             // `sampleRate` is the AudioWorkletGlobalScope's context rate.
-            var pcm = javisToPcm16(javisDownsample(this.buf, sampleRate, JAVIS_MIC_RATE));
+            var pcm = unimateToPcm16(unimateDownsample(this.buf, sampleRate, UNIMATE_MIC_RATE));
             this.port.postMessage(pcm.buffer, [pcm.buffer]);
-            this.buf = new Float32Array(JAVIS_MIC_BLOCK);
+            this.buf = new Float32Array(UNIMATE_MIC_BLOCK);
             this.n = 0;
           }
         }
@@ -52,9 +52,9 @@ if (typeof registerProcessor === "function") {
       return this.alive;
     }
   }
-  registerProcessor("javis-mic", JavisMicProcessor);
+  registerProcessor("unimate-mic", UniMateMicProcessor);
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { downsample: javisDownsample, toPcm16: javisToPcm16, BLOCK: JAVIS_MIC_BLOCK, RATE: JAVIS_MIC_RATE };
+  module.exports = { downsample: unimateDownsample, toPcm16: unimateToPcm16, BLOCK: UNIMATE_MIC_BLOCK, RATE: UNIMATE_MIC_RATE };
 }

@@ -10,7 +10,7 @@ from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-msg-pins-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-msg-pins-")
 
 import main  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

@@ -1,8 +1,8 @@
-# Kiểm tra bộ sửa Javis Resonance của Claude
+# Kiểm tra bộ sửa UNI MATE Resonance của Claude
 
 Ngày: 06/10/2026.
 
-**Vai trò hiện hành:** bản review tham chiếu khi triển khai [MVP](../plans/2026-10-06-resonance-00-mvp.md), không phải kế hoạch riêng. Claude đã xác nhận năm lỗi P1 và các thiếu sót chính ở mục 6 trong phản hồi người dùng cung cấp; việc đồng ý chưa có nghĩa mã đã được sửa. Xem [danh mục chốt](../README-RESONANCE.md). ZIP nguồn và các bản phản biện cũ đã chuyển vào [gói lịch sử](../../../exports/archive/Javis-Resonance-LICH-SU-2026-10-06.zip); các đường dẫn nguồn dưới đây ghi vị trí lúc review, không còn là bản đang dùng.
+**Vai trò hiện hành:** bản review tham chiếu khi triển khai [MVP](../plans/2026-10-06-resonance-00-mvp.md), không phải kế hoạch riêng. Claude đã xác nhận năm lỗi P1 và các thiếu sót chính ở mục 6 trong phản hồi người dùng cung cấp; việc đồng ý chưa có nghĩa mã đã được sửa. Xem [danh mục chốt](../README-RESONANCE.md). ZIP nguồn và các bản phản biện cũ đã chuyển vào [gói lịch sử](../../../exports/archive/UniMate-Resonance-LICH-SU-2026-10-06.zip); các đường dẫn nguồn dưới đây ghi vị trí lúc review, không còn là bản đang dùng.
 
 > Đính chính sau khi kiểm tra remote ngày 06/10/2026: checkout được review là `codex/restore-chat-colors` tại `5b4a9be1`, có 3 commit riêng và thiếu 121 commit so với `origin/main` tại `7d264236` (0.83.2). `git ls-remote` xác nhận main trên remote cùng SHA. Trên main này, `_reply_policy_sandbox_engine` có ở `server/main.py:1895` và `_reply_policy_ask` có ở dòng 1955. Nhận xét bên dưới về chưa tìm thấy hàm chỉ đúng với checkout cũ, không phải thiếu sót của main hiện tại. Trước M1 cần chốt commit nền từ main mới nhất và kiểm lại mọi điểm tích hợp; các lỗi logic được tái hiện từ mã trong ZIP không bị thay đổi bởi đính chính này.
 
@@ -16,7 +16,7 @@ Không cần một vòng kiến trúc mới. Có thể chuyển sang M1 khi đư
 
 ## Bộ tài liệu được kiểm tra
 
-Nguồn: `D:\Download\Javis-Resonance-ban-chot-2026-10-06.zip`.
+Nguồn: `D:\Download\UNI MATE-Resonance-ban-chot-2026-10-06.zip`.
 
 ZIP có 8 tệp và kiểm tra toàn vẹn thành công. SHA-256: `cd1450491e5c1837d53ae24bdf2421f0529cb0e03edccba2c5d5f1d90c9ea220`.
 

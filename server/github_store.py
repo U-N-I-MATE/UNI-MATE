@@ -1,9 +1,9 @@
 """Durable state of GitHub work per conversation and repo (spec docs/dev/2026-10-github-trong-chat-spec.md, section 14).
 
-One row per (conversation, repo): its branch, the commit Javis last pushed, the PR, and three SEPARATE state fields
+One row per (conversation, repo): its branch, the commit UNI MATE last pushed, the PR, and three SEPARATE state fields
 (section 12.1) from which the status icons are computed:
 
-    exec   idle | running | done | stuck            what Javis is doing on it right now
+    exec   idle | running | done | stuck            what UNI MATE is doing on it right now
     ci     none | pending | running | green | red | no_ci | cancelled    for the pushed commit ONLY
     integ  no_pr | pr_open | ready | merged | conflict | merge_failed
     post_merge  "" | pending | green | red      checks of the merge commit on the base branch

@@ -1,7 +1,7 @@
 /* Cookies page, once "Kho đăng nhập" / Login vault (0.251.0; renamed and given a file upload in 0.261.0).
  *
  * The owner signs in on their own browser, exports that site's cookies and pastes them here. The server
- * (server/login_vault.py) encrypts them; Javis then opens pages behind that sign-in (tool javis_login) and
+ * (server/login_vault.py) encrypts them; UNI MATE then opens pages behind that sign-in (tool unimate_login) and
  * page watches can use it. This page adds, checks, updates, switches off and deletes sign-ins. It never
  * receives a cookie back from the server: the list carries names, domains and status only. A cookie file
  * (Cookie-Editor JSON, cookies.txt) is read in the browser and goes in as the same text a paste would.
@@ -25,9 +25,9 @@
     });
   }
   var ic = function (n) { return (typeof window !== "undefined" && window.ic) ? window.ic(n) : ""; };
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(tw("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(tw("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
 
@@ -321,6 +321,6 @@
 
   var api_ = { mount: mount, introHtml: introHtml, cardHtml: cardHtml, expiryText: expiryText, needsSite: needsSite, pasteFormHtml: pasteFormHtml,
     nameFromFile: nameFromFile };
-  if (typeof window !== "undefined") window.JavisLoginVault = api_;
+  if (typeof window !== "undefined") window.UniMateLoginVault = api_;
   if (typeof module !== "undefined" && module.exports) module.exports = api_;
 })();

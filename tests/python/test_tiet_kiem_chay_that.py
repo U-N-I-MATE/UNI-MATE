@@ -11,7 +11,7 @@ xanh, người dùng vẫn trả tiền như cũ:
      hiện CHỈ có Groq. Nên OpenRouter, OpenAI, Gemini, Anthropic API bấm mức Tối ưu là bật
      một đường chết: mọi lượt trả về `hard_quota_unknown` rồi gửi nguyên CLAUDE.md. Bốn trên
      năm engine API key dính.
-  2. `/runtime/preset` chỉ khai hạn mức khi danh sách còn TRỐNG. Đổi bộ não - đúng thứ Javis
+  2. `/runtime/preset` chỉ khai hạn mức khi danh sách còn TRỐNG. Đổi bộ não - đúng thứ UNI MATE
      mời chào - là kẹt lại với hạn mức của bộ não cũ, `_quota` lọc theo provider nên không
      khớp cái nào, và mức tiết kiệm lặng lẽ ngừng chạy.
   3. `pin_execution_path` cho ai ghim trước thắng. Trên engine API, các tầng Phase 9/7/6/5
@@ -33,7 +33,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-tkct-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-tkct-")
 
 import adaptive_context_runtime as acr  # noqa: E402
 import config as cfg  # noqa: E402
@@ -50,7 +50,7 @@ def check(name, cond):
 
 
 # Brain tối thiểu nhưng THẬT: có bộ nhớ để Phase 8 còn thứ mà chọn lọc.
-BRAIN = Path(tempfile.mkdtemp(prefix="javis-tkct-brain-"))
+BRAIN = Path(tempfile.mkdtemp(prefix="unimate-tkct-brain-"))
 (BRAIN / "Memory" / "facts").mkdir(parents=True, exist_ok=True)
 (BRAIN / "Memory" / "MEMORY.md").write_text(
     "- [user] Chu ho kinh doanh nuoc mam\n", encoding="utf-8")
@@ -167,7 +167,7 @@ check("CANARY: đổi hẳn sang bộ não khác vẫn tiết kiệm được",
 # Trên engine API, các tầng Phase 9/7/6/5 chạy trước và tầng nào không nhận lượt thì ghim
 # "legacy". Ai ghim trước thắng, nên Phase 8 nhận lượt rồi mà nhãn vẫn là đường cũ.
 _rt = context_runtime.ObserveRuntime(
-    Path(tempfile.mkdtemp(prefix="javis-tkct-rt-")), lambda: cfg.read_settings())
+    Path(tempfile.mkdtemp(prefix="unimate-tkct-rt-")), lambda: cfg.read_settings())
 _tr = _rt.start_turn("phien-ghim", "brain", "dashboard")
 _rt.pin_execution_path(_tr, "legacy", 1, "fast-path-canary-v1", "outside_allocation")
 check("tầng không nhận lượt thì ghim đường cũ", _tr.execution_path == "legacy")

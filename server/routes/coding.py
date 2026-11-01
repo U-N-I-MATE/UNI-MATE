@@ -189,7 +189,7 @@ def _make_router() -> APIRouter:
     @r.post("/coding/folders/{tid}/delete")
     async def coding_thu_muc_bo(tid: str):
         # Chỉ gỡ khỏi sổ. Nói rõ trong câu trả lời để giao diện nhắc lại được cho người dùng:
-        # "đã bỏ khỏi Javis, thư mục còn nguyên trên đĩa".
+        # "đã bỏ khỏi UNI MATE, thư mục còn nguyên trên đĩa".
         if not coding_store.bo_thu_muc(tid):
             return JSONResponse({"ok": False, "error": localefmt.chu("Không có thư mục nào id đó", "No folder with that id")}, status_code=404)
         return {"ok": True, "con_tren_dia": True}
@@ -285,7 +285,7 @@ def _make_router() -> APIRouter:
             return _400(str(e))
 
     # ---- Hoàn tác về mốc tự động (0.256.0, coding_checkpoint) ----
-    # Khác điểm hồi ở trên: mốc do Javis TỰ tạo trước thao tác thay đổi đầu tiên của mỗi lượt,
+    # Khác điểm hồi ở trên: mốc do UNI MATE TỰ tạo trước thao tác thay đổi đầu tiên của mỗi lượt,
     # nằm trong kho git bóng (không đụng repo), có ở cả thư mục không phải git, và khôi phục
     # chọn lọc chứ không `reset --hard`.
     @r.get("/coding/session/{sid}/undo")

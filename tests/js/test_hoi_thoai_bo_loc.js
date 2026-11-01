@@ -37,7 +37,7 @@ const win = {
 const ctx = { window: win, console, encodeURIComponent, String, Object, Array, Number, JSON };
 vm.createContext(ctx);
 vm.runInContext(MOD, ctx);
-const F = win.JavisConvFilters;
+const F = win.UniMateConvFilters;
 check("module phơi ra đủ hàm", F && ["emptyState", "sanitize", "load", "save", "activeCount", "query", "tagChips", "tagChip",
   "rowMenuItems", "rowMenuHtml", "tagMenuHtml"].every((k) => typeof F[k] === "function"));
 check("dropdown builders of the pre-v5 filter row are gone", ["botOptions", "statusOptions", "typeOptions", "channelOptions",
@@ -73,11 +73,11 @@ check("query: from/to as days, last_by, pinned=1", /&from=2026-10-01&to=2026-10-
 F.save({ bot: "b1", status: "unread", type: "private", channel: "", who: "" });
 check("lưu rồi đọc lại đúng (chosen 'All' stays All)", JSON.stringify(F.load()) ===
   '{"bot":"b1","status":"unread","type":"private","channel":"","contact":"","who":"","accs":[],"tagsAny":[],"tagsNone":[],"when":null,"lastBy":"","pinned":""}');
-store["javis.inbox.filters"] = JSON.stringify({ bot: "b1" });
+store["unimate.inbox.filters"] = JSON.stringify({ bot: "b1" });
 check("nothing saved about who yet (first visit, pre-v5 browser): opens on Needs you", F.load().who === "you" && F.load().bot === "b1");
-store["javis.inbox.filters"] = "không phải json";
+store["unimate.inbox.filters"] = "không phải json";
 check("dữ liệu lưu hỏng thì về không lọc (mở ở Cần bạn), không sập", JSON.stringify(F.load()) === EMPTY.replace('"who":""', '"who":"you"'));
-store["javis.inbox.filters"] = JSON.stringify({ status: "hack" });
+store["unimate.inbox.filters"] = JSON.stringify({ status: "hack" });
 check("dữ liệu lưu có giá trị lạ thì bỏ giá trị đó", F.load().status === "");
 const oldLs = win.localStorage;
 win.localStorage = { getItem() { throw new Error("chặn"); }, setItem() { throw new Error("chặn"); } };
@@ -104,7 +104,7 @@ check("list head: search with the Filter button, the who dropdown and the channe
   ["ht-search", "ib-fbtn", "ib-whobtn", "ib-picker", "ib-activef", "ib-pop ib-wm", "ib-pop ib-pk", "ib-pop ib-fm"].every((c) => CV.indexOf('class="' + c) > 0));
 check("KHÔNG còn hàng dropdown cũ (bot, tình trạng, loại, kênh, thẻ) và chip tài khoản",
   !/ht-f-bot|ht-f-status|ht-f-type|ht-f-channel|ht-f-tag|ht-f-contact|ht-fclear|ht-loc-tk|_tkLoc|_tagLoc/.test(CV) && !/function paintFilters/.test(CV));
-check("gửi tham số lọc lên server qua JavisConvFilters.query", /JavisConvFilters\.query\(filterState\(\)\)/.test(CV) &&
+check("gửi tham số lọc lên server qua UniMateConvFilters.query", /UniMateConvFilters\.query\(filterState\(\)\)/.test(CV) &&
   !/"&bot_id=" \+ encodeURIComponent\(_botLoc\)/.test(CV) && !/&account_id=/.test(CV));
 check("đọc facets, bot, who_counts từ server, dùng cho cả nhịp làm mới", /_facets = d\.facets \|\| null/.test(CV) &&
   /_botList = d\.bots \|\| \[\]/.test(CV) && /if \(d\.who_counts\) _whoCounts = d\.who_counts/.test(CV) &&
@@ -118,7 +118,7 @@ check("a who choice, a picker tick, a menu choice or a chip x saves the filters 
 check("ticking a channel ticks every nick or Page of it, not only the ones the search shows",
   /accList\(\)\.filter\(function \(a\) \{ return a\.channel === t\.dataset\.ch; \}\)/.test(CV));
 check("khôi phục bộ lọc đã lưu khi mở hòm thư; mở từ nơi khác thì bỏ mọi bộ lọc có thể giấu cuộc chat",
-  /JavisConvFilters\.load\(\)|F\.load\(\)/.test(CV) &&
+  /UniMateConvFilters\.load\(\)|F\.load\(\)/.test(CV) &&
   /_who = ""; _statusLoc = ""; _typeLoc = ""; _tagsAny = \[\]; _tagsNone = \[\]; _contactLoc = ""; _q = "";/.test(CV) &&
   /_accs = _cho\.account_key \? \[_cho\.account_key\] : \[\]/.test(CV));
 check("Filter menu 'Clear' resets every filter of the menu", /_tagsAny = \[\]; _tagsNone = \[\]; _typeLoc = _botLoc = _statusLoc = _contactLoc = _lastBy = _pinned = ""; _when = null;/.test(CV));

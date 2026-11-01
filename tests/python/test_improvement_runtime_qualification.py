@@ -106,7 +106,7 @@ def qualification_worker(root):
         expected = root.parent / ("config" if name == "CLAUDE_CONFIG_DIR" else "empty-auth-home")
         if Path(os.environ[name]) != expected:
             raise ValueError("qualification_home_not_scratch")
-    pinned = candidate(os.environ["JAVIS_TEST_NATIVE_CLI"])
+    pinned = candidate(os.environ["UNIMATE_TEST_NATIVE_CLI"])
     version = subprocess.run([str(pinned), '--version'], cwd=root, capture_output=True, text=True,
         check=True, timeout=10, creationflags=worker.winproc.no_window()).stdout.strip().split()
     if not version or version[0] != CANDIDATE_VERSION:
@@ -226,9 +226,9 @@ def _spawn(command, **kwargs):
 
 
 class CandidateNativeTests(unittest.TestCase):
-    @unittest.skipUnless(os.environ.get("JAVIS_TEST_NATIVE_QUALIFICATION_CLI"), "Explicit candidate developer qualification only")
+    @unittest.skipUnless(os.environ.get("UNIMATE_TEST_NATIVE_QUALIFICATION_CLI"), "Explicit candidate developer qualification only")
     def test_candidate_reuses_full_native_blackbox_with_extra_tool_and_ambient_canaries(self):
-        path = candidate(os.environ["JAVIS_TEST_NATIVE_QUALIFICATION_CLI"])
+        path = candidate(os.environ["UNIMATE_TEST_NATIVE_QUALIFICATION_CLI"])
         import test_improvement_native as existing
         original_server, requests = http.server.ThreadingHTTPServer, []
         extras = [("bad-agent", "Agent", {"subagent_type": "qualification-canary", "description": "synthetic", "prompt": "synthetic"}),
@@ -275,7 +275,7 @@ class CandidateNativeTests(unittest.TestCase):
 
         _spawn.original, _spawn.observations, _spawn.roots = subprocess.Popen, [], []
         started = time.monotonic()
-        with patch.dict(os.environ, {"JAVIS_TEST_NATIVE_CLI": str(path)}), \
+        with patch.dict(os.environ, {"UNIMATE_TEST_NATIVE_CLI": str(path)}), \
              patch.object(existing.http.server, "ThreadingHTTPServer", side_effect=server), \
              patch.object(existing.subprocess, "Popen", side_effect=_spawn):
             method = inspect.unwrap(existing.NativeBoundaryTests.test_native_profile_denies_outside_tools_and_ambient_configuration)
@@ -314,10 +314,10 @@ class CandidateNativeTests(unittest.TestCase):
             "ambient_plugin_hook_ran": False, "session_transcripts_persisted": False,
             "coverage": {"model": "observed", "reasoning": "unknown", "asset_use": "unknown"}, "sdk_children_closed": True})
 
-    @unittest.skipUnless(os.environ.get("JAVIS_TEST_NATIVE_QUALIFICATION_CLI"), "Explicit candidate developer qualification only")
+    @unittest.skipUnless(os.environ.get("UNIMATE_TEST_NATIVE_QUALIFICATION_CLI"), "Explicit candidate developer qualification only")
     def test_candidate_pending_query_cancellation_closes_the_owned_native_tree(self):
         from improvement_sandbox import worker_environment
-        path = candidate(os.environ["JAVIS_TEST_NATIVE_QUALIFICATION_CLI"])
+        path = candidate(os.environ["UNIMATE_TEST_NATIVE_QUALIFICATION_CLI"])
         requested, release = threading.Event(), threading.Event()
         requests, dummy_auth = [], []
 
@@ -371,7 +371,7 @@ class CandidateNativeTests(unittest.TestCase):
             environment = worker_environment(root, auth_home=root / "empty-auth-home")
             environment.update({"CLAUDE_CONFIG_DIR": str(root / "config"), "ANTHROPIC_API_KEY": "synthetic-local-provider-only",
                 "ANTHROPIC_BASE_URL": endpoint, "HTTP_PROXY": endpoint, "HTTPS_PROXY": endpoint, "ALL_PROXY": endpoint,
-                "NO_PROXY": "127.0.0.1,localhost", "JAVIS_TEST_NATIVE_CLI": str(path)})
+                "NO_PROXY": "127.0.0.1,localhost", "UNIMATE_TEST_NATIVE_CLI": str(path)})
             _spawn.original, _spawn.observations, _spawn.roots = subprocess.Popen, [], []
             process = _spawn([sys.executable, "unused-controlled-helper", "--native-worker", str(work)],
                 cwd=work, env=environment, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
@@ -481,8 +481,8 @@ if __name__ == "__main__":
         qualification_worker(Path(sys.argv[2]))
     else:
         result = unittest.main(exit=False)
-        if EVIDENCE and os.environ.get("JAVIS_TEST_NATIVE_QUALIFICATION_EVIDENCE"):
-            target = Path(os.environ["JAVIS_TEST_NATIVE_QUALIFICATION_EVIDENCE"])
+        if EVIDENCE and os.environ.get("UNIMATE_TEST_NATIVE_QUALIFICATION_EVIDENCE"):
+            target = Path(os.environ["UNIMATE_TEST_NATIVE_QUALIFICATION_EVIDENCE"])
             target.write_text(json.dumps({"label": "synthetic/native-technical-qualification-only", "production_billing": False,
                 "passed": result.result.wasSuccessful(), "profile_hash": native.profile_hash(), "scenarios": EVIDENCE}, indent=2))
         raise SystemExit(not result.result.wasSuccessful())

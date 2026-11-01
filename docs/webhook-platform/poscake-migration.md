@@ -1,7 +1,7 @@
 # POSCake: cutover to the webhook platform, and the way back (0.274.0, spec §9, §16, §17)
 
 **Known and not known.** This repository has no POSCake webhook contract: no documented signature, no event names, no
-payload schema, no statement of whether POSCake can send a custom header. Javis does **not** guess any of it
+payload schema, no statement of whether POSCake can send a custom header. UNI MATE does **not** guess any of it
 (`provider: poscake` is refused when saved). Everything below that depends on POSCake's real data is a step to run
 on staging with the owner, not a fact. Nothing here was run against POSCake, Apps Script or Zalo.
 
@@ -27,7 +27,7 @@ Corrected filter for a paid-order trigger, once the owner names the paid status 
 ```json
 {"filter": {"all": [
   {"path": "status", "op": "eq", "value": <P>},
-  {"path": "items[*].variation_info.name", "op": "contains", "value": "TRỢ LÝ AI JAVIS", "quantifier": "any",
+  {"path": "items[*].variation_info.name", "op": "contains", "value": "TRỢ LÝ AI UNI MATE", "quantifier": "any",
    "case_sensitive": false, "reason": "product_not_found"}]}}
 ```
 
@@ -41,7 +41,7 @@ actions that do not need AI.
   "rules": {
     "filter": {"all": [
       {"path": "status", "op": "eq", "value": 1},
-      {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI JAVIS", "quantifier": "any",
+      {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI UNI MATE", "quantifier": "any",
        "case_sensitive": false, "reason": "product_not_found"}
     ]},
     "dedup": {"policy_version": 1, "business_paths": ["shop_id", "id", "status"], "ttl_s": 604800,
@@ -68,14 +68,14 @@ confirms `status`, `shop_id` and `id` but puts the product name at `items[*].var
   with `?token=` keeps working. Add the rules and actions above **to that hook** (Configuration, Advanced) instead of
   creating a new one, unless step 2 shows POSCake can send a header. An older hook keeps `notify: all` (one
   message per order): set **Notifications** to `errors_only` there too, once its actions run without AI.
-- A **new** hook accepts the key only in a header (`X-Javis-Token`, or one the owner names, or `Authorization:
+- A **new** hook accepts the key only in a header (`X-UniMate-Token`, or one the owner names, or `Authorization:
   Bearer`). Use one only if POSCake can send that header.
 - Never switch authentication off to make POSCake fit (spec §10). If POSCake signs its deliveries, its scheme becomes
   an adapter once its documentation is in hand (see the end of this page).
 
 ## Before you start
 
-- [ ] Javis 0.274.0 or later on **staging**, with its own state folder.
+- [ ] UNI MATE 0.274.0 or later on **staging**, with its own state folder.
 - [ ] Back up `STATE_DIR/webhook_events.sqlite3*`, `webhook_keys.json` and `webhook_secrets.json`.
 - [ ] The data of spec §17 collected (see `staging-pilot-pack.md`, part 0): masked POSCake payloads and headers; ids of
       shop, order and event; what each status means; whether POSCake sends a custom header; what the Apps Script
@@ -85,7 +85,7 @@ confirms `status`, `shop_id` and `id` but puts the product name at `items[*].var
 
 ## Cutover (spec §16), one step at a time
 
-1. **Create the v2 configuration on staging** (the hook above, on the staging Javis).
+1. **Create the v2 configuration on staging** (the hook above, on the staging UNI MATE).
 2. **Capture, then simulate.** Point a POSCake test shop at staging, or replay captured bodies with `curl`. Open the
    event, then Configuration, Advanced, **Test rules** with that body: the simulation writes nothing, sends nothing
    and calls no model. Compare its decision for each captured order with what the shop expects (run or ignore, and
@@ -118,7 +118,7 @@ confirms `status`, `shop_id` and `id` but puts the product name at `items[*].var
 - **Send traffic back to the old path:** point POSCake at the old address again, and switch the new path's Zalo or
   Apps Script action off before switching the old one on. Keep the new store: its delivery keys and receipts tell you
   what already happened.
-- **Go back to an older Javis build:** follow `rollback.md`. A binary rollback never undoes what was already sent:
+- **Go back to an older UNI MATE build:** follow `rollback.md`. A binary rollback never undoes what was already sent:
   reconcile the receipts first.
 
 ## When POSCake's contract is known

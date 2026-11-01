@@ -2,10 +2,10 @@
 
     python tests/run.py domain_status_loop      (no network: the lookups are stubbed with slow fakes)
 
-"Bị mất kết nối khi 1 người khác truy cập vào javis ở máy khác": every dashboard load asks /domain/status
+"Bị mất kết nối khi 1 người khác truy cập vào unimate ở máy khác": every dashboard load asks /domain/status
 (branding.js loadExtras), and the route looked up the server's public IP (three HTTPS services, DNS + 4s timeout
 each, not cached when they failed) and resolved the saved domain ON THE EVENT LOOP. On a server whose DNS or outbound
-HTTPS is slow, one visitor opening Javis froze the whole server for 12 to 24 seconds (measured with Playwright: the
+HTTPS is slow, one visitor opening UNI MATE froze the whole server for 12 to 24 seconds (measured with Playwright: the
 other open page's ping went unanswered past its 20s wait and it dropped with code "ping"). This file pins:
 
 1. while /domain/status waits on slow lookups, the event loop keeps running (other pages get their pong);
@@ -22,10 +22,10 @@ import threading
 import time
 import urllib.request
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-domain-loop-test-")
-os.environ["JAVIS_REQUIRE_LOGIN"] = "0"
-os.environ.pop("JAVIS_ADMIN_PASSWORD", None)
-os.environ.pop("JAVIS_DEPLOY_TARGET", None)
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-domain-loop-test-")
+os.environ["UNIMATE_REQUIRE_LOGIN"] = "0"
+os.environ.pop("UNIMATE_ADMIN_PASSWORD", None)
+os.environ.pop("UNIMATE_DEPLOY_TARGET", None)
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -72,7 +72,7 @@ async def probe_ok(domain, hostinger=False):
 urllib.request.urlopen = slow_urlopen
 socket.gethostbyname = slow_gethostbyname
 dom._probe_https = probe_ok
-c.update_settings({"domain": {"custom": "javis.example.com"}})
+c.update_settings({"domain": {"custom": "unimate.example.com"}})
 
 
 async def run(n_requests):

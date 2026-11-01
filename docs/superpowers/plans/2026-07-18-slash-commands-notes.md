@@ -136,7 +136,7 @@ git commit -m "feat(skill): them skill he thong notes - luu note nguyen van + wi
 - Test: `dashboard/test_chat_slash.js`
 
 **Interfaces:**
-- Produces (export cho trình duyệt qua `window.JavisSlash` và cho node qua `module.exports`):
+- Produces (export cho trình duyệt qua `window.UniMateSlash` và cho node qua `module.exports`):
   - `parseSlash(text) -> {cmd, arg} | null` - `cmd` viết thường; `arg` phần sau lệnh đã trim (có thể `""`). `null` nếu không phải lệnh.
   - `SESSION_COMMANDS: string[]` = `["new","reset","stop"]`.
   - `classify(cmd) -> "session" | "skill"`.
@@ -165,7 +165,7 @@ check("parse: /notes hello", (() => { const r = S.parseSlash("/notes hello"); re
 check("parse: /notes tron -> arg rong", (() => { const r = S.parseSlash("/notes"); return r && r.cmd === "notes" && r.arg === ""; })());
 check("parse: chu HOA -> thuong", (() => { const r = S.parseSlash("/Notes X"); return r && r.cmd === "notes" && r.arg === "X"; })());
 check("parse: dau / tron -> null", S.parseSlash("/") === null);
-check("parse: khong phai lenh -> null", S.parseSlash("chao Javis") === null);
+check("parse: khong phai lenh -> null", S.parseSlash("chao UNI MATE") === null);
 check("parse: khoang trang dau -> null", S.parseSlash("  /notes") === null);
 check("parse: arg nhieu dong giu nguyen", (() => { const r = S.parseSlash("/notes dong1\ndong2"); return r && r.arg === "dong1\ndong2"; })());
 
@@ -283,12 +283,12 @@ Create `dashboard/chat-slash.js`:
     filterItems: filterItems,
   };
 
-  if (typeof window !== "undefined") window.JavisSlash = api;
+  if (typeof window !== "undefined") window.UniMateSlash = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 
   // ===== Phan MENU DOM (chi trinh duyet) - dien o Task 3 =====
   if (typeof window !== "undefined" && typeof document !== "undefined") {
-    if (window.JavisSlash) window.JavisSlash._initMenu = function () { /* Task 3 */ };
+    if (window.UniMateSlash) window.UniMateSlash._initMenu = function () { /* Task 3 */ };
   }
 })();
 ```
@@ -317,7 +317,7 @@ git commit -m "feat(web): logic khung lenh / (parse/route/menu) + test node"
 - Test: xác minh thủ công trong trình duyệt (Task 5 chạy end-to-end).
 
 **Interfaces:**
-- Consumes: `window.JavisSlash.route/buildMenu/filterItems/parseSlash` (Task 2); `newChat()`, `stopCurrent()`, `currentBrainPath()`, `chatInput`, `pendingAttachments` (có sẵn trong app.js).
+- Consumes: `window.UniMateSlash.route/buildMenu/filterItems/parseSlash` (Task 2); `newChat()`, `stopCurrent()`, `currentBrainPath()`, `chatInput`, `pendingAttachments` (có sẵn trong app.js).
 - Produces: khi `sendMessage` thấy `/`, session-command chạy tại chỗ (không gửi engine); skill-command gửi chuỗi `buildSkillInvocation` (+ path đính kèm) qua WebSocket.
 
 - [ ] **Step 1: Điền menu DOM trong chat-slash.js**
@@ -386,7 +386,7 @@ Thay khối `// ===== Phan MENU DOM ... =====` cuối `dashboard/chat-slash.js` 
       } else {
         // Lenh phien: chay ngay.
         input.value = "";
-        if (typeof window.JavisSend === "function") window.JavisSend("/" + it.cmd);
+        if (typeof window.UniMateSend === "function") window.UniMateSend("/" + it.cmd);
       }
     }
 
@@ -446,7 +446,7 @@ Chèn NGAY sau dòng `const atts = ...`:
 
 ```javascript
   // Lệnh / : session-command chạy tại chỗ; skill-command bung thành lời gọi skill.
-  const _slash = (window.JavisSlash && msg) ? window.JavisSlash.route(msg) : { type: "passthrough" };
+  const _slash = (window.UniMateSlash && msg) ? window.UniMateSlash.route(msg) : { type: "passthrough" };
   if (_slash.type === "session") {
     chatInput.value = ""; chatInput.style.height = "auto";
     if (_slash.cmd === "stop") { try { stopCurrent(); } catch (e) {} }
@@ -458,7 +458,7 @@ Chèn NGAY sau dòng `const atts = ...`:
 Sau đó, để skill-command gửi ĐÚNG chuỗi bung (không phải chữ `/notes ...` thô), sửa phần dựng `outMsg`. Tìm khối (dòng ~209-221):
 
 ```javascript
-  // Soạn message gửi Javis (kèm đường dẫn file trong Sources)
+  // Soạn message gửi UNI MATE (kèm đường dẫn file trong Sources)
   let outMsg = msg;
   if (atts.length) {
     const lines = atts.map(a => `- ${a.path}`).join("\n");
@@ -477,7 +477,7 @@ Sau đó, để skill-command gửi ĐÚNG chuỗi bung (không phải chữ `/n
 Thay bằng:
 
 ```javascript
-  // Soạn message gửi Javis (kèm đường dẫn file trong Sources)
+  // Soạn message gửi UNI MATE (kèm đường dẫn file trong Sources)
   const _isSkill = _slash.type === "skill";
   let outMsg = _isSkill ? _slash.message : msg;
   if (atts.length) {
@@ -572,7 +572,7 @@ git commit -m "feat(web): menu lenh / tren khung chat + dinh tuyen skill/lenh ph
 
 - [ ] **Step 1: Khởi động server nội bộ (nếu chưa chạy)**
 
-Dùng `.venv` (python hệ thống thiếu lib - xem memory). Khởi động app theo cách dự án (vd `.venv/Scripts/python server/main.py` hoặc `start-javis.bat`). Mở dashboard trên trình duyệt.
+Dùng `.venv` (python hệ thống thiếu lib - xem memory). Khởi động app theo cách dự án (vd `.venv/Scripts/python server/main.py` hoặc `start-unimate.bat`). Mở dashboard trên trình duyệt.
 
 - [ ] **Step 2: Xác minh menu web**
 

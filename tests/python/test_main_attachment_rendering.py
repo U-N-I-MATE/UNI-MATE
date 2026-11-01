@@ -11,8 +11,8 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 SCRATCH = Path(tempfile.mkdtemp(prefix="main-attachments-"))
-for key, child in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
-                   "BRAIN_PATH": "brain", "SOURCES_PATH": "sources", "JAVIS_SESSIONS_DB": "sessions.sqlite3"}.items():
+for key, child in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
+                   "BRAIN_PATH": "brain", "SOURCES_PATH": "sources", "UNIMATE_SESSIONS_DB": "sessions.sqlite3"}.items():
     os.environ[key] = str(SCRATCH / child)
 
 import main
@@ -32,10 +32,10 @@ def _project_block(project_id: str, chi_huong_dan: bool = False) -> str:
     ĐỒNG HÀNH XỬ ("luôn trả lời bằng tiếng Anh", "tránh màu xanh dương"), còn danh sách tài
     liệu là dữ liệu TRA CỨU. Bỏ dữ liệu tra cứu lúc siết ngân sách thì model cùng lắm phải hỏi
     lại; bỏ hợp đồng hành xử thì cùng một project, cùng một câu hỏi, lượt này tuân luật lượt
-    kia không - và người dùng không có cách nào biết vì sao, chỉ thấy Javis bướng.
+    kia không - và người dùng không có cách nào biết vì sao, chỉ thấy UNI MATE bướng.
 
     GHIM FILE = NẠP NỘI DUNG. Spec ban đầu chỉ liệt kê tên và thêm chữ "(ghim)", tức là ghim
-    chỉ đổi thứ tự danh sách. Nhưng người dùng ghim bảng giá vào project thì họ nghĩ Javis đã
+    chỉ đổi thứ tự danh sách. Nhưng người dùng ghim bảng giá vào project thì họ nghĩ UNI MATE đã
     BIẾT bảng giá, chứ không phải biết TÊN nó. Nạp nội dung mới làm cái nút ghim thành công
     tắc thật, và trần ở trên để chính họ cầm cán cân token.
     """
@@ -81,7 +81,7 @@ def _liet_ke_tai_lieu(brain: str, files: list, links: list):
         duoi = os.path.splitext(duong)[1].lower()
         if duoi not in PROJECT_GHIM_DUOI:
             # Nói THẲNG là ghim nhưng không nạp được, kèm lý do. Im lặng bỏ qua thì người dùng
-            # ghim xong tưởng Javis đã đọc, rồi ngạc nhiên vì nó trả lời như chưa thấy gì.
+            # ghim xong tưởng UNI MATE đã đọc, rồi ngạc nhiên vì nó trả lời như chưa thấy gì.
             dong.append(f"- [file, đã ghim nhưng là tệp nhị phân - tự mở khi cần] {ten} - {duong}")
             continue
         try:
@@ -113,11 +113,11 @@ def _session_block(session_id: str) -> str:
 
     Song sinh với `_project_block`, và cố ý cùng trần token: project là "luôn dùng cho mọi
     cuộc trong nhóm", còn cái này là "chỉ cuộc này". Không có nó thì nút thêm file chỉ là một
-    danh sách để ngắm - người dùng gắn bảng giá vào cuộc rồi hỏi ngay, và Javis trả lời như
+    danh sách để ngắm - người dùng gắn bảng giá vào cuộc rồi hỏi ngay, và UNI MATE trả lời như
     chưa hề thấy gì.
 
     Ghim thì NẠP NỘI DUNG, y như project: gắn tên vào cho biết chỗ mà tìm, ghim vào là bảo
-    Javis đọc sẵn.
+    UNI MATE đọc sẵn.
     """
     if not session_id:
         return ""

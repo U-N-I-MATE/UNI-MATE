@@ -3,10 +3,10 @@
     python tests/run.py read_search_file
 
 Hai lời hứa phải giữ:
-  - Chat thường KHÔNG truyền offset/limit thì `javis_read_file` trả y như cũ (chatbot và luồng
+  - Chat thường KHÔNG truyền offset/limit thì `unimate_read_file` trả y như cũ (chatbot và luồng
     brain dựa vào output đó). Trong thư mục làm việc của phiên Coding, hoặc khi xin offset/limit,
     output có số dòng "N|..." và báo đọc tiếp ở đâu.
-  - `javis_search_files` tìm được cả khi máy không có ripgrep (Windows thường không có).
+  - `unimate_search_files` tìm được cả khi máy không có ripgrep (Windows thường không có).
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -15,8 +15,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-readsearch-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-readsearch-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 
 import coding_files as cf  # noqa: E402
 import mcp_hub  # noqa: E402
@@ -60,32 +60,32 @@ check("chạm trần ký tự thì cắt theo ranh giới dòng", den == 1 and "
 # ---- 2. Qua hub: chat thường giữ output cũ ----
 _t, r_thuong = mcp_hub._builtin_tools("full", str(VAULT))
 check("chat thường: đọc không offset trả nguyên văn cũ",
-      goi(r_thuong, "javis_read_file", {"path": "ghi-chu/a.md"}) == "dòng một\ndòng hai\n")
+      goi(r_thuong, "unimate_read_file", {"path": "ghi-chu/a.md"}) == "dòng một\ndòng hai\n")
 check("chat thường: xin offset/limit thì có số dòng",
-      goi(r_thuong, "javis_read_file", {"path": "ghi-chu/a.md", "offset": 2, "limit": 1}).startswith("2|dòng hai"))
-check("chat thường cũng có javis_edit_file và javis_search_files",
-      "javis_edit_file" in r_thuong and "javis_search_files" in r_thuong)
+      goi(r_thuong, "unimate_read_file", {"path": "ghi-chu/a.md", "offset": 2, "limit": 1}).startswith("2|dòng hai"))
+check("chat thường cũng có unimate_edit_file và unimate_search_files",
+      "unimate_edit_file" in r_thuong and "unimate_search_files" in r_thuong)
 
 # ---- 3. Qua hub: phiên Coding đọc có số dòng ----
 ctx = CodingToolContext(session_id="phien-1", workspace_root=str(WS), workspace_roots=(str(WS),),
                         permission_mode="auto")
 _t, r_cd = mcp_hub._builtin_tools("auto", str(VAULT), workspace_root=[str(WS)], coding_ctx_cua_phien=ctx)
-ra = goi(r_cd, "javis_read_file", {"path": "src/dai.py"})
+ra = goi(r_cd, "unimate_read_file", {"path": "src/dai.py"})
 check("phiên Coding: file trong repo đọc có số dòng", ra.startswith("   1|dong 1") and "offset=2001" in ra)
 check("phiên Coding: file brain không đổi kiểu đọc",
-      goi(r_cd, "javis_read_file", {"path": "ghi-chu/a.md"}) == "dòng một\ndòng hai\n")
+      goi(r_cd, "unimate_read_file", {"path": "ghi-chu/a.md"}) == "dòng một\ndòng hai\n")
 
 # ---- 4. Tìm ----
-ra = goi(r_cd, "javis_search_files", {"pattern": "tim_toi"})
+ra = goi(r_cd, "unimate_search_files", {"pattern": "tim_toi"})
 check("tìm theo nội dung, đường dẫn tương đối repo", "src/con/b.py:1:def tim_toi" in ra)
 check("bỏ qua node_modules", "node_modules" not in ra)
-ra = goi(r_cd, "javis_search_files", {"pattern": "*.py", "target": "files"})
+ra = goi(r_cd, "unimate_search_files", {"pattern": "*.py", "target": "files"})
 check("tìm theo tên bằng glob", "src/dai.py" in ra and "src/con/b.py" in ra)
-ra = goi(r_cd, "javis_search_files", {"pattern": "dong", "file_glob": "*.py", "limit": 5})
+ra = goi(r_cd, "unimate_search_files", {"pattern": "dong", "file_glob": "*.py", "limit": 5})
 check("limit và báo xem tiếp", ra.count("\n") >= 4 and "offset=5" in ra)
-ra = goi(r_cd, "javis_search_files", {"pattern": "return", "path": "src/con", "context": 1})
+ra = goi(r_cd, "unimate_search_files", {"pattern": "return", "path": "src/con", "context": 1})
 check("context kèm dòng xung quanh", "def tim_toi" in ra and "return 42" in ra)
-ra = goi(r_cd, "javis_search_files", {"pattern": "x", "path": "/etc"})
+ra = goi(r_cd, "unimate_search_files", {"pattern": "x", "path": "/etc"})
 check("đường dẫn ngoài brain và repo bị từ chối", ra.startswith("ERROR"))
 
 # Không có ripgrep: bản Python phải cho cùng kết quả cốt lõi.

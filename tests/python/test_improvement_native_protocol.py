@@ -27,7 +27,7 @@ def canonical(value):
 
 def startup(kind='trial'):
     environment = {key: r'C:\private' for key in ('PATH', 'HOME', 'USERPROFILE', 'TEMP', 'TMP',
-        'JAVIS_STATE_DIR', 'BRAINS_DIR', 'OBSIDIAN_VAULT_PATH', 'BRAIN_PATH', 'SOURCES_PATH', 'APPDATA', 'LOCALAPPDATA')}
+        'UNIMATE_STATE_DIR', 'BRAINS_DIR', 'OBSIDIAN_VAULT_PATH', 'BRAIN_PATH', 'SOURCES_PATH', 'APPDATA', 'LOCALAPPDATA')}
     environment.update(ENABLE_TOOL_SEARCH='false', DISABLE_TELEMETRY='1', DISABLE_ERROR_REPORTING='1',
         DISABLE_NON_ESSENTIAL_MODEL_CALLS='1', CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC='1', PYTHONIOENCODING='utf-8')
     request = {'version': 1, 'config_pin': {'fixture': 'no credentials'}}

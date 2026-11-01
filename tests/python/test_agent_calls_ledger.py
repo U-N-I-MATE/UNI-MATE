@@ -22,9 +22,9 @@ import time
 from contextlib import closing
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-agent-calls-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-TEMP = Path(tempfile.mkdtemp(prefix="javis-agent-calls-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-agent-calls-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-agent-calls-w-"))
 
 import agent_ledger as AL  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -44,9 +44,9 @@ def check(name, cond, extra=""):
 
 def ceiling(n):
     if n is None:
-        os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+        os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
     else:
-        os.environ["JAVIS_RESONANCE_CALL_CEILING"] = str(n)
+        os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = str(n)
 
 
 _n = [0]

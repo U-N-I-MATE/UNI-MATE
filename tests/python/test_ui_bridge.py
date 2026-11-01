@@ -1,21 +1,21 @@
-"""Cầu nối tool -> dashboard (server/ui_bridge.py) và tool javis_ui.
+"""Cầu nối tool -> dashboard (server/ui_bridge.py) và tool unimate_ui.
 
     python tests/run.py ui_bridge
 
-Voice V1: model gọi `javis_ui` để mở trang/file/việc trên dashboard. Tool chạy ở server, việc
+Voice V1: model gọi `unimate_ui` để mở trang/file/việc trên dashboard. Tool chạy ở server, việc
 làm nằm trong trình duyệt, nên phải có chỗ ĐỢI trình duyệt trả lời. Bốn chỗ dễ vỡ:
   1. Không có tab nào mở -> trả lỗi NGAY bằng một câu, không treo 4 giây.
   2. Có tab -> frame `ui_action` đúng khuôn (id, action, target, session_id); ack giải future.
   3. Tab khác phiên trả `skipped` thì KHÔNG được giải future (tab đúng phiên còn đáp sau).
   4. Không ai đáp -> hết giờ, trả câu lỗi có ghi số giây.
-Cộng: javis_ui chặn trang lạ và đường dẫn `..` TRƯỚC khi hỏi dashboard; /ws có nhánh ui_result.
+Cộng: unimate_ui chặn trang lạ và đường dẫn `..` TRƯỚC khi hỏi dashboard; /ws có nhánh ui_result.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-uib-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-uib-"))
 
 import ui_bridge  # noqa: E402
 from chat_runtime import ChatRuntime  # noqa: E402
@@ -84,10 +84,10 @@ async def main():
     # 5) resolve id lạ -> False, không nổ
     check("resolve id lạ trả False", ui_bridge.resolve("nope", True) is False)
 
-    # 6) plugin javis_ui: kiểm target trước khi hỏi dashboard
+    # 6) plugin unimate_ui: kiểm target trước khi hỏi dashboard
     import importlib.util
     spec = importlib.util.spec_from_file_location(
-        "javis_ui_plugin", ROOT / "system" / "plugins" / "javis-ui" / "plugin.py")
+        "unimate_ui_plugin", ROOT / "system" / "plugins" / "unimate-ui" / "plugin.py")
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     check("resolve_page: alias 'việc' -> tasks (0.422.0)", m.resolve_page("việc") == "tasks")
@@ -163,7 +163,7 @@ async def main():
     main_src = (SERVER / "main.py").read_text(encoding="utf-8")
     check("main gắn runtime vào ui_bridge", "ui_bridge.attach(_CHAT_RUNTIME)" in main_src)
     check("/ws xử lý action ui_result", 'if action == "ui_result":' in main_src and "ui_bridge.resolve(" in main_src)
-    # Đường TẮT giọng nói (dòng JAVIS_UI:) phải tra bí danh trước khi bắn sang dashboard. Thiếu
+    # Đường TẮT giọng nói (dòng UNIMATE_UI:) phải tra bí danh trước khi bắn sang dashboard. Thiếu
     # bước này thì model giọng viết "công cụ" là trình duyệt trả "trang không tồn tại" (lỗi 0.57.5).
     check("đường tắt giọng nói chuẩn hoá target qua ui_targets",
           "ui_targets.normalize_target(act, tgt)" in main_src)
@@ -173,4 +173,4 @@ asyncio.run(main())
 if _fails:
     print("\nFAIL:", len(_fails), _fails)
     raise SystemExit(1)
-print("\nOK - ui_bridge + javis_ui")
+print("\nOK - ui_bridge + unimate_ui")

@@ -87,7 +87,7 @@ c = new C.Chunker();
 out = c.push("Chạy lệnh này ```ls``` là xong.", 1);
 check("rào mã giữa dòng: chữ trước rào phát, khối bỏ, chữ sau phát khi khép câu", j(out) === j(["Chạy lệnh này ", " là xong."]));
 c = new C.Chunker();
-out = c.push("Anh chọn kỳ nào? <!-- JAVIS_ASK: {\"question\":\"x\"", 1);
+out = c.push("Anh chọn kỳ nào? <!-- UNIMATE_ASK: {\"question\":\"x\"", 1);
 check("gặp <!-- -> phát phần trước, bỏ phần sau", j(out) === j(["Anh chọn kỳ nào?"]));
 check("sau <!-- mọi mẩu mới đều bị bỏ", j(c.push(",\"options\":[]} -->", 2)) === "[]" && j(c.flush()) === "[]");
 c = new C.Chunker();

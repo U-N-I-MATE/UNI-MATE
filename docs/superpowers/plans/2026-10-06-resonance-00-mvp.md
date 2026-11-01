@@ -1,4 +1,4 @@
-# Javis Resonance MVP Implementation Plan
+# UNI MATE Resonance MVP Implementation Plan
 
 **Kế hoạch triển khai hiện hành.** Đọc cùng [danh mục chốt](../README-RESONANCE.md) và [bản review mới nhất](../specs/2026-10-06-resonance-revised-package-review.md). Phụ lục code của Claude là mẫu chưa nghiệm thu, được lưu trong gói lịch sử; không phải lộ trình triển khai song song.
 
@@ -10,7 +10,7 @@
 
 **Tech Stack:** Python, FastAPI, SQLite, engine adapter hiện có, dashboard JavaScript và i18n vi/en. Test bằng tests/run.py. Không cần nhóm agent, message broker, container, dịch vụ mới hoặc tài khoản model mới.
 
-**Spec:** [Thiết kế tổng thể](../specs/2026-10-06-javis-resonance-design.md), ưu tiên mục 2, 4.0, 4.6, 4.7, 6, 8, 10 và 12. Các plan 01/02/03 là tài liệu mở rộng, không phải ba luồng triển khai đồng thời.
+**Spec:** [Thiết kế tổng thể](../specs/2026-10-06-unimate-resonance-design.md), ưu tiên mục 2, 4.0, 4.6, 4.7, 6, 8, 10 và 12. Các plan 01/02/03 là tài liệu mở rộng, không phải ba luồng triển khai đồng thời.
 
 ## Global Constraints
 
@@ -21,7 +21,7 @@
 - Artifact contract và human confirmation là hai evaluator đầu; chưa có model rubric tự chấm thắng. Artifact đạt không tự chứng minh đúng nhu cầu.
 - Dùng engine/hạn mức đã chọn, ghi usage có thật; không coi gói thuê bao là vô hạn hoặc tự chuyển qua API trả phí.
 - Feature mặc định off, bật một lần theo brain trong phạm vi thử; task/loop legacy không gắn goal giữ hành vi cũ. Không bắt cấu hình lại theo từng goal.
-- Dữ liệu ở JAVIS_STATE_DIR; payload qua EvidenceStore đã kiểm retention/quota. Quyền hiện hành và scope phải được kiểm trước effect; log bắt buộc lỗi thì không gửi effect mới.
+- Dữ liệu ở UNIMATE_STATE_DIR; payload qua EvidenceStore đã kiểm retention/quota. Quyền hiện hành và scope phải được kiểm trước effect; log bắt buộc lỗi thì không gửi effect mới.
 - Không em dash; UTF-8 và LF; chuỗi UI có vi/en. TestClient dùng http://127.0.0.1:8080. Tuân thủ docs/quy-uoc-dev.md khi bắt đầu triển khai code.
 - Trước M1, kiểm main mới nhất từ remote, ghi commit nền và làm trên nhánh riêng. Khảo sát 5b4a9be1 là checkout cũ; main được kiểm ngày 06/10/2026 là 7d264236 (0.83.2) và đã có _reply_policy_sandbox_engine/_reply_policy_ask. Dò lại chữ ký và đường gọi trên commit nền thực tế, không dùng số dòng cũ làm hợp đồng.
 - Người triển khai tự kiểm thử trước khi giao review. Review độc lập sau M1, theo từng PR trong M2-M4, rồi review tổng thể sau M5; sửa lỗi ảnh hưởng đến bước phụ thuộc trước khi xây tiếp. Người viết và người review phải đối chiếu cùng commit/PR.

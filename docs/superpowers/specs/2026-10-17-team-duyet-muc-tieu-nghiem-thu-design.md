@@ -52,12 +52,12 @@ decided_at, consumed_at, created_at, updated_at)` và `team_approval_events(id, 
 - Hết hiệu lực: `team_amend` (sửa yêu cầu) → mọi yêu cầu chưa tiêu của việc thành `superseded`; huỷ việc → `cancelled`; đổi
   quyền nhóm (thu hồi `work_mode=full`, thu hồi Toàn quyền) → yêu cầu đã duyệt chưa tiêu thành `revoked`; thành viên xin rời
   nhóm → `superseded`. Quá `deadline_at` → `expired`, việc chặn kind `approval_expired`.
-- Tin của agent, đoạn trích trong tin hay lời chủ gõ trong chat KHÔNG phải lời duyệt: không có lệnh JAVIS_TEAM nào quyết định,
+- Tin của agent, đoạn trích trong tin hay lời chủ gõ trong chat KHÔNG phải lời duyệt: không có lệnh UNIMATE_TEAM nào quyết định,
   và parser không đọc chữ để duyệt. Thẻ duyệt hiện trong chat với nút Duyệt, Từ chối, Yêu cầu sửa.
 
 ### 1.3 Ai được tạo yêu cầu, và lưới an toàn
 
-- Lệnh có cấu trúc (giao thức chính): `<!-- JAVIS_TEAM: {"op": "ask_approval", "title", "action", "scope", "impact",
+- Lệnh có cấu trúc (giao thức chính): `<!-- UNIMATE_TEAM: {"op": "ask_approval", "title", "action", "scope", "impact",
   "evidence": [...], "deadline"} -->` trong bước `plan`, `work`, `help`. Mọi thành viên dùng được trong bước của việc.
 - Cổng công cụ (1.4) chặn một hành động: host tự tạo yêu cầu `action` từ chính lời gọi đã bị chặn (tên công cụ, tóm tắt tham
   số, dấu vân tay). Đây là dữ liệu host quan sát, không phải lời model.
@@ -77,16 +77,16 @@ Quyền làm việc của nhóm, cột mới `teams.work_mode`:
 Mức hub mới `gated`: liệt kê công cụ như `full` (để hành động bị chặn có thể thành yêu cầu và chạy được sau khi duyệt), trần
 như `auto` (`mcp_catalog._MODE_CAP`), nên chỗ nào không biết cổng thì đóng lại, không bao giờ chạy ở `full`. Khi `_guard` của hub
 hay `plugins_host._make_call` thấy lời gọi bị trần `gated` chặn mà kết nối cho phép ở `full`, nó hỏi cổng của lượt
-(`turn_context` khoá `team_gate`, đến qua `X-Javis-Turn` hoặc ContextVar). Có dấu vân tay đã duyệt cho bước này thì tiêu ngay
+(`turn_context` khoá `team_gate`, đến qua `X-UniMate-Turn` hoặc ContextVar). Có dấu vân tay đã duyệt cho bước này thì tiêu ngay
 trong một giao dịch rồi cho qua; không thì từ chối TRƯỚC khi gọi và ghi lại lời gọi (tên, tham số, dấu vân tay). Không có cổng
 sống (thiếu hay giả khoá lượt) thì từ chối.
 
 Theo provider (`team_gate.provider_support`, `main._team_gate_support` đọc cờ thật của máy):
 - Claude: hook PreToolUse của SDK (bypassPermissions không bỏ qua hook). Read/Glob/Grep/WebSearch/WebFetch/Task cho qua;
   Write/Edit chỉ trong thư mục nhóm và bộ não; Bash chỉ lệnh chỉ đọc (ls, cat, grep, git status... không ký tự shell, `find`
-  không `-exec`/`-delete`); `mcp__javis__*` để hub tự chặn; connector tài khoản chỉ lệnh đọc. SDK không có hook thì từ chối.
+  không `-exec`/`-delete`); `mcp__unimate__*` để hub tự chặn; connector tài khoản chỉ lệnh đọc. SDK không có hook thì từ chối.
 - Codex: dựng ở `auto` (sandbox `workspace-write`, không mạng), hub ghi đè thành `gated` và bật khoá lượt. Không có sandbox
-  (`JAVIS_CODEX_SANDBOX=off`) thì từ chối.
+  (`UNIMATE_CODEX_SANDBOX=off`) thì từ chối.
 - API: mọi công cụ qua hub trong tiến trình ở mức `gated`.
 - Grok Build: dựng ở `auto` (cấm Bash, hub `auto`). Grok không mang được khoá lượt tới hub (file cấu hình MCP dùng chung cho cả
   bộ não), nên chỉ làm được phần trong phạm vi; hành động đã duyệt không chạy được trên Grok. Bản không có `--deny` thì từ chối.

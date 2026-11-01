@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 _STATE = tempfile.TemporaryDirectory(prefix='skill-state-import-')
-os.environ['JAVIS_STATE_DIR'] = _STATE.name
+os.environ['UNIMATE_STATE_DIR'] = _STATE.name
 os.environ['BRAIN_PATH'] = str(Path(_STATE.name) / 'brain')
 os.environ['BRAINS_DIR'] = str(Path(_STATE.name) / 'brains')
 
@@ -78,7 +78,7 @@ class SkillResolutionStateTests(unittest.TestCase):
         canonical = self.write('skills', 'CANONICAL')
         self.write('.claude/skills', 'STALE_CLAUDE')
         _, routes = mcp_hub._builtin_tools('auto', str(self.root))
-        handler = routes['javis_use_skill']['call']
+        handler = routes['unimate_use_skill']['call']
         self.assertIn('CANONICAL', asyncio.run(handler({'name': self.slug})))
         self.assertEqual(skill_usage.read_usage(self.root)[self.slug]['use_count'], 1)
         self.disable_canonical(canonical)

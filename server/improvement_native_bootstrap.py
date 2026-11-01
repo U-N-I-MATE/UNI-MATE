@@ -190,7 +190,7 @@ def _read_source(path, digest):
 def _load_guard_type(root, files):
     path = root / _IMAGE
     raw = _read_source(path, files[_IMAGE])
-    module = types.ModuleType("_javis_verified_bootstrap_image")
+    module = types.ModuleType("_unimate_verified_bootstrap_image")
     module.__file__ = str(path)
     exec(compile(raw, str(path), "exec"), module.__dict__)
     return module.ImageReadGuard

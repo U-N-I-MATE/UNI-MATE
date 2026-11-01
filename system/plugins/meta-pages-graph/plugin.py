@@ -387,7 +387,7 @@ async def _publish_album(args, cctx):
 
 async def _edit_post(args, cctx):
     """Sửa NỘI DUNG CHỮ của bài đã đăng. Meta chỉ cho đổi message - không đổi được
-    ảnh/video đã đính kèm (muốn đổi media thì xoá đăng lại, Javis không tự xoá)."""
+    ảnh/video đã đính kèm (muốn đổi media thì xoá đăng lại, UNI MATE không tự xoá)."""
     token = await _token()
     if not token:
         return "ERROR: " + (_check() or "chưa kết nối")

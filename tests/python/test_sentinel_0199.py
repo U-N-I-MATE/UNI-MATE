@@ -25,10 +25,10 @@ def check(name, cond):
 
 
 now = time.time()
-state = Path(tempfile.mkdtemp(prefix="javis-sentinel-state-"))
-brains_dir = Path(tempfile.mkdtemp(prefix="javis-sentinel-brains-"))
+state = Path(tempfile.mkdtemp(prefix="unimate-sentinel-state-"))
+brains_dir = Path(tempfile.mkdtemp(prefix="unimate-sentinel-brains-"))
 shop = brains_dir / "shop"
-(shop / "Javis").mkdir(parents=True)
+(shop / "UNI MATE").mkdir(parents=True)
 
 con = sqlite3.connect(state / "kanban.sqlite3")
 con.execute("CREATE TABLE tasks (id TEXT, brain_root TEXT, title TEXT, status TEXT, block_kind TEXT, "
@@ -42,10 +42,10 @@ con.executemany("INSERT INTO tasks VALUES (?,?,?,?,?,?,?)", [
 ])
 con.commit()
 con.close()
-(shop / "Javis" / "reminders.json").write_text(json.dumps({"reminders": [
+(shop / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_1", "label": "Báo doanh thu", "error": "Zalo token expired (code 403)", "fired_at": now - 300},
     {"id": "r_2", "label": "OK", "error": "", "fired_at": now - 300}]}), encoding="utf-8")
-(shop / "Javis" / "loop-state.json").write_text(json.dumps({
+(shop / "UNI MATE" / "loop-state.json").write_text(json.dumps({
     "quet-don": {"fail_streak": 3, "auto_paused_reason": "Tự tạm dừng 17/10 09:00: 3 lần lỗi", "last_run": now - 600},
     "ok-loop": {"fail_streak": 0}}), encoding="utf-8")
 (state / "webhooks.json").write_text(json.dumps({"hooks": [{"id": "wh_1", "name": "Lead", "brain": str(shop),
@@ -54,7 +54,7 @@ con.close()
 (state / "incidents.json").write_text(json.dumps({"incidents": [{"id": "i1", "status": "needs_you"},
                                                                {"id": "i2", "status": "resolved"}]}), encoding="utf-8")
 
-before = {p: p.stat().st_mtime for p in [state / "kanban.sqlite3", shop / "Javis" / "reminders.json"]}
+before = {p: p.stat().st_mtime for p in [state / "kanban.sqlite3", shop / "UNI MATE" / "reminders.json"]}
 rep = sentinel.scan(state, [shop], now=now)
 top = rep["issues"][0]
 check("same cause across stores groups into one issue", top["count"] == 3
@@ -70,7 +70,7 @@ check("nothing was written", all(p.stat().st_mtime == m for p, m in before.items
 check("markdown lists the issue", "3x" in sentinel.to_markdown(rep))
 check("empty state is an empty report", sentinel.scan(Path(tempfile.mkdtemp()), [])["issues"] == [])
 
-out = Path(tempfile.mkdtemp(prefix="javis-sentinel-out-"))
+out = Path(tempfile.mkdtemp(prefix="unimate-sentinel-out-"))
 r = subprocess.run([sys.executable, str(ROOT / "tools" / "sentinel.py"), "--state-dir", str(state),
                     "--brains-dir", str(brains_dir), "--json", "--out", str(out)],
                    capture_output=True, text=True, env=dict(os.environ, PYTHONIOENCODING="utf-8"))

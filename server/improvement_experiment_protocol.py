@@ -74,14 +74,14 @@ def comparison_matrix(value, arm_hash, ordinal, kind, case_ids, case_seed):
             or any(type(item) is not str or not _ID.fullmatch(item) for item in case_ids)
             or len(set(case_ids)) != len(case_ids)):
         raise ValueError("invalid_comparison_matrix")
-    seed = _hash(["javis-comparison-schedule-v1", _hash(value), arm_hash, ordinal, kind, case_seed])
+    seed = _hash(["unimate-comparison-schedule-v1", _hash(value), arm_hash, ordinal, kind, case_seed])
     ordered = sorted(case_ids, key=lambda identifier: (_hash([seed, identifier]), identifier))
     repeats = value["repeat_policy"]["repeats"]
     pairs = []
     for index, case_id in enumerate(ordered):
         for repeat in range(1, repeats + 1):
             position = index * repeats + repeat - 1
-            pairs.append({"pair_id": _hash(["javis-comparison-pair-v1", seed, case_id, repeat]),
+            pairs.append({"pair_id": _hash(["unimate-comparison-pair-v1", seed, case_id, repeat]),
                 "case_id": case_id, "repeat": repeat,
                 "first_variant": "baseline" if (int(seed[0], 16) + position) % 2 == 0 else "candidate"})
     matrix = {"version": 1, "experiment_id": value["experiment_id"], "definition_hash": _hash(value), "arm_hash": arm_hash,

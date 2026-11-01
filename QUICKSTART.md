@@ -1,27 +1,27 @@
-# Javis OS - Quick start
+# UNI MATE - Quick start
 
 *[English](QUICKSTART.en.md) · **Tiếng Việt** · [简体中文](docs/i18n/zh/QUICKSTART.md) · [Español](docs/i18n/es/QUICKSTART.md) · [日本語](docs/i18n/ja/QUICKSTART.md) · [हिन्दी](docs/i18n/hi/QUICKSTART.md) · [Português](docs/i18n/pt-BR/QUICKSTART.md) · [한국어](docs/i18n/ko/QUICKSTART.md) · [Русский](docs/i18n/ru/QUICKSTART.md) · [Deutsch](docs/i18n/de/QUICKSTART.md) · [Français](docs/i18n/fr/QUICKSTART.md) · [Bahasa Indonesia](docs/i18n/id/QUICKSTART.md)*
 
-Chạy Javis OS trong vài phút. Chi tiết từng phần: [docs/](docs/README.md).
+Chạy UNI MATE trong vài phút. Chi tiết từng phần: [docs/](docs/README.md).
 
 ## Cách 1 - Hostinger VPS (Docker Manager, 1-click)
 
-> 🛒 **Chưa có VPS?** [Đăng ký VPS Hostinger tại đây](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). VPS có sẵn Docker Manager nên cài Javis đúng một cú bấm. Thuê xong quay lại làm các bước dưới.
+> 🛒 **Chưa có VPS?** [Đăng ký VPS Hostinger tại đây](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). VPS có sẵn Docker Manager nên cài UNI MATE đúng một cú bấm. Thuê xong quay lại làm các bước dưới.
 
 1. hPanel → VPS → **Docker Manager** → **Compose** → **Compose from URL**.
 2. Dán URL:
    ```
-   https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+   https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.hostinger.yml
    ```
 3. (Tùy chọn, để có HTTPS + tên miền) ở ô **Environment** đặt:
    ```
-   DOMAIN_NAME=javis.<hostname-vps>.hstgr.cloud
+   DOMAIN_NAME=unimate.<hostname-vps>.hstgr.cloud
    ```
-   (hostname xem ở hPanel → VPS; ví dụ `javis.srv1782015.hstgr.cloud`.)
+   (hostname xem ở hPanel → VPS; ví dụ `unimate.srv1782015.hstgr.cloud`.)
 4. **Deploy**. Đợi 1-3 phút. Mở app bằng nút **Open** (hoặc `https://<DOMAIN_NAME>`).
 5. Lần đầu: màn hình sẽ hỏi tạo tài khoản admin. Sau đó đăng nhập Claude Code trong terminal container 1 lần: `claude auth login --claudeai`.
 
-VPS cài **Ubuntu 26** hay hệ điều hành trắng, không có Traefik của Hostinger: vẫn dán đúng link trên, bỏ trống `DOMAIN_NAME` cũng được: bấm **Open** là Javis tự chuyển sang `https://javis.srvXXXX.hstgr.cloud` hoặc `https://srvXXXX.hstgr.cloud` (từ 0.302.0). **Cài đặt → Tên miền** cho biết link đã chạy chưa. Container `javis-gateway` đi kèm tự cấp HTTPS cho `DOMAIN_NAME` khi cổng 80/443 trống (từ 0.300.0); nhớ mở cổng 80, 443 ở tường lửa.
+VPS cài **Ubuntu 26** hay hệ điều hành trắng, không có Traefik của Hostinger: vẫn dán đúng link trên, bỏ trống `DOMAIN_NAME` cũng được: bấm **Open** là UNI MATE tự chuyển sang `https://unimate.srvXXXX.hstgr.cloud` hoặc `https://srvXXXX.hstgr.cloud` (từ 0.302.0). **Cài đặt → Tên miền** cho biết link đã chạy chưa. Container `unimate-gateway` đi kèm tự cấp HTTPS cho `DOMAIN_NAME` khi cổng 80/443 trống (từ 0.300.0); nhớ mở cổng 80, 443 ở tường lửa.
 
 Cập nhật bản mới: bấm **⬆ Cập nhật ngay** trong app (trang Cập nhật), hoặc **Redeploy** trong Docker Manager (image `:latest`, `pull_policy: always`). Dữ liệu brain giữ nguyên trong volume.
 
@@ -38,7 +38,7 @@ Mở http://localhost:7777. Muốn HTTPS qua Caddy: thêm `-f docker-compose.htt
 
 1. Cài Python 3.12 + Node 22.
 2. Trong thư mục dự án: `setup.bat` một lần - tạo .venv, cài deps, và cài sẵn hai engine CLI (Claude Code, Codex).
-3. `start-javis.bat` để chạy nền (tắt: `stop-javis.bat`).
+3. `start-unimate.bat` để chạy nền (tắt: `stop-unimate.bat`).
 4. Mở http://localhost:7777.
 
 ## Sau khi chạy
@@ -54,6 +54,6 @@ Xem [docs/README.md](docs/README.md) - hướng dẫn từng chức năng (chat/
 
 ## Sự cố hay gặp
 
-- **Nút cập nhật trong app không chạy trên Hostinger**: nút cần container `javis-watchtower` đi kèm (có sẵn từ 0.55.56). Stack hiện "Partially running" thì mở log container đó; không sửa được thì cập nhật bằng **Redeploy** trong Docker Manager.
+- **Nút cập nhật trong app không chạy trên Hostinger**: nút cần container `unimate-watchtower` đi kèm (có sẵn từ 0.55.56). Stack hiện "Partially running" thì mở log container đó; không sửa được thì cập nhật bằng **Redeploy** trong Docker Manager.
 - **ChatGPT/Codex báo "model không hỗ trợ"**: chọn model Codex hợp lệ ở trang Models (vd `gpt-5.5`), không dùng `gpt-5-mini`/`gpt-4o` (đó là model API, Codex account không chạy).
 - Thêm: [docs/17 - Khắc phục sự cố](docs/17-khac-phuc-su-co.md).

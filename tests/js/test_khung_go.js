@@ -61,7 +61,7 @@ check("workspace locks send through a flag that app.js honours, so a turn update
   /dataset\.wsLock/.test(ws) && // 0.206.0: during a turn the button unlocks for an add-on message (coTheGuiBoSung); the workspace flag still wins.
   /sendBtn\.disabled = \(isProcessing && !coTheGuiBoSung\(\)\) \|\| sendBtn\.dataset\.wsLock === "1"/.test(app)
   && /function setProcessing\(s\) \{[^}]*sendBtn\.dataset\.wsLock === "1"/.test(app));
-check("leaving the page mid-turn does not re-enable send (workspace asks app.js to resync)", /JavisSyncActiveUI/.test(ws) && /window\.JavisSyncActiveUI = syncActiveUI/.test(app));
+check("leaving the page mid-turn does not re-enable send (workspace asks app.js to resync)", /UniMateSyncActiveUI/.test(ws) && /window\.UniMateSyncActiveUI = syncActiveUI/.test(app));
 check("no CSS left for the old Effort row and separator", !/\.mb-eff-row|\.mb-eff-btn|\.mb-sep|\.mb-eff \{/.test(css));
 check("mobile-chat.js has no unused modelBar variable", !/var modelBar = /.test(mobile));
 if (fails.length) { console.log("\nFAIL - test_khung_go: " + fails.length); process.exit(1); }

@@ -33,11 +33,11 @@ check("turn 4 long English sentence switches at once", t.pick("Sure, here is the
 const t3 = new L.Tracker("vi");
 t3.pick("Here is the news.");
 check("asking the same chunk twice in a row (preload, play) counts once", t3.pick("Here is the news.") === vi);
-check("detect: 'Chào anh, em là Javis.' is Vietnamese (shared marks only)", L.detect("Chào anh, em là Javis.") === "vi");
+check("detect: 'Chào anh, em là UNI MATE.' is Vietnamese (shared marks only)", L.detect("Chào anh, em là UNI MATE.") === "vi");
 check("detect: French with ç is not Vietnamese", L.detect("Ça va très bien, merci.") === "en");
 
 const t2 = new L.Tracker("vi");
-t2.pick("Chào anh, em là Javis.");
+t2.pick("Chào anh, em là UNI MATE.");
 check("a short English chunk (3-5 words) does not switch alone", t2.pick("Check the dashboard now.") === vi);
 check("the second English chunk in a row switches", t2.pick("Then open the report.") === en);
 check("Japanese long reply switches to a Japanese voice", new L.Tracker("vi").pick("今日の売上は十二万円でした。明日も頑張りましょう。") === L.VOICES.ja);

@@ -5,7 +5,7 @@
 Không cần pytest, KHÔNG chạm mạng (ghi thẳng token giả vào kho oauth).
 
 Bối cảnh: file ADC mà gcloud sinh ra thực chất chỉ là
-{type: authorized_user, client_id, client_secret, refresh_token}. Javis đã có sẵn luồng OAuth
+{type: authorized_user, client_id, client_secret, refresh_token}. UNI MATE đã có sẵn luồng OAuth
 Google (dùng cho Gmail/Lịch), nên chỉ cần chạy luồng đó với scope adwords rồi TỰ DỰNG file ADC.
 Vướng duy nhất: oauth_mcp sinh HTTP header (cho transport http), còn google-ads là stdio và cần
 credential dạng FILE + biến môi trường. Test này phủ đúng cầu nối đó.
@@ -16,7 +16,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-adstest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-adstest-"))
 
 import mcp_catalog  # noqa: E402
 import mcp_store  # noqa: E402
@@ -52,7 +52,7 @@ fields = {f["key"]: f for f in (auth.get("fields") or [])}
 check("có ô Client ID + Client Secret", "client_id" in fields and "client_secret" in fields)
 check("giữ ô developer_token", "developer_token" in fields)
 check("giữ đường lui dán tay file ADC", bool(fields.get("adc_json", {}).get("optional")))
-# google-ads-mcp không còn đọc GOOGLE_PROJECT_ID, và file ADC Javis dựng cũng không cần nó (0.82.0).
+# google-ads-mcp không còn đọc GOOGLE_PROJECT_ID, và file ADC UNI MATE dựng cũng không cần nó (0.82.0).
 check("bỏ ô Project ID (server không đọc nữa)", "project_id" not in fields)
 check("chạy bản PyPI chính thức mới nhất, không chạy code GitHub",
       (con or {}).get("args") == ["google-ads-mcp@latest"])

@@ -72,6 +72,6 @@
 
   var API = { TOI_DA: TOI_DA, dinhDang: dinhDang, ghep: ghep, tach: tach, utextHtml: utextHtml,
               xemTruoc: xemTruoc };
-  if (typeof window !== "undefined") window.JavisQuote = API;
+  if (typeof window !== "undefined") window.UniMateQuote = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 })();

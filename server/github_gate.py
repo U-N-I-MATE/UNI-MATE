@@ -1,9 +1,9 @@
 """Pre-push quality gate for GitHub inside chat (spec docs/dev/2026-10-github-trong-chat-spec.md, section 7, phase G2).
 
-Everything here runs in a conversation's worktree BEFORE Javis pushes, driven by Javis and not by the model's memory:
+Everything here runs in a conversation's worktree BEFORE UNI MATE pushes, driven by UNI MATE and not by the model's memory:
 
   7.1 `repo_rules`      the repo's own rules (AGENTS.md, CLAUDE.md, CONTRIBUTING.md) for every engine, not only the ones
-                        that read CLAUDE.md natively, plus the per-repo lessons Javis learned (phase G5).
+                        that read CLAUDE.md natively, plus the per-repo lessons UNI MATE learned (phase G5).
   7.2 `suggest_checks`  the local check commands, read from the repo's CI workflows and its usual manifests.
       `run_checks`      runs them with a time ceiling. A command that cannot run on this machine (missing tool or
                         module) is reported as "skipped here, CI decides", never as green.
@@ -77,7 +77,7 @@ _BRANCH_ONLY = re.compile(r"refs/heads/(main|master)|github\.ref\s*==|github\.ev
 
 
 def _workflow_triggers_on_change(on: Any) -> bool:
-    """True when the workflow runs on push or pull_request (the events a Javis branch causes)."""
+    """True when the workflow runs on push or pull_request (the events a UNI MATE branch causes)."""
     if on is None:
         return False
     if isinstance(on, str):

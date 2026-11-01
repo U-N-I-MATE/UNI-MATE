@@ -2,7 +2,7 @@
 
     python tests/run.py codex_hub_mode      (no network, no codex binary needed)
 
-The shared Codex profile is written with `X-Javis-Mode: full` (the chat path). Before 0.117.0 a
+The shared Codex profile is written with `X-UniMate-Mode: full` (the chat path). Before 0.117.0 a
 reminder, loop or Kanban job at suggest or auto that ran on Codex reached hub tools at full through
 that profile, while Grok and Antigravity already got the job's level. Now `aux_engine._build_codex`
 adds a per-process `-c` override, the same way the brain header is pinned.
@@ -14,8 +14,8 @@ import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-codex-mode-"))
-os.environ["JAVIS_STATE_DIR"] = str(_TMP / "state")
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-codex-mode-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
 (_TMP / "state").mkdir(parents=True, exist_ok=True)
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -38,16 +38,16 @@ def _mode_overrides(cfg):
     return [x for x in cfg if str(x).startswith(mcp_hub.CODEX_MODE_KEY + "=")]
 
 
-base = SimpleNamespace(cwd=str(_TMP), tag="dispatch:t1", system_prompt="", javis_vault=str(_TMP),
-                       javis_mode="full")
+base = SimpleNamespace(cwd=str(_TMP), tag="dispatch:t1", system_prompt="", unimate_vault=str(_TMP),
+                       unimate_mode="full")
 for mode, want in (("suggest", '"suggest"'), ("auto", '"auto"'), ("full", '"full"')):
     cc = aux_engine._build_codex({"provider": "codex", "model": ""}, base, mode, "dispatch:t1")
     ov = _mode_overrides(cc.extra_config)
-    check(f"CANARY: a {mode} job pins X-Javis-Mode={mode}", ov == [f"{mcp_hub.CODEX_MODE_KEY}={want}"], ov)
+    check(f"CANARY: a {mode} job pins X-UniMate-Mode={mode}", ov == [f"{mcp_hub.CODEX_MODE_KEY}={want}"], ov)
 
-cc = aux_engine._build_codex({"provider": "codex"}, SimpleNamespace(**{**vars(base), "javis_mode": "auto"}),
+cc = aux_engine._build_codex({"provider": "codex"}, SimpleNamespace(**{**vars(base), "unimate_mode": "auto"}),
                              None, "reminder")
-check("no explicit mode: the engine's own javis_mode is used",
+check("no explicit mode: the engine's own unimate_mode is used",
       _mode_overrides(cc.extra_config) == [f'{mcp_hub.CODEX_MODE_KEY}="auto"'], cc.extra_config)
 
 cfg = []

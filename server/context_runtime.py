@@ -36,7 +36,7 @@ REGISTRY_REVISION = "legacy-live"
 MODEL_PROFILE_REVISION = "settings-live"
 
 _CURRENT: contextvars.ContextVar[Optional["TurnTrace"]] = contextvars.ContextVar(
-    "javis_context_runtime_trace", default=None
+    "unimate_context_runtime_trace", default=None
 )
 
 
@@ -110,7 +110,7 @@ def _content_chars(content: Any) -> int:
 _SYSTEM_MARKERS = (
     ("memory_index_chars", "# === BỘ NHỚ DÀI HẠN"),
     ("agentic_contract_chars", "# === LỚP AGENTIC"),
-    ("capability_summary_chars", "# === NĂNG LỰC JAVIS"),
+    ("capability_summary_chars", "# === NĂNG LỰC UNI MATE"),
     ("skill_router_chars", "# === SKILL KHẢ DỤNG"),
     ("usage_hint_chars", "# === MỨC DÙNG HÔM NAY"),
     ("channel_contract_chars", "# === KÊNH HỘI THOẠI HIỆN TẠI"),
@@ -1737,11 +1737,11 @@ class ObserveRuntime:
     def _he_so_hieu_chinh(self, db, provider: str) -> float:
         """Thực tế gấp mấy lần ước lượng, học từ chính các lượt đã chạy của provider này.
 
-        Vì sao cần. `payload_attribution` đếm ĐÚNG những gì Javis gói lại và gửi đi: một
+        Vì sao cần. `payload_attribution` đếm ĐÚNG những gì UNI MATE gói lại và gửi đi: một
         system prompt cộng một câu hỏi. Với engine API thì đó là toàn bộ request, ước lượng
         sát. Với engine gói thuê bao thì không: Claude Code và Codex nhận prompt đó rồi tự
         chạy cả một vòng lặp - đọc file, gọi tool, suy nghĩ, gọi lại model - và mỗi vòng gửi
-        lại toàn bộ ngữ cảnh đã tích luỹ. Javis không nhìn thấy các vòng đó, chỉ nhận tổng
+        lại toàn bộ ngữ cảnh đã tích luỹ. UNI MATE không nhìn thấy các vòng đó, chỉ nhận tổng
         token ở cuối.
 
         Số đo thật của chủ repo: lệch âm 86% trên bảng tổng, có lượt âm 96%. Nghĩa là bộ đoán

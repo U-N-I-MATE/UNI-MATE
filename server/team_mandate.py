@@ -2,7 +2,7 @@
 
 Design: docs/superpowers/specs/2026-10-17-team-duyet-muc-tieu-nghiem-thu-design.md, part 2.
 
-A team can carry ONE mandate, set only by the owner (HTTP routes in team_api, never a JAVIS_TEAM directive):
+A team can carry ONE mandate, set only by the owner (HTTP routes in team_api, never a UNIMATE_TEAM directive):
 
     outcome        what the department is for ("Giữ trang bán hàng chạy và đúng giá")
     metrics        how the owner judges it (lines of text, shown to members)

@@ -24,8 +24,8 @@ only a bounded task and its authorized source/dependency tree. None is validated
 | Local-login exemption and forwarded requests |edc35224|main.py|test_local_exempt_tunnel.py|
 | Separate 2FA state on login disable |f0cbff7b|config.py,main.py|test_auth_disable_keeps_2fa.py|
 | Equivalent brain identifiers |1edcf0fc|brain_ident.py,stores|test_brain_filter_spellings.py|
-| Background recipient/source provenance |1e91d082|owner_channels.py,channel_context.py|test_javis_core_routing.py|
-| Memory policy reaches native restrictions |355f2155|memory_control.py,claude_sdk_engine.py|test_javis_core_followups.py|
+| Background recipient/source provenance |1e91d082|owner_channels.py,channel_context.py|test_unimate_core_routing.py|
+| Memory policy reaches native restrictions |355f2155|memory_control.py,claude_sdk_engine.py|test_unimate_core_followups.py|
 | Read-only shell-chain classification |70f77c3c|team_gate.py|test_team_approval_0207.py|
 | Connector names and verb classification |76fdc6d0|mcp_catalog.py|test_composio_app_name_verbs.py|
 | Speech language/model compatibility |32d5d0ce|tts_eleven.py|test_tts_eleven.py|

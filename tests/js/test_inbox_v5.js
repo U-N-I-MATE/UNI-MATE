@@ -25,7 +25,7 @@ const win = { t: (k, v) => k + (v ? "#" + Object.keys(v).map((x) => v[x]).join("
 const ctx = { window: win, console, String, Object, Array, Number, JSON };
 vm.createContext(ctx);
 vm.runInContext(V5SRC, ctx);
-const V = win.JavisInboxV5;
+const V = win.UniMateInboxV5;
 const I = (n) => "[" + n + "]";
 const L = (ch) => "<" + ch + ">";
 
@@ -100,7 +100,7 @@ check("bot-wide settings say so once, and go through the bot's own update route"
 check("the note is saved when the box loses focus, and typing survives the 5-second redraw", /note\.onblur = function \(\) \{ saveNote\(c\.id\); \};/.test(PI) &&
   /_noteEdit && _noteEdit\.id === c\.id \? _noteEdit\.text/.test(PI) && /\/note", \{ method: "POST", body: fd\(\{ note: text \}\) \}/.test(CV));
 check("'Open the settings of bot X' asks the Bot tab to open that bot, which says so when it lives in another brain",
-  /javis:chatbot-open", \{ detail: \{ bot_id: c\.bot_id \} \}/.test(CV) && /addEventListener\("javis:chatbot-open"/.test(CB) && /ib\.bot_other_brain/.test(CB));
+  /unimate:chatbot-open", \{ detail: \{ bot_id: c\.bot_id \} \}/.test(CV) && /addEventListener\("unimate:chatbot-open"/.test(CB) && /ib\.bot_other_brain/.test(CB));
 check("every change from the chat or Info shows a toast; Undo where it can be put back", /function toast\(text, undo\)/.test(CV) &&
   /ib\.undo/.test(CV) && /setTimeout\(function \(\) \{ if \(t\.parentNode\) t\.parentNode\.removeChild\(t\); \}, 6000\)/.test(CV));
 check("CANARY: no robot icon in the inbox (owner)", !/ic\("bot"\)/.test(CV) && !/I\("bot"\)/.test(V5SRC));

@@ -28,7 +28,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-ghim-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-ghim-"))
 
 import main  # noqa: E402
 
@@ -41,7 +41,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-BRAIN = tempfile.mkdtemp(prefix="javis-brain-ghim-")
+BRAIN = tempfile.mkdtemp(prefix="unimate-brain-ghim-")
 (Path(BRAIN) / "agents").mkdir(parents=True, exist_ok=True)
 (Path(BRAIN) / "workflows").mkdir(parents=True, exist_ok=True)
 

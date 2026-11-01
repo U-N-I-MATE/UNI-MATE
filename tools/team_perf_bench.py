@@ -33,8 +33,8 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default="")
     a = ap.parse_args(argv)
 
-    state = Path(tempfile.mkdtemp(prefix="javis-team-bench-"))
-    os.environ["JAVIS_STATE_DIR"] = str(state / "state")
+    state = Path(tempfile.mkdtemp(prefix="unimate-team-bench-"))
+    os.environ["UNIMATE_STATE_DIR"] = str(state / "state")
     (state / "state").mkdir()
     brain = state / "brain"
     (brain / "agents").mkdir(parents=True)

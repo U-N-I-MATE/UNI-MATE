@@ -7,14 +7,14 @@ legacy. Với lý do "câu này không hợp fast path" thì đúng. Nhưng vớ
 chiều, vì legacy chính là đường gửi NHIỀU token hơn - phát hiện request quá to rồi đáp lại
 bằng một request còn to hơn, và provider trả lỗi.
 
-Đây đúng là tình huống đã chặn Javis với gói Groq 12.000 TPM khi một lượt cần 21.446 token.
+Đây đúng là tình huống đã chặn UNI MATE với gói Groq 12.000 TPM khi một lượt cần 21.446 token.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-quotadir-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-quotadir-")
 
 import context_compiler  # noqa: E402
 import model_limits  # noqa: E402
@@ -145,13 +145,13 @@ def _p8_run(tmp, settings, objective="Giải thích entropy là gì"):
 
 
 # Hạn mức rộng: phải chạy bình thường, để biết harness dựng đúng.
-_tmp = tempfile.mkdtemp(prefix="javis-p8-ok-")
+_tmp = tempfile.mkdtemp(prefix="unimate-p8-ok-")
 _plan = _p8_run(_tmp, _p8_settings(rolling_tpm=12_000, max_input=8_000))
 check("hạn mức rộng: Phase 8 không từ chối", _plan.action != "reject")
 shutil.rmtree(_tmp, ignore_errors=True)
 
 # Hạn mức siết tới mức không đủ cho cả phần BẮT BUỘC. Đây là toàn bộ lý do của Việc 5.
-_tmp = tempfile.mkdtemp(prefix="javis-p8-tight-")
+_tmp = tempfile.mkdtemp(prefix="unimate-p8-tight-")
 _plan = _p8_run(_tmp, _p8_settings(rolling_tpm=60, max_input=50))
 check("hạn mức siết: KHÔNG rơi về legacy (legacy còn to hơn)", _plan.action != "legacy")
 check("hạn mức siết: từ chối hẳn", _plan.action == "reject")

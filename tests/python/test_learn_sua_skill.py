@@ -159,13 +159,13 @@ def test_rao4_learn_lock_la_cam_dung(tmp_path):
 
 
 def test_rao5_skill_he_thong_la_cam(tmp_path):
-    """javis-builder do app ship và tự cập nhật. Sửa nó là bản đó thành của người dùng và app
+    """unimate-builder do app ship và tự cập nhật. Sửa nó là bản đó thành của người dùng và app
     ngừng cập nhật đè lên, mất im lặng một năng lực mặc định."""
     import system_sync
-    assert system_sync.is_system_skill("javis-builder")
+    assert system_sync.is_system_skill("unimate-builder")
     feature = _feature(tmp_path)
-    fp = _co_skill(tmp_path, slug="javis-builder")
-    rep = _chay(feature, tmp_path, [_sk(slug="javis-builder")])
+    fp = _co_skill(tmp_path, slug="unimate-builder")
+    rep = _chay(feature, tmp_path, [_sk(slug="unimate-builder")])
     assert "Bước còn thiếu" not in fp.read_text(encoding="utf-8")
     assert any("hệ thống" in b for b in rep["blocked"]), rep["blocked"]
 
@@ -192,7 +192,7 @@ def test_tao_moi_van_chay_binh_thuong(tmp_path):
     rep = _chay(feature, tmp_path, [_sk(op="create", slug="viet-email")])
     assert rep["skills"] == ["viet-email"]
     fm, _ = _fm(tmp_path / "skills" / "viet-email" / "SKILL.md")
-    assert fm["origin"] == "javis-learned"
+    assert fm["origin"] == "unimate-learned"
 
 
 # ---- dry-run: chỉ liệt kê, không ghi ----
@@ -211,7 +211,7 @@ def test_dry_run_khong_ghi_gi(tmp_path):
 def test_prompt_liet_ke_skill_da_co_va_dan_nhan_cam(tmp_path):
     feature = _feature(tmp_path)
     _co_skill(tmp_path)
-    _co_skill(tmp_path, slug="javis-builder")
+    _co_skill(tmp_path, slug="unimate-builder")
     _co_skill(tmp_path, slug="da-khoa", extra_fm="learn_lock: true\n")
     p = feature._build_prompt(CAPS, "brain", "hội thoại")
     assert "SKILL ĐÃ CÓ" in p

@@ -2,8 +2,8 @@
 
 Vì sao tách thành module riêng: chỗ cần tra tên trang có HAI đường, và trước đây chỉ một đường
 có bảng bí danh.
-  - Bộ não chính gọi tool `javis_ui` (system/plugins/javis-ui/plugin.py) - đường này vẫn tra.
-  - Bộ não GIỌNG NÓI tự phát dòng `JAVIS_UI: open_page ...` rồi main.py gọi thẳng dashboard
+  - Bộ não chính gọi tool `unimate_ui` (system/plugins/unimate-ui/plugin.py) - đường này vẫn tra.
+  - Bộ não GIỌNG NÓI tự phát dòng `UNIMATE_UI: open_page ...` rồi main.py gọi thẳng dashboard
     (đường tắt của Voice V2). Đường này trước đây đẩy nguyên chữ model viết ra, nên hễ model
     nói "công cụ" hay "kỹ năng" thay vì id tiếng Anh là dashboard trả "trang không tồn tại".
 
@@ -33,10 +33,10 @@ ALIASES = {
     "cai dat": "settings", "setting": "settings", "thiet lap": "settings",
     "mo hinh": "models", "model": "models", "bo nao": "models", "engine": "models",
     "ket noi": "mcp", "nguon": "mcp", "connect": "mcp", "nguon du lieu": "mcp",
-    "goi": "packs", "kho": "packs", "store": "packs", "pack": "packs", "javis store": "packs",
+    "goi": "packs", "kho": "packs", "store": "packs", "pack": "packs", "unimate store": "packs",
     "kenh": "channels", "telegram": "channels", "zalo": "channels",
     "muc dung": "usage", "token": "usage", "chi phi": "usage",
-    "tro chuyen": "chat", "hoi thoai": "chat", "trang chu": "home", "javis": "home",
+    "tro chuyen": "chat", "hoi thoai": "chat", "trang chu": "home", "unimate": "home",
     "do thi": "home", "graph": "home", "khoang nao": "home", "do thi tri thuc": "home",
     "linh vat": "pet", "mascot": "pet", "con pet": "pet", "pet": "pet", "thu cung": "pet",
     "chia se": "share", "share": "share", "link chia se": "share", "duong link": "share",

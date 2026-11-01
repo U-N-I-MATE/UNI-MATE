@@ -7,7 +7,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-rp-tuning-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-rp-tuning-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -67,7 +67,7 @@ check("get_offset reads it back", abs(st.get_offset("A", "g1", NOW) - st.OFFSET_
 
 # ---- the addressed_other gate ----
 ev = rp.Event(channel="zalo", bot_id="A", chat_id="g1", chat_type="group", msg_id="m", ts=NOW,
-              text="@Quý anh ơi lịch học Javis tuần này thế nào", sender_id="u1")
+              text="@Quý anh ơi lịch học UNI MATE tuần này thế nào", sender_id="u1")
 check("tagging someone else is filtered by default", rp.coarse_gate(ev, "none", {}) == (False, "addressed_other"))
 Q0 = {"question_score": {"value": 0.8, "evidence": ""}}
 check("a positive case from the owner or the review opens the gate", rp.coarse_gate(ev, "none", Q0, tag_case=True)[0])
@@ -80,8 +80,8 @@ ev_junk = rp.Event(channel="zalo", bot_id="A", chat_id="g1", chat_type="group", 
 check("junk stays junk even with the knob on", rp.coarse_gate(ev_junk, "none", Q, consider_tagged=True) == (False, "junk"))
 
 # pre_screen wires the knob through the profile
-p_off = rp.BotProfile(bot_id="T", name="Javis Vũ")
-p_on = rp.BotProfile(bot_id="T", name="Javis Vũ", consider_tagged=True)
+p_off = rp.BotProfile(bot_id="T", name="Uni Vũ")
+p_on = rp.BotProfile(bot_id="T", name="Uni Vũ", consider_tagged=True)
 check("pre_screen: knob off -> addressed_other", rp.pre_screen(ev, p_off, st, NOW)["code"] == "addressed_other")
 check("pre_screen: knob on -> candidate", rp.pre_screen(ev, p_on, st, NOW)["candidate"])
 
@@ -89,10 +89,10 @@ check("pre_screen: knob on -> candidate", rp.pre_screen(ev, p_on, st, NOW)["cand
 d = st.log_decision({"bot_id": "T", "chat_id": "g1", "ts": NOW, "text": ev.text, "verdict": "silent",
                      "candidate": False, "silence_code": "addressed_other", "address_level": "none",
                      "signals": {"question_score": 0.6}}, NOW)
-p_learn = rp.BotProfile(bot_id="T", name="Javis Vũ", learning_enabled=True, mode="on")
+p_learn = rp.BotProfile(bot_id="T", name="Uni Vũ", learning_enabled=True, mode="on")
 check("owner thumbs-down on a silenced tag", rp.owner_label(st, p_learn, d, "down", NOW) == "missed")
 ev2 = rp.Event(channel="zalo", bot_id="T", chat_id="g1", chat_type="group", msg_id="m2", ts=NOW + 60,
-               text="@Quý anh ơi lịch học Javis tuần sau thế nào", sender_id="u2")
+               text="@Quý anh ơi lịch học UNI MATE tuần sau thế nào", sender_id="u2")
 check("a similar tagged message now passes the gate", rp.pre_screen(ev2, p_off, st, NOW + 60)["candidate"])
 
 # prompt mentions the tag signal

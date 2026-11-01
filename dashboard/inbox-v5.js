@@ -157,7 +157,7 @@
         radio("ib-st", "hidden", s.status, tt("ht.f_st_hidden", { n: Number(stt.hidden) || 0 }));
     } else if (c === "time") {
       // The calendar for any days first (it is the one a long list would hide), then the quick ranges (date-range.js).
-      var DR = window.JavisDateRange, cur = s.when && s.when.preset ? s.when.preset : s.when ? "custom" : "";
+      var DR = window.UniMateDateRange, cur = s.when && s.when.preset ? s.when.preset : s.when ? "custom" : "";
       o = '<button type="button" class="s-btn-ghost ib-fm-cal' + (cur === "custom" ? " on" : "") + '">' + I("calendar") + ' ' +
         esc(cur === "custom" && DR ? DR.label(s.when) : tt("ib.f_time_pick")) + '</button>' +
         radio("ib-time", "", cur, tt("dr.all")) + ((DR && DR.PRESETS) || []).map(function (p) {
@@ -180,7 +180,7 @@
 
   // Chips for the active filters under the quick filters, each with an "x". Returns [{k, v, text}].
   function activeChips(st, tags, bots) {
-    var s = st || {}, out = [], DR = window.JavisDateRange;
+    var s = st || {}, out = [], DR = window.UniMateDateRange;
     if (s.when) out.push({ k: "when", v: "", text: tt("ib.fc_time", { t: DR ? DR.label(s.when) : "" }) });
     var name = function (id) { var g = (tags || []).filter(function (x) { return String(x.id) === String(id); })[0]; return g ? g.name : "#" + id; };
     (s.tagsAny || []).forEach(function (id) { out.push({ k: "tagsAny", v: id, text: tt("ib.fc_tag", { t: name(id) }) }); });
@@ -256,7 +256,7 @@
       '<button type="button" class="s-btn ib-dr-send"' + (busy ? " disabled" : "") + '>' + I(busy === "send" ? "loader" : "send") + ' ' + esc(tt("ib.dr_send")) + '</button></div></div>';
   }
 
-  window.JavisInboxV5 = {
+  window.UniMateInboxV5 = {
     WHO: WHO, whoLabel: whoLabel, whoSentence: whoSentence, whoButtonHtml: whoButtonHtml, whoMenuHtml: whoMenuHtml,
     pickerSummary: pickerSummary, pickerHtml: pickerHtml, filterCats: filterCats, filterMenuHtml: filterMenuHtml, activeChips: activeChips,
     modeBarHtml: modeBarHtml, modeChipHtml: modeChipHtml, modeSheetHtml: modeSheetHtml, draftHtml: draftHtml,

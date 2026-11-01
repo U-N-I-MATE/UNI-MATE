@@ -71,13 +71,13 @@ check("card: name, time, last line, state with its colour key; text escaped",
   card.includes("<strong>A &lt;b&gt;</strong>") && card.includes('ws-mini-tip-time">10:00') && card.includes("Last line") &&
   card.includes('data-st="need">Cần bạn'));
 check("one card for the app (moved out of workspace.js)", crSrc.includes('el.id = "wsMiniTip"') && !ws.includes('the.id = "wsMiniTip"') &&
-  ws.includes("window.JavisColResize.miniTip.show(b,"));
+  ws.includes("window.UniMateColResize.miniTip.show(b,"));
 
 // pages
 check("graph: both columns fold with their own buttons", crSrc.includes('collapse: { below: FOLD_AT(200), run: press("#vtCollapse") }') &&
   crSrc.includes('collapse: { below: FOLD_AT(280), run: press("#chatColThu") }'));
 check("chat: the conversations column folds like its collapse button",
-  consoleJs.includes("collapse: { below: window.JavisColResize.FOLD_AT(220), run: () => datSideThu(true) }"));
+  consoleJs.includes("collapse: { below: window.UniMateColResize.FOLD_AT(220), run: () => datSideThu(true) }"));
 check("partners: the right panel folds away when let go narrow, keeping its width",
   /if \(ben === "right" && tho && tho < NGUONG_AN_PHAI\) \{[\s\S]{0,400}luuBeRong\(ben, chanBeRong\(ben, w0, page\), page\);[\s\S]{0,80}datPhai\(false\);/.test(ws));
 check("team: list handle snaps to the 72px strip of team pictures (tm-mini), side panel folds with closeSide",

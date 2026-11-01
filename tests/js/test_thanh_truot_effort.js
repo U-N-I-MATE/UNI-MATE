@@ -34,7 +34,7 @@ check("the level baked into an Antigravity name is read for display",
   S.lockedLevel("gemini-3.8-flash-high") === "high" && S.lockedLevel("m-minimal") === "low" && S.lockedLevel("m-max") === "ultra"
   && S.lockedLevel("m-xhigh") === "xhigh" && S.lockedLevel("plain") === "");
 check("a locked model shows its own level on the chip and in the popover, not the global one",
-  (picker.match(/JavisEffortSlider\.lockedLevel\(/g) || []).length >= 2);
+  (picker.match(/UniMateEffortSlider\.lockedLevel\(/g) || []).length >= 2);
 const drawBody = (srcSlider.match(/function draw\(t\) \{[\s\S]*?\n    \}\n/) || [""])[0];
 check("the animation frame does not re-read styles or media queries", drawBody && !/getComputedStyle|matchMedia|reduced\(\)/.test(drawBody), drawBody.slice(0, 200));
 check("the canvas is only resized when the track size changes", /if \(cv\.width !== W \|\| cv\.height !== H\)/.test(srcSlider));

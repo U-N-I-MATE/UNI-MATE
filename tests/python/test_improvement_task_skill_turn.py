@@ -73,7 +73,7 @@ class TaskSkillTurnTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_actual_selected_api_binds_on_event_loop_and_lazy_hub_metadata_share_pin(self):
         _, routes = mcp_hub._builtin_tools('full', self.brain)
-        handler = routes['javis_use_skill']['call']
+        handler = routes['unimate_use_skill']['call']
         scope = await self.start()
         self.assertIs(self.m.current(self.brain), scope, 'thread-local bind would not propagate to event loop')
         with patch.object(self.registry, 'refresh_skills', side_effect=AssertionError('global task projection')):

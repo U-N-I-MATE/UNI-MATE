@@ -1,26 +1,26 @@
 <!-- translated-from: QUICKSTART.en.md sha256:2f4928f341af -->
-# Javis OS - 빠른 시작
+# UNI MATE - 빠른 시작
 
 *[English](../../../QUICKSTART.en.md) · [Tiếng Việt](../../../QUICKSTART.md) · [简体中文](../zh/QUICKSTART.md) · [Español](../es/QUICKSTART.md) · [日本語](../ja/QUICKSTART.md) · [हिन्दी](../hi/QUICKSTART.md) · [Português](../pt-BR/QUICKSTART.md) · **한국어** · [Русский](../ru/QUICKSTART.md) · [Deutsch](../de/QUICKSTART.md) · [Français](../fr/QUICKSTART.md) · [Bahasa Indonesia](../id/QUICKSTART.md)*
 
 > 이 문서는 영어 빠른 시작 안내를 자동 번역한 것입니다.
 
-몇 분이면 Javis OS를 실행할 수 있습니다. 전체 안내서: [docs/en/](../../../docs/en/README.md).
+몇 분이면 UNI MATE를 실행할 수 있습니다. 전체 안내서: [docs/en/](../../../docs/en/README.md).
 
 ## 방법 1 - Hostinger VPS (Docker Manager, 원클릭)
 
-> 🛒 **아직 VPS가 없나요?** [여기서 Hostinger VPS 신청하기](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager가 기본 탑재되어 있어 Javis를 원클릭으로 설치합니다. 준비되면 아래 단계로 돌아오세요.
+> 🛒 **아직 VPS가 없나요?** [여기서 Hostinger VPS 신청하기](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager가 기본 탑재되어 있어 UNI MATE를 원클릭으로 설치합니다. 준비되면 아래 단계로 돌아오세요.
 
 1. hPanel → VPS → **Docker Manager** → **Compose** → **Compose from URL**.
 2. 다음 URL을 붙여 넣습니다.
    ```
-   https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+   https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.hostinger.yml
    ```
 3. (선택, HTTPS + 도메인을 쓰려면) **Environment** 상자에 다음을 설정합니다.
    ```
-   DOMAIN_NAME=javis.<vps-hostname>.hstgr.cloud
+   DOMAIN_NAME=unimate.<vps-hostname>.hstgr.cloud
    ```
-   (호스트 이름은 hPanel → VPS에서 확인할 수 있습니다. 예: `javis.srv1782015.hstgr.cloud`.)
+   (호스트 이름은 hPanel → VPS에서 확인할 수 있습니다. 예: `unimate.srv1782015.hstgr.cloud`.)
 4. **Deploy** 를 누릅니다. 1-3분 기다린 뒤 **Open** 버튼(또는 `https://<DOMAIN_NAME>`)으로 앱을 엽니다.
 5. 처음 실행하면 관리자 계정을 만들라는 화면이 나옵니다. 그다음 컨테이너 터미널에서 Claude Code에 한 번 로그인합니다: `claude auth login --claudeai`.
 
@@ -39,7 +39,7 @@ http://localhost:7777 을 엽니다. Caddy를 통해 HTTPS를 쓰려면 `-f dock
 
 1. Python 3.12 + Node 22를 설치합니다.
 2. 프로젝트 폴더에서 `setup.bat` 을 한 번 실행합니다. .venv를 만들고, 의존성을 설치하고, CLI 엔진 두 가지(Claude Code, Codex)도 대신 설치해 줍니다.
-3. `start-javis.bat` 으로 백그라운드에서 실행합니다(멈추려면 `stop-javis.bat`).
+3. `start-unimate.bat` 으로 백그라운드에서 실행합니다(멈추려면 `stop-unimate.bat`).
 4. http://localhost:7777 을 엽니다.
 
 ## 실행한 다음에는

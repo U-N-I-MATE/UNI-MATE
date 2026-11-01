@@ -7,7 +7,7 @@
 
    - Chip phải nói về project CỦA LƯỢT CHAT chứ không phải bộ lọc cột trái. Server bơm hướng
      dẫn theo `sessions.project_id`; chip mà đọc bộ lọc là nó nói dối đúng vào lúc người dùng
-     mở nó ra để kiểm tra xem Javis đang nhận hướng dẫn nào.
+     mở nó ra để kiểm tra xem UNI MATE đang nhận hướng dẫn nào.
    - Hướng dẫn lưu theo debounce, nên phải có đường XẢ khi đóng ngăn kéo / rời tab / rời ô
      nhập. Thiếu nhát đó thì gõ xong đóng nhanh tay là mất chữ, và mất im lặng.
    - Tài liệu tải lên phải vào SOURCES, và tên thư mục phải do SERVER tìm. Hai cái bẫy nằm
@@ -37,14 +37,14 @@ const check = (name, cond, them) => {
 // ============================================================
 // 1. Chip: có chỗ đứng ở CẢ HAI khung chat
 // ============================================================
-check("chip có chỗ đứng ở thanh nhãn khung chat màn Javis",
+check("chip có chỗ đứng ở thanh nhãn khung chat màn UNI MATE",
   /<span class="proj-chip-host" id="projChipHost"><\/span>/.test(HTML));
 check("và ở thanh tiêu đề trang Trò chuyện",
   /'<span class="proj-chip-host"><\/span>' \+/.test(CS));
 // Trang Trò chuyện dựng lại thanh tiêu đề từ đầu mỗi lần vào, nên phải vẽ lại chip sau đó -
-// không thì chip chỉ có ở màn Javis, đúng chỗ người dùng ít chat nhất.
+// không thì chip chỉ có ở màn UNI MATE, đúng chỗ người dùng ít chat nhất.
 check("renderChat vẽ lại chip sau khi dựng thanh tiêu đề",
-  /JavisChatSide\.chip\(\)/.test(CS));
+  /UniMateChatSide\.chip\(\)/.test(CS));
 check("module xuất hàm vẽ chip và hàm mở khung",
   /chip: renderProjChip, moKhung: openProjDrawer/.test(SU));
 // 0.53.1: nút "Mở khung project" trong menu ĐỔI thành nút GHIM (chủ repo yêu cầu 01/09).
@@ -109,17 +109,17 @@ check("có hàm hỏi project của lượt chat", !!duAn);
 check("hỏi hàng phiên qua /sessions/{id}/meta chứ không đọc bộ lọc",
   /\/sessions\/" \+ encodeURIComponent\(sid\) \+ "\/meta/.test(duAn), duAn.slice(0, 120));
 // Chat chưa gửi tin nào thì chưa có hàng trong DB; lúc đó bộ lọc MỚI là câu trả lời đúng vì
-// JavisProjects.claim sẽ gắn tin đầu tiên vào đúng project đang lọc.
+// UniMateProjects.claim sẽ gắn tin đầu tiên vào đúng project đang lọc.
 check("chưa có phiên thì mới rơi về bộ lọc", /if \(!sid\) return locThat;/.test(duAn));
 check("404 (id đã mint, chưa gửi tin) cũng rơi về bộ lọc", /pid = locThat;/.test(duAn));
 // Mạng hỏng mà ghi cache thì cái sai đó sống tới khi đổi phiên.
 check("mạng hỏng thì KHÔNG ghi cache", /catch \(e\) \{ return locThat; \}/.test(duAn));
 check("đổi phiên là bỏ cache rồi vẽ lại chip",
-  /javis:sessions-changed", function \(\) \{\s*\n\s*quenPhienProj\(\);\s*\n\s*renderProjChip\(\);/.test(SU));
-// refresh() thoát sớm khi cột trái chưa mount, mà chip còn đứng ở màn Javis - nơi cột đó
+  /unimate:sessions-changed", function \(\) \{\s*\n\s*quenPhienProj\(\);\s*\n\s*renderProjChip\(\);/.test(SU));
+// refresh() thoát sớm khi cột trái chưa mount, mà chip còn đứng ở màn UNI MATE - nơi cột đó
 // không bao giờ mount. Nên chip phải nghe sự kiện bằng listener RIÊNG.
 check("chip có listener riêng, không dựa vào refresh() của cột trái",
-  (SU.match(/addEventListener\("javis:sessions-changed"/g) || []).length === 2);
+  (SU.match(/addEventListener\("unimate:sessions-changed"/g) || []).length === 2);
 check("đổi project của một cuộc cũng làm chip vẽ lại",
   /quenPhienProj\(\);\s*\n\s*renderProjChip\(\);\s*\n\s*cached = null;/.test(SU));
 
@@ -231,7 +231,7 @@ const moi = (SU.match(/async function newProject\(\)[\s\S]*?\n  \}/) || [""])[0]
 check("tạo xong thì mở luôn khung project", /openProjDrawer\(r\.id\)/.test(moi));
 check("kèm banner chào", /pdOnboard = true;/.test(moi));
 check("và mở sẵn một hội thoại trống để tin đầu rơi vào project mới",
-  /JavisSessions\.new\(\)/.test(moi));
+  /UniMateSessions\.new\(\)/.test(moi));
 check("banner chỉ sống trong lần mở đó, đóng khung là tắt",
   /pdOnboard = false;/.test((SU.match(/function closeProjDrawer\(\)[\s\S]*?\n  \}/) || [""])[0]));
 check("xoá project đang mở thì đóng khung theo",
@@ -253,7 +253,7 @@ check("nền mờ dùng token --scrim (tông sáng không bị phủ đen)",
 // Khung dựng MỘT lần nên nút đóng / đổi tên không tự vẽ lại như thân khung: đổi ngôn ngữ mà
 // không bỏ node đi thì hai nút đó nói tiếng cũ mãi mãi.
 check("đổi ngôn ngữ thì bỏ node khung đi để lần sau dựng lại",
-  /addEventListener\("javis:i18n", function \(\) \{[\s\S]*?pdEl = null;/.test(SU));
+  /addEventListener\("unimate:i18n", function \(\) \{[\s\S]*?pdEl = null;/.test(SU));
 
 // ============================================================
 // 8. i18n: khung mới không được là ốc đảo tiếng Việt cứng
@@ -273,8 +273,8 @@ check("không dùng emoji thay icon (mockup dùng emoji, app dùng Lucide)",
 // Bấm vào tên một tài liệu mà không mở được nó ra đọc là phản xạ bị phụ - danh sách này
 // chính là chỗ người ta đi tìm tài liệu.
 check("tên file là NÚT mở, dùng lại ba nấc của chip 'file đang mở'",
-  /JavisOpenNoteAt === "function" && window\.JavisOpenNoteAt\(f\.path, ten\)/.test(SU)
-  && /JavisEditFile === "function"/.test(SU) && /JavisOpenFiles === "function"/.test(SU));
+  /UniMateOpenNoteAt === "function" && window\.UniMateOpenNoteAt\(f\.path, ten\)/.test(SU)
+  && /UniMateEditFile === "function"/.test(SU) && /UniMateOpenFiles === "function"/.test(SU));
 check("mở file thì đóng ngăn kéo (trình sửa hiện ra sau nó)",
   /function moFile\(f\) \{[\s\S]*?closeProjDrawer\(\);/.test(SU));
 // <a> lồng trong <button> là HTML sai và trình duyệt nuốt cú bấm vào link.
@@ -321,9 +321,9 @@ check("file đã dời vẫn hiện, mờ đi và gạch ngang",
   /\.pd-row\.mat \{ opacity/.test(CSS) && /\.pd-row\.mat \.pd-row-name \{ text-decoration: line-through/.test(CSS));
 check("và nói rõ vì sao nó mờ", /đổi tên hoặc dời/i.test(VI["cts.file_gone"] || ""));
 // Người dùng phải biết danh sách này gom từ đâu, nếu không thiếu một file là mất lòng tin.
-check("nói thẳng giới hạn: chỉ gom file Javis có nhắc tên",
+check("nói thẳng giới hạn: chỉ gom file UNI MATE có nhắc tên",
   /nhắc tên/.test(VI["cts.note"] || ""));
-check("ghi rõ link do ai gửi", !!VI["cts.from_you"] && !!VI["cts.from_javis"]);
+check("ghi rõ link do ai gửi", !!VI["cts.from_you"] && !!VI["cts.from_unimate"]);
 
 // ============================================================
 // 11. Phản hồi 01/09: nút ba chấm, tên project đủ chỗ, chip không phá thanh nhãn

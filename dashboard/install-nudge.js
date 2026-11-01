@@ -1,8 +1,8 @@
-/* install-nudge.js - nhắc thêm Javis vào Màn hình chính, MỖI NGÀY MỘT LẦN.
+/* install-nudge.js - nhắc thêm UNI MATE vào Màn hình chính, MỖI NGÀY MỘT LẦN.
 
-   Vì sao cần: trên điện thoại, Javis mở bằng tab trình duyệt và Javis mở bằng app đã cài là
+   Vì sao cần: trên điện thoại, UNI MATE mở bằng tab trình duyệt và UNI MATE mở bằng app đã cài là
    hai trải nghiệm khác hẳn nhau - và cái khác lớn nhất không nhìn thấy được. iOS CHỈ cho
-   nhận thông báo đẩy khi trang đã được "Thêm vào MH chính" (iOS 16.4+). Ai dùng Javis bằng
+   nhận thông báo đẩy khi trang đã được "Thêm vào MH chính" (iOS 16.4+). Ai dùng UNI MATE bằng
    Safari thường sẽ không bao giờ nhận được kết quả việc nền, mà cũng không có gì nói cho họ
    biết vì sao. Nút "Mở như app" trên thanh trạng thái chỉ hiện ở trình duyệt có
    beforeinstallprompt (Chrome/Edge), tức là đúng iOS - nơi cần nhất - lại không có nút nào.
@@ -20,8 +20,8 @@
 */
 (function () {
   "use strict";
-  var KEY_LUC = "javis.install.nhac_luc";     // lần nhắc gần nhất (epoch ms)
-  var KEY_TAT = "javis.install.tat_nhac";     // "1" = người dùng bảo đừng nhắc nữa
+  var KEY_LUC = "unimate.install.nhac_luc";     // lần nhắc gần nhất (epoch ms)
+  var KEY_TAT = "unimate.install.tat_nhac";     // "1" = người dùng bảo đừng nhắc nữa
   var MOT_NGAY = 24 * 60 * 60 * 1000;
   var CHO_TRUOC_KHI_HIEN = 12000;             // 12 giây - xem luật 2
 
@@ -58,7 +58,7 @@
 
   function ve() {
     var ios = laIOS();
-    var coNutCai = !!(window.JavisInstall && window.JavisInstall.coHopCai());
+    var coNutCai = !!(window.UniMateInstall && window.UniMateInstall.coHopCai());
     var than = ios
       ? '<ol class="inud-buoc">'
         + '<li>' + window.t("instl.ios1_a") + ' <b>' + window.t("instl.ios1_b") + '</b> ' + window.t("instl.ios1_c") + '</li>'
@@ -105,7 +105,7 @@
     if (tat) tat.onclick = function () { ghi(KEY_TAT, "1"); dong(el); };
     if (cai) cai.onclick = async function () {
       cai.disabled = true;
-      var xong = await window.JavisInstall.moHopCai();
+      var xong = await window.UniMateInstall.moHopCai();
       dong(el);
       // Cài xong thì thôi hẳn; từ chối thì mai nhắc lại như thường.
       if (xong) ghi(KEY_TAT, "1");
@@ -130,5 +130,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", batDau);
   else batDau();
 
-  window.JavisInstallNudge = { thu: thu, denHen: denHen, laIOS: laIOS, laDienThoai: laDienThoai };
+  window.UniMateInstallNudge = { thu: thu, denHen: denHen, laIOS: laIOS, laDienThoai: laDienThoai };
 })();

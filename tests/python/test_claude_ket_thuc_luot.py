@@ -6,7 +6,7 @@ import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-completion-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-completion-"))
 import claude_agent_sdk as sdk
 from claude_sdk_engine import ClaudeSDK
 
@@ -36,9 +36,9 @@ async def run_case(messages, monitored=True):
          patch.object(ClaudeSDK, "is_available", return_value=True), \
          patch.object(ClaudeSDK, "_options", return_value=SimpleNamespace(include_hook_events=monitored)), \
          patch("claude_token_gate.xep_hang", return_value=""), \
-         patch.dict(os.environ, {"JAVIS_CLAUDE_RESULT_TIMEOUT": "0.05",
-                                 "JAVIS_CLAUDE_IDLE_TIMEOUT": "0",
-                                 "JAVIS_CLAUDE_FIRST_TIMEOUT": "0"}):
+         patch.dict(os.environ, {"UNIMATE_CLAUDE_RESULT_TIMEOUT": "0.05",
+                                 "UNIMATE_CLAUDE_IDLE_TIMEOUT": "0",
+                                 "UNIMATE_CLAUDE_FIRST_TIMEOUT": "0"}):
         engine = ClaudeSDK(tag="completion-test")
         engine.session_id = "s1"
         events = []
@@ -48,7 +48,7 @@ async def run_case(messages, monitored=True):
         try:
             await asyncio.wait_for(consume(), 0.5)
         except asyncio.TimeoutError:
-            raise AssertionError("Claude reported end_turn but Javis kept waiting for result") from None
+            raise AssertionError("Claude reported end_turn but UNI MATE kept waiting for result") from None
     assert client.closed, "SDK connection must be closed"
     return events
 
@@ -177,7 +177,7 @@ asyncio.run(main())
 with patch("claude_cli.tim_binary", return_value="/test/claude"), \
      patch("claude_cli.find_claude_cli", return_value="/test/claude"), \
      patch.object(ClaudeSDK, "_mcp_servers", return_value=(None, False)), \
-     patch.dict(os.environ, {"JAVIS_CLAUDE_CLI": "/test/claude"}):
+     patch.dict(os.environ, {"UNIMATE_CLAUDE_CLI": "/test/claude"}):
     with patch("claude_cli.co_co", return_value=True):
         opts = ClaudeSDK()._options()
         assert opts.include_hook_events and opts.include_partial_messages

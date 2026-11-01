@@ -2,8 +2,8 @@
 
     python tests/run.py chat_socket_chet      (KHÔNG mạng)
 
-Lỗi thật, khách báo 08/10/2026 kèm ảnh: ra lệnh xong Javis xử lý một lúc rồi đứng im, chip
-"Javis đang suy nghĩ..." đếm tới 5 phút, phải gửi lại câu lệnh mới chạy tiếp.
+Lỗi thật, khách báo 08/10/2026 kèm ảnh: ra lệnh xong UNI MATE xử lý một lúc rồi đứng im, chip
+"UNI MATE đang suy nghĩ..." đếm tới 5 phút, phải gửi lại câu lệnh mới chạy tiếp.
 
 Gốc: máy ngủ, đổi Wi-Fi, router rớt kết nối thì trình duyệt vẫn giữ WebSocket ở trạng thái OPEN
 và không bao giờ gọi onclose. Lượt chat vẫn chạy xong trên server (job không thuộc socket), nhưng

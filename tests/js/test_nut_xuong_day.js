@@ -85,7 +85,7 @@ check("pressing the button jumps to the end", area.scrollTop === area.scrollHeig
 check("CANARY: at the end the New messages look is dropped", !btn.classList.contains("has-new") && !btn.classList.contains("show"));
 check("icon through ic() with a fallback when icons.js is missing", /typeof win\.ic === "function"\) \? win\.ic\("chevron-down"\)/.test(SCROLL));
 check("main chat uses the shared module on #chatArea with its button, selectors and the 90px threshold",
-  /const chatScroll = window\.JavisChatScroll\.attach\(chatArea, \{\s*button: newMsgBtn, msg: "\.msg", hold: "\.msg-acts:hover, \.jr-chat:hover", near: 90,/.test(APP)
+  /const chatScroll = window\.UniMateChatScroll\.attach\(chatArea, \{\s*button: newMsgBtn, msg: "\.msg", hold: "\.msg-acts:hover, \.jr-chat:hover", near: 90,/.test(APP)
   && /function scrollBottom\(force\) \{ chatScroll\.toBottom\(force\); \}/.test(APP));
 
 // ---- 4. CSS ----

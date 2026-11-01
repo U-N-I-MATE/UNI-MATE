@@ -20,13 +20,13 @@ def check(name, cond):
         fails.append(name)
 
 
-root = Path(tempfile.mkdtemp(prefix="javis-receipt-"))
-(root / "Javis" / "loops").mkdir(parents=True)
+root = Path(tempfile.mkdtemp(prefix="unimate-receipt-"))
+(root / "UNI MATE" / "loops").mkdir(parents=True)
 (root / "agents").mkdir()
 (root / "skills" / "old").mkdir(parents=True)
 (root / "skills" / "old" / "SKILL.md").write_text("---\nname: Old skill\n---\nx", encoding="utf-8")
 (root / "agents" / "lan.md").write_text("---\nname: Lan\n---\nbody", encoding="utf-8")
-(root / "Javis" / "reminders.json").write_text(json.dumps({"reminders": [
+(root / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_old", "status": "pending", "label": "Old"}]}), encoding="utf-8")
 
 check("no snapshot, no receipt", cr.diff(None, root) == [])
@@ -34,10 +34,10 @@ snap = cr.snapshot(root)
 check("unchanged brain gives nothing", cr.diff(snap, root) == [])
 
 time.sleep(0.01)
-(root / "Javis" / "reminders.json").write_text(json.dumps({"reminders": [
+(root / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_old", "status": "cancelled", "label": "Old"},
     {"id": "r_new", "status": "pending", "label": "Báo doanh thu 7h"}]}), encoding="utf-8")
-(root / "Javis" / "loops" / "quet-don.md").write_text("---\nname: Quét đơn\n---\n", encoding="utf-8")
+(root / "UNI MATE" / "loops" / "quet-don.md").write_text("---\nname: Quét đơn\n---\n", encoding="utf-8")
 (root / "agents" / "lan.md").write_text("---\nname: Lan (sửa)\n---\nbody 2", encoding="utf-8")
 (root / "skills" / "viet-email").mkdir()
 (root / "skills" / "viet-email" / "SKILL.md").write_text("---\nname: \"Viết email\"\n---\n", encoding="utf-8")
@@ -52,8 +52,8 @@ check("new skill name unquoted", by.get(("skill", "viet-email"), {}).get("title"
 check("old skill untouched not listed", ("skill", "old") not in by)
 
 block = cr.receipt_block(items, "/brains/shop")
-check("block shape", block.startswith("<!-- JAVIS_DOI: ") and block.endswith(" -->"))
-data = json.loads(block[len("<!-- JAVIS_DOI: "):-4])
+check("block shape", block.startswith("<!-- UNIMATE_DOI: ") and block.endswith(" -->"))
+data = json.loads(block[len("<!-- UNIMATE_DOI: "):-4])
 check("block carries brain and items", data["brain"] == "/brains/shop" and len(data["items"]) == len(items))
 check("block cannot be closed early by a title", "-->" not in cr.receipt_block(
     [{"kind": "loop", "id": "x", "title": "evil --> <script>", "act": "new"}], "b")[:-4])

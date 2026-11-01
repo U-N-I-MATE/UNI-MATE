@@ -2,7 +2,7 @@
 
 Spec §10. Two locks, in this order, before anything is stored:
 
-1. The Javis token. `Authorization: Bearer <token>` or a header the owner names (`X-Javis-Token` by default). The query
+1. The UNI MATE token. `Authorization: Bearer <token>` or a header the owner names (`X-UniMate-Token` by default). The query
    string `?token=` is accepted only for hooks created before 0.274.0 (their senders were set up that way); the
    dashboard warns that a token in a URL ends up in access logs. Only a SHA-256 of the token is stored.
 2. A provider profile (`verify`), checked on the RAW body:
@@ -13,14 +13,14 @@ Spec §10. Two locks, in this order, before anything is stored:
     {"provider": "systeme_io", "secret": ref}    X-Webhook-Signature, see SYSTEME_IO (NOT production verified)
     {"provider": "hmac_sha256", "secret": ref, "header": "X-Signature", "encoding": "hex"|"base64", "prefix": "",
      "timestamp_header": "", "tolerance_s": 300}  any sender that signs the raw body
-    {"provider": "none"}                          the Javis token only (the default)
+    {"provider": "none"}                          the UNI MATE token only (the default)
 
    The payload never chooses the algorithm, the header or the secret: they are the hook's. A signing secret can be
    rotated with a bounded overlap: the previous secret keeps working until `previous_until` (spec §10: two keys, a
    finite overlap); the key that matched (`current` / `previous`) and the time are stored with the event.
 
 POSCake: its webhook contract (signature header, event names, payload) is NOT known to this code and is not guessed.
-Use `none` (the Javis token) or `hmac_sha256` once the contract is confirmed against a real POSCake account; see
+Use `none` (the UNI MATE token) or `hmac_sha256` once the contract is confirmed against a real POSCake account; see
 docs/webhook-platform/poscake-migration.md.
 """
 from __future__ import annotations
@@ -43,7 +43,7 @@ ADAPTER_STATUS = {"none": "spec", "hmac_sha256": "spec", "stripe": "spec", "gith
 STRIPE_TOLERANCE_S = 300
 OVERLAP_DEFAULT_H = 24
 OVERLAP_MAX_H = 168
-DEFAULT_TOKEN_HEADER = "x-javis-token"
+DEFAULT_TOKEN_HEADER = "x-unimate-token"
 # Systeme.io (spec §10, [S5]): signature header `X-Webhook-Signature`, HMAC-SHA256 hex over the JSON as Systeme
 # normalises it (Unicode and slash escaping), dedup on `X-Webhook-Message-Id` (stable across retries), never the attempt
 # id. The exact normalisation could not be read from developer.systeme.io from this environment, so the check accepts
@@ -62,7 +62,7 @@ class VerifyError(ValueError):
     """The verify config itself is wrong (shown when saving)."""
 
 
-# ── the Javis token ──
+# ── the UNI MATE token ──
 def hash_token(token: str) -> str:
     return hashlib.sha256(str(token or "").encode("utf-8")).hexdigest()
 
@@ -78,8 +78,8 @@ def token_header_name(name: Any) -> str:
         return DEFAULT_TOKEN_HEADER
     if len(n) > 64 or not all(c.isalnum() or c == "-" for c in n) or n in (
             "authorization", "cookie", "content-length", "host", "x-forwarded-for") or n in STORED_HEADERS:
-        # A header Javis stores with the event (or uses as the delivery key) would put the token in the log and exports.
-        raise VerifyError("the token header is a plain header name (letters, digits and -) that Javis does not "
+        # A header UNI MATE stores with the event (or uses as the delivery key) would put the token in the log and exports.
+        raise VerifyError("the token header is a plain header name (letters, digits and -) that UNI MATE does not "
                           "store or use for anything else")
     return n
 
@@ -127,7 +127,7 @@ def validate(cfg: Any) -> dict:
         raise VerifyError("verify must be an object")
     prov = str(cfg.get("provider") or "none")
     if prov == "poscake":
-        raise VerifyError("POSCake's webhook signature is not known yet: use provider none (the Javis token) or "
+        raise VerifyError("POSCake's webhook signature is not known yet: use provider none (the UNI MATE token) or "
                           "hmac_sha256 once POSCake's contract is confirmed")
     if prov not in PROVIDERS:
         raise VerifyError(f"provider is one of {', '.join(PROVIDERS)}")
@@ -147,7 +147,7 @@ def validate(cfg: Any) -> dict:
     prev = cfg.get("previous_secret")
     if prev is not None:
         if not (isinstance(prev, dict) and "$secret" in prev) and not (isinstance(prev, str) and 8 <= len(prev) <= 500):
-            raise VerifyError("previous_secret is set by Javis when the secret changes")
+            raise VerifyError("previous_secret is set by UNI MATE when the secret changes")
         out["previous_secret"] = prev
         try:
             out["previous_until"] = float(cfg.get("previous_until") or 0)

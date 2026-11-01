@@ -40,7 +40,7 @@ def native_view_worker(root):
     manifest, pin, trial_id = (payload[key] for key in ('manifest', 'pin', 'trial_id'))
     if manifest['version'] != 3 or manifest['engine_config_hash'] != _hash(pin):
         raise ValueError('qualification_view_configuration_changed')
-    if pin['profile_hash'] != native.profile_hash() or pin['cli_path'] != os.environ['JAVIS_TEST_NATIVE_CLI']:
+    if pin['profile_hash'] != native.profile_hash() or pin['cli_path'] != os.environ['UNIMATE_TEST_NATIVE_CLI']:
         raise ValueError('qualification_view_profile_changed')
 
     async def run():
@@ -130,7 +130,7 @@ if '--qualification-worker' not in sys.argv:
     from test_improvement_experiment_execution import _REAL_RUN, _REAL_POPEN
     from test_improvement_role_qualification import qualification_directory
 
-    @unittest.skipUnless(os.environ.get('JAVIS_TEST_NATIVE_QUALIFICATION_CLI'), 'Explicit pinned local native qualification only')
+    @unittest.skipUnless(os.environ.get('UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'), 'Explicit pinned local native qualification only')
     class ViewNativeQualificationTests(sources.SourceFixture, unittest.IsolatedAsyncioTestCase):
         request = materialization.ViewMaterializationTests.request
         load = materialization.ViewMaterializationTests.load
@@ -139,7 +139,7 @@ if '--qualification-worker' not in sys.argv:
         materialize = materialization.ViewMaterializationTests.materialize
 
         def setUp(self):
-            binary = runtime.candidate(os.environ['JAVIS_TEST_NATIVE_QUALIFICATION_CLI'])
+            binary = runtime.candidate(os.environ['UNIMATE_TEST_NATIVE_QUALIFICATION_CLI'])
             self.pin = {'version': 1, 'provider': 'anthropic-cli', 'engine_id': 'claude-sdk',
                 'model': 'claude-opus-5-5', 'reasoning': 'medium', 'cli_path': str(binary),
                 'cli_hash': runtime.CANDIDATE_HASH, 'cli_version': runtime.CANDIDATE_VERSION,
@@ -298,8 +298,8 @@ if __name__ == '__main__':
             runtime.qualification_worker(Path(sys.argv[2]))
     else:
         result = unittest.main(exit=False)
-        if EVIDENCE and os.environ.get('JAVIS_TEST_NATIVE_VIEW_QUALIFICATION_EVIDENCE'):
-            Path(os.environ['JAVIS_TEST_NATIVE_VIEW_QUALIFICATION_EVIDENCE']).write_text(json.dumps({
+        if EVIDENCE and os.environ.get('UNIMATE_TEST_NATIVE_VIEW_QUALIFICATION_EVIDENCE'):
+            Path(os.environ['UNIMATE_TEST_NATIVE_VIEW_QUALIFICATION_EVIDENCE']).write_text(json.dumps({
                 'version': 1, 'evidence_class': 'technical', 'label': 'native-view-local-enforcement-only',
                 'passed': result.result.wasSuccessful(), 'profile_hash': native.profile_hash(),
                 'production_billing': False, 'selected_account_calls': 0, 'native_trialrunner_proof': False,

@@ -12,7 +12,7 @@ Cả ba đều là loại "chạy trên máy dev không đời nào lộ ra":
    `chcp 65001` trong setup.bat cũng không cứu (đổi codepage console, không đổi ANSI codepage).
 
 2. MODEL BÁO SAI NGUYÊN NHÂN KHI BỊ CHẶN GHI FILE. Việc Kanban chạy mức `suggest` thì
-   `javis_write_file` từ chối - đúng thiết kế. Nhưng câu từ chối cũ mơ hồ, model đọc xong tự
+   `unimate_write_file` từ chối - đúng thiết kế. Nhưng câu từ chối cũ mơ hồ, model đọc xong tự
    dựng ra một nguyên nhân nghe hợp lý mà sai hoàn toàn: người dùng nhận được "môi trường
    filesystem đang lỗi quyền sandbox" rồi đi tìm lỗi ổ đĩa, trong khi thứ cần làm chỉ là nâng
    mức việc lên Ghi nháp. Thông báo cho MÁY ĐỌC cũng là giao diện, sai là hại thật.
@@ -90,8 +90,8 @@ check("dòng khai báo là comment, không thành một requirement", dong1.star
 import mcp_hub  # noqa: E402
 
 src = (SERVER / "mcp_hub.py").read_text(encoding="utf-8")
-# 0.256.0: mọi rào trước khi ghi dời vào `_kiem_ghi`, dùng chung cho javis_write_file và
-# javis_edit_file. Câu từ chối nằm ở đó.
+# 0.256.0: mọi rào trước khi ghi dời vào `_kiem_ghi`, dùng chung cho unimate_write_file và
+# unimate_edit_file. Câu từ chối nằm ở đó.
 i = src.find("async def _kiem_ghi(args")
 khoi = src[i:i + 1400]
 
@@ -109,9 +109,9 @@ import asyncio  # noqa: E402
 import tempfile  # noqa: E402
 from pathlib import Path  # noqa: E402
 
-vault = Path(tempfile.mkdtemp(prefix="javis-write-test-"))
+vault = Path(tempfile.mkdtemp(prefix="unimate-write-test-"))
 tools, route = mcp_hub._builtin_tools("suggest", str(vault))
-ghi = route.get("javis_write_file")
+ghi = route.get("unimate_write_file")
 check("mức suggest vẫn THẤY tool ghi file (để model biết nó tồn tại mà xin nâng quyền)",
       ghi is not None)
 if ghi:
@@ -122,7 +122,7 @@ if ghi:
           "Ghi nháp" in kq and "sandbox" in kq.lower(), kq[:80])
 
 tools2, route2 = mcp_hub._builtin_tools("auto", str(vault))
-kq2 = asyncio.run(route2["javis_write_file"]["call"]({"path": "thu.md", "content": "xin chao"}))
+kq2 = asyncio.run(route2["unimate_write_file"]["call"]({"path": "thu.md", "content": "xin chao"}))
 check("mức auto thì ghi được thật", not kq2.startswith("ERROR") and (vault / "thu.md").is_file(),
       kq2[:80])
 
@@ -139,29 +139,29 @@ check("ba vòng lặp tool đều đọc từ một chỗ",
       esrc.count("_n_vong = _max_tool_rounds()") == 3 and esrc.count("for _vong in range(_n_vong):") == 3,
       esrc.count("_n_vong = _max_tool_rounds()"))
 
-that_env = os.environ.get("JAVIS_MAX_TOOL_ROUNDS")
+that_env = os.environ.get("UNIMATE_MAX_TOOL_ROUNDS")
 try:
     # 0.47.1: mặc định 8 -> 30, kẹp trên 40 -> 120. Người dùng chạm trần 8 liên tục với việc
     # nhiều bước bình thường (27/08); phanh chống kẹt vòng lặp chuyển sang _LapGuard bên dưới.
     for dat, mong in ((None, 30), ("3", 3), ("40", 40), ("999", 120), ("0", 1), ("-5", 1),
                       ("abc", 30), ("", 30)):
-        os.environ.pop("JAVIS_MAX_TOOL_ROUNDS", None)
+        os.environ.pop("UNIMATE_MAX_TOOL_ROUNDS", None)
         if dat is not None:
-            os.environ["JAVIS_MAX_TOOL_ROUNDS"] = dat
+            os.environ["UNIMATE_MAX_TOOL_ROUNDS"] = dat
         got = engine._max_tool_rounds()
         check(f"trần với biến môi trường {dat!r} -> {mong}", got == mong, got)
-    os.environ.pop("JAVIS_MAX_TOOL_ROUNDS", None)
+    os.environ.pop("UNIMATE_MAX_TOOL_ROUNDS", None)
     msg = engine._het_vong_msg()
     check("câu báo nêu đúng con số đang áp dụng", "30 vòng" in msg, msg[:70])
-    check("câu báo chỉ ra biến môi trường để nâng trần", "JAVIS_MAX_TOOL_ROUNDS" in msg)
+    check("câu báo chỉ ra biến môi trường để nâng trần", "UNIMATE_MAX_TOOL_ROUNDS" in msg)
     check("câu báo gợi ý chia nhỏ yêu cầu", "chia nhỏ" in msg)
     check("câu báo nói rõ câu trả lời có thể còn dở", "còn dở" in msg)
-    os.environ["JAVIS_MAX_TOOL_ROUNDS"] = "20"
+    os.environ["UNIMATE_MAX_TOOL_ROUNDS"] = "20"
     check("đổi biến thì câu báo đổi theo", "20 vòng" in engine._het_vong_msg())
 finally:
-    os.environ.pop("JAVIS_MAX_TOOL_ROUNDS", None)
+    os.environ.pop("UNIMATE_MAX_TOOL_ROUNDS", None)
     if that_env is not None:
-        os.environ["JAVIS_MAX_TOOL_ROUNDS"] = that_env
+        os.environ["UNIMATE_MAX_TOOL_ROUNDS"] = that_env
 
 # ---- Phanh kẹt vòng lặp (_LapGuard): soi đúng bệnh thay vì đếm số ----
 g = engine._LapGuard()
@@ -195,7 +195,7 @@ check("cả ba vòng tool đều gắn phanh kẹt vòng lặp",
       esrc.count("guard = _LapGuard()") == 3, esrc.count("guard = _LapGuard()"))
 
 check("biến mới có trong tài liệu env",
-      "JAVIS_MAX_TOOL_ROUNDS" in (ROOT / "docs" / "16-cau-hinh-env.md").read_text(encoding="utf-8"))
+      "UNIMATE_MAX_TOOL_ROUNDS" in (ROOT / "docs" / "16-cau-hinh-env.md").read_text(encoding="utf-8"))
 
 if fails:
     print("\nFAIL - test_ba_loi_nguoi_dung_bao: " + str(len(fails)) + " lỗi: " + ", ".join(fails))

@@ -24,8 +24,8 @@
   var RAW = window.LucideIcons || {};
   var FALLBACK = "circle-help";
 
-  // ---- Icon RIÊNG của Javis (không có trong Lucide) ----------------------------------
-  // "javis-pet" là chính khuôn mặt linh vật: thân tròn cam, vành quỹ đạo mảnh, và đôi mắt
+  // ---- Icon RIÊNG của UNI MATE (không có trong Lucide) ----------------------------------
+  // "unimate-pet" là chính khuôn mặt linh vật: thân tròn cam, vành quỹ đạo mảnh, và đôi mắt
   // LIẾC chéo lên phải - đúng dáng của con pet ở mép màn hình và của dấu ấn trên thanh bên.
   // Trước đây trang Linh vật mượn mặt cười chung của Lucide, nên cái tab dẫn tới con pet lại
   // là thứ duy nhất trong app không giống con pet.
@@ -35,7 +35,7 @@
   // Toạ độ quy từ bản gốc 320x320 của pet.js (thân bán kính 78, mắt lệch +16/-12) về khung
   // 24x24, nên đổi dáng liếc bên đó thì đổi cả ở đây.
   var RIENG = {
-    "javis-pet":
+    "unimate-pet":
       '<circle cx="12" cy="12" r="11" fill="none" stroke="#F28C28" stroke-width="1.3" opacity=".55"/>' +
       '<circle cx="12" cy="12" r="8.2" fill="#F28C28" stroke="none"/>' +
       '<ellipse cx="12.1" cy="10.74" rx=".76" ry="1.84" fill="#201E1E" stroke="none"/>' +

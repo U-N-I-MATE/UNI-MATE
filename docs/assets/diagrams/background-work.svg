@@ -1,6 +1,6 @@
 <svg viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t d">
-<title id="t">Javis works while you sleep</title>
-<desc id="d">Four tasks move on their own across a Kanban board from Queued to Running, Review and Done overnight, and by 07:00 Javis sends a Telegram message that the daily sales report is ready.</desc>
+<title id="t">UNI MATE works while you sleep</title>
+<desc id="d">Four tasks move on their own across a Kanban board from Queued to Running, Review and Done overnight, and by 07:00 UNI MATE sends a Telegram message that the daily sales report is ready.</desc>
 <style>
 .mv,.fade,.st,.pg,.pf,.vf,.tm,.ic,.note,.morn,.pulse{animation-duration:14s;animation-iteration-count:infinite;animation-fill-mode:both}
 .pf{transform-box:fill-box;transform-origin:left center}
@@ -149,14 +149,14 @@
 <rect x="942" y="108" width="226" height="514" rx="30" fill="#151525" stroke="#2a2a40" stroke-width="2"/>
 <rect x="1021.0" y="120" width="68" height="8" rx="4" fill="#2a2a40"/>
 <circle cx="978" cy="164" r="18" fill="#f97316"/><text x="978" y="170.5" text-anchor="middle" font-size="18" font-weight="700" fill="#0b0b14">J</text>
-<text x="1006" y="160" font-size="18" font-weight="700" fill="#e5e7eb">Javis</text>
+<text x="1006" y="160" font-size="18" font-weight="700" fill="#e5e7eb">UNI MATE</text>
 <text x="1006" y="181" font-size="16" fill="#9ca3af">Telegram bot</text>
 <line x1="956" y1="200" x2="1154" y2="200" stroke="#2a2a40" stroke-width="1.5"/>
 <rect x="952" y="224" width="206" height="74" rx="14" fill="#2dd4bf" fill-opacity=".14" stroke="#2dd4bf" stroke-opacity=".35"/>
 <text font-size="16" fill="#e5e7eb"><tspan x="966" y="252">Run tonight's queue,</tspan><tspan x="966" y="274">report back here.</tspan></text>
 <text x="1158" y="320" text-anchor="end" font-family="ui-monospace, 'SFMono-Regular', Consolas, 'Courier New', monospace" font-size="16" fill="#9ca3af">23:00</text>
 <g class="note"><rect x="952" y="348" width="206" height="132" rx="14" fill="#f97316" fill-opacity=".12" stroke="#f97316" stroke-opacity=".55" stroke-width="1.5"/>
-<text x="966" y="375" font-size="16" font-weight="700" fill="#fb923c">Javis:</text>
+<text x="966" y="375" font-size="16" font-weight="700" fill="#fb923c">UNI MATE:</text>
 <text font-size="16" fill="#e5e7eb"><tspan x="966" y="400">Daily sales report is</tspan><tspan x="966" y="422">ready. Revenue <tspan fill="#4ade80" font-weight="700">+12%</tspan></tspan><tspan x="966" y="444">vs last week.</tspan></text>
 <text x="1146" y="468" text-anchor="end" font-family="ui-monospace, 'SFMono-Regular', Consolas, 'Courier New', monospace" font-size="16" fill="#9ca3af">07:00</text></g>
 <rect x="956" y="560" width="198" height="40" rx="20" fill="#0b0b14" stroke="#2a2a40" stroke-width="1.5"/>

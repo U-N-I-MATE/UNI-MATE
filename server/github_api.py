@@ -1,12 +1,12 @@
 """Thin GitHub REST client for the GitHub-in-chat feature (spec docs/dev/2026-10-github-trong-chat-spec.md).
 
-Why its own module instead of an MCP connector: the spec (section 4.1) keeps everything that talks to GitHub in Javis's
+Why its own module instead of an MCP connector: the spec (section 4.1) keeps everything that talks to GitHub in UNI MATE's
 own server code, so the status icons and every step after a push come from GitHub's answers, never from what a model
 says it did. It is also built into the core (section 5.1, owner 2026-10-27): no Store pack, no external MCP.
 
 Design rules:
 - Sync, small, stdlib plus httpx (already a dependency). Callers run it in a worker thread.
-- The API base is configurable (`JAVIS_GITHUB_API`, or the `base` argument) so tests run against a local fake server.
+- The API base is configurable (`UNIMATE_GITHUB_API`, or the `base` argument) so tests run against a local fake server.
   Nothing in tests ever reaches api.github.com.
 - The token is never logged and never part of an exception message. Errors carry the HTTP status and GitHub's own
   `message`, which is what a person needs to fix a token or a permission.
@@ -36,7 +36,7 @@ class GitHubError(Exception):
 
 
 def api_base() -> str:
-    return (os.environ.get("JAVIS_GITHUB_API") or DEFAULT_BASE).rstrip("/")
+    return (os.environ.get("UNIMATE_GITHUB_API") or DEFAULT_BASE).rstrip("/")
 
 
 class GitHub:
@@ -50,7 +50,7 @@ class GitHub:
     # ---- transport ----
     def _headers(self) -> Dict[str, str]:
         h = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
-             "User-Agent": "javis-os"}
+             "User-Agent": "UNI-MATE"}
         if self.token:
             h["Authorization"] = f"Bearer {self.token}"
         return h

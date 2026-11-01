@@ -118,7 +118,7 @@ check("không có em dash trong chuỗi mới", keys.every(function (k) { return
 // fetch giả trả lời như host: phiên "cu" (mở trước lúc cấp mã) là needs_new_session, phiên "moi" là ready.
 const calls = [];
 let current = "cu";
-global.window = { JavisSessions: { brain: function () { return "brain"; }, current: function () { return current; } } };
+global.window = { UniMateSessions: { brain: function () { return "brain"; }, current: function () { return current; } } };
 global.fetch = function (url) {
   calls.push(url);
   const m = /session_id=([^&]+)/.exec(url);

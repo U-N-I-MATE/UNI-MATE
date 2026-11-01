@@ -54,11 +54,11 @@ _TARGET_KEYS = ("threadId", "thread_id", "chat_id", "chatId", "to", "recipient",
                 "userId", "page_id", "channel", "customer", "order_id")
 _TEXT_KEYS = ("message", "text", "content", "body", "caption", "subject", "title")
 
-DONE_NOTE = ("[Javis] Thao tác này ĐÃ làm xong ở một lần chạy trước của chính việc này nên không làm lại "
+DONE_NOTE = ("[UNI MATE] Thao tác này ĐÃ làm xong ở một lần chạy trước của chính việc này nên không làm lại "
              "(tránh gửi trùng). Kết quả lần đó:\n")
 UNKNOWN_NOTE = ("ERROR: Thao tác này có thể ĐÃ được thực hiện ở lần chạy trước (máy chủ dừng hoặc mất kết nối "
-                "đúng lúc đang gọi), nên Javis KHÔNG làm lại để tránh gửi trùng. Đừng tìm cách khác để làm cùng "
-                "việc này. Làm nốt phần còn lại rồi kết thúc; Javis sẽ hỏi chủ.")
+                "đúng lúc đang gọi), nên UNI MATE KHÔNG làm lại để tránh gửi trùng. Đừng tìm cách khác để làm cùng "
+                "việc này. Làm nốt phần còn lại rồi kết thúc; UNI MATE sẽ hỏi chủ.")
 BUSY_NOTE = "ERROR: Đúng thao tác này đang được gọi ở một nhánh khác của việc, chờ nó xong, đừng gọi lại."
 
 _lock = threading.RLock()

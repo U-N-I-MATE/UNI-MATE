@@ -2,7 +2,7 @@
 
     python tests/run.py 2fa_mat_khoa_khong_im_lang     (KHÔNG mạng)
 
-Vụ thật (16/08): chủ bật 2FA, cập nhật Javis xong UI báo "Chưa bật" - tưởng bản cập
+Vụ thật (16/08): chủ bật 2FA, cập nhật UNI MATE xong UI báo "Chưa bật" - tưởng bản cập
 nhật đè mất. Truy ra: secret 2FA mã hoá Fernet bằng STATE_DIR/.secret_key; file key
 mất/đổi thì decrypt trả "", mà totp_enabled = enabled AND secret nên thành False.
 Hậu quả kép, cả hai đều tệ hơn triệu chứng:
@@ -36,9 +36,9 @@ def check(name, cond):
 
 
 _td = tempfile.TemporaryDirectory()
-os.environ["JAVIS_STATE_DIR"] = _td.name
+os.environ["UNIMATE_STATE_DIR"] = _td.name
 
-import config as cfgmod          # noqa: E402  - đọc JAVIS_STATE_DIR lúc import
+import config as cfgmod          # noqa: E402  - đọc UNIMATE_STATE_DIR lúc import
 import secrets_store             # noqa: E402
 
 assert str(cfgmod.STATE_DIR) == _td.name, "STATE_DIR phải trỏ vào thư mục tạm của test"

@@ -31,8 +31,8 @@ import improvement_store as IM
 
 SURFACES = ("dm", "team", "kanban", "workflow")
 MIN_CHARS, MAX_CHARS = 10, 2000
-# Any host marker token (JAVIS_RULE, JAVIS_LESSON, JAVIS_ASK...) or an HTML comment that could hide one.
-_MARKERS = re.compile(r"JAVIS_[A-Z]|<!--|-->", re.IGNORECASE)
+# Any host marker token (UNIMATE_RULE, UNIMATE_LESSON, UNIMATE_ASK...) or an HTML comment that could hide one.
+_MARKERS = re.compile(r"UNIMATE_[A-Z]|<!--|-->", re.IGNORECASE)
 # A line that tries to set a protected field, with or without a bullet or list number.
 _SETTINGS = re.compile(r"^\s*(?:[-*+]|\d+[.)])?\s*(model|model_provider|provider|reasoning|effort|skills|"
                        r"permissions?|quyền|mức quyền|enabled)\s*[:=]", re.IGNORECASE | re.MULTILINE)
@@ -43,7 +43,7 @@ _OVERRIDES = re.compile(
     r"(?:(?:all|any|the|previous|above|every|mọi|các|tất cả|những)\s+)*"
     r"(owner|owner's|rules?|instructions?|system prompt|luật|quy tắc|hướng dẫn|chỉ dẫn|lời dặn)\b|"
     r"\b(đổi|chuyển|change|switch)\s+(?:sang\s+|to\s+)?(?:\w+\s+)?(model|provider|reasoning)\b", re.IGNORECASE)
-_PROCEDURE_HEADER = "# Quy trình đã được chủ duyệt (Javis quản lý)"
+_PROCEDURE_HEADER = "# Quy trình đã được chủ duyệt (UNI MATE quản lý)"
 
 
 def unsafe_reason(text: str, original: str = "") -> str:
@@ -84,7 +84,7 @@ def surfaces(value) -> list:
 
 
 def owner_rules_hash(agent_text: str, memory_text: str) -> str:
-    """Everything the owner wrote for this assistant: agent file lines outside Javis-managed sections
+    """Everything the owner wrote for this assistant: agent file lines outside UNI MATE-managed sections
     (frontmatter included) and the `## Luật chủ dặn` bullets of its memory."""
     import agent_rules
     managed = ("## Lịch sử (tự học)", agent_rules.LEARNED_ADDITIONS_HEADER)

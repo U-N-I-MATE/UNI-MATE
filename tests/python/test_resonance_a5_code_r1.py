@@ -23,9 +23,9 @@ import threading
 import time
 from pathlib import Path
 
-_STATE = Path(tempfile.mkdtemp(prefix="javis-res-a5r1-"))
-os.environ["JAVIS_STATE_DIR"] = str(_STATE)
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+_STATE = Path(tempfile.mkdtemp(prefix="unimate-res-a5r1-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_STATE)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 import resonance as R  # noqa: E402
 import resonance_heartbeat as HB  # noqa: E402
@@ -318,7 +318,7 @@ def team_ledger(t, g):
             t.g(g).calls_used, tm["reviewer_agent_key"])
 
 
-# Tên kho "resonance": route đọc kho mặc định của JAVIS_STATE_DIR.
+# Tên kho "resonance": route đọc kho mặc định của UNIMATE_STATE_DIR.
 t, g = ready_for_review("resonance")
 RA.disable(t.store, t.brain, T.REVIEWER)
 t.wake(g)

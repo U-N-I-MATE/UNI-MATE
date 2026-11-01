@@ -2,7 +2,7 @@
 
 Vì sao có file này
 ==================
-Trước bản này, muốn Javis canh một trang (giá đối thủ, offer mới, trang chính sách) thì phải dựng
+Trước bản này, muốn UNI MATE canh một trang (giá đối thủ, offer mới, trang chính sách) thì phải dựng
 loop, mà mỗi vòng loop là một lượt gọi AI: canh 15 phút một lần là gần trăm lượt mỗi ngày, phần lớn
 chỉ để thấy "chưa có gì mới".
 
@@ -60,7 +60,7 @@ MAX_REDIRECTS = 4
 TICK_S = 30
 PARALLEL = 3
 LIST_NEW, LIST_UPD, LIST_DEL = 8, 4, 4
-USER_AGENT = ("Mozilla/5.0 (compatible; JavisWatch/1.0; +https://github.com/blogminhquy/javis-os)")
+USER_AGENT = ("Mozilla/5.0 (compatible; UniMateWatch/1.0; +https://github.com/U-N-I-MATE/UNI-MATE)")
 # With the owner's own sign-in (login vault, 0.251.0) a bot user agent gets many sites to drop the session or
 # serve a bare page, so those requests look like the desktop browser the cookies came from.
 BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "

@@ -15,10 +15,10 @@ import threading
 from pathlib import Path
 from unittest.mock import patch
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-approval-")
-STATE = Path(os.environ["JAVIS_STATE_DIR"])
-if os.environ.get("JAVIS_NO_REAL_TEAM_ENGINE") is None:
-    os.environ["JAVIS_NO_REAL_TEAM_ENGINE"] = "1"
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-approval-")
+STATE = Path(os.environ["UNIMATE_STATE_DIR"])
+if os.environ.get("UNIMATE_NO_REAL_TEAM_ENGINE") is None:
+    os.environ["UNIMATE_NO_REAL_TEAM_ENGINE"] = "1"
 
 import mcp_catalog  # noqa: E402
 import mcp_client  # noqa: E402
@@ -42,7 +42,7 @@ def check(name, cond, extra=""):
 
 
 def directive(**op):
-    return f"\n<!-- JAVIS_TEAM: {json.dumps(op, ensure_ascii=False)} -->"
+    return f"\n<!-- UNIMATE_TEAM: {json.dumps(op, ensure_ascii=False)} -->"
 
 
 def run(coro):
@@ -467,7 +467,7 @@ cases = [("Bash", {"command": "ls -la"}, "free"), ("Bash", {"command": "git stat
          ("Bash", {"command": "git push"}, "outside"), ("Bash", {"command": "curl https://x"}, "outside"),
          ("Write", {"file_path": str(STATE / "brain" / "a.md")}, "free"),
          ("Write", {"file_path": "/etc/passwd"}, "outside"), ("Edit", {"file_path": "../../x"}, "outside"),
-         ("Read", {"file_path": "/etc/hosts"}, "free"), ("mcp__javis__zalo_send_message", {}, "free"),
+         ("Read", {"file_path": "/etc/hosts"}, "free"), ("mcp__unimate__zalo_send_message", {}, "free"),
          ("mcp__Gmail__send_message", {"to": "a"}, "outside"), ("mcp__Gmail__search_threads", {}, "free"),
          ("SomethingNew", {}, "outside"),
          # review 0.207.0
@@ -477,7 +477,7 @@ cases = [("Bash", {"command": "ls -la"}, "free"), ("Bash", {"command": "git stat
          ("Write", {"file_path": str(STATE / "brain" / "plugins" / "x" / "plugin.py")}, "outside"),
          ("Write", {"file_path": str(STATE / "brain" / ".claude" / "settings.json")}, "outside"),
          ("Edit", {"file_path": str(STATE / "brain" / ".git" / "config")}, "outside"),
-         ("Write", {"file_path": str(STATE / "brain" / "Javis" / "loops" / "x.md")}, "outside"),
+         ("Write", {"file_path": str(STATE / "brain" / "UNI MATE" / "loops" / "x.md")}, "outside"),
          ("WebFetch", {"url": "https://example.com/docs/guide"}, "free"),
          ("WebFetch", {"url": "https://api.telegram.org/bot123/sendMessage?chat_id=1&text=hi"}, "outside"),
          # 0.267.0 (a user's team): chained reads were stopped for approval; writes in a chain still are
@@ -509,8 +509,8 @@ with patch.object(mcp_catalog, "classify", side_effect=lambda c, t, a=None: "wri
     out = run(mcp_hub._guard(WRITE_ENT, "mail_create_draft", "gated")({"to": "a"}))
 check("hub: a write-class call at gated is an outside action too (no live gate: refused, nothing runs)",
       str(out).startswith("ERROR") and EFFECTS == [], out)
-call_safe = plugins_host._make_call({"handler": _plugin_handler, "min_mode": "safe", "name": "javis_task"}, None, "gated")
-check("plugin: a safe-level plugin (javis_task) at gated is refused without approval",
+call_safe = plugins_host._make_call({"handler": _plugin_handler, "min_mode": "safe", "name": "unimate_task"}, None, "gated")
+check("plugin: a safe-level plugin (unimate_task) at gated is refused without approval",
       str(run(call_safe({"title": "gửi tin"}))).startswith("ERROR") and EFFECTS == [])
 call_ro = plugins_host._make_call({"handler": _plugin_handler, "min_mode": "readonly", "name": "doc_so"}, None, "gated")
 check("plugin: a read-only plugin runs at gated", run(call_ro({})) == "đã đăng")

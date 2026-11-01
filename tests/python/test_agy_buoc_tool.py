@@ -19,7 +19,7 @@ thôi".
 `step_type`. Nhánh `tool_use/tool_call/tool` ngay trong file đó chỉ khớp khi `agy` đặt loại ở
 TẦNG NGOÀI - hình dạng mà bản CLI thật không dùng. Hậu quả: mọi lần `agy` gọi công cụ đều rơi
 vào hư không, khung chat không có tiến trình nào để vẽ, và cờ `co_tool` cũng không bật lên nên
-Javis tưởng lượt đó chưa đụng gì bên ngoài và được phép chạy lại.
+UNI MATE tưởng lượt đó chưa đụng gì bên ngoài và được phép chạy lại.
 
 Các mẫu dưới đây chép từ luồng đo được ở trên, giữ đúng bộ khoá.
 """

@@ -15,7 +15,7 @@ import json
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-ear-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-ear-"))
 
 import main  # noqa: E402
 import nghe_sua  # noqa: E402
@@ -63,11 +63,11 @@ check("chọn tay groq có key -> groq, lý do chosen", r["provider"] == "groq" 
 
 # ---- vocab(): MCP vào từ mồi, không vào lớp sửa mờ ----
 _goc_mcp = voice_ear._mcp_labels
-voice_ear._mcp_labels = lambda: ["Pancake POS", "Gmail", "javis"]
+voice_ear._mcp_labels = lambda: ["Pancake POS", "Gmail", "unimate"]
 tv = voice_ear.vocab({"voice": {"hotwords": "Webcake"}})
 check("từ mồi có tên trợ lý, từ người dùng khai và tên kết nối MCP",
-      tv[:2] == ["Javis", "Webcake"] and "Pancake POS" in tv and "Gmail" in tv)
-check("từ mồi không lặp tên trợ lý khi kết nối trùng tên", [t.lower() for t in tv].count("javis") == 1)
+      tv[:2] == ["Uni", "Webcake"] and "Pancake POS" in tv and "Gmail" in tv)
+check("từ mồi không lặp tên trợ lý khi kết nối trùng tên", [t.lower() for t in tv].count("unimate") == 1)
 check("lớp sửa mờ nghe_sua.tu_vung KHÔNG nhận tên MCP",
       "Pancake POS" not in nghe_sua.tu_vung({"voice": {"hotwords": "Webcake"}}))
 voice_ear._mcp_labels = _goc_mcp
@@ -154,7 +154,7 @@ class _Resp:
     status_code = 200
 
     def json(self):
-        return {"text": "Javis ơi mở Claude Code"}
+        return {"text": "Uni ơi mở Claude Code"}
 
 
 class _Client:
@@ -174,12 +174,12 @@ class _Client:
 _goc_client = stt.httpx.AsyncClient
 stt.httpx.AsyncClient = _Client
 try:
-    out = asyncio.run(stt.openai_nghe(b"x" * 4000, "v.webm", "sk-test", "", "", hotwords="Javis, ChatGPT."))
+    out = asyncio.run(stt.openai_nghe(b"x" * 4000, "v.webm", "sk-test", "", "", hotwords="UNI MATE, ChatGPT."))
     check("openai_nghe posts to OpenAI transcriptions with gpt-4o-transcribe, the key and the prompt",
           sent.get("url") == stt.OPENAI_STT_URL and sent["form"].get("model") == "gpt-4o-transcribe"
-          and sent.get("auth") == "Bearer sk-test" and sent["form"].get("prompt") == "Javis, ChatGPT."
+          and sent.get("auth") == "Bearer sk-test" and sent["form"].get("prompt") == "UNI MATE, ChatGPT."
           and "language" not in sent["form"])
-    check("openai_nghe returns the text in the shared shape", out == {"ok": True, "text": "Javis ơi mở Claude Code",
+    check("openai_nghe returns the text in the shared shape", out == {"ok": True, "text": "Uni ơi mở Claude Code",
                                                                       "model": "gpt-4o-transcribe"})
     out = asyncio.run(stt.openai_nghe(b"x" * 4000, "v.webm", "", ""))
     check("no OpenAI key -> thieu_key, no request", out["ly_do"] == "thieu_key")

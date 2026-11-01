@@ -1,17 +1,17 @@
-"""Giữ Antigravity CLI (`agy`) trên máy luôn ở bản mới, để model mới tự hiện trong Javis (0.137.0).
+"""Giữ Antigravity CLI (`agy`) trên máy luôn ở bản mới, để model mới tự hiện trong UNI MATE (0.137.0).
 
 Danh sách model của Antigravity đọc thẳng từ `agy models` (`antigravity_cli.list_models`), nên
-Javis chỉ thấy model mới khi `agy` đã lên bản biết model đó. Báo lỗi 14/10/2026: Gemini 4 Argon
-ra rồi mà trình chọn model của Javis không có.
+UNI MATE chỉ thấy model mới khi `agy` đã lên bản biết model đó. Báo lỗi 14/10/2026: Gemini 4 Argon
+ra rồi mà trình chọn model của UNI MATE không có.
 
 Cùng bệnh với Claude Code (`claude_update`): `agy` chỉ tự cập nhật khi người ta mở nó gõ tay, còn
-Javis gọi nó chạy ngầm. Bản Docker còn kẹt nặng hơn: container cài `agy` MỘT LẦN vào thư mục người
+UNI MATE gọi nó chạy ngầm. Bản Docker còn kẹt nặng hơn: container cài `agy` MỘT LẦN vào thư mục người
 dùng trên ổ dữ liệu (`docker/entrypoint.sh`), sống qua mọi lần cập nhật image, và từ đó không ai
 cập nhật nó nữa.
 
-Nên Javis tự chạy `agy update` mỗi ngày một lần. Khác Claude Code, đường này chạy được cả trong
-Docker: `agy` nằm ở `~/.local/bin` của chính user chạy Javis, nên ghi đè được. Tắt bằng
-JAVIS_AGY_AUTO_UPDATE=0.
+Nên UNI MATE tự chạy `agy update` mỗi ngày một lần. Khác Claude Code, đường này chạy được cả trong
+Docker: `agy` nằm ở `~/.local/bin` của chính user chạy UNI MATE, nên ghi đè được. Tắt bằng
+UNIMATE_AGY_AUTO_UPDATE=0.
 """
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ _TRANG_THAI = "agy-update.json"
 
 def bat() -> bool:
     """Tự cập nhật hằng ngày có bật không."""
-    return (os.environ.get("JAVIS_AGY_AUTO_UPDATE") or "1").strip().lower() not in (
+    return (os.environ.get("UNIMATE_AGY_AUTO_UPDATE") or "1").strip().lower() not in (
         "0", "false", "no", "off")
 
 

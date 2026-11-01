@@ -2,7 +2,7 @@
 
     python tests/run.py zalo_send_file      (no network, no real Zalo, no npx)
 
-Incident 2026-10-14: Javis had to send an 11 KB Excel list to a staff member. `msg send-file` hung twice until it was killed at
+Incident 2026-10-14: UNI MATE had to send an 11 KB Excel list to a staff member. `msg send-file` hung twice until it was killed at
 120 seconds and the file never arrived, while PNG images through the same path went fine. Cause, read in zca-js 2.2.0
 (`apis/uploadAttachment.js`, `apis/listen.js`): a file that is not an image is only confirmed (`file_done`) over the live
 WebSocket, and the one-shot CLI never opens one, so zca-js waits forever. Opening one there would evict the MCP listener of the
@@ -14,7 +14,7 @@ What is checked here:
      removes the subfolder afterwards, success or not.
   3. Every failure comes back as a sentence a person understands: older MCP without the tool, Zalo did not confirm, the MCP
      call itself timed out (marked so callers never resend), connection gone, odd result.
-  4. The three pins of javis-zalo agree, and the catalog lists the new tool as dangerous (it sends).
+  4. The three pins of unimate-zalo agree, and the catalog lists the new tool as dangerous (it sends).
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -47,7 +47,7 @@ check("images and GIFs keep the CLI path (their URL comes back over HTTP)",
       not any(Z.needs_live_confirm(p) for p in ["a.jpg", "b.JPEG", "c.png", "d.webp", "e.gif"]))
 check("CANARY: xlsx, pdf, docx, zip, mp4, bmp and no extension need the live connection",
       all(Z.needs_live_confirm(p) for p in ["Danh sach.xlsx", "r.pdf", "d.docx", "z.zip", "v.mp4", "x.bmp", "noext"]))
-check("outbox is ~/.zalo-agent-cli/outbox of the session (same as OUTBOX_DIR in javis-zalo)",
+check("outbox is ~/.zalo-agent-cli/outbox of the session (same as OUTBOX_DIR in unimate-zalo)",
       Z.outbox_dir("/data/zalo/home").as_posix() == "/data/zalo/home/.zalo-agent-cli/outbox", Z.outbox_dir("/data/zalo/home"))
 
 # ============================================================
@@ -118,8 +118,8 @@ check("CANARY: outbox cleaned up after a failure too", list(outbox.iterdir()) ==
 
 reply["raise"] = RuntimeError("MCP error -32602: Tool zalo_send_file not found")
 ok, data, err = send([SRC / "Danh sach.xlsx"])
-check("older javis-zalo without the tool: says to update Javis and restart the connection, no QR",
-      ok is False and "bản javis-zalo cũ" in err and "Cập nhật Javis" in err, err)
+check("older unimate-zalo without the tool: says to update UNI MATE and restart the connection, no QR",
+      ok is False and "bản unimate-zalo cũ" in err and "Cập nhật UNI MATE" in err, err)
 
 reply["raise"] = TimeoutError("tool không phản hồi sau 120s")
 ok, data, err = send([SRC / "Danh sach.xlsx"])
@@ -166,7 +166,7 @@ zalo = find_zalo(cat)
 # 0.334.0: v1.7.0 (emoji reactions in the live feed, zalo_add_reaction, cliMsgId on every message).
 # 0.346.0: v1.8.0 (group note-list, note-edit keeps the pin: the Store tools zalo_list_notes / zalo_edit_note).
 # 0.414.0: v1.9.0 (zalo_send_typing for "đang soạn tin", styles on zalo_send_message).
-check("CANARY: the three javis-zalo pins agree and are v1.4.0 or later (the first with zalo_send_file)",
+check("CANARY: the three unimate-zalo pins agree and are v1.4.0 or later (the first with zalo_send_file)",
       Z.CLI_PACKAGE == zalo_login._CLI_PACKAGE and Z.CLI_PACKAGE in zalo["args"] and Z.CLI_PACKAGE.endswith("/v1.9.0"),
       (Z.CLI_PACKAGE, zalo_login._CLI_PACKAGE, zalo["args"]))
 check("the previous pins are listed as old commands, so existing connections move to the new one",

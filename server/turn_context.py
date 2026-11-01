@@ -40,7 +40,7 @@ Two transports, one source of truth:
     the turn's own asyncio context, so the hook reads the ContextVar directly.
   - CLI engines (Claude Code, Codex) call the hub over HTTP from a child process, i.e. from a
     different request context. The turn issues an opaque random key (`issue_key`), the engine
-    sends it as the `X-Javis-Turn` header, and the hub maps it back (`resolve_key`). The header
+    sends it as the `X-UniMate-Turn` header, and the hub maps it back (`resolve_key`). The header
     carries no identity of its own: a forged, stale or missing key resolves to None, and a key
     dies with the turn that issued it.
 """
@@ -53,10 +53,10 @@ import threading
 import time
 from typing import Optional
 
-HEADER = "X-Javis-Turn"
+HEADER = "X-UniMate-Turn"
 # Codex takes per-process header overrides through `-c`. No quotes around the header name, same
 # reason as mcp_hub.CODEX_VAULT_KEY (Codex keeps the quotes and the header becomes invalid).
-CODEX_HEADER_KEY = "mcp_servers.javis.http_headers." + HEADER
+CODEX_HEADER_KEY = "mcp_servers.unimate.http_headers." + HEADER
 
 # Safety net only: a key is dropped when its turn ends (`reset`). This bounds the table if a turn
 # is killed without reaching its `finally`. Long enough for a slow tool (the CLI tool timeout is
@@ -88,7 +88,7 @@ class Token:
 
 
 _CURRENT: contextvars.ContextVar[Optional[_Binding]] = contextvars.ContextVar(
-    "javis_turn_context", default=None)
+    "unimate_turn_context", default=None)
 _KEYS: dict = {}          # key -> (turn dict, expires_at)
 _LOCK = threading.Lock()  # CLI engines build argv from worker threads too
 
@@ -250,7 +250,7 @@ def issue_key() -> Optional[str]:
 
 
 def resolve_key(key) -> Optional[dict]:
-    """The turn behind a key from the `X-Javis-Turn` header, or None for anything not issued by
+    """The turn behind a key from the `X-UniMate-Turn` header, or None for anything not issued by
     a live turn in THIS process."""
     k = str(key or "").strip()
     if not k:

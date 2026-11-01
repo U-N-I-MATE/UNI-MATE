@@ -13,9 +13,9 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-_STATE = Path(tempfile.mkdtemp(prefix="javis-res-a5b-"))
-os.environ["JAVIS_STATE_DIR"] = str(_STATE)
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+_STATE = Path(tempfile.mkdtemp(prefix="unimate-res-a5b-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_STATE)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 import resonance as R  # noqa: E402
 import resonance_heartbeat as HB  # noqa: E402
@@ -102,7 +102,7 @@ check("T8 lượt thứ tư chỉ mở bởi tin mới (NEW), vẫn chưa đạt
       t.st(g) == {"run_state": "blocked", "block_reason": "budget_maker"} and t.calls(g) == (4, 0, 4)
       and t.rev.queries == 0, (t.st(g), t.calls(g)))
 check("T51 bế tắc trên mục tiêu có đội không đề xuất phép thử làn M (không có bài học)", lessons == 0, lessons)
-eid = t.store.begin_experiment(RS.Principal("agent", "javis", t.brain), g.id, t.g(g).revision, "a", "b", 2, 2, {},
+eid = t.store.begin_experiment(RS.Principal("agent", "unimate", t.brain), g.id, t.g(g).revision, "a", "b", 2, 2, {},
                                agent=RA.pin(t.store, t.brain, T.MAKER))
 check("T51 kho từ chối begin_experiment trên mục tiêu có đội: None, calls_used không đổi", eid is None
       and t.g(g).calls_used == 4, eid)
@@ -111,10 +111,10 @@ check("T51 kho từ chối begin_experiment trên mục tiêu có đội: None, 
 t = T.Team(_STATE, "t9")
 g = t.create()
 t.wake(g)
-os.environ["JAVIS_RESONANCE_CALL_CEILING"] = "1"
+os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = "1"
 t.run(g, n=4)
 st9 = (t.st(g), t.calls(g), t.rev.queries)
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 check("T9 trần chung thắng phần vai: không giữ chỗ review, không gọi engine; lượt không đổi (1, 0, 1)",
       st9[1] == (1, 0, 1) and st9[2] == 0 and st9[0]["run_state"] == "blocked", st9)
 

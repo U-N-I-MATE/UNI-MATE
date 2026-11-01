@@ -14,8 +14,8 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-unread-")
-BR = Path(tempfile.mkdtemp(prefix="javis-team-unread-brain-")).resolve()
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-unread-")
+BR = Path(tempfile.mkdtemp(prefix="unimate-team-unread-brain-")).resolve()
 (BR / "agents").mkdir()
 for slug, name in (("lan", "Lan"), ("minh", "Minh")):
     (BR / "agents" / f"{slug}.md").write_text(f"---\nname: {name}\nrole: Thành viên\n---\nBạn là {name}.\n",
@@ -155,7 +155,7 @@ check("a team with no leader: any member's call to the owner is flagged", not t2
 note = "\n".join(team_runner.INTERNAL_GROUP_NOTE)
 check("members are told only the leader calls @Chủ nhóm and the others go through the leader",
       "Chỉ trưởng nhóm" in note and "@Chủ nhóm" in note and "gọi trưởng nhóm" in note)
-db = Path(tempfile.mkdtemp(prefix="javis-team-mig-")) / "teams.db"
+db = Path(tempfile.mkdtemp(prefix="unimate-team-mig-")) / "teams.db"
 c = sqlite3.connect(db)
 c.execute("CREATE TABLE teams(team_id TEXT PRIMARY KEY, brain_id TEXT, name TEXT, description TEXT, session_id TEXT, "
           "leader_key TEXT, leader_mode TEXT, status TEXT, caps_json TEXT, created_at REAL, updated_at REAL)")

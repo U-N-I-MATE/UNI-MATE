@@ -8,9 +8,9 @@ conversations (228 MB per idle `claude`, 57 MB per idle `codex app-server`), so 
 - one slot per conversation, carrying a fingerprint of the engine configuration it was opened with; a turn whose
   fingerprint differs closes the old slot and runs cold;
 - a memory budget: a quarter of the free RAM (the container's own limit when there is one), at most 1,200 MB, or
-  JAVIS_WARM_BUDGET_MB (0 turns the pool off). A full pool evicts the idle slot used longest ago, never a busy one;
+  UNIMATE_WARM_BUDGET_MB (0 turns the pool off). A full pool evicts the idle slot used longest ago, never a busy one;
   with nothing idle to evict the turn simply runs cold and its process is closed as before;
-- an idle slot closes after JAVIS_WARM_IDLE_S (300 s, the provider's prompt-cache lifetime: past it the next turn
+- an idle slot closes after UNIMATE_WARM_IDLE_S (300 s, the provider's prompt-cache lifetime: past it the next turn
   reloads the context anyway, the process would only save the start-up);
 - a closed idle slot leaves its recipe, so `prewarm` (the owner started typing) can reopen it before the message lands.
 
@@ -47,7 +47,7 @@ def _env_float(name: str, default: float) -> float:
 
 
 def idle_s() -> float:
-    return max(10.0, _env_float("JAVIS_WARM_IDLE_S", DEFAULT_IDLE_S))
+    return max(10.0, _env_float("UNIMATE_WARM_IDLE_S", DEFAULT_IDLE_S))
 
 
 def _cgroup_free_mb() -> Optional[float]:
@@ -102,9 +102,9 @@ def free_ram_mb() -> float:
 
 def budget_mb(in_use_mb: float = 0.0) -> float:
     """What the pool may hold. Free RAM already excludes what the pool's own processes use, so they are added back."""
-    raw = os.getenv("JAVIS_WARM_BUDGET_MB")
+    raw = os.getenv("UNIMATE_WARM_BUDGET_MB")
     if raw not in (None, ""):
-        return max(0.0, _env_float("JAVIS_WARM_BUDGET_MB", 0.0))
+        return max(0.0, _env_float("UNIMATE_WARM_BUDGET_MB", 0.0))
     return min(float(MAX_BUDGET_MB), (free_ram_mb() + in_use_mb) * 0.25)
 
 

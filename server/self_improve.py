@@ -2,11 +2,11 @@
 Vòng tự cải thiện MULTI-LOOP - nhiều loop cấu hình song song, THỰC THI TUẦN TỰ.
 
 Nâng cấp từ loop ĐƠN (loop_config.json) thành hệ N loop:
-  - ĐỊNH NGHĨA loop = file markdown trong vault: <vault>/Javis/loops/<slug>.md
+  - ĐỊNH NGHĨA loop = file markdown trong vault: <vault>/UniMate/loops/<slug>.md
     (frontmatter YAML: name/slug/enabled/goal/mode/interval_min/workspace/tools_profile/
      quiet_hours/max_runs_per_day/updated; thân file = prompt mục tiêu khi goal=custom,
      goal khác thì thân file là ghi chú). Người / chat / Studio đều sửa được file này.
-  - STATE runtime tách riêng, server sở hữu: <vault>/Javis/loop-state.json, key theo slug:
+  - STATE runtime tách riêng, server sở hữu: <vault>/UniMate/loop-state.json, key theo slug:
     {last_run, last_summary, last_status, runs_today, day, fail_streak, auto_paused_reason}.
     KHÔNG ghi state vào frontmatter - tránh giẫm chân user đang mở file trong Obsidian.
   - THỰC THI TUẦN TỰ: 1 lock toàn cục, tại 1 thời điểm chỉ 1 vòng chạy. Scheduler mỗi tick
@@ -16,11 +16,11 @@ Nâng cấp từ loop ĐƠN (loop_config.json) thành hệ N loop:
     auto_paused_reason trong state (không sửa file .md của user) + ghi log + báo Telegram
     nếu deps.notify được tiêm. Bật lại / bấm Run now sẽ xoá pause.
 
-Triết lý MỖI VÒNG giữ nguyên bản gốc: Javis tự thức theo lịch, làm ĐÚNG MỘT việc cụ thể,
-tự kiểm chứng độc lập (mode=auto, giả định kết quả SAI), ghi log Javis/loop-log/.
+Triết lý MỖI VÒNG giữ nguyên bản gốc: UNI MATE tự thức theo lịch, làm ĐÚNG MỘT việc cụ thể,
+tự kiểm chứng độc lập (mode=auto, giả định kết quả SAI), ghi log UniMate/loop-log/.
 
 An toàn theo tools_profile:
-  - "vault-safe" (MẶC ĐỊNH): file tools + MCP do Javis quản lý (POS/ads/lịch...) - loop ĐỌC
+  - "vault-safe" (MẶC ĐỊNH): file tools + MCP do UNI MATE quản lý (POS/ads/lịch...) - loop ĐỌC
     được dữ liệu thật để làm việc. cwd ghim vault. Bash/WebFetch/WebSearch/Task NGOÀI allowlist
     → bị chặn. Ở hai mức nhẹ (suggest/auto) hành động ra ngoài qua MCP bị chặn bằng 3 lớp:
     (a) deny_tools per-server của MCP (apply_mcp gắn --disallowedTools), (b) chỉ dẫn trong
@@ -68,7 +68,7 @@ from fastapi import APIRouter, Form, Query
 
 from claude_cli import claude_engine, cancel_all, _empty_mcp_file
 import aux_engine   # engine viec nen theo model phu nguoi dung chon
-import channel_context   # bóc khối JAVIS_* trước khi báo Telegram - kênh chữ, không phải web
+import channel_context   # bóc khối UNIMATE_* trước khi báo Telegram - kênh chữ, không phải web
 
 LEGACY_SLUG = "vong-lap-goc"
 # Dấu "đã migrate loop_config.json" ghi thẳng vào chính file đó. Có dấu này thì KHÔNG dựng lại
@@ -169,12 +169,12 @@ class LoopDeps:
     # async report(owner_chat, text, *, quiet=False) - báo NGƯỜI YÊU CẦU loop mỗi vòng.
     # `quiet` bỏ chuông + thông báo đẩy (vòng chạy trót lọt), tin vẫn về kênh và hòm thư.
     report: Optional[Callable] = None
-    apply_mcp: Optional[Callable] = None      # apply_mcp(cli): gắn MCP Javis-quản-lý (config+strict+deny) - loop ĐỌC được dữ liệu thật
+    apply_mcp: Optional[Callable] = None      # apply_mcp(cli): gắn MCP UNI MATE-quản-lý (config+strict+deny) - loop ĐỌC được dữ liệu thật
     mcp_allow_patterns: Optional[Callable] = None  # () -> ["mcp__<server>", ...] để thêm vào allowlist (MCP mới gọi được)
     # Đổi engine việc nền theo model phụ người dùng chọn (Claude / Codex / API rẻ).
     # None = giữ nguyên Claude như trước (test dựng deps tối giản không cần tiêm).
     aux_swap: Optional[Callable] = None
-    # 0.199.0: (source, ref, brain=, title=, error=, request=) -> report a broken run to Javis Core (incident_desk.py).
+    # 0.199.0: (source, ref, brain=, title=, error=, request=) -> report a broken run to UNI MATE Core (incident_desk.py).
     incident_hook: Optional[Callable] = None
 
 
@@ -271,14 +271,14 @@ class LoopFeature:
         except Exception:
             pass
 
-    # ══════════════════════ registry: Javis/loops/<slug>.md ══════════════════════
+    # ══════════════════════ registry: UniMate/loops/<slug>.md ══════════════════════
 
     def _loops_dir(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "Javis" / "loops"
+        return Path(self.deps.brain_root(brain)) / "UNI MATE" / "loops"
 
     def _loop_path(self, brain: str, slug: str) -> Optional[Path]:
         """Path file loop AN TOÀN theo slug tuỳ ý (kể cả stem tiếng Việt user tự đặt):
-        file PHẢI nằm NGAY TRONG Javis/loops - chặn '../' traversal. None = slug không hợp lệ."""
+        file PHẢI nằm NGAY TRONG UniMate/loops - chặn '../' traversal. None = slug không hợp lệ."""
         d = self._loops_dir(brain)
         fp = d / f"{slug}.md"
         try:
@@ -289,11 +289,11 @@ class LoopFeature:
         return fp
 
     def _state_path(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "Javis" / "loop-state.json"
+        return Path(self.deps.brain_root(brain)) / "UNI MATE" / "loop-state.json"
 
     def _norm_loop(self, fm: dict, body: str, stem: str) -> dict:
         # MẶC ĐỊNH 'custom' (thân file = việc loop làm mỗi vòng) - đúng "format ĐƠN GIẢN" ở
-        # CLAUDE.md và khớp cả 2 đường tạo loop (plugin javis_schedule ép 'goal: custom';
+        # CLAUDE.md và khớp cả 2 đường tạo loop (plugin unimate_schedule ép 'goal: custom';
         # form web /loops mặc định 'custom'). TRƯỚC ĐÂY rơi về 'business' → _build_prompt BỎ
         # HOÀN TOÀN thân file, chỉ bơm số liệu MCP: loop thiếu dòng 'goal:' (viết tay trong
         # Obsidian hay tạo bằng bản cũ) chạy sai việc - vd loop "nhắc uống thuốc" lại đi đọc
@@ -332,7 +332,7 @@ class LoopFeature:
             "max_runs_per_day": maxr,
             # owner_chat = chat_id người YÊU CẦU loop (để báo về đúng người). Rỗng = web → ID đầu.
             "owner_chat": str(fm.get("owner_chat", "") or "").strip(),
-            # 0.429.0: the chatbot whose turn created the loop ("" = the owner or Javis Core), for the Tasks page.
+            # 0.429.0: the chatbot whose turn created the loop ("" = the owner or UNI MATE Core), for the Tasks page.
             "bot_id": str(fm.get("bot_id", "") or "").strip(),
             "notify": notify,
             "ambient_mcp": ambient_mcp,
@@ -459,7 +459,7 @@ class LoopFeature:
         self.register_brain(to_brain)
         return {"ok": True}
 
-    # ══════════════════════ state runtime: Javis/loop-state.json ══════════════════════
+    # ══════════════════════ state runtime: UniMate/loop-state.json ══════════════════════
 
     def read_state(self, brain: str) -> dict:
         try:
@@ -549,7 +549,7 @@ class LoopFeature:
                                last_status=cfg.get("last_status", ""),
                                runs_today=0, day="", fail_streak=0, auto_paused_reason="")
             self._mark_migrated(cfg)
-            print(f"[loops] đã migrate loop_config.json → Javis/loops/{LEGACY_SLUG}.md",
+            print(f"[loops] đã migrate loop_config.json → UniMate/loops/{LEGACY_SLUG}.md",
                   file=__import__('sys').stderr)
         except Exception as e:
             print(f"[loops migrate] {type(e).__name__}: {e}", file=__import__('sys').stderr)
@@ -644,7 +644,7 @@ class LoopFeature:
 
     def _log_append(self, brain: str, entry: dict) -> None:
         try:
-            d = Path(self.deps.brain_root(brain)) / "Javis" / "loop-log"
+            d = Path(self.deps.brain_root(brain)) / "UNI MATE" / "loop-log"
             d.mkdir(parents=True, exist_ok=True)
             now = _now_vn()
             with open(d / f"{now.strftime('%Y-%m-%d')}.md", "a", encoding="utf-8") as fh:
@@ -653,7 +653,7 @@ class LoopFeature:
             print(f"[loop log] {e}", file=__import__('sys').stderr)
 
     def _read_log_entries(self, brain: str, slug: str = "", limit: int = 10) -> List[str]:
-        d = Path(self.deps.brain_root(brain)) / "Javis" / "loop-log"
+        d = Path(self.deps.brain_root(brain)) / "UNI MATE" / "loop-log"
         entries: List[str] = []
         if d.is_dir():
             # Đọc file mới nhất trước; trong mỗi file entry mới nằm DƯỚI (ghi nối) nên đảo lại để
@@ -685,7 +685,7 @@ class LoopFeature:
         page, do not repeat earlier rounds" had no way to know what earlier rounds said: two
         manual runs one minute apart suggested the same wiki page, and the model wrote that it
         "found no record of previous rounds" (customer report 0.270, Code 16). The rounds are
-        already logged in Javis/loop-log/ (the Recurring work page reads the same entries), so
+        already logged in UniMate/loop-log/ (the Recurring work page reads the same entries), so
         the tail comes from there, with the state's last_summary as a fallback when the log is
         missing. Bounded: at most PREV_ROUNDS_MAX entries, each cut to PREV_ROUND_CHARS, the
         whole block to PREV_ROUNDS_TOTAL_CHARS. Failed rounds are left out: an error line says
@@ -766,19 +766,19 @@ class LoopFeature:
             ), ""
         if goal == "product":
             base = (
-                "MỤC TIÊU: TỰ CẢI THIỆN JAVIS hữu dụng hơn với người dùng.\n"
-                "Đọc log hội thoại gần đây (Memory/conversations) + các agent/workflow trong Javis/ + ghi chú phản hồi. "
+                "MỤC TIÊU: TỰ CẢI THIỆN UNI MATE hữu dụng hơn với người dùng.\n"
+                "Đọc log hội thoại gần đây (Memory/conversations) + các agent/workflow trong UniMate/ + ghi chú phản hồi. "
                 "Nhận diện: người dùng hay vướng gì, yêu cầu lặp lại gì, thiếu agent/workflow/skill nào, chỗ nào gây khó. "
                 "KHÔNG sửa code server.\n"
                 + safety
             )
             if is_write:
                 return base + (
-                    "Thực hiện 1 cải tiến cụ thể: tạo/cải thiện 1 agent hoặc workflow trong Javis/ (đúng format frontmatter), "
+                    "Thực hiện 1 cải tiến cụ thể: tạo/cải thiện 1 agent hoặc workflow trong UniMate/ (đúng format frontmatter), "
                     "hoặc ghi 1 note đề xuất cải tiến UX/tính năng vào '05 - Projects'. Báo cáo NGẮN: cải tiến gì, file nào, vì sao."
                 ), ""
             return base + (
-                "CHẾ ĐỘ ĐỀ XUẤT - chỉ đọc, không ghi. Liệt kê 3-5 cải tiến giá trị nhất để Javis hữu dụng hơn (mỗi cái 1 dòng + lý do)."
+                "CHẾ ĐỘ ĐỀ XUẤT - chỉ đọc, không ghi. Liệt kê 3-5 cải tiến giá trị nhất để UNI MATE hữu dụng hơn (mỗi cái 1 dòng + lý do)."
             ), ""
         if goal == "custom":
             objective = (loop.get("body") or "").strip() or "Cải thiện vault theo cách hữu ích nhất bạn thấy."
@@ -805,7 +805,7 @@ class LoopFeature:
         """Dựng CLI cho 1 vòng loop.
         - profile 'code' (nâng cao, chỉ đặt qua .md): Bash/Web + file, cwd=workspace, VẪN 0 MCP
           (fail-closed nếu không tạo được file MCP rỗng) - cho loop sửa mã repo.
-        - MẶC ĐỊNH (mọi loop tạo qua form): file tools + MCP do Javis quản lý (POS/ads/lịch...).
+        - MẶC ĐỊNH (mọi loop tạo qua form): file tools + MCP do UNI MATE quản lý (POS/ads/lịch...).
           Loop ĐỌC được dữ liệu thật; ghi allowlist kèm 'mcp__<server>' để tool MCP gọi được.
           An toàn tiền/đơn dựa vào: (a) deny_tools per-server (apply_mcp gắn --disallowedTools),
           (b) chỉ dẫn cứng trong prompt, (c) mode suggest = chỉ tool đọc.
@@ -833,10 +833,10 @@ class LoopFeature:
             if self.deps.apply_mcp:
                 # allowed_tools=None ở NHÁNH NÀY = ungated = plugin in-process CÓ nạp
                 # (claude_sdk_engine._mcp_servers: allowed_tools rỗng mới gọi _plugins_server()).
-                # PHẢI truyền brain để cli.javis_vault đúng brain đang chạy - thiếu brain thì
-                # plugin (vd javis_generate_image) không suy được vault, rơi về Brain Default.
+                # PHẢI truyền brain để cli.unimate_vault đúng brain đang chạy - thiếu brain thì
+                # plugin (vd unimate_generate_image) không suy được vault, rơi về Brain Default.
                 try:
-                    self.deps.apply_mcp(cli, mode="full", brain=brain)   # hub nhận mode qua header X-Javis-Mode
+                    self.deps.apply_mcp(cli, mode="full", brain=brain)   # hub nhận mode qua header X-UniMate-Mode
                 except TypeError:
                     self.deps.apply_mcp(cli)
             # KHÔNG _isolate: full mode chủ đích mở MCP + Bash. Không có apply_mcp (test) → vẫn None allowlist.
@@ -850,7 +850,7 @@ class LoopFeature:
             cli = claude_engine(system_prompt=sysprompt, cwd=cwd, tag="loop", allowed_tools=None)
             if self.deps.apply_mcp:
                 # Cũng ungated (allowed_tools=None) như nhánh full ở trên - PHẢI truyền brain
-                # cùng lý do (plugin in-process cần javis_vault đúng).
+                # cùng lý do (plugin in-process cần unimate_vault đúng).
                 hub_mode = "auto" if mode == "auto" else "suggest"
                 try:
                     self.deps.apply_mcp(cli, mode=hub_mode, brain=brain)
@@ -949,8 +949,8 @@ class LoopFeature:
             if paused_now:
                 body += f"\n\n⚠ **{patch['auto_paused_reason']}** - bật lại hoặc bấm Chạy ngay để tiếp tục."
             self._log_append(brain, {"title": title, "body": body})
-            # BÁO CÁO mỗi vòng cho NGƯỜI YÊU CẦU loop (mặc định của Javis; đặt notify: false
-            # trong frontmatter để tắt loop nào quá ồn). owner_chat rỗng → Javis Core của brain loop
+            # BÁO CÁO mỗi vòng cho NGƯỜI YÊU CẦU loop (mặc định của UNI MATE; đặt notify: false
+            # trong frontmatter để tắt loop nào quá ồn). owner_chat rỗng → UNI MATE Core của brain loop
             # (0.186.0; trước đây là ID Telegram đầu tiên).
             report_sent = False
             # Thẻ cho khung chat web (dashboard/chat-viec.js, 0.64.49): dòng đầu thẻ đã nói
@@ -970,8 +970,8 @@ class LoopFeature:
                 if paused_now:
                     parts.append("⚠ " + patch["auto_paused_reason"] + bat_lai)
                 try:
-                    # Telegram là kênh chữ thuần: lọc khối JAVIS_METRICS/JAVIS_ASK trước khi báo,
-                    # kẻo lộ nguyên cụm "<!-- JAVIS_...: ... -->" (system prompt loop dùng chung
+                    # Telegram là kênh chữ thuần: lọc khối UNIMATE_METRICS/UNIMATE_ASK trước khi báo,
+                    # kẻo lộ nguyên cụm "<!-- UNIMATE_...: ... -->" (system prompt loop dùng chung
                     # CLAUDE.md nên có thể sinh các khối này).
                     #
                     # `quiet` cho vòng chạy TRÓT LỌT: tin vẫn về đủ kênh (khung chat đã giao
@@ -981,7 +981,7 @@ class LoopFeature:
                     # thông báo - lúc đó cái đáng báo (loop hỏng, loop tự tạm dừng) cũng mất
                     # theo. Đây đúng luật việc Kanban đã theo từ 01/09/2026: chỉ thứ CẦN
                     # người dùng ra tay mới được kêu.
-                    # 0.186.0: the loop's own brain (an empty owner_chat lands in that brain's Javis Core) and a key
+                    # 0.186.0: the loop's own brain (an empty owner_chat lands in that brain's UNI MATE Core) and a key
                     # per run, so a retried report is filed once.
                     kw = {}
                     if _accepts(self.deps.report, "brain"):

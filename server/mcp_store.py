@@ -1,5 +1,5 @@
 """
-Registry KẾT NỐI MCP của Javis - model v2: connector (mẫu, xem mcp_catalog) ↔ connection (tài khoản).
+Registry KẾT NỐI MCP của UNI MATE - model v2: connector (mẫu, xem mcp_catalog) ↔ connection (tài khoản).
 - File: STATE_DIR/mcp_servers.json (v2). Bản v1 (danh sách server phẳng) tự MIGRATE khi đọc lần đầu,
   bản gốc backup sang mcp_servers.v1.bak.json - không phá dữ liệu cũ.
 - Secret (headers/env/fields) mã hoá at rest qua secrets_store.
@@ -309,8 +309,8 @@ def _cred_dir(conn, con=None):
     """{env, path} thư mục token RIÊNG của 1 connection, hoặc None nếu connector không khai.
 
     Vì sao tồn tại: có connector tự chạy luồng OAuth của nó và cache token ra đĩa NGOÀI tầm với
-    của Javis (workspace-mcp). Không tách thư mục thì (1) nhiều tài khoản giẫm lên nhau và
-    (2) Javis không có cách nào bắt nó đăng nhập lại."""
+    của UNI MATE (workspace-mcp). Không tách thư mục thì (1) nhiều tài khoản giẫm lên nhau và
+    (2) UNI MATE không có cách nào bắt nó đăng nhập lại."""
     con = con or mcp_catalog.get(conn.get("connector_id"))
     cd = (con or {}).get("cred_dir") or {}
     if not cd.get("env"):
@@ -354,7 +354,7 @@ def delete_connection(cid):
     d = _load()
     before = len(d["connections"])
     victim = _find(d, cid)
-    forget_cred_dir(victim)   # token OAuth connector tự giữ ngoài Javis - xoá kết nối là xoá theo
+    forget_cred_dir(victim)   # token OAuth connector tự giữ ngoài UNI MATE - xoá kết nối là xoá theo
     d["connections"] = [c for c in d["connections"] if c.get("id") != cid]
     if victim and victim.get("is_default"):   # chuyển default cho tài khoản còn lại cùng connector
         for c in d["connections"]:
@@ -453,14 +453,14 @@ def resolved(enabled_only=True):
         if con:
             for k, v in mcp_catalog.build_env(con, secrets).items():
                 env.setdefault(k, v)
-        # Connector tự giữ token OAuth RIÊNG bên ngoài Javis (vd workspace-mcp cache ở
+        # Connector tự giữ token OAuth RIÊNG bên ngoài UNI MATE (vd workspace-mcp cache ở
         # ~/.google_workspace_mcp/credentials). Để mặc định thì mọi tài khoản dùng chung một
-        # kho, và Javis KHÔNG có đường nào dọn - xoá kết nối rồi thêm lại vẫn xài đúng token cũ,
+        # kho, và UNI MATE KHÔNG có đường nào dọn - xoá kết nối rồi thêm lại vẫn xài đúng token cũ,
         # nên token thiếu quyền là thiếu mãi mãi (đúng vụ Lịch báo thiếu quyền của người dùng
         # thật: cài lại chục lần vô ích vì lần nào cũng đọc lại credential cũ trên đĩa).
         # Trỏ mỗi connection vào một thư mục riêng thì xoá kết nối là token đi theo, lần gọi
         # tool kế tiếp server tự mở lại màn đăng nhập Google với đúng bộ quyền hiện hành.
-        # Playwright MCP phải biết Javis tải trình duyệt về ĐÂU, và trên máy chủ Linux thì phải
+        # Playwright MCP phải biết UNI MATE tải trình duyệt về ĐÂU, và trên máy chủ Linux thì phải
         # lái Chromium chứ không phải Google Chrome (container Debian không có Chrome, và câu
         # lỗi khi nó đi tìm thì không ai đoán ra). Nhận biết theo LỆNH chứ không theo id, để
         # connector đến từ gói hay người dùng tự thêm tay đều được lo như nhau.

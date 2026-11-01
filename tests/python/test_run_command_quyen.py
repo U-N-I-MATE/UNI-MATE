@@ -1,8 +1,8 @@
-"""`javis_run_command`: rào quyền, rào thư mục, rào env, rào thời gian.
+"""`unimate_run_command`: rào quyền, rào thư mục, rào env, rào thời gian.
 
     python tests/run.py run_command_quyen
 
-Đây là tool NGUY HIỂM NHẤT mà Javis cấp cho engine không native, nên phần lớn phép thử ở đây
+Đây là tool NGUY HIỂM NHẤT mà UNI MATE cấp cho engine không native, nên phần lớn phép thử ở đây
 là phép thử CHẶN chứ không phải phép thử chạy.
 
 Ba rào phải giữ, mỗi rào có phép thử riêng:
@@ -18,10 +18,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-runcmd-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-runcmd-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 # Biến "bí mật" cắm vào env của tiến trình test, để chứng minh lệnh con KHÔNG thấy nó.
-os.environ["JAVIS_TEST_SECRET"] = "KHOA-BI-MAT-KHONG-DUOC-LO"
+os.environ["UNIMATE_TEST_SECRET"] = "KHOA-BI-MAT-KHONG-DUOC-LO"
 
 import run_command as rc  # noqa: E402
 from coding_ctx import CodingToolContext  # noqa: E402
@@ -125,7 +125,7 @@ check("cwd con được phép", str((WS / "con").resolve()) in kq.output)
 
 # ---- 6. Env lọc trắng: lệnh con KHÔNG thấy bí mật của server ----
 
-kq = rc.chay('python -c "import os; print(os.environ.get(\'JAVIS_TEST_SECRET\', \'KHONG-THAY\'))"',
+kq = rc.chay('python -c "import os; print(os.environ.get(\'UNIMATE_TEST_SECRET\', \'KHONG-THAY\'))"',
              ctx("auto"))
 check("lệnh con KHÔNG thấy biến bí mật của env server",
       "KHONG-THAY" in kq.output and "KHOA-BI-MAT" not in kq.output)
@@ -195,32 +195,32 @@ check("bị chặn -> gói thành ERROR cho model", s2.startswith("ERROR:"))
 import mcp_hub  # noqa: E402
 
 t_thuong, _ = mcp_hub._builtin_tools("full", str(WS))
-check("phiên KHÔNG có thư mục làm việc -> hub KHÔNG cấp javis_run_command",
-      "javis_run_command" not in [x["fn"] for x in t_thuong])
+check("phiên KHÔNG có thư mục làm việc -> hub KHÔNG cấp unimate_run_command",
+      "unimate_run_command" not in [x["fn"] for x in t_thuong])
 
 t_code, r_code = mcp_hub._builtin_tools("full", str(WS), workspace_root=str(WS),
                                         coding_ctx_cua_phien=ctx("auto"))
-check("phiên coding -> hub cấp javis_run_command",
-      "javis_run_command" in [x["fn"] for x in t_code])
-check("javis_run_command khai effect full (mức quyền cao nhất của hub)",
-      r_code["javis_run_command"]["required_mode"] == "full")
-check("javis_run_command nằm trong nhóm hạt nhân, không bị tầng lazy giấu",
-      "javis_run_command" in mcp_hub.CORE_TOOL_FNS)
+check("phiên coding -> hub cấp unimate_run_command",
+      "unimate_run_command" in [x["fn"] for x in t_code])
+check("unimate_run_command khai effect full (mức quyền cao nhất của hub)",
+      r_code["unimate_run_command"]["required_mode"] == "full")
+check("unimate_run_command nằm trong nhóm hạt nhân, không bị tầng lazy giấu",
+      "unimate_run_command" in mcp_hub.CORE_TOOL_FNS)
 
 t_thieu, _ = mcp_hub._builtin_tools("full", str(WS), workspace_root=str(WS))
 check("có workspace nhưng THIẾU ctx -> vẫn không cấp tool chạy lệnh",
-      "javis_run_command" not in [x["fn"] for x in t_thieu])
+      "unimate_run_command" not in [x["fn"] for x in t_thieu])
 
 import asyncio  # noqa: E402
 _, r_sug = mcp_hub._builtin_tools("full", str(WS), workspace_root=str(WS),
                                   coding_ctx_cua_phien=ctx("suggest"))
 # 0.256.0: mức suggest không thấy tool luôn (trước đây thấy rồi mới bị chặn lúc chạy). Lớp thứ
 # hai trong run_command vẫn chặn suggest nếu ai đó gọi thẳng, xem mục kiem_quyen ở trên.
-check("qua hub, mức suggest không được cấp tool chạy lệnh", "javis_run_command" not in r_sug)
+check("qua hub, mức suggest không được cấp tool chạy lệnh", "unimate_run_command" not in r_sug)
 _, r_plan = mcp_hub._builtin_tools("suggest", str(WS), workspace_root=str(WS),
                                    coding_ctx_cua_phien=ctx("auto"))
 check("lượt /plan (trần suggest) ở chip Tự động cũng không có tool chạy lệnh",
-      "javis_run_command" not in r_plan)
+      "unimate_run_command" not in r_plan)
 
 _hub_src = (SERVER / "mcp_hub.py").read_text(encoding="utf-8")
 check("mức quyền của phiên nằm trong khoá cache (hai phiên cùng repo khác chip không lẫn nhau)",

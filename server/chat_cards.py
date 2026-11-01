@@ -1,9 +1,9 @@
-"""Text form of a JAVIS_CARD block, for channels that cannot draw it (0.201.0).
+"""Text form of a UNIMATE_CARD block, for channels that cannot draw it (0.201.0).
 
-The dashboard draws `<!-- JAVIS_CARD: {...} -->` as a chart, a row of number tiles or buttons
+The dashboard draws `<!-- UNIMATE_CARD: {...} -->` as a chart, a row of number tiles or buttons
 (dashboard/chat-card.js). Telegram, Zalo and the other text channels get this plain version instead:
 a chart becomes one line per label, tiles become "label: value (delta)", buttons become a numbered
-list the person answers with a number, the same way a JAVIS_ASK block degrades.
+list the person answers with a number, the same way a UNIMATE_ASK block degrades.
 """
 from __future__ import annotations
 

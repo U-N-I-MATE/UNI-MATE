@@ -2,7 +2,7 @@
 
    When a chat turn creates, edits or removes a schedule, loop, partner, workflow or skill, the server pushes one small
    line into the chat (server/change_receipt.py) carrying a hidden block:
-       <!-- JAVIS_DOI: {"brain": "<brain key>", "items": [{"kind", "id", "title", "act": "new|updated|removed"}]} -->
+       <!-- UNIMATE_DOI: {"brain": "<brain key>", "items": [{"kind", "id", "title", "act": "new|updated|removed"}]} -->
    This file takes the block out and draws the line. A NEW item gets an Undo button that calls the route that already
    removes that kind (cancel a reminder, delete a loop, partner, workflow or skill). The block is part of the stored
    message, so a refresh draws the same line.
@@ -11,7 +11,7 @@
 (function () {
   "use strict";
 
-  var RE = /<!--\s*JAVIS_DOI:\s*([\s\S]*?)\s*-->\s*/;
+  var RE = /<!--\s*UNIMATE_DOI:\s*([\s\S]*?)\s*-->\s*/;
   var KINDS = ["reminder", "loop", "agent", "workflow", "skill"];
   var ACTS = { "new": "doi.new", updated: "doi.updated", removed: "doi.removed" };
   var KIND_KEY = { reminder: "doi.k_reminder", loop: "doi.k_loop", agent: "doi.k_agent", workflow: "doi.k_workflow",
@@ -96,6 +96,6 @@
   }
 
   var API = { tach: tach, ve: ve, lineHtml: lineHtml, UNDO: UNDO };
-  if (typeof window !== "undefined") window.JavisDoi = API;
+  if (typeof window !== "undefined") window.UniMateDoi = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 })();

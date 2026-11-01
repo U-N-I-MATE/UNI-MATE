@@ -62,6 +62,6 @@
   }
 
   var API = { send: send, STALL_MS: STALL_MS, SERVER_WAIT_MS: SERVER_WAIT_MS, RETRIES: RETRIES };
-  if (typeof window !== "undefined") window.JavisUpload = API;
+  if (typeof window !== "undefined") window.UniMateUpload = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 })();

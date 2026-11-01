@@ -7,7 +7,7 @@
    hành động, đánh giá không có kết quả xen giữa.
 2. API thẻ không giữ event loop: goal_view chậm (giả lập đọc đĩa chậm) chạy ở luồng phụ, một timer 10 ms vẫn đúng giờ
    khi có nhiều GET đồng thời.
-3. Header Server-Timing có trên response HTTP (để tách thời gian Javis xử lý với thời gian đi qua proxy).
+3. Header Server-Timing có trên response HTTP (để tách thời gian UNI MATE xử lý với thời gian đi qua proxy).
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -18,8 +18,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-perf-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-perf-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -34,7 +34,7 @@ def check(name, cond, info=None):
 
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-perf-")).resolve())
-P = RS.Principal("agent", "javis", BRAIN)
+P = RS.Principal("agent", "unimate", BRAIN)
 OWNER = RS.Principal("owner", "owner", BRAIN)
 store = RS.GoalStore(Path(_STATE) / "resonance.sqlite3")
 FRAME = {"understanding": "Ghi chú", "criteria": [

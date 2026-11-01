@@ -15,13 +15,13 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-reminder-silent-state-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-reminder-silent-state-")
 
 import reminders  # noqa: E402
 
 fails = []
 sent = []
-brain = Path(tempfile.mkdtemp(prefix="javis-reminder-silent-brain-"))
+brain = Path(tempfile.mkdtemp(prefix="unimate-reminder-silent-brain-"))
 
 
 def check(name, cond):
@@ -55,7 +55,7 @@ feature = reminders.RemindersFeature(deps)
 
 
 def stored(rid):
-    data = json.loads((brain / "Javis" / "reminders.json").read_text(encoding="utf-8"))
+    data = json.loads((brain / "UNI MATE" / "reminders.json").read_text(encoding="utf-8"))
     return next(r for r in data["reminders"] if r["id"] == rid)
 
 

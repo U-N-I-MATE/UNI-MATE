@@ -14,7 +14,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-limit-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-limit-"))
 
 import limit_learner as ll  # noqa: E402
 
@@ -27,7 +27,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-# ---- 1. Ca THẬT đã chặn Javis, chép nguyên văn từ ảnh chụp màn hình ----
+# ---- 1. Ca THẬT đã chặn UNI MATE, chép nguyên văn từ ảnh chụp màn hình ----
 _groq = ('{"error":{"message":"Request too large for model `llama-3.3-70b-versatile` in '
          'organization `org_01kykn91sqfk5s9nda9m3vpbsc` service tier `on_demand` on tokens '
          'per minute (TPM): Limit 12000, Requested 15447, please reduce your message size '
@@ -174,7 +174,7 @@ check("báo lỗi cuối: nói rõ đã tự thử lại", "thử lại" in _msg
 
 # ---- 7. MỌI đường gọi provider đều phải học hạn mức ----
 # Lỗi đã xảy ra thật: bản đầu chỉ vá các hàm stream thuần, trong khi đường Groq thật đi qua
-# _cc_tool_loop (luôn có tool vì Javis có builtin tools). Code đúng, test xanh, và không bao
+# _cc_tool_loop (luôn có tool vì UNI MATE có builtin tools). Code đúng, test xanh, và không bao
 # giờ chạy. Rào này đối chiếu: chỗ nào phát "error" theo status_code thì phải có học hạn mức
 # ngay trên đó.
 import re as _re  # noqa: E402

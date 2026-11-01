@@ -21,7 +21,7 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-kbsnap-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-kbsnap-"))
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -40,7 +40,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-TMP = Path(tempfile.mkdtemp(prefix="javis-kbsnap-brain-"))
+TMP = Path(tempfile.mkdtemp(prefix="unimate-kbsnap-brain-"))
 BRAIN = TMP / "Brain X"
 BRAIN.mkdir(parents=True, exist_ok=True)
 
@@ -127,7 +127,7 @@ check(f"1 snapshot của {N_TASK} việc chỉ tốn {n_truy_van} truy vấn tas
       n_truy_van <= 2)
 
 # ---- 5. Mirror ghi ra đúng nội dung ----
-mirror = json.loads((BRAIN / "Javis" / "kanban.json").read_text(encoding="utf-8"))
+mirror = json.loads((BRAIN / "UNI MATE" / "kanban.json").read_text(encoding="utf-8"))
 check(f"mirror có đủ {N_TASK} việc", len(mirror["tasks"]) == N_TASK)
 co_log = [t for t in mirror["tasks"] if t.get("log")]
 check(f"mọi việc đều có nhật ký trong mirror ({len(co_log)}/{N_TASK})", len(co_log) == N_TASK)

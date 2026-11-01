@@ -1,14 +1,14 @@
-"""Regression: a scheduled background job on Codex gets the Javis hub, or fails for real.
+"""Regression: a scheduled background job on Codex gets the UNI MATE hub, or fails for real.
 
 Canary 2026-10-08/09 (one VPS, 0.84.4 to 0.86.102, two read-only scheduled reminders): 4 of 12 runs had no
-`mcp__javis__*` tool. Codex 0.161.0 waits only `mcp_optional_startup_grace_ms` (default 1 s,
+`mcp__unimate__*` tool. Codex 0.161.0 waits only `mcp_optional_startup_grace_ms` (default 1 s,
 codex-mcp/src/mcp/mod.rs) for an MCP server that is not `required`, then drops that server from
 the turn (codex-mcp/src/connection_manager/tool_catalog.rs). The hub answers `tools/list` in
 about 2 s once its 60 s discovery cache has expired. The model then went through the ChatGPT
 apps (`mcp__codex_apps__*`) or said it could not work, and the reminder still recorded success.
 
 Fix, for the scheduled background lanes only (reminder, loop, Kanban dispatch):
-  - `mcp_servers.javis.required=true`: Codex waits for the hub up to `startup_timeout_sec`, and
+  - `mcp_servers.unimate.required=true`: Codex waits for the hub up to `startup_timeout_sec`, and
     `codex exec` exits with "required MCP servers failed to initialize" when it cannot start;
   - `features.apps=false`: no `codex_apps` server, so no route around the hub;
   - the background engine chain stops on that error instead of handing the prompt to the next
@@ -33,16 +33,16 @@ import time
 import tomllib
 from pathlib import Path
 
-# Hard-set, not setdefault: inside the production container JAVIS_STATE_DIR, BRAINS_DIR and HOME
+# Hard-set, not setdefault: inside the production container UNIMATE_STATE_DIR, BRAINS_DIR and HOME
 # point at live data, and this test writes a Codex profile under HOME and a reminders.json.
-_TMP = Path(tempfile.mkdtemp(prefix="javis-codex-bg-hub-"))
-os.environ["JAVIS_STATE_DIR"] = str(_TMP / "state")
-os.environ["JAVIS_SESSIONS_DB"] = str(_TMP / "conversations.db")
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-codex-bg-hub-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
+os.environ["UNIMATE_SESSIONS_DB"] = str(_TMP / "conversations.db")
 os.environ["BRAINS_DIR"] = str(_TMP / "brains")
 os.environ["HOME"] = str(_TMP / "home")
-os.environ.pop("JAVIS_CODEX_SANDBOX", None)
+os.environ.pop("UNIMATE_CODEX_SANDBOX", None)
 os.environ.pop("CODEX_HOME", None)
-for _d in ("state", "brains/Brain Default/Javis", "home"):
+for _d in ("state", "brains/Brain Default/UniMate", "home"):
     (_TMP / _d).mkdir(parents=True, exist_ok=True)
 
 try:
@@ -68,7 +68,7 @@ def check(name, cond, detail=""):
 
 
 # Names read with getattr so this file still runs (and turns RED) on a tree without the fix.
-REQ_KEY = getattr(mcp_hub, "CODEX_REQUIRED_KEY", "mcp_servers.javis.required")
+REQ_KEY = getattr(mcp_hub, "CODEX_REQUIRED_KEY", "mcp_servers.unimate.required")
 APPS_KEY = getattr(mcp_hub, "CODEX_APPS_KEY", "features.apps")
 REQ_FAIL = getattr(claude_cli, "CODEX_REQUIRED_FAIL", "required MCP servers failed to initialize")
 HUB_REQ = getattr(mcp_hub, "dat_codex_hub_bat_buoc", None)
@@ -103,7 +103,7 @@ def effective_config(argv):
 
 
 def hub_entry(cfg):
-    return (cfg.get("mcp_servers") or {}).get("javis") or {}
+    return (cfg.get("mcp_servers") or {}).get("unimate") or {}
 
 
 def count(argv, key):
@@ -122,8 +122,8 @@ class _Engine:
         self.cwd = str(BRAIN)
         self.tag = tag
         self.system_prompt = None
-        self.javis_vault = str(BRAIN)
-        self.javis_mode = mode
+        self.unimate_vault = str(BRAIN)
+        self.unimate_mode = mode
         self.model = None
 
     def is_available(self):
@@ -160,8 +160,8 @@ for tag in BG_TAGS:
         check(f"{tag} {m}: hub entry is required", j.get("required") is True, sorted(j))
         check(f"{tag} {m}: startup_timeout_sec still 20 from the profile", j.get("startup_timeout_sec") == 20)
         check(f"{tag} {m}: ChatGPT apps switched off", (cfg.get("features") or {}).get("apps") is False)
-        check(f"{tag} {m}: hub receives X-Javis-Mode={want_mode(m)} (the job's level)",
-              h.get("X-Javis-Mode") == want_mode(m))
+        check(f"{tag} {m}: hub receives X-UniMate-Mode={want_mode(m)} (the job's level)",
+              h.get("X-UniMate-Mode") == want_mode(m))
         check(f"{tag} {m}: auth still comes from the profile", str(h.get("Authorization", "")).startswith("Bearer "))
         check(f"{tag} {m}: exactly one required and one apps override",
               count(argv, REQ_KEY) == 1 and count(argv, APPS_KEY) == 1)
@@ -173,14 +173,14 @@ for tag in ("workflow", "workflow-main", "ingest", "reply-policy", "reply-policy
     check(f"{tag}: hub not marked required", "required" not in hub_entry(cfg))
     check(f"{tag}: apps feature untouched", "apps" not in (cfg.get("features") or {}))
     check(f"{tag}: mode header is the job's level ({want_mode('suggest')})",
-          (hub_entry(cfg).get("http_headers") or {}).get("X-Javis-Mode") == want_mode("suggest"))
+          (hub_entry(cfg).get("http_headers") or {}).get("X-UniMate-Mode") == want_mode("suggest"))
 
 # ---- 4. Shared profile (read by chat lanes) never carries the background overrides -------------
 prof = Path.home() / ".codex" / f"{mcp_hub.codex_profile_name()}.config.toml"
 before = prof.read_bytes()
 aux_engine._build_codex(CODEX_SPEC, _Engine(), "suggest", "reminder", shared_profile)
 after = tomllib.loads(prof.read_text(encoding="utf-8"))
-check("shared profile: hub not required", "required" not in after["mcp_servers"]["javis"])
+check("shared profile: hub not required", "required" not in after["mcp_servers"]["unimate"])
 check("shared profile: no features table", "features" not in after)
 check("shared profile bytes unchanged by a background job", prof.read_bytes() == before)
 
@@ -190,7 +190,7 @@ for label, writer in (("no profile writer", None), ("writer returned nothing", l
     check(f"{label}: no required override", count(argv, REQ_KEY) == 0, argv)
     check(f"{label}: no apps override", count(argv, APPS_KEY) == 0, argv)
 set_hub(False)
-argv = aux_engine._build_codex(CODEX_SPEC, _Engine(), "suggest", "reminder", lambda: "javis")._build_args()
+argv = aux_engine._build_codex(CODEX_SPEC, _Engine(), "suggest", "reminder", lambda: "unimate")._build_args()
 check("hub off in settings: no required and no apps override", count(argv, REQ_KEY) == 0 and count(argv, APPS_KEY) == 0, argv)
 set_hub(True)
 
@@ -210,7 +210,7 @@ for m in ("suggest", "auto", "full"):
     check(f"swap({m}): Codex link has the hub required and apps off",
           hub_entry(cfg).get("required") is True and (cfg.get("features") or {}).get("apps") is False)
     check(f"swap({m}): Codex link reaches the hub at {want_mode(m)}",
-          (hub_entry(cfg).get("http_headers") or {}).get("X-Javis-Mode") == want_mode(m))
+          (hub_entry(cfg).get("http_headers") or {}).get("X-UniMate-Mode") == want_mode(m))
     # 0.350.0: every level gets the fallback chain (a link that already used a tool stops it), Codex first.
     shape_ok = len(links) >= 2 and links[0] is codex[0]
     check(f"swap({m}): chain shape (Codex first, fallback after)", shape_ok,
@@ -247,23 +247,23 @@ async def collect(engine, fresh=True):
 FB = aux_engine._FallbackChain
 FINAL = lambda s: {"type": "final", "content": s}
 # The exact stderr codex-cli 0.161.0 printed in the isolated probe of the 0.86.103 preflight (hub
-# never answered initialize, startup_timeout_sec = 20), through Javis's own error formatter, as
+# never answered initialize, startup_timeout_sec = 20), through UNI MATE's own error formatter, as
 # CodexCLI.query does when Codex exits non-zero. The rmcp log line comes first.
 REQ_STDERR = [
     "2026-10-09T00:20:19.720107Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, "
     "when Client(HttpRequest(HttpRequest(\"http/request failed: error sending request for url "
     "(http://127.0.0.1:19310/hub/mcp)\")))",
     "2026-10-09T00:20:19.722743Z ERROR codex_core::session: Failed to create session: required MCP servers failed "
-    "to initialize: javis: timed out handshaking with MCP server after 20s",
+    "to initialize: unimate: timed out handshaking with MCP server after 20s",
     "Error: thread/start: thread/start failed: error creating thread: Fatal error: Failed to initialize session: "
-    "required MCP servers failed to initialize: javis: timed out handshaking with MCP server after 20s (code -32603)",
+    "required MCP servers failed to initialize: unimate: timed out handshaking with MCP server after 20s (code -32603)",
 ]
 REQ_ERR = claude_cli.codex_error_text(1, REQ_STDERR)
 # Hub port closed: same probe, the reason line is ~800 characters of transport detail.
 DOWN_STDERR = [
     REQ_STDERR[0],
     "2026-10-09T00:19:58.391560Z ERROR codex_core::session: Failed to create session: required MCP servers failed to "
-    "initialize: javis: handshaking with MCP server failed: Send message error Transport "
+    "initialize: unimate: handshaking with MCP server failed: Send message error Transport "
     "[codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::"
     "WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::"
     "http_client_adapter::StreamableHttpClientAdapter>>>] error: Client error: HTTP request failed: http/request "
@@ -272,7 +272,7 @@ DOWN_STDERR = [
 for label, lines in (("hub hung (timed out after 20s)", REQ_STDERR), ("hub port closed", DOWN_STDERR)):
     txt = claude_cli.codex_error_text(1, lines)
     check(f"codex_error_text, {label}: reason within the first 300 characters", REQ_FAIL in txt[:300], txt[:300])
-    check(f"codex_error_text, {label}: names the hub server and keeps the exit code", "javis:" in txt and "1" in txt)
+    check(f"codex_error_text, {label}: names the hub server and keeps the exit code", "unimate:" in txt and "1" in txt)
     check(f"codex_error_text, {label}: bounded length", len(txt) < 600, len(txt))
 other = claude_cli.codex_error_text(2, ["Error: unexpected status 401 Unauthorized"])
 check("codex_error_text, unrelated error: old format kept", other.startswith("Codex lỗi (exit 2):") and "401" in other, other)
@@ -287,8 +287,8 @@ check("required hub failed: next engine NOT run (it would reach the same hub bli
 check("required hub failed: no final leaks out", all(e.get("type") != "final" for e in evs))
 check("required hub failed: the reason is in the first 300 characters (what the chat card keeps)",
       bool(evs) and REQ_FAIL in str(evs[-1].get("content", ""))[:300], str(evs[-1].get("content", ""))[:300] if evs else "")
-check("required hub failed: Codex's own line is kept (javis + timed out after 20s)",
-      bool(evs) and "javis: timed out handshaking with MCP server after 20s" in str(evs[-1].get("content", "")))
+check("required hub failed: Codex's own line is kept (unimate + timed out after 20s)",
+      bool(evs) and "unimate: timed out handshaking with MCP server after 20s" in str(evs[-1].get("content", "")))
 
 LIMIT = "You've hit your session limit · resets 4:40am (UTC)"
 claude_het = FakeEngine([{"type": "error", "content": LIMIT}], provider="claude")
@@ -308,13 +308,13 @@ evs = asyncio.run(collect(FB([codex2, claude2]), fresh=False))
 check("0.222.0: right after that quota error, the next job tries Claude first (Codex is resting)",
       evs[-1] == FINAL("claude chạy trước") and codex2.ran == 0)
 
-codex = FakeEngine([{"type": "tool_call", "name": "mcp__javis__javis_run_tool"}, FINAL("xong")], provider="openai-oauth")
+codex = FakeEngine([{"type": "tool_call", "name": "mcp__unimate__unimate_run_tool"}, FINAL("xong")], provider="openai-oauth")
 claude = FakeEngine([FINAL("không được chạy")])
 evs = asyncio.run(collect(FB([codex, claude])))
 check("healthy Codex run: unchanged, Claude never runs", evs[-1] == FINAL("xong") and claude.ran == 0)
 
 # ---- 9. End to end at the reminder layer: a missing hub is a FAILED job, not a done one ---------
-REM_FILE = BRAIN / "Javis" / "reminders.json"
+REM_FILE = BRAIN / "UNI MATE" / "reminders.json"
 sent = []
 
 
@@ -382,7 +382,7 @@ check("reminder at full (no chain): error recorded with the reason", REQ_FAIL in
 check("reminder at full (no chain): card failed and warning names the reason",
       bool(sent) and (sent[-1]["viec"] or {}).get("status") == "failed" and REQ_FAIL in sent[-1]["text"], sent[-1:])
 
-codex = FakeEngine([{"type": "tool_call", "name": "mcp__javis__javis_run_tool"}, FINAL("OK: 3 rows")], provider="openai-oauth")
+codex = FakeEngine([{"type": "tool_call", "name": "mcp__unimate__unimate_run_tool"}, FINAL("OK: 3 rows")], provider="openai-oauth")
 claude = FakeEngine([FINAL("không được chạy")])
 stored = run_fire([codex, claude])
 check("reminder healthy run: result kept, no error, card done",

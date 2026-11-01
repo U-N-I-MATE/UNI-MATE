@@ -65,20 +65,20 @@ for ten, body in (("trang Cài đặt", SETTINGS), ("trang Tổng quan", OVERVIE
     check(f"{ten}: tính giờ bằng đồng hồ", "Date.now() - t0" in body and "waited >= UPD_WAIT_MS" in body)
     check(f"{ten}: câu 'vẫn đang kéo' đi kèm spinner, không phải cảnh báo",
           re.search(r'ic\("loader", \{ cls: "ic-spin" \}\) \+ " " \+ (esc\()?window\.t\("cs\.upd_pulling_long"\)', body))
-    check(f"{ten}: báo trang đang chờ cập nhật", "window.__javisUpdating = true" in body)
-    # 0.415.0: tải lại qua JavisReloadWhenReady (chờ máy chủ trả JSON hai lần liền), vẫn tự động, không hỏi.
+    check(f"{ten}: báo trang đang chờ cập nhật", "window.__unimateUpdating = true" in body)
+    # 0.415.0: tải lại qua UniMateReloadWhenReady (chờ máy chủ trả JSON hai lần liền), vẫn tự động, không hỏi.
     check(f"{ten}: bản mới lên thì tự tải lại", "setTimeout(_taiLaiKhiSan, 1500)" in body)
     check(f"{ten}: lỗi thật vẫn dừng ngay",
           "rolled_back" in body and "pull_failed" in body and "\"error\"" in body)
     check(f"{ten}: mọi lối ra thất bại đều nhả cờ đang chờ",
-          body.count("window.__javisUpdating = false") >= 3, body.count("window.__javisUpdating = false"))
+          body.count("window.__unimateUpdating = false") >= 3, body.count("window.__unimateUpdating = false"))
 
 i = FRESH.index("function kiemPhienBan")
 seg = FRESH[i:FRESH.index("setInterval(kiemPhienBan", i)]
 check("freshness.js: đang chờ cập nhật thì tải lại luôn, không hỏi",
-      "if (window.__javisUpdating) { choSanRoiTaiLai(); return; }" in seg
+      "if (window.__unimateUpdating) { choSanRoiTaiLai(); return; }" in seg
       and "location.reload(); return; }" in FRESH[FRESH.index("function choSanRoiTaiLai"):]
-      and seg.index("__javisUpdating") < seg.index("baoCoBanMoi("))
+      and seg.index("__unimateUpdating") < seg.index("baoCoBanMoi("))
 
 for lang, d in (("vi", VI), ("en", EN)):
     check(f"{lang}: có câu 'vẫn đang kéo'", bool(d.get("cs.upd_pulling_long")))

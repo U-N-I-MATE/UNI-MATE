@@ -20,7 +20,7 @@ import asyncio
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-call-rules-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-call-rules-"))
 
 import config  # noqa: E402
 import mcp_catalog  # noqa: E402

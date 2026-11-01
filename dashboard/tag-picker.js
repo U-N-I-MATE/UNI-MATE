@@ -4,7 +4,7 @@
    thêm chức năng mới trong cùng 1 phần mềm". These are the Partners page pieces moved here unchanged, so both pages draw
    and behave the same:
    - barHtml: the filter button on top of a list ("All partners" / a tag, with a chevron) plus the clear button; the
-     dropdown it opens is the shared JavisChatSide.menu.
+     dropdown it opens is the shared UniMateChatSide.menu.
    - pickerHtml + bind: the "Tag" picker inside a row's menu: back row, a box to add a new tag, then every tag as a
      check row (tap to add or remove). It stays open so several tags can be set in one go.
    Words come from the caller (each page has its own "All ..." label); the picker's own words are the ws.tag_* keys.
@@ -63,6 +63,6 @@
   }
 
   var API = { barHtml: barHtml, pickerHtml: pickerHtml, bind: bind, FOCUS_INPUT: FOCUS_INPUT };
-  if (typeof window !== "undefined") window.JavisTagPicker = API;
+  if (typeof window !== "undefined") window.UniMateTagPicker = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 })();

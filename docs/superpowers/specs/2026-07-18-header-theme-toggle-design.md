@@ -24,7 +24,7 @@ Gói các con hiện tại vào 3 nhóm cố định cột, thay cho 4 con phẳ
 ```
 <header class="hud-top">
   <div class="hud-top-left">   .brand + .navbar-brain (select brain + ➕🗑📁 + graph-stats) </div>
-  <div class="hud-top-center"> .hud-center-title (JavisOS + ngày) </div>
+  <div class="hud-top-center"> .hud-center-title (UniMateOS + ngày) </div>
   <div class="hud-top-right">  nút đổi theme (LUÔN hiện) + .hud-actions (ẩn khi in-console) </div>
 </header>
 ```
@@ -38,7 +38,7 @@ Gói các con hiện tại vào 3 nhóm cố định cột, thay cho 4 con phẳ
 
 - Nút icon "tương phản" (nửa tròn sáng/tối) trong `.hud-top-right`, style theo `.hud-icon-btn` sẵn có.
 - Bấm → lật thuộc tính `data-theme` trên `<html>`: không có (mặc định) = tối-đậm; `data-theme="dim"` = tối-nhạt.
-- Nhớ lựa chọn qua `localStorage["javis.theme"]`.
+- Nhớ lựa chọn qua `localStorage["unimate.theme"]`.
 - Chống nháy: inline script NGAY đầu `<head>` đọc localStorage và đặt `data-theme` trước khi CSS vẽ.
 
 Bảng màu dim (override `:root[data-theme="dim"]` trong style.css) - nhạt rõ hơn tối-đậm:

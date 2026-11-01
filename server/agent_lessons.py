@@ -13,9 +13,9 @@ Bảng (module tự tạo trên `resonance.sqlite3`, `CREATE TABLE IF NOT EXISTS
 
 Luật phạm vi (8.1):
 - Lượt nhóm nạp `team:<id>` và `*`; chat riêng nạp `dm:<agent_key>` và `*`. Không bao giờ nạp phạm vi của ngữ cảnh khác.
-- `JAVIS_LESSON` trong lượt nhóm: `team:<id>`, nguồn `self`, chỉ khi đầu ra còn hợp lệ (đường R3 của bộ chạy nhóm).
-- `JAVIS_LESSON` trong chat riêng: `dm:<agent_key>` (không còn vào MEMORY.md). Bài học cũ trong MEMORY.md giữ nguyên,
-  giao diện ghi "bài học cũ chưa có phạm vi". `JAVIS_RULE` không đổi (vẫn vào "Luật chủ dặn").
+- `UNIMATE_LESSON` trong lượt nhóm: `team:<id>`, nguồn `self`, chỉ khi đầu ra còn hợp lệ (đường R3 của bộ chạy nhóm).
+- `UNIMATE_LESSON` trong chat riêng: `dm:<agent_key>` (không còn vào MEMORY.md). Bài học cũ trong MEMORY.md giữ nguyên,
+  giao diện ghi "bài học cũ chưa có phạm vi". `UNIMATE_RULE` không đổi (vẫn vào "Luật chủ dặn").
 - Lên `*` chỉ do chủ, hay do tự rà soát kèm bằng chứng từ ít nhất 2 ngữ cảnh khác nhau.
 """
 from __future__ import annotations
@@ -49,9 +49,9 @@ LESSON_HEADER_TEAM = "## Bài học của bạn trong nhóm này (có phạm vi,
 LESSON_HEADER_DM = "## Bài học của bạn trong chat riêng với chủ (có phạm vi, có nguồn)"
 LESSON_NOTE = ("Bài học do bạn tự rút ra hay được rà soát; luật của chủ vẫn đứng trên. Bài học chung (mọi nơi) có nhãn "
                "\"mọi nơi\".")
-DM_LESSON_RULE = ("\n# Bài học trong chat riêng\nTrong chat riêng với chủ, dòng `JAVIS_LESSON` được ghi vào kho bài học của "
+DM_LESSON_RULE = ("\n# Bài học trong chat riêng\nTrong chat riêng với chủ, dòng `UNIMATE_LESSON` được ghi vào kho bài học của "
                   "CHAT RIÊNG (chỉ nạp lại ở chat riêng với chủ, không vào nhóm nào), không còn ghi vào MEMORY.md.\n")
-TEAM_LESSON_RULE = ("Trong lượt nhóm, dòng `JAVIS_LESSON` được ghi vào kho bài học của RIÊNG nhóm này (chỉ khi kết quả của "
+TEAM_LESSON_RULE = ("Trong lượt nhóm, dòng `UNIMATE_LESSON` được ghi vào kho bài học của RIÊNG nhóm này (chỉ khi kết quả của "
                     "lượt còn hợp lệ), không vào MEMORY.md và không đi sang nhóm khác hay chat riêng.")
 
 _SCHEMA = """
@@ -382,10 +382,10 @@ def legacy_lessons(memory_text: str) -> list:
 
 
 def split_lessons(text: str) -> tuple:
-    """Tách dòng `JAVIS_LESSON: ...` khỏi văn bản (cùng luật với main._boc_bai_hoc). Trả (bài học, văn bản sạch)."""
-    pat = re.compile(r"^[ \t]*JAVIS_LESSON:[ \t]*(.+?)[ \t]*$", re.MULTILINE)
+    """Tách dòng `UNIMATE_LESSON: ...` khỏi văn bản (cùng luật với main._boc_bai_hoc). Trả (bài học, văn bản sạch)."""
+    pat = re.compile(r"^[ \t]*UNIMATE_LESSON:[ \t]*(.+?)[ \t]*$", re.MULTILINE)
     s = str(text or "")
-    if "JAVIS_LESSON" not in s:
+    if "UNIMATE_LESSON" not in s:
         return [], s
     found = [m.group(1).strip()[:TEXT_MAX] for m in pat.finditer(s)][:3]
     clean = re.sub(r"\n{3,}", "\n\n", pat.sub("", s)).strip()
@@ -394,7 +394,7 @@ def split_lessons(text: str) -> tuple:
 
 def record_self_lessons(store, *, agent_key: str, context_ref: str, lessons_: Iterable[str],
                         source_refs: Iterable[str] = (), at: Optional[float] = None) -> list:
-    """Bài học `JAVIS_LESSON` do chính agent đề xuất ở một ngữ cảnh (nhóm hay chat riêng): phạm vi = ngữ cảnh, nguồn
+    """Bài học `UNIMATE_LESSON` do chính agent đề xuất ở một ngữ cảnh (nhóm hay chat riêng): phạm vi = ngữ cảnh, nguồn
     `self`, loại `method`. Trả mã bài học đã ghi."""
     ids = []
     for txt in lessons_ or []:

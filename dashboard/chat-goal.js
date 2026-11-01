@@ -8,7 +8,7 @@
 // Chia đôi như chat-slash.js: phần THUẦN (tạo, tạm dừng, đếm giờ, đọc/ghi kho, dựng HTML) chạy được
 // dưới node để test (tests/js/test_chat_goal.js); phần DOM ở cuối file chỉ chạy trong trình duyệt.
 // File này chỉ GIỮ và VẼ mục tiêu. Chạy vòng, quyết định vòng tiếp vẫn là việc của chat-lenh.js: nút
-// trên thanh gọi window.JavisLenh.goalAct().
+// trên thanh gọi window.UniMateLenh.goalAct().
 //
 // Mỗi hội thoại có tối đa MỘT mục tiêu. Mục tiêu chỉ chạy tiếp khi chat của nó đang mở, vì vòng tự
 // động là trình duyệt gửi tin vào khung chat đang xem. Rời chat thì nó CHỜ (không tắt như trước),
@@ -17,7 +17,7 @@
 (function () {
   "use strict";
 
-  var KHO_KEY = "javis.goals.v1";
+  var KHO_KEY = "unimate.goals.v1";
   var TOI_DA_KHO = 8;      // nhiều hơn thế là mục tiêu bị bỏ quên: cái cũ nhất rơi khỏi kho
 
   // Tên hàm là tw (không phải t) vì test_i18n quét mặt chữ các lời gọi tw để kiểm khoá có thật.
@@ -271,7 +271,7 @@
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (typeof window === "undefined" || typeof document === "undefined") return;
-  window.JavisGoals = api;
+  window.UniMateGoals = api;
   doc();
 
   // ===================== THANH (chỉ trình duyệt) =====================
@@ -279,11 +279,11 @@
   var hen = null;
 
   function sidHienTai() {
-    var s = window.JavisSessions;
+    var s = window.UniMateSessions;
     try { return (s && s.current()) || null; } catch (e) { return null; }
   }
   function brainHienTai() {
-    var s = window.JavisSessions;
+    var s = window.UniMateSessions;
     try { return (s && s.brain()) || ""; } catch (e) { return ""; }
   }
   // Mục tiêu của brain khác không hiện: bấm vào không mở được chat của nó từ brain đang chọn.
@@ -321,7 +321,7 @@
     if (act === "list") { ui.xo = !ui.xo; ve(); return; }
     if (act === "expand") { ui.mo = !ui.mo; ve(); return; }
     ui.xo = false;
-    if (window.JavisLenh && window.JavisLenh.goalAct) window.JavisLenh.goalAct(act, id);
+    if (window.UniMateLenh && window.UniMateLenh.goalAct) window.UniMateLenh.goalAct(act, id);
     ve();
   }
 
@@ -341,8 +341,8 @@
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && ui.xo) { ui.xo = false; ve(); }
     });
-    window.addEventListener("javis:sessions-changed", ve);
-    window.addEventListener("javis:i18n", ve);
+    window.addEventListener("unimate:sessions-changed", ve);
+    window.addEventListener("unimate:i18n", ve);
     ve();
   }
   if (document.getElementById("goalBar")) gan();

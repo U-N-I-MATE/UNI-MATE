@@ -4,10 +4,10 @@
 
 Đo thật 27/10/2026 (bộ não Claude Code, brain nằm trong repo như bản cài thường): một câu "chào em"
 tốn 60.808 token. Ba thứ ghim ở đây:
-  1. CLAUDE.md của repo LÀ prompt Javis, đã gắn qua --append-system-prompt-file. Claude Code đi ngược từ
+  1. CLAUDE.md của repo LÀ prompt UNI MATE, đã gắn qua --append-system-prompt-file. Claude Code đi ngược từ
      cwd lên và nạp nó thêm lần nữa (~12.300 token). `claudeMdExcludes` loại đúng file đó.
   2. Claude Code giữ system prompt của lượt ĐẦU khi nối phiên, nên giờ trong system prompt đông cứng
-     (đo thật: hỏi lúc 08:53, Javis trả 08:51). Lượt nối phiên mang giờ gửi tin ở đầu prompt.
+     (đo thật: hỏi lúc 08:53, UNI MATE trả 08:51). Lượt nối phiên mang giờ gửi tin ở đầu prompt.
   3. Engine báo phần token chỉ đọc lại từ cache (`tokens_cache_read`). Khung chat từng hiện số token mới dưới
      mỗi câu trả lời; từ 0.374.0 chủ repo bỏ hẳn số đó khỏi khung chat (xem trang Mức dùng).
 """
@@ -17,7 +17,7 @@ import json
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-tokluot-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-tokluot-"))
 import context_compiler  # noqa: E402
 import fast_mode  # noqa: E402
 import main  # noqa: E402
@@ -32,13 +32,13 @@ def check(name, cond, extra=""):
         fails.append(name)
 
 
-# ---- 1. CLAUDE.md của Javis không nạp hai lần ----
+# ---- 1. CLAUDE.md của UNI MATE không nạp hai lần ----
 # claude_sdk_engine.py bị ghim băm bởi bằng chứng kiểm định native, nên việc này làm ở factory
 # claude_cli.claude_engine (mọi engine Claude đều dựng qua đó) và ở main._cli_fast (lượt chat).
 CLAUDE_MD = (ROOT / "CLAUDE.md").resolve()
 e = claude_cli.claude_engine(tag="chat")
 cfg = json.loads(e._options().settings)
-check("settings loại đúng CLAUDE.md của repo (prompt Javis)", str(CLAUDE_MD) in cfg.get("claudeMdExcludes", []),
+check("settings loại đúng CLAUDE.md của repo (prompt UNI MATE)", str(CLAUDE_MD) in cfg.get("claudeMdExcludes", []),
       cfg)
 check("chỉ loại MỘT file đó, không loại CLAUDE.md của người dùng hay của brain",
       {os.path.basename(p) for p in cfg["claudeMdExcludes"]} == {"CLAUDE.md"}
@@ -58,20 +58,20 @@ g = claude_cli.claude_engine(tag="loop", allowed_tools=["Read"])
 check("lượt nền khoá quyền cũng loại (cùng cwd brain trong repo)",
       str(CLAUDE_MD) in json.loads(g._options().settings).get("claudeMdExcludes", []))
 check("danh sách loại sẵn có được giữ, không trùng",
-      json.loads(claude_cli.javis_claude_settings('{"claudeMdExcludes": ["/x/CLAUDE.md"]}'))["claudeMdExcludes"][0]
+      json.loads(claude_cli.unimate_claude_settings('{"claudeMdExcludes": ["/x/CLAUDE.md"]}'))["claudeMdExcludes"][0]
       == "/x/CLAUDE.md"
-      and len(json.loads(claude_cli.javis_claude_settings(claude_cli.javis_claude_settings()))["claudeMdExcludes"])
-      == len(json.loads(claude_cli.javis_claude_settings())["claudeMdExcludes"]))
-check("settings hỏng thì vẫn ra JSON hợp lệ", json.loads(claude_cli.javis_claude_settings("{hỏng")).get("fastMode") is False)
+      and len(json.loads(claude_cli.unimate_claude_settings(claude_cli.unimate_claude_settings()))["claudeMdExcludes"])
+      == len(json.loads(claude_cli.unimate_claude_settings())["claudeMdExcludes"]))
+check("settings hỏng thì vẫn ra JSON hợp lệ", json.loads(claude_cli.unimate_claude_settings("{hỏng")).get("fastMode") is False)
 # Native compaction window (0.345.0): measured effectiveWindow=980000 by default on a 1M model,
 # 180000 with autoCompactWindow=200000 (a number: the string "200k" is ignored in settings).
 check("every Claude run compacts natively near 200k", cfg.get("autoCompactWindow") == 200_000, cfg)
 check("...also with fast mode on", cfg2.get("autoCompactWindow") == 200_000, cfg2)
 for env, want in (("auto", None), ("150k", 150_000), ("50000", 100_000), ("5000000", 1_000_000), ("rác", 200_000)):
-    os.environ["JAVIS_CLAUDE_COMPACT_WINDOW"] = env
-    got = json.loads(claude_cli.javis_claude_settings()).get("autoCompactWindow")
-    check(f"JAVIS_CLAUDE_COMPACT_WINDOW={env} -> {want}", got == want, got)
-os.environ.pop("JAVIS_CLAUDE_COMPACT_WINDOW", None)
+    os.environ["UNIMATE_CLAUDE_COMPACT_WINDOW"] = env
+    got = json.loads(claude_cli.unimate_claude_settings()).get("autoCompactWindow")
+    check(f"UNIMATE_CLAUDE_COMPACT_WINDOW={env} -> {want}", got == want, got)
+os.environ.pop("UNIMATE_CLAUDE_COMPACT_WINDOW", None)
 
 # ---- 2. Giờ gửi tin cho lượt nối phiên ----
 now = datetime.datetime(2026, 10, 27, 8, 53, tzinfo=datetime.timezone(datetime.timedelta(hours=7)))

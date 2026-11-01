@@ -4,8 +4,8 @@
 
 Chủ repo gửi ảnh 10/10/2026: thẻ bot "Phi Yến" báo
     RuntimeError: gọi tool lỗi: RuntimeError: process đóng stdout ([mcp] Config loaded: {"maxMessagesPerPoll":20,...
-rồi hết. Vòng đọc giữ 300 ký tự ĐẦU của lỗi, mà dòng "[mcp] Config loaded" (javis-zalo in lúc khởi động) đã
-chiếm gần hết, nên dòng lý do thật phía sau bị cắt. Theo src/commands/mcp.js của javis-zalo v1.2.0, sau dòng
+rồi hết. Vòng đọc giữ 300 ký tự ĐẦU của lỗi, mà dòng "[mcp] Config loaded" (unimate-zalo in lúc khởi động) đã
+chiếm gần hết, nên dòng lý do thật phía sau bị cắt. Theo src/commands/mcp.js của unimate-zalo v1.2.0, sau dòng
 đó tiến trình chỉ tự thoát khi: Zalo đá phiên vì tài khoản mở ở nơi khác (mã 3000, "Duplicate Zalo Web
 session detected"), đăng nhập lại thất bại, hoặc không dựng được server/bộ nghe.
 

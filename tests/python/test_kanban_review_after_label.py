@@ -46,8 +46,8 @@ check("form shows the explanation in an (i) block next to the checkbox",
 check("the box is sent with the job", 'needs_approval: f.appr ? "1" : "0"' in tasks_js)
 
 # Behaviour pinned: a needs_approval task is claimable right away and lands in `review` after.
-store = task_store.TaskStore(Path(tempfile.mkdtemp(prefix="javis-review-after-")) / "tasks.sqlite3")
-root = tempfile.mkdtemp(prefix="javis-review-after-brain-")
+store = task_store.TaskStore(Path(tempfile.mkdtemp(prefix="unimate-review-after-")) / "tasks.sqlite3")
+root = tempfile.mkdtemp(prefix="unimate-review-after-brain-")
 tid = store.enqueue(root, "Đọc báo cáo", "Đọc báo cáo", needs_approval=True, status="ready")
 claimed = store.claim(tid, "w1")
 check("needs_approval task is claimed without a prior approval", bool(claimed))

@@ -14,7 +14,7 @@ Catalog khai trong `auth`:
     }
 
 Đã dán sẵn `output` thì BỎ QUA đổi. Đây là đường lui quan trọng: Google hay chặn đăng nhập từ IP
-trung tâm dữ liệu, nên người chạy Javis trên VPS vẫn phải tự lấy token ở máy nhà rồi dán vào.
+trung tâm dữ liệu, nên người chạy UNI MATE trên VPS vẫn phải tự lấy token ở máy nhà rồi dán vào.
 
 BẢO MẬT:
 - Field trong `drop` bị xoá dù đổi THÀNH CÔNG hay THẤT BẠI.
@@ -43,10 +43,10 @@ def _google_master_token(fields):
     try:
         import gpsoauth
     except ImportError:
-        return None, _c("Máy chủ Javis thiếu thư viện gpsoauth. Chạy: pip install -r requirements.txt "
-                        "rồi khởi động lại Javis.",
-                        "The Javis server is missing the gpsoauth library. Run: pip install -r requirements.txt "
-                        "and restart Javis.")
+        return None, _c("Máy chủ UNI MATE thiếu thư viện gpsoauth. Chạy: pip install -r requirements.txt "
+                        "rồi khởi động lại UNI MATE.",
+                        "The UNI MATE server is missing the gpsoauth library. Run: pip install -r requirements.txt "
+                        "and restart UNI MATE.")
 
     email = str(fields.get("google_email") or "").strip()
     # Google hiển thị App Password thành 4 nhóm 4 ký tự có dấu cách; người dùng hay copy cả cách.
@@ -65,9 +65,9 @@ def _google_master_token(fields):
             res = gpsoauth.exchange_token(email, otk, _ANDROID_ID)
         except Exception as e:
             return None, _c(f"Không gọi được máy chủ Google ({type(e).__name__}). Kiểm tra mạng của "
-                            "máy chạy Javis rồi thử lại.",
+                            "máy chạy UNI MATE rồi thử lại.",
                             f"Could not reach Google's server ({type(e).__name__}). Check the network of "
-                            "the machine running Javis and try again.")
+                            "the machine running UNI MATE and try again.")
         token = res.get("Token")
         if token:
             return token, ""
@@ -89,9 +89,9 @@ def _google_master_token(fields):
         res = gpsoauth.perform_master_login(email, pw, _ANDROID_ID)
     except Exception as e:
         return None, _c(f"Không gọi được máy chủ Google ({type(e).__name__}). Kiểm tra mạng của máy "
-                        "chạy Javis rồi thử lại.",
+                        "chạy UNI MATE rồi thử lại.",
                         f"Could not reach Google's server ({type(e).__name__}). Check the network of the "
-                        "machine running Javis and try again.")
+                        "machine running UNI MATE and try again.")
 
     token = res.get("Token")
     if token:
@@ -102,13 +102,13 @@ def _google_master_token(fields):
         return None, _c("Google từ chối đăng nhập. Ba khả năng: (1) sai email hoặc App Password, "
                         "tạo lại chuỗi mới ở myaccount.google.com/apppasswords; (2) Google đã siết "
                         "đường App Password với tài khoản này, dùng đường lui oauth_token theo hướng "
-                        "dẫn trong form (mở accounts.google.com/EmbeddedSetup); (3) Javis chạy trên "
+                        "dẫn trong form (mở accounts.google.com/EmbeddedSetup); (3) UNI MATE chạy trên "
                         "VPS bị Google chặn IP trung tâm dữ liệu, lấy token ở máy cá nhân rồi dán "
                         "vào ô Master token hoặc oauth_token.",
                         "Google rejected the sign-in. Three possibilities: (1) wrong email or App Password, "
                         "create a new one at myaccount.google.com/apppasswords; (2) Google has tightened "
                         "the App Password route for this account, use the oauth_token fallback as the form "
-                        "explains (open accounts.google.com/EmbeddedSetup); (3) Javis runs on a "
+                        "explains (open accounts.google.com/EmbeddedSetup); (3) UNI MATE runs on a "
                         "VPS whose data-center IP Google blocks, get the token on a personal machine and paste "
                         "it into the Master token or oauth_token box.")
     if ma in ("NeedsBrowser", "DeviceManagementRequiredOrSyncDisabled"):
@@ -173,7 +173,7 @@ def run(connector, fields):
     thứ đáng ra phải vứt."""
     fields = dict(fields or {})
     ex = ((connector or {}).get("auth") or {}).get("exchange") or {}
-    # Older javis.facebook-monitor packs have only the apify_token field. Their virtual
+    # Older unimate.facebook-monitor packs have only the apify_token field. Their virtual
     # connector cannot be dialed by validate_connection, so verify it here as well.
     if not ex and (connector or {}).get("id") == "facebook-monitor":
         ex = _FACEBOOK_MONITOR_EXCHANGE
@@ -208,10 +208,10 @@ def run(connector, fields):
 
     fn = HANDLERS.get(str(ex.get("handler") or ""))
     if not fn:
-        return _bo_rac(fields), _c("Bản Javis này chưa biết cách đổi credential cho connector đó. "
-                                   "Cập nhật Javis rồi thử lại.",
-                                   "This Javis version does not know how to exchange credentials for that connector. "
-                                   "Update Javis and try again.")
+        return _bo_rac(fields), _c("Bản Uni này chưa biết cách đổi credential cho connector đó. "
+                                   "Cập nhật UNI MATE rồi thử lại.",
+                                   "This UNI MATE version does not know how to exchange credentials for that connector. "
+                                   "Update UNI MATE and try again.")
 
     try:
         gia_tri, loi = fn({k: fields.get(k) for k in inputs})

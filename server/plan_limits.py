@@ -1,7 +1,7 @@
 """Plan usage limits (0.329.0): how much of the subscription's 5-hour and weekly allowance is used.
 
 The composer ring shows these two meters for the brains that run on a plan the user already pays
-for: Claude Code signed in to Pro/Max, and ChatGPT through Codex. Javis never reads either login
+for: Claude Code signed in to Pro/Max, and ChatGPT through Codex. UNI MATE never reads either login
 token, so the numbers come from what the two CLIs report on their own:
 
 - Claude Code sends a `rate_limit_event` in its stream after each request (hooked by `cai_vao_claude_sdk`). `rate_limit_info.raw`
@@ -199,7 +199,7 @@ def ghi_codex(snap: dict, now: float = None):
 
 
 def _codex_dir() -> str:
-    return os.getenv("JAVIS_CODEX_SESSIONS_DIR") or os.path.expanduser("~/.codex/sessions")
+    return os.getenv("UNIMATE_CODEX_SESSIONS_DIR") or os.path.expanduser("~/.codex/sessions")
 
 
 def _ngay_moi_nhat(goc: str, n: int) -> list:
@@ -246,7 +246,7 @@ def _doc_rollout(path: str) -> Optional[dict]:
 
 
 def quet_codex(now: float = None) -> Optional[dict]:
-    """Newest Codex rollout files (Codex used inside or outside Javis) -> the latest snapshot, if newer
+    """Newest Codex rollout files (Codex used inside or outside UNI MATE) -> the latest snapshot, if newer
     than what is stored. Only the 3 newest files are opened, and an unchanged file is not reread."""
     now = time.time() if now is None else now
     try:

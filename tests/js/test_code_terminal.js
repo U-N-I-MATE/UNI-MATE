@@ -63,7 +63,7 @@ check("renderPage định tuyến mọi trang thuộc nhóm Code",
       /CODE_PAGES\.includes\(id\)\)\s*return renderCode\(el, id\)/.test(CON_CODE)
       && /const CODE_PAGES = \[[^\]]*"terminal"/.test(CON_CODE));
 check("có hàm renderCode uỷ quyền cho code-term.js",
-      /function renderCode\(el, id\)/.test(CON_CODE) && /window\.JavisCode/.test(CON_CODE));
+      /function renderCode\(el, id\)/.test(CON_CODE) && /window\.UniMateCode/.test(CON_CODE));
 
 // ============================================================
 // 2. Nạp lười: xterm KHÔNG được nằm trong đường khởi động
@@ -88,8 +88,8 @@ check("file xterm đã vendor sẵn trong repo (app không gọi mạng lúc ch�
 // ============================================================
 const renderCode = CON_CODE.slice(CON_CODE.indexOf("function renderCode"),
                                   CON_CODE.indexOf("function renderChatbots"));
-check("rời trang Code có gọi dọn (JavisCode.roi)", /_pageLeave = \(\) =>/.test(renderCode)
-      && /JavisCode\.roi\(\)/.test(renderCode));
+check("rời trang Code có gọi dọn (UniMateCode.roi)", /_pageLeave = \(\) =>/.test(renderCode)
+      && /UniMateCode\.roi\(\)/.test(renderCode));
 check("rời trang Code gỡ lại lớp .cview-flush (cloneNode giữ class -> trang sau mất padding)",
       /classList\.remove\("cview-flush"\)/.test(renderCode));
 check("huy() đóng WebSocket của MỌI tab và ngắt ResizeObserver",
@@ -99,7 +99,7 @@ check("huy() đóng WebSocket của MỌI tab và ngắt ResizeObserver",
 check("ngatWs() gỡ handler rồi mới đóng (chống hai socket cùng chạy)",
       /function ngatWs\(tb\)[\s\S]{0,260}ws\.onclose = null[\s\S]{0,160}ws\.close\(\)/.test(CODE_CODE));
 check("huy() gỡ luôn listener đổi tông (không thì mỗi lần vào tab lại chồng một cái)",
-      /removeEventListener\("javis-theme-change"/.test(CODE_CODE));
+      /removeEventListener\("unimate-theme-change"/.test(CODE_CODE));
 // lastIndexOf, không phải indexOf: "huy: function" xuất hiện mấy lần (veTerminal có một cái
 // tạm), cái CUỐI mới là hàm dọn thật của dungTerminal.
 check("CANARY: rời trang KHÔNG gọi /terminal/close (shell mọi tab phải chạy tiếp)",
@@ -142,9 +142,9 @@ check("trần số tab lấy từ server (max_phien), không viết cứng",
 check("chạm trần thì nút '+' bị khoá chứ không lặng lẽ mở thêm",
       /tabs\.length >= maxTab/.test(CODE_CODE) && /disabled/.test(CODE_CODE));
 check("danh sách tab lưu ở sessionStorage để F5/đổi trang quay lại còn nguyên",
-      /javis\.code\.tabs/.test(CODE_CODE) && /function ghiTabs\(\)/.test(CODE_CODE));
-check("di cư được khoá một-phiên cũ (javis.code.phien) sang tab đầu tiên",
-      /javis\.code\.phien/.test(CODE_CODE) && /function docTabs\(\)/.test(CODE_CODE));
+      /unimate\.code\.tabs/.test(CODE_CODE) && /function ghiTabs\(\)/.test(CODE_CODE));
+check("di cư được khoá một-phiên cũ (unimate.code.phien) sang tab đầu tiên",
+      /unimate\.code\.phien/.test(CODE_CODE) && /function docTabs\(\)/.test(CODE_CODE));
 // Đóng TAB (dấu x) là chủ ý "xong việc với shell này" nên phải đóng hẳn phiên ở server -
 // khác với rời trang (chỉ thôi xem). Không đóng thì shell mồ côi chiếm suất trong trần 4 phiên.
 check("đóng tab (dấu x) gọi /terminal/close để giết shell của tab đó",
@@ -171,7 +171,7 @@ check("CSS có khung trang Code + terminal",
       /\.cview-body\.cview-flush/.test(CSS) && /\.code-page/.test(CSS) && /\.term-host/.test(CSS));
 check("terminal chiếm hết chiều cao khung (không thì xterm tính hụt số dòng)",
       /\.code-page \{[^}]*height: 100%/.test(CSS));
-check("bảng màu terminal có cả tông sáng lẫn tối", /javisTheme && window\.javisTheme\.isLight/.test(CODE_CODE));
+check("bảng màu terminal có cả tông sáng lẫn tối", /unimateTheme && window\.unimateTheme\.isLight/.test(CODE_CODE));
 
 console.log();
 if (fails.length) { console.log(fails.length + " test HỎNG: " + fails.join(", ")); process.exit(1); }

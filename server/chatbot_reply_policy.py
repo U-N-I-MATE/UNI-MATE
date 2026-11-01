@@ -45,7 +45,7 @@ GROUNDING = ("docs", "role")
 MODE_DEFAULT, EAGERNESS_DEFAULT, GROUNDING_DEFAULT = "on", "medium", "docs"
 # Công tắc của NGƯỜI VẬN HÀNH (không phải của chủ bot): đặt biến này thì mọi bot chạy thử, luật cũ vẫn quyết còn
 # bộ phán xử chỉ ghi. Từ 0.65.1 chủ bot không còn chọn chế độ, chọn "Tự đánh giá" là bộ phán xử quyết.
-SHADOW_ENV = "JAVIS_REPLY_POLICY_SHADOW"
+SHADOW_ENV = "UNIMATE_REPLY_POLICY_SHADOW"
 
 BASE_THRESHOLD = {"low": 0.75, "medium": 0.60, "high": 0.45}
 THRESHOLD_MIN, THRESHOLD_MAX = 0.30, 0.90
@@ -120,7 +120,7 @@ def mechanics() -> List[dict]:
 # ============================================================
 _PUNCT = re.compile(r"[^\w@\s]", re.U)
 # Thẻ bọc dữ liệu chat: bắt cả biến thể có khoảng trắng, hoa thường, thiếu ngoặc đóng ("</chat_data >", "< /chat_data").
-_MARKERS = re.compile(r"\[IM_LANG\]|\[BAO_CHU\]|\[TACH_TIN\]|\[\s*CAM_XUC[^\]\n]{0,20}\]|JAVIS_[A-Z_]+|<\s*/?\s*chat[_\s-]*data\b[^>\n]{0,40}>?", re.I)
+_MARKERS = re.compile(r"\[IM_LANG\]|\[BAO_CHU\]|\[TACH_TIN\]|\[\s*CAM_XUC[^\]\n]{0,20}\]|UNIMATE_[A-Z_]+|<\s*/?\s*chat[_\s-]*data\b[^>\n]{0,40}>?", re.I)
 _CTRL = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
 # Ký tự hiện ra là KHÔNG CÓ GÌ: model đọc được, chủ xem hộp thư thì không thấy, nên người lạ giấu lệnh vào đó
 # (0.83.2, ý lấy từ the-security-guide của repo ECC). Gồm: zero-width, đánh dấu và ghi đè hướng chữ (đảo thứ tự chủ

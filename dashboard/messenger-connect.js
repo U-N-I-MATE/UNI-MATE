@@ -7,7 +7,7 @@
  *
  * 0.332.0 (owner, 2026-10-26: "lạc quẻ"): Messenger used to be its own section under the connected list, with the form
  * opening inside the page. It now follows the page's own frame like every other service: a card in the "Available" grid
- * (`catCard`), the form in the shared connection dialog (`window.JavisConnModal`, from console.js), and the connected
+ * (`catCard`), the form in the shared connection dialog (`window.UniMateConnModal`, from console.js), and the connected
  * Pages as one card in the "Connected" list (`mount`), drawn only once a Page is connected.
  *
  * The server never sends a token back; the form fields are cleared after a submit. Render helpers are pure (tested with node). */
@@ -43,9 +43,9 @@
     });
   }
   var ic = function (n) { return (typeof window !== "undefined" && window.ic) ? window.ic(n) : ""; };
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(tw("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(tw("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
   function icon(name) {
@@ -196,7 +196,7 @@
 
   // Every connected Page with its Check / Repair / Renew buttons, in the dialog this page opens for every service.
   function openPages() {
-    var M = typeof window !== "undefined" && window.JavisConnModal;
+    var M = typeof window !== "undefined" && window.UniMateConnModal;
     var accounts = (setup && setup.accounts) || [];
     if (!M || !accounts.length) return;
     var m = M.open(M.head(esc(tw("msc.pages_head", { n: accounts.length })))
@@ -210,7 +210,7 @@
 
   // The form, in the same dialog every other service opens from this page.
   async function openForm(preset) {
-    var M = typeof window !== "undefined" && window.JavisConnModal;
+    var M = typeof window !== "undefined" && window.UniMateConnModal;
     if (!M) return;
     if (!setup) await load();
     var m = M.open(M.head(esc(tw("msc.dialog_head"))) + '<div class="conn-form">' + formHtml(setup || {}, preset) + "</div>", 640);
@@ -265,6 +265,6 @@
   var api_ = { mount: mount, openForm: openForm, catCard: catCard, groupHtml: groupHtml, checklistHtml: checklistHtml,
     summaryHtml: summaryHtml, accountHtml: accountHtml, formHtml: formHtml, addToConnCount: addToConnCount,
     openPages: openPages };
-  if (typeof window !== "undefined") window.JavisMessenger = api_;
+  if (typeof window !== "undefined") window.UniMateMessenger = api_;
   if (typeof module !== "undefined" && module.exports) module.exports = api_;
 })();

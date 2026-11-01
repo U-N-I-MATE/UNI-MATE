@@ -1,10 +1,10 @@
-/* Hộp chọn thư mục (JavisFolderPicker): NẠP THẬT module rồi GỌI THẬT open().
+/* Hộp chọn thư mục (UniMateFolderPicker): NẠP THẬT module rồi GỌI THẬT open().
  *
  *     node tests/js/test_hop_chon_thu_muc.js
  *
  * Vì sao có file này: chủ dự án dùng thử 0.63.2 và chỉ ra "thêm thư mục nên MỞ RA CHỌN thư mục
  * chứ không phải điền đường dẫn". Một test quét chuỗi chỉ chứng minh trong mã CÓ chữ
- * JavisFolderPicker; nó không chứng minh bấm vào một thư mục thì đi vào được thư mục đó, hay
+ * UniMateFolderPicker; nó không chứng minh bấm vào một thư mục thì đi vào được thư mục đó, hay
  * chọn xong thì đường dẫn giao ra đúng. Nên file này chạy thật cái hộp.
  *
  * Không có jsdom trong repo. Bản DOM giả dưới đây KHÔNG parse HTML: nó ghi nhớ chuỗi vừa gán

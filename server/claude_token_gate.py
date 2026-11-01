@@ -1,8 +1,8 @@
 """Xếp hàng đúng LÚC LÀM MỚI token Claude - chống hai lượt chat đá nhau văng đăng nhập.
 
-Bệnh (chủ repo báo 02/09, hai vợ chồng dùng chung một javis)
+Bệnh (chủ repo báo 02/09, hai vợ chồng dùng chung một unimate)
 ------------------------------------------------------------
-Javis chạy NHIỀU tiến trình `claude` song song (xem `_ACTIVE_PROCS` ở claude_cli, và
+UNI MATE chạy NHIỀU tiến trình `claude` song song (xem `_ACTIVE_PROCS` ở claude_cli, và
 `_ACTIVE` ở claude_sdk_engine) mà không có gì xếp hàng chúng lại. Cả đám dùng chung ĐÚNG MỘT
 file `~/.claude/.credentials.json`.
 

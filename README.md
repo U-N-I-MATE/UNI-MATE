@@ -1,18 +1,18 @@
 <div align="center">
 
-<img src="dashboard/logo.svg" width="88" alt="Javis OS logo">
+<img src="dashboard/logo.svg" width="88" alt="UNI MATE logo">
 
-# Javis OS
+# UNI MATE
 
 ### Your self-hosted AI agent with a swappable brain, and a Second Brain that gets smarter every day.
 
 Run it on your laptop or a small VPS. Talk to it by voice. Plug in Claude, ChatGPT, Grok, Gemini or any of 14 providers, keep every tool when you switch, and let it work in the background while you sleep.
 
-[![GitHub stars](https://img.shields.io/github/stars/blogminhquy/javis-os?style=flat&logo=github&label=stars)](https://github.com/blogminhquy/javis-os/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/U-N-I-MATE/UNI-MATE?style=flat&logo=github&label=stars)](https://github.com/U-N-I-MATE/UNI-MATE/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e)](LICENSE)
-[![Last commit](https://img.shields.io/github/last-commit/blogminhquy/javis-os?color=f97316)](https://github.com/blogminhquy/javis-os/commits/main)
+[![Last commit](https://img.shields.io/github/last-commit/U-N-I-MATE/UNI-MATE?color=f97316)](https://github.com/U-N-I-MATE/UNI-MATE/commits/main)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-3776ab?logo=python&logoColor=white)](requirements.txt)
-[![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/blogminhquy/javis-os/pkgs/container/javis-os)
+[![Docker](https://img.shields.io/badge/docker-ghcr.io-2496ed?logo=docker&logoColor=white)](https://github.com/U-N-I-MATE/UNI-MATE/pkgs/container/UNI-MATE)
 [![MCP](https://img.shields.io/badge/tools-Model%20Context%20Protocol-8b5cf6)](https://modelcontextprotocol.io)
 
 <!-- flags:start -->
@@ -35,11 +35,11 @@ Run it on your laptop or a small VPS. Talk to it by voice. Plug in Claude, ChatG
 
 🇬🇧 **English** · [🇻🇳 Tiếng Việt](docs/i18n/vi/README.md) · [🇨🇳 简体中文](docs/i18n/zh/README.md) · [🇪🇸 Español](docs/i18n/es/README.md) · [🇯🇵 日本語](docs/i18n/ja/README.md) · [🇮🇳 हिन्दी](docs/i18n/hi/README.md) · [🇧🇷 Português](docs/i18n/pt-BR/README.md) · [🇰🇷 한국어](docs/i18n/ko/README.md) · [🇷🇺 Русский](docs/i18n/ru/README.md) · [🇩🇪 Deutsch](docs/i18n/de/README.md) · [🇫🇷 Français](docs/i18n/fr/README.md) · [🇮🇩 Bahasa Indonesia](docs/i18n/id/README.md) · [🌍 Help translate](CONTRIBUTING.md#translations)
 
-[Quick start](#-quick-start) · [Why Javis](#-why-javis) · [Brains](#-14-brains-one-toolkit) · [Features](#-features) · [Install](#-installation) · [Docs](docs/en/README.md) · [Support](#-support-javis-os)
+[Quick start](#-quick-start) · [Why UNI MATE](#-why-unimate) · [Brains](#-14-brains-one-toolkit) · [Features](#-features) · [Install](#-installation) · [Docs](docs/en/README.md) · [Support](#-support-UNI-MATE)
 
 <br>
 
-<img src="docs/assets/screenshots/graph.jpg" alt="The Javis OS dashboard on a real brain of 1,633 notes and 2,413 links: the file tree on the left, the knowledge graph in the middle and the chat bar at the bottom" width="100%">
+<img src="docs/assets/screenshots/graph.jpg" alt="The UNI MATE dashboard on a real brain of 1,633 notes and 2,413 links: the file tree on the left, the knowledge graph in the middle and the chat bar at the bottom" width="100%">
 
 </div>
 
@@ -47,28 +47,28 @@ Run it on your laptop or a small VPS. Talk to it by voice. Plug in Claude, ChatG
 
 ## ⚡ Quick start
 
-**The easy way: let your own AI install it.** Give this repo link to Claude Code or Codex on your machine and say *"install Javis OS for me"*. It only needs to run one command:
+**The easy way: let your own AI install it.** Give this repo link to Claude Code or Codex on your machine and say *"install UNI MATE for me"*. It only needs to run one command:
 
 | Machine | One command installs everything |
 |---|---|
-| **Linux / macOS** | `git clone https://github.com/blogminhquy/javis-os.git javis && cd javis && chmod +x install.sh && ./install.sh` |
-| **Windows** | `git clone https://github.com/blogminhquy/javis-os.git javis; cd javis; powershell -ExecutionPolicy Bypass -File install.ps1` |
-| **Docker** | `curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.yml && docker compose up -d` |
+| **Linux / macOS** | `git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate && cd unimate && chmod +x install.sh && ./install.sh` |
+| **Windows** | `git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate; powershell -ExecutionPolicy Bypass -File install.ps1` |
+| **Docker** | `curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml && docker compose up -d` |
 
 Then open **http://localhost:7777**. The installer sets up Python, the four subscription CLI brains (`claude`, `codex`, `agy`, `grok`) and a `.env`, then starts the server. You sign in to each brain **on the Models page of the dashboard**, no more typing commands.
 
 > [!NOTE]
-> Installed an extra CLI **after** Javis was already running? **Restart Javis.** A running process keeps the PATH it started with, so it cannot see a CLI installed later.
+> Installed an extra CLI **after** UNI MATE was already running? **Restart UNI MATE.** A running process keeps the PATH it started with, so it cannot see a CLI installed later.
 
 <p align="center">
-<img src="docs/assets/diagrams/install-terminal.svg" width="100%" alt="Animated terminal: the one-line installer sets up Python, the four subscription CLI brains and a .env, then reports that Javis is running at http://localhost:7777">
+<img src="docs/assets/diagrams/install-terminal.svg" width="100%" alt="Animated terminal: the one-line installer sets up Python, the four subscription CLI brains and a .env, then reports that UNI MATE is running at http://localhost:7777">
 </p>
 
 ---
 
-## 🤔 Why Javis?
+## 🤔 Why UNI MATE?
 
-Javis OS is **not** a chatbot. It is a **self-hosted agentic AI** that runs on your own machine or VPS: it reads and writes files, calls tools over MCP, runs skills, queues background work and schedules itself. All of that sits behind a **voice-controlled dashboard** with a **Second Brain** (memory + wiki) that accumulates knowledge over time.
+UNI MATE is **not** a chatbot. It is a **self-hosted agentic AI** that runs on your own machine or VPS: it reads and writes files, calls tools over MCP, runs skills, queues background work and schedules itself. All of that sits behind a **voice-controlled dashboard** with a **Second Brain** (memory + wiki) that accumulates knowledge over time.
 
 ### The lock-in nobody warns you about
 
@@ -83,9 +83,9 @@ All of it sits on the vendor's servers, in the vendor's format. Then a better mo
 
 So you stay. Not because the old model is still the best, but because leaving means starting from zero. And when the vendor raises prices, tightens limits, retires a model or locks your account, there is no plan B.
 
-### Javis turns it around: rent the model, own the brain
+### UNI MATE turns it around: rent the model, own the brain
 
-In Javis the model is a part you can swap. Everything you build up lives with you, as files you can open:
+In UNI MATE the model is a part you can swap. Everything you build up lives with you, as files you can open:
 
 | What you build up | Where it lives | Format |
 |---|---|---|
@@ -94,19 +94,19 @@ In Javis the model is a part you can swap. Everything you build up lives with yo
 | **Knowledge** | the Wiki and Sources folders of your brain | Markdown, Obsidian-compatible |
 | **Skills** | `skills/<name>/SKILL.md` | Markdown |
 | **Agents and workflows** | `agents/*.md`, `workflows/*.md` | Markdown with front matter |
-| **Loops and reminders** | `Javis/loops/*.md`, `Javis/reminders.json` | Markdown, JSON |
+| **Loops and reminders** | `UniMate/loops/*.md`, `UniMate/reminders.json` | Markdown, JSON |
 
 What that buys you:
 
 - **A new model comes out? Switch on the Models page and keep going.** It reads the same memory, runs the same skills, agents and workflows, and calls the same connections through the MCP Hub. Nothing to migrate, nothing to rebuild.
 - **Use several brains at once.** A strong model for the conversation, a cheaper one for background work, a local Ollama model for private notes, all working on the same brain.
-- **Readable without Javis.** Your brain is a folder of markdown. Open it in Obsidian or any editor. If Javis disappeared tomorrow, your knowledge would still be there, in plain text.
+- **Readable without UNI MATE.** Your brain is a folder of markdown. Open it in Obsidian or any editor. If UNI MATE disappeared tomorrow, your knowledge would still be there, in plain text.
 - **Versioned and portable.** Every learning pass is a git commit you can undo in one tap, and the whole brain can sync to your own private GitHub repo, shared between your laptop and your VPS.
-- **Your data stays on your hardware.** There is no Javis cloud in between. A request goes only to the model provider you picked for it, and with a local Ollama model it never leaves your machine.
+- **Your data stays on your hardware.** There is no UNI MATE cloud in between. A request goes only to the model provider you picked for it, and with a local Ollama model it never leaves your machine.
 
-### Javis next to an ordinary chatbot
+### UNI MATE next to an ordinary chatbot
 
-| | An ordinary chatbot | **Javis OS** |
+| | An ordinary chatbot | **UNI MATE** |
 |---|---|---|
 | **Brain** | Locked to one model, one stateless API call per message | **Swappable**: 14 providers, each with the full set of tools, MCP, skills and sessions, including models running on your own machine through Ollama |
 | **Memory** | Forgets after every session | **A living Second Brain** that remembers you and thickens with every conversation |
@@ -116,20 +116,20 @@ What that buys you:
 | **Your work** | Stays on the vendor's servers, in the vendor's format | **Plain files on your machine**: history, memory, skills, agents and workflows carry over to any new model |
 | **Deployment** | Someone else's cloud | **Self-hosted**: one-click [Hostinger](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN), Docker, or any VPS |
 
-> 💡 **The philosophy: capability lives in Javis, not in the model.** Every brain gets the same toolbox through one shared connection hub (the MCP Hub). Switching from Claude to Gemini costs you nothing except shell access, which only the CLI engines have.
+> 💡 **The philosophy: capability lives in UNI MATE, not in the model.** Every brain gets the same toolbox through one shared connection hub (the MCP Hub). Switching from Claude to Gemini costs you nothing except shell access, which only the CLI engines have.
 
 <p align="center">
-<img src="docs/assets/diagrams/chat-to-action.svg" width="100%" alt="Animated diagram: a chat message goes into Javis, which picks the smallest tool that finishes the job, from answering directly to queuing a task, creating an agent, a workflow, a reminder or a loop">
+<img src="docs/assets/diagrams/chat-to-action.svg" width="100%" alt="Animated diagram: a chat message goes into UNI MATE, which picks the smallest tool that finishes the job, from answering directly to queuing a task, creating an agent, a workflow, a reminder or a loop">
 </p>
 
 ---
 
 ## 🧠 14 brains, one toolkit
 
-Pick the brain on the **Models** page and change it whenever you like. Javis supports **14 providers** today.
+Pick the brain on the **Models** page and change it whenever you like. UNI MATE supports **14 providers** today.
 
 <p align="center">
-<img src="docs/assets/diagrams/swappable-brain.svg" width="100%" alt="Animated diagram: the Javis core in the middle with its toolkit (MCP Hub, Skills, Second Brain, Tasks, Schedules, Plugins) around it, while the brains take turns plugging in and every tool stays lit">
+<img src="docs/assets/diagrams/swappable-brain.svg" width="100%" alt="Animated diagram: the UNI MATE core in the middle with its toolkit (MCP Hub, Skills, Second Brain, Tasks, Schedules, Plugins) around it, while the brains take turns plugging in and every tool stays lit">
 </p>
 
 | Brain | How you pay | Shell, web, sub-agents |
@@ -138,15 +138,15 @@ Pick the brain on the **Models** page and change it whenever you like. Javis sup
 | **ChatGPT** (via Codex) | Your ChatGPT plan | ✅ |
 | **Grok Build** | Your SuperGrok or X Premium+ plan | ✅ |
 | **Antigravity CLI** | Your Google plan (same lineup as the Antigravity IDE, Claude included) | Shell ✅ |
-| **OpenRouter** | API key (hundreds of models behind one key) | via Javis tools |
-| **OpenAI API** · **Anthropic API** · **Google Gemini** · **Groq** · **DeepSeek** | API key | via Javis tools |
-| **Ollama Cloud** · **Ollama on this machine** | API key, or free on your own hardware | via Javis tools |
-| **Any OpenAI-compatible or Anthropic-compatible endpoint** | Whatever that endpoint or reseller needs | via Javis tools |
+| **OpenRouter** | API key (hundreds of models behind one key) | via UNI MATE tools |
+| **OpenAI API** · **Anthropic API** · **Google Gemini** · **Groq** · **DeepSeek** | API key | via UNI MATE tools |
+| **Ollama Cloud** · **Ollama on this machine** | API key, or free on your own hardware | via UNI MATE tools |
+| **Any OpenAI-compatible or Anthropic-compatible endpoint** | Whatever that endpoint or reseller needs | via UNI MATE tools |
 
 Every brain can call your connected MCP servers, read and write the brain, run skills, queue Kanban work, and create agents, workflows, loops and reminders. The CLI engines additionally run **shell commands**, **fetch and search the web**, and **spawn parallel sub-agents**.
 
 > [!WARNING]
-> **A note before letting a subscription run background work.** Anthropic scopes Claude Pro/Max to **ordinary personal use** of Claude Code. Continuous background execution (loops, reminders, Kanban jobs, chatbots), running on a VPS, or several people sharing one account fall outside that scope, so there is a risk of the account **being locked**, although Javis has no reported case so far. If it happens to you, please tell the developer through [Issues](https://github.com/blogminhquy/javis-os/issues/new/choose). Javis never reads your login token: it runs the real `claude` binary, but that does not make round-the-clock background use legitimate. To be safe, set Claude Code to run on an **API key** on the Models page, or point the **background-work model** at another provider. The same caution applies to the xAI plan. See `server/claude_auth.py`.
+> **A note before letting a subscription run background work.** Anthropic scopes Claude Pro/Max to **ordinary personal use** of Claude Code. Continuous background execution (loops, reminders, Kanban jobs, chatbots), running on a VPS, or several people sharing one account fall outside that scope, so there is a risk of the account **being locked**, although UNI MATE has no reported case so far. If it happens to you, please tell the developer through [Issues](https://github.com/U-N-I-MATE/UNI-MATE/issues/new/choose). UNI MATE never reads your login token: it runs the real `claude` binary, but that does not make round-the-clock background use legitimate. To be safe, set Claude Code to run on an **API key** on the Models page, or point the **background-work model** at another provider. The same caution applies to the xAI plan. See `server/claude_auth.py`.
 
 ---
 
@@ -161,15 +161,15 @@ Every brain can call your connected MCP servers, read and write the brain, run s
 <td width="50%" valign="top">
 
 ### 🗣️ Talk to it
-- **Hands-free voice**: speak, Javis listens and answers out loud (Edge TTS free by default, or OpenAI and ElevenLabs).
+- **Hands-free voice**: speak, UNI MATE listens and answers out loud (Edge TTS free by default, or OpenAI and ElevenLabs).
 - **Chat sessions** you can save, reopen and full-text search. Long sessions are compacted into summaries instead of being cut off.
-- **Telegram, Slack, WhatsApp, Zalo, a CLI and a web dashboard**, all talking to the same Javis ([setup for Slack and WhatsApp](docs/en/29-slack-whatsapp.md)).
-- **Any language**: Javis replies in the language you write in. The interface ships in English and Vietnamese.
+- **Telegram, Slack, WhatsApp, Zalo, a CLI and a web dashboard**, all talking to the same UNI MATE ([setup for Slack and WhatsApp](docs/en/29-slack-whatsapp.md)).
+- **Any language**: UNI MATE replies in the language you write in. The interface ships in English and Vietnamese.
 
 ### 🧠 Remember everything
 - **Second Brain**: a markdown vault (Obsidian-compatible) with long-term memory, a Wiki and raw Sources.
 - **Knowledge graph** of your notes joined by `[[wikilink]]`, on a light canvas that works offline.
-- **Self-learning**: after each conversation Javis distils memories, wiki knowledge and skills. Every learning pass is a git commit, so it is **one-tap undoable**.
+- **Self-learning**: after each conversation UNI MATE distils memories, wiki knowledge and skills. Every learning pass is a git commit, so it is **one-tap undoable**.
 - **Back up to GitHub**: two-way sync of every brain to a private repo, shared between your laptop and your VPS.
 
 </td>
@@ -182,7 +182,7 @@ Every brain can call your connected MCP servers, read and write the brain, run s
 - **Chatbots**: put an agent in front of your customers on its own Telegram, Slack, WhatsApp, Lark or Zalo bot, with a shared inbox you can take over.
 
 ### 🔌 Connect anything
-- **MCP connection store** with several accounts per service and three permission levels that Javis **hard-enforces**.
+- **MCP connection store** with several accounts per service and three permission levels that UNI MATE **hard-enforces**.
 - **Skills and plugins**: drop in a folder to add know-how (skill) or a native Python tool (plugin) for every engine.
 - **Image generation** on the ChatGPT plan you are already signed in to.
 - **Usage tracking**: tokens and cost per day, per provider, split between what you typed and what ran on its own.
@@ -209,10 +209,10 @@ flowchart LR
     subgraph You
         W[Web dashboard<br>voice + graph]
         T[Telegram]
-        C[Javis CLI]
+        C[UNI MATE CLI]
         Z[Zalo / bot channels]
     end
-    subgraph Javis["Javis OS (FastAPI, self-hosted)"]
+    subgraph UNI MATE["UNI MATE (FastAPI, self-hosted)"]
         R[Engine router]
         H[MCP Hub<br>shared toolbox]
         B[(Second Brain<br>Memory + Wiki + Sources)]
@@ -239,30 +239,30 @@ flowchart LR
 ## 🚀 Installation
 
 > [!IMPORTANT]
-> Javis runs an AI brain with **full rights** on the machine. When it runs publicly (Docker, VPS, Hostinger), Javis **forces login by itself**: opening the app shows a create-account or sign-in screen, and nobody can drive it without a password.
+> UNI MATE runs an AI brain with **full rights** on the machine. When it runs publicly (Docker, VPS, Hostinger), UNI MATE **forces login by itself**: opening the app shows a create-account or sign-in screen, and nobody can drive it without a password.
 
 <details open>
 <summary><b>Option 1: Hostinger Docker Manager (domain + HTTPS, one click)</b></summary>
 
-> 🛒 **No VPS yet?** [Get a Hostinger VPS here](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager comes built in, so Javis installs in one click. Once it is ready, come back to the steps below.
+> 🛒 **No VPS yet?** [Get a Hostinger VPS here](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). Docker Manager comes built in, so UNI MATE installs in one click. Once it is ready, come back to the steps below.
 
 Hostinger VPS → **Docker Manager → Compose → URL** → paste the Hostinger file and press **Deploy**:
 
 ```
-https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.hostinger.yml
 ```
 
-The **Environment** box needs only three fields: `DOMAIN_NAME`, `JAVIS_ADMIN_USER`, `JAVIS_ADMIN_PASSWORD`, plus an optional `JAVIS_AUTO_UPDATE` (set it to `true` and Javis updates itself daily).
+The **Environment** box needs only three fields: `DOMAIN_NAME`, `UNIMATE_ADMIN_USER`, `UNIMATE_ADMIN_PASSWORD`, plus an optional `UNIMATE_AUTO_UPDATE` (set it to `true` and UNI MATE updates itself daily).
 
 Set `DOMAIN_NAME` so Hostinger's Traefik issues HTTPS:
-- **Free link** (no domain purchase): `DOMAIN_NAME=javis.<vps-hostname>.hstgr.cloud` (hostname under hPanel → VPS, e.g. `javis.srv1562015.hstgr.cloud`).
+- **Free link** (no domain purchase): `DOMAIN_NAME=unimate.<vps-hostname>.hstgr.cloud` (hostname under hPanel → VPS, e.g. `unimate.srv1562015.hstgr.cloud`).
 - **Your own domain:** `DOMAIN_NAME=example.com` and point an A record at the VPS IP.
 
-Wait 1-3 minutes for the certificate, then open `https://<DOMAIN_NAME>`. No Traefik on the VPS (a plain Ubuntu 26 image)? Use the same link: the bundled `javis-gateway` (Caddy) issues the certificate itself when ports 80/443 are free.
+Wait 1-3 minutes for the certificate, then open `https://<DOMAIN_NAME>`. No Traefik on the VPS (a plain Ubuntu 26 image)? Use the same link: the bundled `unimate-gateway` (Caddy) issues the certificate itself when ports 80/443 are free.
 
 **Three one-time steps:**
-1. **Make the GHCR image Public:** GitHub → repo → **Packages** → `javis-os` → *Package settings* → Visibility = **Public**.
-2. **Create the admin account:** fill in `JAVIS_ADMIN_USER` + `JAVIS_ADMIN_PASSWORD` (recommended), or open the app right after deploying and set one yourself. While no admin exists, whoever opens the link first can create it. Then **turn on 2FA** ([Security and accounts](docs/en/14-security-and-accounts.md)).
+1. **Make the GHCR image Public:** GitHub → repo → **Packages** → `UNI-MATE` → *Package settings* → Visibility = **Public**.
+2. **Create the admin account:** fill in `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` (recommended), or open the app right after deploying and set one yourself. While no admin exists, whoever opens the link first can create it. Then **turn on 2FA** ([Security and accounts](docs/en/14-security-and-accounts.md)).
 3. **Sign in to a brain** on the **Models** page.
 
 Details and troubleshooting: [DEPLOY.en.md](DEPLOY.en.md).
@@ -276,14 +276,14 @@ Details and troubleshooting: [DEPLOY.en.md](DEPLOY.en.md).
 
 ```bash
 # Docker required (don't have it?  curl -fsSL https://get.docker.com | sh)
-mkdir javis && cd javis
-curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.yml
+mkdir unimate && cd unimate
+curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml
 
-docker compose run --rm javis claude auth login --claudeai   # sign in to Claude once (optional)
+docker compose run --rm unimate claude auth login --claudeai   # sign in to Claude once (optional)
 docker compose up -d                                          # pull the image and run
 ```
 
-Open `http://<vps-ip>:7777` and set the admin username and password right away (at least 8 characters), or preset `JAVIS_ADMIN_USER` + `JAVIS_ADMIN_PASSWORD` in the environment. Then turn on 2FA.
+Open `http://<vps-ip>:7777` and set the admin username and password right away (at least 8 characters), or preset `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` in the environment. Then turn on 2FA.
 
 Remote access without a domain: `docker compose --profile tunnel up -d`, then `docker compose logs tunnel | grep trycloudflare` prints an HTTPS link.
 
@@ -293,13 +293,13 @@ Remote access without a domain: `docker compose --profile tunnel up -d`, then `d
 <summary><b>Option 3: Linux or macOS, no Docker</b></summary>
 
 ```bash
-git clone https://github.com/blogminhquy/javis-os.git javis && cd javis
+git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate && cd unimate
 chmod +x install.sh && ./install.sh
 ```
 
 The script installs Python, Node and the CLI brains, creates a venv, registers a service that starts at boot, and prints the address.
 
-🍎 **macOS, open it like an app:** double-click `JAVIS OS.app` (or `Start JAVIS OS.command`). Since 0.306.0 `./install.sh` makes Javis start at login and open the dashboard (turn off: `./bin/javis-autostart.sh uninstall`). Details: [bin/README.md](bin/README.md).
+🍎 **macOS, open it like an app:** double-click `UNI MATE.app` (or `Start UNI MATE.command`). Since 0.306.0 `./install.sh` makes UNI MATE start at login and open the dashboard (turn off: `./bin/unimate-autostart.sh uninstall`). Details: [bin/README.md](bin/README.md).
 
 </details>
 
@@ -307,7 +307,7 @@ The script installs Python, Node and the CLI brains, creates a venv, registers a
 <summary><b>Option 4: Windows (personal machine)</b></summary>
 
 ```powershell
-git clone https://github.com/blogminhquy/javis-os.git javis; cd javis
+git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate; cd unimate
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
@@ -315,23 +315,23 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 
 ```
 Run with a visible window (live log):  setup.bat
-Run silently from then on:             start-javis.vbs   (log at server\javis.log)
-Stop:                                  stop-javis.bat
+Run silently from then on:             start-unimate.vbs   (log at server\unimate.log)
+Stop:                                  stop-unimate.bat
 Dashboard:                             http://localhost:7777
 ```
 
-🪟 **Open it like an app:** after the first run, double-click **`JAVIS OS.bat`**. The server starts in the background and the dashboard opens in **its own window** with its own taskbar entry. Since 0.306.0 the installer makes Javis start at login and open the dashboard (turn off: `javis-autostart.bat uninstall` or the button in Settings).
+🪟 **Open it like an app:** after the first run, double-click **`UNI MATE.bat`**. The server starts in the background and the dashboard opens in **its own window** with its own taskbar entry. Since 0.306.0 the installer makes UNI MATE start at login and open the dashboard (turn off: `unimate-autostart.bat uninstall` or the button in Settings).
 
 </details>
 
 <details>
-<summary><b>Several Javis instances on one VPS</b></summary>
+<summary><b>Several UNI MATE instances on one VPS</b></summary>
 
-Brains, settings and accounts stay fully separate per instance. Only three values differ between them: `JAVIS_NAME`, `JAVIS_HOST_PORT`, `DOMAIN_NAME`.
+Brains, settings and accounts stay fully separate per instance. Only three values differ between them: `UNIMATE_NAME`, `UNIMATE_HOST_PORT`, `DOMAIN_NAME`.
 
 - **Hostinger:** deploy `docker-compose.hostinger.yml` again as a second stack and fill in those three fields.
 - **Self-managed VPS:** run the shared proxy `docker-compose.proxy.yml` once for the whole machine, then give each instance its own folder with `docker-compose.multi.yml`. The proxy discovers new instances and requests SSL by itself.
-- **Native:** `JAVIS_NAME=javis-shop JAVIS_PORT=7778 ./install.sh`.
+- **Native:** `UNIMATE_NAME=unimate-shop UNIMATE_PORT=7778 ./install.sh`.
 
 Step by step: [DEPLOY.en.md](DEPLOY.en.md).
 
@@ -339,16 +339,16 @@ Step by step: [DEPLOY.en.md](DEPLOY.en.md).
 
 ### 🎬 First run
 
-Open Javis and the setup wizard walks you through it, in your browser's language:
+Open UNI MATE and the setup wizard walks you through it, in your browser's language:
 
 1. **Admin account**: required when running publicly, to keep strangers out.
 2. **Pick a brain**: sign in once with a subscription, or paste an API key. The Claude Code card has a **"Runs on"** switch between your signed-in plan and an Anthropic API key.
 3. **Pick a model**: switching providers later loses no features (except shell commands, which only the CLI engines have).
-4. **Wire up connections** (optional): open **Connections**, pick a service and paste a key or scan a QR code. Javis then reports on real numbers from it.
+4. **Wire up connections** (optional): open **Connections**, pick a service and paste a key or scan a QR code. UNI MATE then reports on real numbers from it.
 
 ---
 
-## 📖 Using Javis
+## 📖 Using UNI MATE
 
 The left rail groups the pages into **5 groups**. Every page has a guide in [docs/en/](docs/en/README.md).
 
@@ -357,21 +357,21 @@ The left rail groups the pages into **5 groups**. Every page has a guide in [doc
 | **Brain** | Graph, Chat, Files, Self-learning | [Chat and voice](docs/en/02-chat-and-voice.md) · [Knowledge graph](docs/en/03-knowledge-graph.md) · [Sessions](docs/en/04-sessions.md) · [File manager](docs/en/05-file-manager.md) · [Self-learning](docs/en/22-self-learning.md) |
 | **Capabilities** | Partners (agents and workflows), Chatbot, Skills, Plugins, Terminal | [Agents and workflows](docs/en/07-agents-and-workflows.md) · [Chatbots](docs/en/25-chatbots.md) · [Customer conversations](docs/en/28-customer-conversations.md) · [Skills](docs/en/06-skills.md) · [Plugins](docs/en/20-plugins.md) · [Terminal](docs/en/27-code-terminal.md) |
 | **Work** | Tasks, Scheduled | [Tasks (Kanban)](docs/en/21-kanban-work.md) · [Recurring jobs and reminders](docs/en/08-recurring-jobs.md) |
-| **Connections** | Connections, Javis Store, Channels, Models | [Connections and business data](docs/en/09-connections-and-business-data.md) · [Telegram](docs/en/11-telegram.md) · [Zalo](docs/en/12-zalo-agent-mcp.md) · [Models and engines](docs/en/10-models-and-engines.md) |
-| **System** | Settings, Share links, Account | [Getting started](docs/en/01-getting-started.md) · [Security and accounts](docs/en/14-security-and-accounts.md) · [Usage and cost](docs/en/23-usage-and-cost.md) · [Javis CLI](docs/en/24-cli.md) |
+| **Connections** | Connections, UNI MATE Store, Channels, Models | [Connections and business data](docs/en/09-connections-and-business-data.md) · [Telegram](docs/en/11-telegram.md) · [Zalo](docs/en/12-zalo-agent-mcp.md) · [Models and engines](docs/en/10-models-and-engines.md) |
+| **System** | Settings, Share links, Account | [Getting started](docs/en/01-getting-started.md) · [Security and accounts](docs/en/14-security-and-accounts.md) · [Usage and cost](docs/en/23-usage-and-cost.md) · [UNI MATE CLI](docs/en/24-cli.md) |
 
 More: [Second Brain: memory, Wiki and INGEST](docs/en/13-second-brain.md) · [GitHub backup](docs/en/18-github-backup.md) · [Tasks and Dataview in notes](docs/en/19-tasks-and-dataview.md) · [Branding and custom domains](docs/en/15-branding-and-domains.md) · [Troubleshooting](docs/en/17-troubleshooting.md)
 
 ### A few things to try
 
-- **Ask for numbers:** *"How is revenue today compared with yesterday?"* Javis calls the right connection and answers with real figures plus suggestions.
-- **Digest knowledge:** drop in a file or a note. Javis summarises it, extracts insight, writes it into the Wiki and proposes tasks.
+- **Ask for numbers:** *"How is revenue today compared with yesterday?"* UNI MATE calls the right connection and answers with real figures plus suggestions.
+- **Digest knowledge:** drop in a file or a note. UNI MATE summarises it, extracts insight, writes it into the Wiki and proposes tasks.
 - **Hand over background work:** **Tasks** → **+ Assign goal** → *"summarise this week's sales, find slow-moving stock, draft three captions to push it"*. The AI specs it, runs it and reports back.
 - **Schedule something:** *"remind me every weekday at 8:30 to check the ads budget"*, in chat or on the **Scheduled** page.
-- **Use your voice:** press the mic (or turn on hands-free), speak, and Javis answers out loud.
+- **Use your voice:** press the mic (or turn on hands-free), speak, and UNI MATE answers out loud.
 
 <div align="center">
-<img src="docs/assets/screenshots/mobile.jpg" alt="Javis OS on a phone: the knowledge graph on top, the conversation below and the chat bar at the bottom" width="300">
+<img src="docs/assets/screenshots/mobile.jpg" alt="UNI MATE on a phone: the knowledge graph on top, the conversation below and the chat bar at the bottom" width="300">
 <br><sub>Works on your phone too: add it to the home screen and it opens like an app.</sub>
 </div>
 
@@ -379,18 +379,18 @@ More: [Second Brain: memory, Wiki and INGEST](docs/en/13-second-brain.md) · [Gi
 
 ## ⚙️ Configuration (`.env`)
 
-Every line can stay empty and Javis still runs. Copy `env.example` → `.env` and add what you need. The full list with an explanation per variable is in [docs/en/16-env-configuration.md](docs/en/16-env-configuration.md).
+Every line can stay empty and UNI MATE still runs. Copy `env.example` → `.env` and add what you need. The full list with an explanation per variable is in [docs/en/16-env-configuration.md](docs/en/16-env-configuration.md).
 
 | Variable | Meaning | Default |
 |---|---|---|
-| `JAVIS_HOST` | Listen address. `127.0.0.1` = this machine only, `0.0.0.0` = public | `127.0.0.1` |
-| `JAVIS_PORT` | Port | `7777` |
-| `JAVIS_REQUIRE_LOGIN` | `1`/`0` to force login on or off (default: on when bound publicly) | *(auto)* |
-| `JAVIS_ADMIN_USER` / `JAVIS_ADMIN_PASSWORD` | Create the admin at deploy time | - |
-| `JAVIS_ALLOWED_HOSTS` | Extra hostnames on the allow-list (CSRF and DNS-rebinding protection) | localhost + your domain |
-| `JAVIS_STATE_DIR` | Where settings, sessions and the encryption key live | `server/` (Docker: `/data/state`) |
+| `UNIMATE_HOST` | Listen address. `127.0.0.1` = this machine only, `0.0.0.0` = public | `127.0.0.1` |
+| `UNIMATE_PORT` | Port | `7777` |
+| `UNIMATE_REQUIRE_LOGIN` | `1`/`0` to force login on or off (default: on when bound publicly) | *(auto)* |
+| `UNIMATE_ADMIN_USER` / `UNIMATE_ADMIN_PASSWORD` | Create the admin at deploy time | - |
+| `UNIMATE_ALLOWED_HOSTS` | Extra hostnames on the allow-list (CSRF and DNS-rebinding protection) | localhost + your domain |
+| `UNIMATE_STATE_DIR` | Where settings, sessions and the encryption key live | `server/` (Docker: `/data/state`) |
 | `BRAINS_DIR` | Parent folder holding every brain | `brains/` (Docker: `/brains`) |
-| `JAVIS_ENABLE_USER_PLUGINS` | `false` turns your own plugins off (they run real Python inside the server) | *(on)* |
+| `UNIMATE_ENABLE_USER_PLUGINS` | `false` turns your own plugins off (they run real Python inside the server) | *(on)* |
 | `TTS_VOICE` / `TTS_RATE` | Voice and speed for Edge TTS | `en-US-EmmaMultilingualNeural` / `+5%` |
 
 ---
@@ -401,7 +401,7 @@ Every line can stay empty and Javis still runs. Copy `env.example` → `.env` an
 - **2FA (TOTP)**, login rate limiting, passwords of at least 8 characters, `Secure` cookies under HTTPS, sessions that expire after 30 days.
 - **CSRF and DNS-rebinding protection**: any write request from an unknown origin is rejected.
 - **Secrets are encrypted** in `settings.json` (API keys, OAuth tokens, bot tokens) with a per-machine key.
-- **Your own plugins load by default, but each one stays off until you enable it** in the app; set `JAVIS_ENABLE_USER_PLUGINS=false` to turn them all off.
+- **Your own plugins load by default, but each one stays off until you enable it** in the app; set `UNIMATE_ENABLE_USER_PLUGINS=false` to turn them all off.
 - **Connection permissions are enforced** by the hub, not by the model: a read-only account cannot be used to send, pay or publish.
 
 Found a vulnerability? Please follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
@@ -410,7 +410,7 @@ Found a vulnerability? Please follow [SECURITY.md](SECURITY.md) instead of openi
 
 ## 🔄 Updating
 
-In the app: **Settings → Updates → Update now**, with a progress bar and a rollback button if the new build breaks. On a VPS: `cd javis && ./update.sh` (pulls the new image and restarts; your data in the volumes is kept).
+In the app: **Settings → Updates → Update now**, with a progress bar and a rollback button if the new build breaks. On a VPS: `cd unimate && ./update.sh` (pulls the new image and restarts; your data in the volumes is kept).
 
 ---
 
@@ -418,8 +418,8 @@ In the app: **Settings → Updates → Update now**, with a progress bar and a r
 
 | Symptom | What to do |
 |---|---|
-| The Models page says a CLI is not installed, but it is | **Restart Javis**: the running process keeps the PATH from when it started. |
-| Port 7777 is taken and the new build will not start | Stop the old process first (`stop-javis.bat`, or kill the PID), then start again. |
+| The Models page says a CLI is not installed, but it is | **Restart UNI MATE**: the running process keeps the PATH from when it started. |
+| Port 7777 is taken and the new build will not start | Stop the old process first (`stop-unimate.bat`, or kill the PID), then start again. |
 | Hostinger cannot pull the image | Set the GHCR package to **Public** and wait for the GitHub Action build to finish. |
 | A brain says it is not signed in | **Models** → that provider's card → sign in. |
 
@@ -430,7 +430,7 @@ More in [docs/en/17-troubleshooting.md](docs/en/17-troubleshooting.md).
 ## 📂 Repository layout
 
 ```
-javis-os/
+UNI-MATE/
 ├── server/          # FastAPI backend: engines, connections, background work, channels, memory
 ├── dashboard/       # Frontend (plain JS, no build step)
 │   └── i18n/        # Interface strings, one JSON file per language
@@ -440,7 +440,7 @@ javis-os/
 ├── tests/           # Python + JS test suite (python tests/run.py)
 ├── install.sh · install.ps1 · update.sh
 ├── Dockerfile · docker-compose*.yml
-└── CLAUDE.md        # The system prompt Javis runs on
+└── CLAUDE.md        # The system prompt UNI MATE runs on
 ```
 
 ---
@@ -449,7 +449,7 @@ javis-os/
 
 | What | Languages today |
 |---|---|
-| **Javis's replies** | Any language: it answers in the language you write in, or one you pin in Settings |
+| **UNI MATE's replies** | Any language: it answers in the language you write in, or one you pin in Settings |
 | **Dashboard and server messages** | 🇬🇧 English · 🇻🇳 Tiếng Việt, per device: each browser gets its own language until you pick one |
 | **Connection store, plugins, a new brain's starter files** | 🇬🇧 English · 🇻🇳 Tiếng Việt |
 | **README and quick start** | 🇬🇧 English · 🇻🇳 Tiếng Việt · 🇨🇳 简体中文 · 🇪🇸 Español · 🇯🇵 日本語 · 🇮🇳 हिन्दी · 🇧🇷 Português · 🇰🇷 한국어 · 🇷🇺 Русский · 🇩🇪 Deutsch · 🇫🇷 Français · 🇮🇩 Bahasa Indonesia |
@@ -468,21 +468,21 @@ Bug reports, ideas, translations and pull requests are all welcome, in English o
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Setting up, running the tests (`python tests/run.py`), the code conventions |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | How the pieces fit together, and a map of the server modules |
 | [docs/dev/GLOSSARY.md](docs/dev/GLOSSARY.md) | The code base was written in Vietnamese: this decodes names like `nhac_hen` (reminder) |
-| [docs/dev/adding-a-language.md](docs/dev/adding-a-language.md) | Translating Javis into your language, step by step |
-| [Issue templates](https://github.com/blogminhquy/javis-os/issues/new/choose) | Bug report, feature request, translation offer |
+| [docs/dev/adding-a-language.md](docs/dev/adding-a-language.md) | Translating UNI MATE into your language, step by step |
+| [Issue templates](https://github.com/U-N-I-MATE/UNI-MATE/issues/new/choose) | Bug report, feature request, translation offer |
 
 Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report security problems privately as described in [SECURITY.md](SECURITY.md).
 
-If Javis is useful to you, a ⭐ on the repo helps other people find it.
+If UNI MATE is useful to you, a ⭐ on the repo helps other people find it.
 
-[![Star History Chart](https://api.star-history.com/svg?repos=blogminhquy/javis-os&type=Date)](https://star-history.com/#blogminhquy/javis-os&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=U-N-I-MATE/UNI-MATE&type=Date)](https://star-history.com/#U-N-I-MATE/UNI-MATE&Date)
 
 ---
 
 ## 🙏 Credits
 
 - **Brains:** [Claude Code](https://claude.com/claude-code) and the [Claude Agent SDK](https://docs.claude.com/en/api/agent-sdk/overview) (Anthropic), [Codex CLI](https://developers.openai.com/codex/cli) (OpenAI), [Grok Build](https://x.ai) (xAI), [Antigravity](https://antigravity.google) (Google), plus the APIs of [OpenRouter](https://openrouter.ai), OpenAI, [Google Gemini](https://ai.google.dev), Anthropic, [Groq](https://groq.com) and [Ollama](https://ollama.com).
-- **Tool standard:** [Model Context Protocol](https://modelcontextprotocol.io). The whole Javis connection store runs on it.
+- **Tool standard:** [Model Context Protocol](https://modelcontextprotocol.io). The whole UNI MATE connection store runs on it.
 - The Second Brain and digital Bullet Journal patterns.
 
 ## 📄 License
@@ -491,15 +491,15 @@ Open source under the **MIT License**: use, modify and distribute freely, just k
 
 ---
 
-## ☕ Support Javis OS
+## ☕ Support UNI MATE
 
-Javis OS is free and open source, and it is still one person writing the code and paying for the test servers. If Javis helps your work or your life, a small donation buys more time for bug fixes and new features.
+UNI MATE is free and open source, and it is still one person writing the code and paying for the test servers. If UNI MATE helps your work or your life, a small donation buys more time for bug fixes and new features.
 
 - 🌍 **PayPal**: [paypal.me/quy01](https://paypal.me/quy01)
 - 🏦 **MB Bank** (Vietnam): `6636966369`
 - 📱 **MoMo wallet** (Vietnam): `0372752740`
 
-Can't donate? Using Javis, sending feedback or opening a pull request counts as support too.
+Can't donate? Using UNI MATE, sending feedback or opening a pull request counts as support too.
 
 <div align="center">
 <br>

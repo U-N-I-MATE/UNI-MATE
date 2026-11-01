@@ -7,7 +7,7 @@ Engine Claude qua claude-agent-sdk CHÍNH CHỦ (Phase 1-2 của docs/dev/2026-0
   - .query(prompt) -> async yield dict {type: text|tool_call|tool_result|final|error}
   - cancel_all(tag) interrupt theo họ tag (claude_cli.cancel_all gọi hộ)
 
-Bật bằng env JAVIS_CLAUDE_ENGINE=sdk (mặc định cli - qua factory claude_cli.claude_engine).
+Bật bằng env UNIMATE_CLAUDE_ENGINE=sdk (mặc định cli - qua factory claude_cli.claude_engine).
 
 Auth: engine KHÔNG bao giờ đọc token của ai. Nó chạy binary `claude` và để chính sản phẩm
 của Anthropic lo đăng nhập - mặc định là phiên Claude Code sẵn có (gói subscription). Người
@@ -87,8 +87,8 @@ def tran_watchdog(bien: str, mac_dinh: str):
     "bao lâu rồi chưa nhận được message từ SDK" rồi coi đó là treo. Phép đo ấy sai ở một ca
     rất thường gặp - SDK chỉ phát message khi model KẾT THÚC một khối, nên suốt lúc model suy
     nghĩ ở mức nỗ lực cao, hoặc lúc nó soạn nội dung một file dài để đưa vào tool Write, kênh
-    im hoàn toàn dù mọi thứ đang chạy đúng. Chủ repo dính đúng ca đó (2026-08-07): bảo Javis
-    "thiết kế cho anh file .md", Javis nói "viết file luôn" rồi bị chém ở giây thứ 180 giữa
+    im hoàn toàn dù mọi thứ đang chạy đúng. Chủ repo dính đúng ca đó (2026-08-07): bảo UNI MATE
+    "thiết kế cho anh file .md", UNI MATE nói "viết file luôn" rồi bị chém ở giây thứ 180 giữa
     lúc đang soạn file.
 
     Cắt một lượt đang chạy tốt tệ hơn hẳn để nó chạy lâu: người dùng luôn bấm Dừng được, và
@@ -113,14 +113,14 @@ def ap_tran_khoi_dong():
 
     Vì sao cần: lúc initialize, `claude` phải đấu XONG mọi MCP server rồi mới nhận việc, mà SDK
     chờ đúng 60 giây rồi ném `Control request timeout: initialize`. Máy đấu nhiều nguồn (hub
-    Javis + connector tài khoản Claude) vượt 60s là chuyện thường, và người dùng nhận về một
+    UNI MATE + connector tài khoản Claude) vượt 60s là chuyện thường, và người dùng nhận về một
     dòng tiếng Anh trần trụi sau khi ngồi chờ - đúng ca báo ngày 2026-08-11.
 
     SDK chỉ đọc trần này qua env `CLAUDE_CODE_STREAM_CLOSE_TIMEOUT` (mili giây, sàn cứng 60s)
     chứ KHÔNG có tham số nào trong options, nên phải đặt env của chính tiến trình server. Ai đã
     tự đặt biến của SDK thì tôn trọng, không đè.
     """
-    raw = os.getenv("JAVIS_CLAUDE_INIT_TIMEOUT")
+    raw = os.getenv("UNIMATE_CLAUDE_INIT_TIMEOUT")
     if raw is None and os.getenv("CLAUDE_CODE_STREAM_CLOSE_TIMEOUT"):
         return None
     try:
@@ -132,7 +132,7 @@ def ap_tran_khoi_dong():
     return giay
 
 
-_HUB_SLOW_S = 30.0   # giây - cổng công cụ của Javis trả lời lâu hơn mức này thì coi là chậm
+_HUB_SLOW_S = 30.0   # giây - cổng công cụ của UNI MATE trả lời lâu hơn mức này thì coi là chậm
 
 
 def _init_limit_label(tran_init):
@@ -173,45 +173,45 @@ def _init_timeout_text(n, cd):
     login_vi = "Kiểm tra đăng nhập Claude ở trang Models rồi gửi lại tin nhắn."
     login_en = "Check the Claude sign-in on the Models page, then send the message again."
     mcp_vi = ("Nghi nhất là một NGUỒN DỮ LIỆU (MCP) chết hoặc chậm: mở trang Kết nối, bấm Kiểm tra, "
-              "tắt nguồn đang đỏ rồi gửi lại tin nhắn. (JAVIS_CLAUDE_INIT_TIMEOUT=<giây> để nới thêm trần này)")
+              "tắt nguồn đang đỏ rồi gửi lại tin nhắn. (UNIMATE_CLAUDE_INIT_TIMEOUT=<giây> để nới thêm trần này)")
     mcp_en = ("A dead or slow DATA SOURCE (MCP) is the prime suspect: open the Connections page, click "
               "Check, turn off the red source and send the message again. "
-              "(JAVIS_CLAUDE_INIT_TIMEOUT=<seconds> raises this limit)")
+              "(UNIMATE_CLAUDE_INIT_TIMEOUT=<seconds> raises this limit)")
     cham = max([x for x in (hub.get("init_s"), hub.get("list_s")) if x is not None] or [0.0])
     list_s = hub.get("list_s")
     if not cd.get("hub_attached", True):
-        vi = ("lượt này không đấu cổng công cụ của Javis nên hub không phải thủ phạm. Nếu máy có đấu "
+        vi = ("lượt này không đấu cổng công cụ của UNI MATE nên hub không phải thủ phạm. Nếu máy có đấu "
               "connector của chính Claude Code (claude.ai, cài đặt người dùng) thì kiểm tra chúng; "
               "không thì " + login_vi[0].lower() + login_vi[1:])
-        en = ("this run did not attach the Javis tool hub, so the hub is not the culprit. If the machine "
+        en = ("this run did not attach the UNI MATE tool hub, so the hub is not the culprit. If the machine "
               "attaches Claude Code's own connectors (claude.ai, user settings) check those; otherwise "
               + login_en[0].lower() + login_en[1:])
     elif not hub.get("called"):
-        vi = ("nó chưa hề gọi tới cổng công cụ của Javis, nên KHÔNG phải do nguồn MCP. Nó kẹt từ trước "
+        vi = ("nó chưa hề gọi tới cổng công cụ của UNI MATE, nên KHÔNG phải do nguồn MCP. Nó kẹt từ trước "
               "đó, thường vì đăng nhập Claude hết hạn, máy không ra được mạng hoặc đang tự cập nhật. "
               + login_vi)
-        en = ("it never reached the Javis tool hub, so it is NOT a data source (MCP). It got stuck "
+        en = ("it never reached the UNI MATE tool hub, so it is NOT a data source (MCP). It got stuck "
               "before that, usually an expired Claude sign-in, no network or a self-update. " + login_en)
     elif hub.get("pending") and hub.get("pending_s", 0.0) >= _HUB_SLOW_S:
-        vi = (f"cổng công cụ của Javis nhận yêu cầu {_giay(hub['pending_s'])} trước mà chưa trả lời. "
+        vi = (f"cổng công cụ của UNI MATE nhận yêu cầu {_giay(hub['pending_s'])} trước mà chưa trả lời. "
               + mcp_vi)
-        en = (f"the Javis tool hub got a request {_giay(hub['pending_s'])} ago and has not answered. "
+        en = (f"the UNI MATE tool hub got a request {_giay(hub['pending_s'])} ago and has not answered. "
               + mcp_en)
     elif cham >= _HUB_SLOW_S:
-        vi = f"cổng công cụ của Javis trả quá chậm (mất {_giay(cham)} mới trả lời). " + mcp_vi
-        en = f"the Javis tool hub answered far too slowly ({_giay(cham)} to reply). " + mcp_en
+        vi = f"cổng công cụ của UNI MATE trả quá chậm (mất {_giay(cham)} mới trả lời). " + mcp_vi
+        en = f"the UNI MATE tool hub answered far too slowly ({_giay(cham)} to reply). " + mcp_en
     elif list_s is not None:
-        vi = (f"cổng công cụ của Javis trả lời bình thường (liệt kê công cụ mất {_giay(list_s)}), nên "
+        vi = (f"cổng công cụ của UNI MATE trả lời bình thường (liệt kê công cụ mất {_giay(list_s)}), nên "
               "không phải do nguồn MCP. Claude Code kẹt ở bước khác, thường là đăng nhập hết hạn hoặc "
               "mạng. " + login_vi)
-        en = (f"the Javis tool hub answered normally (listing tools took {_giay(list_s)}), so it is not "
+        en = (f"the UNI MATE tool hub answered normally (listing tools took {_giay(list_s)}), so it is not "
               "a data source (MCP). Claude Code is stuck on something else, usually an expired sign-in "
               "or the network. " + login_en)
     else:
-        vi = ("cổng công cụ của Javis đã nhận kết nối nhưng Claude Code chưa hỏi tới danh sách công cụ, "
+        vi = ("cổng công cụ của UNI MATE đã nhận kết nối nhưng Claude Code chưa hỏi tới danh sách công cụ, "
               "nên chưa tới bước dò nguồn MCP. Nó kẹt ở bước khác, thường là đăng nhập hết hạn hoặc "
               "mạng. " + login_vi)
-        en = ("the Javis tool hub accepted the connection but Claude Code never asked for the tool "
+        en = ("the UNI MATE tool hub accepted the connection but Claude Code never asked for the tool "
               "list, so the data sources (MCP) were not even reached. It is stuck on something else, "
               "usually an expired sign-in or the network. " + login_en)
     tail = [str(x).strip()[:120] for x in (cd.get("stderr") or []) if str(x).strip()][-2:]
@@ -241,12 +241,12 @@ def loi_de_hieu(e, tran_init=None, chan_doan=None):
             "luôn là do NGUỒN DỮ LIỆU (MCP): lúc khởi động, Claude phải kết nối xong mọi "
             "nguồn rồi mới nhận việc, nên một nguồn chết hoặc chậm là kéo cả lượt chờ theo "
             "rồi hết giờ. Mở trang Kết nối, bấm Kiểm tra để tìm nguồn đang đỏ rồi tắt nó đi "
-            "và gửi lại tin nhắn. (JAVIS_CLAUDE_INIT_TIMEOUT=<giây> để nới thêm trần này)",
+            "và gửi lại tin nhắn. (UNIMATE_CLAUDE_INIT_TIMEOUT=<giây> để nới thêm trần này)",
             "Claude Code did not finish starting within " + n + ", so this turn was cancelled. It is "
             "almost always a DATA SOURCE (MCP): at startup Claude must connect every source "
             "before taking work, so one dead or slow source makes the whole turn wait "
             "until it times out. Open the Connections page, click Check to find the red source, turn it off "
-            "and send the message again. (JAVIS_CLAUDE_INIT_TIMEOUT=<seconds> raises this limit)")
+            "and send the message again. (UNIMATE_CLAUDE_INIT_TIMEOUT=<seconds> raises this limit)")
     if "Control request timeout:" in raw:
         return localefmt.chu(
             f"Claude Code không phản hồi lệnh điều khiển ({raw}). Gửi lại tin nhắn; còn lặp "
@@ -367,10 +367,10 @@ def map_message(msg):
             events.append({"type": "error", "resume_failed": True,
                            "content": localefmt.chu(
                                "Phiên Claude cũ không còn trên máy (mạch hội thoại phía "
-                               "Claude Code đã mất). Javis mở mạch mới và mồi lại từ "
+                               "Claude Code đã mất). UNI MATE mở mạch mới và mồi lại từ "
                                "lịch sử đã lưu.",
                                "The old Claude session is no longer on this machine (Claude Code lost "
-                               "the conversation thread). Javis opens a new thread and primes it from "
+                               "the conversation thread). UNI MATE opens a new thread and primes it from "
                                "the saved history.")})
         elif msg.is_error and not (msg.result or "").strip():
             events.append({"type": "error",
@@ -525,8 +525,8 @@ class ClaudeSDK:
         # Độ sâu suy nghĩ (low|medium|high|xhigh|max) - `main._cli_do_sau` đặt. None = không
         # truyền gì, để Claude Code dùng mặc định của chính nó.
         self.effort = None
-        self.javis_mode = None    # _apply_mcp đặt (suggest|auto|full) - enforce min_mode plugin in-process
-        self.javis_vault = None   # _apply_mcp đặt - brain đang làm việc, cho ctx của plugin
+        self.unimate_mode = None    # _apply_mcp đặt (suggest|auto|full) - enforce min_mode plugin in-process
+        self.unimate_vault = None   # _apply_mcp đặt - brain đang làm việc, cho ctx của plugin
         # 0.207.0: id of the tool gate of a gated Team step (team_gate.py). Set = a PreToolUse hook refuses an outside
         # action before it runs unless the owner approved that exact call; bypassPermissions does not skip hooks.
         self.team_gate = None
@@ -538,7 +538,7 @@ class ClaudeSDK:
         # Vài chục dòng cuối `claude` in ra stderr, để câu báo lỗi hết giờ khởi động trích được
         # lý do nó kẹt. Xoá ở đầu mỗi query.
         self._stderr_tail = collections.deque(maxlen=40)
-        # `_options` đặt: lượt này có đấu cổng công cụ của Javis không (None = chưa biết).
+        # `_options` đặt: lượt này có đấu cổng công cụ của UNI MATE không (None = chưa biết).
         self._hub_attached = None
 
     def _on_stderr(self, line):
@@ -577,9 +577,9 @@ class ClaudeSDK:
 
     async def _permission_gate(self, tool_name, input_data, context):
         """can_use_tool: whitelist THẬT per-call khi chạy chế độ nền an toàn (allowed_tools).
-        Hỗ trợ pattern fnmatch (vd 'mcp__javis__pos_*') VÀ prefix kiểu --allowedTools của
+        Hỗ trợ pattern fnmatch (vd 'mcp__unimate__pos_*') VÀ prefix kiểu --allowedTools của
         Claude CLI: 'mcp__<server>' trần (không wildcard) = cho MỌI tool của server đó.
-        Thiếu nhánh prefix thì pattern 'mcp__javis' từ mcp_hub.allow_patterns() không khớp
+        Thiếu nhánh prefix thì pattern 'mcp__unimate' từ mcp_hub.allow_patterns() không khớp
         tool nào → lane nền (kanban/loop) bị chặn sạch MCP dù connector sống."""
         from claude_agent_sdk import PermissionResultAllow, PermissionResultDeny
         allowed = self.allowed_tools or []
@@ -608,14 +608,14 @@ class ClaudeSDK:
         every other plugin tool stays out of the server."""
         import plugins_host
         from claude_agent_sdk import tool as sdk_tool, create_sdk_mcp_server
-        mode = (self.javis_mode or "full").strip().lower()
+        mode = (self.unimate_mode or "full").strip().lower()
         # vault_root: CHỈ để ctx của plugin biết đang làm việc ở brain nào (vd image-chatgpt lưu
-        # ảnh vào đúng attachments/). self.javis_vault do _apply_mcp đặt TƯỜNG MINH (main.py) -
+        # ảnh vào đúng attachments/). self.unimate_vault do _apply_mcp đặt TƯỜNG MINH (main.py) -
         # KHÔNG suy từ cwd: trước 0.55.58 chat chạy với cwd = gốc project (CLAUDE_CWD) nên suy
         # từ cwd từng trượt đúng ở đường chat; nay chat đã chạy cwd=brain, nhưng đặt rõ thì
         # đúng ở MỌI chỗ dựng engine, không phụ thuộc ai nhớ đặt cwd.
         # Vẫn KHÔNG nạp plugin riêng-của-vault (giữ nguyên hành vi cũ): scope_vault=False.
-        p_tools, p_route = plugins_host.plugin_tools(mode, self.javis_vault, scope_vault=False)
+        p_tools, p_route = plugins_host.plugin_tools(mode, self.unimate_vault, scope_vault=False)
         if only is not None:
             p_tools = [t for t in p_tools if t["fn"] in only]
         if not p_tools:
@@ -637,15 +637,15 @@ class ClaudeSDK:
 
             sdk_tools.append(sdk_tool(fn, t.get("description") or fn,
                                       t.get("schema") or {"type": "object", "properties": {}})(_handler))
-        return create_sdk_mcp_server("javis-plugins", tools=sdk_tools)
+        return create_sdk_mcp_server("unimate-plugins", tools=sdk_tools)
 
     @staticmethod
     def _gan_khoa_luot(servers):
-        """Add the current turn's key (X-Javis-Turn) to the hub entry, so pre/post_tool_call hooks
+        """Add the current turn's key (X-UniMate-Turn) to the hub entry, so pre/post_tool_call hooks
         on the hub know who is talking (see turn_context). Done here, per query, because this
         runs inside the turn and every query builds a NEW client: the config file itself is
         shared by all turns of the same brain and must never carry a turn."""
-        hub = servers.get("javis")
+        hub = servers.get("unimate")
         if not isinstance(hub, dict) or not isinstance(hub.get("headers"), dict):
             return servers
         try:
@@ -658,7 +658,7 @@ class ClaudeSDK:
             return servers
         hub = dict(hub)
         hub["headers"] = {**hub["headers"], turn_context.HEADER: key}
-        return {**servers, "javis": hub}
+        return {**servers, "unimate": hub}
 
     def _mcp_servers(self):
         """(mcp_servers cho options, strict) - đọc file config (đường _apply_mcp) thành dict,
@@ -689,13 +689,13 @@ class ClaudeSDK:
             plug = None
         if plug is not None:
             servers = dict(servers or {})
-            servers["javis-plugins"] = plug
-            hub = servers.get("javis")
+            servers["unimate-plugins"] = plug
+            hub = servers.get("unimate")
             if isinstance(hub, dict) and hub.get("headers") is not None:
                 # Báo hub bỏ nhóm plugin - model không thấy 2 tool trùng chức năng
                 hub = dict(hub); hub["headers"] = dict(hub["headers"])
-                hub["headers"]["X-Javis-No-Plugins"] = "1"
-                servers["javis"] = hub
+                hub["headers"]["X-UniMate-No-Plugins"] = "1"
+                servers["unimate"] = hub
         return servers, self.mcp_strict
 
     def _write_sysprompt_file(self, text):
@@ -705,9 +705,9 @@ class ClaudeSDK:
         try:
             d = STATE_DIR / "tmp"
             d.mkdir(parents=True, exist_ok=True)
-            fd, path = tempfile.mkstemp(suffix=".txt", prefix="javis-sysprompt-", dir=str(d))
+            fd, path = tempfile.mkstemp(suffix=".txt", prefix="unimate-sysprompt-", dir=str(d))
         except Exception:
-            fd, path = tempfile.mkstemp(suffix=".txt", prefix="javis-sysprompt-")
+            fd, path = tempfile.mkstemp(suffix=".txt", prefix="unimate-sysprompt-")
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(text)
         self._tmp_files.append(path)
@@ -730,7 +730,7 @@ class ClaudeSDK:
             if not d.exists():
                 return
             now = time.time()
-            for f in d.glob("javis-sysprompt-*.txt"):
+            for f in d.glob("unimate-sysprompt-*.txt"):
                 try:
                     if now - f.stat().st_mtime > max_age_s:
                         f.unlink()
@@ -756,7 +756,7 @@ class ClaudeSDK:
         # báo kèm log đầy đủ 2026-08-13; cùng ca đó dính mọi kernel < 3.17: NAS đời cũ, VPS nhân
         # cổ, vài môi trường CI.
         #
-        # Nên ưu tiên NGƯỢC LẠI SDK. Điều này cũng hợp với phần còn lại của Javis: mọi chỗ khác
+        # Nên ưu tiên NGƯỢC LẠI SDK. Điều này cũng hợp với phần còn lại của UNI MATE: mọi chỗ khác
         # (auth, MCP native, kiểm tra trạng thái) đều gọi đúng binary `claude` của máy, để bản
         # đóng gói làm dự phòng cho máy chưa cài CLI.
         #
@@ -765,7 +765,7 @@ class ClaudeSDK:
         # claude_cli._THU_MUC_BIN_THEM). Chặn "_bundled" để một PATH trỏ nhầm về chính binary
         # Bun không lọt qua cửa này.
         if "cli_path" in fields:
-            _cli = (os.environ.get("JAVIS_CLAUDE_CLI") or "").strip()
+            _cli = (os.environ.get("UNIMATE_CLAUDE_CLI") or "").strip()
             if not _cli:
                 try:
                     from claude_cli import tim_binary as _tim
@@ -787,7 +787,7 @@ class ClaudeSDK:
                 pass
         # System prompt đẩy qua FILE (--append-system-prompt-file) thay vì nhét vào THAM SỐ dòng lệnh.
         # Trên Windows tổng dòng lệnh > 32767 ký tự thì CreateProcess CHẾT: Python báo FileNotFoundError,
-        # SDK dán nhãn nhầm "Claude Code not found at ...\\_bundled\\claude.exe". System prompt của Javis
+        # SDK dán nhãn nhầm "Claude Code not found at ...\\_bundled\\claude.exe". System prompt của UNI MATE
         # (CLAUDE.md + bộ nhớ brain nhiều note) dễ vượt ngưỡng -> đây là gốc lỗi đó. Đọc qua file thì
         # không còn giới hạn độ dài. SDK cũ không có extra_args thì fallback nhét inline (chỉ hợp prompt ngắn).
         if self.system_prompt and self.system_prompt_raw:
@@ -824,7 +824,7 @@ class ClaudeSDK:
             kw["model"] = self.model
         # Độ sâu suy nghĩ đi bằng CỜ THẬT của Claude Code (`--effort`), không phải bằng mấy từ
         # khoá "think harder" nhét vào prompt như bản cũ. Ba cái lợi: thang của SDK trùng khít
-        # thang của Javis (low|medium|high|xhigh|max) nên hai mức trên cùng khác nhau THẬT chứ
+        # thang của UNI MATE (low|medium|high|xhigh|max) nên hai mức trên cùng khác nhau THẬT chứ
         # không cùng ra "ultrathink"; không tốn token nhắc trong mỗi prompt; và không có câu
         # tiếng Việt lạ dính vào cuối tin nhắn người dùng.
         #
@@ -841,19 +841,19 @@ class ClaudeSDK:
         if self.session_id:
             kw["resume"] = self.session_id
         servers, strict = self._mcp_servers()
-        # Nhớ lượt này có đấu hub Javis không: lỗi hết giờ khởi động cần biết để khỏi đổ cho hub
+        # Nhớ lượt này có đấu hub UNI MATE không: lỗi hết giờ khởi động cần biết để khỏi đổ cho hub
         # khi hub vốn không được đấu. Chuỗi (đường dẫn thô) coi như có đấu vì không đọc được.
-        self._hub_attached = True if isinstance(servers, str) else bool(servers) and "javis" in servers
+        self._hub_attached = True if isinstance(servers, str) else bool(servers) and "unimate" in servers
         if servers is not None:
             kw["mcp_servers"] = servers
             if strict:
                 kw["strict_mcp_config"] = True
         _deny = list(self.disallowed_tools or [])
-        # 0.188.0 (Javis Core spec 13, 14): the learning switch is a hard rule for Claude Code too. It writes files
+        # 0.188.0 (UNI MATE Core spec 13, 14): the learning switch is a hard rule for Claude Code too. It writes files
         # natively (not through the hub), so the memory guard goes in as deny rules on its own tools.
         try:
             import memory_control
-            _deny += [r for r in memory_control.claude_deny_rules(self.javis_vault) if r not in _deny]
+            _deny += [r for r in memory_control.claude_deny_rules(self.unimate_vault) if r not in _deny]
         except Exception:
             pass
         if _deny:
@@ -907,7 +907,7 @@ class ClaudeSDK:
             ok, msg = await asyncio.to_thread(team_gate.native_check, self.team_gate, name,
                                               (input_data or {}).get("tool_input") or {})
         except Exception as e:  # noqa: BLE001
-            ok, msg = False, f"Javis không kiểm được quyền của lời gọi này ({type(e).__name__}), đã chặn."
+            ok, msg = False, f"UNI MATE không kiểm được quyền của lời gọi này ({type(e).__name__}), đã chặn."
         if ok:
             return {}
         _audit(self.tag, name, False, "chờ chủ nhóm duyệt")
@@ -965,7 +965,7 @@ class ClaudeSDK:
             return {"ok": False, "reason": f"{type(e).__name__}: {e}"}
 
         async def _deny(tool_name, input_data, context):
-            return PermissionResultDeny(message="Javis keep-warm ping: no tools")
+            return PermissionResultDeny(message="UNI MATE keep-warm ping: no tools")
 
         client = None
         try:
@@ -1020,19 +1020,19 @@ class ClaudeSDK:
         # Ba trần watchdog, None = không giới hạn. Xem `tran_watchdog` để biết vì sao hai trần
         # đo-sự-im-lặng-của-model mặc định là KHÔNG GIỚI HẠN: im lặng không đồng nghĩa với treo,
         # và chém oan một lượt đang chạy tốt là mất trắng cả công lẫn token.
-        IDLE = tran_watchdog("JAVIS_CLAUDE_IDLE_TIMEOUT", "0")
+        IDLE = tran_watchdog("UNIMATE_CLAUDE_IDLE_TIMEOUT", "0")
         # Trần RIÊNG khi đang chờ TOOL chạy. Cái này đo một thứ CÓ THẬT: tool đã khởi động mà
         # chưa trả kết quả, tức có một tiến trình con đang sống ngoài kia. Giữ trần 1 tiếng để
         # một lệnh treo (chờ nhập liệu, khoá file...) không giữ phiên mãi mãi.
-        TOOL_IDLE = tran_watchdog("JAVIS_CLAUDE_TOOL_TIMEOUT", "3600")
+        TOOL_IDLE = tran_watchdog("UNIMATE_CLAUDE_TOOL_TIMEOUT", "3600")
         # Trần RIÊNG cho SỰ KIỆN ĐẦU TIÊN. Cùng họ với IDLE: hội thoại càng dài thì lượt đầu
         # càng lâu (nạp lại ngữ cảnh lớn, model suy nghĩ trước khi phát chữ, đôi khi SDK còn tự
         # nén lịch sử), nên cũng để không giới hạn.
-        FIRST_IDLE = tran_watchdog("JAVIS_CLAUDE_FIRST_TIMEOUT", "0")
+        FIRST_IDLE = tran_watchdog("UNIMATE_CLAUDE_FIRST_TIMEOUT", "0")
         # end_turn của model chính + không còn tool: câu trả lời đã kết thúc, nhưng CLI
         # có thể không phát ResultMessage. Chỉ giới hạn chờ phong bì tổng kết ở trạng thái
         # này; chữ thông thường, tool_use và câu trả lời của subagent KHÔNG đủ để chốt lượt.
-        RESULT_IDLE = tran_watchdog("JAVIS_CLAUDE_RESULT_TIMEOUT", "30")
+        RESULT_IDLE = tran_watchdog("UNIMATE_CLAUDE_RESULT_TIMEOUT", "30")
         self._sweep_stale_tmp()   # dọn file prompt tạm sót từ lượt trước bị crash/kill
         trial_profile = getattr(self, "trial_profile", None)
         client_factory = getattr(trial_profile, "create_client", None)
@@ -1122,27 +1122,27 @@ class ClaudeSDK:
                     elif ly_do == "tool":
                         err = localefmt.chu(
                             f"Tool chạy quá {int(TOOL_IDLE)}s chưa xong - đã dừng để tránh treo server. "
-                            f"(tăng JAVIS_CLAUDE_TOOL_TIMEOUT nếu tác vụ thật sự dài hơn, "
+                            f"(tăng UNIMATE_CLAUDE_TOOL_TIMEOUT nếu tác vụ thật sự dài hơn, "
                             f"đặt 0 để bỏ hẳn trần)",
                             f"A tool ran over {int(TOOL_IDLE)}s without finishing - stopped to avoid hanging the server. "
-                            f"(raise JAVIS_CLAUDE_TOOL_TIMEOUT if the job really takes longer, "
+                            f"(raise UNIMATE_CLAUDE_TOOL_TIMEOUT if the job really takes longer, "
                             f"set 0 to remove the limit)")
                     elif ly_do == "dau":
                         err = localefmt.chu(
                             f"Claude chưa trả lời gì sau {int(FIRST_IDLE)}s - đã dừng để tránh treo "
                             f"server. Hay gặp khi hội thoại đã rất dài: lượt đầu phải nạp lại toàn bộ "
                             f"ngữ cảnh nên lâu. Mở hội thoại mới thường hết ngay. "
-                            f"(JAVIS_CLAUDE_FIRST_TIMEOUT=0 để bỏ hẳn trần này)",
+                            f"(UNIMATE_CLAUDE_FIRST_TIMEOUT=0 để bỏ hẳn trần này)",
                             f"Claude had not answered after {int(FIRST_IDLE)}s - stopped to avoid hanging the "
                             f"server. Common when the conversation is very long: the first turn must reload the whole "
                             f"context, which is slow. A new conversation usually fixes it. "
-                            f"(JAVIS_CLAUDE_FIRST_TIMEOUT=0 removes this limit)")
+                            f"(UNIMATE_CLAUDE_FIRST_TIMEOUT=0 removes this limit)")
                     else:
                         err = localefmt.chu(
                             f"Claude đang trả lời rồi im {int(IDLE)}s - đã dừng để tránh treo server. "
-                            f"(JAVIS_CLAUDE_IDLE_TIMEOUT=0 để bỏ hẳn trần này)",
+                            f"(UNIMATE_CLAUDE_IDLE_TIMEOUT=0 để bỏ hẳn trần này)",
                             f"Claude went silent for {int(IDLE)}s mid-answer - stopped to avoid hanging the server. "
-                            f"(JAVIS_CLAUDE_IDLE_TIMEOUT=0 removes this limit)")
+                            f"(UNIMATE_CLAUDE_IDLE_TIMEOUT=0 removes this limit)")
                     try:
                         await client.interrupt()
                     except Exception:
@@ -1155,12 +1155,12 @@ class ClaudeSDK:
                 else:
                     events, sid = map_message(msg)
                 if sid:
-                    if sid != self.session_id and self.javis_vault:
+                    if sid != self.session_id and self.unimate_vault:
                         # Nhãn dự án cho trang Token: log thô chỉ có cwd (= gốc project ở MỌI
                         # phiên), nên ghi riêng phiên này thuộc brain nào. Xem session_brain.py.
                         try:
                             import session_brain
-                            session_brain.record(sid, self.javis_vault)
+                            session_brain.record(sid, self.unimate_vault)
                         except Exception:
                             pass
                     self.session_id = sid

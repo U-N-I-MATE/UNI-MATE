@@ -1,7 +1,7 @@
-/* chat-resonance.js - thẻ "Javis đang hướng tới" của Hệ thống cộng hưởng (Resonance M4).
+/* chat-resonance.js - thẻ "UNI MATE đang hướng tới" của Hệ thống cộng hưởng (Resonance M4).
 
-   Server gắn vào tin nhắn một khối ẩn (cùng khuôn với JAVIS_VIEC, JAVIS_ASK):
-       <!-- JAVIS_RESONANCE: {"goal_id":"g_...","revision":1,"report":"outbox:12"} -->
+   Server gắn vào tin nhắn một khối ẩn (cùng khuôn với UNIMATE_VIEC, UNIMATE_ASK):
+       <!-- UNIMATE_RESONANCE: {"goal_id":"g_...","revision":1,"report":"outbox:12"} -->
    Khối chỉ mang id mục tiêu; trạng thái SỐNG luôn đọc lại qua GET /goals/{id}, nên F5, mở lại hội thoại hay
    nhận lại tin cũ đều vẽ đúng tình trạng hiện tại, không phải ảnh chụp lúc gửi.
 
@@ -15,7 +15,7 @@
 (function () {
   "use strict";
 
-  var RE = /<!--\s*JAVIS_RESONANCE:\s*([\s\S]*?)\s*-->\s*/g;
+  var RE = /<!--\s*UNIMATE_RESONANCE:\s*([\s\S]*?)\s*-->\s*/g;
 
   function tw(khoa, bien) {
     if (typeof window !== "undefined" && window.t) return window.t(khoa, bien);
@@ -33,7 +33,7 @@
       .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
-  /* Bóc mọi khối JAVIS_RESONANCE. LUÔN trả `clean` đã bỏ khối, kể cả khi JSON hỏng: khối hỏng không được lọt ra
+  /* Bóc mọi khối UNIMATE_RESONANCE. LUÔN trả `clean` đã bỏ khối, kể cả khi JSON hỏng: khối hỏng không được lọt ra
      màn hình hay bị đọc thành tiếng. */
   function tach(text) {
     var s = String(text == null ? "" : text);
@@ -152,7 +152,7 @@
   }
 
   /* A4: dòng quyền của thẻ (thiết kế A4 mục 8). Chỉ hiển thị; kho mới là căn cứ. Cho phép gửi đúng yêu cầu, đường,
-     bản nháp và sha đang hiện; thẻ cũ thì server trả 409 và thẻ vẽ lại. Javis không cấp quyền ghi từ lời chat. */
+     bản nháp và sha đang hiện; thẻ cũ thì server trả 409 và thẻ vẽ lại. UNI MATE không cấp quyền ghi từ lời chat. */
   function kb(n) {
     var v = Number(n) || 0;
     return (Math.round(v / 102.4) / 10).toLocaleString();
@@ -315,7 +315,7 @@
     if (t.legacy) return '<div class="rs-line rs-muted rs-team">' + esc(tw("resonance.a5_legacy")) + "</div>";
     var mk = (t.maker || {}).slug || "", rv = (t.reviewer || {}).slug || "";
     if (t.status === "detached") {
-      // 0.142.0: Javis gỡ người review cố định lúc nâng cấp. Mục tiêu đang dừng chờ chủ quyết, không tự chốt.
+      // 0.142.0: UNI MATE gỡ người review cố định lúc nâng cấp. Mục tiêu đang dừng chờ chủ quyết, không tự chốt.
       if (t.detached_by === "host:review_removed") {
         return '<div class="rs-line rs-team rs-review-removed">' + esc(tw("resonance.a5_removed_line")) + "</div>";
       }
@@ -367,7 +367,7 @@
 
   /* 0.175.0 (chủ repo 16/10/2026: "đã ấn Đúng ý rồi mà thẻ cứ hiện hoài"): thẻ tự THU GỌN khi không còn câu hỏi nào chờ chủ
      TRẢ LỜI. Thẻ chỉ mở đủ khi chủ phải đọc kỹ rồi quyết: chưa xác nhận cách hiểu, chờ duyệt sản phẩm, xin quyền ghi file, file
-     bị sửa ngoài Javis. Trục trặc vận hành (đang dừng, bị chặn, bộ não việc nền hỏng, mất theo dõi) KHÔNG cần đọc lại cả danh
+     bị sửa ngoài UNI MATE. Trục trặc vận hành (đang dừng, bị chặn, bộ não việc nền hỏng, mất theo dõi) KHÔNG cần đọc lại cả danh
      sách ràng buộc: bản gọn tự nói trạng thái bằng một dòng cảnh báo và để sẵn đúng nút cần bấm. Thuần để test. */
   var LY_DO_EM = ["", "healthy", "scheduled", "discovery_done"];
   function canChu(g) {
@@ -451,7 +451,7 @@
       h += '<div class="rs-line rs-muted">' + esc(tw("resonance.next_wake", { at: fmtTime(g.next_wake.at) })) +
         " (" + esc(wakeLabel(g.next_wake.code)) + ")</div>";
     }
-    // A2: file bị sửa ngoài Javis, và trạng thái theo dõi điều kiện bảo vệ (không hiện như đang an toàn khi đã ngừng).
+    // A2: file bị sửa ngoài UNI MATE, và trạng thái theo dõi điều kiện bảo vệ (không hiện như đang an toàn khi đã ngừng).
     if (active && g.source_drift) {
       h += '<div class="rs-warn">' + esc(tw("resonance.drift", { path: g.source_drift.path || "",
         at: g.next_wake ? fmtTime(g.next_wake.at) : "" })) + "</div>";
@@ -749,6 +749,6 @@
   var api = { tach: tach, viewHtml: viewHtml, canChu: canChu, gonHtml: gonHtml, compactHtml: compactHtml, requestFor: requestFor, stateKey: stateKey, wakeLabel: wakeLabel,
     ve: ve, render: render, A3_REACT_ROW: A3_REACT_ROW, reactHtml: reactHtml, reactBody: reactBody, learnHtml: learnHtml, isNotice: isNotice,
     scopeHtml: scopeHtml, teamHtml: teamHtml, noteFor: noteFor, _send: send };
-  if (typeof window !== "undefined") window.JavisResonance = api;
+  if (typeof window !== "undefined") window.UniMateResonance = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

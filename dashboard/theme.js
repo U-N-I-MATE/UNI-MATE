@@ -1,10 +1,10 @@
 // ============================================
-// JAVIS OS - Bộ đổi tông: TỐI ↔ SÁNG, chọn tay hoặc tự động theo giờ
+// UNI MATE - Bộ đổi tông: TỐI ↔ SÁNG, chọn tay hoặc tự động theo giờ
 // ============================================
-// Chế độ lưu ở localStorage "javis.theme" với 3 giá trị: "dark" | "light" | "auto".
+// Chế độ lưu ở localStorage "unimate.theme" với 3 giá trị: "dark" | "light" | "auto".
 // Máy chưa từng chọn (không có khoá) dùng "auto" từ 0.75.1, chủ repo chốt 05/10/2026: trước đó
 // mặc định là tối. Ai đã bấm chọn tay thì khoá đã có giá trị, nên không bị đổi theo.
-// "auto" (0.74.0) đọc thêm khung giờ ở "javis.theme.schedule" dạng "06:00-18:00": từ giờ
+// "auto" (0.74.0) đọc thêm khung giờ ở "unimate.theme.schedule" dạng "06:00-18:00": từ giờ
 // đầu tới trước giờ sau là tông sáng, còn lại là tông tối. Cả hai là lựa chọn THEO THIẾT BỊ
 // (điện thoại để tự động, máy bàn ghim tối là hợp lệ), nên không lưu lên server.
 //
@@ -17,10 +17,10 @@
 // lại vào localStorage để lần sau không phải quy đổi nữa.
 //
 // Các lớp vẽ bằng canvas (starfield, knowledge graph) KHÔNG đọc được biến CSS,
-// nên chúng nghe sự kiện "javis-theme-change" rồi tự vẽ lại bằng bảng màu tương ứng.
+// nên chúng nghe sự kiện "unimate-theme-change" rồi tự vẽ lại bằng bảng màu tương ứng.
 (function () {
-  var KEY = "javis.theme";
-  var KEY_SCHED = "javis.theme.schedule";
+  var KEY = "unimate.theme";
+  var KEY_SCHED = "unimate.theme.schedule";
   var DEFAULT_SCHED = { light: "06:00", dark: "18:00" };
   var root = document.documentElement;
 
@@ -87,7 +87,7 @@
     if (!b) return;
     b.setAttribute("aria-pressed", light ? "true" : "false");
     // Tooltip lấy từ từ điển i18n khi nó đã nạp; chưa nạp (theme.js chạy rất sớm) thì dùng
-    // tiếng Anh tại chỗ - cùng nấc suy biến đầu của i18n/index.js - và nghe "javis:i18n" bên
+    // tiếng Anh tại chỗ - cùng nấc suy biến đầu của i18n/index.js - và nghe "unimate:i18n" bên
     // dưới để tự sửa lại ngay khi từ điển về. Chữ gốc tiếng Việt nằm ở vi.json, không chép ra đây.
     var auto = mode() === "auto";
     var key = auto ? (light ? "top.theme_auto_light" : "top.theme_auto_dark")
@@ -103,16 +103,16 @@
     b.title = txt;
     b.setAttribute("aria-label", b.title);
   }
-  window.addEventListener("javis:i18n", function () { syncButton(isLight()); });
+  window.addEventListener("unimate:i18n", function () { syncButton(isLight()); });
 
   function emit(light) {
     try {
-      window.dispatchEvent(new CustomEvent("javis-theme-change", { detail: { light: light, mode: mode() } }));
+      window.dispatchEvent(new CustomEvent("unimate-theme-change", { detail: { light: light, mode: mode() } }));
     } catch (e) {
       // Trình duyệt cũ không có CustomEvent constructor
       try {
         var ev = document.createEvent("Event");
-        ev.initEvent("javis-theme-change", false, false);
+        ev.initEvent("unimate-theme-change", false, false);
         window.dispatchEvent(ev);
       } catch (e2) {}
     }
@@ -163,7 +163,7 @@
   // dùng phải bấm hai lần mới ra tông mình muốn.
   function toggle() { apply(!isLight(), true); }
 
-  window.javisTheme = {
+  window.unimateTheme = {
     isLight: isLight,
     apply: apply,
     toggle: toggle,
@@ -176,7 +176,7 @@
     // Đăng ký hàm vẽ lại; gọi luôn một lần để lớp canvas nhận tông hiện tại ngay khi khởi tạo.
     on: function (fn) {
       if (typeof fn !== "function") return;
-      window.addEventListener("javis-theme-change", function (e) {
+      window.addEventListener("unimate-theme-change", function (e) {
         fn(!!(e && e.detail ? e.detail.light : isLight()));
       });
       try { fn(isLight()); } catch (err) {}
@@ -203,7 +203,7 @@
     });
     window.addEventListener("focus", tick);
 
-    // Mở Javis ở nhiều tab: đổi tông hay khung giờ ở tab này thì tab kia đổi theo.
+    // Mở UNI MATE ở nhiều tab: đổi tông hay khung giờ ở tab này thì tab kia đổi theo.
     window.addEventListener("storage", function (e) {
       if (e.key === KEY || e.key === KEY_SCHED) paint(wantLight(), true);
     });

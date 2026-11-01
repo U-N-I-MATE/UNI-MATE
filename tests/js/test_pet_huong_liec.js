@@ -77,7 +77,7 @@ global.FormData = function () { this.append = function () {}; };
 Math.random = () => 0.5;
 
 require(path.join(root, "dashboard", "pet.js"));
-const P = window.JavisPet;
+const P = window.UniMatePet;
 check("pet.js nạp được với DOM giả", !!P && typeof P.setCfg === "function");
 
 // Tầm đưa mắt theo TRỤC NGANG đang được vẽ ra, đơn vị px trong viewBox. Âm = nhìn sang trái.

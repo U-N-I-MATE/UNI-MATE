@@ -1,4 +1,4 @@
-"""Tầng CRM trên kho hội thoại khách (0.60.1): hàm mà gói javis.khach-hang-crm cắm vào.
+"""Tầng CRM trên kho hội thoại khách (0.60.1): hàm mà gói unimate.khach-hang-crm cắm vào.
 
     python tests/run.py hoi_thoai_crm      (KHÔNG mạng)
 
@@ -13,8 +13,8 @@ import sys
 import tempfile
 import time
 
-_STATE = tempfile.mkdtemp(prefix="javis-crm-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-crm-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")

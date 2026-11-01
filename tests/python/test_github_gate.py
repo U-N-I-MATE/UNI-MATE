@@ -18,7 +18,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-gate-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-gate-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

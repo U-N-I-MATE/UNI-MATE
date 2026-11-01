@@ -2,7 +2,7 @@
 
     python tests/run.py resonance_a1_gates -v
 
-Engine giả, SQLite thật, plugin javis_goal thật, hub HTTP thật (`mcp_hub.handle_http`) với khoá `X-Javis-Turn`,
+Engine giả, SQLite thật, plugin unimate_goal thật, hub HTTP thật (`mcp_hub.handle_http`) với khoá `X-UniMate-Turn`,
 API thật qua TestClient. Không gọi model. Đi theo ma trận ở thiết kế A1 mục 8:
   1 chat thường bị từ chối trước khi ghi kho          7 bật lại: không mở pause/huỷ; đầu ra giữ được đăng, 0 lượt
   2 agent A bật, B tắt; list không lẫn                    model mới, ý định đăng MỚI theo version hiện tại
@@ -24,8 +24,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a1g-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a1g-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import main  # noqa: E402
 import mcp_hub  # noqa: E402
@@ -62,7 +62,7 @@ A = RA.enable(store, BRAIN, "viet-bai")
 B = RA.enable(store, BRAIN, "kiem-tra")
 B = RA.disable(store, BRAIN, "kiem-tra")
 _, ROUTE = plugins_host.plugin_tools("full", BRAIN, scope_vault=False)
-CALL = ROUTE["javis_goal"]["call"]
+CALL = ROUTE["unimate_goal"]["call"]
 
 
 def counts():
@@ -87,7 +87,7 @@ tok = turn_context.bind(turn_context.make("dashboard", chat_id="plain", la_chu=T
 out_plain = asyncio.run(CALL({"op": "create", **PROPOSAL}))
 turn_context.reset(tok)
 out_none = asyncio.run(CALL({"op": "create", **PROPOSAL}))
-check("1 chat thường gọi javis_goal: ERROR, không ghi gì vào kho",
+check("1 chat thường gọi unimate_goal: ERROR, không ghi gì vào kho",
       out_plain.startswith("ERROR") and "trợ lý" in out_plain and counts() == c0)
 check("1 gọi ngoài lượt: ERROR, không ghi gì", out_none.startswith("ERROR") and counts() == c0)
 
@@ -125,7 +125,7 @@ out_f = tool(fake, "sA", 6, {"op": "create", **PROPOSAL}, "viet-bai")
 check("5 mã agent không có trong sổ: ERROR, không ghi", out_f.startswith("ERROR") and counts() == c2)
 
 
-# ═══════════ 3 + 5. hub HTTP thật với khoá X-Javis-Turn (đường của Codex), hai lượt chạy xen ═══════════
+# ═══════════ 3 + 5. hub HTTP thật với khoá X-UniMate-Turn (đường của Codex), hai lượt chạy xen ═══════════
 class _Req:
     def __init__(self, headers, body):
         self.headers = {k.lower(): v for k, v in headers.items()}
@@ -139,7 +139,7 @@ async def _hub(key, args, i=1):
     h = {"Authorization": "Bearer T"}
     if key is not None:
         h[turn_context.HEADER] = key
-    body = {"jsonrpc": "2.0", "id": i, "method": "tools/call", "params": {"name": "javis_goal", "arguments": args}}
+    body = {"jsonrpc": "2.0", "id": i, "method": "tools/call", "params": {"name": "unimate_goal", "arguments": args}}
     # Tiến trình con của engine CLI: không mang gì của ngữ cảnh lượt, chỉ còn header.
     resp = await asyncio.create_task(mcp_hub.handle_http(_Req(h, body)), context=contextvars.Context())
     return json.loads(resp.body)["result"]["content"][0]["text"]
@@ -149,7 +149,7 @@ mcp_hub.hub_token = lambda: "T"
 
 
 async def _fake_discover(*a, **kw):
-    return [], {"javis_goal": ROUTE["javis_goal"]}
+    return [], {"unimate_goal": ROUTE["unimate_goal"]}
 mcp_hub.discover_all = _fake_discover
 keys = {}
 
@@ -322,9 +322,9 @@ check("8 tạo lại cùng tên: mã mới; mục tiêu cũ KHÔNG chạy theo m
 target.unlink(missing_ok=True)
 d0 = R.GoalDeps(engine_factory=lambda s, t: (None, {}), budget=R.CallBudget(0), store=store)
 g9 = asyncio.run(R.form_goal(R.message_ref("s9", 1), {
-    "principal": RS.Principal("agent", "javis", BRAIN), "brain_root": BRAIN, "session_id": "s9", "message_id": 1,
+    "principal": RS.Principal("agent", "unimate", BRAIN), "brain_root": BRAIN, "session_id": "s9", "message_id": 1,
     "user_text": USER, "constraints": [], "budget_calls": 4, "proposal": PROPOSAL}, d0))
-old_act = store.begin_action(RS.Principal("agent", "javis", BRAIN), g9.id, 1, "work", lease_until=time.time() - 5,
+old_act = store.begin_action(RS.Principal("agent", "unimate", BRAIN), g9.id, 1, "work", lease_until=time.time() - 5,
                              now=time.time() - 600)
 Path(g9.output_root).mkdir(parents=True, exist_ok=True)
 (Path(g9.output_root) / f"{old_act['id']}.md").write_text(GOOD, encoding="utf-8", newline="\n")
@@ -427,9 +427,9 @@ async def _noop(*a, **kw):
 
 
 async def do_turn_11(conv_sid, message, *a, user_mid=0, **kw):
-    seen11["hint"] = "javis_goal op=create" in main.build_system_prompt(BRAIN)
+    seen11["hint"] = "unimate_goal op=create" in main.build_system_prompt(BRAIN)
     names = {t["fn"] for t in plugins_host.plugin_tools("full", BRAIN, scope_vault=False)[0]}
-    seen11["tool_listed"] = "javis_goal" in names
+    seen11["tool_listed"] = "unimate_goal" in names
     main._resonance_note_write(conv_sid, user_mid, BRAIN, {"type": "tool_call", "name": "Write", "id": "tu_11",
                                                            "input": {"file_path": str(target), "content": T11}})
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -478,7 +478,7 @@ check("12 Grok, Antigravity: chưa lập được mục tiêu", not R.engine_sup
       and not R.engine_support("antigravity-cli")["goal"])
 check("12 Claude Code: lập mục tiêu và nhận bản chat", R.engine_support("anthropic-cli")["goal"]
       and R.engine_support("anthropic-cli")["chat_output"])
-check("12 A4: Codex và engine API lập được và nộp bản chat qua javis_submit_deliverable (không có biên nhận Write)",
+check("12 A4: Codex và engine API lập được và nộp bản chat qua unimate_submit_deliverable (không có biên nhận Write)",
       R.engine_support("openai-oauth")["goal"] and R.engine_support("openai-oauth")["chat_output"]
       and R.engine_support("openai-oauth")["submit_tool"] and not R.engine_support("openai-oauth")["observed_write"]
       and R.engine_support("openrouter")["goal"] and R.engine_support("openrouter")["chat_output"]

@@ -18,7 +18,7 @@ import os
 import queue
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-codexrt-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-codexrt-"))
 
 import codex_realtime  # noqa: E402
 

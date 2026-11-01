@@ -8,7 +8,7 @@ Khoá:
   - realtime/start: v3, webrtc, includeStartupContext=false (không cho Codex soi máy), giọng
     mặc định juniper, handoff do client lo, lịch sử chat vào initialItems, bộ nhớ vào prompt;
   - answer SDP về qua thông báo thread/realtime/sdp;
-  - dịch thông báo: lời người dùng nháp/chốt, lời Javis, turn_done, handoff thành ask_javis
+  - dịch thông báo: lời người dùng nháp/chốt, lời UNI MATE, turn_done, handoff thành ask_unimate
     (yêu cầu quá ngắn ghép câu vừa nói), lượt Codex tự mở bị interrupt;
   - kết quả bộ não đi appendSpeech đã lột markdown, ngắn; chữ gõ đi appendText;
   - make_provider chọn chatgpt không cần key, chưa nối ChatGPT thì báo lỗi dễ hiểu;
@@ -19,7 +19,7 @@ import asyncio
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-chatgptlive-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-chatgptlive-"))
 
 import codex_realtime  # noqa: E402
 import voice_live  # noqa: E402
@@ -78,7 +78,7 @@ async def main():
     async def getter():
         return fake
 
-    prov = voice_live.ChatGPTLive(memory_index="- Chủ dự án xưng anh, gọi Javis là em.",
+    prov = voice_live.ChatGPTLive(memory_index="- Chủ dự án xưng anh, gọi Uni là em.",
                                   app_server_getter=getter)
     check("transport của ChatGPT Live là webrtc", prov.transport == "webrtc")
     check("giọng mặc định juniper", prov.voice == "juniper")
@@ -114,7 +114,7 @@ async def main():
           rs.get("version") == "v3" and rs.get("outputModality") == "audio"
           and rs.get("transport") == {"type": "webrtc", "sdp": "v=0 offer"})
     check("realtime/start: KHÔNG cho Codex soi máy (includeStartupContext=false)", rs.get("includeStartupContext") is False)
-    check("realtime/start: handoff do Javis lo", rs.get("clientManagedHandoffs") is True)
+    check("realtime/start: handoff do UNI MATE lo", rs.get("clientManagedHandoffs") is True)
     check("realtime/start: giọng juniper", rs.get("voice") == "juniper")
     check("realtime/start: lịch sử chat vào initialItems (bỏ tin system)",
           rs.get("initialItems") == [{"role": "user", "text": "Doanh thu hôm qua bao nhiêu?"},
@@ -134,14 +134,14 @@ async def main():
           evs[0] == {"type": "transcript", "role": "user", "text": "Doanh thu", "final": False}
           and evs[1]["text"] == "Doanh thu hôm nay" and evs[1]["final"] is False
           and evs[2] == {"type": "transcript", "role": "user", "text": "Doanh thu hôm nay", "final": True})
-    check("lời Javis rồi turn_done",
+    check("lời UNI MATE rồi turn_done",
           evs[3]["role"] == "assistant" and evs[3]["text"] == "Để em xem nhé." and evs[4] == {"type": "turn_done"})
 
     fake.push("thread/realtime/itemAdded", item={"type": "handoff_request", "handoff_id": "h1",
                                                  "input_transcript": "Doanh thu hôm nay của cửa hàng là bao nhiêu"})
     ev = await asyncio.wait_for(agen.__anext__(), 2)
-    check("handoff thành tool_call ask_javis mang yêu cầu",
-          ev["type"] == "tool_call" and ev["name"] == "ask_javis" and ev["id"] == "h1"
+    check("handoff thành tool_call ask_unimate mang yêu cầu",
+          ev["type"] == "tool_call" and ev["name"] == "ask_unimate" and ev["id"] == "h1"
           and ev["args"]["request"] == "Doanh thu hôm nay của cửa hàng là bao nhiêu")
 
     fake.push("thread/realtime/transcript/done", role="user", text="Mở dashboard Facebook Ads cho anh")
@@ -163,7 +163,7 @@ async def main():
     fake.push("thread/realtime/transcript/done", role="assistant", text="x")
     await asyncio.wait_for(agen.__anext__(), 2)
     prov.SPEECH_GAP = 0
-    await prov.send_tool_result("h1", "ask_javis",
+    await prov.send_tool_result("h1", "ask_unimate",
                                 "## Doanh thu\n\n| Ngày | Tiền |\n|---|---|\n| Hôm nay | **12.500.000** |\n\nTăng [8%](http://x) so với hôm qua. " + "Rất dài. " * 200)
     for _ in range(100):
         if call(fake, "thread/realtime/appendSpeech"):
@@ -225,9 +225,9 @@ seq = [
 ]
 evs = [e for m in seq for e in tp.translate(m)]
 finals = [e["text"] for e in evs if e.get("role") == "user" and e.get("final")]
-check("lời Javis chen trước chữ cuối: chỉ MỘT bong bóng người dùng, đủ câu", finals == ["Chào em. Hôm nay em có khỏe không"])
+check("lời UNI MATE chen trước chữ cuối: chỉ MỘT bong bóng người dùng, đủ câu", finals == ["Chào em. Hôm nay em có khỏe không"])
 order = [(e.get("role"), e.get("final")) for e in evs if e["type"] == "transcript" and (e.get("final") or e.get("role") == "assistant")]
-check("câu người dùng chốt đứng TRƯỚC lời Javis đã giữ lại",
+check("câu người dùng chốt đứng TRƯỚC lời UNI MATE đã giữ lại",
       order[:2] == [("user", True), ("assistant", False)] and evs[-1] == {"type": "turn_done"})
 
 tp2 = voice_live.ChatGPTLive(app_server_getter=lambda: None)

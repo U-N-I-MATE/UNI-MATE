@@ -12,8 +12,8 @@ import time
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-agent-jobs-")
-BR = Path(tempfile.mkdtemp(prefix="javis-agent-jobs-brain-")).resolve()
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-agent-jobs-")
+BR = Path(tempfile.mkdtemp(prefix="unimate-agent-jobs-brain-")).resolve()
 (BR / "agents").mkdir()
 for slug, name in (("lan", "Lan"), ("minh", "Minh"), ("hoa", "Hoa")):
     (BR / "agents" / f"{slug}.md").write_text(f"---\nname: {name}\nrole: Thành viên\n---\nBạn là {name}.\n",
@@ -118,7 +118,7 @@ check("việc của trợ lý khác không lẫn sang", all(x["id"] != f"kanban:
 check("thiếu nội dung: 400", client.post("/agents/minh/jobs", params={"brain": B},
                                           json={"text": " ", "nonce": "n3"}).status_code == 400)
 
-# Việc xếp từ chat riêng (javis_task với chat_id web:<phiên>) cũng thuộc trợ lý đó.
+# Việc xếp từ chat riêng (unimate_task với chat_id web:<phiên>) cũng thuộc trợ lý đó.
 t2 = main.tasks_feature.enqueue(B, "Tra giá đối thủ", "Tra giá", chat_id=f"web:{a1['session_id']}")
 code, j = jobs("minh")
 check("việc xếp từ chat riêng thuộc trợ lý của phiên", any(x["id"] == f"kanban:{t2}" for x in j["jobs"]), j)
@@ -336,7 +336,7 @@ check("hết việc khác: không lấy việc thứ hai của Minh khi Minh cò
 store.complete(q1, "w1", "xong")
 c4 = store.next_candidate(ROOT_B)
 check("Minh xong việc A: việc B tới lượt (đúng thứ tự, không nhảy sang C)", c4 and c4["id"] == q2, c4 and c4["id"])
-check("trần chạy chung giữ nguyên (JAVIS_KANBAN_MAX_WORKERS)", 1 <= main.tasks_feature.max_workers <= 8)
+check("trần chạy chung giữ nguyên (UNIMATE_KANBAN_MAX_WORKERS)", 1 <= main.tasks_feature.max_workers <= 8)
 
 # ───────────── huy hiệu việc trên thẻ trợ lý ─────────────
 r = client.get("/agents/jobs/counts", params={"brain": B})

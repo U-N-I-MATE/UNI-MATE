@@ -83,7 +83,7 @@ try {
 }
 try {
   const cr = require(path.join(D, "chat-render.js"));
-  const h = cr.mdToHtml("mở `Javis/loops/x.md` nhé");
+  const h = cr.mdToHtml("mở `UniMate/loops/x.md` nhé");
   check("chat-render: mdToHtml() chạy trọn khi có window", typeof h === "string" && h.length > 0);
 } catch (e) {
   check("chat-render: mdToHtml() chạy trọn khi có window", false, String(e.message).slice(0, 90));

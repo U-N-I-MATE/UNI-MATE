@@ -1,5 +1,5 @@
 """
-web_security.py - Chống CSRF + DNS-rebinding cho web API cục bộ của Javis.
+web_security.py - Chống CSRF + DNS-rebinding cho web API cục bộ của UNI MATE.
 
 Vì sao cần: dashboard nghe ở localhost:7777. Khi CHƯA đặt mật khẩu (chạy cá nhân trên máy),
 một trang web độc bất kỳ trong trình duyệt của user có thể:
@@ -18,7 +18,7 @@ Lớp phòng thủ (tách khỏi main.py để test được mà không nạp c�
     miền lạ (dấu hiệu DNS-rebinding) bị chặn. Khi ĐÃ bật auth thì bỏ qua bước Host (tránh khoá nhầm
     deploy sau reverse-proxy tên miền chưa khai) - lúc đó cookie + Origin-check đã đủ.
 
-Allowlist: localhost/127.0.0.1/::1 + tên miền custom (settings.domain.custom) + env JAVIS_ALLOWED_HOSTS.
+Allowlist: localhost/127.0.0.1/::1 + tên miền custom (settings.domain.custom) + env UNIMATE_ALLOWED_HOSTS.
 """
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ MUTATING = {"POST", "PUT", "DELETE", "PATCH"}
 # EventSource không POST được.
 #
 # Vì sao Origin-check ở csrf_decision KHÔNG cứu được nhóm này: điều hướng top-level bằng GET
-# (location.href) KHÔNG gửi Origin, trong khi cookie javis_session đặt SameSite=lax thì VẪN đi
+# (location.href) KHÔNG gửi Origin, trong khi cookie unimate_session đặt SameSite=lax thì VẪN đi
 # kèm. Nghĩa là một trang lạ chỉ cần đẩy trình duyệt sang URL này là lệnh chạy trên máy nạn
 # nhân, kể cả khi đã bật mật khẩu. Slug workflow lại đoán được (bộ mẫu có sẵn
 # 'research-and-write'), nên /workflows/run là đường thật sự hở.
@@ -90,9 +90,9 @@ def _is_ip(h: str) -> bool:
 
 def host_kieu_local(h: str) -> bool:
     """Host NHƯ NGƯỜI DÙNG THẤY có vẻ là máy gần họ không: loopback, hoặc IP private/link-local
-    (nhà/LAN). Dùng cho cảnh báo connector cần trình duyệt TRÊN MÁY CHẠY JAVIS (vd
+    (nhà/LAN). Dùng cho cảnh báo connector cần trình duyệt TRÊN MÁY CHẠY UNI MATE (vd
     workspace-mcp với callback localhost:8000): domain public thì luồng đăng nhập đó chắc chắn
-    đứt, còn LAN thì máy chạy Javis thường là desktop có màn hình nên vẫn đi được.
+    đứt, còn LAN thì máy chạy UNI MATE thường là desktop có màn hình nên vẫn đi được.
 
     CHỈ dùng cho cảnh báo/UX - đây là suy đoán từ header client gửi lên, không phải căn cứ
     cấp quyền (quyết định quyền vẫn phải theo request.client.host thật, xem external_base)."""
@@ -115,7 +115,7 @@ def _compute_hosts() -> set:
             hosts.add(dom)
     except Exception:
         pass
-    for h in (os.getenv("JAVIS_ALLOWED_HOSTS", "") or "").split(","):
+    for h in (os.getenv("UNIMATE_ALLOWED_HOSTS", "") or "").split(","):
         h = host_only(h)
         if h:
             hosts.add(h)

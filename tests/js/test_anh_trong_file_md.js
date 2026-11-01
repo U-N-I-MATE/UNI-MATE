@@ -6,7 +6,7 @@
    tham chiếu đến ảnh trong folder cũng nên hiển thị ảnh trong file .md nhé."
 
    Nguyên nhân: mdToHtml phân giải MỌI đường dẫn tương đối theo GỐC BRAIN. Note nằm ở
-   "06 - Sources/Ghi chu/note.md" mà viết ![](anh.jpg) thì Javis đi tìm <brain>/anh.jpg - không
+   "06 - Sources/Ghi chu/note.md" mà viết ![](anh.jpg) thì UNI MATE đi tìm <brain>/anh.jpg - không
    bao giờ có - nên ảnh thành một ô xám. Obsidian, VS Code và GitHub đều hiểu đường dẫn đó là
    "cạnh chính file này".
 
@@ -52,7 +52,7 @@ function duPhong(html) {
     duongDan(h) === THU_MUC + "/anh.jpg", duongDan(h));
   check("vẫn còn đường lui về gốc brain (note cũ đang trỏ kiểu đó)",
     duPhong(h).indexOf("anh.jpg") >= 0, duPhong(h).join(", "));
-  check("và đường lui vào attachments (nơi Javis cất ảnh nó sinh ra)",
+  check("và đường lui vào attachments (nơi UNI MATE cất ảnh nó sinh ra)",
     duPhong(h).indexOf("attachments/anh.jpg") >= 0, duPhong(h).join(", "));
   check("có dựng ra thẻ <img> thật, không phải chữ trơ", /<img[^>]*class="chat-img"/.test(h));
 }
@@ -137,7 +137,7 @@ function duPhong(html) {
 }
 
 // ---- 9. HAI trình sửa .md đều phải TRUYỀN thư mục vào, không thì bản vá trên vô nghĩa ----
-// Javis có hai khung mở file .md khác hẳn nhau (xem test_nut_chia_se_trinh_sua_dinh.js). Quên
+// UNI MATE có hai khung mở file .md khác hẳn nhau (xem test_nut_chia_se_trinh_sua_dinh.js). Quên
 // một cái là ảnh vẫn không hiện ở khung đó, mà mọi phép thử trên vẫn xanh.
 {
   const fs = require("fs");

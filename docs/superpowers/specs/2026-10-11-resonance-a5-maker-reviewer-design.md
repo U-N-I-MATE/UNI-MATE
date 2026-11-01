@@ -1,6 +1,6 @@
 # Resonance A5: một agent làm, một agent review (thiết kế)
 
-**Trạng thái:** thiết kế **đã chốt** (review thiết kế vòng 3 đạt tại `56f7ab50`); **mã đạt review vòng 2 tại `05e9b065`; pilot thật real-2 tại `33cec518` được reviewer chấp nhận trong phạm vi một mẫu `pass_first` (1 lượt làm, 1 lượt review, 0 chat; chưa chứng minh vòng sửa bằng model thật); chưa phát hành** (hướng dẫn [resonance-a5-team](../../dev/resonance-a5-team.md), biên bản [resonance-a5-verification](../../dev/resonance-a5-verification.md)). Phần dưới giữ nguyên nội dung đã chốt; đã sửa theo review vòng 1 (R1 đến R5) và review vòng 2 (P2 bộ đếm thử lại, lịch đối soát, hai vòng sửa); chủ dự án chọn phương án A cho file sửa tay (mục 0). Mã A5 đạt review mã vòng 2 tại `05e9b065` (biên bản, kịch bản pilot [resonance-a5-pilot](../../dev/resonance-a5-pilot.md)); pilot thật real-2 dùng 2 lượt model việc nền trong trần 4. A5 **đã phát hành 0.109.0** (`bfb1c29f`, PR #616, 13/10/2026; CI `main` run 38369853756 và build image run 38369852881 thành công; image `ghcr.io/blogminhquy/javis-os:0.109.0`, digest `sha256:3890f824…`; VPS chưa kéo). Review mã vòng 1 làm rõ hai điểm đã nằm trong thiết kế: cổng review áp cho MỌI bản đạt kiểm của mục tiêu có đội (cả `maintain` và bước khám phá, mục 4.2, 5.1), và lượt chưa tới mốc gọi engine là lượt chắc chắn chưa chạy (mục 5.6, 6.2). Các mặc định ở mục 16 theo khuyến nghị của review vòng 1; đó là cấu hình sản phẩm đề xuất, **không phải cấp phép chạy pilot**.
+**Trạng thái:** thiết kế **đã chốt** (review thiết kế vòng 3 đạt tại `56f7ab50`); **mã đạt review vòng 2 tại `05e9b065`; pilot thật real-2 tại `33cec518` được reviewer chấp nhận trong phạm vi một mẫu `pass_first` (1 lượt làm, 1 lượt review, 0 chat; chưa chứng minh vòng sửa bằng model thật); chưa phát hành** (hướng dẫn [resonance-a5-team](../../dev/resonance-a5-team.md), biên bản [resonance-a5-verification](../../dev/resonance-a5-verification.md)). Phần dưới giữ nguyên nội dung đã chốt; đã sửa theo review vòng 1 (R1 đến R5) và review vòng 2 (P2 bộ đếm thử lại, lịch đối soát, hai vòng sửa); chủ dự án chọn phương án A cho file sửa tay (mục 0). Mã A5 đạt review mã vòng 2 tại `05e9b065` (biên bản, kịch bản pilot [resonance-a5-pilot](../../dev/resonance-a5-pilot.md)); pilot thật real-2 dùng 2 lượt model việc nền trong trần 4. A5 **đã phát hành 0.109.0** (`bfb1c29f`, PR #616, 13/10/2026; CI `main` run 38369853756 và build image run 38369852881 thành công; image `ghcr.io/u-n-i-mate/uni-mate:0.109.0`, digest `sha256:3890f824…`; VPS chưa kéo). Review mã vòng 1 làm rõ hai điểm đã nằm trong thiết kế: cổng review áp cho MỌI bản đạt kiểm của mục tiêu có đội (cả `maintain` và bước khám phá, mục 4.2, 5.1), và lượt chưa tới mốc gọi engine là lượt chắc chắn chưa chạy (mục 5.6, 6.2). Các mặc định ở mục 16 theo khuyến nghị của review vòng 1; đó là cấu hình sản phẩm đề xuất, **không phải cấp phép chạy pilot**.
 
 - **Nhánh:** `claude/resonance-a5-maker-reviewer`, PR nháp #616, số **0.109.0** sau khi tích hợp `main` 0.108.0 (lúc thiết kế giữ 0.101.0; 0.97.0 cũ đã thấp hơn `main`).
 - **Nền:** lúc thiết kế và review mã là `main` `a02663cb` (0.100.0); tích hợp `main` `c4fb614d` (0.108.0) trước merge. A1 0.87.0, A2 0.88.0, A3 0.89.0, A4 0.96.0 (`d36ebb3e`) đã phát hành; 0.100.0 thêm tag cho agent (mục 4.5).
@@ -9,7 +9,7 @@
   - [thiết kế A4](2026-10-10-resonance-a4-handoff-grants-design.md): bất biến 5, mục 5.4 `narrow`, mục 12.5 các ca để lại cho A5.
   - [thiết kế A3](2026-10-09-resonance-a3-feedback-learning-design.md) mục 16.
   - Review vòng 1: `exports/reviews/PR-616-A5-design-r1-review.md`; review vòng 2: `exports/reviews/PR-616-A5-design-r2-review.md`.
-  - Mã hiện tại của `server/resonance*.py`, `server/main.py` (workflow, `_resonance_engine`), `system/plugins/javis-goal`.
+  - Mã hiện tại của `server/resonance*.py`, `server/main.py` (workflow, `_resonance_engine`), `system/plugins/unimate-goal`.
 - **Mức bằng chứng:** đọc mã và tài liệu, cộng probe của reviewer chạy trên nền mới (mục 18). Chưa chạy thử gì cho A5.
 - **Số dòng mã:** dẫn theo `a02663cb`. `server/resonance*.py` không đổi từ `dc18942e`, nên số dòng ở các file đó giữ như vòng 1. `server/main.py` đã đổi theo PR tag.
 
@@ -58,7 +58,7 @@ Lộ trình (mục 7) đặt các yêu cầu:
 
 **Giữ nguyên:**
 - Chat thường vẫn là chat thường; không áp Cộng hưởng hay review lên cuộc trò chuyện không có mục tiêu.
-- Hợp đồng nộp và đăng của A4 không đổi: `javis_submit_deliverable`, `host_publish` bốn bước, quyền theo phạm vi D1.
+- Hợp đồng nộp và đăng của A4 không đổi: `unimate_submit_deliverable`, `host_publish` bốn bước, quyền theo phạm vi D1.
 - Nhịp tim A2 (thức có lý do, không hỏi model định kỳ) và vòng phản hồi A3 (reaction không đổi lịch, không thay kết luận) không đổi. Riêng làn M của A3 tạm tắt trên mục tiêu có đội (mục 6.3).
 - Tiêu chí `human_confirmation` và guard giữ nguyên quyền phủ quyết.
 
@@ -76,7 +76,7 @@ Lộ trình (mục 7) đặt các yêu cầu:
 | Cần cho A5 | Đã có | Ở đâu | Khoảng trống |
 |---|---|---|---|
 | Danh tính agent do host cấp | `agent_key` bền, `config_version`, `agent_gate` | `resonance_store.py` `agent_set_enabled` (:492), `_bump_agent` (:456); `resonance.py` `agent_gate` (:502); `_agent_block` (:680) | Chưa có vai thứ hai trên một mục tiêu |
-| Đường tạo mục tiêu | `form_goal` gọi `store.create`; `create` ghi `goal_agents` trong cùng giao dịch | `resonance.py` :947-993; `resonance_store.py` :708-786. Hai lối vào: tool `javis_goal` (`system/plugins/javis-goal/plugin.py` :206) và `POST /goal-requests` (`resonance_api.py` :202-242) | Chưa gắn đội. `assign_goal` (:2114) chỉ cho mục tiêu CHƯA gán (mục tiêu cũ) |
+| Đường tạo mục tiêu | `form_goal` gọi `store.create`; `create` ghi `goal_agents` trong cùng giao dịch | `resonance.py` :947-993; `resonance_store.py` :708-786. Hai lối vào: tool `unimate_goal` (`system/plugins/unimate-goal/plugin.py` :206) và `POST /goal-requests` (`resonance_api.py` :202-242) | Chưa gắn đội. `assign_goal` (:2114) chỉ cho mục tiêu CHƯA gán (mục tiêu cũ) |
 | Giữ chỗ lượt trước khi gọi, ghi bền | `begin_action` trong `BEGIN IMMEDIATE`, `_ReservedCall`, `release_call`, `abort_action`, `_reconcile` | `resonance_store.py` :1439, :1856, :1148; `resonance.py` :1895, :2213 | Chưa chia phần theo vai; `release_call` không biết lượt của vai nào |
 | Lượt của làn M (A3) | `begin_experiment` giữ cả lượt thử lẫn một lượt giữ (`call_holds`); hoàn qua `release_trial_call`, `finish_experiment(refund)`, `_release_hold` | `resonance_store.py` :1540-1615, :1617, :1622, :2505 | Đi thẳng vào `calls_used`, ngoài mọi sổ vai |
 | Trần chung | `call_ceiling`, `_under_ceiling` | `resonance_store.py` :32, :53 | Dùng nguyên |
@@ -140,7 +140,7 @@ Reviewer không có grant nào (không root, không revision). Mọi hành độ
 - Cặp lưu theo `agent_key` của hai bên, không theo slug hay tag. Mỗi lần đổi tăng `team_pairs.config_version`.
 
 **Gắn đội vào mục tiêu MỚI (R1):** một hàm kho dùng chung `_attach_team(c, goal_id, brain_id, maker_key, now)`, gọi **trong chính giao dịch `create`**, ngay sau dòng `goal_agents` (`resonance_store.py` :757).
-- `create` là đường duy nhất tạo mục tiêu có agent. Cả tool `javis_goal` và `POST /goal-requests` đi qua `form_goal` gọi `create`, nên cả hai lối vào được phủ mà không thêm giao dịch thứ hai. Không có khe nào để mục tiêu bắt đầu chạy trước khi có đội: lý do `created` được ghi cùng giao dịch.
+- `create` là đường duy nhất tạo mục tiêu có agent. Cả tool `unimate_goal` và `POST /goal-requests` đi qua `form_goal` gọi `create`, nên cả hai lối vào được phủ mà không thêm giao dịch thứ hai. Không có khe nào để mục tiêu bắt đầu chạy trước khi có đội: lý do `created` được ghi cùng giao dịch.
 - Cặp đang bật: ghi `goal_team(status='active')` ghim `reviewer_agent_key`; ghi hai dòng `team_calls` (maker 4, reviewer 4); đặt `goals.budget_calls = TEAM_DEFAULT_CALLS = 8`, thay mặc định 6 mà `form_goal` truyền vào.
 - **Reviewer đang không dùng được lúc tạo** (tắt, `missing`, đã nghỉ) mà cặp vẫn bật: vẫn gắn đội. Cổng vai review (mục 7.3) chặn ở lần thức đầu với lý do cụ thể. Không lặng lẽ bỏ review.
 - Cặp tắt hay không có cặp: không có `goal_team`; mục tiêu chạy như A4.
@@ -311,7 +311,7 @@ Review cũ vẫn giữ trong hồ sơ, không xoá.
 - Không gọi model: không làm lại, không review, không đăng đè. Bảo vệ file như A2/A4: mốc quan sát ghi riêng (`observe_source`), không đổi mốc đăng, không thành baseline.
 - `H2` **không** tự thành bản được tiếp nhận. A5 không thêm đường tiếp nhận file bất kỳ.
 - **Khôi phục đúng `H1`:** lệch hết. Review `pass` cũ của `H1` lại hợp lệ nếu bộ ghim còn khớp, mục tiêu chốt được mà không gọi model. Không còn khớp (ví dụ reviewer đã đổi version) thì `review_due` cho bộ mới, đọc ảnh chụp `H1`.
-- **`H2` đi qua đường tiếp nhận hợp lệ của A4:** maker nộp bằng `javis_submit_deliverable`, hay một lượt việc nền làm lại. `host_publish` và `adopt_submission` ghi mốc đăng mới với bằng chứng của bytes đó, nên có bộ ghim mới và `review_due` mới.
+- **`H2` đi qua đường tiếp nhận hợp lệ của A4:** maker nộp bằng `unimate_submit_deliverable`, hay một lượt việc nền làm lại. `host_publish` và `adopt_submission` ghi mốc đăng mới với bằng chứng của bytes đó, nên có bộ ghim mới và `review_due` mới.
 - **Sửa tay trong lúc review đang chạy:** kết luận ghi cho `H1`. Lúc chốt thấy lệch thì chờ như trên. Kết luận chỉ dùng được nếu file quay về `H1`.
 - **Người dùng muốn giữ `H2` mà không qua review:** tách đội (`team_detach`). Mục tiêu theo luật A4/A2 như cũ. Đây là lựa chọn của chủ dự án, hiện trên thẻ.
 
@@ -352,7 +352,7 @@ Kho chống trùng lý do vĩnh viễn theo (`goal_id`, `code`, `source_ref`), k
 
 ### 6.1 Một sổ, hai phần
 
-- **Một sổ:** `goals.budget_calls` và `calls_used` như hiện tại, cùng trần `JAVIS_RESONANCE_CALL_CEILING`.
+- **Một sổ:** `goals.budget_calls` và `calls_used` như hiện tại, cùng trần `UNIMATE_RESONANCE_CALL_CEILING`.
 - **Chia phần:** bảng `team_calls(goal_id, role, cap, used)`.
   - Mục tiêu có đội: `budget_calls = 8`, maker 4, reviewer 4. Tổng phần vai bằng `budget_calls`, nên không vai nào chạy được bằng lượt "dư" của vai kia.
   - Mục tiêu không có đội giữ `GOAL_DEFAULT_CALLS = 6`.
@@ -648,7 +648,7 @@ Hành động review dùng bảng `actions` hiện có với `kind = 'review'`: 
 - **Thẻ mục tiêu:** dùng khung thẻ A1 đến A4, thêm một dòng đội khi có `goal_team`:
   - "Làm: <tên agent> · Review: <tên agent>";
   - "Bản đã review: <8 ký tự sha> · Đạt / Cần sửa (vòng 1/2) / Chưa rõ";
-  - lý do chờ bằng câu người đọc: "Đang chờ <reviewer> xem bản <sha>", "Đang chờ <maker> sửa theo góp ý", "File đích bị sửa ngoài Javis: chờ bản được tiếp nhận";
+  - lý do chờ bằng câu người đọc: "Đang chờ <reviewer> xem bản <sha>", "Đang chờ <maker> sửa theo góp ý", "File đích bị sửa ngoài UNI MATE: chờ bản được tiếp nhận";
   - "Lượt còn: làm 3/4 · review 2/4".
 - **Nút của chủ dự án trên thẻ** (chỉ hiện khi có lý do):
   - `blocked/reviewer_off`: **Bật lại người review**. Gọi đúng API bật Cộng hưởng hiện có cho mã reviewer. Thẻ nói trước "bản hiện tại sẽ được review lại, tính một lượt review".
@@ -676,12 +676,12 @@ Hành động review dùng bảng `actions` hiện có với `kind = 'review'`: 
 | Khôi phục về 0.108.0 | `tools/resonance_restore_pre_a5.py` |
 | Test | `tests/python/test_resonance_a5_team.py`, `test_resonance_a5_budget.py`, `test_resonance_a5_rollback.py`, `tests/js/test_resonance_a5_ui.js` |
 
-Không thêm công cụ cho model: reviewer không gọi công cụ; agent làm dùng `javis_submit_deliverable` như A4.
+Không thêm công cụ cho model: reviewer không gọi công cụ; agent làm dùng `unimate_submit_deliverable` như A4.
 
 ## 13. Nâng và hạ phiên bản
 
 - **Lúc nâng:** lần đầu mã A5 mở kho có từ trước, `_backup_before("team_pairs", ".pre-0.109.0")` chép kho bằng SQLite backup API một lần, rồi tạo bảng A5. Cùng mẫu với A1 đến A4: có bảng mốc thì không chép lại. Mục tiêu cũ không có `goal_team`, chạy như A4.
-- **Hạ đúng cách:** tắt Javis, chạy `tools/resonance_restore_pre_a5.py`, rồi chạy 0.108.0. Script giữ bản kho hiện tại `post-0.109.0-<thời điểm>` rồi mới ghi snapshot.
+- **Hạ đúng cách:** tắt UNI MATE, chạy `tools/resonance_restore_pre_a5.py`, rồi chạy 0.108.0. Script giữ bản kho hiện tại `post-0.109.0-<thời điểm>` rồi mới ghi snapshot.
 - **Hạ không khôi phục: không hỗ trợ.** Ghi rõ trong CHANGELOG. Lý do:
   - Mã 0.108.0 bỏ qua bảng A5, nên mục tiêu có đội có thể được chốt đạt mà không có review.
   - Hành động `kind='review'` còn `running` bị `_reconcile` cũ coi là lượt việc thường bị ngắt.
@@ -706,7 +706,7 @@ Không thêm công cụ cho model: reviewer không gọi công cụ; agent làm 
 - **Model** là số lần engine giả được gọi.
 - "Kết quả dùng được" là kết luận hay bản nào được phép dùng để chốt.
 
-**Ca qua đường host thật:** các ca đánh dấu (H) phải chạy qua đường host thật: `form_goal` với tool `javis_goal` hay `POST /goal-requests`, scheduler thật, kho thật. Không chèn `goal_team` hay `reviews` vào fixture.
+**Ca qua đường host thật:** các ca đánh dấu (H) phải chạy qua đường host thật: `form_goal` với tool `unimate_goal` hay `POST /goal-requests`, scheduler thật, kho thật. Không chèn `goal_team` hay `reviews` vào fixture.
 
 ### 15.1 Luồng chính
 
@@ -742,7 +742,7 @@ Không thêm công cụ cho model: reviewer không gọi công cụ; agent làm 
 
 | Ca | Tình huống | Trạng thái, lý do cuối | Lượt | Model | Kết quả dùng được |
 |---|---|---|---|---|---|
-| T31 (H) | Tạo qua tool `javis_goal` trong phiên agent có cặp bật | `goal_team active`, `team_calls` 4/4, `budget_calls = 8`, cùng giao dịch với `goal_agents`; `assign_goal` thay bằng hàm ném lỗi vẫn đạt | (0, 0, 0) lúc tạo | 0 | |
+| T31 (H) | Tạo qua tool `unimate_goal` trong phiên agent có cặp bật | `goal_team active`, `team_calls` 4/4, `budget_calls = 8`, cùng giao dịch với `goal_agents`; `assign_goal` thay bằng hàm ném lỗi vẫn đạt | (0, 0, 0) lúc tạo | 0 | |
 | T32 (H) | Tạo qua `POST /goal-requests` | Như T31 | | 0 (có đề xuất) hoặc 1 bộ lập (sổ riêng) | |
 | T33 (H) | Tạo lặp cùng tin (cùng `idempotency_key`), giữa hai lần đổi cặp sang reviewer khác | Trả mục tiêu cũ; reviewer, budget, `team_calls` không đổi | không đổi | 0 | |
 | T34 | Cặp tắt lúc tạo | Không có `goal_team`; chạy như A4 | như A4 | | |
@@ -784,7 +784,7 @@ Không thêm công cụ cho model: reviewer không gọi công cụ; agent làm 
 | T10 | Chủ dự án sửa tay file thành H2 sau review `pass` của H1, H2 vẫn đạt kiểm khách quan | `waiting/source_drift`; không review, không chốt, không đăng đè | không đổi | 0 | Không (review H1 không áp cho H2) |
 | T55 | Sửa tay trong lúc review H1 đang chạy | Kết luận ghi cho H1; lúc chốt thấy lệch, `waiting/source_drift` | (k, +1) | +1 | Chỉ nếu file về lại H1 |
 | T56 | Sau T10, file được khôi phục đúng bytes H1 | `succeeded` bằng review H1 cũ, không gọi model | không đổi | 0 | Review H1 |
-| T57 | Sau T10, maker nộp H2 qua `javis_submit_deliverable` hợp lệ (A4) | Mốc đăng mới; `review_due` cho H2; ảnh chụp đọc từ bằng chứng của H2 | (k, +1) | +1 | Review H2 |
+| T57 | Sau T10, maker nộp H2 qua `unimate_submit_deliverable` hợp lệ (A4) | Mốc đăng mới; `review_due` cho H2; ảnh chụp đọc từ bằng chứng của H2 | (k, +1) | +1 | Review H2 |
 | T58 | Bằng chứng ảnh chụp có hash khác `artifact_sha` (bị hỏng hay thay) | `unknown/snapshot_mismatch`, `blocked/review_input`, không giữ chỗ | không đổi | 0 | Không |
 | T28 | Bản quá `REVIEW_INPUT_MAX_CHARS` (vết V6) | `unknown/too_large`, `blocked/review_input`; không tự thử lại, không nhịp thức sát nhau | không đổi | 0 | Không |
 

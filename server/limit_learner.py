@@ -3,7 +3,7 @@
 Vì sao module này tồn tại, và vì sao thiết kế cũ sai:
 
 Bản trước bắt người vận hành KHAI TRƯỚC hạn mức của từng model rồi mới bảo vệ được. Nghĩa
-là Javis chỉ đỡ được nhà cung cấp nào đã có người ngồi tra tài liệu và điền số. Cắm model
+là UNI MATE chỉ đỡ được nhà cung cấp nào đã có người ngồi tra tài liệu và điền số. Cắm model
 mới, hoặc nhà cung cấp đổi hạn mức, là lại thủng.
 
 Nhưng chính câu báo lỗi đã chứa sự thật chính xác nhất:
@@ -110,7 +110,7 @@ class LimitFact:
 # Mỗi mẫu: (tên, kind, regex có 2 nhóm số theo thứ tự limit, requested).
 # Viết riêng từng nhà cung cấp thay vì một regex tham lam: một regex "bắt mọi số gần chữ
 # limit" sẽ đọc nhầm số tiền, số giây, số phiên bản - và đọc nhầm hạn mức thì tệ hơn không
-# đọc, vì nó làm Javis tự bóp mình xuống một con số bịa.
+# đọc, vì nó làm UNI MATE tự bóp mình xuống một con số bịa.
 # Groq (và vài endpoint OpenAI-compatible khác) dùng CHUNG một khuôn cho cả bốn chiều siết:
 #
 #   ... on tokens per minute (TPM): Limit 12000, Used 8812, Requested 4701. try again in 7.5s
@@ -263,11 +263,11 @@ def parse_limit_error(status_code: int, body: str) -> LimitFact | None:
 #     tương tự). Vượt thì co prompt bao nhiêu cũng vô ích - phải CHỜ tới mốc reset, hoặc
 #     đổi sang bộ não khác.
 #
-# Nhầm hai cái này là Javis sẽ cắt ngữ cảnh của người dùng để giải một bài toán mà cắt không
+# Nhầm hai cái này là UNI MATE sẽ cắt ngữ cảnh của người dùng để giải một bài toán mà cắt không
 # giải được, rồi vẫn lỗi - tệ hơn hẳn việc nói thẳng "gói này hết lượt, tới HH:MM mới lại".
 #
 # Ranh giới trung thực: đây là NHẬN DẠNG CÂU CHỮ do CLI in ra, không phải một API hạn mức.
-# Nhà cung cấp đổi cách viết thì mẫu sẽ trượt, và khi trượt thì Javis phải trả nguyên văn lỗi
+# Nhà cung cấp đổi cách viết thì mẫu sẽ trượt, và khi trượt thì UNI MATE phải trả nguyên văn lỗi
 # gốc chứ không được bịa ra một mốc reset. Vì vậy `reset_epoch` = 0 nghĩa là KHÔNG BIẾT, và
 # mọi chỗ hiển thị đều phải xử đúng nghĩa "không biết" thay vì đoán bừa.
 
@@ -328,7 +328,7 @@ _SUB_PATTERNS: tuple[tuple[str, str, str, re.Pattern], ...] = (
 # giới từ mà nhà cung cấp hay in: "resets 12pm (UTC)". Bắt buộc có "at|in|on" thì mốc reset duy
 # nhất người dùng được cho biết lại rơi mất, và câu báo hoá ra "không biết lúc nào reset".
 # Nhưng bỏ hẳn giới từ thì "Please reset your API key at console.anthropic.com" cũng lọt, và
-# Javis đi khoe "Nhà cung cấp nói: reset your API key at console" - nên dạng không giới từ phải
+# UNI MATE đi khoe "Nhà cung cấp nói: reset your API key at console" - nên dạng không giới từ phải
 # có NGAY một mốc thời gian đằng sau (số, midnight, noon, tomorrow).
 _RESET_TEXT_RE = re.compile(
     r"(resets?\s+(?:at|in|on)\s+[^.\n|]{1,60}"

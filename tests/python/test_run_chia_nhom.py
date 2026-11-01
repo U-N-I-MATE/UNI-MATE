@@ -10,7 +10,7 @@ from _paths import ROOT  # noqa: E402
 import importlib.util
 import unittest
 
-_spec = importlib.util.spec_from_file_location("javis_tests_run", ROOT / "tests" / "run.py")
+_spec = importlib.util.spec_from_file_location("unimate_tests_run", ROOT / "tests" / "run.py")
 R = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(R)
 

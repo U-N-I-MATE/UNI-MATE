@@ -18,9 +18,9 @@ import sys
 import tempfile
 import time
 
-_STATE = tempfile.mkdtemp(prefix="javis-httlg-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"
+_STATE = tempfile.mkdtemp(prefix="unimate-httlg-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -254,8 +254,8 @@ check("cuộc chat không bot thì bot_running là false", cl.get(f"/conversatio
 reset()
 c13 = tin("g13", "customer", "gõ tay", dt=10)
 r = cl.post(f"/conversations/{c13}/reply", data={"text": "Dạ em xin lỗi ạ"})
-# Đổi có chủ ý ở 0.108.0: javis-zalo 1.3.0 đưa tin của chính tài khoản về vòng đọc kèm `isSelf`, nên câu chủ gõ ở
-# đây (Javis đã tự ghi ngay bên dưới) phải được nhớ là tiếng vọng, không thì Hộp thư hiện nó hai lần. Bot vẫn nhường
+# Đổi có chủ ý ở 0.108.0: unimate-zalo 1.3.0 đưa tin của chính tài khoản về vòng đọc kèm `isSelf`, nên câu chủ gõ ở
+# đây (UNI MATE đã tự ghi ngay bên dưới) phải được nhớ là tiếng vọng, không thì Hộp thư hiện nó hai lần. Bot vẫn nhường
 # vì cuộc chat chuyển sang chế độ người tiếp quản (dòng check kế tiếp), không cần tới mốc "chủ nhắn tay".
 check("chủ gõ tay được nhớ là tiếng vọng (không hiện hai lần trong Hộp thư)",
       [e[2] for e in ECHO] == ["Dạ em xin lỗi ạ"], ECHO)

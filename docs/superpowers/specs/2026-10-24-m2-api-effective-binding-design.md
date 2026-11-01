@@ -99,7 +99,7 @@ All line references refer to the immutable commit above.
 | `main.py:2978–3080` | `_api_stream_mcp` obtains the real hub tools/route, coding context, scope-private inventory, and then a provider generator. Discovery exceptions currently may fall through to empty tools/plain API; this cannot swallow effective-binding invalidity. |
 | `engine.py:629,974,1892–2128` | API engine is functions/generators, not a persistent provider object. `openai_compat_url()` reads settings again; `_cc_tool_loop` constructs an `httpx.AsyncClient`, POSTs actual JSON, calls `mcp_client.call_route`, clips tool results, and resends them. Bind concrete selected functions plus actual request/client identities, not a fictional Engine instance. |
 | `engine.py:35–89` | `TEAM_REQUEST_OBSERVER`, `_request_usage`, `_observed_post`, `_observed_stream` already expose request ids and nullable telemetry. Observer errors are swallowed intentionally; that observer must not enforce permission. |
-| `mcp_hub.py:833,1404,1515`; `mcp_client.py:1141` | Real `javis_use_skill` uses scope.read, slices text to 60,000 chars, then checks owner after awaited work. Real routing has guards and may return ERROR strings. Scope-private caches already exist and check source/epoch on hits. |
+| `mcp_hub.py:833,1404,1515`; `mcp_client.py:1141` | Real `unimate_use_skill` uses scope.read, slices text to 60,000 chars, then checks owner after awaited work. Real routing has guards and may return ERROR strings. Scope-private caches already exist and check source/epoch on hits. |
 | `lazy_skill_runtime.py:100`; `skill_router.py` | Existing private scope selection and no-fallback behavior are reused. Lazy selection removes frontmatter, wraps the body, and enforces a body limit; a read hash alone is not the final outbound prompt hash. |
 | `improvement_task_skill_turn.py:15–69`; `improvement_task_skill_scope.py:142,200,304` | Retained off-loop capture and event-loop binding; exact types, runtime object/DB identity, running rows/version, source checks, and copied-context revocation. Extend these concrete owners; do not replace them. |
 | `improvement_trial_host.py:117–122`; `improvement_trial_sql_context.py:369` | Authoring HostContext deliberately requires anthropic-cli/claude-sdk; current SQL capture requires channel web. Neither is an existing owner-DM API issuer. Preserve both. |
@@ -275,7 +275,7 @@ existing composition/transformation sites. If lineage is lost, delivery is
 unknown; never assert full-skill delivery from the unchanged source hash alone.
 
 Agent-DM positive path: real prompt's skill declaration + actual hub inventory,
-API response requesting `javis_use_skill` (or lazy hub search/run), actual guarded
+API response requesting `unimate_use_skill` (or lazy hub search/run), actual guarded
 call_route -> scope.read -> actual clipped tool message -> next HTTP request.
 The receiver must assert the selected candidate bytes in that tool message and
 their absence where baseline is expected. This establishes tool-result delivery,
@@ -285,7 +285,7 @@ as a baseline compatibility control; do not change DM routing to manufacture
 coverage. Metadata availability, body read, local tool result, request prepared,
 request attempted, receiver-observed and model understanding are distinct facts.
 
-The API currently has ordinary file-reading tools as well as `javis_use_skill`.
+The API currently has ordinary file-reading tools as well as `unimate_use_skill`.
 This vertical promises effective bytes through the named skill consumers only.
 It does not intercept arbitrary file reads, hide canonical files, or prove a
 model cannot independently inspect them. Product acceptance must not claim such
@@ -433,7 +433,7 @@ stale revision/CAS checks and the unchanged production gate. No UI rewrite here.
 | Endpoint is read later than key | Pause after route selection; rotate key or endpoint/settings/session pin, then resume: no request goes to either unauthorized destination, no stale secret leaks. Valid unchanged route reaches owned receiver. |
 | Technical native pin mistaken for API config | Preserve exact Session pin/release/source-context hashes across API turn. Foreign Session, mutated pin, E1 selector/plan transplant, product selector on anchored store all fail. Fresh API-bound technical outcome passes shared apply core. |
 | Read receipt mislabeled as API delivery | Real handler -> TaskSkillTurn.start -> actual DM prompt -> real hub -> real engine -> real loopback POST sequence. Receiver observes candidate tool-result bytes; after revert a fresh admitted turn observes baseline. Distinct task/step/pin/request ids checked. Canonical files unchanged. |
-| Plain/eager path only tested | Actual eager javis_use_skill and force-lazy hub search/run both exercise existing guarded route. Body slicing and engine clipping receipts match receiver. DM LazySkillSource injection remains explicitly uncovered; existing common-reader tests verify it separately. |
+| Plain/eager path only tested | Actual eager unimate_use_skill and force-lazy hub search/run both exercise existing guarded route. Body slicing and engine clipping receipts match receiver. DM LazySkillSource injection remains explicitly uncovered; existing common-reader tests verify it separately. |
 | Hub failure silently falls through | Remove/revoke scope during discovery/body/bump/tool return; copied contexts/caches yield unavailable and no later POST carries candidate/canonical fallback. Source permission/enable/frontmatter/grant/policy drift fails real fences. |
 | First request checked but retry/second round unchecked | Pause fixture after first POST; revoke before tool read or second POST. Also named-choice retry, transport retry, autoshrink and compaction attempted routes each have separate fenced attempt receipts. Already sent attempt stays historical. |
 | Usage inferred from final aggregate | Complete, partial, absent, malformed usage and network interruption preserve actual per-attempt unknowns; event-id update dedup; no invented improvement ledger rows/cost/model outcome. |

@@ -33,11 +33,11 @@ def test_la_anh_va_khong_lan_sang_chu():
 
 
 def test_tran_anh_mac_dinh_va_env(monkeypatch):
-    monkeypatch.delenv("JAVIS_SYNC_ANH_MAX_MB", raising=False)
+    monkeypatch.delenv("UNIMATE_SYNC_ANH_MAX_MB", raising=False)
     assert git_brain.anh_max_bytes() == git_brain.ANH_MAX_MB_DEFAULT * 1024 * 1024
-    monkeypatch.setenv("JAVIS_SYNC_ANH_MAX_MB", "2")
+    monkeypatch.setenv("UNIMATE_SYNC_ANH_MAX_MB", "2")
     assert git_brain.anh_max_bytes() == 2 * 1024 * 1024
-    monkeypatch.setenv("JAVIS_SYNC_ANH_MAX_MB", "rac")
+    monkeypatch.setenv("UNIMATE_SYNC_ANH_MAX_MB", "rac")
     assert git_brain.anh_max_bytes() == git_brain.ANH_MAX_MB_DEFAULT * 1024 * 1024
 
 
@@ -81,7 +81,7 @@ def test_bat_chep_anh_va_tra_danh_sach(tmp_path):
 
 
 def test_bat_anh_qua_tran_bi_bo_va_khong_bi_prune(tmp_path, monkeypatch):
-    monkeypatch.setenv("JAVIS_SYNC_ANH_MAX_MB", "1")
+    monkeypatch.setenv("UNIMATE_SYNC_ANH_MAX_MB", "1")
     src, mirror = tmp_path / "brains", tmp_path / "mirror"
     _w(src / "b" / "attachments" / "to.jpg", b"j" * (1024 * 1024 + 1))
     _w(mirror / "b" / "attachments" / "to.jpg", b"cu")   # từng sync được (trần cũ cao hơn)
@@ -148,7 +148,7 @@ def test_force_add_vuot_gitignore_cua_brain(tmp_path):
     staged = (_git(mirror, "diff", "--cached", "--name-only").stdout or "")
     assert "b/attachments/sp.jpg" in staged
     # log thô bị ignore ở khối 3 vẫn KHÔNG bị cuốn vào (force đích danh, không phải -f cả cây)
-    _w(mirror / "b" / "Javis" / "learn-log" / "2026.md", "log")
+    _w(mirror / "b" / "UNI MATE" / "learn-log" / "2026.md", "log")
     _git(mirror, "add", "-A")
     assert "learn-log" not in (_git(mirror, "diff", "--cached", "--name-only").stdout or "")
 

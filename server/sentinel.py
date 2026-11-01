@@ -1,6 +1,6 @@
 """sentinel.py - a read-only health scan that groups failures into issues (0.199.0).
 
-Idea borrowed from OpenMausBot's Sentinel. Failures in Javis are spread over five stores: blocked
+Idea borrowed from OpenMausBot's Sentinel. Failures in UNI MATE are spread over five stores: blocked
 Kanban jobs, reminders with an error, loops that paused themselves, webhooks whose last run failed,
 and open incidents. Each shows only on its own card. This scan reads all of them, groups failures
 that share a cause into one issue (the same error text with numbers and ids masked), and sorts by
@@ -71,7 +71,7 @@ def kanban_failures(state_dir: Path, since: float) -> List[dict]:
 def reminder_failures(brains: Iterable[Path], since: float) -> List[dict]:
     out = []
     for b in brains:
-        d = _read_json(Path(b) / "Javis" / "reminders.json")
+        d = _read_json(Path(b) / "UNI MATE" / "reminders.json")
         for r in (d or {}).get("reminders", []) if isinstance(d, dict) else []:
             if r.get("error") and float(r.get("fired_at") or 0) >= since:
                 out.append({"source": "reminder", "ref": r.get("id"), "brain": str(b),
@@ -83,7 +83,7 @@ def reminder_failures(brains: Iterable[Path], since: float) -> List[dict]:
 def loop_failures(brains: Iterable[Path]) -> List[dict]:
     out = []
     for b in brains:
-        d = _read_json(Path(b) / "Javis" / "loop-state.json")
+        d = _read_json(Path(b) / "UNI MATE" / "loop-state.json")
         if not isinstance(d, dict):
             continue
         for slug, st in d.items():
@@ -143,7 +143,7 @@ def scan(state_dir: Path, brains: Iterable[Path], now: Optional[float] = None,
 
 
 def to_markdown(report: dict) -> str:
-    lines = [f"# Javis health scan ({time.strftime('%Y-%m-%d %H:%M', time.localtime(report['scanned_at']))})", ""]
+    lines = [f"# UNI MATE health scan ({time.strftime('%Y-%m-%d %H:%M', time.localtime(report['scanned_at']))})", ""]
     if not report["issues"]:
         lines.append(f"No failures in the last {report['window_h']} hours.")
     for g in report["issues"]:

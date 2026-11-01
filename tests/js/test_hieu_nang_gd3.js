@@ -5,7 +5,7 @@
    sw.js still caches NOTHING in the normal case (the reason is written at its top: a caching worker serves old code
    after every update). One narrow exception: opening "/" and the i18n dictionaries always ask the server first and
    take its answer; only when the server cannot be reached (network error, 502, 503, 504, 520-530) the last good copy
-   is served, so the owner sees Javis with the "Reconnecting" pill instead of an error page. freshness.js then asks
+   is served, so the owner sees UNI MATE with the "Reconnecting" pill instead of an error page. freshness.js then asks
    for the version right away and reloads a stale shell once the server is back. The pet's CSS rest has its own test
    (test_pet_nghi_yen.js). */
 const fs = require("fs");
@@ -24,7 +24,7 @@ function worker(net) {
   const store = {};
   const handlers = {};
   const self = {
-    location: { origin: "https://javis.example" },
+    location: { origin: "https://unimate.example" },
     addEventListener: (n, fn) => { handlers[n] = fn; },
     skipWaiting() {}, clients: { claim: async () => {} },
     registration: {},
@@ -51,7 +51,7 @@ const bad = (status) => ({ ok: false, status, redirected: false, clone() { retur
   let online = true, status = 200;
   const net = async (req) => { if (!online) throw new TypeError("Failed to fetch"); return status === 200 ? ok("fresh " + req.url) : bad(status); };
   const W = worker(net);
-  const O = "https://javis.example";
+  const O = "https://unimate.example";
 
   check("an API call is not touched by the worker", (await W.go(O + "/settings")) === "untouched");
   check("a static script is not touched either", (await W.go(O + "/static/app.js?v=1")) === "untouched");

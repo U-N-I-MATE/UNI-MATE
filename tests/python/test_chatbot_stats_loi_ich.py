@@ -1,5 +1,5 @@
 """Stats tab benefit numbers (0.399.0; owner, 2026-10-29: "thêm được chỉ số nào cho người dùng cảm thấy được nhiều lợi ích
-nhất khi sử dụng chatbot của javis").
+nhất khi sử dụng chatbot của unimate").
 
     python tests/python/test_chatbot_stats_loi_ich.py
 
@@ -14,9 +14,9 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-stats-loi-ich-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
-os.environ["JAVIS_SESSIONS_DB"] = str(Path(_STATE) / "sessions.db")
+_STATE = tempfile.mkdtemp(prefix="unimate-stats-loi-ich-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
+os.environ["UNIMATE_SESSIONS_DB"] = str(Path(_STATE) / "sessions.db")
 os.environ["BRAINS_DIR"] = str(Path(_STATE) / "brains")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -96,7 +96,7 @@ check("an empty period: zeros and no medians", empty["ai"] == 0 and empty["wait_
       empty["ai_rest"] == 0 and empty["chats"] == 0 and empty["new_chats"] == 0 and sum(empty["hours"]) == 0, empty)
 check("rest hours are 21:00 to 07:00", (conversations.NGHI_TU, conversations.NGHI_DEN) == (21, 7))
 
-# 0.401.0 (owner, 2026-10-29: "ở nick Javis Vũ anh không trả lời tý nào mà nó tính 45% câu do A.I. lo"): a second account
+# 0.401.0 (owner, 2026-10-29: "ở nick Uni Vũ anh không trả lời tý nào mà nó tính 45% câu do A.I. lo"): a second account
 # answered by hand must not lower the first account's A.I. share.
 put("x", "customer", luc(22, 10), acc="acc2")
 put("x", "human", luc(22, 10, 1), acc="acc2")

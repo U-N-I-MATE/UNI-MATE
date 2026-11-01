@@ -31,7 +31,7 @@ class DashboardServiceTests(unittest.TestCase):
         self.addCleanup(self.f.doCleanups)
         self.host = fixtures.H
         self.stack = self.f.stack
-        self.stack.enter_context(patch.dict(os.environ, {"JAVIS_STATE_DIR": str(self.f.state)}))
+        self.stack.enter_context(patch.dict(os.environ, {"UNIMATE_STATE_DIR": str(self.f.state)}))
         self.stack.enter_context(patch.object(self.host.sessions, "_store", self.f.store))
         self.stack.enter_context(patch.object(sys.modules["workflow_runs"], "_STORE", self.f.workflow))
         self.codec = Fernet(Fernet.generate_key())
@@ -50,7 +50,7 @@ class DashboardServiceTests(unittest.TestCase):
         import improvement_claude
         self.binary = self.f.root / "inert-cli.exe"
         self.binary.write_bytes(b"Never execute this synthetic binary")
-        self.stack.enter_context(patch.dict(os.environ, {"JAVIS_CLAUDE_CLI": str(self.binary)}))
+        self.stack.enter_context(patch.dict(os.environ, {"UNIMATE_CLAUDE_CLI": str(self.binary)}))
         self.stack.enter_context(patch.object(improvement_claude, "VERIFIED_NATIVE_RUNTIMES", {
             (sys.platform, "synthetic", hashlib.sha256(self.binary.read_bytes()).hexdigest(), "0.2.116")}))
         self.stack.enter_context(patch("subprocess.run", side_effect=AssertionError("No native/auth/model call")))

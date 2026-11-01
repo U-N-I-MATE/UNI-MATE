@@ -1,6 +1,6 @@
 """Chọn ĐƯỜNG GỌI cho nút mic (docs/dev/2026-10-voice-call-spec.md mục 3.1, 0.65.18).
 
-Bấm mic là gọi Javis. Cuộc gọi chạy bằng một trong ba đường, máy tự chọn theo thứ tự:
+Bấm mic là gọi Uni. Cuộc gọi chạy bằng một trong ba đường, máy tự chọn theo thứ tự:
   chatgpt - ChatGPT Live qua gói ChatGPT (Codex app-server, không cần key);
   api     - Live qua API key (Gemini Live, OpenAI Realtime, GPT-Live);
   basic   - Cơ bản: Web Speech + tai nghe lại + Làn nhanh hay bộ não chính + giọng Edge.

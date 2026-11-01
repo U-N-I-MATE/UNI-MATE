@@ -2,8 +2,8 @@
 
     python tests/run.py zalo_nhap_lich_su      (KHÔNG mạng, MCP giả)
 
-Chủ repo hỏi 16/10/2026: đăng nhập Zalo vào Javis lần đầu thì có đồng bộ được tin nhắn cũ không, làm thành một tuỳ chọn riêng.
-javis-zalo đã tự kéo khoảng 2 tuần tin cũ về mỗi lần kết nối (`zalo_search_history`); nút "Nhập tin cũ" đổ chúng vào Hộp thư.
+Chủ repo hỏi 16/10/2026: đăng nhập Zalo vào UNI MATE lần đầu thì có đồng bộ được tin nhắn cũ không, làm thành một tuỳ chọn riêng.
+unimate-zalo đã tự kéo khoảng 2 tuần tin cũ về mỗi lần kết nối (`zalo_search_history`); nút "Nhập tin cũ" đổ chúng vào Hộp thư.
 
 Các rào file này canh:
   1. Chỉ nhập vào cuộc chat CHƯA có tin (khung tin xếp theo id: tin cũ nhập sau sẽ hiện sau tin mới).
@@ -18,7 +18,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-znhap-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-znhap-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -45,7 +45,7 @@ def tin(mid, thread, text, phut_truoc, self_=False, ttype="dm", sender="u-khach"
             "isSelf": self_, "text": text, "timestamp": NOW - phut_truoc * 60_000, "type": "text"}
 
 
-# Kho lịch sử giả, xếp cũ trước mới sau như javis-zalo; query trả trang MỚI NHẤT trước, `cursor` = id tin cũ nhất của trang.
+# Kho lịch sử giả, xếp cũ trước mới sau như unimate-zalo; query trả trang MỚI NHẤT trước, `cursor` = id tin cũ nhất của trang.
 KHO = [
     tin(1, "u1", "Chào shop, còn nước mắm 500ml không ạ?", 600),
     tin(2, "u1", "Dạ còn ạ, 120 nghìn một chai.", 590, self_=True, sender="me", ten="Chủ"),
@@ -132,7 +132,7 @@ zc.NHAP_TOI_DA = 5000
 # ---- 4. MCP cũ không có tool lịch sử: báo rõ, không ném
 HONG["v"] = True
 r4 = asyncio.run(zc.nhap_lich_su("zalo-1"))
-check("MCP không có zalo_search_history: trả lỗi rõ ràng", not r4.get("ok") and "javis-zalo" in (r4.get("loi") or ""), r4)
+check("MCP không có zalo_search_history: trả lỗi rõ ràng", not r4.get("ok") and "unimate-zalo" in (r4.get("loi") or ""), r4)
 HONG["v"] = False
 
 r5 = asyncio.run(zc.nhap_lich_su("khong-co"))

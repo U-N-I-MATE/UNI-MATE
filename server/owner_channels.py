@@ -1,6 +1,6 @@
 """The owner's control channels on Slack, WhatsApp (0.71.0), Discord and Lark/Feishu (0.85.0).
 
-"Control channel" = the owner talks to Javis itself (full brain, tools, background work), the
+"Control channel" = the owner talks to UNI MATE itself (full brain, tools, background work), the
 way the Telegram and Zalo control bots work. Customer-facing bots live elsewhere
 (`chatbot_runtime` + `channels/`).
 
@@ -94,9 +94,9 @@ class OwnerChannel:
 
     def _refusal(self, code: str) -> str:
         return localefmt.chu(
-            f"Bạn chưa được cấp quyền dùng Javis này.\nMã ghép nối của bạn: {code}\n"
+            f"Bạn chưa được cấp quyền dùng Uni này.\nMã ghép nối của bạn: {code}\n"
             "Đưa mã này cho chủ máy để họ cho phép ở trang Kênh Admin.",
-            f"You are not allowed to use this Javis yet.\nYour pairing code: {code}\n"
+            f"You are not allowed to use this UNI MATE yet.\nYour pairing code: {code}\n"
             "Give this code to the owner so they can allow you on the Admin channels page.")
 
     def _queue(self, meta) -> str:
@@ -234,8 +234,8 @@ class OwnerChannel:
         sent, errs = 0, []
         for who in ids:
             ok, err = await b.send_text(who, localefmt.chu(
-                f"Javis đã kết nối qua {self.label}. Nhắn câu hỏi bất kỳ nhé.",
-                f"Javis is connected through {self.label}. Ask anything."))
+                f"UNI MATE đã kết nối qua {self.label}. Nhắn câu hỏi bất kỳ nhé.",
+                f"UNI MATE is connected through {self.label}. Ask anything."))
             if ok:
                 sent += 1
             else:

@@ -161,7 +161,7 @@
     box.append(pause);
     s.applied.append(box);
   }
-  // M4: a description candidate is measured against intent cases with Javis's own router, then
+  // M4: a description candidate is measured against intent cases with UNI MATE's own router, then
   // applied to the brain's main chat (API engines). Each case line: kind | expected skill | question.
   async function routing(s, version) {
     const data = await request(s, "/improvement-routing?target_id=" + encodeURIComponent(s.context.target_id));
@@ -404,7 +404,7 @@
     info(box, tr("auto_scope_hint"));
     if (!agents.length) box.append(node("p", tr("no_agents")));
     s.review.append(box);
-    if (window.JavisAgentPicker) window.JavisAgentPicker.enhance(choose, {title: t("ap.title")});
+    if (window.UniMateAgentPicker) window.UniMateAgentPicker.enhance(choose, {title: t("ap.title")});
   }
   async function review(s, candidateId) {
     const version = s.version;
@@ -542,8 +542,8 @@
         s.prepare.disabled = !contextActive(s);
         if (s.context) await rows(s); else s.list.replaceChildren();
         if (!alive(s, version)) return;
-        if (s.context && window.JavisImprovementExperiments) {
-          s.experiments = window.JavisImprovementExperiments.mount({parent:s.experimentArea,brain:s.brain,context:s.context,
+        if (s.context && window.UniMateImprovementExperiments) {
+          s.experiments = window.UniMateImprovementExperiments.mount({parent:s.experimentArea,brain:s.brain,context:s.context,
             isCurrent:()=>alive(s, version),review:id=>review(s,id),refreshCandidates:()=>rows(s)});
           await s.experiments.ready;
           if (!alive(s, version)) return;
@@ -587,7 +587,7 @@
     s.status.tabIndex = -1; s.status.focus();
     return s;
   }
-  // Self-learning run for this skill: examples next to the skill, Javis proposes, tests and picks; the owner applies.
+  // Self-learning run for this skill: examples next to the skill, UNI MATE proposes, tests and picks; the owner applies.
   // Independent of the context section below, whose reloads bump s.version: it only checks that the panel lives.
   async function selfLearning(s) {
     let data;
@@ -653,7 +653,7 @@
       box.append(apply);
     } else if (run.applied_at) box.append(node("p", tr("loop_applied"), "loop-applied"));
   }
-  // Automatic learning from chat (0.341.0): what Javis changed on its own, brain-wide, with undo. Nothing to start.
+  // Automatic learning from chat (0.341.0): what UNI MATE changed on its own, brain-wide, with undo. Nothing to start.
   async function autoLearned(s) {
     let data;
     try { data = await request(s, "/auto-learning"); }
@@ -733,5 +733,5 @@
       s.status.textContent = tr("artifact_review_only");
     } catch (error) { failure(s, error); }
   }
-  window.JavisImprovementCandidates = {open, openArtifact, close};
+  window.UniMateImprovementCandidates = {open, openArtifact, close};
 })();

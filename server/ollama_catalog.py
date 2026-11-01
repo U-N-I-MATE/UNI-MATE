@@ -9,7 +9,7 @@ lúc nào cũng được.
 
 Nên module này tách làm hai lớp:
 
-  NGUỒN NỀN (`_NEN`, ngay trong file này) - đi kèm app, luôn có, không cần mạng. Javis tự cập
+  NGUỒN NỀN (`_NEN`, ngay trong file này) - đi kèm app, luôn có, không cần mạng. UNI MATE tự cập
   nhật theo từng bản phát hành nên nó không đứng yên mãi.
 
   NGUỒN SỐNG (`dat_nguon_song`) - một hàm cắm thêm, trả về danh sách như `_NEN`. Chưa có bản
@@ -143,7 +143,7 @@ def tim(q: str = "", capability: str = "", sort: str = "pho-bien") -> list:
 # ── Gợi ý theo cấu hình máy ─────────────────────────────────────────────────────
 
 MAX_GOI_Y = 6
-# Chừa chỗ cho hệ điều hành và chính Javis: nạp một model bằng đúng RAM máy là máy đứng hình,
+# Chừa chỗ cho hệ điều hành và chính UNI MATE: nạp một model bằng đúng RAM máy là máy đứng hình,
 # không phải "chạy chậm".
 CHUA_LAI = 0.8
 # Chưa biết máy gì thì coi như 8GB RAM. Đây là mức VPS phổ thông và cũng là ngưỡng Ollama tự

@@ -13,7 +13,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="imp-assets-"))
-os.environ["JAVIS_STATE_DIR"] = str(TEST_ROOT / "state")
+os.environ["UNIMATE_STATE_DIR"] = str(TEST_ROOT / "state")
 os.environ["BRAINS_DIR"] = str(TEST_ROOT / "brains")
 os.environ["OBSIDIAN_VAULT_PATH"] = str(TEST_ROOT / "vault")
 
@@ -46,7 +46,7 @@ class ImprovementAssetTests(unittest.TestCase):
         self.assertEqual(source.ownership, "user_protected")
         self.assertEqual(source.canonical_ref, "skills/report/SKILL.md")
         self.assertEqual(self.path.read_bytes(), self.raw)
-        self.assertFalse((self.root / ".javis").exists())
+        self.assertFalse((self.root / ".unimate").exists())
 
     def test_canonical_disabled_shadows_enabled_legacy_mirror(self):
         disabled = self.root / "skills" / ".disabled" / "report"

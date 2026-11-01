@@ -1,6 +1,6 @@
-# Ý tưởng: chấm sao, đếm lượt cài và lọc trong Javis Store
+# Ý tưởng: chấm sao, đếm lượt cài và lọc trong UNI MATE Store
 
-Trạng thái: **tạm gác** (chủ dự án, 2026-10-29). Làm khi có bản doanh nghiệp, lúc đó Javis có máy chủ
+Trạng thái: **tạm gác** (chủ dự án, 2026-10-29). Làm khi có bản doanh nghiệp, lúc đó UNI MATE có máy chủ
 trung tâm để quản lý key, và phần này dùng chung máy chủ đó.
 
 ## Chủ dự án muốn gì
@@ -14,23 +14,23 @@ trung tâm để quản lý key, và phần này dùng chung máy chủ đó.
 Phần không cần máy chủ đã có trong Store:
 
 - Ô **Sắp xếp** cạnh ô tìm: Đề xuất (mặc định, gói Khuyên dùng theo repo gốc lên đầu), Mới cập nhật,
-  Tên A-Z. Javis nhớ lựa chọn trên từng máy.
+  Tên A-Z. UNI MATE nhớ lựa chọn trên từng máy.
 - Mô tả trên thẻ dừng ở 3 dòng, kết thúc bằng dấu "…".
 
 Khi có máy chủ, ô Sắp xếp chỉ cần thêm hai lựa chọn: **Nhiều lượt cài** và **Nhiều sao**.
 
 ## Vì sao phải có máy chủ
 
-Store hiện chỉ là tệp tĩnh `index.json` trên GitHub (repo `javis-store`). Mỗi máy Javis tự tải về,
-không có chỗ nào ghi lại ai đã cài gói gì hay ai đã vote. Muốn đếm thì mỗi máy Javis phải báo về
+Store hiện chỉ là tệp tĩnh `index.json` trên GitHub (repo `unimate-store`). Mỗi máy UNI MATE tự tải về,
+không có chỗ nào ghi lại ai đã cài gói gì hay ai đã vote. Muốn đếm thì mỗi máy UNI MATE phải báo về
 **một nơi chung**.
 
 ## Thiết kế đề xuất
 
 ### Định danh máy, không định danh người
 
-- Mỗi máy Javis tự tạo một **mã ẩn danh ngẫu nhiên** lúc cài, lưu trong thư mục state.
-- Javis chỉ gửi: mã ẩn danh, id gói, phiên bản gói, loại sự kiện (cài, gỡ, sao, bỏ sao).
+- Mỗi máy UNI MATE tự tạo một **mã ẩn danh ngẫu nhiên** lúc cài, lưu trong thư mục state.
+- UNI MATE chỉ gửi: mã ẩn danh, id gói, phiên bản gói, loại sự kiện (cài, gỡ, sao, bỏ sao).
   Không gửi tên, email, nội dung brain hay địa chỉ máy.
 - Bản doanh nghiệp có key: lúc đó có thể gắn sao với tài khoản để chống vote ảo tốt hơn.
 
@@ -44,9 +44,9 @@ không có chỗ nào ghi lại ai đã cài gói gì hay ai đã vote. Muốn �
 
 ### API
 
-- `POST /su-kien`: Javis báo cài, gỡ, sao, bỏ sao.
+- `POST /su-kien`: UNI MATE báo cài, gỡ, sao, bỏ sao.
 - `GET /thong-ke.json`: toàn bộ số đếm của mọi gói trong một tệp, có cache ở CDN.
-  Javis tải tệp này cùng lúc với `index.json` rồi ghép theo id gói.
+  UNI MATE tải tệp này cùng lúc với `index.json` rồi ghép theo id gói.
 
 Lý do tách tệp thống kê khỏi `index.json`: danh mục vẫn là tệp tĩnh trên GitHub như bây giờ, máy chủ
 có sập thì Store vẫn chạy, chỉ thiếu con số.
@@ -60,7 +60,7 @@ có sập thì Store vẫn chạy, chỉ thiếu con số.
 ### Quyền riêng tư
 
 - Đếm lượt cài **mặc định bật**, có công tắc tắt trong Cài đặt.
-- Ở Store có nút (i) nói rõ Javis gửi những gì.
+- Ở Store có nút (i) nói rõ UNI MATE gửi những gì.
 - Sao là thao tác người dùng tự bấm, nên không cần hỏi thêm.
 
 ### Giao diện
@@ -85,7 +85,7 @@ Chủ dự án chọn: **đợi máy chủ trung tâm của bản doanh nghiệp
 ## Việc cần làm khi bắt đầu
 
 1. Máy chủ: bảng `luot_cai`, `sao`, `thong_ke`, hai API ở trên, giới hạn tần suất.
-2. Javis (`server/packs_store.py`): tạo mã ẩn danh, gửi sự kiện khi cài, gỡ, sao; tải `thong-ke.json`
+2. UNI MATE (`server/packs_store.py`): tạo mã ẩn danh, gửi sự kiện khi cài, gỡ, sao; tải `thong-ke.json`
    cùng danh mục, có cache như danh mục.
 3. Store (`dashboard/packs.js`): hiện số trên thẻ, nút sao, thêm hai lựa chọn vào `SAP`.
 4. Cài đặt: công tắc tắt đếm lượt cài, kèm (i) giải thích.

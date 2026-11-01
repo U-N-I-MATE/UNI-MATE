@@ -12,7 +12,7 @@ import re
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-ngan-gon-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-ngan-gon-"))
 
 import team_runner as TR  # noqa: E402
 
@@ -30,7 +30,7 @@ check("mọi lượt nhóm nhận luật NÓI NGẮN như nhắn tin", "NÓI NG�
 check("không chào hỏi, không nhắc lại câu hỏi, không tiêu đề, không bảng",
       all(w in note for w in ("không chào hỏi", "không nhắc lại câu hỏi", "không tiêu đề", "không bảng")))
 check("sản phẩm dài ghi vào file, trong nhóm chỉ báo file và ý chính", "ghi vào file" in note and "1 đến 2 dòng chính" in note)
-check("khối điều khiển JAVIS_TEAM không bị luật độ dài cắt", "JAVIS_TEAM" in note and "không tính vào độ dài" in note)
+check("khối điều khiển UNIMATE_TEAM không bị luật độ dài cắt", "UNIMATE_TEAM" in note and "không tính vào độ dài" in note)
 check("không em dash trong lời nhắc", "—" not in note and "–" not in note)
 check("lượt làm việc có công cụ cũng trả lời NGẮN", "Trả lời trong nhóm NGẮN" in TR.WORK_TOOLS_NOTE)
 SRC = (SERVER / "team_runner.py").read_text(encoding="utf-8")

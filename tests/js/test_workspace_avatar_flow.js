@@ -20,7 +20,7 @@ const deferred = () => { let resolve; const promise = new Promise(r => resolve =
     tienDoHienTai:()=>progress, veLoi:e=>errors.push(e),
     document:{getElementById:()=>input},
     api:()=>{ const d=deferred(); requests.push(d); return d.promise; },
-    window:{JavisSessions:{current:()=>current,open:async(id,valid)=>{if(valid())current=id;},new:()=>{current=null;}},JavisSend:text=>sent.push(text)}
+    window:{UniMateSessions:{current:()=>current,open:async(id,valid)=>{if(valid())current=id;},new:()=>{current=null;}},UniMateSend:text=>sent.push(text)}
   };
   vm.createContext(ctx); vm.runInContext(section,ctx);
   const first=ctx.moPhien(selected,false);

@@ -1,4 +1,4 @@
-"""API của Hệ thống cộng hưởng cho dashboard (M4): thẻ "Javis đang hướng tới", phản hồi có nghĩa rõ, lệnh của người dùng.
+"""API của Hệ thống cộng hưởng cho dashboard (M4): thẻ "UNI MATE đang hướng tới", phản hồi có nghĩa rõ, lệnh của người dùng.
 
 Kế hoạch: docs/superpowers/plans/2026-10-06-resonance-00-mvp.md, Task M4. Dashboard có một tài khoản đăng nhập
 duy nhất; middleware `_auth_guard` và `_csrf_guard` của main.py đã chặn trước khi tới đây, nên request tới được
@@ -10,7 +10,7 @@ Lỗi trả mã rõ: 404 không có mục tiêu trong brain này, 409 revision h
 mới; xem thẻ và lệnh tạm dừng, huỷ, tiếp tục, bỏ chỉ dẫn luôn dùng được để người dùng can thiệp kể cả khi đã tắt).
 
 A1 (Cộng hưởng theo từng agent): công tắc nằm ở sổ đăng ký agent trong kho, chỉ đổi qua các route `/resonance/agents*`
-dưới đây. Công tắc brain cũ (`/resonance/settings`, `Javis/resonance.json`) còn đọc ghi được nhưng không cấp quyền gì.
+dưới đây. Công tắc brain cũ (`/resonance/settings`, `UniMate/resonance.json`) còn đọc ghi được nhưng không cấp quyền gì.
 """
 from __future__ import annotations
 
@@ -69,8 +69,8 @@ def _err(code: int, vi: str, en: str, **extra) -> JSONResponse:
 
 
 def set_enabled(brain_root: str, on: bool) -> None:
-    """Bật/tắt Resonance cho MỘT brain (`<brain>/Javis/resonance.json`). Ghi tạm rồi đổi tên, giữ khoá lạ khác."""
-    f = Path(brain_root) / "Javis" / "resonance.json"
+    """Bật/tắt Resonance cho MỘT brain (`<brain>/UniMate/resonance.json`). Ghi tạm rồi đổi tên, giữ khoá lạ khác."""
+    f = Path(brain_root) / "UNI MATE" / "resonance.json"
     f.parent.mkdir(parents=True, exist_ok=True)
     data = {}
     try:
@@ -363,10 +363,10 @@ def register_agents(app, deps: ResonanceApiDeps):
         on = str(body.get("enabled", "")).strip().lower() in ("1", "true", "on", "yes")
         if not slug:
             return _err(400, "Thiếu trợ lý", "Missing assistant")
-        if slug.lower() == "javis-core":
-            # Javis Core (0.185.0) is the system assistant: it is not an Auto assistant and cannot be switched.
-            return _err(403, "Javis Core là trợ lý hệ thống, không bật hay tắt Auto được",
-                        "Javis Core is the system assistant; Auto cannot be switched for it")
+        if slug.lower() == "unimate-core":
+            # UNI MATE Core (0.185.0) is the system assistant: it is not an Auto assistant and cannot be switched.
+            return _err(403, "UNI MATE Core là trợ lý hệ thống, không bật hay tắt Auto được",
+                        "UNI MATE Core is the system assistant; Auto cannot be switched for it")
         if on and deps.agent_file(root, slug) is None:
             store = deps.store() if _store_exists() else None
             live = store.agent(root, slug) if store else None
@@ -705,7 +705,7 @@ def register_a5(app, deps: ResonanceApiDeps):
         body = await _body(request)
         if not str(body.get("reviewer_slug") or "").strip():
             return {"ok": True, "pair": None, "removed": True}
-        return _err(410, "Javis đã bỏ người review cố định. Cần kiểm chứng thì giao một việc riêng cho trợ lý phù hợp "
+        return _err(410, "UNI MATE đã bỏ người review cố định. Cần kiểm chứng thì giao một việc riêng cho trợ lý phù hợp "
                          "ở tab Công việc.",
                     "Fixed reviewers were removed. To get a check, assign a separate job to a suitable assistant on "
                     "the Jobs tab.", removed=True)

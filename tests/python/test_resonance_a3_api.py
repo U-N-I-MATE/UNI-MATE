@@ -16,8 +16,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a3api-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a3api-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 from fastapi.testclient import TestClient  # noqa: E402
 import main  # noqa: E402
@@ -38,7 +38,7 @@ client = TestClient(main.app, base_url="http://127.0.0.1:8080")
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a3api-")).resolve())
 OTHER = str(Path(tempfile.mkdtemp(prefix="brain-a3api-b-")).resolve())
 KEY = main._brain_key(BRAIN)
-P = RS.Principal("agent", "javis", KEY)
+P = RS.Principal("agent", "unimate", KEY)
 OWNER = RS.Principal("owner", "owner", KEY)
 store = main._resonance_store()
 SS = main.get_store()

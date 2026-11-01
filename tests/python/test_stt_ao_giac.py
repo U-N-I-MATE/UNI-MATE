@@ -6,7 +6,7 @@ Vì sao file này tồn tại (0.57.4): Whisper học chủ yếu từ phụ đ�
 tiếng ồn nền hay một đoạn ngắn không rõ, nó "nhớ lại" mấy câu outro dày đặc trong dữ liệu học.
 Tiếng Việt nổi tiếng nhất là "Hãy subscribe cho kênh Ghiền Mì Gõ Để không bỏ lỡ những video
 hấp dẫn". Đó không phải lời người dùng, cũng không phải lỗi mạng nên không có gì báo: nó lặng
-lẽ thành tin nhắn gửi cho Javis, và Javis trả lời câu đó một cách nghiêm túc.
+lẽ thành tin nhắn gửi cho UNI MATE, và UNI MATE trả lời câu đó một cách nghiêm túc.
 
 Ranh giới quan trọng của bộ lọc này: nó CẮT câu bịa nhưng GIỮ phần người dùng nói thật (Whisper
 hay dán câu bịa vào đầu rồi mới chép tiếp lời thật). Cắt sạch thành rỗng thì báo không nghe rõ
@@ -59,7 +59,7 @@ lan = L("Hãy subscribe cho kênh Ghiền Mì Gõ Để không bỏ lỡ những
 check("câu bịa đứng trước, giữ nguyên lời thật phía sau", lan == "Doanh thu tháng này bao nhiêu?")
 lan = L("Mở trang Việc giúp mình. Hãy subscribe cho kênh Ghiền Mì Gõ.")
 check("câu bịa đứng sau, giữ nguyên lời thật phía trước", lan == "Mở trang Việc giúp mình.")
-check("nhiều câu bịa xen giữa", L("[Music] Chào Javis. Thanks for watching!") == "Chào Javis.")
+check("nhiều câu bịa xen giữa", L("[Music] Chào Uni. Thanks for watching!") == "Chào Uni.")
 lan = L("Các bạn hãy đăng ký kênh để ủng hộ kênh của mình nhé. "
         "Thôi được rồi, mình mở rồi Bây giờ đổi sang tab bộ não xem nào")
 check("biến thể 'ủng hộ kênh' cắt đúng, giữ nguyên câu lệnh phía sau",
@@ -107,7 +107,7 @@ NGUYEN_VAN = [
     "https://github.com/yikart/AiToEarn đọc mã này giúp anh",
     "Xem giúp https://www.youtube.com/watch?v=_2105LHq1lI nhé",
     "Doanh thu tăng 3.5 lần so với tháng trước",
-    "[File đính kèm để ĐỌC (đường dẫn):\n- D:\\Project\\Javis-OS\\server\\.staging\\a.txt\n- b.md]",
+    "[File đính kèm để ĐỌC (đường dẫn):\n- D:\\Project\\UNI-MATE\\server\\.staging\\a.txt\n- b.md]",
     "Dòng một\nDòng hai\n\nDòng bốn",
     "A.B.C viết tắt là gì?",
 ]
@@ -116,13 +116,13 @@ for s in NGUYEN_VAN:
 check("cắt câu bịa nhưng KHÔNG đụng dấu chấm trong URL của lời thật",
       L("Thanks for watching! Xem giúp https://downsub.com/vi/ nhé")
       == "Xem giúp https://downsub.com/vi/ nhé")
-# Khối điều khiển của Javis đứng riêng một dòng: câu bịa ngay sau nó KHÔNG được kéo nó đi theo.
+# Khối điều khiển của UNI MATE đứng riêng một dòng: câu bịa ngay sau nó KHÔNG được kéo nó đi theo.
 check("giữ khối [NGỮ CẢNH GIAO DIỆN] khi cắt câu bịa đứng ngay sau",
       L("[NGỮ CẢNH GIAO DIỆN: trang=models]\n\nCác bạn hãy đăng ký kênh để ủng hộ kênh của mình nhé. Mở được chưa?")
       .startswith("[NGỮ CẢNH GIAO DIỆN: trang=models]")
       and "đăng ký kênh" not in L("[NGỮ CẢNH GIAO DIỆN: trang=models]\n\nCác bạn hãy đăng ký kênh để ủng hộ kênh của mình nhé. Mở được chưa?"))
 check("cắt câu cảm ơn theo dõi hẹn gặp lại",
-      L("Chào Javis. Cảm ơn các bạn đã theo dõi và hẹn gặp lại.") == "Chào Javis.")
+      L("Chào Uni. Cảm ơn các bạn đã theo dõi và hẹn gặp lại.") == "Chào Uni.")
 # Whisper hay dán câu bịa vào ĐUÔI lời thật mà KHÔNG có dấu chấm ngăn. Vứt cả câu là mất luôn
 # lời người ta nói (gặp thật ở tin #578 khi quét kho).
 check("câu bịa dính đuôi, không có dấu chấm ngăn: giữ lời thật phía trước",
@@ -134,10 +134,10 @@ check("phần đứng trước dưới 3 chữ thì bỏ luôn (chỉ là lời 
 # ---- 4. Biên ----
 check("chuỗi rỗng vẫn rỗng", L("") == "" and L(None) == "")
 check("chỉ còn dấu câu thì coi như rỗng", L("Ghiền Mì Gõ . !") == "")
-check("không làm hỏng khoảng trắng thừa", L("  Chào Javis  ") == "Chào Javis")
+check("không làm hỏng khoảng trắng thừa", L("  Chào Uni  ") == "Chào Uni")
 
 # ---- 4b. Whisper chép lại chính lời mồi (danh sách từ, 0.64.67) ----
-MOI = "GitHub, GitHub Actions, commit, push, pull request, merge, deploy, Javis, Pancake."
+MOI = "GitHub, GitHub Actions, commit, push, pull request, merge, deploy, UNI MATE, Pancake."
 check("chép lại một đoạn lời mồi: bỏ", stt.la_lap_loi_moi("commit, push, pull request, merge.", MOI))
 check("chép lại cả lời mồi: bỏ", stt.la_lap_loi_moi(MOI, MOI))
 check("câu thật ngắn trùng từ mồi: giữ", not stt.la_lap_loi_moi("GitHub Actions", MOI))

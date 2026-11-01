@@ -7,7 +7,7 @@ Bốn chỗ dễ hỏng của mọi driver CLI, cộng hai chỗ riêng của en
 1. **Dịch sự kiện.** `--output-format streaming-json` phát NDJSON riêng (thought/tool_call/
    tool_call_update/text/usage/end). Dịch sai một loại là mất câu trả lời, mất mạch hội thoại,
    hoặc lượt nào cũng đỏ vì một dòng log vặt.
-2. **Mức quyền.** Ba mức của Javis phải xuống đúng cờ chặn. Mức `suggest` mà không chặn được
+2. **Mức quyền.** Ba mức của UNI MATE phải xuống đúng cờ chặn. Mức `suggest` mà không chặn được
    ghi file thì "chỉ đọc" chỉ còn là một lời hứa trong prompt.
 3. **Không đăng nhập.** Phải thành một câu người dùng làm theo được, không phải nguyên văn
    tiếng Anh của xAI.
@@ -29,7 +29,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-groktest-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-groktest-")
 
 import grok_cli          # noqa: E402
 import main              # noqa: E402
@@ -87,7 +87,7 @@ check("và KHÔNG nhận cờ bịa", grok_cli.co_co("--khong-he-co") is False)
 
 
 # ============================================================
-# 2. Mức quyền: ba mức của Javis -> cờ chặn của CLI
+# 2. Mức quyền: ba mức của UNI MATE -> cờ chặn của CLI
 # ============================================================
 def _deny(mode):
     a = grok_cli.permission_cho_mode(mode)
@@ -121,10 +121,10 @@ check("model đi qua --model",
 check("CANARY: prompt đi qua FILE, KHÔNG nằm trong argv "
       "(Windows chặn dòng lệnh ở 32767 ký tự)",
       "--prompt-file" in _argv and not any(len(x) > 30000 for x in _argv))
-check("lượt đầu KHÔNG tự cấp id mạch (Grok sinh UUIDv7, Javis chỉ có uuid4)",
+check("lượt đầu KHÔNG tự cấp id mạch (Grok sinh UUIDv7, UNI MATE chỉ có uuid4)",
       "--session-id" not in _argv and "--resume" not in _argv)
 
-# Tắt bộ tự cập nhật: Javis chạy `grok` headless trên VPS/container, để nó tự tải bản mới giữa
+# Tắt bộ tự cập nhật: UNI MATE chạy `grok` headless trên VPS/container, để nó tự tải bản mới giữa
 # lượt là in thêm chữ vào stdout (hỏng dòng NDJSON đang đọc) hoặc ghi vào chỗ chỉ đọc.
 check("có --no-auto-update (bộ tự cập nhật xen vào giữa lượt là hỏng dòng NDJSON)",
       "--no-auto-update" in _argv)
@@ -161,11 +161,11 @@ _nap_help()
 
 
 # ============================================================
-# 4. Dịch sự kiện streaming-json -> hợp đồng của Javis
+# 4. Dịch sự kiện streaming-json -> hợp đồng của UNI MATE
 # ============================================================
 def _gia(dong_ra, ma=0, stderr=""):
     """Dựng một `grok` giả in ra đúng những dòng mình muốn."""
-    d = Path(tempfile.mkdtemp(prefix="javis-fakegrok-"))
+    d = Path(tempfile.mkdtemp(prefix="unimate-fakegrok-"))
     p = d / "grok"
     body = json.dumps(dong_ra)
     p.write_text(
@@ -191,7 +191,7 @@ def _chay_gia(dong_ra, ma=0, stderr="", prompt="xin chào"):
 
 _DONG = [
     json.dumps({"type": "thought", "text": "để tôi nghĩ đã"}),
-    json.dumps({"type": "tool_call", "id": "t1", "name": "javis_read_file",
+    json.dumps({"type": "tool_call", "id": "t1", "name": "unimate_read_file",
                 "input": {"path": "MEMORY.md"}}),
     json.dumps({"type": "tool_call_update", "id": "t1", "status": "running"}),
     json.dumps({"type": "tool_call_update", "id": "t1", "status": "completed",
@@ -210,7 +210,7 @@ check("mảnh chữ được GHÉP lại thành một câu trả lời",
 check("CANARY: `thought` KHÔNG lọt vào câu trả lời (lập luận nội bộ, không phải câu trả lời)",
       _final is not None and "nghĩ" not in _final["content"], _final)
 check("tool_call -> tool_call kèm tên công cụ",
-      any(e["type"] == "tool_call" and e.get("name") == "javis_read_file" for e in _evs))
+      any(e["type"] == "tool_call" and e.get("name") == "unimate_read_file" for e in _evs))
 check("CANARY: tool_call_update đang chạy dở KHÔNG thành tool_result "
       "(không thì mỗi tool báo kết quả hai lần)",
       len([e for e in _evs if e["type"] == "tool_result"]) == 1, _loai)
@@ -256,7 +256,7 @@ check("end status=error -> sự kiện error",
 # CLI treo im (headless mà dừng lại hỏi duyệt) -> watchdog phải cắt, không treo tới vô tận.
 # Đây KHÔNG phải phòng xa: `permission_cho_mode()` fail-closed, nên trên một bản CLI không khai
 # `--permission-mode` nó không truyền cờ nào, và lúc đó không có gì ngoài watchdog gỡ được.
-_treo = Path(tempfile.mkdtemp(prefix="javis-grokhang-")) / "grok"
+_treo = Path(tempfile.mkdtemp(prefix="unimate-grokhang-")) / "grok"
 _treo.write_text("#!/usr/bin/env python3\nimport sys, time\n"
                  "if '--help' in sys.argv:\n    print('  -p, --single')\n"
                  "else:\n    time.sleep(60)\n", encoding="utf-8")
@@ -279,13 +279,13 @@ check("và nói rõ là bị cắt vì quá giờ, không im lặng",
 # File prompt tạm phải được dọn, kể cả ở lượt bị cắt giữa chừng
 import glob  # noqa: E402
 check("CANARY: file prompt tạm được dọn, không tích rác trong thư mục tạm",
-      glob.glob(os.path.join(tempfile.gettempdir(), "javis-grok-*.txt")) == [])
+      glob.glob(os.path.join(tempfile.gettempdir(), "unimate-grok-*.txt")) == [])
 
 
 # ============================================================
 # 4b. Trạng thái đăng nhập đọc từ file, không đẻ tiến trình
 # ============================================================
-os.environ["GROK_HOME"] = tempfile.mkdtemp(prefix="javis-grokhome-")
+os.environ["GROK_HOME"] = tempfile.mkdtemp(prefix="unimate-grokhome-")
 os.environ.pop("XAI_API_KEY", None)
 _a = grok_cli.auth_status()
 check("chưa đăng nhập -> nói rõ phải làm gì",
@@ -305,18 +305,18 @@ check("có auth.json thì đọc ra cả tài khoản và gói",
 # ============================================================
 # 5. MCP: cô lập theo brain, và KHÔNG phá cấu hình sẵn có
 # ============================================================
-_brain = Path(tempfile.mkdtemp(prefix="javis-grokbrain-"))
+_brain = Path(tempfile.mkdtemp(prefix="unimate-grokbrain-"))
 _hub = grok_cli.hub_entry("http://127.0.0.1:8790/mcp",
-                          {"Authorization": "Bearer tok", "X-Javis-Mode": "full",
-                           "X-Javis-Vault": str(_brain)})
+                          {"Authorization": "Bearer tok", "X-UniMate-Mode": "full",
+                           "X-UniMate-Vault": str(_brain)})
 check("CANARY: entry MCP dùng khoá `url` - KHÔNG phải `httpUrl` (Gemini) hay `serverUrl` (agy)",
       "url" in _hub and "httpUrl" not in _hub and "serverUrl" not in _hub, _hub)
 _p = grok_cli.ghi_mcp_settings(_brain, _hub)
 check("ghi vào TRONG brain, không đụng ~/.grok của người dùng",
       _p is not None and str(_brain) in _p and _p.endswith(".grok/config.toml"), _p)
 _st = grok_cli.trang_thai_mcp(_brain)
-check("đọc LẠI chính file vừa ghi thì thấy entry javis",
-      _st["co_javis"] and _st["url"] == "http://127.0.0.1:8790/mcp" and _st["so_header"] == 3, _st)
+check("đọc LẠI chính file vừa ghi thì thấy entry unimate",
+      _st["co_unimate"] and _st["url"] == "http://127.0.0.1:8790/mcp" and _st["so_header"] == 3, _st)
 try:
     check("file chứa hub token nên phải chmod 600",
           (os.stat(_p).st_mode & 0o077) == 0 or os.name == "nt")
@@ -335,23 +335,23 @@ check("CANARY: ghi lại hub KHÔNG xoá mất cấu hình sẵn có của ngư�
       and _lai.get("tools", {}).get("bash_timeout") == 60
       and _lai.get("tools", {}).get("flag") is True
       and _lai.get("tools", {}).get("domains") == ["a.com", "b.com"], _lai)
-check("và entry javis vẫn còn", "javis" in _lai.get("mcp_servers", {}))
+check("và entry unimate vẫn còn", "unimate" in _lai.get("mcp_servers", {}))
 
-# hub=None -> gỡ entry javis, giữ phần còn lại
+# hub=None -> gỡ entry unimate, giữ phần còn lại
 grok_cli.ghi_mcp_settings(_brain, None)
 _lai2 = tomllib.load(open(_p, "rb"))
-check("tắt hub thì GỠ entry javis nhưng giữ nguyên phần còn lại",
-      "javis" not in _lai2.get("mcp_servers", {})
+check("tắt hub thì GỠ entry unimate nhưng giữ nguyên phần còn lại",
+      "unimate" not in _lai2.get("mcp_servers", {})
       and _lai2.get("models", {}).get("default") == "grok-4.6", _lai2)
 
 # File HỎNG -> tuyệt đối không ghi đè
-_hong = '[mcp_servers.javis]\nurl = "quên đóng nháy\n'
+_hong = '[mcp_servers.unimate]\nurl = "quên đóng nháy\n'
 Path(_p).write_text(_hong, encoding="utf-8")
 _r = grok_cli.ghi_mcp_settings(_brain, _hub)
 check("CANARY: file config.toml HỎNG thì KHÔNG ghi đè (thà thiếu tool còn hơn xoá cấu hình)",
       _r is None and Path(_p).read_text(encoding="utf-8") == _hong)
 check("và trạng thái nói thẳng là chưa đấu được, không báo xanh giả",
-      grok_cli.trang_thai_mcp(_brain)["co_javis"] is False)
+      grok_cli.trang_thai_mcp(_brain)["co_unimate"] is False)
 
 
 # ============================================================
@@ -419,7 +419,7 @@ check("thẻ có nút Kiểm tra lại và nút Ngắt",
 # Nguyên nhân hạng gốc: `auth_status` của 0.50.0 ĐOÁN sơ đồ `auth.json` (đòi `access_token`
 # hoặc `refresh_token` nằm ngay tầng cao nhất) trong khi xAI KHÔNG tài liệu hoá trường nào
 # cả - Giai đoạn 0 của kế hoạch có ghi rõ phải đo trước, và bước đó đã bị bỏ qua vì máy chưa
-# cài `grok`. Đoán sai một tầng là Javis báo "chưa đăng nhập" vĩnh viễn dù đăng nhập đã xong.
+# cài `grok`. Đoán sai một tầng là UNI MATE báo "chưa đăng nhập" vĩnh viễn dù đăng nhập đã xong.
 #
 # Nên nhóm test này canh HÌNH DẠNG, không canh một sơ đồ: token lồng ở đâu cũng phải nhận ra.
 _HOME_CU = os.environ.get("GROK_HOME")
@@ -428,7 +428,7 @@ grok_cli.find_grok_cli = lambda: "/gia/grok"      # bỏ qua bước "đã cài 
 
 
 def _dat_auth(noi_dung, ten="auth.json"):
-    d = tempfile.mkdtemp(prefix="javis-grokhome-")
+    d = tempfile.mkdtemp(prefix="unimate-grokhome-")
     if noi_dung is not None:
         Path(d, ten).write_text(json.dumps(noi_dung, ensure_ascii=False), encoding="utf-8")
     os.environ["GROK_HOME"] = d
@@ -537,8 +537,8 @@ check("và vòng quay kiểm `connected` TRƯỚC khi kêu hết giờ",
 # thật theo ảnh chụp của người dùng - in link kèm mã bằng `\r` (spinner, KHÔNG xuống dòng),
 # đứng chờ, rồi mới ghi file phiên với token LỒNG trong `oauth`. Bản 0.50.0 hỏng ở cả hai chỗ
 # đó, và không mục nào ở trên một mình chứng minh được cả chuỗi chạy thông.
-_login_home = tempfile.mkdtemp(prefix="javis-grokhome-live-")
-_d = Path(tempfile.mkdtemp(prefix="javis-fakelogin-"))
+_login_home = tempfile.mkdtemp(prefix="unimate-grokhome-live-")
+_d = Path(tempfile.mkdtemp(prefix="unimate-fakelogin-"))
 _p = _d / "grok"
 _p.write_text(
     "#!/usr/bin/env python3\n"
@@ -601,7 +601,7 @@ grok_cli._HELP_CACHE.update(path=None, text="", ts=0.0)
 # Câu đó không nói được gì và không dẫn tới đâu. Nấp sau nó là HAI ca khác hẳn nhau, mà bản
 # 0.50.2 gộp làm một:
 #
-#   a) CLI in ra JSON nhưng toàn loại sự kiện Javis chưa biết. Sơ đồ `streaming-json` là ĐOÁN
+#   a) CLI in ra JSON nhưng toàn loại sự kiện UNI MATE chưa biết. Sơ đồ `streaming-json` là ĐOÁN
 #      từ tài liệu, chưa từng đo trên máy thật - cùng hạng lỗi với `auth.json` ở 0.50.2.
 #   b) CLI in ra ĐÚNG KHÔNG GÌ CẢ rồi thoát 0. Nhiều CLI coi `-p` là cờ BẬT chế độ headless,
 #      còn `--prompt-file` chỉ là chỗ lấy nội dung.
@@ -609,7 +609,7 @@ grok_cli._HELP_CACHE.update(path=None, text="", ts=0.0)
 # Hai ca cần hai cách chữa, nên test này canh riêng từng ca.
 def _gia_kich_ban(than: str):
     """Dựng `grok` giả với thân hàm tự viết, và trỏ cả `co_co` vào nó."""
-    d = Path(tempfile.mkdtemp(prefix="javis-grokq-"))
+    d = Path(tempfile.mkdtemp(prefix="unimate-grokq-"))
     q = d / "grok"
     q.write_text("#!/usr/bin/env python3\nimport sys, json\n" + than, encoding="utf-8")
     q.chmod(q.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
@@ -698,14 +698,14 @@ check("CANARY: lượt bình thường trả về ĐÚNG một lần chữ, khô
 # ============================================================
 # Phần chẩn đoán thêm ở 0.50.3 đã làm đúng việc của nó và trả về nguyên văn:
 #
-#   "Grok CLI in ra 40 dòng nhưng Javis không nhận ra loại sự kiện nào là câu trả lời
+#   "Grok CLI in ra 40 dòng nhưng UNI MATE không nhận ra loại sự kiện nào là câu trả lời
 #    (thấy: available_commands, thought). Dòng đầu CLI in ra:
 #    {"type":"available_commands","tools":["run_terminal_command","read_file",...]}"
 #
 # Hai điều rút ra, và cả hai đều là lỗi của chính phần chẩn đoán:
 #
-#   1. Sơ đồ sự kiện thật KHÔNG giống bảng Javis đoán. `available_commands` và `thought` không
-#      hề có trong tài liệu Javis dựa vào.
+#   1. Sơ đồ sự kiện thật KHÔNG giống bảng UNI MATE đoán. `available_commands` và `thought` không
+#      hề có trong tài liệu UNI MATE dựa vào.
 #   2. Trần 40 dòng chỉ giữ phần ĐẦU, mà câu trả lời của model luôn nằm ở CUỐI - sau bảng khai
 #      báo tool và một tràng `thought`. Nên nó chẩn được phần mở đầu và mù đúng phần cần nhìn.
 #      Trần 30 sự kiện cho danh sách LOẠI cũng vậy: 40 dòng `thought` ăn hết chỗ.
@@ -723,7 +723,7 @@ def _luong_that(cuoi_json, so_nghi=40):
         f"print({cuoi_json!r})\n")
 
 
-# --- Câu trả lời nằm ở CUỐI, dưới một loại Javis chưa biết ---
+# --- Câu trả lời nằm ở CUỐI, dưới một loại UNI MATE chưa biết ---
 _cuoi = json.dumps({"type": "assistant_turn_complete",
                     "message": {"content": "Chào anh, em nghe đây."}})
 _cli = _luong_that(_cuoi)
@@ -799,9 +799,9 @@ check("và KHÔNG phình vô hạn",
 #     {"type":"usage","usage":{"input_tokens":9028,...},"signature":"..."}
 #     {"type":"end","stopReason":"end_turn","sessionId":"01a04b69-...","usage":{...}}
 #
-# Ba chỗ lệch so với bảng Javis ĐOÁN, và cái đầu tiên là gốc rễ của cả chuỗi lỗi:
+# Ba chỗ lệch so với bảng UNI MATE ĐOÁN, và cái đầu tiên là gốc rễ của cả chuỗi lỗi:
 #
-#   1. Chữ nằm ở khoá `data`, KHÔNG phải `text`. Javis dò `text`/`content`/`delta` nên mọi sự
+#   1. Chữ nằm ở khoá `data`, KHÔNG phải `text`. UNI MATE dò `text`/`content`/`delta` nên mọi sự
 #      kiện text trả về chuỗi rỗng - lượt chạy đúng, model trả lời đúng, người dùng thấy ô
 #      trống. Bản 0.50.5 vẫn hỏng y nguyên vì `text` là loại ĐÃ BIẾT nên không đi qua đường vớt.
 #   2. Sự kiện `usage` BỌC số liệu trong khoá `usage`; đọc tầng ngoài là mọi lượt vào bảng Mức
@@ -853,7 +853,7 @@ grok_cli.find_grok_cli = _that_find
 
 _CLAUDEMD = Path(ROOT, "CLAUDE.md").read_text(encoding="utf-8")
 check("CANARY: CLAUDE.md đã kể tên bộ não mới "
-      "(câu này vào system prompt MỖI LƯỢT CHAT, sai là Javis nói sai với mọi người dùng)",
+      "(câu này vào system prompt MỖI LƯỢT CHAT, sai là UNI MATE nói sai với mọi người dùng)",
       "Grok Build" in _CLAUDEMD and "Eleven brains" in _CLAUDEMD)
 check("và đã đếm lại số engine CLI", "three CLI engines" in _CLAUDEMD)
 check("CANARY: Gemini CLI đã gỡ khỏi system prompt (đường đó đã chết)",

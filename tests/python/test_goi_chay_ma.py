@@ -8,11 +8,11 @@ Không cần pytest, không chạm mạng, không đụng kho gói thật.
 tức thêm được NGUỒN DỮ LIỆU nhưng không thêm được KHẢ NĂNG.
 
 Chủ dự án chốt 2026-09-03 là mở cho mã Python, vì chính chủ là người xem gói trước khi cài. Nên
-cổng `JAVIS_ENABLE_USER_PLUGINS` KHÔNG áp cho gói. Việc đó nhất quán chứ không phải nới lỏng,
+cổng `UNIMATE_ENABLE_USER_PLUGINS` KHÔNG áp cho gói. Việc đó nhất quán chứ không phải nới lỏng,
 và test này canh đúng chỗ nhất quán nằm ở đâu:
 
 - Cổng env bịt lỗ "thư mục ghi được nên mã chạy mà không ai bấm gì". Lỗ đó CÓ THẬT với
-  `<brain>/plugins/` vì model ghi được vào vault qua `javis_write_file`.
+  `<brain>/plugins/` vì model ghi được vào vault qua `unimate_write_file`.
 - Trình cài phá bỏ đúng điều kiện đó: có người bấm, có màn hình liệt kê từng tệp `.py`, và có
   chữ ký nội dung mã ghi lại.
 - Nên thay vì cổng env, gói chịu HAI chốt khác: phải có hàng trong sổ cài đặt (tức đã qua trình
@@ -43,7 +43,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-MF = ('format: javis-pack\nspec: 1\nid: {pid}\nversion: 1.0.0\n'
+MF = ('format: unimate-pack\nspec: 1\nid: {pid}\nversion: 1.0.0\n'
       'name: {{vi: "Gói thử"}}\ncompat: {{app: "{compat}"}}\n'
       'provides:\n  plugins: [plugins/{slug}]\n')
 PLUGIN_PY = (
@@ -61,7 +61,7 @@ PLUGIN_YML = 'name: Chao tu goi\nversion: 1.0.0\nenabled: true\nmin_mode: readon
 def zip_goi(pid="acme.tool", slug="chao", tool="goi_chao", compat=">=0.1.0", them=None):
     b = io.BytesIO()
     with zipfile.ZipFile(b, "w") as z:
-        z.writestr("javis-pack.yaml", MF.format(pid=pid, slug=slug, compat=compat))
+        z.writestr("unimate-pack.yaml", MF.format(pid=pid, slug=slug, compat=compat))
         z.writestr(f"plugins/{slug}/plugin.py", PLUGIN_PY.format(tool=tool))
         z.writestr(f"plugins/{slug}/plugin.yaml", PLUGIN_YML.format(tool=tool))
         for ten, noi in (them or {}).items():
@@ -143,7 +143,7 @@ with tempfile.TemporaryDirectory() as td:
         asyncio.run(pack_install.go("acme.tool"))
         check("gỡ gói thì tool biến mất", not route_co("goi_chao"))
         check("và không để lại xác module trong bộ nhớ",
-              not [m for m in sys.modules if m.startswith("javis_plugin_") and "chao" in m])
+              not [m for m in sys.modules if m.startswith("unimate_plugin_") and "chao" in m])
         check("thư mục gói cũng sạch", not (packs.PACKS_DIR / "acme.tool").exists())
 
         # ─────────────── 5. Không được cướp tên plugin có sẵn ───────────────
@@ -159,7 +159,7 @@ with tempfile.TemporaryDirectory() as td:
         r3 = pack_install.soi(zip_goi(pid="acme.cu", slug="chao2", tool="tool_cu"), "cu.zip")
         pack_install.cai(r3["staging_id"], r3["sha256"], enable=True)
         check("gói khớp phiên bản thì bật bình thường", route_co("tool_cu"))
-        mf = packs.PACKS_DIR / "acme.cu" / "javis-pack.yaml"
+        mf = packs.PACKS_DIR / "acme.cu" / "unimate-pack.yaml"
         mf.write_text(mf.read_text(encoding="utf-8")
                       .replace('compat: {app: ">=0.1.0"}', 'compat: {app: ">=99.0.0"}'),
                       encoding="utf-8")
@@ -167,7 +167,7 @@ with tempfile.TemporaryDirectory() as td:
         tat = pack_install.quet_tuong_thich()
         check("quét lúc khởi động TẮT gói không còn khớp phiên bản",
               any(x["id"] == "acme.cu" for x in tat))
-        check("và nêu lý do đọc được", "cần Javis" in (tat[0]["reason"] if tat else ""))
+        check("và nêu lý do đọc được", "cần UNI MATE" in (tat[0]["reason"] if tat else ""))
         check("tool của nó biến mất", not route_co("tool_cu"))
         check("nhưng gói KHÔNG bị xoá (hạ cấp rồi nâng lại là chạy tiếp)",
               (packs.PACKS_DIR / "acme.cu").is_dir())

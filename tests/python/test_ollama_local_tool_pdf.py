@@ -5,7 +5,7 @@
 Người dùng Mac mini báo 11/10/2026 (kèm bản vá đã chạy thử trên máy):
   1. Chọn Ollama (Local) thì model "không có quyền tool": `_api_stream_mcp` chỉ nạp tool cho một danh sách provider mà danh sách
      đó thiếu `ollama-local`, nên nhánh `ollama_local_chat_with_mcp` không bao giờ chạy.
-  2. `javis_read_file` đọc PDF/DOCX bằng `read_text`, ra toàn mã nhị phân.
+  2. `unimate_read_file` đọc PDF/DOCX bằng `read_text`, ra toàn mã nhị phân.
   4. Trang Local Model trên chip Apple ghi "Chạy bằng CPU và RAM" trong khi Ollama chạy 100% GPU: gợi ý model chỉ coi là GPU khi có
      VRAM rời, và nhận diện chip bằng `uname -m` (Python bản Intel qua Rosetta thấy x86_64).
 """
@@ -19,7 +19,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-ollama-local-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-ollama-local-"))
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -59,7 +59,7 @@ goi = {}
 
 
 async def _discover(mode, **kw):
-    return [{"name": "javis_read_file"}], {"javis_read_file": "builtin"}
+    return [{"name": "unimate_read_file"}], {"unimate_read_file": "builtin"}
 
 
 async def _ollama_local(key, model, messages, reasoning, tools, route):
@@ -79,7 +79,7 @@ try:
         return [ev async for ev in out]
     evs = asyncio.run(_chay())
     check("Ollama (Local) đi nhánh có tool và nhận đủ tool của hub",
-          [t["name"] for t in goi.get("tools") or []] == ["javis_read_file"], goi)
+          [t["name"] for t in goi.get("tools") or []] == ["unimate_read_file"], goi)
 finally:
     (main.mcp_hub.discover_all, main.mcp_hub.registry_inventory, main.engine.ollama_local_chat_with_mcp,
      main._hub_enabled) = goc
@@ -87,7 +87,7 @@ finally:
 # ============================================================
 # 2. Bóc chữ PDF và Word
 # ============================================================
-TMP = Path(tempfile.mkdtemp(prefix="javis-doc-text-"))
+TMP = Path(tempfile.mkdtemp(prefix="unimate-doc-text-"))
 
 
 def pdf_mot_trang(text: str) -> bytes:
@@ -137,7 +137,7 @@ finally:
     doc_text.MAX_DOCX_XML_BYTES = goc_max
 
 HUB = (SERVER / "mcp_hub.py").read_text(encoding="utf-8")
-check("javis_read_file dùng doc_text cho .pdf/.docx (chạy ngoài event loop)",
+check("unimate_read_file dùng doc_text cho .pdf/.docx (chạy ngoài event loop)",
       "if p.suffix.lower() in doc_text.SUFFIXES:" in HUB and "await asyncio.to_thread(doc_text.extract, p)" in HUB)
 check("requirements ghim pypdf", re.search(r"^pypdf==\d", (ROOT / "requirements.txt").read_text(encoding="utf-8"), re.M))
 

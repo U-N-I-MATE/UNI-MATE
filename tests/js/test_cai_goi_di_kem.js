@@ -1,9 +1,9 @@
-// Mời cài GÓI ĐI KÈM của một kết nối (0.73.0: quét QR Zalo xong mời cài `javis.zalo`).
+// Mời cài GÓI ĐI KÈM của một kết nối (0.73.0: quét QR Zalo xong mời cài `unimate.zalo`).
 //
 //     node tests/js/test_cai_goi_di_kem.js
 //
-// Ba plugin Zalo (gửi ảnh, tag người, đọc ảnh trong nhóm) rời app sang Javis Store. Javis không có
-// đường tự cài gói, nên lối vào là `JavisPacks.caiGoiKho(id, tuy)`: tìm gói trong kho rồi mở ĐÚNG màn
+// Ba plugin Zalo (gửi ảnh, tag người, đọc ảnh trong nhóm) rời app sang UNI MATE Store. UNI MATE không có
+// đường tự cài gói, nên lối vào là `UniMatePacks.caiGoiKho(id, tuy)`: tìm gói trong kho rồi mở ĐÚNG màn
 // hình đồng ý của đường cài từ kho. Những điều phải giữ:
 //   1. Không có lần cài nào trước khi người dùng bấm Cài: lối vào mới không được ngắn hơn đường kho.
 //   2. Vân tay đi kèm: tải bằng sha256 của kho, cài bằng sha256 của bản soi.
@@ -64,11 +64,11 @@ function moiTruong() {
 
 const SRC = fs.readFileSync(path.join(ROOT, "dashboard", "packs.js"), "utf8");
 const KHO = (them) => ({ ok: true, packs: [
-  { id: "javis.zalo", nguon: "kho", installed: false, enabled: true,
-    download: { url: "dist/javis-zalo-1.0.0.zip", sha256: "a".repeat(64) }, ...(them || {}) },
+  { id: "unimate.zalo", nguon: "kho", installed: false, enabled: true,
+    download: { url: "dist/unimate-zalo-1.0.0.zip", sha256: "a".repeat(64) }, ...(them || {}) },
   { id: "zalo", nguon: "app", installed: true, download: { url: "" } },
 ] });
-const SOI = { ok: true, tier: "code", id: "javis.zalo", name: { vi: "Zalo mở rộng" }, staging_id: "b".repeat(64),
+const SOI = { ok: true, tier: "code", id: "unimate.zalo", name: { vi: "Zalo mở rộng" }, staging_id: "b".repeat(64),
               sha256: "b".repeat(64), py_files: ["plugins/zalo-read-images/plugin.py"], plugins: ["zalo-read-images"] };
 
 function nap(kho) {
@@ -81,14 +81,14 @@ function nap(kho) {
     let r = { ok: true };
     if (url.startsWith("/packs/store")) r = kho;
     else if (url === "/packs/install-url") r = SOI;
-    else if (url === "/packs/install") r = { ok: true, id: "javis.zalo", enabled: body.enable };
+    else if (url === "/packs/install") r = { ok: true, id: "unimate.zalo", enabled: body.enable };
     return Promise.resolve({ json: () => Promise.resolve(r) });
   };
   const alpineCu = globalThis.Alpine;
   globalThis.Alpine = win.Alpine;
   new Function("window", "document", "fetch", SRC)(win, doc, fetchGia);
   globalThis.Alpine = alpineCu;
-  return { P: win.JavisPacks || {}, goi, hop, nut };
+  return { P: win.UniMatePacks || {}, goi, hop, nut };
 }
 const nghi = () => new Promise(r => setTimeout(r, 0));
 
@@ -98,11 +98,11 @@ check("packs.js phơi ra caiGoiKho", typeof nap(KHO()).P.caiGoiKho === "function
   // ---- 1-3. Lối vào sau khi quét QR ----
   const a = nap(KHO());
   let xong = null;
-  const kq = await a.P.caiGoiKho("javis.zalo", { batSan: true, sauKhiCai: (r) => { xong = r; } });
+  const kq = await a.P.caiGoiKho("unimate.zalo", { batSan: true, sauKhiCai: (r) => { xong = r; } });
   await nghi();
   check("mở màn hình đồng ý", kq === "mo", kq);
   check("tải đúng tệp của kho, kèm vân tay của kho",
-    a.goi.some(g => g.url === "/packs/install-url" && g.body.url === "dist/javis-zalo-1.0.0.zip"
+    a.goi.some(g => g.url === "/packs/install-url" && g.body.url === "dist/unimate-zalo-1.0.0.zip"
       && g.body.expect_sha256 === "a".repeat(64)), JSON.stringify(a.goi));
   check("CHƯA cài gì trước khi bấm Cài", !a.goi.some(g => g.url === "/packs/install"));
   check("màn hình vẫn hiện khối cảnh báo mã kèm tên tệp", a.hop.innerHTML.includes("pkm-canh do")
@@ -117,18 +117,18 @@ check("packs.js phơi ra caiGoiKho", typeof nap(KHO()).P.caiGoiKho === "function
 
   // ---- 3b. Đường kho thường không đổi: gói có mã vẫn tắt sẵn ----
   const b = nap(KHO());
-  await b.P.caiGoiKho("javis.zalo", {});
+  await b.P.caiGoiKho("unimate.zalo", {});
   await nghi();
   check("không có batSan: gói có mã vẫn TẮT sẵn", b.nut.pkBat && b.nut.pkBat.getAttribute("aria-pressed") === "false");
 
   // ---- 4. Không mở gì khi không cần hoặc không được ----
   const c = nap(KHO({ installed: true, enabled: true }));
-  check("đã cài và đang bật: trả da_cai, không tải gì", await c.P.caiGoiKho("javis.zalo") === "da_cai"
+  check("đã cài và đang bật: trả da_cai, không tải gì", await c.P.caiGoiKho("unimate.zalo") === "da_cai"
     && !c.goi.some(g => g.url === "/packs/install-url"));
   const d = nap(KHO({ installed: true, enabled: false }));
-  check("đã cài nhưng tắt: trả da_tat", await d.P.caiGoiKho("javis.zalo") === "da_tat");
+  check("đã cài nhưng tắt: trả da_tat", await d.P.caiGoiKho("unimate.zalo") === "da_tat");
   const e = nap({ ok: true, packs: [] });
-  check("kho không có gói: trả khong_co", await e.P.caiGoiKho("javis.zalo") === "khong_co");
+  check("kho không có gói: trả khong_co", await e.P.caiGoiKho("unimate.zalo") === "khong_co");
   const f = nap(KHO());
   check("thẻ connector của app trùng id không bị coi là gói", await f.P.caiGoiKho("zalo") === "khong_co");
 

@@ -17,7 +17,7 @@ sha256, so what the person read is what gets installed.
 Rules on top of the zip rules
 -----------------------------
 - The zip holds ONE plugin: `plugin.yaml` + `plugin.py` (or `__init__.py`) at the root or inside
-  one wrapper folder. A full store pack (it has `javis-pack.yaml`) is reported as `kind: pack`
+  one wrapper folder. A full store pack (it has `unimate-pack.yaml`) is reported as `kind: pack`
   so the route hands it to the pack installer instead of a weaker copy of it.
 - No compiled or native code (`.pyc`, `.so`, ...): the screen lists the source files the person
   can read, and an unchecked-hash `.pyc` would run something else than that source.
@@ -92,13 +92,13 @@ def _collision(slug: str) -> dict:
     """Error dict when `slug` may never be installed from a zip, else {}."""
     if slug in plugins_host._slug_bundled():
         return _err("validate",
-                    f"'{slug}' trùng tên một plugin có sẵn của Javis. Đổi slug trong plugin.yaml rồi thử lại.",
-                    f"'{slug}' is the name of a built-in Javis plugin. Change the slug in plugin.yaml and try again.",
+                    f"'{slug}' trùng tên một plugin có sẵn của UNI MATE. Đổi slug trong plugin.yaml rồi thử lại.",
+                    f"'{slug}' is the name of a built-in UNI MATE plugin. Change the slug in plugin.yaml and try again.",
                     code="bundled")
     if slug in _pack_slugs():
         return _err("validate",
-                    f"'{slug}' trùng tên một plugin đến từ gói trong Javis Store. Đổi slug trong plugin.yaml rồi thử lại.",
-                    f"'{slug}' is the name of a plugin from a Javis Store pack. Change the slug in plugin.yaml and try again.",
+                    f"'{slug}' trùng tên một plugin đến từ gói trong UNI MATE Store. Đổi slug trong plugin.yaml rồi thử lại.",
+                    f"'{slug}' is the name of a plugin from a UNI MATE Store pack. Change the slug in plugin.yaml and try again.",
                     code="pack")
     return {}
 

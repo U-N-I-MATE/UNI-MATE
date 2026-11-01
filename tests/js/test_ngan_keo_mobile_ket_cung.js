@@ -59,7 +59,7 @@ check("và chỉ áp trên màn hẹp",
   /const dong = \(\) => \{ if \(hep\(\)\) page\.classList\.remove\("side-open"\); \}/.test(neo), neo);
 check("cả trang Trò chuyện lẫn trang Code đều đi qua hàm đó",
   /_neoCotTrai\(page,/.test(JS)
-  && /W\.JavisNeoCotTrai\(/.test(D("coding.js")));
+  && /W\.UniMateNeoCotTrai\(/.test(D("coding.js")));
 
 // ---------------------------------------------------------------- 3. Mở file = đóng ngăn kéo
 // Chốt ở _borrowNoteEditor vì đó là chỗ MỌI đường mở file đi qua (bấm file trong cây, bấm

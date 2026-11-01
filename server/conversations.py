@@ -581,7 +581,7 @@ def own_messages_without_id(channel: str, account_id: str, external_chat_id: str
     """Messages this account sent in a chat (the bot, or the owner from the inbox) since `since` that still have no
     channel message id, newest first: `[{id, text}]` (0.334.0). Never raises.
 
-    Javis writes those rows before Zalo gives the message an id; the id comes back with the message's echo in the read
+    UNI MATE writes those rows before Zalo gives the message an id; the id comes back with the message's echo in the read
     loop (`zalo_personal_channel.attach_echo_id`). A customer's reaction names the message by that id, so without
     it a heart on the bot's price quote could not be told apart from a heart on anything else."""
     try:
@@ -1017,7 +1017,7 @@ def dat_ghim(conversation_id: int, pinned: bool) -> bool:
 #
 # The owner keeps ONE list of tags (name + a colour from a small fixed palette) and puts them on CONVERSATIONS, so a
 # customer's private chat and a group they write in are tagged separately. Kept apart from `customers.tags_json`, the
-# free-text tags the CRM store pack (javis.khach-hang-crm) writes on a CUSTOMER: neither touches the other.
+# free-text tags the CRM store pack (unimate.khach-hang-crm) writes on a CUSTOMER: neither touches the other.
 # ============================================================
 TAG_COLORS = ("gray", "red", "orange", "yellow", "green", "teal", "blue", "purple", "pink")
 MAX_INBOX_TAGS = 60
@@ -1446,7 +1446,7 @@ def insights(since: float, until: float, account: str = "") -> dict:
       - `chats` / `new_chats`: chats where a customer wrote, and private chats whose very first message is in the period;
       - `hours`: customer messages per hour of the day (24 numbers, the brain's time zone).
 
-    0.401.0 (owner, 2026-10-29: "ở nick Javis Vũ anh không trả lời tý nào mà nó tính 45% câu do A.I. lo"): the totals mixed
+    0.401.0 (owner, 2026-10-29: "ở nick Uni Vũ anh không trả lời tý nào mà nó tính 45% câu do A.I. lo"): the totals mixed
     every account, so one account's hand replies lowered another one's A.I. share. `account` (the inbox account key,
     `"<channel>:<id>"`) keeps one account only, and `by_account` gives each account its own A.I., hand and customer counts."""
     import localefmt
@@ -1541,9 +1541,9 @@ _NEN_ANH = re.compile(r"^(?:https?://\S+|\[(?:chat\.)?(?:photo|image)[^\]]*\]|\[
 def chu_thich_anh(text: str) -> str:
     """Chú thích thật của một tin ảnh, hoặc "" nếu tin ảnh trơn.
 
-    MCP của javis-zalo chuẩn hoá tin không phải chữ bằng `extractMessageText` (src/utils/extract-message-text.js; bản 1.6.2 cũ là
+    MCP của unimate-zalo chuẩn hoá tin không phải chữ bằng `extractMessageText` (src/utils/extract-message-text.js; bản 1.6.2 cũ là
     `content.title || content.href || "[<msgType>]"`). Với ảnh hai bản ra cùng kết quả vì ảnh có `description` rỗng: ảnh CÓ chú thích
-    thì `text` là chú thích; ảnh trơn thì `text` là đường dẫn ảnh, hoặc "[chat.photo]". Javis
+    thì `text` là chú thích; ảnh trơn thì `text` là đường dẫn ảnh, hoặc "[chat.photo]". UNI MATE
     cũng tự thay chữ trống bằng "[Zalo cá nhân: khách gửi image]". Cả ba loại "nền" đó không phải lời của người gửi nên trả rỗng."""
     t = " ".join(str(text or "").split())
     return "" if (not t or _NEN_ANH.match(t)) else t
@@ -1566,7 +1566,7 @@ def loai_tin_tu_chu(text: str) -> str:
 # ============================================================
 # CRM: khách hàng xuyên kênh (0.60.1)
 #
-# Tầng đọc/ghi mà gói "Quản lý khách hàng" ở Kho cài đặt (javis.khach-hang-crm) cắm vào. Gói
+# Tầng đọc/ghi mà gói "Quản lý khách hàng" ở Kho cài đặt (unimate.khach-hang-crm) cắm vào. Gói
 # gọi ĐÚNG các hàm này chứ không tự viết SQL: schema là của kho, kho đổi thì hàm đổi theo, còn
 # SQL chép trong gói sẽ gãy im lặng ở bản sau. Hai hàm ghi (tag, ghi chú) chỉ chạm bảng
 # customers; không hàm nào gửi tin hay gọi ra ngoài.

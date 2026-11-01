@@ -1,7 +1,7 @@
 /* One deadline owner, monotonic clock, session-only learning and metadata diagnostics. */
 (function(root) {
   'use strict';
-  const policy=typeof module==='object'&&module.exports?require('./voice-turn-policy.js'):root.JavisVoiceTurnPolicy;
+  const policy=typeof module==='object'&&module.exports?require('./voice-turn-policy.js'):root.UniMateVoiceTurnPolicy;
   class Controller {
     constructor({now=()=>performance.now(),pace='balanced'}={}) {
       this.now=now; this.pace=pace; this.samples=[]; this.targets={}; this.events=[]; this.epoch=0; this.reset();
@@ -63,5 +63,5 @@
     diagnostics() { return this.events.map(e=>({...e})); }
   }
   const api={Controller};
-  if(typeof module==='object'&&module.exports) module.exports=api; else root.JavisVoiceAdaptive=api;
+  if(typeof module==='object'&&module.exports) module.exports=api; else root.UniMateVoiceAdaptive=api;
 })(typeof window!=='undefined'?window:globalThis);

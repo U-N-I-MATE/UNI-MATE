@@ -58,7 +58,7 @@ async function fixture(lang='en',options={}) {
       return {ok:status===200,status,json:async()=>({ok:status===200,...data})};
     }};
   vm.createContext(ctx);vm.runInContext(source,ctx);
-  const mounted=ctx.window.JavisImprovementExperiments.mount({parent,brain:'brain-one',context:{context_id:'context-one',experiment_id:'experiment-one',target_id:'target-one',grant_status:'active',base_generation:1,current_generation:1},isCurrent:()=>current,review:id=>reviews.push(id),refreshCandidates:async()=>{}});
+  const mounted=ctx.window.UniMateImprovementExperiments.mount({parent,brain:'brain-one',context:{context_id:'context-one',experiment_id:'experiment-one',target_id:'target-one',grant_status:'active',base_generation:1,current_generation:1},isCurrent:()=>current,review:id=>reviews.push(id),refreshCandidates:async()=>{}});
   await mounted.ready;
   const find=action=>{const el=parent.querySelectorAll().find(x=>x.attrs['data-action']===action);assert.ok(el,'Missing '+action);return el;};
   const text=()=>parent.querySelectorAll().map(x=>x.textContent).join('\n');

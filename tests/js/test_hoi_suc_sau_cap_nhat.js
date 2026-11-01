@@ -71,7 +71,7 @@ function page({ downCalls, typed }) {
 
   // 3. A reload just happened (sessionStorage mark): never a reload loop.
   p = page({ downCalls: 1 });
-  p.session["javis.i18n_reload_at"] = String(Date.now());
+  p.session["unimate.i18n_reload_at"] = String(Date.now());
   await wait(1400);
   check("a second automatic reload within 30 seconds is refused", p.reloads === 0 && p.t("nav.group.bo_nao") === "Bộ não");
 
@@ -82,15 +82,15 @@ function page({ downCalls, typed }) {
 
   // ───────── the update flow waits for a ready server ─────────
   const fresh = read("dashboard/freshness.js");
-  check("freshness.js offers JavisReloadWhenReady", /window\.JavisReloadWhenReady = choSanRoiTaiLai;/.test(fresh));
+  check("freshness.js offers UniMateReloadWhenReady", /window\.UniMateReloadWhenReady = choSanRoiTaiLai;/.test(fresh));
   check("it needs /app-version and vi.json as JSON twice in a row, 90 seconds at most",
     /json\("\/app-version"\), json\("\/static\/i18n\/vi\.json"\)/.test(fresh) && /dat >= 2 \|\| Date\.now\(\) - batDau > 90000/.test(fresh));
-  check("a version change seen while updating goes through it", /if \(window\.__javisUpdating\) \{ choSanRoiTaiLai\(\); return; \}/.test(fresh));
+  check("a version change seen while updating goes through it", /if \(window\.__unimateUpdating\) \{ choSanRoiTaiLai\(\); return; \}/.test(fresh));
   const consoleJs = read("dashboard/console.js");
   check("every update success in console.js reloads through it",
     (consoleJs.match(/setTimeout\(_taiLaiKhiSan, 1500\)/g) || []).length === 4 && !/setTimeout\(\(\) => location\.reload\(\), 1500\)/.test(consoleJs));
-  check("the rail version falls back to the always fresh javis-fresh block, not v0.4.3",
-    /JSON\.parse\(document\.getElementById\("javis-fresh"\)\.textContent\)\.version \|\| APP_VERSION/.test(consoleJs));
+  check("the rail version falls back to the always fresh unimate-fresh block, not v0.4.3",
+    /JSON\.parse\(document\.getElementById\("unimate-fresh"\)\.textContent\)\.version \|\| APP_VERSION/.test(consoleJs));
 
   // ───────── lighter idle loops ─────────
   check("freshness.js hashes each asset set once per device",
@@ -102,7 +102,7 @@ function page({ downCalls, typed }) {
   check("the starfield skips frames behind a management page",
     /if \(document\.hidden\) return;\n[\s\S]{0,400}if \(document\.body\.classList\.contains\("in-console"\)\) return;/.test(app));
   check("the brain graph is paused right after it is built when the app opens on another page",
-    /await reloadGraph\(\);\n[\s\S]{0,300}window\.JavisRecomputeGraph\(\)/.test(app) && /window\.JavisRecomputeGraph = recomputeGraph;/.test(consoleJs));
+    /await reloadGraph\(\);\n[\s\S]{0,300}window\.UniMateRecomputeGraph\(\)/.test(app) && /window\.UniMateRecomputeGraph = recomputeGraph;/.test(consoleJs));
 
   if (fails.length) { console.log("\nFAIL - test_hoi_suc_sau_cap_nhat: " + fails.length); process.exit(1); }
   console.log("\nOK - test_hoi_suc_sau_cap_nhat: all pass");

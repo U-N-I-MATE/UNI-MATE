@@ -1,4 +1,4 @@
-"""Mã xác thực 2 lớp (TOTP - RFC 6238) cho cổng đăng nhập Javis.
+"""Mã xác thực 2 lớp (TOTP - RFC 6238) cho cổng đăng nhập UNI MATE.
 
 Module này CỐ Ý thuần tuý: chỉ toán và chuỗi, không đọc/ghi cấu hình, không import `config`.
 Nơi lưu secret và mã khôi phục là `config.py`; nơi ráp vào cổng đăng nhập là `main.py`. Tách
@@ -93,7 +93,7 @@ def _sach(s: str) -> str:
     return "".join(ch for ch in s if ch.isprintable() and ch != ":").strip()
 
 
-def otpauth_uri(secret: str, ten_dang_nhap: str, ten_workspace: str = "Javis OS") -> str:
+def otpauth_uri(secret: str, ten_dang_nhap: str, ten_workspace: str = "UNI MATE") -> str:
     """Chuỗi `otpauth://` để app Authenticator quét QR hoặc nhập tay.
 
     CHỈ kèm `algorithm`/`digits`/`period` khi chúng KHÁC mặc định. Ba giá trị SHA1 / 6 số /
@@ -111,7 +111,7 @@ def otpauth_uri(secret: str, ten_dang_nhap: str, ten_workspace: str = "Javis OS"
     # Cắt ở 24 KÝ TỰ chứ không phải 24 byte: chữ có dấu chiếm 6 ký tự sau khi mã hoá ("ý" ->
     # %C3%BD), nên cùng một giới hạn thì tên tiếng Việt tốn chỗ hơn tên không dấu. Đã đo: kể cả
     # 24 ký tự có dấu hết thì QR vẫn giữ 8px mỗi ô, tức vẫn quét thoải mái.
-    issuer = _sach(ten_workspace)[:24].strip() or "Javis"
+    issuer = _sach(ten_workspace)[:24].strip() or "UNI MATE"
     tai_khoan = _sach(ten_dang_nhap)[:24].strip() or "admin"
     label = quote(f"{issuer}:{tai_khoan}", safe="")
     uri = f"otpauth://totp/{label}?secret={secret}&issuer={quote(issuer, safe='')}"

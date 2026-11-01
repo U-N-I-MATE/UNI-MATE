@@ -53,7 +53,7 @@ const con = fs.readFileSync(path.join(__dirname, "..", "..", "dashboard", "conso
 check("a card in the Available grid, filed under messaging, opening the form", () => {
   const h = M.catCard("Nhắn tin");
   assert.ok(/class="cat-card msc-cat" data-cat="Nhắn tin"/.test(h) && /data-msc-open="1"/.test(h));
-  assert.ok(con.includes('window.JavisMessenger.catCard((cat.find(c => c.id === "zalo") || {}).category || "")'));
+  assert.ok(con.includes('window.UniMateMessenger.catCard((cat.find(c => c.id === "zalo") || {}).category || "")'));
 });
 check("connected Pages are one card in the Connected list, nothing when none", () => {
   assert.strictEqual(M.groupHtml([]), "");
@@ -67,7 +67,7 @@ check("connected Pages are one card in the Connected list, nothing when none", (
 });
 check("no section of its own, form in the shared dialog", () => {
   assert.ok(!con.includes("Facebook Messenger setup card (0.301.0)"));
-  assert.ok(con.includes("window.JavisConnModal = { open: connModal, head: mHead, close: closeConnModal }"));
+  assert.ok(con.includes("window.UniMateConnModal = { open: connModal, head: mHead, close: closeConnModal }"));
   const src = fs.readFileSync(path.join(__dirname, "..", "..", "dashboard", "messenger-connect.js"), "utf8");
   assert.ok(src.includes("M.open(M.head(") && !src.includes('class="cview-section msc"'));
   assert.ok(!/class="lv-card lv-card-new msc-form"/.test(M.formHtml({ https: true })));

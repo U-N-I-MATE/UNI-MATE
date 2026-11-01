@@ -2,9 +2,9 @@
 
     python tests/run.py ollama_local_dinh_tuyen     (KHÔNG mạng)
 
-Chủ repo báo kèm ảnh (02/09): chọn model local `qwen3:4b-instruct`, gõ "hello", Javis trả
+Chủ repo báo kèm ảnh (02/09): chọn model local `qwen3:4b-instruct`, gõ "hello", UNI MATE trả
 về "There's an issue with the selected model (qwen3:4b-instruct). It may not exist or you
-may not have access to it." Câu đó KHÔNG có trong mã nguồn Javis - nó do chính binary
+may not have access to it." Câu đó KHÔNG có trong mã nguồn UNI MATE - nó do chính binary
 `claude` in ra. Badge dưới câu trả lời ghi `cli · qwen3:4b-instruct`, tức lượt chat đã bị
 đưa cho Claude Code kèm tên model của Ollama.
 

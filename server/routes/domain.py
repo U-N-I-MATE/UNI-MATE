@@ -52,9 +52,9 @@ def _domain_deploy_target(request: Request = None):
 
     Hostinger không cho container sửa label Traefik đang chạy, vì vậy UI chỉ có thể lưu
     tên miền + kiểm tra DNS rồi hướng dẫn đúng bước Environment/Redeploy. Compose mới đặt
-    JAVIS_DEPLOY_TARGET rõ ràng; nhận diện hostname .hstgr.cloud giữ tương thích bản cũ.
+    UNIMATE_DEPLOY_TARGET rõ ràng; nhận diện hostname .hstgr.cloud giữ tương thích bản cũ.
     """
-    explicit = (os.getenv("JAVIS_DEPLOY_TARGET", "") or "").strip().lower()
+    explicit = (os.getenv("UNIMATE_DEPLOY_TARGET", "") or "").strip().lower()
     if explicit in ("hostinger", "vps", "native", "windows"):
         return explicit
     host = ""
@@ -68,9 +68,9 @@ def _domain_deploy_target(request: Request = None):
 
 def _detect_public_ip():
     """This server's public address, or None. BLOCKING (DNS plus up to three HTTPS requests): call it in a thread,
-    never on the event loop. Owner report 25/10/2026: every page that opened Javis asked /domain/status, which ran this
+    never on the event loop. Owner report 25/10/2026: every page that opened UNI MATE asked /domain/status, which ran this
     on the loop; on a server whose DNS or outbound HTTPS is slow that froze the whole server for 12 to 24 seconds, and
-    everyone else's live socket missed its pong ("Mất kết nối" as soon as another person opened Javis)."""
+    everyone else's live socket missed its pong ("Mất kết nối" as soon as another person opened UNI MATE)."""
     import time as _t
     c = _PUBLIC_IP_CACHE
     if c["ip"] and _t.time() - c["ts"] < PUBLIC_IP_TTL:
@@ -106,8 +106,8 @@ def _lookup_public_ip():
 
 
 def _instance_label() -> str:
-    """The sub-name this instance uses under the VPS hostname: JAVIS_NAME, "javis" when unset."""
-    return re.sub(r"[^a-z0-9-]+", "-", (os.getenv("JAVIS_NAME", "") or "javis").strip().lower()).strip("-") or "javis"
+    """The sub-name this instance uses under the VPS hostname: UNIMATE_NAME, "unimate" when unset."""
+    return re.sub(r"[^a-z0-9-]+", "-", (os.getenv("UNIMATE_NAME", "") or "unimate").strip().lower()).strip("-") or "unimate"
 
 
 def hostinger_names(base: str, label: str) -> list:
@@ -115,13 +115,13 @@ def hostinger_names(base: str, label: str) -> list:
 
     `label.base`, then for the default instance the bare `base` too. 0.304.0: no DNS guessing any more. 0.302.0 picked
     ONE name by comparing addresses, and the gateway's lookup read the VPS's /etc/hosts first (Ubuntu maps its own
-    hostname to 127.0.1.1), so Caddy got a certificate for srv123.hstgr.cloud while Javis checked javis.srv123...:
+    hostname to 127.0.1.1), so Caddy got a certificate for srv123.hstgr.cloud while UNI MATE checked unimate.srv123...:
     nobody was moved to https (owner report 24/10/2026, Ubuntu 26). The gateway now serves both names; whichever DNS
-    sends to this VPS gets a certificate, and Javis tries them in this order.
+    sends to this VPS gets a certificate, and UNI MATE tries them in this order.
     """
     if not base:
         return []
-    out = [f"{label}.{base}"] + ([base] if label == "javis" else [])
+    out = [f"{label}.{base}"] + ([base] if label == "unimate" else [])
     return [n for n in out if _DOMAIN_RE.match(n)]
 
 
@@ -140,26 +140,26 @@ def _hostinger_base(ip, ptr_lookup=None) -> str:
 
 
 def hostinger_suggestion(ip, ptr_lookup=None) -> str:
-    """The free Hostinger name for this VPS, ready for DOMAIN_NAME: "javis.srv123456.hstgr.cloud", or "".
+    """The free Hostinger name for this VPS, ready for DOMAIN_NAME: "unimate.srv123456.hstgr.cloud", or "".
 
     0.302.0 (owner 24/10/2026: Open in hPanel led to localhost). Hostinger does not tell a pasted compose its VPS
     hostname (TRAEFIK_HOST and HOSTNAME are not set for Compose-from-URL), so the owner had to dig the
-    srv<id>.hstgr.cloud name out of hPanel. Hostinger's reverse DNS of the VPS IP carries that name, so Javis can
+    srv<id>.hstgr.cloud name out of hPanel. Hostinger's reverse DNS of the VPS IP carries that name, so UNI MATE can
     offer the exact line to paste.
     """
     names = hostinger_names(_hostinger_base(ip, ptr_lookup), _instance_label())
     return names[0] if names else ""
 
 
-# 0.304.0: the gateway service writes what it is doing into a volume Javis mounts read-only (docker-compose.hostinger.yml):
-# "state=idle|busy|serving" and "names=<the names Caddy serves>". Javis then checks exactly the names that have a
+# 0.304.0: the gateway service writes what it is doing into a volume UNI MATE mounts read-only (docker-compose.hostinger.yml):
+# "state=idle|busy|serving" and "names=<the names Caddy serves>". UNI MATE then checks exactly the names that have a
 # certificate, and Settings can say which step is stuck. Missing file = an older compose or no gateway at all.
 GATEWAY_STATUS_FILE = "/gateway/gateway.txt"
 
 
 def read_gateway_status(path=None) -> dict:
     try:
-        text = Path(path or os.getenv("JAVIS_GATEWAY_STATUS", "") or GATEWAY_STATUS_FILE).read_text(encoding="utf-8")
+        text = Path(path or os.getenv("UNIMATE_GATEWAY_STATUS", "") or GATEWAY_STATUS_FILE).read_text(encoding="utf-8")
     except Exception:
         return {}
     kv = {}
@@ -185,7 +185,7 @@ def auto_candidates(ip, gateway=None) -> list:
 
 
 # 0.302.0: who answers on a candidate link. A random id per server process; /domain/auto only sends the browser to an
-# https link that answers with THIS id, so it never moves anyone to another site or another Javis on the same VPS.
+# https link that answers with THIS id, so it never moves anyone to another site or another UNI MATE on the same VPS.
 _WHOAMI = __import__("secrets").token_hex(12)
 _AUTO = {"url": "", "ts": 0.0}
 AUTO_TTL_OK, AUTO_TTL_MISS = 300.0, 90.0
@@ -202,7 +202,7 @@ async def _answers_as_me(url: str) -> bool:
 
 
 async def _auto_link() -> str:
-    """The first candidate link that answers as THIS Javis over valid https, or "" (cached a few minutes)."""
+    """The first candidate link that answers as THIS UNI MATE over valid https, or "" (cached a few minutes)."""
     import asyncio as _aio
     import time as _t
     now = _t.time()
@@ -231,24 +231,24 @@ def _req_is_secure(request: Request) -> bool:
 #   no_route     the proxy in front (Traefik on Hostinger) has no route for this hostname: its own 404
 #   cert_pending the route reaches this server, but the certificate is not issued yet (only works unverified)
 #   bad_gateway  the proxy has a route but cannot reach the app (502/503/504)
-#   other_javis  another Javis answered (a second stack on the same VPS, or the domain saved differently there)
+#   other_unimate  another UNI MATE answered (a second stack on the same VPS, or the domain saved differently there)
 #   other_site   some other website answered: DNS or the route points somewhere else
 #   cert_invalid the certificate is wrong and the page behind it is not ours either
 #   unreachable  nothing answers on port 443
 # Why /tls-check: it is public, and it answers 200 only when the hostname is the domain saved on THIS server,
-# so it tells this Javis apart from any other site or Javis behind the same address.
-PROBE_CODES = ("ok", "no_route", "cert_pending", "bad_gateway", "other_javis", "other_site", "cert_invalid",
+# so it tells this UNI MATE apart from any other site or UNI MATE behind the same address.
+PROBE_CODES = ("ok", "no_route", "cert_pending", "bad_gateway", "other_unimate", "other_site", "cert_invalid",
                "unreachable")
 
 
 def _classify_answer(status: int, body: str, verified: bool) -> str:
-    """Code for an HTTP answer to /tls-check. Pure, so tests can feed it real Traefik and Javis answers."""
+    """Code for an HTTP answer to /tls-check. Pure, so tests can feed it real Traefik and UNI MATE answers."""
     text = (body or "").strip()
-    javis_json = text.startswith("{") and '"ok"' in text
-    if status == 200 and javis_json and '"ok": true' in text.replace('":true', '": true'):
+    unimate_json = text.startswith("{") and '"ok"' in text
+    if status == 200 and unimate_json and '"ok": true' in text.replace('":true', '": true'):
         return "ok" if verified else "cert_pending"
-    if status == 403 and javis_json:
-        return "other_javis"
+    if status == 403 and unimate_json:
+        return "other_unimate"
     if status == 404 and text.lower().startswith("404 page not found"):
         return "no_route"   # Traefik's own answer when no router matches the Host
     if status in (502, 503, 504):
@@ -270,23 +270,23 @@ def _probe_reason(code: str, hostinger: bool) -> str:
         return localefmt.chu("DNS đã tới máy chủ nhưng proxy phía trước chưa có đường cho tên miền này.",
                              "DNS reaches the server but the proxy in front has no route for this domain.")
     if code == "cert_pending":
-        return localefmt.chu("Đường đã thông tới Javis nhưng chứng chỉ chưa cấp xong. Đợi vài phút rồi Kiểm tra lại; "
+        return localefmt.chu("Đường đã thông tới UNI MATE nhưng chứng chỉ chưa cấp xong. Đợi vài phút rồi Kiểm tra lại; "
                              "lâu hơn 10 phút thì xem cổng 80 có mở cho Let's Encrypt không.",
-                             "The route reaches Javis but the certificate is not issued yet. Wait a few minutes and "
+                             "The route reaches UNI MATE but the certificate is not issued yet. Wait a few minutes and "
                              "check again; after 10 minutes, check that port 80 is open for Let's Encrypt.")
     if code == "bad_gateway":
-        return localefmt.chu("Proxy đã nhận tên miền nhưng không gọi được Javis (502). Kiểm tra container Javis đang "
+        return localefmt.chu("Proxy đã nhận tên miền nhưng không gọi được UNI MATE (502). Kiểm tra container UNI MATE đang "
                              "chạy và nhãn loadbalancer.server.port=7777.",
-                             "The proxy knows the domain but cannot reach Javis (502). Check that the Javis "
+                             "The proxy knows the domain but cannot reach UNI MATE (502). Check that the UNI MATE "
                              "container is running and loadbalancer.server.port=7777.")
-    if code == "other_javis":
-        return localefmt.chu("Tên miền này đang mở một bản Javis KHÁC (ví dụ stack thứ hai trên cùng VPS). Kiểm tra "
+    if code == "other_unimate":
+        return localefmt.chu("Tên miền này đang mở một bản UNI MATE KHÁC (ví dụ stack thứ hai trên cùng VPS). Kiểm tra "
                              "DOMAIN_NAME của từng stack.",
-                             "This domain opens a DIFFERENT Javis (for example a second stack on the same VPS). "
+                             "This domain opens a DIFFERENT UNI MATE (for example a second stack on the same VPS). "
                              "Check each stack's DOMAIN_NAME.")
     if code in ("other_site", "cert_invalid"):
-        return localefmt.chu("Tên miền đang mở một trang khác, không phải Javis này. Kiểm tra bản ghi DNS và cấu hình "
-                             "proxy.", "The domain opens another site, not this Javis. Check the DNS record and the "
+        return localefmt.chu("Tên miền đang mở một trang khác, không phải Uni này. Kiểm tra bản ghi DNS và cấu hình "
+                             "proxy.", "The domain opens another site, not this UNI MATE. Check the DNS record and the "
                              "proxy setup.")
     if hostinger:
         return localefmt.chu("Không kết nối được cổng 443 của VPS.", "Cannot connect to the VPS on port 443.")
@@ -341,16 +341,16 @@ def _make_router() -> APIRouter:
 
     @router.get("/domain/whoami")
     async def domain_whoami():
-        """Public: lets /domain/auto tell this Javis apart from anything else answering on a candidate link."""
+        """Public: lets /domain/auto tell this UNI MATE apart from anything else answering on a candidate link."""
         return JSONResponse({"id": _WHOAMI})
 
     @router.get("/domain/auto")
     async def domain_auto(request: Request):
-        """Public: the https link a browser that opened Javis by IP should move to, or "" (0.302.0).
+        """Public: the https link a browser that opened UNI MATE by IP should move to, or "" (0.302.0).
 
         Owner 24/10/2026: "khi cài nó tự cài 1 đường dẫn của vps hostinger sẵn để khách hàng mở luôn". hPanel's Open
-        reaches http://<ip>:7777; the page asks here and moves to https://javis.srv<id>.hstgr.cloud (served by the
-        gateway, or by Traefik with DOMAIN_NAME) once that link answers as THIS Javis over a valid certificate.
+        reaches http://<ip>:7777; the page asks here and moves to https://unimate.srv<id>.hstgr.cloud (served by the
+        gateway, or by Traefik with DOMAIN_NAME) once that link answers as THIS UNI MATE over a valid certificate.
         Hostinger stack only, cached a few minutes.
         """
         if _domain_deploy_target(request) != "hostinger":
@@ -361,8 +361,8 @@ def _make_router() -> APIRouter:
     async def domain_set(domain: str = Form("")):
         d = _norm_domain(domain)
         if d and not _DOMAIN_RE.match(d):
-            return JSONResponse({"ok": False, "error": localefmt.chu("Tên miền không hợp lệ (vd: javis.tencuaban.com)",
-                                                                   "Invalid domain (e.g. javis.yourdomain.com)")}, status_code=400)
+            return JSONResponse({"ok": False, "error": localefmt.chu("Tên miền không hợp lệ (vd: unimate.tencuaban.com)",
+                                                                   "Invalid domain (e.g. unimate.yourdomain.com)")}, status_code=400)
         cfg = cfgmod.read_settings()
         cfg.setdefault("domain", {})
         cfg["domain"]["custom"] = d
@@ -435,11 +435,11 @@ def _make_router() -> APIRouter:
             return JSONResponse({
                 "ok": False,
                 "error": localefmt.chu(
-                    "Hostinger quản lý HTTPS bằng Traefik. Hãy đặt DOMAIN_NAME trong Docker Manager rồi Redeploy; Javis không thể sửa route của hPanel từ bên trong container.",
-                    "Hostinger manages HTTPS with Traefik. Set DOMAIN_NAME in Docker Manager and Redeploy; Javis cannot change hPanel routes from inside the container."),
+                    "Hostinger quản lý HTTPS bằng Traefik. Hãy đặt DOMAIN_NAME trong Docker Manager rồi Redeploy; UNI MATE không thể sửa route của hPanel từ bên trong container.",
+                    "Hostinger manages HTTPS with Traefik. Set DOMAIN_NAME in Docker Manager and Redeploy; UNI MATE cannot change hPanel routes from inside the container."),
                 "hostinger": True,
                 "domain": custom,
-                "docs": "https://github.com/blogminhquy/javis-os/blob/main/docs/15-thuong-hieu-ten-mien.md",
+                "docs": "https://github.com/U-N-I-MATE/UNI-MATE/blob/main/docs/15-thuong-hieu-ten-mien.md",
             }, status_code=409)
         cfg["domain"]["ssl_enabled"] = on
         cfgmod.write_settings(cfg)

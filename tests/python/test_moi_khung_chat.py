@@ -17,8 +17,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-moikhung-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-moikhung-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 
 import coding_store  # noqa: E402
 import main  # noqa: E402
@@ -72,35 +72,35 @@ check("lượt /plan ở khung chat thường bị hạ xuống suggest", "mode=
 ctx = main._coding_ctx_luot({"id": "s-thuong", "channel": "web"}, br)
 tools, route = mcp_hub._builtin_tools("full", br, workspace_root=list(ctx.workspace_roots), coding_ctx_cua_phien=ctx)
 co = set(route)
-check("khung chat thường có terminal và quản lý tiến trình", {"javis_terminal", "javis_process"} <= co)
-check("khung chat thường có sửa, tìm file và web", {"javis_edit_file", "javis_search_files",
-                                                    "javis_web_search", "javis_web_fetch"} <= co)
+check("khung chat thường có terminal và quản lý tiến trình", {"unimate_terminal", "unimate_process"} <= co)
+check("khung chat thường có sửa, tìm file và web", {"unimate_edit_file", "unimate_search_files",
+                                                    "unimate_web_search", "unimate_web_fetch"} <= co)
 _v, _ = mcp_hub._apply_lazy(tools, route, force=True)
-check("sửa và tìm file hiện thẳng ở khung chat thường", {"javis_edit_file", "javis_search_files"}
+check("sửa và tìm file hiện thẳng ở khung chat thường", {"unimate_edit_file", "unimate_search_files"}
       <= {x["fn"] for x in _v})
-ra = asyncio.run(route["javis_read_file"]["call"]({"path": "notes/a.md"}))
+ra = asyncio.run(route["unimate_read_file"]["call"]({"path": "notes/a.md"}))
 check("ghi chú trong brain đọc như cũ, không bị chèn số dòng", ra == "dòng một\ndòng hai\n", ra)
-ra = asyncio.run(route["javis_write_file"]["call"]({"path": "notes/a.md", "content": "mới"}))
+ra = asyncio.run(route["unimate_write_file"]["call"]({"path": "notes/a.md", "content": "mới"}))
 check("ghi đè ghi chú trong brain không bị bắt đọc trước", ra.startswith("Đã ghi"), ra)
 _, r_plan = mcp_hub._builtin_tools("suggest", br, workspace_root=list(ctx.workspace_roots), coding_ctx_cua_phien=ctx)
-check("lượt /plan ở khung chat thường không có terminal", "javis_terminal" not in r_plan)
+check("lượt /plan ở khung chat thường không có terminal", "unimate_terminal" not in r_plan)
 
 # Thư mục ghim NGOÀI brain thì có rào như trang Code.
 ctx_g = main._coding_ctx_luot({"id": "s-ghim", "channel": "web"}, br)
 _, r_g = mcp_hub._builtin_tools("full", br, workspace_root=list(ctx_g.workspace_roots), coding_ctx_cua_phien=ctx_g)
-ra = asyncio.run(r_g["javis_write_file"]["call"]({"path": str(GHIM / "app.py"), "content": "x"}))
+ra = asyncio.run(r_g["unimate_write_file"]["call"]({"path": str(GHIM / "app.py"), "content": "x"}))
 check("thư mục ghim ngoài brain: ghi đè file chưa đọc bị chặn", ra.startswith("ERROR"), ra)
 
 if os.name != "nt":
-    ra = asyncio.run(route["javis_terminal"]["call"]({"command": "pwd"}))
+    ra = asyncio.run(route["unimate_terminal"]["call"]({"command": "pwd"}))
     check("terminal của khung chat thường đứng ở gốc brain", ra.rstrip().endswith(br), ra)
 else:
     print("bỏ qua: chạy terminal thật cần bash (Windows CI)")
 
 # ---- 3. Bot của khách ----
 _, r_bot = mcp_hub._builtin_tools("full", br)
-check("lượt không có ngữ cảnh (bot, việc nền) không có terminal", "javis_terminal" not in r_bot)
-check("bot của khách không có tool web", {"javis_web_search", "javis_web_fetch"} <= mcp_hub.OWNER_ONLY_TOOLS)
+check("lượt không có ngữ cảnh (bot, việc nền) không có terminal", "unimate_terminal" not in r_bot)
+check("bot của khách không có tool web", {"unimate_web_search", "unimate_web_fetch"} <= mcp_hub.OWNER_ONLY_TOOLS)
 
 # ---- 4. Hoàn tác ở mọi khung chat ----
 _cd = (ROOT / "dashboard" / "coding.js").read_text(encoding="utf-8")

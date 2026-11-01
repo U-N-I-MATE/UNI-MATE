@@ -6,7 +6,7 @@
 
    Phần khung chat có ba cái bẫy, mỗi cái đều IM LẶNG khi làm sai:
 
-   1. Chèn ngược mà quên chặn cuộn: appendUserMessage/appendJavisMessage đều gọi scrollBottom
+   1. Chèn ngược mà quên chặn cuộn: appendUserMessage/appendUniMateMessage đều gọi scrollBottom
       theo thói quen, nên chèn xong là màn quăng thẳng xuống đáy - người đọc đang xem giữa
       cuộc bị đá đi mà không hiểu vì sao.
 
@@ -122,10 +122,10 @@ check("có CSS cho mồi tải tin cũ", CSS.indexOf(".older-seed") !== -1 && CS
 // ============================================================
 // E. Phân trang trang Kỹ năng - dùng LẠI pager() sẵn có
 // ============================================================
-check("console.js xuất pager ra cho module khác", /window\.JavisPager = pager;/.test(CONSOLE));
+check("console.js xuất pager ra cho module khác", /window\.UniMatePager = pager;/.test(CONSOLE));
 check("pager nhận được cả Node lẫn chuỗi HTML", /if \(ruot && ruot\.nodeType\)/.test(CONSOLE));
 check("trang Kỹ năng gọi pager dùng chung, không tự viết bản thứ hai",
-  /window\.JavisPager\(box, list, SK_MOI_TRANG, veTrang[,)]/.test(STUDIO));
+  /window\.UniMatePager\(box, list, SK_MOI_TRANG, veTrang[,)]/.test(STUDIO));
 // 0.75.0: bật/tắt một skill ở trang 3 từng nhảy về trang 1 vì pager giữ số trang trong biến
 // cục bộ. Trang Kỹ năng nay truyền trang đang xem vào và nhận lại mỗi lần lật.
 check("trang Kỹ năng nhớ trang đang xem qua pager",

@@ -3,7 +3,7 @@ KHÔNG rơi về 'business' (đọc số liệu MCP, bỏ hết thân file).
 
 Bối cảnh lỗi thật: loop "Nhắc uống thuốc - kiểm tra xác nhận" (không có dòng goal:) bị
 _norm_loop tự gán goal='business', nên _build_prompt bỏ qua thân file "nhắc uống thuốc" và
-đi đọc POS + phân tích kinh doanh. Cả plugin javis_schedule lẫn form web đều mặc định 'custom';
+đi đọc POS + phân tích kinh doanh. Cả plugin unimate_schedule lẫn form web đều mặc định 'custom';
 chỉ parser self_improve._norm_loop còn lệch. Test này chốt parser cùng mặc định 'custom'.
 
 Chạy tay / CI:
@@ -19,7 +19,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-goaltest-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-goaltest-"))
 
 import self_improve  # noqa: E402
 
@@ -32,7 +32,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-_BRAIN_ROOT = tempfile.mkdtemp(prefix="javis-goalbrain-")
+_BRAIN_ROOT = tempfile.mkdtemp(prefix="unimate-goalbrain-")
 
 
 def _atomic_write(path, text):
@@ -47,7 +47,7 @@ deps = self_improve.LoopDeps(
     aux_model=lambda: None,
     atomic_write_text=_atomic_write,
     project_root=Path("."),
-    state_dir=Path(os.environ["JAVIS_STATE_DIR"]),
+    state_dir=Path(os.environ["UNIMATE_STATE_DIR"]),
     safe_tools=["Read", "Write", "Edit", "Glob", "Grep"],
     readonly_tools=["Read", "Glob", "Grep", "LS"],
 )

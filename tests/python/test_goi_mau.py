@@ -13,7 +13,7 @@ loại năng lực có vòng đời khác nhau, và chính chỗ khác nhau đó
     thứ họ viết thì không.
 
 Gói dựng ngay trong test chứ không đọc từ đĩa. Trước 0.55.30 nó đọc `examples/packs/`, nhưng
-gói thật đã dọn sang repo kho riêng (`blogminhquy/javis-store`) - và một test của Javis OS thì
+gói thật đã dọn sang repo kho riêng (`U-N-I-MATE/unimate-store`) - và một test của UNI MATE thì
 không được phụ thuộc vào nội dung một repo khác, càng không phụ thuộc vào mạng.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -31,12 +31,12 @@ import pack_vault
 import packs
 import plugins_host
 
-PACK_ID = "javis.tinh-gia"
-TOOL = "javis_tinh_gia_ban"
+PACK_ID = "unimate.tinh-gia"
+TOOL = "unimate_tinh_gia_ban"
 
-MANIFEST = """format: javis-pack
+MANIFEST = """format: unimate-pack
 spec: 1
-id: javis.tinh-gia
+id: unimate.tinh-gia
 version: 1.0.0
 name: {vi: "Tính giá bán"}
 description: {vi: "Từ giá vốn ra giá niêm yết."}
@@ -52,7 +52,7 @@ version: 1.0.0
 enabled: true
 min_mode: readonly
 tools:
-  - javis_tinh_gia_ban
+  - unimate_tinh_gia_ban
 hooks: []
 """
 
@@ -84,7 +84,7 @@ def _tinh(args, ctx):
 
 
 def register(ctx):
-    ctx.register_tool(name="javis_tinh_gia_ban", description="Tinh gia ban tu gia von",
+    ctx.register_tool(name="unimate_tinh_gia_ban", description="Tinh gia ban tu gia von",
                       handler=_tinh, min_mode="readonly",
                       schema={"type": "object",
                               "properties": {"gia_von": {"type": "number"}},
@@ -114,7 +114,7 @@ def check(ten, cond):
 def dung_zip() -> bytes:
     b = io.BytesIO()
     with zipfile.ZipFile(b, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("javis-pack.yaml", MANIFEST)
+        z.writestr("unimate-pack.yaml", MANIFEST)
         z.writestr("plugins/tinh-gia/plugin.yaml", PLUGIN_YAML)
         z.writestr("plugins/tinh-gia/plugin.py", PLUGIN_PY)
         z.writestr("skills/dat-gia-ban/SKILL.md", SKILL_MD)
@@ -146,8 +146,8 @@ with tempfile.TemporaryDirectory() as td:
         du = dung_zip()
 
         # --------------- 1. Soi: nói đúng gói có gì, TRƯỚC khi cài gì ---------------
-        r = pack_install.soi(du, "javis-tinh-gia.zip")
-        check("gói đọc được bằng bản Javis hiện tại", r.get("ok") is True)
+        r = pack_install.soi(du, "unimate-tinh-gia.zip")
+        check("gói đọc được bằng bản UNI MATE hiện tại", r.get("ok") is True)
         check("id khớp tên khai trong manifest", r.get("id") == PACK_ID)
         check("xếp đúng bậc code vì có tệp .py", r.get("tier") == "code")
         check("liệt kê plugin trong gói", r.get("plugins") == ["tinh-gia"])
@@ -195,7 +195,7 @@ with tempfile.TemporaryDirectory() as td:
 
         # --------------- 5. Cài lại rồi gỡ khi CHƯA sửa: phải sạch bong ---------------
         shutil.rmtree(brain / "skills" / "dat-gia-ban")
-        r2 = pack_install.soi(du, "javis-tinh-gia.zip")
+        r2 = pack_install.soi(du, "unimate-tinh-gia.zip")
         pack_install.cai(r2["staging_id"], r2["sha256"], enable=True, brain_root=str(brain))
         check("cài lại lần hai được", sk.is_file())
         asyncio.run(pack_install.go(PACK_ID))

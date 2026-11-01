@@ -3,7 +3,7 @@
     python tests/run.py prefix_slim
 
 Bối cảnh (đo trên brain thật "My Bullet Journal"): prefix mỗi lượt chat đi từ 38k token
-(30/6) lên 85k (cuối tháng 7). Bóc ra: Claude Code tự nó ~49k, system prompt Javis 14,4k,
+(30/6) lên 85k (cuối tháng 7). Bóc ra: Claude Code tự nó ~49k, system prompt UNI MATE 14,4k,
 tool hub 8k, danh sách skill của brain ~5k, CLAUDE.md của brain 5,3k. MEMORY.md chỉ 5,7k
 tức 7% - nên KHÔNG cắt bộ nhớ (thử rồi: rút mô tả xuống 60 ký tự chỉ tiết kiệm 1,4k token,
 đổi khả năng nhớ lấy chừng đó là lỗ).
@@ -16,7 +16,7 @@ Ba việc test này phủ:
    giữ nguyên chữ của người dùng. Không mất năng lực: description chỉ để định tuyến, router
    xưa nay đã cắt ở 150 rồi; thân skill vẫn nạp đủ khi được gọi.
 2. Chỉ mục bộ nhớ có TRẦN, và hạ dần theo bậc - rút mô tả trước, bỏ dòng là bậc CUỐI.
-3. CLAUDE.md không còn ôm mẫu file dài (đã dời vào skill javis-builder) nhưng GIỮ NGUYÊN
+3. CLAUDE.md không còn ôm mẫu file dài (đã dời vào skill unimate-builder) nhưng GIỮ NGUYÊN
    mọi luật an toàn và luật hành vi.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path (xem tests/python/_paths.py)
@@ -26,7 +26,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-prefix-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-prefix-")
 
 import yaml  # noqa: E402
 
@@ -79,7 +79,7 @@ check("mo ta ngan thi KHONG dung toi",
 check("khong co frontmatter -> khong dung toi", ss._cap_desc("chi co than", CAP) is None)
 
 # mirror thật: canonical giữ nguyên, mirror bị cắt, thân file giống hệt
-root = Path(tempfile.mkdtemp(prefix="javis-mirror-"))
+root = Path(tempfile.mkdtemp(prefix="unimate-mirror-"))
 sk = root / "skills" / "dai-dong"
 sk.mkdir(parents=True)
 src_text = f"---\nname: Dai dong\ndescription: {'z' * 900}\ngroup: Marketing\n---\n\n# Than skill\nnoi dung day du"
@@ -132,7 +132,7 @@ for cap in (1200, 4000):
     check(f"bo dong: tran {cap} van giu duoi tran ke ca danh sach ten", len(got) <= cap)
 check("CANARY: khong duong chi tiep nao quay lai cach viet Memory/ hoa",
       "Memory/" not in tiny and "Memory/" not in main._fit_memory_index(mem, 8000))
-check("tran doc duoc tu bien moi truong", "JAVIS_MEMORY_INDEX_MAX" in
+check("tran doc duoc tu bien moi truong", "UNIMATE_MEMORY_INDEX_MAX" in
       SERVER.joinpath("main.py").read_text(encoding="utf-8"))
 
 # ---- 3. CLAUDE.md: gỡ mẫu file, GIỮ luật ----
@@ -140,20 +140,20 @@ md = ROOT.joinpath("CLAUDE.md").read_text(encoding="utf-8")
 check("da go mau frontmatter loop", "type: loop\nname: <Tên hiển thị tiếng Việt>" not in md)
 check("da go mau plugin.py", "def register(ctx):" not in md)
 check("da go mau frontmatter agent/workflow", "type: workflow\nname: <Tên>" not in md)
-check("co tro toi javis-builder", "javis-builder" in md)
+check("co tro toi unimate-builder", "unimate-builder" in md)
 
-for luat in ("mode: full", "enabled: false", "JAVIS_ENABLE_USER_PLUGINS",
+for luat in ("mode: full", "enabled: false", "UNIMATE_ENABLE_USER_PLUGINS",
              "AT MOST 150 characters", "NEVER leave `group` empty", "owner_chat",
              "notify: false",
              "em dash"):
     check(f"GIU luat: {luat}", luat in md)
 
 bld = ROOT.joinpath(
-    ".claude/skills/javis-builder/SKILL.md").read_text(encoding="utf-8")
+    ".claude/skills/unimate-builder/SKILL.md").read_text(encoding="utf-8")
 for truong in ("type: loop", "type: agent", "type: workflow", "plugin.yaml",
                "quiet_hours", "max_runs_per_day", "ambient_mcp", "tools_profile",
                "notify: false", "owner_chat"):
-    check(f"javis-builder co phu: {truong}", truong in bld)
+    check(f"unimate-builder co phu: {truong}", truong in bld)
 
 print()
 if fails:

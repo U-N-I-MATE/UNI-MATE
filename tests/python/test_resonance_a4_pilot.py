@@ -1,14 +1,14 @@
 """Resonance A4: pilot nộp sản phẩm qua hợp đồng host (thiết kế chốt D1), engine THẬT chỉ ở lượt chat của trợ lý.
 
-    JAVIS_RESONANCE_A4_PILOT=dry  python tests/python/test_resonance_a4_pilot.py         # KHÔNG gọi model, mọi ca
-    JAVIS_RESONANCE_A4_PILOT=real JAVIS_RESONANCE_PILOT_SETTINGS=<settings.json thật> \\
-        JAVIS_RESONANCE_A4_OUT=<thư mục hồ sơ, chưa tồn tại> python tests/python/test_resonance_a4_pilot.py
+    UNIMATE_RESONANCE_A4_PILOT=dry  python tests/python/test_resonance_a4_pilot.py         # KHÔNG gọi model, mọi ca
+    UNIMATE_RESONANCE_A4_PILOT=real UNIMATE_RESONANCE_PILOT_SETTINGS=<settings.json thật> \\
+        UNIMATE_RESONANCE_A4_OUT=<thư mục hồ sơ, chưa tồn tại> python tests/python/test_resonance_a4_pilot.py
                                                                                         # cần người dùng duyệt riêng
 
 Không đặt biến thì bỏ qua (CI và tests/run.py không gọi gì).
 
 Điều pilot cần chứng minh bằng model thật (phần còn lại đã có test và smoke engine giả):
-1. Lượt chat của TRỢ LÝ với đích mới: bộ não tự lập mục tiêu và nộp bản qua công cụ chung `javis_submit_deliverable`;
+1. Lượt chat của TRỢ LÝ với đích mới: bộ não tự lập mục tiêu và nộp bản qua công cụ chung `unimate_submit_deliverable`;
    host GIỮ bản nháp, xin quyền trên thẻ, KHÔNG có file đích nào trước khi chủ cho phép.
 2. Chủ dự án bấm Cho phép (API như nút thẻ, gửi đúng yêu cầu, bản nháp, sha): host đăng ĐÚNG bytes đã giữ, tiếp nhận,
    KHÔNG gọi thêm model.
@@ -19,7 +19,7 @@ Hạn mức, hai lớp, không thay nhau:
 - Sổ LƯỢT CHAT thật (ChatLedger): tối đa 2 lượt, giữ chỗ và fsync TRƯỚC mỗi lần gửi, không đặt lại, không hoàn. Lượt
   lỗi, hết giờ, không có turn_done: sổ ĐÓNG, không gửi lượt nào nữa, không tự thử lại. Sổ đã có từ lần chạy trước thì
   từ chối chạy (không bao giờ đặt về 0).
-- Trần KHO `JAVIS_RESONANCE_CALL_CEILING=0` cho mọi tiến trình server: KHÔNG lượt việc nền hay phép thử nào được gọi
+- Trần KHO `UNIMATE_RESONANCE_CALL_CEILING=0` cho mọi tiến trình server: KHÔNG lượt việc nền hay phép thử nào được gọi
   engine (kho chặn trước lời gọi, giữ qua khởi động lại).
 Đơn vị là lượt engine cấp host: một lượt chat có thể gồm nhiều request nội bộ của SDK, không phải số request hay token.
 
@@ -40,10 +40,10 @@ import tempfile
 import time
 from pathlib import Path
 
-MODE = os.environ.get("JAVIS_RESONANCE_A4_PILOT", "").strip().lower()
-SCEN = os.environ.get("JAVIS_RESONANCE_A4_SCENARIO", "").strip()
+MODE = os.environ.get("UNIMATE_RESONANCE_A4_PILOT", "").strip().lower()
+SCEN = os.environ.get("UNIMATE_RESONANCE_A4_SCENARIO", "").strip()
 if MODE not in ("dry", "real"):
-    print("pilot A4: bỏ qua (đặt JAVIS_RESONANCE_A4_PILOT=dry hoặc real để chạy)")
+    print("pilot A4: bỏ qua (đặt UNIMATE_RESONANCE_A4_PILOT=dry hoặc real để chạy)")
     print("\nOK")
     sys.exit(0)
 
@@ -55,7 +55,7 @@ CHAT_LIMIT = 2
 STORE_CEILING = 0
 TOKEN_MIN_S = 600
 TURN_WALL_S = 900
-PORT = int(os.environ.get("JAVIS_RESONANCE_A4_PORT", "7792"))
+PORT = int(os.environ.get("UNIMATE_RESONANCE_A4_PORT", "7792"))
 SLUG = "tro-ly-tom-tat"
 
 # ───────────── Đầu vào ĐÓNG BĂNG: không chọn dữ liệu lúc chạy ─────────────
@@ -73,7 +73,7 @@ FROZEN = {
     "content_v1": ["Kết luận", "20/11", "Lan", "Minh"],
     "content_v2": ["Việc tiếp theo", "Lan", "thứ Sáu", "Minh", "thứ Năm"],
 }
-# Hai bộ đầu vào, mỗi bộ ghim bằng hash; real BẮT BUỘC chọn đúng bộ đã duyệt (JAVIS_RESONANCE_A4_INPUTS), không mặc định.
+# Hai bộ đầu vào, mỗi bộ ghim bằng hash; real BẮT BUỘC chọn đúng bộ đã duyệt (UNIMATE_RESONANCE_A4_INPUTS), không mặc định.
 # v1: lời giao gốc ("soạn giúp"), hash 48a31ab9... Theo hướng dẫn của host ("việc xong ngay trong lượt thì làm luôn"), lời
 # này có thể được làm ngay trong lượt mà không lập mục tiêu; sự cố 11/10 (một lượt Claude Code lọt vào dry) cho thấy đúng
 # như vậy. v2: lời giao giao trách nhiệm sau lượt ("lo tới khi anh duyệt, góp ý thì sửa tiếp"), hash 7762a2d7... Chỉ khác
@@ -82,7 +82,7 @@ TURN_1_V2 = ("(Dữ liệu mô phỏng để thử nghiệm.) Em nhận lo giúp
              "soạn vào Inbox/tom-tat-hop.md, phải có mục Kết luận; anh xem rồi góp ý thì em sửa tiếp. Nội dung họp: chốt "
              "ra mắt sản phẩm ngày 20/11; chị Lan lo kế hoạch truyền thông; anh Minh kiểm lại ngân sách quảng cáo; cả "
              "nhóm họp lại thứ Hai tuần sau.")
-INPUTS = os.environ.get("JAVIS_RESONANCE_A4_INPUTS", "").strip().lower()
+INPUTS = os.environ.get("UNIMATE_RESONANCE_A4_INPUTS", "").strip().lower()
 INPUT_SHA = {"v1": "48a31ab95b3c6be873440c1e7e600f98ddd9cf597f9b09d5afb64b456d83693c",
              "v2": "7762a2d7005ad79a4e596605f898d01ee06ee59b34a42ff02a03d32f03693613"}
 if INPUTS == "v2":
@@ -298,20 +298,20 @@ def run_case(scen: str) -> int:
     if scen == "receipt":
         deliv.write_text("Bản anh tự viết trước đó.\n", encoding="utf-8", newline="\n")
 
-    out_dir = Path(os.environ.get("JAVIS_RESONANCE_A4_OUT") or (base / "out"))
+    out_dir = Path(os.environ.get("UNIMATE_RESONANCE_A4_OUT") or (base / "out"))
     if MODE == "real":
         if INPUTS not in INPUT_SHA or FROZEN_SHA != INPUT_SHA[INPUTS]:
-            print("FAIL pilot: real cần JAVIS_RESONANCE_A4_INPUTS=v1 hay v2 (bộ đầu vào đã duyệt) và hash phải khớp")
+            print("FAIL pilot: real cần UNIMATE_RESONANCE_A4_INPUTS=v1 hay v2 (bộ đầu vào đã duyệt) và hash phải khớp")
             return 1
-        if not os.environ.get("JAVIS_RESONANCE_A4_OUT"):
-            print("FAIL pilot: chế độ real cần JAVIS_RESONANCE_A4_OUT (thư mục hồ sơ, chưa tồn tại)")
+        if not os.environ.get("UNIMATE_RESONANCE_A4_OUT"):
+            print("FAIL pilot: chế độ real cần UNIMATE_RESONANCE_A4_OUT (thư mục hồ sơ, chưa tồn tại)")
             return 1
         if out_dir.exists():
-            print("FAIL pilot: JAVIS_RESONANCE_A4_OUT đã tồn tại; mỗi lần chạy thật một thư mục mới")
+            print("FAIL pilot: UNIMATE_RESONANCE_A4_OUT đã tồn tại; mỗi lần chạy thật một thư mục mới")
             return 1
-        src = os.environ.get("JAVIS_RESONANCE_PILOT_SETTINGS", "")
+        src = os.environ.get("UNIMATE_RESONANCE_PILOT_SETTINGS", "")
         if not src or not Path(src).is_file():
-            print("FAIL pilot: thiếu JAVIS_RESONANCE_PILOT_SETTINGS trỏ tới settings.json thật")
+            print("FAIL pilot: thiếu UNIMATE_RESONANCE_PILOT_SETTINGS trỏ tới settings.json thật")
             return 1
         _m = (json.loads(Path(src).read_text(encoding="utf-8")).get("model") or {})
         model = {k: _m[k] for k in ("auxiliary", "main", "engine", "claude_model") if k in _m}
@@ -326,9 +326,9 @@ def run_case(scen: str) -> int:
     (state / "usage.json").write_text(json.dumps({"days": {}, "total": {}}), encoding="utf-8", newline="\n")
     (state / "usage-events.jsonl").write_text("", encoding="utf-8", newline="\n")
 
-    os.environ["JAVIS_STATE_DIR"] = str(state)
+    os.environ["UNIMATE_STATE_DIR"] = str(state)
     os.environ["BRAINS_DIR"] = str(brains)
-    import resonance as R  # noqa: E402  - sau khi đặt JAVIS_STATE_DIR
+    import resonance as R  # noqa: E402  - sau khi đặt UNIMATE_STATE_DIR
     import resonance_store as RS  # noqa: E402
     import sessions as SSm  # noqa: E402
     import turn_context  # noqa: E402
@@ -336,12 +336,12 @@ def run_case(scen: str) -> int:
 
     key = str(brain.resolve())
     owner = RS.Principal("owner", "owner", key)
-    host = RS.Principal("agent", "javis", key)
+    host = RS.Principal("agent", "unimate", key)
     origin = f"http://127.0.0.1:{PORT}"
-    approved = (json.loads(os.environ["JAVIS_RESONANCE_A4_APPROVED"]) if os.environ.get("JAVIS_RESONANCE_A4_APPROVED")
+    approved = (json.loads(os.environ["UNIMATE_RESONANCE_A4_APPROVED"]) if os.environ.get("UNIMATE_RESONANCE_A4_APPROVED")
                 else {} if MODE == "real" else {"aux": {"provider": "grok-cli"}})
-    pilot_vars = ("JAVIS_RESONANCE_TICK_PAUSED", "JAVIS_RESONANCE_CALL_CEILING", "JAVIS_CLAUDE_CLI", "JAVIS_CLAUDE_BIN",
-                  "JAVIS_STATE_DIR", "BRAINS_DIR", "JAVIS_PORT")
+    pilot_vars = ("UNIMATE_RESONANCE_TICK_PAUSED", "UNIMATE_RESONANCE_CALL_CEILING", "UNIMATE_CLAUDE_CLI", "UNIMATE_CLAUDE_BIN",
+                  "UNIMATE_STATE_DIR", "BRAINS_DIR", "UNIMATE_PORT")
     env0 = {k: v for k, v in G.clean_env(dict(os.environ)).items() if k not in pilot_vars}
     fails, log = [], []
 
@@ -380,7 +380,7 @@ def run_case(scen: str) -> int:
     except FileExistsError as e:
         led = ChatLedger(ledger_path, CHAT_LIMIT)
         rep["ledger_refused"] = str(e)
-    limit_env = int(os.environ.get("JAVIS_RESONANCE_A4_MAX_CALLS", str(CHAT_LIMIT)))
+    limit_env = int(os.environ.get("UNIMATE_RESONANCE_A4_MAX_CALLS", str(CHAT_LIMIT)))
 
     def resolve_cli() -> str:
         cp = subprocess.run([sys.executable, "-c", "import sys; sys.path.insert(0, 'server'); "
@@ -393,7 +393,7 @@ def run_case(scen: str) -> int:
                 "m = (config.read_settings().get('model') or {}); "
                 "print(json.dumps({'main': aux_engine.main_spec(), 'aux': aux_engine.read_spec(), "
                 "'claude_model': m.get('claude_model')}))")
-        cp = subprocess.run([sys.executable, "-c", code], cwd=str(ROOT), env={**env0, "JAVIS_STATE_DIR": str(state)},
+        cp = subprocess.run([sys.executable, "-c", code], cwd=str(ROOT), env={**env0, "UNIMATE_STATE_DIR": str(state)},
                             capture_output=True, text=True, timeout=120)
         try:
             return json.loads((cp.stdout or "").strip().splitlines()[-1])
@@ -449,12 +449,12 @@ def run_case(scen: str) -> int:
 
         def start(self, tick_paused: bool, wait_s: int = 150) -> float:
             self.n += 1
-            env = {**env0, "JAVIS_PORT": str(PORT), "JAVIS_STATE_DIR": str(state), "BRAINS_DIR": str(brains),
-                   "JAVIS_REQUIRE_LOGIN": "0", "PYTHONUTF8": "1", "JAVIS_RESONANCE_CALL_CEILING": str(STORE_CEILING)}
+            env = {**env0, "UNIMATE_PORT": str(PORT), "UNIMATE_STATE_DIR": str(state), "BRAINS_DIR": str(brains),
+                   "UNIMATE_REQUIRE_LOGIN": "0", "PYTHONUTF8": "1", "UNIMATE_RESONANCE_CALL_CEILING": str(STORE_CEILING)}
             if self.cli:
-                env["JAVIS_CLAUDE_CLI"] = self.cli
+                env["UNIMATE_CLAUDE_CLI"] = self.cli
             if tick_paused:
-                env["JAVIS_RESONANCE_TICK_PAUSED"] = "1"
+                env["UNIMATE_RESONANCE_TICK_PAUSED"] = "1"
             self.started.append({"n": self.n, "tick_paused": tick_paused, "call_ceiling": STORE_CEILING})
             logf = open(base / f"server-{self.n}.log", "w", encoding="utf-8")
             self.proc = subprocess.Popen([sys.executable, "server/main.py"], cwd=str(ROOT), env=env, stdout=logf,
@@ -915,7 +915,7 @@ def run_case(scen: str) -> int:
         for secret in (str(base), str(Path.home())):
             txt = txt.replace(json.dumps(secret)[1:-1], "<path>")
         (out_dir / f"a4-pilot-{MODE}-{scen or 'main'}.json").write_text(txt, encoding="utf-8", newline="\n")
-        keep = rep.get("engine_turns_logged") != 0 or bool(os.environ.get("JAVIS_RESONANCE_A4_KEEP"))
+        keep = rep.get("engine_turns_logged") != 0 or bool(os.environ.get("UNIMATE_RESONANCE_A4_KEEP"))
         if keep and rep.get("engine_turns_logged") != 0:
             # Sự cố hay không xác minh được: GIỮ nguyên thư mục ca (state, sổ usage, log server, brain) làm bằng chứng,
             # không xoá tệp hỏng; bộ cha chép nó vào hồ sơ rồi dừng cả đợt.
@@ -933,7 +933,7 @@ def run_case(scen: str) -> int:
 DRY_CASES = {
     # ca: (biến môi trường thêm, kết luận mong đợi, câu kiểm phải có trong output)
     "main": ({}, "dry_ok", "bản 2 được host tự đăng"),
-    "cost": ({"JAVIS_RESONANCE_A4_MAX_CALLS": "1"}, "stopped", "dừng trước khi gửi tin: hạn mức"),
+    "cost": ({"UNIMATE_RESONANCE_A4_MAX_CALLS": "1"}, "stopped", "dừng trước khi gửi tin: hạn mức"),
     "auth": ({}, "stopped", "dừng trước khi gửi tin: không chứng minh"),
     "permission": ({}, "stopped", "Cho phép trả 409"),
     "receipt": ({}, "stopped", "Cho phép trả 200/conflict"),
@@ -960,13 +960,13 @@ if MODE == "real":
 
 bad = []
 for name, (extra, want, needle) in DRY_CASES.items():
-    env = {**os.environ, "JAVIS_RESONANCE_A4_SCENARIO": name, "PYTHONIOENCODING": "utf-8", **extra}
-    env.pop("JAVIS_RESONANCE_A4_OUT", None)
+    env = {**os.environ, "UNIMATE_RESONANCE_A4_SCENARIO": name, "PYTHONIOENCODING": "utf-8", **extra}
+    env.pop("UNIMATE_RESONANCE_A4_OUT", None)
     cp = subprocess.run([sys.executable, str(HERE)], cwd=str(ROOT), env=env, capture_output=True, text=True,
                         encoding="utf-8", timeout=900)
-    if os.environ.get("JAVIS_RESONANCE_A4_DRY_DIR"):
+    if os.environ.get("UNIMATE_RESONANCE_A4_DRY_DIR"):
         # Bằng chứng từng ca: output đầy đủ của tiến trình con (không có khoá hay đường dẫn cá nhân).
-        dd = Path(os.environ["JAVIS_RESONANCE_A4_DRY_DIR"])
+        dd = Path(os.environ["UNIMATE_RESONANCE_A4_DRY_DIR"])
         dd.mkdir(parents=True, exist_ok=True)
         (dd / f"a4-pilot-dry-{name}.txt").write_text(cp.stdout + cp.stderr[-4000:], encoding="utf-8", newline="\n")
     line = next((x for x in cp.stdout.splitlines() if x.startswith("A4_PILOT ")), "")
@@ -991,9 +991,9 @@ for name, (extra, want, needle) in DRY_CASES.items():
                      if x.startswith("A4_PILOT_KEPT ")), "")
         print(f"DỪNG CẢ ĐỢT: ca {name} có lượt engine {etl!r} ({got.get('engine_turns_status') or 'không có báo cáo'}); "
               "không mở ca kế tiếp, không thử lại.")
-        if kept and os.environ.get("JAVIS_RESONANCE_A4_DRY_DIR"):
+        if kept and os.environ.get("UNIMATE_RESONANCE_A4_DRY_DIR"):
             import shutil as _shutil
-            dest = Path(os.environ["JAVIS_RESONANCE_A4_DRY_DIR"]) / f"incident-{name}"
+            dest = Path(os.environ["UNIMATE_RESONANCE_A4_DRY_DIR"]) / f"incident-{name}"
             _shutil.copytree(kept, dest, dirs_exist_ok=True)
             print(f"Bằng chứng (thư mục ca, gồm sổ usage và log server) đã chép vào {dest}")
         elif kept:

@@ -51,7 +51,7 @@ def _feature(tmp_path, brains):
 
 def test_legacy_json_migrates_once_and_keeps_snapshot(tmp_path):
     brain = tmp_path / "Brain A"
-    legacy = brain / "Javis" / "kanban.json"
+    legacy = brain / "UNI MATE" / "kanban.json"
     legacy.parent.mkdir(parents=True)
     legacy.write_text(
         json.dumps(
@@ -396,7 +396,7 @@ def test_report_ngan_va_khong_lap_lai(tmp_path):
     assert "Tôi sẽ lần theo" not in msg
     # lý do chỉ xuất hiện đúng một lần
     assert msg.count("Cần anh chốt bonus") == 1
-    # 0.411.0 (owner, 30/10/2026): a job stopped on a technical hitch is Javis's to handle (Javis Core gets the
+    # 0.411.0 (owner, 30/10/2026): a job stopped on a technical hitch is UNI MATE's to handle (UNI MATE Core gets the
     # incident and messages the owner only when a person is really needed), so its notice is QUIET and says there is
     # nothing to do. Only a permission request still rings: see test_viec_nen_hop_ly.py.
     assert kw.get("quiet") is True, kw

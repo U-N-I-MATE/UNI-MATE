@@ -19,8 +19,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-botsess-")
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"       # xem test_workflow_runs_api.py
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-botsess-")
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"       # xem test_workflow_runs_api.py
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -43,7 +43,7 @@ mk = lambda ch, title: store.create_session(brain="brain", engine="cli", title=t
 web = mk("web", "chat thường của chủ")
 tg = mk("telegram", "chat telegram")
 own = mk("agent:lan", "chủ chat với Lan")
-bot1 = mk("bot:javis-vu", "khách nhắn Javis Vũ")
+bot1 = mk("bot:unimate-vu", "khách nhắn Uni Vũ")
 bot2 = mk("bot:nhi-mai", "khách nhắn Nhi Mai")
 wf = mk("workflow:viet-bai", "chạy quy trình")
 cod = mk("coding:repo", "coding")
@@ -65,16 +65,16 @@ check("vòng tự học (channel='*') vẫn thấy mọi phiên, kể cả bot",
       {web, own, bot1, bot2, wf, cod} <= ids(store.list_sessions(limit=50, brain=["brain"], channel="*")))
 
 # 2. Lịch sử Agent
-hist = ids(store.list_sessions(limit=50, brain=["brain"], channel="agent:lan", also_channels=["bot:javis-vu"]))
+hist = ids(store.list_sessions(limit=50, brain=["brain"], channel="agent:lan", also_channels=["bot:unimate-vu"]))
 check("lịch sử Agent thấy cuộc chủ chat và phiên của bot dùng Agent đó", hist == {own, bot1}, hist)
 check("không thấy phiên của bot dùng Agent KHÁC", bot2 not in hist)
 check("không truyền kênh phụ thì như cũ (chỉ cuộc chủ chat)",
       ids(store.list_sessions(limit=50, brain=["brain"], channel="agent:lan")) == {own})
-two = ids(store.list_sessions(limit=50, brain=["brain"], channel="agent:lan", also_channels=["bot:javis-vu", "bot:nhi-mai"]))
+two = ids(store.list_sessions(limit=50, brain=["brain"], channel="agent:lan", also_channels=["bot:unimate-vu", "bot:nhi-mai"]))
 check("nhiều bot cùng dùng một Agent thì thấy hết", two == {own, bot1, bot2}, two)
 
 # 3. Tìm kiếm
-res = {r["session_id"] for r in store.search("đổi bộ não", brain=["brain"], channel="agent:lan", also_channels=["bot:javis-vu"])}
+res = {r["session_id"] for r in store.search("đổi bộ não", brain=["brain"], channel="agent:lan", also_channels=["bot:unimate-vu"])}
 check("tìm trong lịch sử Agent: thấy phiên chủ và phiên bot của Agent đó", res == {own, bot1}, res)
 res = {r["session_id"] for r in store.search("đổi bộ não", brain=["brain"], channel="agent:lan")}
 check("tìm không kênh phụ thì như cũ", res == {own}, res)
@@ -84,7 +84,7 @@ check("tìm ở Trò chuyện vẫn tìm mọi kênh (giữ hành vi cũ)", {web
 # 4. Ánh xạ Agent -> kênh bot ở tầng endpoint
 import main  # noqa: E402
 
-b1, err = chatbot_store.create_bot({"name": "Javis Vũ", "agent_slug": "lan", "brain": "brain"})
+b1, err = chatbot_store.create_bot({"name": "Uni Vũ", "agent_slug": "lan", "brain": "brain"})
 b2, err2 = chatbot_store.create_bot({"name": "Nhi Mai", "agent_slug": "hoa", "brain": "brain"})
 check("(chuẩn bị) tạo hai bot dùng hai Agent khác nhau", b1 and b2 and not err and not err2, (err, err2))
 k = main._kenh_bot_cua_agent("brain", "agent:lan")
@@ -108,7 +108,7 @@ cl = TestClient(main.app)
 ms = main.get_store()
 own2 = ms.create_session(brain="brain", engine="cli", title="chủ chat với Lan", channel="agent:lan")
 ms.append_message(own2, "user", "đổi bộ não giúp mình")
-bot_s = ms.create_session(brain="brain", engine="cli", title="khách nhắn Javis Vũ", channel="bot:" + slug1)
+bot_s = ms.create_session(brain="brain", engine="cli", title="khách nhắn Uni Vũ", channel="bot:" + slug1)
 ms.append_message(bot_s, "user", "khách hỏi đổi bộ não")
 r = cl.get("/sessions", params={"brain": "brain", "channel": "agent:lan", "limit": 1}).json()["sessions"]
 check("mặc định (chọn phiên để mở tiếp): CHỈ phiên của chính Agent, dù phiên bot mới hơn", [x["id"] for x in r] == [own2], r)
@@ -134,15 +134,15 @@ for lang in ("vi", "en"):
     d = json.loads((ROOT / "dashboard" / "i18n" / f"{lang}.json").read_text(encoding="utf-8"))
     check(f"i18n {lang} có sess.bot_badge", bool(d.get("sess.bot_badge")))
 
-# 7. Phiên của bot trong NHÓM mang tên NHÓM (chủ dự án 2026-09-30: xem lịch sử toàn "[Minh Quý] @Javis Vũ ..." rất loạn)
+# 7. Phiên của bot trong NHÓM mang tên NHÓM (chủ dự án 2026-09-30: xem lịch sử toàn "[Minh Quý] @Uni Vũ ..." rất loạn)
 gs = ms.create_session(brain="brain", engine="cli", title="", channel="bot:" + slug1)
-ms.append_message(gs, "user", "[Minh Quý] @Javis Vũ hầy")
+ms.append_message(gs, "user", "[Minh Quý] @Uni Vũ hầy")
 check("(chuẩn bị) phiên nhóm chưa có tên: tiêu đề hiện đang là tin đầu",
       next(x for x in ms.list_sessions(limit=50, brain=["brain"], channel="*") if x["id"] == gs)["preview"].startswith("[Minh Quý]"))
-check("đặt tên phiên theo tên nhóm", ms.name_group_session(gs, "  Lớp Javis   OS ") is True
-      and ms.get_session(gs)["title"] == "Lớp Javis OS", ms.get_session(gs))
+check("đặt tên phiên theo tên nhóm", ms.name_group_session(gs, "  Lớp UNI MATE   OS ") is True
+      and ms.get_session(gs)["title"] == "Lớp UNI MATE", ms.get_session(gs))
 check("đã có tên thì KHÔNG ghi đè (kể cả tên chủ tự đặt)", ms.name_group_session(gs, "Nhóm khác") is False
-      and ms.get_session(gs)["title"] == "Lớp Javis OS")
+      and ms.get_session(gs)["title"] == "Lớp UNI MATE")
 gs2 = ms.create_session(brain="brain", engine="cli", title="", channel="bot:" + slug1)
 check("nhóm chưa có tiêu đề: không đặt gì, để lượt sau đặt kịp",
       ms.name_group_session(gs2, "") is False and ms.name_group_session(gs2, None) is False

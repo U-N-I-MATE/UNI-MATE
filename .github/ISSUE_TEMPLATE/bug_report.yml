@@ -1,5 +1,5 @@
 name: Bug report
-description: Something in Javis does not work as it should.
+description: Something in UNI MATE does not work as it should.
 title: "[Bug] "
 labels: ["bug"]
 body:
@@ -29,7 +29,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Javis version
+      label: UNI MATE version
       description: Shown under Settings → Updates, or in the VERSION file.
       placeholder: "0.68.0"
     validations:
@@ -37,7 +37,7 @@ body:
   - type: dropdown
     id: deploy
     attributes:
-      label: How is Javis running?
+      label: How is UNI MATE running?
       options:
         - Docker on a VPS
         - Hostinger Docker Manager
@@ -55,5 +55,5 @@ body:
     id: logs
     attributes:
       label: Logs or screenshots
-      description: Server log lines (server/javis.log, or `docker compose logs`) and screenshots help a lot. Remove any API keys or tokens first.
+      description: Server log lines (server/unimate.log, or `docker compose logs`) and screenshots help a lot. Remove any API keys or tokens first.
       render: text

@@ -2,7 +2,7 @@
 
 Goal§12–15/code-first apply. Continue after preserving the proposer unit. The
 reuse map records exact upstream selection helpers assessed before this unit;
-reuse Javis require_product_store, not upstream finals-only selection/runtime.
+reuse UNI MATE require_product_store, not upstream finals-only selection/runtime.
 
 Known actual gap: TrialResults/OperationResults refuse a genuine anchored
 QualificationSession store, but ComparisonResults._evidence catches reader

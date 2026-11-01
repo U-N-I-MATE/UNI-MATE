@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""youtube_read.py - Đọc NỘI DUNG một video YouTube (phụ đề/transcript) để Javis tóm tắt được.
+"""youtube_read.py - Đọc NỘI DUNG một video YouTube (phụ đề/transcript) để UNI MATE tóm tắt được.
 
-Vì sao có file này: người dùng dán link YouTube vào khung chat và mong Javis tóm tắt. Trước đây
-Javis luôn báo "không đọc được", vì:
+Vì sao có file này: người dùng dán link YouTube vào khung chat và mong UNI MATE tóm tắt. Trước đây
+UNI MATE luôn báo "không đọc được", vì:
   - Sáu engine API (OpenRouter, OpenAI, Anthropic, Gemini, Groq, Ollama) KHÔNG có WebFetch,
     tức không mở được URL nào cả.
   - Ba engine CLI có WebFetch, nhưng trang YouTube là một khung React rỗng: tải HTML về chỉ
@@ -22,12 +22,12 @@ Hai đường lấy playerResponse, thử lần lượt vì không đường nà
 Không cần API key, không cần đăng nhập, không thêm thư viện (chỉ httpx đã có sẵn).
 
 GIỚI HẠN phải nói thẳng với người dùng khi gặp, đừng hứa suông:
-  - Video KHÔNG có phụ đề (kể cả phụ đề máy nghe) thì không có gì để đọc. Javis chỉ còn tiêu
+  - Video KHÔNG có phụ đề (kể cả phụ đề máy nghe) thì không có gì để đọc. UNI MATE chỉ còn tiêu
     đề + mô tả, và phải nói rõ là chưa đọc được nội dung.
   - Video riêng tư, giới hạn tuổi, hoặc bị chặn theo vùng thì YouTube từ chối ngay từ bước
     playerResponse.
   - YouTube có thể chặn IP máy chủ (hay gặp trên VPS) bằng màn "xác nhận không phải robot".
-    Đó là chặn phía YouTube, không phải lỗi cấu hình của Javis.
+    Đó là chặn phía YouTube, không phải lỗi cấu hình của UNI MATE.
 """
 from __future__ import annotations
 
@@ -58,20 +58,20 @@ TONG_TIMEOUT_S = 90.0
 
 
 def _proxy() -> str:
-    """Proxy RIÊNG cho YouTube, đặt qua biến môi trường JAVIS_YOUTUBE_PROXY. Rỗng = không dùng.
+    """Proxy RIÊNG cho YouTube, đặt qua biến môi trường UNIMATE_YOUTUBE_PROXY. Rỗng = không dùng.
 
     Vì sao đáng có: gốc rễ của "xác nhận bạn không phải robot" là DANH TIẾNG IP. YouTube đánh
     dấu dải IP của các nhà cung cấp máy chủ (AWS, Google Cloud, Azure, VPS giá rẻ...), nên
     cùng một đoạn mã chạy ở nhà thì trôi chảy còn chạy trên VPS thì bị hỏi giấy. Đổi client
     giúp được một phần, nhưng khi cả dàn client lẫn yt-dlp đều bị chặn thì thứ duy nhất còn
-    lại là đứng ở CHỖ KHÁC trên Internet. Các trang tải phụ đề không có phép màu nào Javis
+    lại là đứng ở CHỖ KHÁC trên Internet. Các trang tải phụ đề không có phép màu nào UNI MATE
     thiếu; phần lớn chỉ chạy từ IP dân cư hoặc proxy dân cư xoay vòng.
 
     Tách riêng khỏi HTTPS_PROXY của hệ thống có chủ ý: đặt HTTPS_PROXY là ĐẨY TOÀN BỘ lưu
-    lượng của Javis qua đó, gồm cả gọi model và MCP - vừa chậm vừa lộ dữ liệu cho bên thứ ba.
+    lượng của UNI MATE qua đó, gồm cả gọi model và MCP - vừa chậm vừa lộ dữ liệu cho bên thứ ba.
     Biến này chỉ đổi đường cho đúng phần đi YouTube.
     """
-    return str(os.getenv("JAVIS_YOUTUBE_PROXY", "") or "").strip()
+    return str(os.getenv("UNIMATE_YOUTUBE_PROXY", "") or "").strip()
 
 # Gom lời thoại thành khối ~45 giây rồi mới gắn mốc thời gian. Gắn mốc cho từng dòng phụ đề
 # (2-3 giây một dòng) làm phình văn bản gấp rưỡi mà chẳng thêm thông tin gì.
@@ -233,7 +233,7 @@ _CLIENT_SPECS = [
 # Trang giả làm nơi nhúng video. PHẢI là một URL KHÔNG thuộc YouTube: ý nghĩa của client nhúng
 # là giả một trang BÊN NGOÀI đang nhúng video, nên khai embedUrl là youtube.com vừa vô nghĩa
 # vừa bị từ chối. yt-dlp dùng đúng giá trị này kèm chú thích "Can be any valid non-YouTube URL"
-# (vá cho issue #14826). Bản trước của Javis khai youtube.com, tức hai client nhúng hỏng sẵn.
+# (vá cho issue #14826). Bản trước của UNI MATE khai youtube.com, tức hai client nhúng hỏng sẵn.
 _URL_NHUNG = "https://www.reddit.com/"
 
 
@@ -462,7 +462,7 @@ async def _player_response(client: httpx.AsyncClient, vid: str,
 # đã thua - video bình thường không phải trả cái giá đó.
 #
 # KHÔNG dùng cookie đăng nhập, có chủ ý: video thật sự riêng tư hay bắt đăng nhập theo tài
-# khoản thì vẫn bó tay, nhưng đổi lại Javis không phải giữ phiên YouTube của người dùng trên
+# khoản thì vẫn bó tay, nhưng đổi lại UNI MATE không phải giữ phiên YouTube của người dùng trên
 # máy chủ - thứ mà lộ ra là mất luôn tài khoản.
 def _bo_fmt(url: str) -> str:
     """Bỏ tham số fmt= khỏi URL phụ đề: chỗ gọi tự thêm fmt=json3 rồi mới lui về XML."""
@@ -1266,7 +1266,7 @@ async def tu_kiem(url: str, client: Optional[httpx.AsyncClient] = None,
     doi_chung_ok: Optional[bool] = None
 
     p("=" * 72)
-    p("JAVIS - TU KIEM DOC PHU DE YOUTUBE")
+    p("UNI MATE - TU KIEM DOC PHU DE YOUTUBE")
     p("=" * 72)
     p(f"Link      : {url}")
     p(f"Ma video  : {vid or '(KHONG TACH DUOC - link sai?)'}")
@@ -1286,7 +1286,7 @@ async def tu_kiem(url: str, client: Optional[httpx.AsyncClient] = None,
         client = httpx.AsyncClient(timeout=httpx.Timeout(15.0, connect=8.0),
                                    follow_redirects=True, proxy=_proxy() or None)
     try:
-        p(f"Proxy rieng: {_proxy() or '(khong dat JAVIS_YOUTUBE_PROXY)'}")
+        p(f"Proxy rieng: {_proxy() or '(khong dat UNIMATE_YOUTUBE_PROXY)'}")
         try:
             r = await client.get("https://ipinfo.io/json", timeout=8.0)
             j = r.json() if r.status_code == 200 else {}
@@ -1416,7 +1416,7 @@ async def tu_kiem(url: str, client: Optional[httpx.AsyncClient] = None,
     p("=" * 72)
     if nguon_track:
         ket = "OK"
-        p("KET LUAN: LAY DUOC phu de. Neu Javis van bao loi thi van de nam o tang tren,")
+        p("KET LUAN: LAY DUOC phu de. Neu UNI MATE van bao loi thi van de nam o tang tren,")
         p("          khong phai o duong mang.")
     elif da_ket_noi == 0:
         ket = "MANG_HONG"
@@ -1431,8 +1431,8 @@ async def tu_kiem(url: str, client: Optional[httpx.AsyncClient] = None,
         p("KET LUAN: KHONG duong nao lay duoc phu de, va video doi chung cung bi chan.")
         p("          Nhieu kha nang IP may chu bi YouTube danh dau. Doc cot reason o tren de chac.")
         p("")
-        p("Cach dut diem: dat JAVIS_YOUTUBE_PROXY=http://user:pass@host:port (proxy dan cu)")
-        p("roi khoi dong lai Javis. Chi rieng luu luong YouTube di qua do.")
+        p("Cach dut diem: dat UNIMATE_YOUTUBE_PROXY=http://user:pass@host:port (proxy dan cu)")
+        p("roi khoi dong lai UNI MATE. Chi rieng luu luong YouTube di qua do.")
     p("")
     p(f"KET_LUAN={ket}")
     p("Gui NGUYEN KHOI bao cao nay cho nguoi sua loi.")

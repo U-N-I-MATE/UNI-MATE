@@ -181,7 +181,7 @@ class AdaptiveContextCanary:
 
     @staticmethod
     def _learned_quota(settings: dict, provider: str, model: str) -> dict | None:
-        """Ngân sách dựng từ hạn mức Javis TỰ HỌC được từ lỗi nhà cung cấp.
+        """Ngân sách dựng từ hạn mức UNI MATE TỰ HỌC được từ lỗi nhà cung cấp.
 
         Đây không phải suy đoán hạn mức thương mại - điều mà module này vẫn từ chối làm. Đây
         là con số chính nhà cung cấp vừa nói ra cho ĐÚNG tài khoản này, đáng tin hơn mọi bảng
@@ -424,7 +424,7 @@ class AdaptiveContextCanary:
         base_tokenizer = HeuristicTokenizer(provider, model)
         base_item = ContextItem(
             id="source_fallback_contract", kind="source_fallback_contract", content=base_prompt,
-            source_ref=("javis:legacy-base:memory=" + str(not memory_applied).lower() +
+            source_ref=("unimate:legacy-base:memory=" + str(not memory_applied).lower() +
                         ":skills=" + str(not skill_applied).lower()),
             token_cost=base_tokenizer.count_text(base_prompt), relevance=1.0, confidence=1.0,
             authority=1.0, freshness=1.0, required=True, trust="system",
@@ -454,7 +454,7 @@ class AdaptiveContextCanary:
             # MEMORY.md, tức là lớn hơn hẳn cái vừa bị từ chối vì quá lớn. Provider sẽ trả
             # lỗi hạn mức, và người dùng chỉ thấy một lỗi khó hiểu từ nhà cung cấp.
             #
-            # Đây đúng là ca đã chặn Javis: gói Groq 12.000 TPM, một lượt cần 21.446 token.
+            # Đây đúng là ca đã chặn UNI MATE: gói Groq 12.000 TPM, một lượt cần 21.446 token.
             quota_reason = context_compiler.quota_block_reason(report)
             # Ngân sách SOFT = con số của CHÍNH TA (trần thuê bao, trần ngữ cảnh API mặc
             # định), không phải lời nhà cung cấp. Vượt nó thì lui về đường cũ, tuyệt đối
@@ -478,8 +478,8 @@ class AdaptiveContextCanary:
                 return AdaptiveContextPlan(
                     "reject", quota_reason, feature_status=status, compiler_report=report,
                     rejection_message=(
-                        localefmt.chu("Javis chưa gửi request vì biết trước là sẽ vượt hạn mức. ",
-                                      "Javis did not send the request because it would exceed the limit. ")
+                        localefmt.chu("UNI MATE chưa gửi request vì biết trước là sẽ vượt hạn mức. ",
+                                      "UNI MATE did not send the request because it would exceed the limit. ")
                         + model_limits.blocked_hint(provider, model, needed,
                                                     self._configured_providers())
                     ),

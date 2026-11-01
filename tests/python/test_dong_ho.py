@@ -1,15 +1,15 @@
-"""Javis phải biết BÂY GIỜ MẤY GIỜ trên mọi đường, kể cả đường tắt không phát tool.
+"""UNI MATE phải biết BÂY GIỜ MẤY GIỜ trên mọi đường, kể cả đường tắt không phát tool.
 
     python tests/run.py dong_ho
 
-Lỗi thật chủ repo chụp lại: hỏi "giờ Việt Nam là mấy giờ" thì Javis trả lời "MCP server của
-Javis hiện đang mất kết nối... khi nào kết nối lại em sẽ gọi tool javis_now". Không có server
+Lỗi thật chủ repo chụp lại: hỏi "giờ Việt Nam là mấy giờ" thì UNI MATE trả lời "MCP server của
+UNI MATE hiện đang mất kết nối... khi nào kết nối lại em sẽ gọi tool unimate_now". Không có server
 nào mất kết nối cả. Sự thật là lượt đó đi ĐƯỜNG TẮT của mức Siêu tiết kiệm, mà đường tắt gửi
 capsule KHÔNG KÈM TOOL NÀO - đó chính là chỗ nó tiết kiệm. Model không có đồng hồ, không có
 tool, nên nó làm cái tệ nhất: bịa ra một lý do nghe hợp lý.
 
 Bộ lọc câu hỏi CÓ chặn "bây giờ", "hôm nay"... nhưng chặn theo từ khoá là trò đuổi bắt, và
-"giờ Việt Nam là mấy giờ" lọt qua đúng như vậy. Nên chữa ở gốc: mọi prompt Javis gửi đi đều
+"giờ Việt Nam là mấy giờ" lọt qua đúng như vậy. Nên chữa ở gốc: mọi prompt UNI MATE gửi đi đều
 mang theo một dòng giờ thật. Khoảng 30 token, đổi lấy việc không còn cửa nào để bịa.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -20,7 +20,7 @@ import sys
 import tempfile
 from datetime import datetime, timedelta, timezone
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-dongho-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-dongho-")
 
 import context_compiler as cc  # noqa: E402
 import main  # noqa: E402
@@ -62,7 +62,7 @@ check("và đúng giờ đang chạy", _hom_nay.strftime("%H:%M") in _that
 # ---- 2. Capsule của ĐƯỜNG TẮT phải mang theo giờ. Đây là chỗ lỗi thật nằm ----
 from capability_registry import CapabilityRegistry  # noqa: E402
 
-_reg_dir = tempfile.mkdtemp(prefix="javis-dongho-reg-")
+_reg_dir = tempfile.mkdtemp(prefix="unimate-dongho-reg-")
 _reg = CapabilityRegistry(_reg_dir)
 _reg.refresh_tools("brain-a", [], {})
 _reg.refresh_model_profile("groq", "model-a", "api", True, {"observed": True})
@@ -74,7 +74,7 @@ check("biên soạn được capsule", _kq.status == "compiled")
 check("capsule đi đường tắt", _kq.capsule.path == "fast")
 _sys = _kq.capsule.rendered_request["messages"][0]["content"]
 # Nhãn múi giờ nay đọc từ cấu hình (vd "Asia/Ho_Chi_Minh (UTC+7)") thay vì ghim "Việt Nam":
-# người dùng đổi múi giờ mà Javis vẫn khai giờ Việt Nam là sai một cách rất khó ngờ, vì
+# người dùng đổi múi giờ mà UNI MATE vẫn khai giờ Việt Nam là sai một cách rất khó ngờ, vì
 # con số giờ thì đã đúng. Test bám vào ĐỘ LỆCH, thứ luôn có mặt.
 check("CANARY: capsule đường tắt CÓ mang theo giờ", "UTC+7" in _sys)
 check("giờ là món BẮT BUỘC, có tên riêng trong sổ nguồn",

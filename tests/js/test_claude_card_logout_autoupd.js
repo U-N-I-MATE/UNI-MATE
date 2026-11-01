@@ -5,7 +5,7 @@
 //
 // Code 19: "Ngắt" called POST /claude/logout on the first tap, so one stray tap signed the
 // machine out of the Claude plan. Code 18: the daily `claude update` could only be turned off
-// with the env var JAVIS_CLAUDE_AUTO_UPDATE=0.
+// with the env var UNIMATE_CLAUDE_AUTO_UPDATE=0.
 //
 // Test style: load the REAL refreshClaudeCard / veCapNhatClaude out of console.js into a vm with
 // a stub DOM, then press the buttons, instead of only scanning strings.
@@ -138,7 +138,7 @@ function load(opts) {
     const { el, byId } = makeEl();
     ctx.veCapNhatClaude(el, { cap_nhat: {}, auto_update: false, auto_update_env_off: true });
     const sw = byId.cliAutoUpd;
-    check("env JAVIS_CLAUDE_AUTO_UPDATE=0: switch off and locked, with the reason shown",
+    check("env UNIMATE_CLAUDE_AUTO_UPDATE=0: switch off and locked, with the reason shown",
       !!sw && !sw.checked && / id="cliAutoUpd"[^>]* disabled/.test(byId.cliUpd.innerHTML)
       && byId.cliUpd.innerHTML.includes("models.cc_auto_env_off"));
   }

@@ -5,7 +5,7 @@ Spec: [2026-10-13-team-chat-design.md](../superpowers/specs/2026-10-13-team-chat
 ## Luồng
 
 1. Chủ mở tab Cài đặt của nhóm, mục **Toàn quyền cho trưởng nhóm**: hộp cấp quyền có phạm vi, trợ lý do nhóm quản lý, provider được Không giới hạn lượt model, nguồn thanh toán, từng trần (giá trị và trần tối đa trưởng nhóm được đặt, mỗi ô có "Không giới hạn"), quyền "Được ngắt việc đang chạy", và các trần luôn áp không bỏ được. Bấm **Bật Toàn quyền**.
-2. Lời nhắc của trưởng nhóm có khối "Toàn quyền": trần đang áp, các lệnh quản trị dùng được (khối `JAVIS_TEAM`), giới hạn không vượt được. Ngắt việc chỉ hiện khi chủ cho.
+2. Lời nhắc của trưởng nhóm có khối "Toàn quyền": trần đang áp, các lệnh quản trị dùng được (khối `UNIMATE_TEAM`), giới hạn không vượt được. Ngắt việc chỉ hiện khi chủ cho.
 3. Trưởng nhóm trả lời kèm lệnh: mở việc, ưu tiên hay bỏ ưu tiên việc chờ, thêm hay bỏ thành viên, tạo trợ lý mới (thành trợ lý do nhóm quản lý), đặt trần trong mức tối đa, sửa lời nhắc hay bật tắt Cộng hưởng của trợ lý do nhóm quản lý, ngắt việc đang chạy (nếu được cho). Mỗi thao tác hiện thành tin hệ thống trong nhóm và có sự kiện `by=leader:<mã>`.
 4. Chủ bấm **Thu hồi** bất cứ lúc nào, hay đổi trưởng nhóm: nhóm về Quyền giới hạn ngay.
 
@@ -21,7 +21,7 @@ Spec: [2026-10-13-team-chat-design.md](../superpowers/specs/2026-10-13-team-chat
 
 ## Quy tắc đã giữ
 
-- Trưởng nhóm không có đường nào tự bật Toàn quyền: chỉ route của chủ (auth, CSRF) gọi `grant_authority`; lệnh lạ trong khối `JAVIS_TEAM` bị bỏ kèm ghi chú.
+- Trưởng nhóm không có đường nào tự bật Toàn quyền: chỉ route của chủ (auth, CSRF) gọi `grant_authority`; lệnh lạ trong khối `UNIMATE_TEAM` bị bỏ kèm ghi chú.
 - "Không giới hạn" lưu là `{"unlimited": true}` trong hộp cấp quyền và trả `None` ở trần hiệu lực; mã kiểm trần coi `None` là không có trần, không thay bằng số lớn (`reserve_turn` nhận `daily_cap=None`, `task_cap=None`).
 - Trần trưởng nhóm đặt phải nằm trong trần tối đa chủ đặt; trần tối đa vắng nghĩa là trưởng nhóm không đổi được trần đó; trần tối đa là số thì không đặt được "Không giới hạn".
 - D6: Không giới hạn lượt model (`task_turns`, `daily_turns`) chỉ áp khi provider của lượt (suy như adapter: model Claude riêng của agent là `anthropic-cli`, còn lại `aux`) có trong danh sách chủ tích; provider khác dùng trần của nhóm.
@@ -36,7 +36,7 @@ Spec: [2026-10-13-team-chat-design.md](../superpowers/specs/2026-10-13-team-chat
 - **Trần goal theo nhóm (13.6, các dòng goal) và duyệt phạm vi ghi A4 trong thư mục nhóm (D4): chưa làm.** Lượt nhóm vẫn chỉ chữ (phán quyết R3 của T1): không có đường nào tạo goal hay ghi file từ lượt nhóm, nên các trần đó không có gì để áp. Giá nếu sai: khi mở công cụ cho lượt nhóm phải làm hai phần này cùng lúc.
 - Đổi model của trợ lý do nhóm quản lý: chưa làm (chỉ lời nhắc và Cộng hưởng).
 - Trần "một lượt mỗi agent cùng lúc" giữ 1, chưa có ô cho chủ đổi.
-- Lệnh quản trị dùng khối `JAVIS_TEAM` (phán quyết R1 của T1) thay cho công cụ `javis_team`; `submit` của spec 15.2 không cần vì kết quả là chính câu trả lời.
+- Lệnh quản trị dùng khối `UNIMATE_TEAM` (phán quyết R1 của T1) thay cho công cụ `unimate_team`; `submit` của spec 15.2 không cần vì kết quả là chính câu trả lời.
 - Mở việc của trưởng nhóm có khoá chống trùng theo lượt (`leader:<turn_id>:<thứ tự lệnh>`): cùng lượt xử lý lặp không tạo việc thứ hai; hai lượt khác nhau mở cùng tiêu đề là hai việc.
 - Chữ của tin hệ thống, ghi chú lệnh bị bỏ chỉ tiếng Việt (như các chữ từ server khác của T1).
 

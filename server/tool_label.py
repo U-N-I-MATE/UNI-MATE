@@ -26,7 +26,7 @@ def _mot_dong(s: str) -> str:
 
 
 def _rut_gon_duong(s: str) -> str:
-    """Đường dẫn tuyệt đối dài (/root/.javis/brains/x/wiki/a.md) chỉ giữ 3 đoạn cuối."""
+    """Đường dẫn tuyệt đối dài (/root/.unimate/brains/x/wiki/a.md) chỉ giữ 3 đoạn cuối."""
     if len(s) > 40 and (s.startswith("/") or (len(s) > 2 and s[1] == ":")) and " " not in s:
         manh = s.replace("\\", "/").rstrip("/").split("/")
         if len(manh) > 3:

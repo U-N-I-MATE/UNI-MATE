@@ -1,4 +1,4 @@
-# Tái cấu trúc server Javis OS
+# Tái cấu trúc server UNI MATE
 
 Ngày: 2026-07-28
 Trạng thái: giai đoạn 0 XONG (0.9.235 + 0.9.236). Giai đoạn 1-4 chờ kế hoạch thực thi.
@@ -17,7 +17,7 @@ Tiến độ:
       Mục 2.1 gốc SAI và đã bỏ: `server/brains-backup/` là bản sao làm việc git của tính năng
       sao lưu brain lên GitHub (`main.py:1474`) và đang có thay đổi chưa commit;
       `server/.staging/` chứa file người dùng upload thật; `server/tmp/` đang được
-      `claude_sdk_engine.py:254` dùng. Cả ba là nội dung `JAVIS_STATE_DIR`, mà `STATE_DIR`
+      `claude_sdk_engine.py:254` dùng. Cả ba là nội dung `UNIMATE_STATE_DIR`, mà `STATE_DIR`
       mặc định chính là `server/`, nên "dời ra ngoài" thực chất là đổi `STATE_DIR` - đúng
       điều mục 3 cấm. Muốn `server/` gọn thì đó là quyết định cấu hình của từng máy, không
       phải thay đổi code.
@@ -70,7 +70,7 @@ Thiếu ở TELEGRAM:
 
 Thiếu ở DASHBOARD:
 7. ~~Không `strip_control_blocks` trước khi `store.append_message`/`log_conversation`~~, nên khối
-   `<!-- JAVIS_ASK ... -->` thô lọt vào kho phiên và vào nhật ký hội thoại - tức lọt vào chính
+   `<!-- UNIMATE_ASK ... -->` thô lọt vào kho phiên và vào nhật ký hội thoại - tức lọt vào chính
    corpus dùng để tự học. **XONG 0.9.244.**
 8. ~~Khung `response` của nhánh Claude nằm TRONG handler `final`~~, không có `final` thì không có
    `response`. **XONG 0.9.245.**
@@ -158,9 +158,9 @@ và spec này được xây trên phần còn đúng.
 **Bác bỏ 1: hermes-agent không gọn hơn.** Bản clone tại `.learn/hermes` là repo thật
 (remote NousResearch/hermes-agent, HEAD 972b1620). `gateway/run.py` 18.911 dòng, `cli.py` 15.695,
 `hermes_cli/web_server.py` 14.142, `hermes_cli/config.py` 7.731. Có 12 file source của hermes lớn
-hơn `server/main.py` (6.442). Trung bình 712 dòng/file so với 558 của Javis. Về đăng ký route hermes
+hơn `server/main.py` (6.442). Trung bình 712 dòng/file so với 558 của UNI MATE. Về đăng ký route hermes
 còn kém hơn: 200 route treo `@app.*` trong một file 14k dòng, `APIRouter` chỉ dùng ở 4 chỗ phụ,
-trong khi Javis đã có 5 module feature dùng `APIRouter` + `register(app, Deps)`.
+trong khi UNI MATE đã có 5 module feature dùng `APIRouter` + `register(app, Deps)`.
 Kết luận: không lấy hermes làm khuôn mẫu cấu trúc. Bốn thứ duy nhất đáng học là `pyproject.toml`,
 `tools/registry.py` (tự đăng ký + discovery lazy bằng AST), `PluginContext` 18 điểm mở rộng có kiểu,
 và `tests/` soi gương cây source.
@@ -194,12 +194,12 @@ một tiến trình uvicorn duy nhất không `--workers` (`Dockerfile:96`, `mai
 
 ## 3. Không phải mục tiêu
 
-- **Không** đổi sang package `pyproject.toml` / `src/javis/`. Lý do là bẫy ở mục 8.1.
+- **Không** đổi sang package `pyproject.toml` / `src/unimate/`. Lý do là bẫy ở mục 8.1.
 - **Không** cache system prompt theo chữ ký file trong đợt này. Nếu sót một đầu vào thì prompt cũ
   được dùng âm thầm, model hành xử sai mà không có lỗi nào báo. Chờ đo lại sau giai đoạn 1.
 - **Không** đụng 3 vòng import đang được phá bằng import trong hàm (`config`↔`secrets_store`,
   `oauth_mcp`↔`mcp_store`, `claude_cli`↔`claude_sdk_engine`).
-- **Không** đổi mặc định `JAVIS_STATE_DIR`. Nó đang trỏ `server/`, nơi mọi bản cài hiện có giữ
+- **Không** đổi mặc định `UNIMATE_STATE_DIR`. Nó đang trỏ `server/`, nơi mọi bản cài hiện có giữ
   `settings.json`, `.secret_key`, `.hub_token`, `kanban.sqlite3`, `conversations.db`. Đổi mặc định
   là người dùng bật lên thấy mất tài khoản và toàn bộ connector.
 - **Không** gộp đoạn dispatch engine 4 nhánh bị viết hai lần ở `_do_turn` (5459-5599) và
@@ -232,7 +232,7 @@ Guard đã được kiểm chứng là bắt được lỗi: cố tình xoá `/b
 Số đo trên brain lớn `brains/My Bullet Journal` (623 file .md, 30 skill), máy Windows, cache nóng:
 
 - `build_system_prompt()` **150,8ms** (trung vị 5 lần). Bóc ra: `list_skills` 53,4ms,
-  `plugins_host.describe` 34,7ms, `_gather_capabilities` 76,9ms, `_javis_capability_summary` 69,8ms,
+  `plugins_host.describe` 34,7ms, `_gather_capabilities` 76,9ms, `_unimate_capability_summary` 69,8ms,
   `_skill_router_block` 26,9ms.
 - `GET /brains` **136,1ms**.
 - `usage_index.summary()` 46,7ms, `usage_index.insights()` 46,6ms.
@@ -329,7 +329,7 @@ và docker context đều phải đi qua. Xoá luôn hai thư mục rỗng vô n
 do một lệnh redirect hỏng) và `server/tmp/`.
 
 **2.2 Vá `.gitignore` cho 6 artifact đang vừa không track vừa không ignore:** `server/_selfupdate.bat`
-(hardcode `D:\Project\Javis-OS`), `server/brain-trash/`, `server/kanban.sqlite3`, `server/logs/`,
+(hardcode `D:\Project\UNI-MATE`), `server/brain-trash/`, `server/kanban.sqlite3`, `server/logs/`,
 `server/tg_brain.json`, `server/update_state.json`. Một cú `git add -A` là commit hết.
 Đã xác minh hiện không có gì nhạy cảm bị TRACK.
 
@@ -373,7 +373,7 @@ Nghiệm thu: CI xanh với đủ 67 test Python và 11 test JS, `server/` khôn
 ### 8.1 Bẫy phải biết trước
 
 `updater.py:143` hardcode `pip install -r requirements.txt` (không có `-e .`) và `updater.py:131`
-hardcode `uvicorn main:app`. `javis.service` là template có `__APP_DIR__` được `install.sh` thay,
+hardcode `uvicorn main:app`. `unimate.service` là template có `__APP_DIR__` được `install.sh` thay,
 nên unit systemd đang chạy không nằm trong git và `git pull` không bao giờ cập nhật `ExecStart`.
 Hệ quả: mọi thay đổi làm `main:app` không còn import được từ `server/` sẽ khiến lần tự cập nhật kế tiếp
 trên VPS pull về code mà updater cũ không cài và không khởi động được, health trượt, rollback tự động,
@@ -381,7 +381,7 @@ và máy kẹt vĩnh viễn dưới commit đó.
 
 **Ràng buộc cứng của giai đoạn 4: sau mỗi commit, `uvicorn main:app --app-dir server` phải chạy được y nguyên.**
 Đây là lý do spec giữ `server/` phẳng, giữ import bằng tên trần, và không đổi `Dockerfile`,
-`javis.service`, `start-javis.vbs`, `updater.py`.
+`unimate.service`, `start-unimate.vbs`, `updater.py`.
 
 ### 8.2 Module nền, làm trước
 
@@ -414,7 +414,7 @@ Nhóm chỉ dùng helper của chính nó, gỡ ra không đụng ai:
 `routes/files.py` (2715-3009 + 3012-3196 + 3222-3302), `routes/connectors.py` (966-1317, 26 route),
 `routes/models.py` (884-960 + 1555-1676, 14 route), `routes/chat_ws.py` (5385-5671),
 `channels/telegram.py` (5710-6399), `routes/misc.py` (`/`, `/stop`, `/health`, `/memory/stats`,
-`/reflect`, `/viec/all`, `/lint`, `/javis/index`, `/image/generate`, `/plugins`).
+`/reflect`, `/viec/all`, `/lint`, `/unimate/index`, `/image/generate`, `/plugins`).
 
 **Thứ tự bắt buộc:** `vault.py` và `files.py` phải đi SAU `lifecycle.py`, vì `_prewarm_mdindex` và
 `_ensure_default_brain`/`_sync_system_all_brains` là hook khởi động chạm vào chúng.

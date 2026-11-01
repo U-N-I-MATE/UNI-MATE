@@ -1,4 +1,4 @@
-/* chat-steps.js - khoi "tien trinh tung buoc" trong khung chat Javis.
+/* chat-steps.js - khoi "tien trinh tung buoc" trong khung chat UNI MATE.
 
    Van de: server DA ban ra su kien tool_call cho moi engine (main.py), nhung dashboard chi co
    MOT dong trang thai (showActivity): buoc moi ghi de buoc cu, het luot thi xoa sach. Luot
@@ -57,7 +57,7 @@
     [/^(websearch|web_search|web_search_call|google_search|search_web)$/, "app.step_v_search"],
     [/^(task|agent)$/, "app.step_v_agent"],
     [/^(todowrite|todo_write|update_plan)$/, "app.step_v_todo"],
-    [/^(skill|javis_use_skill)$/, "app.step_v_skill"]
+    [/^(skill|unimate_use_skill)$/, "app.step_v_skill"]
   ];
   function loaiCongCu(ten) {
     var t = String(ten || "").toLowerCase().trim();
@@ -155,7 +155,7 @@
      chay, bao nhieu buoc, buoc moi nhat la gi. Chi bung khi nguoi dung bam (`_moTay`). */
   function ve(el, st, dangChay) {
     if (!el) el = taoKhoi();
-    // Nhớ mạch để vẽ lại khi từ điển về (xem bộ nghe "javis:i18n" cuối file).
+    // Nhớ mạch để vẽ lại khi từ điển về (xem bộ nghe "unimate:i18n" cuối file).
     el._st = st; el._dangChay = !!dangChay;
     var cu = chuanHoa(st);
     var txt = el.querySelector(".steps-sum-text");
@@ -178,12 +178,12 @@
   }
 
   var API = { nhan: nhan, tomTat: tomTat, taoKhoi: taoKhoi, ve: ve, nhanDong: nhanBuoc, TRAN: TRAN };
-  if (typeof window !== "undefined") window.JavisSteps = API;
+  if (typeof window !== "undefined") window.UniMateSteps = API;
   // Mở lại hội thoại (restoreSession) vẽ khối bước TRƯỚC khi từ điển tải xong, lúc đó t() trả
   // về chính cái khoá, nên người dùng thấy chữ thô "app.steps_done" (chủ repo báo 27/09). Từ
   // điển về thì vẽ lại mọi khối đang có.
   if (typeof window !== "undefined" && window.addEventListener) {
-    window.addEventListener("javis:i18n", function () {
+    window.addEventListener("unimate:i18n", function () {
       var ds = document.querySelectorAll(".msg-steps");
       for (var i = 0; i < ds.length; i++) {
         if (ds[i]._st) { try { ve(ds[i], ds[i]._st, ds[i]._dangChay); } catch (e) {} }

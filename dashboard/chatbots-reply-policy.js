@@ -1,5 +1,5 @@
 // ============================================================
-// Javis - Bộ phán xử hội thoại nhóm: phần giao diện.
+// UNI MATE - Bộ phán xử hội thoại nhóm: phần giao diện.
 //
 // Từ 0.65.1 KHÔNG còn ô cài đặt nào cho bộ phán xử. Chọn "Tự đánh giá" ở phần Bot trả lời ai là xong: máy tự
 // chọn mức hăng hái, tự tra tài liệu hay dựa vào vai, tự học từ phản ứng trong nhóm. Chủ chỉ còn hai việc, đều
@@ -23,12 +23,12 @@
   function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
   function tt(k, v) { return window.t(k, v); }
   // (i) button (info-tip.js, 0.214.0): explanations sit behind it; without the helper (Node tests) they draw open.
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(tt("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(tt("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
-  function loc() { return (window.JavisI18n && window.JavisI18n.locale()) || "vi-VN"; }
+  function loc() { return (window.UniMateI18n && window.UniMateI18n.locale()) || "vi-VN"; }
   function gio(ts) {
     if (!ts) return "";
     try { return new Date(ts * 1000).toLocaleString(loc()); } catch (e) { return ""; }
@@ -211,5 +211,5 @@
     await tai();
   }
 
-  window.JavisReplyPolicy = { formHtml: formHtml, summary: summary, openPanel: openPanel, codeLabel: codeLabel };
+  window.UniMateReplyPolicy = { formHtml: formHtml, summary: summary, openPanel: openPanel, codeLabel: codeLabel };
 })();

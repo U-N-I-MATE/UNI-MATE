@@ -15,7 +15,7 @@ import json
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-call-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-call-"))
 
 import codex_realtime  # noqa: E402
 import main  # noqa: E402

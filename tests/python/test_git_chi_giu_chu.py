@@ -16,7 +16,7 @@ lượt xuất lại là thêm nguyên một cục, vĩnh viễn.
 BẪY CHÍNH mà test này canh: luật allowlist CHỈ ĐÚNG KHI ĐÚNG THỨ TỰ - chặn hết, mở lại cho
 chữ, rồi chặn lần nữa mấy thư mục cấm. Bản `_ensure_gitignore_lines` cũ chỉ NỐI THÊM dòng
 thiếu vào cuối file, nên với một brain cũ thì mấy dòng "chặn lại" nằm TRƯỚC dòng "mở cho chữ"
-và git hiểu ngược: `Javis/learn-log/*.json` được mở lại. Log thô có thể chứa secret, nên đó
+và git hiểu ngược: `UniMate/learn-log/*.json` được mở lại. Log thô có thể chứa secret, nên đó
 không phải lỗi thẩm mỹ.
 """
 import json
@@ -29,7 +29,7 @@ from pathlib import Path
 
 from _paths import ROOT, SERVER  # noqa: E402,F401
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-gitchu-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-gitchu-"))
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -64,7 +64,7 @@ check("thư mục tên giống media không làm lệch phép thử",
 check("mirror bỏ media", G._backup_skip("wiki/anh.jpg") and G._backup_skip("clip.mp4"))
 check("mirror giữ chữ", not G._backup_skip("wiki/ghi-chu.md"))
 check("mirror vẫn bỏ file nhạy cảm dù là chữ",
-      G._backup_skip("brain/Javis/learn-log/log.json")
+      G._backup_skip("brain/UniMate/learn-log/log.json")
       and G._backup_skip("brain/memory/conversations/2026-08-08.md")
       and G._backup_skip("brain/x.tmp"))
 SRC = (SERVER / "git_brain.py").read_text(encoding="utf-8")
@@ -84,10 +84,10 @@ def _gi(tmp):
 
 d1 = tempfile.mkdtemp()
 gi = _gi(d1)
-check("brain mới: có khối của Javis, có mốc mở/đóng", G._GI_MO in gi and G._GI_DONG in gi)
+check("brain mới: có khối của UNI MATE, có mốc mở/đóng", G._GI_MO in gi and G._GI_DONG in gi)
 check("brain mới: chặn tất cả trước", "\n*\n" in gi)
 check("brain mới: mở lại cho thư mục và cho .md", "\n!*/\n" in gi and "\n!*.md\n" in gi)
-i_chan, i_mo, i_camlai = gi.index("\n*\n"), gi.index("\n!*.md\n"), gi.index("Javis/learn-log/")
+i_chan, i_mo, i_camlai = gi.index("\n*\n"), gi.index("\n!*.md\n"), gi.index("UniMate/learn-log/")
 check("THỨ TỰ: chặn hết → mở cho chữ → chặn lại thư mục cấm", i_chan < i_mo < i_camlai)
 check("gọi lần hai không ghi lại vô ích (idempotent)", G._ensure_gitignore_lines(d1) is False)
 
@@ -95,24 +95,24 @@ check("gọi lần hai không ghi lại vô ích (idempotent)", G._ensure_gitign
 # ---- 4. Nâng cấp một brain CŨ: giữ luật riêng của user, dọn template cũ ----
 d2 = tempfile.mkdtemp()
 (Path(d2) / ".gitignore").write_text(
-    "# Javis brain - KHÔNG commit: khoá, log thô (có thể chứa secret), nhật ký nền.\n"
-    ".javis-learn.lock\nJavis/learn-log/\nattachments/\ninbox/\n*.tmp\n\n"
+    "# UNI MATE brain - KHÔNG commit: khoá, log thô (có thể chứa secret), nhật ký nền.\n"
+    ".unimate-learn.lock\nUNI MATE/learn-log/\nattachments/\ninbox/\n*.tmp\n\n"
     "# luat rieng cua toi\nbao-mat/\n", encoding="utf-8")
 gi2 = _gi(d2)
 check("nâng cấp: giữ nguyên luật riêng của user", "bao-mat/" in gi2)
 check("nâng cấp: giữ luôn cả dòng chú thích của user", "# luat rieng cua toi" in gi2)
 check("nâng cấp: dòng template CŨ không nằm lẫn ngoài khối nữa",
-      gi2.count("Javis/learn-log/") == 1 and gi2.count("inbox/") == 1)
-check("nâng cấp: luật riêng của user nằm SAU khối Javis (user đè lên được)",
+      gi2.count("UniMate/learn-log/") == 1 and gi2.count("inbox/") == 1)
+check("nâng cấp: luật riêng của user nằm SAU khối UNI MATE (user đè lên được)",
       gi2.index(G._GI_DONG) < gi2.index("bao-mat/"))
 check("nâng cấp: THỨ TỰ trong khối vẫn đúng",
-      gi2.index("\n*\n") < gi2.index("\n!*.md\n") < gi2.index("Javis/learn-log/"))
+      gi2.index("\n*\n") < gi2.index("\n!*.md\n") < gi2.index("UniMate/learn-log/"))
 
 
 # ---- 5. Thử trên git THẬT: lời nói phải khớp với việc git làm ----
 if shutil.which("git"):
     d3 = tempfile.mkdtemp()
-    for sub in ("Javis/learn-log", "attachments", "wiki", "bao-mat"):
+    for sub in ("UniMate/learn-log", "attachments", "wiki", "bao-mat"):
         os.makedirs(os.path.join(d3, sub), exist_ok=True)
     subprocess.run(["git", "init", "-q", "."], cwd=d3, capture_output=True)
     G._ensure_gitignore_lines(d3)
@@ -121,7 +121,7 @@ if shutil.which("git"):
     ghi = {
         "wiki/ghi-chu.md": "tri thuc", "wiki/bang.csv": "a,b",
         "wiki/anh.jpg": "x", "clip.mp4": "x", "am-thanh.mp3": "x",
-        "Javis/learn-log/log.json": '{"secret":"abc"}',
+        "UniMate/learn-log/log.json": '{"secret":"abc"}',
         "attachments/note.md": "x", "attachments/anh.png": "x",
         "bao-mat/key.md": "x",
     }
@@ -139,7 +139,7 @@ if shutil.which("git"):
     check("git THẬT: KHÔNG commit video", "clip.mp4" not in theo_doi)
     check("git THẬT: KHÔNG commit âm thanh", "am-thanh.mp3" not in theo_doi)
     check("git THẬT: KHÔNG commit log thô dù nó là .json (bẫy thứ tự luật)",
-          "Javis/learn-log/log.json" not in theo_doi)
+          "UniMate/learn-log/log.json" not in theo_doi)
     check("git THẬT: KHÔNG commit thứ trong attachments dù là .md",
           "attachments/note.md" not in theo_doi)
     check("git THẬT: luật riêng của user vẫn có tác dụng", "bao-mat/key.md" not in theo_doi)

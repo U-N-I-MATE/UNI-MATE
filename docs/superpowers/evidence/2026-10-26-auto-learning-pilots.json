@@ -10,7 +10,7 @@
   "effort": "medium"
  },
  "scenario": "tools/auto_learning_pilot.py: a door shop's quote skill misses 8% VAT, a 30% deposit and a 200.000 delivery fee below 5.000.000; 4 chat turns answered by the real model with the current skill, each followed by the owner's correction; then judge, case writer, Harness² loop with a model grader, apply",
- "fixed_check": "6 fresh requests, deterministic numbers, never seen by Javis (VAT on goods only)",
+ "fixed_check": "6 fresh requests, deterministic numbers, never seen by UNI MATE (VAT on goods only)",
  "scope_of_claim": "One skill, synthetic chat, one engine. Agents and workflows run the same pipeline but were only exercised with fakes. Not a production measurement.",
  "pilots": [
   {

@@ -3,12 +3,12 @@
     python tests/run.py voice_live_paste
 
 Owner report 2026-10-19: in Live mode, pasting an image opened an ordinary chat turn (read aloud by the Edge voice,
-in Vietnamese) while the Live model, told "look at this picture", handed the same picture to ask_javis (a second
+in Vietnamese) while the Live model, told "look at this picture", handed the same picture to ask_unimate (a second
 brain turn, spoken in English). Two answers over each other. The contract now:
   - the dashboard sends the message as an "ask" frame on /ws/voice-live, no chat turn of its own;
   - the route stores the full message (F5 rebuilds the image bubble from it), runs the brain ONCE and has the Live
     model read the answer;
-  - while that runs, and a short while after, an ask_javis about the image is acknowledged, not run again;
+  - while that runs, and a short while after, an ask_unimate about the image is acknowledged, not run again;
   - the reply language falls back to the configured one when the spoken line gives none.
 """
 from _paths import ROOT, SERVER  # noqa: F401
@@ -34,7 +34,7 @@ class AttachmentWordsTests(unittest.TestCase):
     def test_readback_text(self):
         t = voice_live.readback_text("Ảnh là **mì** và sốt.")
         self.assertTrue(t.startswith(voice_live.LATE_RESULT_TAG))
-        self.assertIn("không gọi ask_javis", t)
+        self.assertIn("không gọi ask_unimate", t)
         self.assertIn("mì", t)
         self.assertNotIn("**", t, "markdown is stripped before speech")
         self.assertNotIn("—", voice_live.ATTACHMENT_ACK + t)
@@ -57,17 +57,17 @@ class LivePasteRouteTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
                                "files": ["mi-sot.png"]})
             await h.until(lambda: len(h.asks) == 1, "the brain runs the pasted file")
             # The Live model hears "look at this image" and tries to hand the same file over again.
-            await prov.q.put({"type": "tool_call", "id": "c1", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "c1", "name": "ask_unimate",
                               "args": {"request": "Look at the image the user just pasted"}})
             await h.until(lambda: any(c == "c1" for c, _ in prov.acks), "the duplicate is acknowledged")
             h.release(0)
             await h.until(lambda: prov.readbacks, "the model reads the answer")
             # Right after the answer, the same question again is still that file.
-            await prov.q.put({"type": "tool_call", "id": "c2", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "c2", "name": "ask_unimate",
                               "args": {"request": "Describe the picture"}})
             await h.until(lambda: any(c == "c2" for c, _ in prov.acks), "the late duplicate is acknowledged too")
             # A real new request still goes through.
-            await prov.q.put({"type": "tool_call", "id": "c3", "name": "ask_javis",
+            await prov.q.put({"type": "tool_call", "id": "c3", "name": "ask_unimate",
                               "args": {"request": "doanh thu hôm nay bao nhiêu"}})
             await h.until(lambda: len(h.asks) == 2, "a new request runs")
             h.release(1)
@@ -82,7 +82,7 @@ class LivePasteRouteTests(LiveRouteMixin, unittest.IsolatedAsyncioTestCase):
         self.assertIn(FULL, users, "the stored message keeps the file block so F5 shows the image")
         bubbles = [f["text"] for f in frames if f["type"] == "tool_result"]
         self.assertEqual(bubbles[0], "Ảnh là mì và sốt.")
-        self.assertEqual(sum(f == {"type": "tool", "name": "ask_javis", "status": "running"} for f in frames), 2)
+        self.assertEqual(sum(f == {"type": "tool", "name": "ask_unimate", "status": "running"} for f in frames), 2)
 
     async def test_reply_language_falls_back_to_the_configured_one(self):
         async def script(prov, h):
@@ -123,10 +123,10 @@ class SourceCanaries(unittest.TestCase):
     def test_route_and_dashboard(self):
         main = (SERVER / "main.py").read_text(encoding="utf-8")
         self.assertIn('d.get("type") == "ask"', main)
-        self.assertIn("[voice live] bỏ ask_javis trùng", main, "a blocked duplicate leaves a log line")
+        self.assertIn("[voice live] bỏ ask_unimate trùng", main, "a blocked duplicate leaves a log line")
         self.assertNotIn("call_lang=lang_mod.call_language(", main, "every Live brain turn uses the fallback")
         app = (ROOT / "dashboard" / "app.js").read_text(encoding="utf-8")
-        self.assertIn("window.JavisVoiceLive.ask(liveMsg", app, "a paste during Live goes through the ask frame")
+        self.assertIn("window.UniMateVoiceLive.ask(liveMsg", app, "a paste during Live goes through the ask frame")
         js = (ROOT / "dashboard" / "voice-live.js").read_text(encoding="utf-8")
         self.assertIn('type: "ask"', js)
         self.assertIn("ask: ask", js)

@@ -19,7 +19,7 @@ import threading
 from contextvars import ContextVar
 from typing import Dict, List, Optional, Tuple
 
-CURRENT: ContextVar[bool] = ContextVar("javis_fast_mode", default=False)
+CURRENT: ContextVar[bool] = ContextVar("unimate_fast_mode", default=False)
 
 # Claude Fast mode: Opus 5.5, Opus 5 and Opus 4.8 only. An empty model means Claude Code's
 # default and the "opus" alias points at Opus 5.5, so both count.
@@ -52,8 +52,8 @@ def claude_supports(model: str) -> bool:
 def claude_sdk_settings(model: str, on: bool) -> str:
     """`ClaudeAgentOptions(settings=...)` value (a JSON string).
 
-    Always explicit: Claude Code persists /fast in ~/.claude/settings.json, and Javis loads user
-    settings, so "nothing" would let a /fast typed once in a terminal bill every Javis turn 2x.
+    Always explicit: Claude Code persists /fast in ~/.claude/settings.json, and UNI MATE loads user
+    settings, so "nothing" would let a /fast typed once in a terminal bill every UNI MATE turn 2x.
     Flag settings win over user settings, so `false` here means normal speed (review 0.164.0)."""
     return json.dumps({"fastMode": bool(on and claude_supports(model))})
 

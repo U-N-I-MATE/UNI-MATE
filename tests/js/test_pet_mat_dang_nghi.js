@@ -75,7 +75,7 @@ global.CustomEvent = function () {};
 global.FormData = function () { this.append = function () {}; };
 
 require(path.join(root, "dashboard", "pet.js"));
-const P = window.JavisPet;
+const P = window.UniMatePet;
 check("pet.js nạp được với DOM giả", !!P && typeof P.setState === "function");
 
 // Dáng mắt ĐANG VẼ. Ba dáng phân biệt được bằng chính hình của chúng, và phải phân biệt được:

@@ -45,7 +45,7 @@ const sandbox = { window, document, history: { pushState() {}, back() {} },
   getComputedStyle: () => ({ paddingLeft: "0px", paddingRight: "0px",
     paddingTop: "0px", paddingBottom: "0px" }), Date: { now: () => now }, console };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../../dashboard/chat-render.js"), "utf8"), sandbox);
-window.JavisLightbox.open("data:image/png;base64,AA==", "ảnh thử");
+window.UniMateLightbox.open("data:image/png;base64,AA==", "ảnh thử");
 
 let prevented = 0;
 function touch(name, points) {

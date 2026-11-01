@@ -20,7 +20,7 @@ import os
 import re
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-voicecfg-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-voicecfg-")
 
 from fastapi.testclient import TestClient   # noqa: E402
 import config as c   # noqa: E402

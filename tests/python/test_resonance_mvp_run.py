@@ -15,8 +15,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m3-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m3-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -31,8 +31,8 @@ def check(name, cond):
 
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-m3-")).resolve())
-(Path(BRAIN) / "Javis").mkdir(parents=True)
-P = RS.Principal("agent", "javis", BRAIN)
+(Path(BRAIN) / "UNI MATE").mkdir(parents=True)
+P = RS.Principal("agent", "unimate", BRAIN)
 OWNER = RS.Principal("owner", "owner", BRAIN)
 store = RS.GoalStore()
 import _resonance_agent as RA  # noqa: E402  - A1: Cộng hưởng bật theo agent, không theo brain
@@ -218,7 +218,7 @@ try:
 except R.GoalRejected as _e:
     _rej = "path" in str(_e)
 check("đường dẫn ra ngoài brain bị từ chối ngay lúc lập mục tiêu, nói rõ vì sao", _rej)
-g_out = R.GoalRecord(id="g_out", brain_id=BRAIN, owner="javis", revision=1, output_root=BRAIN,
+g_out = R.GoalRecord(id="g_out", brain_id=BRAIN, owner="unimate", revision=1, output_root=BRAIN,
                      criteria=({"id": "c1", "description": "File ngoài brain", "evaluator": "artifact_contract",
                                 "params": {"path": "../ngoai-brain.md"}},))
 check("evaluator vẫn tự vệ: khung lỗi lọt tới thì unknown (lỗi evaluator), không đọc ngoài brain",
@@ -295,19 +295,19 @@ check("không ghi đè file người dùng đã sửa (xung đột thì giữ ng
       target(g_pub).read_text(encoding="utf-8") == "# Bản anh tự sửa\n"
       and any(e["kind"] == "publish_conflict" for e in store.events(P, g_pub2.id)))
 # Câu báo nói đúng nguyên nhân (review pilot lần 3): g_pub2 chưa từng ghi file này nên không được nói "đã sửa sau
-# lần Javis ghi trước".
+# lần UNI MATE ghi trước".
 _conf = [r for r in store.outbox_pending(200) if r["goal_id"] == g_pub2.id and r["kind"] == "goal.publish_conflict"]
 _t_new = R.notice_text(g_pub2, "goal.publish_conflict", _conf[0]["payload"]) if _conf else ""
 check("xung đột với file có sẵn (chưa từng ghi): báo file có sẵn, chưa tiếp nhận, bản mới chưa đăng",
       bool(_conf) and _conf[0]["payload"].get("had_baseline") is False
-      and ("đã có sẵn" in _t_new or "already existed" in _t_new) and "lần Javis ghi trước" not in _t_new)
+      and ("đã có sẵn" in _t_new or "already existed" in _t_new) and "lần UNI MATE ghi trước" not in _t_new)
 _t_old = R.notice_text(g_pub2, "goal.publish_conflict", {"path": "Inbox/viec-dang-do.md", "had_baseline": True})
-check("xung đột sau lần đã ghi: mới nói file đã đổi sau lần Javis ghi trước",
-      "lần Javis ghi trước" in _t_old or "last wrote" in _t_old)
+check("xung đột sau lần đã ghi: mới nói file đã đổi sau lần UNI MATE ghi trước",
+      "lần UNI MATE ghi trước" in _t_old or "last wrote" in _t_old)
 target(g_pub).unlink(missing_ok=True)
 
-# Sản phẩm không được tạo file ở chỗ Javis tự chạy hay tự nạp (loop, agent, skill, plugin, bộ nhớ, CLAUDE.md...).
-for bad in ("Javis/loops/tu-chay.md", "agents/moi.md", "Skills/x/SKILL.md", "memory/facts/gia.md",
+# Sản phẩm không được tạo file ở chỗ UNI MATE tự chạy hay tự nạp (loop, agent, skill, plugin, bộ nhớ, CLAUDE.md...).
+for bad in ("UniMate/loops/tu-chay.md", "agents/moi.md", "Skills/x/SKILL.md", "memory/facts/gia.md",
             ".claude/commands/x.md", "Notes/CLAUDE.md", "plugins/p/README.md", "workflows/w.md", "Inbox/x.py"):
     g_bad = make_goal(criteria=[{"description": "Có file", "evaluator": "artifact_contract", "params": {"path": bad}}])
     deps_bad, _, _ = make_deps()
@@ -422,7 +422,7 @@ check("no_paid_provider_fallback: blocked engine_blocked, báo người dùng l�
 # ═══════════════════════ test_idle_does_not_call_model ═══════════════════════
 clock_i = Clock(4_000_000_000.0)
 for w in store.due_wakeups(clock_i()):
-    store.clear_wake(RS.Principal("agent", "javis", w["brain_id"]), w["goal_id"], w["kind"])
+    store.clear_wake(RS.Principal("agent", "unimate", w["brain_id"]), w["goal_id"], w["kind"])
 deps_i, built_i, eng_i = make_deps(clock=clock_i)
 n_i = asyncio.run(R.tick(store, clock_i(), lambda b: deps_i))
 check("idle_does_not_call_model: không có lịch tới hạn thì tick không dựng engine nào", n_i == 0 and built_i["n"] == 0)
@@ -575,7 +575,7 @@ check("P1-4 nhận lịch bằng CAS", store.claim_wake(P, g_lw.id, "work", w_lw
 check("P1-4 nhận lại cùng lịch lần hai thì không được", not store.claim_wake(P, g_lw.id, "work", w_lw["due_at"], now_lw + 900))
 for w in store.due_wakeups(now_lw + 5000, limit=500):   # chỉ để lại lịch của mục tiêu đang thử
     if w["goal_id"] != g_lw.id:
-        store.clear_wake(RS.Principal("agent", "javis", w["brain_id"]), w["goal_id"], w["kind"])
+        store.clear_wake(RS.Principal("agent", "unimate", w["brain_id"]), w["goal_id"], w["kind"])
 store2 = RS.GoalStore()          # "khởi động lại": kho mới trên cùng SQLite
 check("P1-4 sau khởi động lại: chưa tới hạn nhận lại thì chưa chạy",
       not any(w["goal_id"] == g_lw.id for w in store2.due_wakeups(now_lw + 10)))
@@ -614,7 +614,7 @@ asyncio.run(R.drain_outbox(store, deps_ho.notify))
 check("P2-1 chỉ có human_confirmation: làm ra bản mẫu (một lượt) rồi mới chờ người dùng",
       eng_ho.queries == 1 and store.run_state(P, g_ho.id)["block_reason"] == "human_confirmation")
 check("P2-1 tin chờ duyệt kèm link tới bản mẫu trong brain",
-      any(k == "goal.waiting_human" and "Javis/resonance/outputs/" in t
+      any(k == "goal.waiting_human" and "UniMate/resonance/outputs/" in t
           for (gid, k, t) in deps_ho.notify.sent if gid == g_ho.id))
 
 # Review M3 vòng 2: chính lần đăng làm guard sai (guard đọc đúng file sản phẩm). Không được đóng thành công.

@@ -9,7 +9,7 @@
   },
   "test_sha256": "27da904b9715b614bead7dfc985d4b39e0e44456198ec2c78a2b0cdb05408fb0",
   "authorized_existing_test_sha256": "0c8860159f91cfe4e4869b2abed59df93fdc9d76b9c1a2c659fd425291920669",
-  "command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe tests/python/test_improvement_manifest4.py -v",
+  "command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe tests/python/test_improvement_manifest4.py -v",
   "red": {"tests": 11, "failures": 1, "errors": 8, "seconds": 0.021, "log_sha256": "f8f2e8bead5fe0fb2948e2bcc70b2b238b5f4cefccf67a0bf0a1933f26088e1a", "cause": "Missing manifest4 validation, readonly prompt/effective-view hashing and exact read outcome support"},
   "author": {"tests": 11, "seconds": 0.042, "exit": 0, "log_sha256": "a45fd4ecb9b39cf0cb04c72b25b5ee04170f171b43b46119b2fa3331e3ded79e"},
   "independent": {"tests": 11, "seconds": 0.039, "exit": 0, "log_sha256": "70d96d9858afd8714fdcfd4b575b170b89f8ea3403e3c1bb7acbb7092e820e78"},

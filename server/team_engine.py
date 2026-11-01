@@ -18,7 +18,7 @@ Hợp đồng ở đây:
 Cơ chế chỉ chữ theo provider:
 - `anthropic-cli`: engine Claude hộp cát của caller (`allowed_tools` không khớp công cụ nào, MCP rỗng).
 - `openai-oauth` (Codex): không profile `-p` (nơi có hub), `mcp_servers={}`, tắt các công cụ native bằng cờ `features.*`,
-  và LUÔN `--sandbox read-only` kể cả khi máy đặt `JAVIS_CODEX_SANDBOX=off`: lượt chỉ chữ không chạy lệnh nào nên rào hỏng
+  và LUÔN `--sandbox read-only` kể cả khi máy đặt `UNIMATE_CODEX_SANDBOX=off`: lượt chỉ chữ không chạy lệnh nào nên rào hỏng
   trong Docker không làm hỏng câu trả lời, còn công cụ còn sót (`apply_patch`) bị Codex từ chối ở tầng chính sách
   ("writing is blocked by read-only sandbox"). Đã thử với Codex 0.153.4 qua một máy chủ Responses giả: danh sách công cụ
   gửi cho model chỉ còn `request_user_input` và `apply_patch`, và một `apply_patch` ghi file ngoài thư mục bị từ chối.
@@ -138,7 +138,7 @@ def build_tools(spec: dict, base: Any, tag: str, settings: Optional[dict] = None
                 codex_profile: Optional[Callable[[], Any]] = None) -> Any:
     """Engine CÓ công cụ cho lượt Làm/Hỗ trợ của việc nhóm (0.194.0, chủ 17/10/2026: "team phải đầy đủ các quyền thì mới
     làm việc được"). `base` là engine Claude caller đã dựng như chat riêng: cwd là thư mục làm việc của nhóm (hay bộ não),
-    hub MCP gắn ở mức `mode`, `javis_vault` là bộ não. Provider khác Claude dựng bằng đúng các builder của việc nền
+    hub MCP gắn ở mức `mode`, `unimate_vault` là bộ não. Provider khác Claude dựng bằng đúng các builder của việc nền
     (`aux_engine._build_*`), nên quyền đi theo cùng một chỗ: hub chặn theo mức, sandbox Codex và cờ deny của Grok theo mức.
     Không có chuỗi dự phòng (như việc nền mức full): provider đã chọn không chạy được thì báo lỗi rõ."""
     prov = str(spec.get("provider") or CLAUDE)

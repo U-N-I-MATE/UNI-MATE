@@ -3,8 +3,8 @@
        node tests/js/test_tab_model_local.js
 
    Bản demo HTML ban đầu có nút "Cài Ollama" tự chạy script và ba trạng thái (chưa cài / đang
-   cài / đã cài). Nó chỉ đúng khi Javis và Ollama là CÙNG MỘT máy vật lý. Phần đông người dùng
-   chạy Javis trong Docker/VPS, nơi Javis không có quyền - và cũng không có đường - chạy lệnh
+   cài / đã cài). Nó chỉ đúng khi UNI MATE và Ollama là CÙNG MỘT máy vật lý. Phần đông người dùng
+   chạy UNI MATE trong Docker/VPS, nơi UNI MATE không có quyền - và cũng không có đường - chạy lệnh
    cài trên máy vật lý của người ta. Đây đúng là lý do provider ollama local bị chặn cố ý từ
    đầu (server/config.py), nên file này canh để bản thật không lặp lại nó. */
 const fs = require("fs");
@@ -43,10 +43,10 @@ check("tab đang chọn giữ ở biến module, không đẩy lên server",
   /let _modelTab = "cloud";/.test(OL) && !/fetch\([^)]*modelTab/.test(OL));
 
 // ============================================================
-// 2. KHÔNG lặp lại giả định "Javis cài hộ trên máy bạn"
+// 2. KHÔNG lặp lại giả định "UNI MATE cài hộ trên máy bạn"
 // ============================================================
 // Lệnh cài CÓ mặt (dạng chữ để người dùng tự chép), nhưng KHÔNG được có đường nào để bấm
-// một nút rồi Javis chạy nó hộ - đó mới là giả định sai.
+// một nút rồi UNI MATE chạy nó hộ - đó mới là giả định sai.
 check("CANARY: không có nút tự cài Ollama nào",
   !/\/ollama-local\/install(?![a-z])/.test(OL) && !/btnInstallOllama/.test(JS)
   && !/ol-cai\b|installOllama/.test(OL));
@@ -63,10 +63,10 @@ check("Docker được nói RIÊNG, không dùng chung câu với native",
 check("và câu đó nói rõ container không phải máy bạn",
   /container/.test(VI["ol.note_docker"] || "") && /container/i.test(EN["ol.note_docker"] || ""));
 
-// 02/09: chủ repo dán thẳng lệnh cài vào TERMINAL CỦA JAVIS và ăn "requires superuser". Dễ
+// 02/09: chủ repo dán thẳng lệnh cài vào TERMINAL CỦA UNI MATE và ăn "requires superuser". Dễ
 // hiểu - nút copy nằm ngay cạnh mà app thì có sẵn một terminal. Nhưng kể cả cài đúng máy vẫn
 // còn hai bức tường nữa, và thiếu một trong hai là "không nối được" mà không hiểu vì sao.
-check("bản Docker nói THẲNG là đừng dùng terminal của Javis",
+check("bản Docker nói THẲNG là đừng dùng terminal của UNI MATE",
   /terminal/i.test(VI["ol.dk_b1"] || "") && /root/i.test(VI["ol.dk_b1"] || ""));
 check("và nói rõ cài vào container thì mất sạch khi cập nhật",
   /cập nhật/i.test(VI["ol.dk_b1"] || ""));
@@ -88,7 +88,7 @@ check("nối hỏng thì có dòng chẩn đoán kèm lệnh ss",
 check("và nối hỏng thì vẽ lại tab để dòng đó hiện ra, không chỉ alert",
   /alert\(\(r\.error \|\| t\("ol\.err_connect"\)\)\);[\s\S]{0,240}renderModelsLocalTab\(el\);/.test(OL));
 // Không ai đoán được địa chỉ cầu nối Docker, mà bản cũ lại ĐOÁN HỘ SAI: hằng
-// OL_DIA_CHI_DOCKER viết cứng 172.17.0.1, tức cổng của mạng bridge MẶC ĐỊNH (docker0). Javis
+// OL_DIA_CHI_DOCKER viết cứng 172.17.0.1, tức cổng của mạng bridge MẶC ĐỊNH (docker0). UNI MATE
 // cài bằng docker-compose thì nằm trên mạng riêng của project, dải cấp từ 172.18.0.0/16 trở
 // đi, nên người dùng điền y như hướng dẫn vẫn không nối được. Server phải DÒ cổng thật.
 // Soi phần MÃ THẬT: dòng chú thích vẫn được nhắc lại con số cũ để giải thích vì sao nó sai,
@@ -131,8 +131,8 @@ check("nói thẳng VPS chạy model local sẽ chậm",
 // sao ngoài việc đi hỏi. Một tính năng bắt người dùng đi hỏi mới hiểu là chưa xong.
 check("model không chat được thì NÓI RÕ lý do, không lặng lẽ bỏ nút",
   /ol-row-note/.test(OL) && /ol\.embed_note/.test(OL) && !!VI["ol.embed_note"]);
-check("và câu đó nói cả việc Javis chưa dùng tới loại này",
-  /Javis chưa dùng/.test(VI["ol.embed_note"] || ""));
+check("và câu đó nói cả việc UNI MATE chưa dùng tới loại này",
+  /UNI MATE chưa dùng/.test(VI["ol.embed_note"] || ""));
 // Quyết định "chat được hay không" phải do SERVER chốt: chỉ nó mới hỏi được Ollama qua
 // /api/show. Đoán qua tên ở giao diện trượt đúng những cái phổ biến nhất (all-minilm, bge-m3).
 check("giao diện đọc cờ của server chứ không tự đoán",

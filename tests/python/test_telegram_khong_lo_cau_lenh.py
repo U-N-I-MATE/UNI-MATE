@@ -2,7 +2,7 @@
 
     python tests/run.py telegram_khong_lo_cau_lenh      (KHÔNG mạng)
 
-Bug 2026-09-28 (ảnh chụp chủ repo gửi): bot KJavis chạy engine ChatGPT (Codex) để ingest một
+Bug 2026-09-28 (ảnh chụp chủ repo gửi): bot KUNI MATE chạy engine ChatGPT (Codex) để ingest một
 trang web, và tin trạng thái chốt thành dòng vết dài chín dòng:
 
     ⚙ /bin/sh -lc "sed -n '1,260p' skills/ingest-source/SKILL.md" · /bin/sh -lc "curl -L
@@ -112,7 +112,7 @@ fake = [
     {"type": "item.completed", "item": {"type": "command_execution",
                                         "command": "/bin/sh -lc \"sed -n '1,260p' x.md\"",
                                         "status": "completed"}},
-    {"type": "item.completed", "item": {"type": "mcp_tool_call", "server": "javis",
+    {"type": "item.completed", "item": {"type": "mcp_tool_call", "server": "unimate",
                                         "tool": "pos_statistics", "arguments": {}}},
     {"type": "item.completed", "item": {"type": "agent_message", "text": "xong"}},
     {"type": "turn.completed", "usage": {}},

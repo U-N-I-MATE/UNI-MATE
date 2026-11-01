@@ -251,7 +251,7 @@
     normalizeSearch: normalizeSearch,
   };
 
-  if (typeof window !== "undefined") window.JavisSlash = api;
+  if (typeof window !== "undefined") window.UniMateSlash = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 
   // ===== Phan MENU DOM (chi trinh duyet) =====
@@ -360,7 +360,7 @@
       } else {
         // Lenh phien va lenh he thong khong can noi dung kem: chay ngay.
         input.value = "";
-        if (typeof window.JavisSend === "function") window.JavisSend("/" + it.cmd);
+        if (typeof window.UniMateSend === "function") window.UniMateSend("/" + it.cmd);
       }
     }
 

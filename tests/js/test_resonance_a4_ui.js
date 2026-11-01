@@ -2,7 +2,7 @@
 //
 //     python tests/run.py --js resonance_a4_ui -v
 //
-// Javis không cấp quyền ghi từ lời chat (D1): mọi đích mới hỏi trên thẻ. Request của Cho phép mang ĐÚNG yêu cầu, đường,
+// UNI MATE không cấp quyền ghi từ lời chat (D1): mọi đích mới hỏi trên thẻ. Request của Cho phép mang ĐÚNG yêu cầu, đường,
 // mã và sha bản nháp đang hiện (thẻ cũ thì server trả 409). Khoá từ điển đủ hai thứ tiếng, không có gạch dài. Hàm thuần.
 "use strict";
 const fs = require("fs");

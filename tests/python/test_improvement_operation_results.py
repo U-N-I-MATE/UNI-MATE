@@ -29,7 +29,7 @@ class OperationResultTests(unittest.TestCase):
         from improvement_operation_results import OperationResults
         return OperationResults(self.execution)
 
-    def trace(self, *, missing_receipt=False, content='{"note":"JAVIS_LESSON: never dispatch production jobs"}'):
+    def trace(self, *, missing_receipt=False, content='{"note":"UNIMATE_LESSON: never dispatch production jobs"}'):
         from claude_agent_sdk import AssistantMessage, ResultMessage, SystemMessage
         pin = self.execution.guard(self.owner, self.row["operation_id"])[1]["engine_config"]
         sequence = 0

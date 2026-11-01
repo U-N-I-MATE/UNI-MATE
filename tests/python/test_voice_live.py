@@ -12,7 +12,7 @@ import json
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-vlive-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-vlive-"))
 
 import voice_live as vl  # noqa: E402
 
@@ -41,16 +41,16 @@ g = vl.GeminiLive("KEY", model="gemini-x", voice="Kore")
 check("gemini: url mang key", "BidiGenerateContent?key=KEY" in g.url())
 s = g.setup_message()["setup"]
 check("gemini: setup model có tiền tố models/", s["model"] == "models/gemini-x")
-check("gemini: setup AUDIO + giọng + tool ask_javis + transcription hai chiều",
+check("gemini: setup AUDIO + giọng + tool ask_unimate + transcription hai chiều",
       s["generationConfig"]["responseModalities"] == ["AUDIO"]
       and s["generationConfig"]["speechConfig"]["voiceConfig"]["prebuiltVoiceConfig"]["voiceName"] == "Kore"
-      and s["tools"][0]["functionDeclarations"][0]["name"] == "ask_javis"
+      and s["tools"][0]["functionDeclarations"][0]["name"] == "ask_unimate"
       and "inputAudioTranscription" in s and "outputAudioTranscription" in s)
 a = g.audio_message(pcm)["realtimeInput"]["audio"]
 check("gemini: audio 16 kHz base64", a["mimeType"] == "audio/pcm;rate=16000" and base64.b64decode(a["data"]) == pcm)
 check("gemini: text turnComplete", g.text_message("hi")["clientContent"]["turnComplete"] is True)
-tr = g.tool_result_messages("c1", "ask_javis", "kết quả")[0]["toolResponse"]["functionResponses"][0]
-check("gemini: tool result đúng id/name/output", tr == {"id": "c1", "name": "ask_javis", "response": {"output": "kết quả"}})
+tr = g.tool_result_messages("c1", "ask_unimate", "kết quả")[0]["toolResponse"]["functionResponses"][0]
+check("gemini: tool result đúng id/name/output", tr == {"id": "c1", "name": "ask_unimate", "response": {"output": "kết quả"}})
 evs = g.translate({"serverContent": {"modelTurn": {"parts": [{"inlineData": {"mimeType": "audio/pcm;rate=24000", "data": base64.b64encode(b"\x01\x02").decode()}}]},
                                      "inputTranscription": {"text": "xin chào", "finished": True}, "turnComplete": True}})
 check("gemini: dịch audio + transcript user final + turn_done",
@@ -61,7 +61,7 @@ check("gemini: interrupted", evs == [{"type": "interrupted"}])
 evs = g.translate({"serverContent": {"modelTurn": {"parts": [{"text": "xin chào"}]}, "outputTranscription": {"text": "xin chào"}}})
 check("gemini: chữ trợ lý chỉ phát MỘT lần (từ outputTranscription, bỏ modelTurn.text)",
       [e for e in evs if e["type"] == "transcript"] == [{"type": "transcript", "role": "assistant", "text": "xin chào", "final": False}])
-evs = g.translate({"toolCall": {"functionCalls": [{"id": "f1", "name": "ask_javis", "args": {"request": "doanh thu"}}]}})
+evs = g.translate({"toolCall": {"functionCalls": [{"id": "f1", "name": "ask_unimate", "args": {"request": "doanh thu"}}]}})
 check("gemini: tool_call", evs[0]["type"] == "tool_call" and evs[0]["args"]["request"] == "doanh thu")
 check("gemini: setupComplete -> ready", g.translate({"setupComplete": {}}) == [{"type": "ready"}])
 check("gemini: mặc định model/voice từ PROVIDERS", vl.GeminiLive("k").model == vl.PROVIDERS["gemini"]["default_model"])
@@ -73,8 +73,8 @@ check("gemini 3.1: KHÔNG khai NON_BLOCKING (Google chưa hỗ trợ), 2.5: có"
       "behavior" not in g31.setup_message()["setup"]["tools"][0]["functionDeclarations"][0]
       and g25.setup_message()["setup"]["tools"][0]["functionDeclarations"][0]["behavior"] == "NON_BLOCKING")
 check("gemini 2.5: kết quả tool có scheduling WHEN_IDLE, 3.1 thì không",
-      g25.tool_result_messages("c", "ask_javis", "x")[0]["toolResponse"]["functionResponses"][0]["response"].get("scheduling") == "WHEN_IDLE"
-      and "scheduling" not in g31.tool_result_messages("c", "ask_javis", "x")[0]["toolResponse"]["functionResponses"][0]["response"])
+      g25.tool_result_messages("c", "ask_unimate", "x")[0]["toolResponse"]["functionResponses"][0]["response"].get("scheduling") == "WHEN_IDLE"
+      and "scheduling" not in g31.tool_result_messages("c", "ask_unimate", "x")[0]["toolResponse"]["functionResponses"][0]["response"])
 s31 = g31.setup_message()["setup"]
 check("gemini: setup xin sessionResumption + nén ngữ cảnh", "sessionResumption" in s31 and "slidingWindow" in s31["contextWindowCompression"])
 check("gemini: sessionResumptionUpdate lưu handle, không phát sự kiện",
@@ -93,18 +93,18 @@ check("openai: session.update khuôn GA: type realtime, audio.input/output pcm 2
       s["type"] == "session.update" and s["session"]["type"] == "realtime" and s["session"]["output_modalities"] == ["audio"]
       and au["input"]["format"] == {"type": "audio/pcm", "rate": 24000} and au["output"]["format"]["rate"] == 24000
       and au["input"]["turn_detection"]["type"] == "server_vad"
-      and s["session"]["tools"][0]["name"] == "ask_javis" and au["output"]["voice"] == "marin")
+      and s["session"]["tools"][0]["name"] == "ask_unimate" and au["output"]["voice"] == "marin")
 am = o.audio_message(pcm)
 check("openai: audio append đã chuyển sang 24 kHz (dài gấp 1,5)", am["type"] == "input_audio_buffer.append"
       and len(base64.b64decode(am["audio"])) == len(pcm) * 3 // 2)
-tr = o.tool_result_messages("c9", "ask_javis", "kq")
+tr = o.tool_result_messages("c9", "ask_unimate", "kq")
 check("openai: tool result = function_call_output + response.create",
       tr[0]["item"]["type"] == "function_call_output" and tr[0]["item"]["call_id"] == "c9" and tr[1]["type"] == "response.create")
 check("openai: interrupt = response.cancel", o.interrupt_messages() == [{"type": "response.cancel"}])
 # ---- OpenAI: response.create xếp hàng khi model đang nói; truncate đúng item ----
 o2 = vl.OpenAIRealtime("KEY")
 check("openai: response.created -> đang nói", o2.translate({"type": "response.created"}) == [] and o2.response_active is True)
-tr2 = o2.tool_result_messages("c1", "ask_javis", "kq")
+tr2 = o2.tool_result_messages("c1", "ask_unimate", "kq")
 check("openai: kết quả tool lúc đang nói KHÔNG kèm response.create", [m["type"] for m in tr2] == ["conversation.item.create"])
 check("openai: chưa done thì after_translate rỗng", o2.after_translate_messages() == [])
 o2.translate({"type": "response.output_audio.delta", "delta": base64.b64encode(b"ab").decode(), "item_id": "item_9"})
@@ -120,7 +120,7 @@ check("openai: audio delta (tên GA lẫn tên cũ)",
 check("openai: transcript trợ lý delta (tên GA)",
       o.translate({"type": "response.output_audio_transcript.delta", "delta": "hi"}) == [{"type": "transcript", "role": "assistant", "text": "hi", "final": False}])
 check("openai: speech_started -> interrupted", o.translate({"type": "input_audio_buffer.speech_started"}) == [{"type": "interrupted"}])
-ev = o.translate({"type": "response.function_call_arguments.done", "call_id": "c2", "name": "ask_javis", "arguments": json.dumps({"request": "x"})})
+ev = o.translate({"type": "response.function_call_arguments.done", "call_id": "c2", "name": "ask_unimate", "arguments": json.dumps({"request": "x"})})
 check("openai: function call args parse JSON", ev[0]["type"] == "tool_call" and ev[0]["args"] == {"request": "x"} and ev[0]["id"] == "c2")
 check("openai: transcript user completed final", o.translate({"type": "conversation.item.input_audio_transcription.completed", "transcript": "hi"})[0]["final"] is True)
 check("openai: response.done -> turn_done", o.translate({"type": "response.done"}) == [{"type": "turn_done"}])
@@ -165,17 +165,17 @@ ev = gl.translate({"type": "session.input_transcript.delta", "delta": "doanh thu
 ev += gl.translate({"type": "session.input_transcript.delta", "delta": "tháng này", "start_ms": 500, "end_ms": 900})
 check("gpt-live: transcript người dùng cộng dồn, chưa final", ev[-1] == {"type": "transcript", "role": "user", "text": "doanh thu tháng này", "final": False})
 ev = gl.translate({"type": "session.delegation.created", "delegation": {"id": "item_d1", "target": "client", "type": "delegation"}, "offset_ms": 900})
-check("gpt-live: delegation client -> chốt câu user + tool_call ask_javis với câu vừa nói",
+check("gpt-live: delegation client -> chốt câu user + tool_call ask_unimate với câu vừa nói",
       ev[0] == {"type": "transcript", "role": "user", "text": "doanh thu tháng này", "final": True}
       and ev[1]["type"] == "tool_call" and ev[1]["id"] == "item_d1" and ev[1]["args"]["request"] == "doanh thu tháng này")
 check("gpt-live: delegation responses bị bỏ qua", gl.translate({"type": "session.delegation.created", "delegation": {"id": "x", "target": "responses"}}) == [])
 check("gpt-live: đang chạy -> thinking.append kèm delegation_id",
-      gl.tool_running_messages("item_d1", "ask_javis")[0]["type"] == "session.thinking.append"
-      and gl.tool_running_messages("item_d1", "ask_javis")[0]["delegation_id"] == "item_d1")
-res = gl.tool_result_messages("item_d1", "ask_javis", "Doanh thu 120 triệu")
+      gl.tool_running_messages("item_d1", "ask_unimate")[0]["type"] == "session.thinking.append"
+      and gl.tool_running_messages("item_d1", "ask_unimate")[0]["delegation_id"] == "item_d1")
+res = gl.tool_result_messages("item_d1", "ask_unimate", "Doanh thu 120 triệu")
 check("gpt-live: kết quả -> commentary.append (model tự nói), cắt 500 token",
       res == [{"type": "session.commentary.append", "delegation_id": "item_d1", "content": "Doanh thu 120 triệu"}]
-      and len(gl.tool_result_messages("d", "ask_javis", "x" * 5000)[0]["content"]) == vl.GPT_LIVE_APPEND_MAX)
+      and len(gl.tool_result_messages("d", "ask_unimate", "x" * 5000)[0]["content"]) == vl.GPT_LIVE_APPEND_MAX)
 check("gpt-live: ngữ cảnh giao diện -> thinking.append không delegation",
       gl.context_messages("[NGỮ CẢNH GIAO DIỆN: trang=work]") == [{"type": "session.thinking.append", "delegation_id": None, "content": "[NGỮ CẢNH GIAO DIỆN: trang=work]"}]
       and gl.context_messages("") == [])

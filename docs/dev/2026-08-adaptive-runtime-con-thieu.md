@@ -9,7 +9,7 @@
 
 Tài liệu này soi lại 12 phase dưới góc nhìn **mục đích gốc**, chứ không phải dưới góc nhìn
 spec. Mục đích gốc không phải hiệu năng trừu tượng, mà rất cụ thể: gói Groq on_demand miễn phí
-với `llama-3.3-70b-versatile` cho 12.000 token mỗi phút, còn một lượt Javis gửi đi 21.446
+với `llama-3.3-70b-versatile` cho 12.000 token mỗi phút, còn một lượt UNI MATE gửi đi 21.446
 token, nên bị chặn ngay trước khi kịp trả lời.
 
 ## 1. Cấu thành 21.446 token, đo lại hôm nay

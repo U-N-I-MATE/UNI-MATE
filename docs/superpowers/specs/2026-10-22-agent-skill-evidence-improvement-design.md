@@ -2,7 +2,7 @@
 
 - Ngày: 22/10/2026, Asia/Saigon.
 - Trạng thái: thiết kế đề xuất để chủ sản phẩm review; chưa triển khai, chưa gọi model chạy thử, chưa bật chính sách trên brain nào.
-- Nền khảo sát: Javis OS **0.284.0**, `a02e45fcd7c58bb3fde4eac3a850cb87c618621c` trên GitHub `main`. Checkout chính trên máy cũ hơn nền này; khi triển khai phải bắt đầu từ main mới và rà lại điểm tích hợp.
+- Nền khảo sát: UNI MATE **0.284.0**, `a02e45fcd7c58bb3fde4eac3a850cb87c618621c` trên GitHub `main`. Checkout chính trên máy cũ hơn nền này; khi triển khai phải bắt đầu từ main mới và rà lại điểm tích hợp.
 - Chủ sản phẩm: anh. Đối tượng sử dụng: chủ brain, người xây agent/skill và nhóm trợ lý chạy công việc có sản phẩm kiểm được.
 - Phạm vi tài liệu: hợp đồng sản phẩm và kỹ thuật từ nền nghiệm thu, bản đầu cho một skill, đến cải tiến agent, gói agent–skill và Team. Mỗi mốc có điều kiện nghiệm thu riêng; tài liệu không cấp lệnh triển khai hoặc chạy pilot thật.
 - Tên trong giao diện: **Cải tiến có kiểm chứng**. Tiền tố kỹ thuật đề xuất: `improvement_*`.
@@ -13,7 +13,7 @@
 
 ### 1.1 Yêu cầu đã nhận
 
-Sau nghiên cứu Harness², chủ yêu cầu một spec chi tiết từ đầu đến bản mở rộng cho agent và skill. Giá trị cần tạo ra là: giảm lỗi lặp lại, giảm công chủ phải sửa và giúp Javis giữ lại cách làm có bằng chứng tốt hơn cho những nhiệm vụ tiếp theo.
+Sau nghiên cứu Harness², chủ yêu cầu một spec chi tiết từ đầu đến bản mở rộng cho agent và skill. Giá trị cần tạo ra là: giảm lỗi lặp lại, giảm công chủ phải sửa và giúp UNI MATE giữ lại cách làm có bằng chứng tốt hơn cho những nhiệm vụ tiếp theo.
 
 Không dùng số skill mới, số bài học mới, số lần agent tự review hoặc số token tiết kiệm làm đại diện cho chất lượng. Một hệ học hữu ích có thể quyết định không sửa gì khi cách hiện tại đã tốt hoặc bằng chứng chưa đủ.
 
@@ -23,14 +23,14 @@ Không dùng số skill mới, số bài học mới, số lần agent tự revi
 2. Ưu tiên công việc lặp lại có nguồn đầu vào và tiêu chí kiểm rõ: đối soát bảng, báo cáo, tài liệu theo brief, quy trình tổng hợp có cấu trúc.
 3. Chất lượng đứng trước tiết kiệm. Không thêm trần tiền mặc định; không tự đổi sang model rẻ hơn, hạ reasoning, bỏ dữ liệu cần thiết hoặc bỏ kiểm chứng.
 4. Thử nghiệm dùng đúng engine/model/reasoning do chủ chọn. Engine không hỗ trợ cách ly cần thiết thì báo chưa hỗ trợ cho phép thử đó, không tự đổi engine.
-5. Những con số trong tài liệu là chính sách khởi tạo hoặc điều kiện thử nghiệm đề xuất, chưa phải hiệu quả Javis đã đạt.
+5. Những con số trong tài liệu là chính sách khởi tạo hoặc điều kiện thử nghiệm đề xuất, chưa phải hiệu quả UNI MATE đã đạt.
 6. Mỗi mức mở rộng chỉ được bật sau khi mốc phụ thuộc đã đạt. Không coi đồng ý viết spec là đồng ý cho tự sửa mọi agent/skill.
 
 ### 1.3 Kết quả người dùng phải nhận ra
 
-- Khi báo lỗi lặp lại, anh thấy Javis đề xuất một thay đổi cụ thể và nói cách kiểm thay đổi ấy.
+- Khi báo lỗi lặp lại, anh thấy UNI MATE đề xuất một thay đổi cụ thể và nói cách kiểm thay đổi ấy.
 - Sau phép thử, anh xem được bản cũ/bản mới, điều gì tốt hơn, chỗ nào chưa rõ, phạm vi áp dụng và nút quay lại.
-- Khi chạy việc tiếp theo, Javis nạp đúng phiên bản đã được cho phép, không để bài học nhóm này ảnh hưởng nhóm khác.
+- Khi chạy việc tiếp theo, UNI MATE nạp đúng phiên bản đã được cho phép, không để bài học nhóm này ảnh hưởng nhóm khác.
 - Khi bản mới kém đi hoặc dữ liệu/luật thay đổi, hệ ngừng dùng bản không còn hợp lệ và giữ lại lịch sử.
 - Hoạt động cải tiến không đánh dấu việc gốc đã xong; sản phẩm vẫn phải qua nghiệm thu của chính việc đó.
 
@@ -44,12 +44,12 @@ Không dùng số skill mới, số bài học mới, số lần agent tự revi
 | `agent_ledger.py`, `usage_store.py`, `usage_index.py` | Sổ lượt thực thi và usage chuẩn | Truyền thêm experiment/trial/case/purpose; không tạo sổ tiền độc lập |
 | `team_acceptance.py`, `team_runner.py` | Kiểm sản phẩm, hash, lịch sử, bounded fix, xác nhận chủ | Nghiệm thu còn tùy chọn; sản phẩm chữ và đúng nghiệp vụ cần hợp đồng đủ mạnh |
 | `skill_router.py`, `lazy_skill_runtime.py`, `system_sync.py` | Phân giải skill canonical, lazy loading, mirror, bảo vệ skill hệ thống | Phân giải revision hiệu lực theo scope; bằng chứng phiên bản thực sự được cấp vào lượt |
-| `agent_rules.py` | Giữ nguyên các dòng chủ sở hữu ngoài vùng Javis quản lý | Kiểm các patch và nguyên tắc chủ trong thử nghiệm lẫn kích hoạt |
+| `agent_rules.py` | Giữ nguyên các dòng chủ sở hữu ngoài vùng UNI MATE quản lý | Kiểm các patch và nguyên tắc chủ trong thử nghiệm lẫn kích hoạt |
 | `team_gate.py`, `capability_executor.py`, `turn_context.py` | Danh tính host, grant, tool gate, audit, lease/idempotency | Profile thử chỉ đọc nguồn đã đóng băng, chặn side effect, receipt phiên bản end-to-end |
 
 Tham chiếu bắt buộc: [spec Team chất lượng trước chi phí](2026-10-22-team-quality-first-design.md). Mốc nghiệm thu mặc định và usage ở tài liệu đó là **phụ thuộc dùng chung**, không triển khai lại bằng một bộ hợp đồng, bảng usage hoặc dispatcher khác. Nếu phần phụ thuộc chưa phát hành, pilot đầu vẫn làm được trên tác vụ thử riêng có hợp đồng bắt buộc; chưa được bật tự cải tiến cho mọi việc Team.
 
-Spec này không thay thế học sự kiện, kiến thức cá nhân, reaction, nhịp thức hay phép thử METHODS đang chạy. Nó thêm đường kiểm chứng cho **thay đổi năng lực có thể thực thi**. Tài liệu tiến độ cũ ngày 08/10 không được dùng làm bằng chứng Javis hiện chưa có học theo agent/nhóm.
+Spec này không thay thế học sự kiện, kiến thức cá nhân, reaction, nhịp thức hay phép thử METHODS đang chạy. Nó thêm đường kiểm chứng cho **thay đổi năng lực có thể thực thi**. Tài liệu tiến độ cũ ngày 08/10 không được dùng làm bằng chứng UNI MATE hiện chưa có học theo agent/nhóm.
 
 ## 3. Lựa chọn kiến trúc và phạm vi
 
@@ -57,16 +57,16 @@ Spec này không thay thế học sự kiện, kiến thức cá nhân, reaction
 
 | Phương án | Lợi ích | Hạn chế | Quyết định |
 |---|---|---|---|
-| Cài toàn bộ Harness² thành một dịch vụ chạy ngoài Javis | Có quy trình nghiên cứu sẵn | Thêm executor, thư viện và luồng state; không kế thừa đủ scope/quyền/engine của sản phẩm | Chỉ dùng làm tham chiếu hoặc đối chứng nghiên cứu |
+| Cài toàn bộ Harness² thành một dịch vụ chạy ngoài UNI MATE | Có quy trình nghiên cứu sẵn | Thêm executor, thư viện và luồng state; không kế thừa đủ scope/quyền/engine của sản phẩm | Chỉ dùng làm tham chiếu hoặc đối chứng nghiên cứu |
 | Mở rộng hệ học, thử nghiệm và nghiệm thu hiện có | Giữ một đường quyền, usage và danh tính; rollout theo mốc | Cần xây revision/effective view và adapter cách ly | **Chọn** |
 | Cho agent tự sửa skill sau góp ý | Nhanh | Khó phân biệt sửa đúng với viết thêm prose; không có đối chứng | Chỉ giữ cơ chế đề xuất hiện có, không gọi là cải tiến đã kiểm chứng |
 
-Mượn Propose–Probe–Compose và kho kinh nghiệm từ Harness². Bổ sung baseline trong lựa chọn cuối, nghiệm thu nghiệp vụ độc lập, kiểm scope, holdout kín, version pin, canary và rollback của Javis.
+Mượn Propose–Probe–Compose và kho kinh nghiệm từ Harness². Bổ sung baseline trong lựa chọn cuối, nghiệm thu nghiệp vụ độc lập, kiểm scope, holdout kín, version pin, canary và rollback của UNI MATE.
 
 ### 3.2 Bản đầu và bản mở rộng
 
 - **V1:** một skill người dùng, patch nội dung văn bản, một adapter thử được xác minh, snapshot đầu vào, hai ứng viên tối đa, phép thử kín, chủ quyết áp dụng, một scope rõ ràng.
-- **V2:** tự áp dụng có điều kiện trong scope chủ đã cấp; mở rộng adapter; kiểm mô tả/điều kiện chọn skill; cải tiến vùng do Javis quản lý trong agent.
+- **V2:** tự áp dụng có điều kiện trong scope chủ đã cấp; mở rộng adapter; kiểm mô tả/điều kiện chọn skill; cải tiến vùng do UNI MATE quản lý trong agent.
 - **V3:** gói agent–skill có quan hệ phụ thuộc, script kiểm được, quy trình chỉ đọc/ghi vùng thử, kinh nghiệm dùng lại theo nghiệp vụ và phối hợp Team.
 - **V4:** chọn nhu cầu thử theo bằng chứng, compose nhiều gói đã kiểm, chuyển kinh nghiệm có kiểm tra lại giữa scope/engine; quản trị và xuất/nhập gói.
 
@@ -198,7 +198,7 @@ Emoji, nhiều agent đồng tình, usage cao, “lâu chưa cải tiến” ho�
 
 Mặc định brain cũ/mới là `suggest`; migration không lấy công tắc Auto/Cộng hưởng/Toàn quyền sẵn có làm quyền tự cải tiến. Chọn `trial` hoặc `auto_scoped` một lần cho phạm vi đủ rõ là đủ, không hỏi lại từng rollout. Mở sang brain/team khác, executable helper, thay mô tả định tuyến hoặc thay cấu trúc cần quyền tương ứng trong policy.
 
-Trong `suggest`, host chỉ gom trigger và tạo thẻ đề xuất bằng code từ bằng chứng đã có; không tự gọi improver để viết patch hoặc tự chạy solver. Chủ yêu cầu tạo patch/chạy thử cụ thể mới cho phép các lượt tương ứng. Quy tắc này áp dụng đường cải tiến mới, không tắt các lượt học/hội thoại vốn đã được chủ cho phép ở phần khác của Javis.
+Trong `suggest`, host chỉ gom trigger và tạo thẻ đề xuất bằng code từ bằng chứng đã có; không tự gọi improver để viết patch hoặc tự chạy solver. Chủ yêu cầu tạo patch/chạy thử cụ thể mới cho phép các lượt tương ứng. Quy tắc này áp dụng đường cải tiến mới, không tắt các lượt học/hội thoại vốn đã được chủ cho phép ở phần khác của UNI MATE.
 
 Policy host giữ `policy_version`, owner principal, target allowlist, scopes, allowed_surface, allowed_engines, sources, apply_mode, canary allocation, operational limits và retention. Candidate không được sửa policy. Quyền trial luôn là giao giữa quyền hiện tại và profile thử nghiệm; `full` ở việc thật không cấp quyền side effect cho probe.
 
@@ -219,14 +219,14 @@ Canonical của user vẫn là `skills/<slug>/SKILL.md`, `agents/<slug>.md` và 
 Activation trỏ revision overlay theo scope. Mỗi lượt dùng **effective view** = canonical đã pin + các overlay hợp lệ được chọn + luật/policy/grant host. Resolver chung phải phục vụ đồng nhất:
 
 - skill index/router và lazy loading;
-- `javis_use_skill`/đọc helper qua hub;
+- `unimate_use_skill`/đọc helper qua hub;
 - persona/lesson của chat agent, goal và Team;
 - nội dung materialize cho engine native, gồm mirror `.claude/skills` của riêng lượt;
 - telemetry và bản giải thích đang dùng phiên bản nào.
 
 Không ghi overlay scope nhóm A vào canonical dùng toàn brain hoặc mirror global. Mirror là dữ liệu phái sinh, không phải nguồn revision. V1 chỉ enable adapter chứng minh được effective view; giao diện không cho bật ở đường nạp chưa được phủ.
 
-Ownership map được host khóa cùng baseline: vùng chủ bảo vệ, vùng Javis quản lý, vùng chủ cho phép cải tiến. Không để model suy ra “đoạn này chắc do AI viết” để tự nhận quyền sửa. Skill cũ chưa có ownership map chỉ được tạo bản diff đề xuất; chủ chọn vùng được sửa hoặc xác nhận diff trước activation. Agent mặc định chỉ mở vùng bổ sung Javis đã quản lý.
+Ownership map được host khóa cùng baseline: vùng chủ bảo vệ, vùng UNI MATE quản lý, vùng chủ cho phép cải tiến. Không để model suy ra “đoạn này chắc do AI viết” để tự nhận quyền sửa. Skill cũ chưa có ownership map chỉ được tạo bản diff đề xuất; chủ chọn vùng được sửa hoặc xác nhận diff trước activation. Agent mặc định chỉ mở vùng bổ sung UNI MATE đã quản lý.
 
 Thứ tự phân giải: đúng brain -> đúng target -> đúng agent/team/context -> domain/language/channel/engine selector chủ đã khai. Activation cùng target có scope chồng nhau phải có quan hệ specificity rõ; nếu hai bản cùng mức ưu tiên cùng khớp thì `activation_conflict`, giữ baseline và báo chủ. Không chọn ngẫu nhiên hoặc theo thời điểm cập nhật.
 
@@ -244,7 +244,7 @@ Thứ tự phân giải: đúng brain -> đúng target -> đúng agent/team/cont
 
 ### 9.3 Bề mặt agent
 
-V2 cho thay vùng bổ sung do Javis quản lý hoặc procedure overlay riêng: cách lập kế hoạch, kiểm nguồn, trình bày, tự kiểm theo nghiệp vụ và hướng dẫn dùng skill đã được cấp. Giữ `agent_key`, role/đích chủ đặt, luật chủ, model/provider/reasoning, lịch, quyền, công tắc Auto và tài sản riêng.
+V2 cho thay vùng bổ sung do UNI MATE quản lý hoặc procedure overlay riêng: cách lập kế hoạch, kiểm nguồn, trình bày, tự kiểm theo nghiệp vụ và hướng dẫn dùng skill đã được cấp. Giữ `agent_key`, role/đích chủ đặt, luật chủ, model/provider/reasoning, lịch, quyền, công tắc Auto và tài sản riêng.
 
 `agent_rules.missing_owner_lines` là một guard dùng lại, không phải bằng chứng duy nhất rằng ý nghĩa luật không đổi. Patch thêm câu đối nghịch luật chủ vẫn phải bị chặn, dù chữ gốc còn nguyên. Các trường protected được host loại khỏi patch schema; reviewer độc lập kiểm mâu thuẫn nội dung; mâu thuẫn chưa rõ thì chờ chủ.
 
@@ -289,7 +289,7 @@ V1 ưu tiên adapter API có tool inventory host kiểm soát. Đây là lựa c
 
 Host ghi `trial_id`, `engine_session_id`, provider/model/reasoning được yêu cầu và thực tế, native version nếu quan sát được, prompt/effective bundle hash, skill selection refs, tool inventory hash, fixture hash, grant hash, artifact hash và trạng thái kết thúc. Cấu hình thực tế không xác minh được có trường `coverage=unknown`; không giả định model alias bất biến.
 
-Tách ba tín hiệu: `available` (đã cấp vào view), `selected` (router/tool chọn), `observed_use` (host có sự kiện gọi/đọc phù hợp). Không có sự kiện `javis_use_skill` không chứng minh engine native không đọc skill. Không suy khả năng model hiểu/tuân thủ từ receipt. Thử sửa body cần đủ bằng chứng phiên bản mới đã được cấp theo đường dự kiến; thiếu thì `unverified_installation`, chưa kết luận patch vô ích.
+Tách ba tín hiệu: `available` (đã cấp vào view), `selected` (router/tool chọn), `observed_use` (host có sự kiện gọi/đọc phù hợp). Không có sự kiện `unimate_use_skill` không chứng minh engine native không đọc skill. Không suy khả năng model hiểu/tuân thủ từ receipt. Thử sửa body cần đủ bằng chứng phiên bản mới đã được cấp theo đường dự kiến; thiếu thì `unverified_installation`, chưa kết luận patch vô ích.
 
 Nếu adapter có server/tool/session cache, key phải chứa effective bundle generation; test phải chứng minh lần sau không nạp nhầm bản cũ. Đổi activation giữa các lượt của cùng một việc chỉ có hiệu lực từ việc mới hoặc điểm nối đã chủ cho phép; turn đang chạy tiếp tục với bundle đã pin.
 
@@ -542,7 +542,7 @@ Mỗi API kiểm brain và owner principal từ auth/turn context, không tin `b
 
 Mọi mutation dùng auth+CSRF theo chuẩn repo. 409 cho stale/conflict, 403 cho ngoài quyền, 422 cho contract sai, 202 cho đã nhận; quota/provider wait là state có reason, không báo success của trial. WS dùng event id và object generation để client dedupe/reconcile sau mất mạng.
 
-V2 có công cụ `javis_improve` để chủ giao bằng chat: `inspect|propose|run|status|cancel`. Chỉ nhận chủ có quyền và giữ scope của turn; `apply|revert` chỉ được thêm khi có typed decision/policy tương đương UI, không cho untrusted document hoặc agent khác tự kích hoạt. Không tạo loop nền từ lời “có thể cải thiện”.
+V2 có công cụ `unimate_improve` để chủ giao bằng chat: `inspect|propose|run|status|cancel`. Chỉ nhận chủ có quyền và giữ scope của turn; `apply|revert` chỉ được thêm khi có typed decision/policy tương đương UI, không cho untrusted document hoặc agent khác tự kích hoạt. Không tạo loop nền từ lời “có thể cải thiện”.
 
 ## 18. Đồng thời, phục hồi, vô hiệu hóa và retention
 
@@ -606,7 +606,7 @@ Nút áp dụng luôn chỉ đúng revision và phạm vi đang xem. Nút quay l
 
 Thông báo khi cần chủ quyết, experiment kết thúc, áp dụng/quay lại, vi phạm nghiêm trọng hoặc blocker cần hành động. Không gửi mỗi candidate, mỗi request, mỗi tick hoặc mỗi lần trạng thái không đổi. Thông báo gắn experiment/generation để chống trùng và đi về kênh chủ đã chọn, theo cơ chế report/inbox hiện có.
 
-Mẫu ngắn: “Javis đã thử sửa bước đối chiếu mã của skill Báo cáo. Bản mới sửa được 5 tình huống trước đây sai, không làm sai thêm trong bộ kiểm này. Chỉ áp dụng thử cho trợ lý Kế toán ở nhóm Nội bộ. Anh xem bằng chứng và chọn Áp dụng hoặc Giữ cách cũ.” Đây là mẫu câu khi đúng số đo thực tế, không hardcode kết quả.
+Mẫu ngắn: “UNI MATE đã thử sửa bước đối chiếu mã của skill Báo cáo. Bản mới sửa được 5 tình huống trước đây sai, không làm sai thêm trong bộ kiểm này. Chỉ áp dụng thử cho trợ lý Kế toán ở nhóm Nội bộ. Anh xem bằng chứng và chọn Áp dụng hoặc Giữ cách cũ.” Đây là mẫu câu khi đúng số đo thực tế, không hardcode kết quả.
 
 ### 19.4 Ví dụ đầu-cuối
 
@@ -656,7 +656,7 @@ Không mở rộng một file điều phối thành hàng nghìn dòng logic m�
 
 `main.py` chỉ wire deps, route và seam build effective context. Chưa triển khai mốc sau thì không scaffold toàn bộ module/schema UI của mốc sau. Signature cụ thể và task TDD được viết trong implementation plan của từng mốc sau review spec.
 
-Điểm bắt buộc rà trên main khi thực hiện: `learn._promote_sync`; `agent_review` apply/proposal; `agent_lessons.for_prompt`; persona của DM/Team/goal; `skill_router` và `javis_use_skill`; mirror/native install; `system_sync`/pack update/disabled; `agent_ledger.reserve/mark_engine/settle`; usage parser/index; `team_runner._finish` và `team_acceptance`.
+Điểm bắt buộc rà trên main khi thực hiện: `learn._promote_sync`; `agent_review` apply/proposal; `agent_lessons.for_prompt`; persona của DM/Team/goal; `skill_router` và `unimate_use_skill`; mirror/native install; `system_sync`/pack update/disabled; `agent_ledger.reserve/mark_engine/settle`; usage parser/index; `team_runner._finish` và `team_acceptance`.
 
 ## 22. Ma trận kiểm thử bắt buộc
 
@@ -699,7 +699,7 @@ Test giả chứng minh cơ chế; test model thật/pilot chứng minh hiệu q
 | S06 | Prior rollback không tương thích hoặc owner vừa sửa | Suspend an toàn; không đè sửa của chủ |
 | L01 | Recipe/lesson ở nhóm A, DM, `*`, brain khác | Lọc quyền/scope trước retrieval; không nhiễm chéo |
 | L02 | Recipe chỉ có selection win hoặc nhiều phần cùng đổi | Không nâng chứng cứ quá mức; NO_ENTRY hợp lệ |
-| L03 | Trial text có JAVIS_LESSON/RULE hoặc create-task directives | Không tự học/đặt việc production |
+| L03 | Trial text có UNIMATE_LESSON/RULE hoặc create-task directives | Không tự học/đặt việc production |
 | L04 | Source bị xóa/evidence hết hạn | Tombstone/unavailable, không gọi là đủ hồ sơ hoặc tự tái tải |
 | U01 | Usage API/CLI summary/request tới muộn, ledger mirror | Không cộng trùng, null không thành 0, mất telemetry không giả hoàn tất |
 | U02 | Chi phí cao, quota thực chặn | Không tự giảm chất lượng; reason quota đúng và giữ baseline |
@@ -744,11 +744,11 @@ Hồi quy bắt buộc: học hiện tại, bảo vệ owner rules, canonical/mi
 
 - Sản phẩm: case intent dương/âm/cạnh tranh, description/trigger surface, telemetry cấp/chọn/dùng; thêm từng adapter API/CLI có enforcement và native view riêng.
 - Nghiệm thu: không tăng chọn sai skill ở bộ regression bắt buộc; từng engine có ma trận E01–E06 riêng và smoke thật; receipt/config/usage rõ; skill disabled và mirror không sai.
-- Giá trị: Javis biết khi nào dùng đúng skill, đồng thời dùng đúng phiên bản trên các engine đã kiểm.
+- Giá trị: UNI MATE biết khi nào dùng đúng skill, đồng thời dùng đúng phiên bản trên các engine đã kiểm.
 
 ### M5. V2 cải tiến agent theo phạm vi
 
-- Sản phẩm: procedure overlay vùng Javis quản lý; pin persona/owner rules/skills; nạp nhất quán DM/Team/goal/kênh đã enable; tích hợp agent_review/learn proposal, lesson evidence và UI agent.
+- Sản phẩm: procedure overlay vùng UNI MATE quản lý; pin persona/owner rules/skills; nạp nhất quán DM/Team/goal/kênh đã enable; tích hợp agent_review/learn proposal, lesson evidence và UI agent.
 - Nghiệm thu: owner lines và ý nghĩa luật giữ nguyên; model/reasoning/role/grant không đổi; L01–L03/S04–S06 đạt; một pilot agent theo scope và canary có báo cáo.
 - Giá trị: agent bớt lặp lỗi cách làm, giữ sự khác biệt giữa DM, các nhóm và nhiệm vụ.
 
@@ -811,7 +811,7 @@ Nếu overlay chưa từng sửa canonical thì không cần viết lại file c
 
 ## 26. Ước lượng và cách chia triển khai
 
-Ước lượng dưới đây là khoảng lập kế hoạch với một người triển khai chính đã quen Javis, chưa đo trên implementation; không là cam kết và không dùng để bỏ gate:
+Ước lượng dưới đây là khoảng lập kế hoạch với một người triển khai chính đã quen UNI MATE, chưa đo trên implementation; không là cam kết và không dùng để bỏ gate:
 
 | Giai đoạn | Khoảng phát triển dự kiến | Thời gian quan sát riêng |
 |---|---|---|
@@ -853,20 +853,20 @@ Tiêu chuẩn giá trị cuối cùng: sản phẩm đúng hơn, chủ phải s�
 - [Harness² repository tại 1cfe254e](https://github.com/google-research/harness2/tree/1cfe254e8d25b15f37048c3730134686abe60335).
 - [Paper: Recursive Agent Harnessing for an Open World](https://arxiv.org/abs/2610.14224).
 - [Recursion](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/recursion.py): Propose–Probe–Compose, baseline/candidate executions.
-- [Selection](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/selection.py): tập chọn cuối của bản phát hành chỉ gồm finals; spec Javis chủ ý giữ baseline trong so sánh.
+- [Selection](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/selection.py): tập chọn cuối của bản phát hành chỉ gồm finals; spec UNI MATE chủ ý giữ baseline trong so sánh.
 - [Prompts](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/prompts.py): evidence boundary, ghi tác dụng/confounded và recipe.
 - [Substrate](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/substrate/base.py), [library](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/harness2/core/library.py), [experiment guide](https://github.com/google-research/harness2/blob/1cfe254e8d25b15f37048c3730134686abe60335/docs/EXPERIMENTS.md).
 
-Đây là thiết kế Javis lấy cảm hứng phương pháp; các gate thống kê, scope/effective view, canary, schema và roadmap trong tài liệu là đề xuất của spec này, không phải tính năng đã có sẵn của Harness². Nếu tái sử dụng mã nguồn phải giữ Apache-2.0 notices và kiểm giấy phép phần third-party; không sao chép benchmark/dataset chỉ vì license core cho phép.
+Đây là thiết kế UNI MATE lấy cảm hứng phương pháp; các gate thống kê, scope/effective view, canary, schema và roadmap trong tài liệu là đề xuất của spec này, không phải tính năng đã có sẵn của Harness². Nếu tái sử dụng mã nguồn phải giữ Apache-2.0 notices và kiểm giấy phép phần third-party; không sao chép benchmark/dataset chỉ vì license core cho phép.
 
-### Nguồn Javis
+### Nguồn UNI MATE
 
 Mã đã đối chiếu trực tiếp ở main `a02e45fc`: `VERSION`, `learn.py`, `resonance.py`, `resonance_learning.py`, `team_runner.py`, `team_acceptance.py`, `team_gate.py`, `team_long_memory.py`, `agent_review.py`, `agent_lessons.py`, `agent_rules.py`, `skill_router.py`, `lazy_skill_runtime.py`, `capability_executor.py`, `turn_context.py`, `feedback_projector.py`; cùng các tài liệu T3 learning, Resonance A3/A4. Các đường integration khác tham khảo thêm snapshot `d6781404` ngày 22/10 và phải xác minh lại trên main khi viết plan.
 
-- [Mã nguồn Javis tại snapshot nền](https://github.com/blogminhquy/javis-os/tree/a02e45fcd7c58bb3fde4eac3a850cb87c618621c).
-- [Học trong đội](https://github.com/blogminhquy/javis-os/blob/a02e45fcd7c58bb3fde4eac3a850cb87c618621c/docs/dev/team-chat-t3-learn.md).
-- [Học có kiểm chứng Resonance](https://github.com/blogminhquy/javis-os/blob/a02e45fcd7c58bb3fde4eac3a850cb87c618621c/server/resonance_learning.py).
-- [Quyền Team](https://github.com/blogminhquy/javis-os/blob/a02e45fcd7c58bb3fde4eac3a850cb87c618621c/server/team_gate.py).
+- [Mã nguồn UNI MATE tại snapshot nền](https://github.com/U-N-I-MATE/UNI-MATE/tree/a02e45fcd7c58bb3fde4eac3a850cb87c618621c).
+- [Học trong đội](https://github.com/U-N-I-MATE/UNI-MATE/blob/a02e45fcd7c58bb3fde4eac3a850cb87c618621c/docs/dev/team-chat-t3-learn.md).
+- [Học có kiểm chứng Resonance](https://github.com/U-N-I-MATE/UNI-MATE/blob/a02e45fcd7c58bb3fde4eac3a850cb87c618621c/server/resonance_learning.py).
+- [Quyền Team](https://github.com/U-N-I-MATE/UNI-MATE/blob/a02e45fcd7c58bb3fde4eac3a850cb87c618621c/server/team_gate.py).
 - [Spec Team chất lượng trước chi phí](2026-10-22-team-quality-first-design.md), bản làm việc cục bộ cùng ngày; là dependency thiết kế, không mặc định đã phát hành.
 
 Không có số liệu pilot mới, benchmark model thật, thay đổi sản phẩm hoặc quyết định auto áp dụng được thực hiện trong lần viết tài liệu này. Các cổng trong spec phải được hiện thực và kiểm trước khi báo đã hỗ trợ.

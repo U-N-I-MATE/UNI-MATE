@@ -6,7 +6,7 @@
       người dùng bấm là spam, và Chrome chặn vĩnh viễn miền đó sau vài lần bị từ chối - tức
       là hỏng luôn cả những lần sau khi người ta THẬT SỰ muốn bật. Chỉ hỏi khi bấm nút.
    2. Không có secure context thì ẩn hẳn nút, kèm lý do. Web Push đòi https (localhost được
-      tính là an toàn); Javis chạy trần bằng IP LAN qua http là không có cách nào lách.
+      tính là an toàn); UNI MATE chạy trần bằng IP LAN qua http là không có cách nào lách.
    3. Hụt push không bao giờ đồng nghĩa mất tin: nội dung nằm trong hòm thư ở server. Nút
       này chỉ bật/tắt cái chuông cửa.
 */
@@ -22,7 +22,7 @@
   // Người dùng bấm Tắt trên trình duyệt này (0.223.0). Tắt chỉ huỷ đăng ký, quyền thông báo của trình duyệt vẫn là
   // "granted" (trang web không tự thu lại quyền được), nên thiếu dấu này thì tuNoiLai thấy quyền còn và lặng lẽ bật lại ở
   // lần tải trang sau. Chủ dự án 19/10: "tắt thông báo đẩy ở máy tính xong nó tự bật lên".
-  var KHOA_TAT = "javis.push.off";
+  var KHOA_TAT = "unimate.push.off";
   function daTat() { try { return localStorage.getItem(KHOA_TAT) === "1"; } catch (e) { return false; } }
   function nhoTat(tat) {
     try { if (tat) localStorage.setItem(KHOA_TAT, "1"); else localStorage.removeItem(KHOA_TAT); } catch (e) {}
@@ -134,12 +134,12 @@
     catch (e) { return []; }
   }
 
-  // Bấm vào thông báo khi Javis đang mở: service worker focus đúng tab này rồi nhắn sang.
+  // Bấm vào thông báo khi UNI MATE đang mở: service worker focus đúng tab này rồi nhắn sang.
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("message", function (ev) {
       var d = ev.data || {};
-      if (d.type !== "javis-open-inbox") return;
-      try { if (window.JavisInbox) window.JavisInbox.moTu(d.url || ""); } catch (e) {}
+      if (d.type !== "unimate-open-inbox") return;
+      try { if (window.UniMateInbox) window.UniMateInbox.moTu(d.url || ""); } catch (e) {}
     });
   }
 
@@ -153,7 +153,7 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", tuNoiLai);
   else tuNoiLai();
 
-  window.JavisPush = { batDuoc: function () { return coHoTro() && antoan(); },
+  window.UniMatePush = { batDuoc: function () { return coHoTro() && antoan(); },
                        lyDo: vichLyDo, dangBat: dangBat, bat: bat, tat: tat, thu: thu,
                        thietBi: thietBi };
 })();

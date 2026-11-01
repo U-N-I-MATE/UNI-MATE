@@ -40,23 +40,23 @@ check("tin user: có nút copy", has(h, 'data-act="copy"'));
 check("tin user: có nút trích dẫn", has(h, 'data-act="quote"'));
 check("tin user: nút không submit form", (h.match(/type="button"/g) || []).length === 3);
 
-// ---- 4. Tin Javis: CHỈ giờ + copy ----
+// ---- 4. Tin UNI MATE: CHỈ giờ + copy ----
 // Nút "Trả lời lại câu hỏi phía trên" bỏ ở 0.52.13 (chủ repo yêu cầu): nó nằm ngay cạnh nút
-// sao chép - thao tác hay dùng nhất dưới một câu trả lời - nên bấm trượt một ly là Javis chạy
+// sao chép - thao tác hay dùng nhất dưới một câu trả lời - nên bấm trượt một ly là UNI MATE chạy
 // lại cả lượt, tốn tiền và mất câu trả lời đang đọc.
-h = A.actsHtml("javis", TS);
-check("tin javis: có giờ", has(h, "msg-time"));
-check("tin javis: KHÔNG còn nút chạy lại", !has(h, 'data-act="retry"') && !has(h, 'data-act="rewind"'));
-check("tin javis: KHÔNG có nút sửa", !has(h, 'data-act="edit"'));
-check("tin javis: có copy", has(h, 'data-act="copy"'));
+h = A.actsHtml("unimate", TS);
+check("tin unimate: có giờ", has(h, "msg-time"));
+check("tin unimate: KHÔNG còn nút chạy lại", !has(h, 'data-act="retry"') && !has(h, 'data-act="rewind"'));
+check("tin unimate: KHÔNG có nút sửa", !has(h, 'data-act="edit"'));
+check("tin unimate: có copy", has(h, 'data-act="copy"'));
 // 0.171.0: thêm nút Trích dẫn (chủ repo 15/10/2026: hỏi tiếp một câu trả lời cũ mà khỏi gõ lại). Bấm
 // trượt vô hại: nó chỉ đặt đoạn trích lên ô nhập, không chạy gì, nên được đứng cạnh nút sao chép.
-check("tin javis: có nút trích dẫn", has(h, 'data-act="quote"'));
+check("tin unimate: có nút trích dẫn", has(h, 'data-act="quote"'));
 // 0.374.0 (chủ repo 28/10/2026): thêm nút ghim vào mục lục và nút loa đọc thành tiếng. Cả hai bấm trượt vô hại
 // (ghim bấm lại là bỏ, loa bấm lại là dừng), không chạy lại lượt nào.
-check("tin javis: có nút ghim vào mục lục", has(h, 'data-act="pin"'));
-check("tin javis: có nút đọc thành tiếng", has(h, 'data-act="speak"'));
-check("tin javis: đúng 4 nút (trích dẫn, copy, ghim, loa)", (h.match(/class="msg-act"/g) || []).length === 4);
+check("tin unimate: có nút ghim vào mục lục", has(h, 'data-act="pin"'));
+check("tin unimate: có nút đọc thành tiếng", has(h, 'data-act="speak"'));
+check("tin unimate: đúng 4 nút (trích dẫn, copy, ghim, loa)", (h.match(/class="msg-act"/g) || []).length === 4);
 check("tin người dùng: không có ghim hay loa",
   !has(A.actsHtml("user", TS), 'data-act="pin"') && !has(A.actsHtml("user", TS), 'data-act="speak"'));
 // Đường hỏi lại KHÔNG mất: nó nằm trên chính bong bóng câu hỏi của người dùng.
@@ -67,7 +67,7 @@ h = A.actsHtml("user", TS);
 check("nhãn có dấu: Tua lại", has(h, "Tua lại từ câu này"));
 check("nhãn có dấu: Sao chép", has(h, "Sao chép nội dung"));
 
-// ---- 6. Tìm ngược lên tin người dùng gần nhất (nút trả lời lại ở tin Javis) ----
+// ---- 6. Tìm ngược lên tin người dùng gần nhất (nút trả lời lại ở tin UNI MATE) ----
 function node(cls, text) {
   return {
     classList: { contains: function (c) { return cls.split(" ").indexOf(c) !== -1; } },
@@ -80,9 +80,9 @@ function chain(list) {
   return list;
 }
 const u1 = node("msg msg-user", "câu hỏi một");
-const j1 = node("msg msg-javis", "");
+const j1 = node("msg msg-unimate", "");
 const u2 = node("msg msg-user", "câu hỏi hai");
-const j2 = node("msg msg-javis", "");
+const j2 = node("msg msg-unimate", "");
 chain([u1, j1, u2, j2]);
 
 // prevUserText đã BỎ cùng nút "trả lời lại": nó sinh ra chỉ để ngược lên tìm câu hỏi cho nút
@@ -99,9 +99,9 @@ check("chỉ có ảnh: vẫn còn giờ", has(h, "msg-time"));
 check("chỉ có ảnh: KHÔNG có nút trích dẫn (không có chữ để trích)", !has(h, 'data-act="quote"'));
 check("chỉ có ảnh: chỉ còn đúng 1 nút", (h.match(/class="msg-act"/g) || []).length === 1);
 
-h = A.actsHtml("javis", TS, false);
-check("javis không có câu hỏi chữ: bỏ nút tua lại", !has(h, 'data-act="rewind"'));
-check("javis không có câu hỏi chữ: vẫn còn copy", has(h, 'data-act="copy"'));
+h = A.actsHtml("unimate", TS, false);
+check("unimate không có câu hỏi chữ: bỏ nút tua lại", !has(h, 'data-act="rewind"'));
+check("unimate không có câu hỏi chữ: vẫn còn copy", has(h, 'data-act="copy"'));
 
 // Bỏ trống tham số thì giữ nguyên hành vi cũ (các chỗ gọi cũ không đổi)
 h = A.actsHtml("user", TS);

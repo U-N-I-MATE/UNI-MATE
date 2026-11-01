@@ -1,7 +1,7 @@
 """
-reminders.py - Nhắc hẹn từ chat cho Javis: "30 phút nữa nhắc anh...", "8h30 sáng mai...".
+reminders.py - Nhắc hẹn từ chat cho UNI MATE: "30 phút nữa nhắc anh...", "8h30 sáng mai...".
 
-Vá đúng lỗ hổng người dùng nêu: Javis GỬI được Telegram ngay lúc chat, nhưng CHƯA tự
+Vá đúng lỗ hổng người dùng nêu: UNI MATE GỬI được Telegram ngay lúc chat, nhưng CHƯA tự
 hẹn giờ để thức dậy gửi SAU. Module này thêm hàng đợi nhắc hẹn BỀN (JSON trong vault,
 git-backed) + để scheduler nền (main._scheduler_loop, tick 30s) đánh thức đúng giờ:
   - mode "notify" (mặc định): tới giờ bắn thẳng tin nhắc qua Telegram cho ĐÚNG người đã đặt.
@@ -9,20 +9,20 @@ git-backed) + để scheduler nền (main._scheduler_loop, tick 30s) đánh th�
                              Quyền theo `muc_quyen` (suggest | auto | full, mặc định full).
                              Kết quả MỞ ĐẦU hoặc KẾT THÚC bằng [SILENT] → im lặng, vẫn lưu vào bản ghi.
   - mode "script"          : job KHÔNG cần LLM (rẻ, để giám sát) - chạy script có sẵn trong
-                             <brain>/Javis/scripts, đẩy stdout về Telegram; exit≠0 → cảnh báo lỗi,
+                             <brain>/UniMate/scripts, đẩy stdout về Telegram; exit≠0 → cảnh báo lỗi,
                              stdout rỗng hoặc có cờ [SILENT] → im lặng (port ý no_agent của Hermes).
 
 Lịch: hẹn 1-lần (delay_min|at|due_at) HOẶC định kỳ bằng biểu thức CRON 5 trường (cron_util.py,
 tự viết, không phụ thuộc lib). Có cron thì mỗi lần fire xong tự tính due_at kế tiếp.
 
-Tạo nhắc: engine (Javis) tự gọi POST /reminders qua Bash curl từ localhost khi user nói
+Tạo nhắc: engine (UNI MATE) tự gọi POST /reminders qua Bash curl từ localhost khi user nói
 "nhắc anh ..." (endpoint được khai báo trong channel_context). Dashboard tạo/sửa/huỷ/xoá được
 qua /reminders, /reminders/update, /reminders/cancel (giữ lịch sử), /reminders/delete (mất hẳn).
 
 ĐỦ ĐIỀU KIỆN MỚI TẠO: notify/task tồn tại chỉ để BÁO cho người, mà kênh báo duy nhất là
 Telegram. Chưa đấu Telegram thì _create ném NotifyNotReady kèm lý do, endpoint trả thêm cờ
 can_force để chỗ gọi hỏi lại người dùng (allow_no_channel=true mới tạo tiếp). Trước đây job cứ
-tạo, cứ chạy đúng giờ, rồi kết quả rơi vào hư không - người dùng tưởng Javis quên việc.
+tạo, cứ chạy đúng giờ, rồi kết quả rơi vào hư không - người dùng tưởng UNI MATE quên việc.
 Thời gian do SERVER tính (giờ VN, UTC+7) từ delay_min | at | due_at → engine chỉ cần map câu
 nói của user, KHỎI cần biết "bây giờ" trong prompt (giữ prompt-cache ổn định).
 
@@ -56,7 +56,7 @@ from typing import Any, Callable, List, Optional
 from fastapi import APIRouter, Body, Form, Query
 
 import cron_util
-import channel_context   # bóc khối JAVIS_* trước khi gửi Telegram - kênh chữ, không phải web
+import channel_context   # bóc khối UNIMATE_* trước khi gửi Telegram - kênh chữ, không phải web
 import once_ledger       # outside actions of one firing run once, across retries (0.238.0)
 import work_log          # one line per finished run, for the Tasks page stats (0.428.0)
 import turn_context
@@ -94,7 +94,7 @@ VALID_MUC_QUYEN = {"suggest", "auto", "full"}
 # Nhắc hẹn khác loop ở chỗ căn bản: loop tự nghĩ ra việc để làm mỗi vòng, còn nhắc hẹn làm ĐÚNG
 # một việc người dùng đã viết ra và hẹn giờ từ trước. Nó là một câu lệnh trong chat được dời
 # sang giờ khác, nên trói nó chặt hơn lúc chat là tự mâu thuẫn: người dùng gõ "10h mai gửi
-# link vào nhóm" rồi tới giờ Javis báo về là nó không được phép gửi.
+# link vào nhóm" rồi tới giờ UNI MATE báo về là nó không được phép gửi.
 #
 # Trước 2026-08-07 mức quyền bị ghim cứng ở chỉ-đọc, nên MỌI nhắc hẹn yêu cầu một hành động ra
 # ngoài (gửi tin, đăng bài, đặt lịch, tạo đơn) đều thức dậy đúng giờ, chạy, rồi báo về là không
@@ -180,7 +180,7 @@ def ledger_job(rid: str, slot) -> str:
         slot_txt = str(slot or "")
     return f"reminder:{rid}:{slot_txt}"
 
-# Đuôi file script → trình chạy. Chỉ chạy script CÓ SẴN trong <brain>/Javis/scripts (chủ tự viết),
+# Đuôi file script → trình chạy. Chỉ chạy script CÓ SẴN trong <brain>/UniMate/scripts (chủ tự viết),
 # KHÔNG nhận lệnh tuỳ ý từ chat → chặn prompt-injection tạo job phá hoại.
 _SCRIPT_RUNNERS = {
     ".py": [sys.executable],
@@ -197,7 +197,7 @@ class NotifyNotReady(ValueError):
     """Chưa có đường gửi kết quả (bot Telegram chưa bật / chưa có Chat ID).
 
     Tách riêng khỏi ValueError thường để endpoint trả thêm cờ can_force: đây KHÔNG phải lỗi cú
-    pháp mà là THIẾU ĐIỀU KIỆN, và người dùng có quyền chọn tạo tiếp (kết quả chỉ lưu trong Javis).
+    pháp mà là THIẾU ĐIỀU KIỆN, và người dùng có quyền chọn tạo tiếp (kết quả chỉ lưu trong UNI MATE).
     """
 
     def __init__(self, reason: str):
@@ -322,7 +322,7 @@ class RemindersDeps:
     safe_tools: List[str]
     readonly_tools: List[str]
     scheduler_brains: Callable[[], List[str]]  # () -> danh sách brain scheduler quét
-    apply_mcp: Optional[Callable] = None       # apply_mcp(cli, mode): gắn MCP Javis-quản-lý (đọc thật)
+    apply_mcp: Optional[Callable] = None       # apply_mcp(cli, mode): gắn MCP UNI MATE-quản-lý (đọc thật)
     mcp_allow_patterns: Optional[Callable] = None  # () -> ["mcp__<server>", ...] cho allowlist
     # Đổi engine việc nền theo model phụ người dùng chọn (Claude / Codex / API rẻ).
     # None = giữ nguyên Claude như trước (test dựng deps tối giản không cần tiêm).
@@ -330,7 +330,7 @@ class RemindersDeps:
     # () -> (sẵn_sàng, lý_do): có đường gửi kết quả cho người dùng chưa (bot Telegram bật +
     # token + Chat ID). None = bỏ qua kiểm tra (test dựng deps tối giản).
     notify_ready: Optional[Callable[[], tuple]] = None
-    # 0.199.0: (source, ref, brain=, title=, error=, request=) -> report a broken run to Javis Core (incident_desk.py).
+    # 0.199.0: (source, ref, brain=, title=, error=, request=) -> report a broken run to UNI MATE Core (incident_desk.py).
     incident_hook: Optional[Callable] = None
     # 0.202.0: async make_voice(brain, text) -> vault-relative mp3 path ("" on failure), and
     # async send_file(chat_id, abs_path, brain) -> (ok, err) for channels that need the file itself.
@@ -362,7 +362,7 @@ class RemindersFeature:
 
     # ── store (JSON trong brain) ──
     def _path(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "Javis" / "reminders.json"
+        return Path(self.deps.brain_root(brain)) / "UNI MATE" / "reminders.json"
 
     def _load(self, brain: str) -> dict:
         data = {"reminders": [], "updated": 0.0}
@@ -381,18 +381,18 @@ class RemindersFeature:
         self.deps.atomic_write_text(self._path(brain), json.dumps(data, ensure_ascii=False, indent=2))
 
     def _scripts_dir(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "Javis" / "scripts"
+        return Path(self.deps.brain_root(brain)) / "UNI MATE" / "scripts"
 
     def _resolve_script(self, brain: str, script: str) -> Path:
-        """script CHỈ nhận TÊN FILE nằm trong <brain>/Javis/scripts (không path, không '..').
+        """script CHỈ nhận TÊN FILE nằm trong <brain>/UniMate/scripts (không path, không '..').
         Trả path thật đã kiểm tra tồn tại. Ném ValueError nếu không hợp lệ."""
         name = str(script or "").strip().replace("\\", "/")
         if not name:
-            raise ValueError(localefmt.chu("mode 'script' cần tên file trong Javis/scripts",
-                                           "mode 'script' needs a file name in Javis/scripts"))
+            raise ValueError(localefmt.chu("mode 'script' cần tên file trong UniMate/scripts",
+                                           "mode 'script' needs a file name in UniMate/scripts"))
         if "/" in name or name.startswith("."):
-            raise ValueError(localefmt.chu("script chỉ nhận TÊN FILE trong Javis/scripts (không đường dẫn)",
-                                           "script only takes a FILE NAME in Javis/scripts (no path)"))
+            raise ValueError(localefmt.chu("script chỉ nhận TÊN FILE trong UniMate/scripts (không đường dẫn)",
+                                           "script only takes a FILE NAME in UniMate/scripts (no path)"))
         base = self._scripts_dir(brain)
         p = base / name
         try:
@@ -400,8 +400,8 @@ class RemindersFeature:
         except Exception:
             raise ValueError(localefmt.chu("đường dẫn script không hợp lệ", "invalid script path"))
         if rp.parent != rbase or not rp.is_file():
-            raise ValueError(localefmt.chu(f"không thấy script '{name}' trong Javis/scripts",
-                                           f"script '{name}' not found in Javis/scripts"))
+            raise ValueError(localefmt.chu(f"không thấy script '{name}' trong UniMate/scripts",
+                                           f"script '{name}' not found in UniMate/scripts"))
         if rp.suffix.lower() not in _SCRIPT_RUNNERS and not os.access(rp, os.X_OK):
             raise ValueError(localefmt.chu(f"đuôi '{rp.suffix}' chưa hỗ trợ (dùng .py/.sh/.ps1/.js/.bat)",
                                            f"extension '{rp.suffix}' is not supported (use .py/.sh/.ps1/.js/.bat)"))
@@ -428,7 +428,7 @@ class RemindersFeature:
         mq = str(muc_quyen or "").strip().lower()
         mq = mq if mq in VALID_MUC_QUYEN else MUC_QUYEN_MAC_DINH
         # ĐỦ ĐIỀU KIỆN MỚI TẠO. notify/task tồn tại chỉ để BÁO cho người - chưa đấu Telegram thì
-        # tới giờ nó chạy xong rồi ném kết quả vào hư không, người dùng tưởng Javis quên việc.
+        # tới giờ nó chạy xong rồi ném kết quả vào hư không, người dùng tưởng UNI MATE quên việc.
         # Thà chặn ngay lúc tạo và nói thiếu gì. (script = job giám sát, im lặng là bình thường.)
         if mode in ("notify", "task") and not allow_no_channel:
             ready, why = self.notify_status()
@@ -501,7 +501,7 @@ class RemindersFeature:
                 "remember_last": bool(r.get("remember_last")),
                 "speak": bool(r.get("speak")),
                 "call": bool(r.get("call")),
-                # 0.429.0: who made it. bot_id names the chatbot whose turn created it ("" = the owner or Javis Core).
+                # 0.429.0: who made it. bot_id names the chatbot whose turn created it ("" = the owner or UNI MATE Core).
                 "created_by": r.get("created_by", ""), "bot_id": r.get("bot_id", ""),
                 "next_runs": next_runs(cron) if cron and r.get("status") == "pending" else [],
                 "result": (r.get("result") or "")[:500], "error": r.get("error", ""),
@@ -853,9 +853,9 @@ class RemindersFeature:
                     luc = _fmt_vn(retry_at)[:5]
                     msg = (localefmt.chu("⚠ Nhắc hẹn chưa chạy được nhiệm vụ: ", "⚠ The reminder could not run its task: ")
                            + err[:300] + "\n\n"
-                           + localefmt.chu(f"Có vẻ là lỗi mạng. Javis tự thử lại lúc {luc} "
+                           + localefmt.chu(f"Có vẻ là lỗi mạng. UNI MATE tự thử lại lúc {luc} "
                                            f"(lần 1/{len(RETRY_DELAYS_S)}), việc đã gửi đi rồi thì không gửi lại.",
-                                           f"This looks like a network error. Javis will try again at {luc} "
+                                           f"This looks like a network error. UNI MATE will try again at {luc} "
                                            f"(attempt 1 of {len(RETRY_DELAYS_S)}); anything already sent is not sent again."))
                 else:
                     deliver = False
@@ -920,13 +920,13 @@ class RemindersFeature:
                 web = msg[2:]
             try:
                 # Telegram là kênh chữ thuần: mode "task" chạy chung system prompt/CLAUDE.md với
-                # chat nên body có thể mang khối JAVIS_METRICS/JAVIS_ASK - lọc trước khi gửi, kẻo
-                # lộ nguyên cụm "<!-- JAVIS_...: ... -->".
+                # chat nên body có thể mang khối UNIMATE_METRICS/UNIMATE_ASK - lọc trước khi gửi, kẻo
+                # lộ nguyên cụm "<!-- UNIMATE_...: ... -->".
                 kw = {}
                 if _nhan_kw(self.deps.send_telegram, "viec"):
                     kw = {"viec": viec, "web": channel_context.strip_control_blocks(web)}
                 if _nhan_kw(self.deps.send_telegram, "brain"):
-                    # 0.186.0: the reminder's own brain (an empty chat_id lands in its Javis Core) and one key per
+                    # 0.186.0: the reminder's own brain (an empty chat_id lands in its UNI MATE Core) and one key per
                     # firing, so a send repeated after a crash is filed once.
                     kw["brain"] = brain
                     # A network retry is a new message about the same firing: its own key, or the
@@ -958,7 +958,7 @@ class RemindersFeature:
                 cur["result"] = (body or "")[:2000]
                 cur["error"] = (err or ("" if ok else send_err) or "")[:400]
                 if cur.get("status") == "failed" and rem.get("retry_of") and ok and not run_failed:
-                    cur["status"] = "done"   # a retry of the failed firing (Javis Core) worked
+                    cur["status"] = "done"   # a retry of the failed firing (UNI MATE Core) worked
             elif cur is not None:
                 cur["fired_at"] = _now()
                 cur["result"] = (body or "")[:2000]
@@ -1046,7 +1046,7 @@ class RemindersFeature:
         return at, ""
 
     async def _run_script(self, brain: str, script: str):
-        """Job không-LLM: chạy script CÓ SẴN trong Javis/scripts, trả (stdout, stderr, exit_code).
+        """Job không-LLM: chạy script CÓ SẴN trong UniMate/scripts, trả (stdout, stderr, exit_code).
         exit_code=-1 nếu không chạy được (thiếu trình chạy / timeout / lỗi khởi tạo)."""
         try:
             rp = self._resolve_script(brain, script)
@@ -1062,7 +1062,7 @@ class RemindersFeature:
         else:
             argv = [str(rp)]   # file thực thi có shebang (đã kiểm tra os.X_OK lúc tạo)
         env = dict(os.environ)
-        env["JAVIS_BRAIN_ROOT"] = str(self.deps.brain_root(brain))
+        env["UNIMATE_BRAIN_ROOT"] = str(self.deps.brain_root(brain))
         try:
             proc = await asyncio.create_subprocess_exec(
                 *argv, cwd=self.deps.brain_root(brain), env=env,
@@ -1137,7 +1137,7 @@ class RemindersFeature:
                     cli.mcp_config = mcpf
                     cli.mcp_strict = True
         cli = aux_engine.apply(self.deps, cli, mode=mq, tag="reminder")
-        # Trần chung cho fork nền (mặc định 1 giờ, env JAVIS_BG_MAX_WALL_S). Số cứng 300s cũ
+        # Trần chung cho fork nền (mặc định 1 giờ, env UNIMATE_BG_MAX_WALL_S). Số cứng 300s cũ
         # từng giết việc lịch thật đang chạy dở - xem doc tại aux_engine.bg_max_wall_s.
         cli.max_wall_s = aux_engine.bg_max_wall_s()
         if not cli.is_available():
@@ -1202,7 +1202,7 @@ class RemindersFeature:
             p = payload or {}
             brain = str(p.get("brain") or "brain")
             # Body thiếu 'brain' → rơi Brain Default. Sau khi recipe curl (channel_context) và tool
-            # javis_schedule đều gắn brain, thiếu brain là BẤT THƯỜNG (model quên) → log để soi chứ
+            # unimate_schedule đều gắn brain, thiếu brain là BẤT THƯỜNG (model quên) → log để soi chứ
             # KHÔNG chặn (giữ tương thích caller cũ/thủ công cố ý dùng default). Đây từng là bug câm
             # "chat brain khác nhưng nhắc hẹn vẫn vào default".
             if not str(p.get("brain") or "").strip():
@@ -1246,7 +1246,7 @@ class RemindersFeature:
 
         @router.get("/reminders/scripts")
         async def reminders_scripts(brain: str = Query("brain")):
-            """Liệt kê script chạy được (job không-LLM) đặt trong <brain>/Javis/scripts.
+            """Liệt kê script chạy được (job không-LLM) đặt trong <brain>/UniMate/scripts.
             Tự tạo thư mục nếu chưa có để user biết chỗ bỏ file vào."""
             d = self._scripts_dir(brain)
             try:

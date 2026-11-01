@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Work only in C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS. Preserve original D:/Project/Javis-OS; its .venv/Scripts/python.exe may run with -B and managed cwd. Keep VERSION0.299.0 and the existing reserved branch/PR.
+- Work only in C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE. Preserve original D:/Project/UNI-MATE; its .venv/Scripts/python.exe may run with -B and managed cwd. Keep VERSION0.299.0 and the existing reserved branch/PR.
 - Goal §18: M2 engineering and committed/integrated handoff only. No M3–M8, new Goal, account/model/business pilot/canary, deploy/restart or activation. Business/live acceptance remains PENDING.
 - This task changes only the two ordinary admission guards and one new focused test module. No positive qualification entry, scheduler, semantic owner, runner, ledger, schema, native profile, registry, source-footprint list or public readiness change.
 - Preserve exact dictionary and supported-is-True guards, ValueError('trial_native_unavailable'), existing caught exceptions, historical replay ordering, real source/current/barrier/linked transaction behavior and final resolve. Refusal predicate is `available.get('account_ready') is False or available.get('domain') == 'qualification'`. Integer0 is not identity False.
@@ -68,7 +68,7 @@ For snapshots use actual read-only SQL on existing tables and preserve ordered r
 
 - [ ] **Step 2: Freeze and run RED before production edits.**
 
-Use a private driver under this plan's ignored SDD workspace which imports actual tests/run.py and calls its `chay_mot` for the new module with `D:/Project/Javis-OS/.venv/Scripts/python.exe -I -B -Xutf8 <absolute-new-test-path>`. Set the same no-real judge/review/team flags used by the existing task harness. Record the exact driver and child command in the report. Expected RED: the two marked-capability tests fail on actual accepted rows/admission, while ordinary/malformed controls pass. Missing imports, fixture setup failure or a synthetic thrown exception is not meaningful RED; resolve fixture failures first and preserve their logs.
+Use a private driver under this plan's ignored SDD workspace which imports actual tests/run.py and calls its `chay_mot` for the new module with `D:/Project/UNI-MATE/.venv/Scripts/python.exe -I -B -Xutf8 <absolute-new-test-path>`. Set the same no-real judge/review/team flags used by the existing task harness. Record the exact driver and child command in the report. Expected RED: the two marked-capability tests fail on actual accepted rows/admission, while ordinary/malformed controls pass. Missing imports, fixture setup failure or a synthetic thrown exception is not meaningful RED; resolve fixture failures first and preserve their logs.
 
 - [ ] **Step 3: Extend both guards with the exact predicates.**
 

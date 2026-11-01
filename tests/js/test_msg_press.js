@@ -115,7 +115,7 @@ check("index.html loads msg-press.js before chat-reactions.js and teams.js", pos
 check("main chat: only the reaction corner opens the menu, no action card, messages selectable with the phone's callout",
   /if \(opts\.holdOnly && !onBtn\) return;/.test(src) && /holdOn: "\.jr-rx-btn",\s*holdOnly: true,/.test(cr)
   && !/actions:/.test(cr) && !/pressActions|mpress\./.test(cr) && !/holdOnly/.test(tm) && /actions: function \(m\)/.test(tm)
-  && !/\.mp-host \.msg\b/.test(css) && !/\.msg-javis\[data-mid\] \{ -webkit-touch-callout: none; \}/.test(css)
+  && !/\.mp-host \.msg\b/.test(css) && !/\.msg-unimate\[data-mid\] \{ -webkit-touch-callout: none; \}/.test(css)
   && !Object.keys(vi).some((k) => k.startsWith("mpress.")) && !Object.keys(en).some((k) => k.startsWith("mpress.")));
 check("no em or en dash", src.indexOf(String.fromCharCode(0x2014)) < 0 && src.indexOf(String.fromCharCode(0x2013)) < 0);
 process.exit(fails ? 1 : 0);

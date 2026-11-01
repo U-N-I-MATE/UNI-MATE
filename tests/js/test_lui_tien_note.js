@@ -1,4 +1,4 @@
-/* Lùi / Tiến giữa các note trong trình sửa của Javis.
+/* Lùi / Tiến giữa các note trong trình sửa của UNI MATE.
 
        node tests/js/test_lui_tien_note.js
 
@@ -125,7 +125,7 @@ check("lưu hỏng thì KHÔNG dịch con trỏ vệt",
 
 // Mốc so sánh phải là bản ĐÃ vòng qua markdown, không phải chữ thô đọc từ đĩa: bản render
 // WYSIWYG đổi ngược lại luôn lệch đôi chỗ, nên so với file gốc thì mỗi lần chỉ ĐỌC rồi rời đi
-// cũng bị tính là có sửa, và Javis âm thầm ghi đè định dạng file đó.
+// cũng bị tính là có sửa, và UNI MATE âm thầm ghi đè định dạng file đó.
 check("mốc 'đã sửa gì chưa' lấy từ chính khung soạn, không phải nội dung thô",
   /_neGocText = _neLayNoiDung\(\)/.test(CON));
 check("lưu xong thì dời mốc (không lưu lại lần nữa khi rời file)",
@@ -143,7 +143,7 @@ const del = CON.slice(CON.indexOf("async function _neDeleteCur("), CON.indexOf("
 check("xoá file -> rút khỏi vệt", /_neLichSu\.filter\(n => n\.rel !== rel\)/.test(del));
 check("xoá file -> con trỏ vệt được kéo về chỗ hợp lệ", del.indexOf("_neViTri = Math.min(") >= 0);
 check("đổi brain -> xoá sạch vệt (mọi bước thuộc brain cũ)",
-  /JavisPin\.clear\(\);[\s\S]{0,300}_neLichSu = \[\]; _neViTri = -1;/.test(CON));
+  /UniMatePin\.clear\(\);[\s\S]{0,300}_neLichSu = \[\]; _neViTri = -1;/.test(CON));
 
 // Đóng trình sửa thì GIỮ vệt: đóng ra chat về chính note đó rồi mở lại là luồng thường gặp.
 const dong = CON.slice(CON.indexOf("function closeNote()"), CON.indexOf("async function _neRenameCur("));

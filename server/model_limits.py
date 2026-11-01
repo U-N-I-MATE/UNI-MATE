@@ -39,7 +39,7 @@ KNOWN_LIMITS: tuple[dict, ...] = (
         "context_window": 131072,
         "reserved_output_tokens": 2000,
         "window_seconds": 60,
-        "note": "Groq gói on_demand miễn phí. Chính hạn mức đã chặn Javis ở 21.446 token.",
+        "note": "Groq gói on_demand miễn phí. Chính hạn mức đã chặn UNI MATE ở 21.446 token.",
         "source": "Tài liệu rate limit công khai của Groq, tra ngày 2026-08-02",
         "verify": True,
     },
@@ -189,7 +189,7 @@ def subscription_blocked_hint(limit, configured_providers=(), now=None) -> str:
     elif getattr(limit, "reset_text", ""):
         parts.append(f"Nhà cung cấp nói: {limit.reset_text}.")
     else:
-        parts.append("Nhà cung cấp không nói lúc nào reset, nên Javis cũng chưa biết.")
+        parts.append("Nhà cung cấp không nói lúc nào reset, nên UNI MATE cũng chưa biết.")
 
     others = sorted({str(p) for p in (configured_providers or ()) if str(p).strip()})
     if others:

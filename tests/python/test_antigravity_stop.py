@@ -33,7 +33,7 @@ def processes(tmp_path):
         proc.wait(timeout=5)
     deadline = time.monotonic() + 3
     while time.monotonic() < deadline and any(
-        t.name.startswith("javis-agy-") and "stop-test" in t.name
+        t.name.startswith("unimate-agy-") and "stop-test" in t.name
         for t in threading.enumerate()
     ):
         time.sleep(0.02)
@@ -246,7 +246,7 @@ def test_stop_order_kills_grandchildren(tmp_path):
 
 
 def test_cancel_all_never_signals_a_shared_group(tmp_path):
-    """A child that did not start its own session shares Javis's process group: it gets a plain terminate."""
+    """A child that did not start its own session shares UNI MATE's process group: it gets a plain terminate."""
     child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"])
     with claude_cli._PROC_LOCK:
         claude_cli._ACTIVE_PROCS[child] = "chat:shared-group-test"
@@ -260,7 +260,7 @@ def test_cancel_all_never_signals_a_shared_group(tmp_path):
 
 
 def test_watchdog_leaves_room_for_agys_own_print_timeout():
-    """With --print-timeout agy stops itself and prints a partial answer; Javis's watchdog must fire later."""
+    """With --print-timeout agy stops itself and prints a partial answer; UNI MATE's watchdog must fire later."""
     src = (SERVER / "antigravity_cli.py").read_text(encoding="utf-8")
     assert 'deadline = self.timeout + (60 if co_co("--print-timeout") else 0)' in src
     assert "stop_requested.wait(deadline)" in src

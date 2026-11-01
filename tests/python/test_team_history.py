@@ -11,8 +11,8 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-hist-")
-TEMP = Path(tempfile.mkdtemp(prefix="javis-team-hist-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-hist-")
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-team-hist-w-"))
 
 import sessions  # noqa: E402
 import task_store  # noqa: E402

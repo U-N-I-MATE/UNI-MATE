@@ -24,8 +24,8 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-pwtest-")
-os.environ["JAVIS_REQUIRE_LOGIN"] = "1"
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-pwtest-")
+os.environ["UNIMATE_REQUIRE_LOGIN"] = "1"
 
 from fastapi.testclient import TestClient   # noqa: E402
 import config as c   # noqa: E402
@@ -119,7 +119,7 @@ _r = P("/auth/password", current_password="matkhau123", password="matkhaumoi456"
 check("CANARY: phiên của máy KHÁC bị hạ (nếu không, đổi mật khẩu chẳng đuổi được ai)",
       c.valid_session(_phien_may_khac) is False)
 check("máy đang thao tác được cấp phiên MỚI ngay (không tự khoá mình)",
-      "javis_session" in _r.cookies)
+      "unimate_session" in _r.cookies)
 check("và dùng được luôn, không văng ra màn đăng nhập",
       cl.get("/auth/status").json().get("authed") is True)
 
@@ -167,7 +167,7 @@ check("index.html có ô mật khẩu hiện tại cho khối đó", 'id="setAut
 check("CANARY: nút Lưu đọc trạng thái TƯƠI, không tin _settingsCache",
       "_settingsCache && _settingsCache.auth" not in _app)
 check("console.js gọi hàm đổ trạng thái tài khoản khi mở trang Cài đặt",
-      "__javisRefreshAuthRow" in _console and "__javisRefreshAuthRow" in _app)
+      "__unimateRefreshAuthRow" in _console and "__unimateRefreshAuthRow" in _app)
 
 # Rào tối thiểu 8 ký tự phải giống nhau ở giao diện và server, nếu không người dùng gõ 5 ký tự
 # rồi ăn lỗi từ server mà chẳng hiểu vì sao.

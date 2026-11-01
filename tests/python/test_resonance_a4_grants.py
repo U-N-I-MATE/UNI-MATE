@@ -16,9 +16,9 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = Path(tempfile.mkdtemp(prefix="javis-res-a4-"))
-os.environ["JAVIS_STATE_DIR"] = str(_STATE)
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+_STATE = Path(tempfile.mkdtemp(prefix="unimate-res-a4-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_STATE)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 import resonance as R  # noqa: E402
 import resonance_grants as G  # noqa: E402
@@ -88,7 +88,7 @@ class World:
     def __init__(self, name):
         World.n += 1
         self.brain = str(Path(tempfile.mkdtemp(prefix=f"brain-a4-{name}-")).resolve())
-        (Path(self.brain) / "Javis").mkdir(parents=True)
+        (Path(self.brain) / "UNI MATE").mkdir(parents=True)
         self.store = RS.GoalStore(_STATE / f"{name}.sqlite3")
         self.agent = RA.enable(self.store, self.brain)
         self.p = RS.Principal("agent", self.agent["agent_key"], self.brain)
@@ -102,7 +102,7 @@ class World:
         e = eng or self.eng
         return R.GoalDeps(engine_factory=lambda s, t: (e, {"provider": "fake", "model": "fake-1", "text_only": True}),
                           budget=R.CallBudget(0), clock=self.clock, store=self.store,
-                          principal=RS.Principal("agent", "javis", self.brain), brain_root=self.brain,
+                          principal=RS.Principal("agent", "unimate", self.brain), brain_root=self.brain,
                           evidence=EV, notify=_notes)
 
     def next(self):

@@ -18,7 +18,7 @@ kế tiếp trong khung chat riêng với trợ lý đó, mọi đường nạp 
 
 | Đường | Có dùng bản thử |
 |---|---|
-| Tool `javis_use_skill` gọi trong tiến trình (engine API) | Có |
+| Tool `unimate_use_skill` gọi trong tiến trình (engine API) | Có |
 | Ảnh chụp skill theo lượt (`TaskSkillScope`, khi bật) | Có, bytes được ghim theo lượt |
 | Hub qua HTTP từ CLI (Claude Code, Codex, Grok, Antigravity) | Không: các engine này còn tự đọc `.claude/skills`, phục vụ bản thử ở một đường sẽ chia lượt làm hai phiên bản |
 | Router lười (`lazy_skill_runtime`) | Không: chạy cả cho engine CLI và không chạy cho chat trợ lý |
@@ -99,7 +99,7 @@ idempotent theo `event_key`. Không ghi đè file, không phát lại hành đ�
   kê tên skill nên không bị ảnh hưởng. Claude Code và Codex đọc `.claude/skills` nên không nhận mô tả áp dụng
   (canary Phase 8 bỏ qua khi `provider_kind` là cli/oauth, prompt thuê bao vẫn dùng `build_system_prompt`).
 - `POST /improvement-routing/evaluate` dựng bytes mới bằng `patch_description` (chỉ dòng `description:` một dòng,
-  thân và các khoá khác giữ nguyên), chấm bộ câu hỏi bằng đúng hàm chấm của bộ chọn Javis với mô tả cũ và mới, lưu
+  thân và các khoá khác giữ nguyên), chấm bộ câu hỏi bằng đúng hàm chấm của bộ chọn UNI MATE với mô tả cũ và mới, lưu
   ứng viên bất biến kèm báo cáo (`improvement_routing_candidates`, schema 13). Câu `negative`/`competing` đang đúng
   mà thành chọn sai/thừa thì `rejected`; đủ khác biệt theo phép kiểm dấu thì `eligible`; còn lại `inconclusive`.
 - Áp dụng (`/improvement-routing/{id}/apply`) tạo một con trỏ `improvement_routing_overlays` phạm vi `main`;
@@ -112,7 +112,7 @@ idempotent theo `event_key`. Không ghi đè file, không phát lại hành đ�
   kiếm bỏ sót), nên định tuyến của skill khác không đổi. Cần ít nhất một câu negative hoặc competing.
 - Skill có mô tả dịch (`description_<lang>`) chưa áp dụng được (V1 chỉ thay mô tả gốc). Mô tả trùng nội dung cũ bị
   từ chối. Khi phạm vi chụp skill theo lượt đang bật, khung chat dùng ảnh chụp, không trộn mô tả áp dụng.
-- Giới hạn còn lại: mô tả trong tool `javis_use_skill` của hub vẫn là mô tả gốc (danh sách tool được cache theo
+- Giới hạn còn lại: mô tả trong tool `unimate_use_skill` của hub vẫn là mô tả gốc (danh sách tool được cache theo
   brain, dùng chung cho mọi lượt), nên lượt API ở khung chat chính thấy mô tả mới trong danh sách skill của prompt
   và mô tả gốc trong mô tả tool.
 - Chưa có: bộ chạy thử cho bộ não API với bộ công cụ do host kiểm soát (spec 10.3), và đo việc Claude Code/Codex tự
@@ -121,19 +121,19 @@ idempotent theo `event_key`. Không ghi đè file, không phát lại hành đ�
 ## Quy trình cho trợ lý (M5, 0.321.0)
 
 - Là gì: một đoạn cách làm do chủ duyệt (lập kế hoạch, kiểm nguồn, kiểm kết quả, cách bàn giao) nối vào cuối lời
-  nhắc của MỘT trợ lý thành mục riêng `# Quy trình đã được chủ duyệt (Javis quản lý)`. Không sửa file trợ lý, bộ
+  nhắc của MỘT trợ lý thành mục riêng `# Quy trình đã được chủ duyệt (UNI MATE quản lý)`. Không sửa file trợ lý, bộ
   nhớ, mục `## Luật chủ dặn`, model, provider, mức suy nghĩ, skills, quyền, lịch hay công tắc Auto.
 - Nơi dùng (chủ tick): `dm` (chat riêng ở dashboard, CLI, Telegram), `team` (lượt nhóm), `kanban` (việc giao bằng
   Giao việc), `workflow` (bước quy trình, cả trợ lý kiểm chứng). Nơi không tick không bao giờ thấy. Mục tiêu (goal) và
   chatbot khách không nạp lời nhắc trợ lý nên không được phủ. Mọi bộ não đều nhận vì đây là chữ trong lời nhắc.
 - Host nói nơi chạy: `_agent_sysprompt(slug, surface, agent_key, session_created_at)`; không có `surface` thì lời
   nhắc y như trước. Mã trợ lý lấy từ ghim phiên, thành viên nhóm, khoá việc Kanban hoặc dòng sống của slug.
-- Kiểm của host khi lưu: 20 tới 2000 ký tự; từ chối dấu hiệu `JAVIS_RULE/LESSON/ASK`, comment HTML, dòng đặt
+- Kiểm của host khi lưu: 20 tới 2000 ký tự; từ chối dấu hiệu `UNIMATE_RULE/LESSON/ASK`, comment HTML, dòng đặt
   `model:`, `skills:`, `quyền:`..., câu bảo bỏ qua luật chủ hay đổi model. Mâu thuẫn về nghĩa với luật chủ do chủ
   tự đọc và tick xác nhận (`owner_confirmed`); duyệt mâu thuẫn tự động để Phase 2.
 - Ghim phiên (I10): chat riêng bắt đầu TRƯỚC lúc áp dụng giữ lời nhắc cũ; phiên mới mới dùng quy trình. Gỡ và tạm
   ngừng có hiệu lực ngay ở lượt kế.
-- Tạm ngừng: chủ sửa bất kỳ dòng nào của file trợ lý ngoài mục Javis quản lý (kể cả frontmatter) hoặc mục
+- Tạm ngừng: chủ sửa bất kỳ dòng nào của file trợ lý ngoài mục UNI MATE quản lý (kể cả frontmatter) hoặc mục
   `## Luật chủ dặn` (`owner_rules_changed`), trợ lý bị tạo lại cùng slug (`agent_identity_changed`), hoặc bị xoá
   (`agent_unavailable`). Bài học tự học và mục `## Bổ sung (tự học)` không làm tạm ngừng.
 - Nối đường học: trợ lý đang có quy trình hiệu lực thì `op=update` của learn.py (luật bổ sung) thành ứng viên
@@ -221,7 +221,7 @@ idempotent theo `event_key`. Không ghi đè file, không phát lại hành đ�
   bộ kín đã tiêu không cho lặp, kể cả khi chủ giao. Bước bị từ chối không ghi. Hiện chưa có vòng V4 tự chạy nào gọi
   sổ này; khi có, `holdout_consumed` phải lấy từ trạng thái bộ case của host, không từ người gọi.
 - Xuất (`POST /improvement-export` `{procedure_ids, event_key}`): host đọc đúng chữ quy trình đã lưu theo id, kèm
-  phiên bản Javis; không có báo cáo, luật chủ, hội thoại. Chữ có khoá bí mật, số điện thoại, email hay chuỗi khoá dài
+  phiên bản UNI MATE; không có báo cáo, luật chủ, hội thoại. Chữ có khoá bí mật, số điện thoại, email hay chuỗi khoá dài
   bị TỪ CHỐI (không tự sửa chữ), để chủ thấy lý do. Hash gói chỉ để phát hiện hỏng, không phải chữ ký.
 - Nhập (`POST /improvement-imports` `{package, event_key}`, `GET /improvement-imports`): gói lạ được kiểm định
   dạng, hash, tối đa 20 quy trình, slug hợp lệ, cùng quy tắc từ chối dữ liệu riêng; từng mục thành ứng viên

@@ -19,7 +19,7 @@ import inspect
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-doitroly-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-doitroly-"))
 
 import antigravity_cli  # noqa: E402
 import aux_engine  # noqa: E402

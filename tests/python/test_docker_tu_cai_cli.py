@@ -11,7 +11,7 @@ What is guarded:
   1. The server command still runs right away (the install is in the background, never blocking).
   2. Both CLIs end up installed and the state files say "ok"; a CLI already present is not
      reinstalled; a failed download says "failed" (and the next boot retries).
-  3. JAVIS_AUTO_INSTALL_CLIS=0 turns it off completely.
+  3. UNIMATE_AUTO_INSTALL_CLIS=0 turns it off completely.
   4. The Models page reads those states: "installing", "failed", "ok", a stuck "installing" turns
      into "failed", and outside Docker (no state folder) the answer is "".
 """
@@ -66,7 +66,7 @@ def boot(td, **extra):
     # PATH holds ONLY the fake curl and the system tools: a developer machine with the real agy or
     # grok on PATH would otherwise count as "already installed" and skip the install under test.
     sysdirs = [str(Path(shutil.which(b)).parent) for b in ("sh", "bash", "mkdir", "date") if shutil.which(b)]
-    env = dict(os.environ, HOME=str(home), JAVIS_HOME_PERSIST=str(persist),
+    env = dict(os.environ, HOME=str(home), UNIMATE_HOME_PERSIST=str(persist),
                PATH=os.pathsep.join(dict.fromkeys([str(fake), *sysdirs, "/usr/bin", "/bin"])),
                CURL_LOG=str(Path(td) / "curl.log"), **extra)
     t0 = time.monotonic()
@@ -112,9 +112,9 @@ else:
         check("the installer output is kept for support", (sd / "install.log").is_file())
 
     with tempfile.TemporaryDirectory() as td:
-        r, _, home, sd = boot(td, JAVIS_AUTO_INSTALL_CLIS="0")
+        r, _, home, sd = boot(td, UNIMATE_AUTO_INSTALL_CLIS="0")
         time.sleep(1)
-        check("JAVIS_AUTO_INSTALL_CLIS=0: nothing installed, no state written",
+        check("UNIMATE_AUTO_INSTALL_CLIS=0: nothing installed, no state written",
               r.returncode == 0 and not sd.exists() and not (Path(td) / "curl.log").exists())
 
 
@@ -122,7 +122,7 @@ else:
 # What the Models page reads
 # ============================================================
 with tempfile.TemporaryDirectory() as td:
-    os.environ["JAVIS_HOME_PERSIST"] = td
+    os.environ["UNIMATE_HOME_PERSIST"] = td
     import cli_autoinstall as ca
     check("no state folder (not Docker): nothing to say", ca.state("agy") == "")
     d = Path(td) / ".cli-auto-install"

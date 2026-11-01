@@ -6,11 +6,11 @@ trước khi chạy và ghi vào báo cáo)
     nhiều ngày; gói Pro/Max của Anthropic dành cho dùng cá nhân thông thường, chạy nền 24/7 hay trên VPS có rủi ro bị
     khoá tài khoản. Gói xAI cũng chưa nói rõ chuyện này.
   - Claude Code chạy được ở quyền "cần duyệt" khi bản claude-agent-sdk có móc PreToolUse (bản ghim trong
-    requirements.txt có); thiếu thì Javis từ chối bước và nói rõ.
+    requirements.txt có); thiếu thì UNI MATE từ chối bước và nói rõ.
   - Codex (gói ChatGPT) chạy được ở quyền "cần duyệt" khi: MCP Hub bật, sandbox riêng của Codex bật (KHÔNG đặt
-    JAVIS_CODEX_SANDBOX=off, nên trong Docker không bubblewrap thì Codex không dùng được cho nhóm cần duyệt), và
-    ~/.codex/config.toml không có MCP riêng ngoài Javis.
-  - KHÔNG dùng Grok Build hay Antigravity cho nhóm ở quyền "cần duyệt": Javis từ chối bước có công cụ trên hai engine
+    UNIMATE_CODEX_SANDBOX=off, nên trong Docker không bubblewrap thì Codex không dùng được cho nhóm cần duyệt), và
+    ~/.codex/config.toml không có MCP riêng ngoài UNI MATE.
+  - KHÔNG dùng Grok Build hay Antigravity cho nhóm ở quyền "cần duyệt": UNI MATE từ chối bước có công cụ trên hai engine
     này (không chặn được trước khi chạy). Muốn dùng thì phải bật "Nhóm tự làm", và khi đó không còn cổng duyệt.
 
 Ngân sách mặc định cho mỗi nhóm (đặt ở tab Nhóm > Nâng cao và mục Mục tiêu phòng ban). config/teams.json đặt riêng
@@ -22,7 +22,7 @@ cho từng nhóm và THẮNG các số dưới đây khi khác nhau.
   jobs_per_day (việc mục tiêu tự mở)        2
   max_open_jobs (dừng mở khi đang có)       3
   fix_rounds (vòng sửa nghiệm thu)          2
-  Trần chung của máy chủ: JAVIS_RESONANCE_CALL_CEILING (ví dụ 300 lượt mỗi ngày cho cả máy pilot).
+  Trần chung của máy chủ: UNIMATE_RESONANCE_CALL_CEILING (ví dụ 300 lượt mỗi ngày cho cả máy pilot).
   Chi phí: đặt giới hạn chi tiêu ở trang nhà cung cấp API trước khi chạy (ví dụ 5 USD mỗi ngày).
 
 Điều kiện dừng ngay (dừng khẩn, xem run_guide.txt)

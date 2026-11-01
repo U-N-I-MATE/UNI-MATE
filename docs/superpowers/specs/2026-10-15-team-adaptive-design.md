@@ -11,12 +11,12 @@ phiên bản**, không phải kết luận nghiên cứu; chúng được kiểm
 
 | Tài liệu cũ | Nói gì | Nay đổi thành | Vì sao |
 |---|---|---|---|
-| Spec Resonance 06/10 (`2026-10-06-javis-resonance-design.md`:251,261), roadmap 08/10 | Không gắn tần suất với điểm khen/chê | Nhịp CHỦ ĐỘNG của agent (lớp 3) thay đổi theo ước lượng hữu ích có giới hạn, độ tin và quay lại; lịch trách nhiệm (goal A2, hạn chót, Kanban, nhắc hẹn) **không** đổi theo điểm | GOAL 7.2, 7.3 |
+| Spec Resonance 06/10 (`2026-10-06-unimate-resonance-design.md`:251,261), roadmap 08/10 | Không gắn tần suất với điểm khen/chê | Nhịp CHỦ ĐỘNG của agent (lớp 3) thay đổi theo ước lượng hữu ích có giới hạn, độ tin và quay lại; lịch trách nhiệm (goal A2, hạn chót, Kanban, nhắc hẹn) **không** đổi theo điểm | GOAL 7.2, 7.3 |
 | A3 (`docs/dev/resonance-a3-learning.md` "Những điều không bao giờ xảy ra") | Reaction không tạo lý do thức, không đổi lịch | Reaction hợp lệ trên agent bật Cộng hưởng tạo **một** lý do xem xét gom nhóm theo (agent, ngữ cảnh) và là đầu vào ước lượng hữu ích. Reaction trên agent tắt Cộng hưởng vẫn chỉ lưu và hiển thị | GOAL 6.2, 7.3 |
 | A3 làn P | Đề xuất bài học trình bày, chủ duyệt mới áp | Khi Cộng hưởng bật, điều chỉnh trong **phạm vi tự học đã cấp** (nói/im, nhịp, bài học phạm vi nhóm) tự áp có trước/sau, quan sát và tự quay lại; thay đổi quyền, luật của chủ, phạm vi ngoài cấp vẫn chờ chủ | GOAL 8.2 |
 | Team chat T1 (spec 13/10 :252, TC8) | Tin của agent không đánh thức ai | Tin của đồng đội/trưởng nhóm mở **lượt xem xét liên quan** chỉ qua sự kiện có cấu trúc (quan hệ việc, input_refs, lệnh `ask_peer`), có trần độ sâu và chống vòng; chữ `@` trong văn bản, trích dẫn và tag giả vẫn không mở gì | GOAL 8.1 |
-| Team chat T1 | Bài học `JAVIS_LESSON` ghi vào bộ nhớ chung của agent | Bài học trong nhóm ghi vào kho bài học có **phạm vi nhóm**, có nguồn, lịch sử, thu hồi; chỉ đưa lên phạm vi chung qua tự rà soát có bằng chứng từ nhiều ngữ cảnh hoặc chủ duyệt | GOAL 7.5, 8.2 |
-| Chat riêng hiện nay | `JAVIS_LESSON` model đề xuất ghi `MEMORY.md` (đi mọi ngữ cảnh) | Ghi bài học phạm vi `dm:<agent_key>`; chỉ luật chủ và bài học được nâng mới đi mọi ngữ cảnh | GOAL 7.5 |
+| Team chat T1 | Bài học `UNIMATE_LESSON` ghi vào bộ nhớ chung của agent | Bài học trong nhóm ghi vào kho bài học có **phạm vi nhóm**, có nguồn, lịch sử, thu hồi; chỉ đưa lên phạm vi chung qua tự rà soát có bằng chứng từ nhiều ngữ cảnh hoặc chủ duyệt | GOAL 7.5, 8.2 |
+| Chat riêng hiện nay | `UNIMATE_LESSON` model đề xuất ghi `MEMORY.md` (đi mọi ngữ cảnh) | Ghi bài học phạm vi `dm:<agent_key>`; chỉ luật chủ và bài học được nâng mới đi mọi ngữ cảnh | GOAL 7.5 |
 | Phán xử Zalo | Hai kết luận nói/im; không có sổ lượt | Ba kết luận nói/chờ/im (chờ có điều kiện gỡ); mọi lượt phán xử và tự rà soát vào sổ lượt chung | GOAL 8.1, 8.3 |
 | Test emoji (`tests/python/test_icons.py`) | Sáu emoji chỉ được nằm trong `teams.js` | Sáu emoji chỉ được nằm trong **một** bảng dùng chung `dashboard/reactions.js`; mọi chỗ khác vẫn cấm | GOAL 6.1 |
 
@@ -42,7 +42,7 @@ phiên bản**, không phải kết luận nghiên cứu; chúng được kiểm
 - **Ngữ cảnh (`context_ref`):** `team:<team_id>` hoặc `dm:<agent_key>` (toàn bộ chat riêng của chủ với agent đó, mọi phiên kênh
   `agent:<slug>` gộp chung; ranh giới riêng tư là chat riêng khác nhóm, mã phiên chỉ dùng ở tham chiếu tin). Phần tổng hợp
   theo agent dùng `context_ref = "*"` (chỉ để hiển thị và khởi tạo). Không đưa nội dung của ngữ cảnh này vào prompt ngữ cảnh khác.
-- **Câu trả lời ở trang Trò chuyện chính** (không có agent, tác giả là Javis): có sáu reaction để lưu và hiển thị (`agent_key`
+- **Câu trả lời ở trang Trò chuyện chính** (không có agent, tác giả là UNI MATE): có sáu reaction để lưu và hiển thị (`agent_key`
   rỗng); không vào ước lượng hữu ích hay phán xử của agent nào.
 - **Sự kiện nguồn:** mọi tác động trỏ về một `source_ref` duy nhất (`rx:dm:<log_id>`, `rx:team:<log_id>`, `decision:<id>`,
   `step:<id>`, `seen:<context>:<message_id>`). Mỗi loại tác động có chỉ mục duy nhất theo `source_ref`.
@@ -297,7 +297,7 @@ mở lượt quét nữa và **không** được tính là "có cơ hội" ở l
 ### 6.2 Sự kiện "đã xem" (`message_seen`, resonance.sqlite3)
 
 Dashboard gửi `POST /seen {context_ref, message_ids}` khi tin của agent nằm trong khung nhìn ≥ 1,5 giây và tab đang hiển thị (nhóm
-và chat riêng). Host ghi lần đầu. Chỉ tin của agent trong Javis; không theo dõi gì khác.
+và chat riêng). Host ghi lần đầu. Chỉ tin của agent trong UNI MATE; không theo dõi gì khác.
 
 ### 6.3 Công thức (`pulse.v1`)
 
@@ -400,9 +400,9 @@ của nhóm. Đi qua phán xử của agent nhận (7.2 bước 2-5).
 `id, agent_key, scope (team:<id>|dm:<agent_key>|*), kind (speak|method|presentation|collab), text, source (owner|teammate|leader|self|
 review), source_refs_json, status (active|revoked|superseded), created_at, revoked_at, revoked_by`; nhật ký `agent_lesson_events`.
 
-- `JAVIS_LESSON` trong lượt nhóm: scope `team:<id>`, nguồn `self`, gắn lượt/tin/revision; chỉ khi đầu ra còn hợp lệ (R3). Lượt nhóm nạp
+- `UNIMATE_LESSON` trong lượt nhóm: scope `team:<id>`, nguồn `self`, gắn lượt/tin/revision; chỉ khi đầu ra còn hợp lệ (R3). Lượt nhóm nạp
   scope của nhóm đó và `*`.
-- Chat riêng: `JAVIS_RULE` (luật chủ nói thẳng) vẫn vào "Luật chủ dặn", phạm vi `*` như hiện nay. **Đổi:** `JAVIS_LESSON` do model đề
+- Chat riêng: `UNIMATE_RULE` (luật chủ nói thẳng) vẫn vào "Luật chủ dặn", phạm vi `*` như hiện nay. **Đổi:** `UNIMATE_LESSON` do model đề
   xuất trong chat riêng nay ghi `agent_lessons` scope `dm:<agent_key>` thay vì `MEMORY.md`, để bài học riêng không rò vào lượt nhóm;
   chỉ luật của chủ và bài học được tự rà soát/chủ nâng lên mới thành `*`. Lượt chat riêng (mọi phiên) nạp scope `dm:<agent_key>` và
   `*`.
@@ -439,7 +439,7 @@ chứng.
 | Lượt chủ động/xem xét/quét/tự rà soát mỗi agent/ngày `agent_daily_calls` | 6 | chủ; có "Không giới hạn" | Toàn quyền không chỉnh (không phải trần nhóm) |
 | `max_tier` (nhịp nhanh nhất) | B1 | chủ (tới B0) | trưởng nhóm không nâng được, kể cả Toàn quyền |
 | Dự trữ nghĩa vụ trong trần chung server | 20% | server | lượt tự phát (chủ động, xem xét, quét, phán xử theo lô) chỉ dùng tới 80% trần; goal A2, việc giao, lời gọi trực tiếp dùng được cả trần (9.1) |
-| Trần chung `JAVIS_RESONANCE_CALL_CEILING` | env | server | cố định với Toàn quyền; phạm vi ở 9.1 |
+| Trần chung `UNIMATE_RESONANCE_CALL_CEILING` | env | server | cố định với Toàn quyền; phạm vi ở 9.1 |
 
 `agent_daily_calls` tiêu theo thứ tự ưu tiên `reaction_review` > `related_review` > `wait_unblocked` > tin chủ động/quét, và luôn
 giữ 2 lượt/ngày cho hai loại xem xét đầu (quét/chủ động không dùng phần giữ). Lượt phán xử cho tin chủ động trong chat riêng tính vào
@@ -448,11 +448,11 @@ giữ 2 lượt/ngày cho hai loại xem xét đầu (quét/chủ động không
 Hết trần: lần thức chỉ chạy code, lý do giữ `pending`, trạng thái "Chờ hạn mức"; qua ngày mỗi lý do tối đa một lượt (không bù hàng loạt).
 Các trần mới vào **bảng giới hạn** của T1 (loại: chủ chỉnh, Toàn quyền chỉnh, server cố định, nhà cung cấp).
 
-### 9.1 Phạm vi và thực thi trần chung (`JAVIS_RESONANCE_CALL_CEILING`)
+### 9.1 Phạm vi và thực thi trần chung (`UNIMATE_RESONANCE_CALL_CEILING`)
 
 Sửa sau review T1: bản trước chỉ cộng `goals.calls_used` và `call_ledger`, nên lượt nhóm (lưu ở `team_turns`, kho khác) nằm ngoài trần.
 
-- **Phạm vi:** mọi lượt engine cấp host do Javis tự chạy ở đường nhóm và Cộng hưởng: lượt goal A2 và phép thử, bộ lập mục tiêu, lượt
+- **Phạm vi:** mọi lượt engine cấp host do UNI MATE tự chạy ở đường nhóm và Cộng hưởng: lượt goal A2 và phép thử, bộ lập mục tiêu, lượt
   nhóm (trả lời tin nhóm, bước việc nhóm), phán xử theo lô, lượt chủ động, quét, xem xét, xem xét reaction, gỡ chờ. **Ngoài phạm vi:**
   lượt chat riêng chủ tự gõ (chủ đang ngồi đó, không phải lượt tự chạy), loop và nhắc hẹn (có trần riêng). Đây là trần của pilot có
   hạn mức do chủ duyệt; không đặt biến thì không có trần chung.

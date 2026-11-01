@@ -10,8 +10,8 @@ import os
 import sys
 import tempfile
 
-_tmp = tempfile.mkdtemp(prefix="javis-loi-")
-os.environ["JAVIS_STATE_DIR"] = _tmp
+_tmp = tempfile.mkdtemp(prefix="unimate-loi-")
+os.environ["UNIMATE_STATE_DIR"] = _tmp
 sys.path.insert(0, str(SERVER))
 import config as cfgmod  # noqa: E402
 cfgmod.STATE_DIR = __import__("pathlib").Path(_tmp)

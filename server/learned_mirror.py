@@ -4,9 +4,9 @@ Owner request (2026-10-25): copying or moving a brain to another machine, or res
 keep what a chatbot's reply-policy judge and the agents have learned. That knowledge lives in SQLite stores under
 STATE_DIR, keyed by machine-local random ids (`bot_<uuid>`, `ag_<hex>`, `tm_<hex>`), so it never travelled with the
 brain. The SQLite stores stay the source of truth; this module writes a JSON mirror next to the brain's other files and
-imports it on a machine whose stores do not have it yet (same idea as `Javis/kanban.json`, see server/tasks.py).
+imports it on a machine whose stores do not have it yet (same idea as `UniMate/kanban.json`, see server/tasks.py).
 
-Layout, under `<brain>/Javis/learned/`:
+Layout, under `<brain>/UniMate/learned/`:
 
   bots/<bot-slug>.json            judge knowledge WITHOUT customer chat text: role profile, tuning knobs, lessons,
                                   per-chat threshold offsets, bootstrap cases (model-written from the Agent text).
@@ -16,7 +16,7 @@ Layout, under `<brain>/Javis/learned/`:
   agents/<agent-slug>.private.json  per-agent judge cases (they keep a chat excerpt in their features).
 
 Privacy (owner decision "Tach rieng", 2026-10-25): files without chat text go to the GitHub brain backup; every
-`*.private.json` under `Javis/learned/` never does (git_brain `_backup_skip` and the managed brain `.gitignore` block).
+`*.private.json` under `UniMate/learned/` never does (git_brain `_backup_skip` and the managed brain `.gitignore` block).
 Copying the brain folder keeps everything; a GitHub restore keeps everything except the private files.
 
 Ids are remapped on import:
@@ -79,7 +79,7 @@ def _log(msg: str) -> None:
 # ───────────── paths, hashing, state ─────────────
 
 def learned_dir(root: Any) -> Path:
-    return Path(root) / "Javis" / "learned"
+    return Path(root) / "UNI MATE" / "learned"
 
 
 def _paths(root: str, kind: str, name: str) -> Tuple[Path, Path]:
@@ -88,7 +88,7 @@ def _paths(root: str, kind: str, name: str) -> Tuple[Path, Path]:
 
 
 def _safe_name(slug: Any) -> str:
-    """A slug usable as a file name inside `Javis/learned/<kind>/`, or "" when it could escape the folder."""
+    """A slug usable as a file name inside `UniMate/learned/<kind>/`, or "" when it could escape the folder."""
     s = str(slug or "").strip()
     if not s or len(s) > 120 or s.startswith(".") or any(ch in s for ch in "/\\\0:") or ".." in s:
         return ""
@@ -162,7 +162,7 @@ class _State:
         out = []
         for k in self.files:
             try:
-                out.append(str(Path(k).parents[3]))     # <root>/Javis/learned/<kind>/<file>
+                out.append(str(Path(k).parents[3]))     # <root>/UniMate/learned/<kind>/<file>
             except IndexError:
                 continue
         return out

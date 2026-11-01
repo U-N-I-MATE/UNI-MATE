@@ -108,6 +108,6 @@
   }
 
   var api = { bind: bind, decide: decide, pull: pull, armed: armed, SWIPE_AT: SWIPE_AT, MAX_PULL: MAX_PULL };
-  if (typeof window !== "undefined") window.JavisMsgSwipe = api;
+  if (typeof window !== "undefined") window.UniMateMsgSwipe = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

@@ -1,7 +1,7 @@
 """Tự học từ VIỆC NỀN (Kanban), không chỉ từ hội thoại.
 
 Trước bản này `learn.enqueue` chỉ được gọi ở `_persist_turn` - tức chỉ luồng CHAT. Mọi thứ
-Javis TỰ LÀM trong nền (việc Kanban chạy xong, và nhất là việc BỊ CHẶN) trôi qua mà không để
+UNI MATE TỰ LÀM trong nền (việc Kanban chạy xong, và nhất là việc BỊ CHẶN) trôi qua mà không để
 lại bài học nào, đúng chỗ kinh nghiệm thực chiến sinh ra. `enqueue_job` vá khe đó: nó chỉ XẾP
 HÀNG, còn mẻ học vẫn chạy qua debounce + rate-limit + fork read-only + verify như luồng chat.
 

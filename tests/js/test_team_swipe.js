@@ -17,7 +17,7 @@ function check(name, cond, extra) {
   if (!cond) fails++;
 }
 
-// The options teams.js passes to JavisMsgSwipe.bind, taken from the source and run with a recording startReply.
+// The options teams.js passes to UniMateMsgSwipe.bind, taken from the source and run with a recording startReply.
 const m = teamsJs.match(/S\.unswipe = SW\.bind\(el, (\{[\s\S]*?\n      \})\);/);
 check("teams.js binds msg-swipe.js on its page root", !!m);
 if (!m) process.exit(1);

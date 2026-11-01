@@ -13,7 +13,7 @@
      vào từng hàm là chế độ cuộc lặng lẽ ghi vào project đang mở gần nhất.
    - Hàng TỰ DÒ không có id nên không được bày nút gỡ/ghim: bấm vào là gọi route với id rỗng,
      hỏng câm.
-   - Gắn tay mà Javis không thấy thì cái nút chỉ là danh sách để ngắm. */
+   - Gắn tay mà UNI MATE không thấy thì cái nút chỉ là danh sách để ngắm. */
 const fs = require("fs");
 const path = require("path");
 
@@ -131,7 +131,7 @@ check("media_gc giữ lại file gắn tay của cuộc",
   /all_project_file_paths\(\)\s*\n?\s*\| get_store\(\)\.all_session_file_paths\(\)/.test(PY));
 
 // ============================================================
-// 6. Javis phải THẤY thứ được gắn
+// 6. UNI MATE phải THẤY thứ được gắn
 // ============================================================
 check("có khối tài liệu của cuộc ghép vào system prompt",
   /def _session_block\(session_id: str\) -> str:/.test(PY)

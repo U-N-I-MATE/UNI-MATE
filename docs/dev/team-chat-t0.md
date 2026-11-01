@@ -18,8 +18,8 @@ Spec: [2026-10-13-team-chat-design.md](../superpowers/specs/2026-10-13-team-chat
   - trang Cài đặt chỉ còn tóm tắt "N trợ lý đang bật Cộng hưởng", nút sang trang Cộng sự, danh sách trợ lý cần xác nhận bằng chữ, mục mồ côi, Chờ gán, ghi chú brain cũ.
 - **Đồng bộ hai tab:**
   - route bật, tắt và xác nhận phát gói WS `{"type": "resonance_agents"}` (`ResonanceApiDeps.broadcast` gọi `ChatRuntime.publish`); lỗi của gói này không làm hỏng lệnh của chủ;
-  - `app.js` đổi gói thành sự kiện `javis:resonance-agents-changed`; trang Cộng sự, bảng bên phải và trang Cài đặt tải lại trạng thái thật.
-- **`.gitignore`:** thêm `server/resonance.sqlite3*` và `server/team.sqlite3*`, vì server chạy từ worktree mà không đặt `JAVIS_STATE_DIR` sẽ ghi các kho này vào `server/`.
+  - `app.js` đổi gói thành sự kiện `unimate:resonance-agents-changed`; trang Cộng sự, bảng bên phải và trang Cài đặt tải lại trạng thái thật.
+- **`.gitignore`:** thêm `server/resonance.sqlite3*` và `server/team.sqlite3*`, vì server chạy từ worktree mà không đặt `UNIMATE_STATE_DIR` sẽ ghi các kho này vào `server/`.
 - **Hợp đồng A1 giữ nguyên:** chỉ chủ đổi được; `missing` cần xác nhận; tắt luôn được; trạng thái của phiên đang mở vẫn do bảng bên phải hỏi host (`session_id` ở `GET`).
 
 ## Kiểm

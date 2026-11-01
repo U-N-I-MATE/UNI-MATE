@@ -18,7 +18,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-larkbot-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-larkbot-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -96,7 +96,7 @@ try:
     s = channels.spec("lark")
     check("Lark is in the channel registry as a token bot", s is not None and s.kind == "bot" and "lark" in channels.bot_token_ids())
     check("capabilities: groups, text, files, reply from the inbox, attach a bot",
-          all(s.nl(k) for k in ("nhom", "gui_chu", "gui_file", "tra_loi_tu_javis", "bot")), s.nang_luc)
+          all(s.nl(k) for k in ("nhom", "gui_chu", "gui_file", "tra_loi_tu_unimate", "bot")), s.nang_luc)
     ui = next(x for x in channels.cho_giao_dien() if x["id"] == "lark")
     check("the Chatbot page gets the setup line and the Lark logo", "App ID" in ui["lay_token"] and ui["logo"] == "lark" and ui["co_nhom"])
     check("a customer bot on Lark sends the images it writes", bot_images.channel_sends_files("lark"))

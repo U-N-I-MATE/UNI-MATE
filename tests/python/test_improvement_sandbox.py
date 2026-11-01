@@ -14,7 +14,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 TEST_ROOT = Path(tempfile.mkdtemp(prefix="improvement-sandbox-"))
-for key, name in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
+for key, name in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
                   "BRAIN_PATH": "brain", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(TEST_ROOT / name)
 
@@ -212,14 +212,14 @@ class SandboxTests(unittest.TestCase):
 
     def test_clean_worker_environment_drops_server_tokens_and_turn_authority(self):
         with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "server-secret", "OPENAI_API_KEY": "other-secret",
-                                     "X_JAVIS_TURN": "owner-turn", "JAVIS_STATE_DIR": "production-state",
+                                     "X_UNIMATE_TURN": "owner-turn", "UNIMATE_STATE_DIR": "production-state",
                                      "ANTHROPIC_BASE_URL": "https://production.invalid", "BETA_TRACING_ENDPOINT": "https://logs.invalid"}):
             environment = SB.worker_environment(self.root / "worker", auth_home=self.root / "auth-home")
-        for name in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "X_JAVIS_TURN", "ANTHROPIC_BASE_URL", "BETA_TRACING_ENDPOINT"):
+        for name in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "X_UNIMATE_TURN", "ANTHROPIC_BASE_URL", "BETA_TRACING_ENDPOINT"):
             self.assertNotIn(name, environment)
         self.assertNotIn("server-secret", json.dumps(environment))
         self.assertEqual(environment["ENABLE_TOOL_SEARCH"], "false")
-        self.assertNotEqual(environment["JAVIS_STATE_DIR"], "production-state")
+        self.assertNotEqual(environment["UNIMATE_STATE_DIR"], "production-state")
         self.assertEqual(environment["HOME"], str(self.root / "auth-home"))
 
     def test_concurrent_prepare_has_one_pinned_workspace_receipt(self):

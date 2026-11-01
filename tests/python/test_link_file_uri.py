@@ -24,7 +24,7 @@ import tempfile
 from pathlib import Path
 from urllib.parse import quote
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-fileuri-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-fileuri-")
 
 import main  # noqa: E402
 import channel_context  # noqa: E402
@@ -41,12 +41,12 @@ def check(name, cond, them=""):
 
 MAIN = (ROOT / "server" / "main.py").read_text(encoding="utf-8")
 TEN = "30 Ngày Làm Chủ Antigravity (CES Global).md"
-brain = Path(tempfile.mkdtemp(prefix="javis-brain-")).resolve()
+brain = Path(tempfile.mkdtemp(prefix="unimate-brain-")).resolve()
 (brain / "wiki").mkdir()
 (brain / "wiki" / TEN).write_text("x", encoding="utf-8")
 (brain / "attachments").mkdir()
 (brain / "attachments" / "so do.png").write_bytes(b"\x89PNG")
-ngoai = Path(tempfile.mkdtemp(prefix="javis-ngoai-")).resolve()
+ngoai = Path(tempfile.mkdtemp(prefix="unimate-ngoai-")).resolve()
 (ngoai / "lac.md").write_text("z", encoding="utf-8")
 # A real file URI also preserves the Windows drive instead of treating it as a host.
 ENC = (brain / "wiki" / TEN).as_uri().removeprefix("file://")
@@ -123,7 +123,7 @@ check("chuẩn hoá tuyệt đối có (ngoặc) ra đủ đuôi .md",
 # 5. Prompt: dặn thẳng model không dùng file://
 # ============================================================
 _agentic = main.main_prompt_rendering.render_agentic_paths(
-    str(brain), brain / "agents", brain / "workflows", brain / "Javis/loops", brain / "skills")
+    str(brain), brain / "agents", brain / "workflows", brain / "UniMate/loops", brain / "skills")
 check("production nối đúng renderer LỚP AGENTIC dùng chung",
       "base += main_prompt_rendering.render_agentic_paths(root, ag, wf, lp, sk)" in MAIN)
 check("LỚP AGENTIC dặn KHÔNG dùng giao thức file:// và không mã hoá %20",

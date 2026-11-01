@@ -1,4 +1,4 @@
-"""Excel and scanned PDF reading for Team attachments and `javis_read_file` (0.271.0).
+"""Excel and scanned PDF reading for Team attachments and `unimate_read_file` (0.271.0).
 
     python tests/python/test_doc_text_xlsx_0271.py      (no network, no model)
 
@@ -16,7 +16,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-doc-xlsx-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-doc-xlsx-"))
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -34,7 +34,7 @@ def check(name, cond, extra=""):
         fails.append(name)
 
 
-TMP = Path(tempfile.mkdtemp(prefix="javis-doc-xlsx-files-"))
+TMP = Path(tempfile.mkdtemp(prefix="unimate-doc-xlsx-files-"))
 NS = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' \
      'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
 
@@ -158,7 +158,7 @@ except ImportError:
     print("skip pdf checks: pypdf missing")
 
 # ---- 3. Team attachments get a pinned text copy of the Excel ----
-staging, brain = Path(tempfile.mkdtemp(prefix="javis-stg-")), Path(tempfile.mkdtemp(prefix="javis-br-"))
+staging, brain = Path(tempfile.mkdtemp(prefix="unimate-stg-")), Path(tempfile.mkdtemp(prefix="unimate-br-"))
 write_xlsx(staging / "bang-tinh.xlsx")
 docs, pinned = {}, []
 
@@ -179,8 +179,8 @@ if txt:
     body = (brain / txt[0]).read_text(encoding="utf-8")
     check("team attach: the copy holds every sheet and the error cell", "Sheet: Ẩn" in body and "#DIV/0!" in body)
 blk = team_docs.block(["- [file] bang-tinh.xlsx - x"], [], "", tools=True)
-check("tool turn: members are told to read PDF/Word/Excel with javis_read_file, not shell commands",
-      "javis_read_file" in blk and "Excel" in blk, blk)
+check("tool turn: members are told to read PDF/Word/Excel with unimate_read_file, not shell commands",
+      "unimate_read_file" in blk and "Excel" in blk, blk)
 
 print()
 if fails:

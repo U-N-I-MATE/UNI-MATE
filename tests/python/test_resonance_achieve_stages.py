@@ -2,7 +2,7 @@
 
     python tests/run.py resonance_achieve_stages -v
 
-Review đường công cụ (PR #579, điểm 1): trần tổng JAVIS_RESONANCE_CALL_CEILING=2 không biết lượt nào là bản đầu, lượt
+Review đường công cụ (PR #579, điểm 1): trần tổng UNIMATE_RESONANCE_CALL_CEILING=2 không biết lượt nào là bản đầu, lượt
 nào là bản sửa; bản đầu chưa đạt thì runtime tự hẹn làm lại và tiêu luôn lượt của bản sửa. Bộ chạy lần 3 vì thế đặt trần
 TÍCH LUỸ theo giai đoạn: 1 cho tới khi góp ý hợp lệ được nối vào mục tiêu, rồi 2. Sổ không bị đặt lại.
 
@@ -21,8 +21,8 @@ import os
 import tempfile
 from pathlib import Path
 
-_STATE = Path(tempfile.mkdtemp(prefix="javis-res-stages-"))
-os.environ["JAVIS_STATE_DIR"] = str(_STATE)
+_STATE = Path(tempfile.mkdtemp(prefix="unimate-res-stages-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_STATE)
 
 import resonance as R  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -94,7 +94,7 @@ async def _notes(goal, kind, text, card=""):
 def world(name):
     """Một kho và một brain riêng: trần là trần TỔNG trên cả kho, hai ca không được tiêu chung."""
     brain = Path(tempfile.mkdtemp(prefix=f"brain-{name}-")).resolve()
-    (brain / "Javis").mkdir(parents=True)
+    (brain / "UNI MATE").mkdir(parents=True)
     db = _STATE / f"{name}.sqlite3"
     RA.enable(RS.GoalStore(db), brain)       # A1: mục tiêu thuộc một trợ lý đang bật trong kho này
     return str(brain), db
@@ -102,7 +102,7 @@ def world(name):
 
 def make_goal(brain, db, mid=1):
     store = RS.GoalStore(db)
-    p = RS.Principal("agent", "javis", brain)
+    p = RS.Principal("agent", "unimate", brain)
     deps0 = R.GoalDeps(engine_factory=lambda s, t: (None, {"blocked": "không gọi"}), budget=R.CallBudget(0),
                        store=store)
     prop = {"understanding": "Bản hướng dẫn nhận hàng cho nhân viên mới, sửa theo góp ý tới khi anh dùng được",
@@ -122,7 +122,7 @@ def deps_for(brain, db, eng, clock):
     def _factory(system_prompt, tag):
         return eng, {"provider": "fake", "model": "fake-1", "text_only": True}
     return R.GoalDeps(engine_factory=_factory, budget=R.CallBudget(0), clock=clock, store=RS.GoalStore(db),
-                      principal=RS.Principal("agent", "javis", brain), brain_root=brain, evidence=EVIDENCE,
+                      principal=RS.Principal("agent", "unimate", brain), brain_root=brain, evidence=EVIDENCE,
                       notify=_notes)
 
 
@@ -139,7 +139,7 @@ def ledger_used(db):
 
 
 def ceiling(n):
-    os.environ["JAVIS_RESONANCE_CALL_CEILING"] = str(n)
+    os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = str(n)
 
 
 # ═══════════ Ca 1: bản đầu CHƯA đạt, trần giai đoạn 1 chặn lượt làm lại ═══════════
@@ -178,7 +178,7 @@ clk2.t += 3600
 adv(g2.id, deps_for(b2, db2, e2, clk2))
 check("đang chờ người dùng: đánh thức lại không gọi model", e2.queries == 1 and ledger_used(db2) == 1)
 
-# Góp ý đến trong lượt chat (như javis_goal op=update): đổi một trường thật, nối ý định vào chuỗi.
+# Góp ý đến trong lượt chat (như unimate_goal op=update): đổi một trường thật, nối ý định vào chuỗi.
 g_prev = st.get(p2, g2.id)
 g_new, relation, kept = R.revise_goal(st, p2, g2.id, g_prev.revision,
                                       {"constraints": ["Bước đối chiếu phiếu giao có một ví dụ cụ thể"],
@@ -238,6 +238,6 @@ check("sổ chat: đối tượng mới đọc lại đúng số đã giữ", G.
 check("sổ chat: giữ được lượt 2", G.TurnLedger(lp, 2).reserve("s4"))
 check("sổ chat: hết chỗ thì từ chối lượt thứ ba", not G.TurnLedger(lp, 2).reserve("s7"))
 
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 print(f"\n{'FAIL' if _fails else 'OK'}: {len(_fails)} lỗi")
 raise SystemExit(1 if _fails else 0)

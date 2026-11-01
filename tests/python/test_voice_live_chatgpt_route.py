@@ -56,7 +56,7 @@ class ChatGPTLiveRouteTests(unittest.IsolatedAsyncioTestCase):
                     calls["results"].append(result)
 
                 async def events(self):
-                    yield {"type": "tool_call", "id": "h1", "name": "ask_javis",
+                    yield {"type": "tool_call", "id": "h1", "name": "ask_unimate",
                            "args": {"request": "Doanh thu hôm nay"}}
                     await asyncio.Event().wait()
 
@@ -107,7 +107,7 @@ class ChatGPTLiveRouteTests(unittest.IsolatedAsyncioTestCase):
                 openai_oauth=types.SimpleNamespace(write_codex_auth=write_auth),
                 _brain_memory_dir=lambda root: mem_dir, _brain_root=lambda b: directory,
                 _fit_memory_index=lambda mem, cap=None: mem[:cap],
-                _voice_ask_javis=ask, get_store=lambda: store, _brain_key=lambda b: b,
+                _voice_ask_unimate=ask, get_store=lambda: store, _brain_key=lambda b: b,
                 voice_call=types.SimpleNamespace(live_settings=lambda c: c))
             tree = ast.parse((SERVER / "main.py").read_text(encoding="utf-8"))
             route = next(n for n in tree.body if isinstance(n, ast.AsyncFunctionDef) and n.name == "voice_live_ws")

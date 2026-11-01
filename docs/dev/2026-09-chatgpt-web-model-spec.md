@@ -1,19 +1,19 @@
 > **ĐÃ GỠ ở 0.64.20 (2026-09-23).** Tính năng trong tài liệu này đã chạy từ 0.64.0 tới 0.64.18
 > rồi bị gỡ hẳn. Giữ lại tài liệu làm hồ sơ quyết định, không phải hướng dẫn.
 >
-> Lý do gỡ, gọn: Javis chạy trên máy chủ thuê, và Cloudflare của chatgpt.com chặn trình
+> Lý do gỡ, gọn: UNI MATE chạy trên máy chủ thuê, và Cloudflare của chatgpt.com chặn trình
 > duyệt theo IP trung tâm dữ liệu. Đã đọc hai dự án làm cùng việc (`miuuyy/codex-chatgpt-web`,
 > `XiaoDuoYa/codex-with-chatgpt`): CẢ HAI đều chạy trình duyệt trên máy của người dùng, không
 > dự án nào có cách qua Cloudflare từ máy chủ. Đường gọi thẳng `backend-api` cũng đã chết
 > (tầng Turnstile của Sentinel không hoàn tất nữa từ 08/09/2026).
 >
 > Mục tiêu gốc (dùng gói ChatGPT không giới hạn cho việc hằng ngày) chuyển sang hướng ĐẢO
-> CHIỀU: ChatGPT gọi sang MCP hub của Javis qua connector chính thức, thay vì Javis lái trang
+> CHIỀU: ChatGPT gọi sang MCP hub của UNI MATE qua connector chính thức, thay vì UNI MATE lái trang
 > ChatGPT.
 
 # ChatGPT Web: một model của thẻ ChatGPT
 
-**Phiên bản:** v4.1 (mục 14 ghi lại những gì đã vào `main` ở 0.64.0). v4.0: Gộp bản rà soát chéo `JAVIS_OS_WEB_ENGINE_SPEC.md` (2026-09-22) vào v3.0:
+**Phiên bản:** v4.1 (mục 14 ghi lại những gì đã vào `main` ở 0.64.0). v4.0: Gộp bản rà soát chéo `UNIMATE_OS_WEB_ENGINE_SPEC.md` (2026-09-22) vào v3.0:
 thêm mục 18-22, và ĐÍNH CHÍNH một chỗ v2.0/v3.0 nói quá (mục 3).
 **Trạng thái:** chốt phạm vi và chốt mục đích. **Chưa viết mã**; cổng duy nhất là spike ở
 mục 13.
@@ -55,7 +55,7 @@ Ba hệ quả, và chúng đổi cả lộ trình:
 1. **Cổng 0 cũ chết.** Nó hỏi "pool Codex đã cạn chưa". Câu đó không còn liên quan. Cổng duy
    nhất còn lại là spike ở mục 13: giao thức có chạy không.
 2. **Task Handoff Packet rời khỏi phạm vi dự án này.** Nó sinh ra cho cảnh "Codex chết giữa
-   chừng thì web tiếp quản". Vẫn là việc đáng làm cho Javis, nhưng không phải việc của tài
+   chừng thì web tiếp quản". Vẫn là việc đáng làm cho UNI MATE, nhưng không phải việc của tài
    liệu này.
 3. **Phần lớn việc chủ dự án kể tốn 1 tới 3 vòng tool, không phải 15.** Mục 5 tính lại theo
    đó, và lộ trình ở mục 14 xếp lại để thứ dùng nhiều nhất tới trước.
@@ -69,7 +69,7 @@ toàn (mục 11), spike và tiêu chí giết.
 
 Đây là chỗ quyết định dự án này rẻ hay đắt.
 
-Javis đã có provider `openai-oauth`, nhãn `OpenAI OAuth (ChatGPT)`, `kind: "oauth"`,
+UNI MATE đã có provider `openai-oauth`, nhãn `OpenAI OAuth (ChatGPT)`, `kind: "oauth"`,
 `catalog_key: "openai-oauth"` (`main.py:1520`). Provider đó **đã** được phủ sẵn ở mọi chỗ:
 72 nhánh `provider == "..."`, ô chọn model, catalog, `/model` của Telegram, thẻ trang Models,
 nhãn thuê bao, ngân sách ngữ cảnh.
@@ -116,7 +116,7 @@ thúc `-codex` về model Codex mặc định. Tệ hơn: khi nó coerce, chỗ 
 bằng `_set_main_model`, **và ghi đè cả model ghim của phiên** (`store.set_pinned_model`), rồi
 báo "đã tự đổi sang ...".
 
-Nghĩa là nếu không xử lý, chủ máy chọn `chatgpt-web` thì Javis **âm thầm đổi ngược về Codex
+Nghĩa là nếu không xử lý, chủ máy chọn `chatgpt-web` thì UNI MATE **âm thầm đổi ngược về Codex
 và ghi đè lựa chọn đó vào cài đặt**. Chọn một lần là mất luôn.
 
 Hai việc bắt buộc:
@@ -199,16 +199,16 @@ có một dòng trong nhật ký chạy nói rõ, kẻo trang chẩn đoán nói
 | Hạng | Có gì |
 |---|---|
 | CLI (Claude Code, Codex, Grok) | Tool file native, **Bash**, **WebFetch/WebSearch**, **Task**, resume phiên |
-| API (sáu engine) | Tool vault qua hub, MCP, skill, `javis_task`, `javis_schedule`, plugin. Không Bash, không WebFetch, không Task |
+| API (sáu engine) | Tool vault qua hub, MCP, skill, `unimate_task`, `unimate_schedule`, plugin. Không Bash, không WebFetch, không Task |
 
 `chatgpt-web` nằm ở **hạng API**, không phải hạng CLI. Nó có
-`javis_read_file` / `javis_list_dir` / `javis_write_file` / `javis_use_skill`, mọi MCP đã nối,
-mọi plugin, `javis_task`, `javis_schedule`.
+`unimate_read_file` / `unimate_list_dir` / `unimate_write_file` / `unimate_use_skill`, mọi MCP đã nối,
+mọi plugin, `unimate_task`, `unimate_schedule`.
 
 Hai thứ của hạng CLI nó vẫn **không** có, và mô tả model trên ô chọn phải nói thẳng:
 **WebFetch/WebSearch** và **Task** (sub-agent song song).
 
-Còn chạy lệnh thì **mục 7.2 gỡ**, bằng `javis_run_command` chứ không phải Bash native và
+Còn chạy lệnh thì **mục 7.2 gỡ**, bằng `unimate_run_command` chứ không phải Bash native và
 không phải PTY. Nhưng đúng như bản rà soát chéo nêu: cấp thế thì **cả sáu engine API cũng
 có**, nên đó là quyết định của chủ dự án, không phải chi tiết thi công.
 
@@ -218,10 +218,10 @@ có**, nên đó là quyết định của chủ dự án, không phải chi ti�
 
 | Nhóm | Tool |
 |---|---|
-| Builtin vault | `javis_read_file`, `javis_list_dir`, `javis_write_file`, `javis_use_skill`, `javis_connections` |
-| Điều phối | `javis_task`, `javis_schedule`, `javis_workflow`, `javis_ui` |
-| Tiện ích | `javis_now`, `javis_date_add`, `javis_generate_image`, `javis_add_mcp`, `javis_tool_stats`, `javis_youtube_read` |
-| Máy | `javis_app_list`, `javis_app_open`, `javis_app_close` |
+| Builtin vault | `unimate_read_file`, `unimate_list_dir`, `unimate_write_file`, `unimate_use_skill`, `unimate_connections` |
+| Điều phối | `unimate_task`, `unimate_schedule`, `unimate_workflow`, `unimate_ui` |
+| Tiện ích | `unimate_now`, `unimate_date_add`, `unimate_generate_image`, `unimate_add_mcp`, `unimate_tool_stats`, `unimate_youtube_read` |
+| Máy | `unimate_app_list`, `unimate_app_open`, `unimate_app_close` |
 | Meta, Zalo | `meta_ads_*` (4), `fb_pages_*` (6), `fb_monitor`, `zalo_send_image` |
 | MCP | Mọi connector đã nối |
 
@@ -229,9 +229,9 @@ Khoảng **26 tool plugin bundled cộng 5 builtin**, cộng toàn bộ MCP.
 
 Hai điểm dễ tưởng là thiếu mà thật ra có:
 
-- **Đính kèm trong khung chat đọc được.** Hub cho `javis_read_file` đọc thêm vùng `.staging`
+- **Đính kèm trong khung chat đọc được.** Hub cho `unimate_read_file` đọc thêm vùng `.staging`
   khi `staging=True` (`mcp_hub.py:447`), nên file người dùng vừa kéo vào vẫn tới được model.
-- **Tạo ảnh vẫn chạy.** `javis_generate_image` gọi Codex Responses bằng OAuth
+- **Tạo ảnh vẫn chạy.** `unimate_generate_image` gọi Codex Responses bằng OAuth
   (`system/plugins/image-chatgpt/`), không phụ thuộc phiên trình duyệt.
 
 ### 3.2. Sáu thứ thiếu RIÊNG của bản web, ngoài bảng hạng
@@ -241,19 +241,19 @@ Hai điểm dễ tưởng là thiếu mà thật ra có:
 1. **Không có function calling.** Không có gì ép model trả đúng khuôn ngoài lời dặn trong
    prompt. Sáu engine API được nhà cung cấp bảo đảm khuôn tool call; model này thì không. Đây
    là rủi ro kỹ thuật lớn nhất của cả dự án, và là tiêu chí giết thứ năm ở mục 13.
-2. **Không có system role.** Toàn bộ system prompt của Javis (CLAUDE.md, MEMORY, router skill,
+2. **Không có system role.** Toàn bộ system prompt của UNI MATE (CLAUDE.md, MEMORY, router skill,
    danh sách tool) phải nhét vào **tin nhắn đầu tiên** như chữ thường. Codex có trường
    `instructions` riêng (`engine._codex_input`), web không có gì cả.
 3. **Custom instructions và Memory của chính tài khoản sẽ trộn vào mọi lượt.** API không bao
    giờ có thứ này. Một dòng custom instruction kiểu "luôn trả lời thật ngắn" sẽ bóp mọi câu
-   Javis hỏi, và triệu chứng sẽ trông như Javis hỏng. **Thẻ Models phải dặn tắt Memory và
+   UNI MATE hỏi, và triệu chứng sẽ trông như UNI MATE hỏng. **Thẻ Models phải dặn tắt Memory và
    custom instructions, hoặc dùng một tài khoản riêng.**
 4. **Không có số token.** `usage_store.record` sẽ ghi 0, nên trang Sử dụng và trang Tiết kiệm
    **mù với model này**. Bộ đếm tin nhắn ở mục 10 là thứ thay thế duy nhất, và nó là đơn vị
    khác, không so được với các model kia.
 5. **Không chỉnh được mức suy nghĩ.** Không có `reasoning effort`, cũng không có prompt
    caching. Web tự quyết theo model chọn trong giao diện của nó.
-6. **Ảnh thì ngược đời.** Hạng API của Javis hiện không gửi ảnh cho model (không có
+6. **Ảnh thì ngược đời.** Hạng API của UNI MATE hiện không gửi ảnh cho model (không có
    `image_url` hay `input_image` ở đâu trong `engine.py`), trong khi ChatGPT Web tự nó xem ảnh
    rất tốt. Khai thác được phải lái widget tải file lên; không thuộc tài liệu này, ghi ở mục 17.
 
@@ -261,12 +261,12 @@ Hai điểm dễ tưởng là thiếu mà thật ra có:
 
 ChatGPT Web không có function calling. Nên vòng tool phải chạy bằng chữ, đúng kiểu ReAct.
 
-Javis **đã có sẵn vòng lặp**: `engine.openai_chat_with_mcp` (`engine.py:1740`), trần vòng
+UNI MATE **đã có sẵn vòng lặp**: `engine.openai_chat_with_mcp` (`engine.py:1740`), trần vòng
 `_max_tool_rounds` (`engine.py:1680`), phanh chống kẹt `_LapGuard` (`engine.py:1697`), định
 tuyến tool qua `mcp_hub`. Chỉ thiếu **bộ dịch** ở hai đầu:
 
 **Đầu gửi:** thay vì đính `tools=[...]` dạng schema, dựng danh sách tool thành chữ và chèn vào
-prompt, kèm luật: muốn gọi tool thì trả về **đúng một khối** rào bằng ```` ```javis_tool ````
+prompt, kèm luật: muốn gọi tool thì trả về **đúng một khối** rào bằng ```` ```unimate_tool ````
 chứa JSON `{"name": ..., "arguments": {...}}`, và **không viết gì khác** trong lượt đó.
 
 **Đầu nhận:** bóc khối đó ra khỏi câu trả lời. Có khối thì chạy tool qua hub rồi gửi kết quả
@@ -285,8 +285,8 @@ Ba ranh giới của bộ dịch:
 ### Chế độ lazy nhân đôi số vòng, phải biết trước
 
 Hub có tầng lazy (`mcp_hub.py:612-669`): mặc định `auto`, bật khi pool vượt **40 tool** hoặc
-**6000 ký tự schema**. Bật rồi thì tool MCP bị giấu sau hai meta-tool `javis_search_tools` và
-`javis_run_tool`, nên **mỗi lần dùng một tool MCP tốn hai vòng**: tìm, rồi mới gọi.
+**6000 ký tự schema**. Bật rồi thì tool MCP bị giấu sau hai meta-tool `unimate_search_tools` và
+`unimate_run_tool`, nên **mỗi lần dùng một tool MCP tốn hai vòng**: tìm, rồi mới gọi.
 
 Với engine API thì hai vòng đó là hai lời gọi HTTP, không ai để ý. Với `chatgpt-web` thì đó là
 **hai lượt gõ vào ô chat**, tức gấp đôi cả thời gian lẫn số tin nhắn. Máy nào đã nối vài
@@ -305,7 +305,7 @@ Với model này, **một vòng tool là một tin nhắn web**. Một lượt c
 ```
 
 Chủ dự án đã chốt: gói chat rất lớn, **số tin nhắn không phải ràng buộc**. Nên giữ trần chung
-30 vòng (`JAVIS_MAX_TOOL_ROUNDS`), không đặt trần riêng. Biến `JAVIS_WEB_MAX_TOOL_ROUNDS` vẫn
+30 vòng (`UNIMATE_MAX_TOOL_ROUNDS`), không đặt trần riêng. Biến `UNIMATE_WEB_MAX_TOOL_ROUNDS` vẫn
 có, mặc định bằng trần chung, để ai dùng gói nhỏ hơn tự hạ.
 
 ### Ràng buộc thật là THỜI GIAN, không phải tin nhắn
@@ -326,12 +326,12 @@ lời gọi API chứ không phải một lượt gõ vào ô chat rồi chờ n
 
 Nên phanh đổi từ đếm tin nhắn sang **đếm giây**:
 
-- `JAVIS_WEB_TURN_BUDGET_S`, **mặc định 600** (10 phút cho một lượt). Hết ngân sách thì dừng
+- `UNIMATE_WEB_TURN_BUDGET_S`, **mặc định 600** (10 phút cho một lượt). Hết ngân sách thì dừng
   đúng như chạm trần vòng: trả phần đã có kèm lời giải thích, không cụt lặng lẽ.
 - **Hiện tiến độ trong lúc chạy.** Vòng thứ mấy, đã mất bao lâu. Mười lăm phút im lặng thì
   người dùng sẽ tưởng treo và bấm Dừng, kể cả khi nó đang chạy đúng.
 - Bộ đếm lượt (`so_luot_trong_ngay`, mục 10) **giữ lại**, nhưng hạ vai trò: nó không còn là
-  phanh, chỉ là thứ duy nhất Javis biết về mức tiêu thụ, vì model này không trả số token
+  phanh, chỉ là thứ duy nhất UNI MATE biết về mức tiêu thụ, vì model này không trả số token
   (xem mục 3.2).
 
 ### Nhưng phần lớn việc thường ngày chỉ tốn 1 tới 3 vòng
@@ -342,8 +342,8 @@ Con số 15 phút ở trên là trường hợp XẤU NHẤT, và nó chỉ xả
 | Việc | Vòng tool | Thời gian ước |
 |---|---|---|
 | Hỏi đáp, lên kế hoạch, đọc hiểu một đoạn | 0 | một lượt web |
-| Tạo ảnh (`javis_generate_image`) | 1 | dưới 1 phút cộng thời gian dựng ảnh |
-| Nhắc lịch (`javis_schedule`) | 1 | dưới 1 phút |
+| Tạo ảnh (`unimate_generate_image`) | 1 | dưới 1 phút cộng thời gian dựng ảnh |
+| Nhắc lịch (`unimate_schedule`) | 1 | dưới 1 phút |
 | Đọc file trong brain, dùng skill | 1-3 | 1-2 phút |
 | Lập trình nhiều bước | 10-30 | 5-15 phút |
 
@@ -351,7 +351,7 @@ Nên **độ trễ không phải vấn đề cho phần lớn việc thường n
 lập trình, và đó cũng chính là nhánh mà Codex tiện hơn. Chọn cái nào tiện hơn là đúng cách
 dùng, không phải giải pháp tạm.
 
-Một điều chính xác về tạo ảnh, để sau khỏi tưởng nhầm: `javis_generate_image` gọi
+Một điều chính xác về tạo ảnh, để sau khỏi tưởng nhầm: `unimate_generate_image` gọi
 `image_gen.generate_chatgpt`, đi đường **OAuth Responses**, không đi qua phiên trình duyệt.
 Nghĩa là nó tiêu hạn mức ảnh của gói qua đường API, không tiêu lượt chat web. Chạy được, chỉ
 là đừng nhầm nó với quota web. Muốn ảnh sinh thẳng trong phiên web thì phải bóc ảnh từ trang
@@ -401,7 +401,7 @@ Rỗng thì `workspace_root = vault_root` và mọi thứ chạy y như hôm nay
 rõ đang ở gốc nào, vì câu hiện tại ("nằm ngoài bộ não đang làm việc") sẽ sai nghĩa ngay khi có
 gốc thứ hai.
 
-### 7.2. `javis_run_command`, KHÔNG phải PTY của `terminal.py`
+### 7.2. `unimate_run_command`, KHÔNG phải PTY của `terminal.py`
 
 Bản rà soát chéo 2026-09-22 bác đề xuất cho model lái thẳng PTY của `terminal.py`, và bác
 đúng. Chính docstring của file đó ghi:
@@ -423,14 +423,14 @@ Nên tool riêng, một lệnh một lần, không trạng thái:
 Bắt buộc: env **lọc trắng**, không thừa kế env server; trần kích thước output; huỷ được; ghi
 audit; và mức quyền ánh xạ thẳng từ chip của phiên:
 
-| Mức của `coding_store` | `javis_run_command` |
+| Mức của `coding_store` | `unimate_run_command` |
 |---|---|
 | `suggest` | Không chạy. Trả về lệnh đề xuất dưới dạng chữ |
 | `auto` | Chỉ lệnh trong allowlist, và chỉ trong `workspace_root` |
 | `full` | Chạy đầy đủ |
 
 **Allowlist của mức `auto` phải viết ra thành danh sách**, không để mỗi lần đoán. Đây là lần
-đầu Javis cần một allowlist lệnh thật: Codex không có allowlist per-call, nó chỉ chặn ở tầng
+đầu UNI MATE cần một allowlist lệnh thật: Codex không có allowlist per-call, nó chỉ chặn ở tầng
 sandbox (`aux_engine.py:18-21`), còn Claude Code có allowlist nhưng của riêng CLI đó. Coi đây
 là một hạng mục thiết kế, không phải một dòng cấu hình.
 
@@ -439,13 +439,13 @@ trên. Hai lớp, không thay nhau.
 
 ### 7.3. Bộ tool coding tối thiểu
 
-Có `workspace_root` và `javis_run_command` rồi thì bộ còn lại gần như miễn phí, vì chúng chỉ
+Có `workspace_root` và `unimate_run_command` rồi thì bộ còn lại gần như miễn phí, vì chúng chỉ
 là lệnh git gói lại:
 
 ```
 đọc file, ghi file, liệt kê, tìm trong file   ← builtin, đổi gốc là xong
-git status, git diff                          ← javis_run_command
-chạy test                                     ← javis_run_command
+git status, git diff                          ← unimate_run_command
+chạy test                                     ← unimate_run_command
 ```
 
 Đây mới là thứ làm `chatgpt-web` coding được. Giao thức tool qua chữ chỉ là cách gọi; không có
@@ -469,12 +469,12 @@ Thẻ đã có, thêm vào đó:
 - Mô tả model `chatgpt-web` nói thẳng: không có WebFetch/WebSearch, không có Task, mỗi vòng
   tool mất 20 tới 40 giây (số ước, mục 5).
 - **Lời dặn tắt Memory và Custom instructions** của chính tài khoản ChatGPT, hoặc dùng tài
-  khoản riêng. Mục 3.2 điểm 3 là lý do: không tắt thì cài đặt cá nhân bóp mọi câu Javis hỏi,
-  và triệu chứng trông như Javis hỏng.
+  khoản riêng. Mục 3.2 điểm 3 là lý do: không tắt thì cài đặt cá nhân bóp mọi câu UNI MATE hỏi,
+  và triệu chứng trông như UNI MATE hỏng.
 
 Thẻ sẵn sàng khi Codex CLI dùng được **hoặc** phiên web đã đăng nhập (mục 1).
 
-## 9. Transport: để trang tự xác thực, Javis chỉ đọc dây
+## 9. Transport: để trang tự xác thực, UNI MATE chỉ đọc dây
 
 Giữ nguyên từ v1.0. Ba đường khả dĩ, chọn đường thứ ba:
 
@@ -482,7 +482,7 @@ Giữ nguyên từ v1.0. Ba đường khả dĩ, chọn đường thứ ba:
 |---|---|
 | Dựng lại request `backend-api/conversation` bằng cookie | Phải tự giải proof-of-work sentinel và qua Cloudflare. Hỏng vài tuần một lần. **Loại** |
 | Scrape DOM, đọc bong bóng chat cuối | Hỏng mỗi lần đổi giao diện. **Loại** |
-| **Tee `window.fetch` trong chính trang đã đăng nhập** | Trang tự lo auth, Cloudflare, PoW. Javis chỉ đọc luồng trang vốn đã nhận. **Chọn** |
+| **Tee `window.fetch` trong chính trang đã đăng nhập** | Trang tự lo auth, Cloudflare, PoW. UNI MATE chỉ đọc luồng trang vốn đã nhận. **Chọn** |
 
 Cơ chế:
 
@@ -492,7 +492,7 @@ Cơ chế:
    `expose_binding`. Khoảng 30 dòng JS.
 3. Gõ prompt vào ô soạn, gửi, đọc từ luồng đã tee cho tới khi kết thúc.
 
-Javis không chạm cookie, token hay proof-of-work. Đổi giao diện không gãy, đổi cơ chế auth
+UNI MATE không chạm cookie, token hay proof-of-work. Đổi giao diện không gãy, đổi cơ chế auth
 không gãy.
 
 **Một lượt tại một thời điểm.** Cùng profile, cùng tài khoản, nên module giữ một khoá; lượt
@@ -525,7 +525,7 @@ cooldown_until   auth_state     so_luot_trong_ngay
 nêu là còn thiếu (`aux_engine._FallbackChain` hiện thử mù, không nhớ mắt nào vừa chết). Viết ở
 dạng tổng quát được, để sau bê nguyên sang nhà khác.
 
-| Mã | Khi nào | Javis làm gì |
+| Mã | Khi nào | UNI MATE làm gì |
 |---|---|---|
 | `CHUA_DANG_NHAP` | profile chưa có phiên | Lỗi kèm câu mời bấm "Mở cửa sổ đăng nhập" |
 | `HET_LUOT` | trang báo chạm trần tin nhắn | `parse_subscription_limit` lấy mốc mở lại, đặt `cooldown_until`. Trong cooldown thì từ chối ngay, không mở trình duyệt |
@@ -543,12 +543,12 @@ thứ mấy, và đưa vào `limit_resume.REGISTRY` để tự chạy lại khi 
 
 **Điều khoản dịch vụ.** OpenAI cấm truy cập tự động vào dịch vụ ngoài đường API. Đây là tài
 khoản của chính chủ máy, trên máy của chính họ, nhưng nếu bị phát hiện thì thứ mất là **gói
-thuê bao đang trả tiền**. Đúng cùng loại cảnh báo mà `CLAUDE.md` bắt Javis nói thẳng về việc
+thuê bao đang trả tiền**. Đúng cùng loại cảnh báo mà `CLAUDE.md` bắt UNI MATE nói thẳng về việc
 chạy nền gói Claude Pro/Max. Không bọc đường.
 
 Vì vậy:
 
-- Model `chatgpt-web` chỉ hiện trong ô chọn khi cổng môi trường `JAVIS_ENABLE_WEB_CHAT=true`
+- Model `chatgpt-web` chỉ hiện trong ô chọn khi cổng môi trường `UNIMATE_ENABLE_WEB_CHAT=true`
   được bật. Bật là một hành động có chủ ý.
 - Mô tả model nói rõ nó chạy bằng phiên trình duyệt, để người bật biết mình bật gì.
 - **Không việc nền nào được tự chọn model này.** Loop, nhắc hẹn, task Kanban, `_FallbackChain`
@@ -559,8 +559,8 @@ Vì vậy:
 hẳn. Thực tế: **chỉ chạy ổn trên máy nhà hoặc bản desktop**. Trên VPS thì model tự ẩn khỏi ô
 chọn và nói rõ lý do, chứ không hiện ra rồi lỗi.
 
-**Dữ liệu.** Tool `javis_read_file` trả nội dung vault, và nội dung đó đi thẳng vào ô chat của
-chatgpt.com. Javis in ra đã gửi những gì trước mỗi vòng tool.
+**Dữ liệu.** Tool `unimate_read_file` trả nội dung vault, và nội dung đó đi thẳng vào ô chat của
+chatgpt.com. UNI MATE in ra đã gửi những gì trước mỗi vòng tool.
 
 ## 12. Đổi qua lại giữa web và Codex
 
@@ -572,7 +572,7 @@ model, không phải như đổi cấu hình.
 
 ```
 Phiên "hỏi đáp hằng ngày"   ghim chatgpt-web
-Phiên "sửa repo javis-os"   ghim gpt-5-codex
+Phiên "sửa repo UNI-MATE"   ghim gpt-5-codex
 ```
 
 Hai phiên sống song song, mỗi phiên nhớ model của nó, không ai đạp lên ai. Đổi trong một phiên
@@ -589,7 +589,7 @@ của phiên**. Không chặn nó thì đúng cơ chế đang phục vụ mục 
 - **Không có thử thách nào** cần tay người trong 10 lượt đó
 - Độ trễ trung vị **dưới 60 giây** với prompt khoảng 2.000 token
 - Đoạn tee bắt được luồng ở **cả hai cảnh**: mở nguội và tab đã mở sẵn
-- **Một vòng tool đi trọn**: model trả đúng khối ```` ```javis_tool ````, Javis bóc được, chạy
+- **Một vòng tool đi trọn**: model trả đúng khối ```` ```unimate_tool ````, UNI MATE bóc được, chạy
   được, gửi lại được, và model dùng kết quả đó trả lời
 
 Tiêu chí cuối là tiêu chí mới của v2.0 và là tiêu chí dễ trượt nhất. Không đạt đủ năm thì
@@ -605,13 +605,13 @@ Năm lớp đã vào `main`, mỗi lớp một commit và một bộ test riêng
 |---|---|---|
 | 1. Giao thức tool qua chữ, sổ trạng thái | `web_tool_protocol.py`, `web_state.py` | `test_web_tool_protocol`, `test_web_state` |
 | 2. Gỡ chặn cứng tool file khoá trong brain | `coding_ctx.py`, `mcp_hub._safe_path` | `test_coding_tool_context`, `test_doc_file_dinh_kem` |
-| 3. `javis_run_command` (KHÔNG phải PTY) | `run_command.py` | `test_run_command_quyen` |
+| 3. `unimate_run_command` (KHÔNG phải PTY) | `run_command.py` | `test_run_command_quyen` |
 | 4. Transport tee fetch | `web_transport.py` | `test_web_transport_tee` (có tầng chạy THẬT trong Chromium) |
 | 5. Vòng lặp tool + nối dây ba đường chat | `web_engine.py`, `main.py` | `test_web_engine_loop`, `test_luot_chat_web` |
 
 Tức Phase 1 tới Phase 4 của bảng dưới đã xong. Đường chat dashboard truyền `workspace_root`
 và `coding_ctx` của phiên vào hub, nên chọn `chatgpt-web` trong một phiên Coding là model đọc
-ghi được cây mã nguồn và gọi được `javis_run_command`.
+ghi được cây mã nguồn và gọi được `unimate_run_command`.
 
 **Gốc file là một DANH SÁCH, không phải một đường dẫn.** 0.63.9 cho một phiên Coding gắn
 nhiều thư mục. Engine CLI chỉ hưởng thư mục CHÍNH, vì tool file native của nó chạy theo `cwd`
@@ -627,7 +627,7 @@ này, im lặng, không báo gì.
    nhận sự kiện KẾ TIẾP, mà một vòng web mất hàng chục giây, nên dòng trạng thái tới nơi đúng
    lúc nó hết ý nghĩa. Engine phát thẳng sự kiện `progress` trong dòng sự kiện chung.
 2. **Transport phải về ĐÚNG cuộc chat trước khi gõ** (`_ve_dung_luong`). Một trình duyệt dùng
-   chung cho mọi hội thoại Javis, nên thiếu bước này thì hội thoại B gõ tiếp vào cuộc chat mà
+   chung cho mọi hội thoại UNI MATE, nên thiếu bước này thì hội thoại B gõ tiếp vào cuộc chat mà
    hội thoại A vừa mở: hai mạch trộn làm một, im lặng, không thông báo nào.
 3. **Ba đường KHÔNG chạy được engine Web phải đổi về model Codex thật** (`_model_codex_thay_the`):
    stream không tool, vòng tool của bot chuyên trách, và việc nền. Chúng gọi thẳng API
@@ -645,7 +645,7 @@ phải tự nó dùng được.
 | Phase 1 | `web_chat.py`: transport, sổ trạng thái, thẻ Models, nút đăng nhập, model vào ô chọn, chặn bẫy mục 2.1. Chat thuần | Hỏi đáp, lên kế hoạch, đọc hiểu | 2-3 ngày |
 | Phase 2 | Bộ dịch tool qua chữ, ngân sách giờ, bộ đếm | **Tạo ảnh, nhắc lịch, đọc vault, skill, MCP.** Phần lớn giá trị nằm ở đây | 3-4 ngày |
 | Phase 3 | `web_thread_id`, nối tiếp luồng, xoay mạch khi phình (mượn `compaction.nen_mach_thue_bao`) | Dùng hằng ngày không phải dựng lại ngữ cảnh mỗi lượt | 1-2 ngày |
-| Phase 4 | Coding Tool Context (mục 7): `workspace_root`, `javis_run_command`, allowlist mức `auto` | Lập trình | 3-4 ngày |
+| Phase 4 | Coding Tool Context (mục 7): `workspace_root`, `unimate_run_command`, allowlist mức `auto` | Lập trình | 3-4 ngày |
 
 **Vì sao Coding Tool Context xuống cuối, dù v2.1 xếp nó đầu:** v2.1 tưởng mục tiêu là "web thay
 Codex khi Codex chết", nên coding là bắt buộc. Mục tiêu thật là việc thường ngày, mà trong đó
@@ -661,7 +661,7 @@ từ đầu thì vừa chậm vừa tốn, và cái đó chạm vào mọi lư�
 - DeepSeek Web. API DeepSeek rẻ hơn công sức xây và vá bridge; muốn DeepSeek thì thêm provider
   API OpenAI-compatible, một buổi chiều, không thuộc tài liệu này.
 - Tự giải proof-of-work, tự dựng request `backend-api`, đụng cookie hay token.
-- Ô nhập mật khẩu ChatGPT trong Javis.
+- Ô nhập mật khẩu ChatGPT trong UNI MATE.
 - Chạy trên VPS.
 - Việc nền tự chọn `chatgpt-web`.
 - Cho model lái thẳng PTY của `terminal.py`. Mục 7.2 là lý do: PTY thừa kế env server chứa
@@ -678,11 +678,11 @@ Repo chạy test bằng cách gọi từng file như script, nên mỗi file ph�
 - `test_web_chat_catalog.py`: `chatgpt-web` có trong danh sách model của thẻ ChatGPT **cả khi**
   `openai_oauth.list_models` trả `None`; và thẻ báo sẵn sàng khi chỉ có phiên web, không có
   Codex CLI.
-- `test_web_chat_tool_protocol.py`: bóc đúng khối ```` ```javis_tool ````; JSON hỏng thì trả
+- `test_web_chat_tool_protocol.py`: bóc đúng khối ```` ```unimate_tool ````; JSON hỏng thì trả
   câu báo lỗi nói được chứ không ném exception và không đoán; tên tool không tồn tại thì báo rõ;
   `_LapGuard` vẫn cắt khi lặp y hệt.
-- `test_web_chat_ngan_sach_gio.py`: hết `JAVIS_WEB_TURN_BUDGET_S` thì dừng và trả phần đã có
-  kèm lời giải thích, không cụt lặng lẽ; và trần vòng mặc định bằng `JAVIS_MAX_TOOL_ROUNDS`
+- `test_web_chat_ngan_sach_gio.py`: hết `UNIMATE_WEB_TURN_BUDGET_S` thì dừng và trả phần đã có
+  kèm lời giải thích, không cụt lặng lẽ; và trần vòng mặc định bằng `UNIMATE_MAX_TOOL_ROUNDS`
   chứ không phải một con số riêng.
 - `test_web_chat_state.py`: `HET_LUOT` đặt đúng `cooldown_until`; trong cooldown thì từ chối mà
   **không** mở trình duyệt; hết lượt giữa vòng tool thì giữ phần đã làm và vào `limit_resume`.
@@ -690,7 +690,7 @@ Repo chạy test bằng cách gọi từng file như script, nên mỗi file ph�
   nguyên văn; luồng đứt giữa chừng thì `QUA_HAN` chứ không trả chuỗi cụt.
 - `test_web_chat_viec_nen.py`: `_FallbackChain` và hàng đợi việc nền không bao giờ chọn
   `chatgpt-web`.
-- `test_coding_tool_context.py`: phiên coding thì `javis_read_file` đọc được file trong repo;
+- `test_coding_tool_context.py`: phiên coding thì `unimate_read_file` đọc được file trong repo;
   phiên thường thì `workspace_root` bằng `vault_root` và hành vi **không đổi một chút nào**;
   đường dẫn ngoài cả hai gốc vẫn bị chặn, và câu báo lỗi nói đúng gốc nào.
 - `test_run_command_quyen.py`: `suggest` không chạy lệnh nào; `auto` chỉ chạy lệnh trong
@@ -713,7 +713,7 @@ Model thiếu thì gọi lại xin thêm. Một vòng xin thêm rẻ hơn một 
 
 ## 19. Hợp đồng sự kiện chung giữa các engine
 
-Javis đã có hợp đồng ngầm: mọi engine sinh dict `{"type": ...}` mà `CodexCLI.query` và
+UNI MATE đã có hợp đồng ngầm: mọi engine sinh dict `{"type": ...}` mà `CodexCLI.query` và
 `claude_sdk_engine` cùng tuân theo (`type` nhận `session`, `text`, `tool_call`, `item`,
 `final`, `error`, `usage`).
 
@@ -722,7 +722,7 @@ Web Engine **map vào đúng hợp đồng đó**, không đẻ hợp đồng th
 ```
 transport nhận mảnh chữ      → {"type": "text"}
 mở luồng web mới             → {"type": "session"}
-bóc được khối javis_tool     → {"type": "tool_call"}
+bóc được khối unimate_tool     → {"type": "tool_call"}
 xong lượt                    → {"type": "final"}
 lỗi transport / hết lượt     → {"type": "error"}
 ```
@@ -749,12 +749,12 @@ từng phase:
 | `usage_tokens` | không | không | không |
 | `background` | không | không | không |
 
-**Không khai một cờ chưa chạy được.** Khai thừa là hứa với chính bộ chọn tool của Javis, rồi
+**Không khai một cờ chưa chạy được.** Khai thừa là hứa với chính bộ chọn tool của UNI MATE, rồi
 nó gửi xuống một tool mà engine không dùng nổi.
 
 ## 21. Sinh ảnh: hai đường, và phải nói rõ đường nào
 
-Mục 5 đã nêu: `javis_generate_image` đi OAuth Responses, **không** qua trình duyệt. Nên khi
+Mục 5 đã nêu: `unimate_generate_image` đi OAuth Responses, **không** qua trình duyệt. Nên khi
 đang chọn `chatgpt-web` mà bảo tạo ảnh, ảnh vẫn ra, nhưng tiêu hạn mức ảnh qua API chứ không
 tiêu lượt chat web.
 
@@ -762,7 +762,7 @@ Luật:
 
 - Engine là `chatgpt-web` thì đường mặc định **nên** là sinh ảnh trong chính phiên web, khi
   năng lực đó có (cờ `web_image_generation`).
-- Chưa có thì **được phép** dùng `javis_generate_image`, nhưng **phải nói ra**: "ảnh này tạo
+- Chưa có thì **được phép** dùng `unimate_generate_image`, nhưng **phải nói ra**: "ảnh này tạo
   qua đường API của gói, không qua phiên web".
 - **Không bao giờ** lặng lẽ tiêu hạn mức của túi khác. Chủ máy chọn engine nào là chọn cả túi
   quota của engine đó.
@@ -790,7 +790,7 @@ bắt được khi trang đổi:
 ```
 transport_version        đoạn tee fetch
 selector_version         selector DOM (ô soạn, nút gửi, nút tải file)
-tool_protocol_version    khuôn khối javis_tool
+tool_protocol_version    khuôn khối unimate_tool
 ```
 
 Mọi selector DOM nằm **trong một chỗ duy nhất** của transport. Rải selector khắp nơi là lần
@@ -801,9 +801,9 @@ sau OpenAI đổi giao diện thì phải đi tìm.
 - Lệnh phiên `/web` và chip "hỏi Web lượt tới" trong phiên Coding, để hỏi một câu mà vẫn ở
   trên Codex. Đã đặc tả trong v1.0 mục 7 (bản cũ); rẻ, nhưng chỉ làm sau khi đường chọn model chạy ngon.
 - Gửi ẢNH cho `chatgpt-web` bằng cách lái widget tải file của trang. Mục 3.2 điểm 6: hạng API
-  của Javis hiện không gửi ảnh, trong khi ChatGPT Web tự nó xem ảnh rất tốt.
-- **Chrome Extension Relay** thay cho việc server Javis tự giữ profile Chrome mãi:
-  `Javis server ↕ relay có xác thực ↕ extension ↕ tab ChatGPT đã đăng nhập`. Hợp với VPS hơn
+  của UNI MATE hiện không gửi ảnh, trong khi ChatGPT Web tự nó xem ảnh rất tốt.
+- **Chrome Extension Relay** thay cho việc server UNI MATE tự giữ profile Chrome mãi:
+  `UNI MATE server ↕ relay có xác thực ↕ extension ↕ tab ChatGPT đã đăng nhập`. Hợp với VPS hơn
   hẳn Playwright, và chủ dự án vốn đã định làm extension. Playwright profile cố định vẫn là
   đường đúng cho spike. Cần kiểm trước: service worker MV3 bị kill khi rảnh, nên kết nối dài
   có thể phải qua offscreen document.
@@ -814,7 +814,7 @@ sau OpenAI đổi giao diện thì phải đi tìm.
   trong `main.py`. Là refactor dần, và KHÔNG được chặn Phase 1: bản rà soát chéo xếp nó thành
   bước 1, làm vậy thì nhiều tuần nữa mới có thứ chạy được.
 - Máy trạng thái provider dùng chung cho mọi nhà, bê từ sổ mục 10 ra.
-- Task Handoff Packet (bản rà soát 2026-09-22). Đáng làm cho Javis, nhưng KHÔNG thuộc dự án
+- Task Handoff Packet (bản rà soát 2026-09-22). Đáng làm cho UNI MATE, nhưng KHÔNG thuộc dự án
   này: nó sinh ra cho cảnh chuyển engine giữa chừng, mà mục đích ở đây là chọn tay theo tiện.
 - Sinh ảnh THẲNG trong phiên web (bóc ảnh từ trang rồi tải về) để tiêu quota web thay vì hạn
   mức ảnh qua API. Xem mục 5.

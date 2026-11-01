@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS only; original D:/Project/Javis-OS untouched except its .venv Python executable -B with managed cwd. VERSION0.299.0 unchanged, English code/comments/commits.
+- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE only; original D:/Project/UNI-MATE untouched except its .venv Python executable -B with managed cwd. VERSION0.299.0 unchanged, English code/comments/commits.
 - Goal18 ends this Goal at M2 engineering plus committed/integrated Claude Opus5.5 handoff. No M3–M8/recipe/Library/orchestration expansion, new Goal, real account/model/business feasibility/pilot/canary, deploy/restart or activation.
 - Default implementation tests never launch ambient selected CLI/SDKClient/query, read/copy login stores or use auth overrides. Inert native children and real kernel/private-channel fixtures are allowed with explicit engineering labels and owned cleanup. Root separately owns any exact-reviewed selected-CLI diagnostic gate; no model/query/account request is authorized there.
 - Production startup2/default SDK environment/account verifier/product supported checks/release registration remain strict. Only startup3 preflight is enabled; startup3 trial/operation queries refuse. No new executor/ledger/schema/package or generic caller current=true/qualification environment switch.

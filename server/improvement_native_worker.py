@@ -113,7 +113,7 @@ class NativeWorkerSessionV2:
             if not home.is_dir() or tuple(home.iterdir()):
                 raise NativeWorkerError('qualification_home_not_empty', self)
         if self._namespace == 'preflight':
-            expected = {'TEMP': 'tmp', 'TMP': 'tmp', 'JAVIS_STATE_DIR': 'host-state', 'BRAINS_DIR': 'empty-brains',
+            expected = {'TEMP': 'tmp', 'TMP': 'tmp', 'UNIMATE_STATE_DIR': 'host-state', 'BRAINS_DIR': 'empty-brains',
                 'OBSIDIAN_VAULT_PATH': 'empty-vault', 'BRAIN_PATH': 'empty-brain', 'SOURCES_PATH': 'empty-sources'}
             if any(_absolute(env[key]) != scratch / leaf for key, leaf in expected.items()):
                 raise NativeWorkerError('native_worker_preflight_scratch_mismatch', self)

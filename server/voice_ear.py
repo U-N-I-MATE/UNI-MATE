@@ -14,7 +14,7 @@ Ba lớp rào cho chữ của tai, giống nhau với mọi tai:
   - `stt.loc_ao_giac`: Whisper bịa câu outro YouTube khi gặp im lặng hay tiếng ồn.
   - `stt.khop_ban_nhap`: chữ tai lệch hẳn bản nháp của trình duyệt thì giữ bản nháp. Rào này
     bắt kiểu lỗi model nghe âm thanh trả về nguyên một câu không liên quan.
-  - `nghe_sua.sua`: sửa tên trợ lý nghe nhầm ("David" thành "Javis").
+  - `nghe_sua.sua`: sửa tên trợ lý nghe nhầm ("Diu ni" thành "Uni", "U ni mết" thành "UNI MATE").
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ import stt
 CHOICES = ("auto", "groq", "openai", "off")
 DEFAULT = "auto"
 
-# Các tai Javis biết chạy. `kind`:
+# Các tai UNI MATE biết chạy. `kind`:
 #   upload - trình duyệt ghi âm cả câu, hết câu mới gửi lên /stt.
 EARS = {
     "groq": {"label": "Groq Whisper", "kind": "upload", "key_field": "groq_api_key"},
@@ -44,7 +44,7 @@ RANKING = ("groq", "openai")
 
 # Provider của bộ não chính (main._effective_main) -> tai cùng hãng. Bộ não Claude không có
 # tai: model Claude không nhận âm thanh, còn giọng nói của Claude Code cần token đăng nhập mà
-# Javis cố ý không đọc. Khi đó dùng tai tốt nhất đang có, bộ não vẫn là Claude.
+# UNI MATE cố ý không đọc. Khi đó dùng tai tốt nhất đang có, bộ não vẫn là Claude.
 BRAIN_EAR = {
     "groq": "groq",
 }

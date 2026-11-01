@@ -58,7 +58,7 @@ function trinhDuyet() {
   vm.runInContext(SRC, ctx);
   // tuNoiLai gọi bat() mà không trả promise: chạy hẹn giờ rồi nhường vài nhịp cho chuỗi await bên trong đi hết.
   const nhuong = async () => { for (let i = 0; i < 20; i++) await new Promise((r) => setImmediate(r)); };
-  return { P: win.JavisPush, chayHenGio: async () => { for (const f of timers.splice(0)) f(); await nhuong(); } };
+  return { P: win.UniMatePush, chayHenGio: async () => { for (const f of timers.splice(0)) f(); await nhuong(); } };
 }
 
 // Khoá server rỗng làm bat() dừng sớm ở bước /push/key: đủ để biết push.js CÓ thử bật lại hay không.
@@ -75,7 +75,7 @@ const soLanThuBat = () => goi.filter((u) => u === "/push/key").length;
   const r = await b.P.tat();
   check("Tắt: huỷ đăng ký ở trình duyệt", r.ok && sub === null, r);
   check("Tắt: báo server bỏ thiết bị này", goi.includes("/push/unsubscribe"), goi);
-  check("Tắt: nhớ lựa chọn ở trình duyệt này", store["javis.push.off"] === "1", store);
+  check("Tắt: nhớ lựa chọn ở trình duyệt này", store["unimate.push.off"] === "1", store);
 
   // Tải lại trang: quyền vẫn "granted" nhưng không được tự bật lại.
   goi.length = 0;
@@ -86,13 +86,13 @@ const soLanThuBat = () => goi.filter((u) => u === "/push/key").length;
 
   // Bấm Bật khi server chưa có khoá: bật hỏng thì vẫn giữ dấu đã tắt, lần tải sau không tự bật.
   const r2 = await b.P.bat();
-  check("bấm Bật hỏng: báo lỗi, giữ nguyên trạng thái tắt", r2.ok === false && store["javis.push.off"] === "1", [r2, store]);
+  check("bấm Bật hỏng: báo lỗi, giữ nguyên trạng thái tắt", r2.ok === false && store["unimate.push.off"] === "1", [r2, store]);
 
   // Bấm Bật được thật: bỏ dấu đã tắt, lần tải sau lại tự nối như trước.
   khoa = "QUJD";
   const r3 = await b.P.bat();
   check("bấm Bật thành công: đăng ký và bỏ dấu đã tắt",
-    r3.ok === true && goi.includes("/push/subscribe") && !("javis.push.off" in store), [r3, store, goi]);
+    r3.ok === true && goi.includes("/push/subscribe") && !("unimate.push.off" in store), [r3, store, goi]);
   goi.length = 0;
   b = trinhDuyet();
   await b.chayHenGio();

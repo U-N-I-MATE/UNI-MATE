@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS only; original D:/Project/Javis-OS untouched except its .venv Python executable -B with managed cwd. VERSION0.299.0 unchanged, English code/comments/commits.
+- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE only; original D:/Project/UNI-MATE untouched except its .venv Python executable -B with managed cwd. VERSION0.299.0 unchanged, English code/comments/commits.
 - Goal18 ends this Goal at M2 engineering plus committed/integrated Claude Opus5.5 handoff. No M3–M8/recipe/Library/orchestration expansion, new Goal, real account/model/business feasibility/pilot/canary, deploy/restart or live activation. Business/live acceptance stays PENDING.
 - Q1 enables only actual baseline5 trial queries. No positive view4/operation2 routes, operation/view source edits, extra executor/accounting/query ledger/schema/package or public simulation/allow_qualification/current=true switch. Q2 consumes Q1 later.
 - Production startup2/default SDK/profile/account verifier/product supported checks/release registration stay strict. Returned objects have domain qualification, supported=False, account_ready=False, business_proof=False; no capability_hash property/product result/activation verdict. Existing wire field capability_hash carries only the private descriptor authority_hash consistency join.

@@ -12,7 +12,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 BOOT = Path(tempfile.mkdtemp(prefix="trial-request-test-"))
-for key, name in {"JAVIS_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
+for key, name in {"UNIMATE_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
                   "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(BOOT / name)
 

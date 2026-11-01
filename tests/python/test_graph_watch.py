@@ -6,7 +6,7 @@ note đổi, file trong thư mục ẩn không lọt ra, và disconnect dọn ta
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401  - nạp server/ vào sys.path (xem tests/python/_paths.py)
 import os, sys, tempfile, json, time, queue, threading
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-graphwatch-test-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-graphwatch-test-")
 
 _fails = []
 def check(name, cond):
@@ -19,7 +19,7 @@ from routes import graph as graph_routes  # noqa: E402  - _hidden_in_roots bóc 
 from starlette.testclient import TestClient  # noqa: E402
 
 # --- _hidden_in_roots (thuần) ---
-root = tempfile.mkdtemp(prefix="javis-graphwatch-vault-")
+root = tempfile.mkdtemp(prefix="unimate-graphwatch-vault-")
 check("_hidden_in_roots: file thường - False",
       graph_routes._hidden_in_roots(os.path.join(root, "a.md"), [root]) is False)
 check("_hidden_in_roots: trong .trash - True",

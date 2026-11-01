@@ -17,9 +17,9 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-0142r-")
-TEMP = Path(tempfile.mkdtemp(prefix="javis-team-0142r-w-"))
-BR = Path(tempfile.mkdtemp(prefix="javis-team-0142r-brain-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-0142r-")
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-team-0142r-w-"))
+BR = Path(tempfile.mkdtemp(prefix="unimate-team-0142r-brain-"))
 (BR / "agents").mkdir()
 for slug, name, role in (("lan", "Lan", "Chăm khách"), ("minh", "Minh", "Viết bài")):
     (BR / "agents" / f"{slug}.md").write_text(f"---\nname: {name}\nrole: {role}\n---\nBạn là {name}.\n",

@@ -6,7 +6,7 @@ Bổ sung 0.283.0: xem quality_first_guide.md cho chính sách chất lượng, 
   không phải kết quả nghiệp vụ thật hay thay thế hướng dẫn bản cũ bên dưới.
 
 Mục đích
-  Chạy thử 3 nhóm trong 3 tới 7 ngày trên một bản Javis riêng để xem ba thứ có đứng vững với model thật không:
+  Chạy thử 3 nhóm trong 3 tới 7 ngày trên một bản UNI MATE riêng để xem ba thứ có đứng vững với model thật không:
   1. Cổng chờ duyệt: bước cần chủ thì dừng thật, hành động ra ngoài chỉ chạy đúng lời gọi đã duyệt, một lần.
   2. Mục tiêu phòng ban: nhóm tự tìm việc trong nguồn được giao, đúng ngân sách, không bịa, có dấu vết.
   3. Nghiệm thu: việc chỉ xong khi sản phẩm đạt tiêu chí của chủ.

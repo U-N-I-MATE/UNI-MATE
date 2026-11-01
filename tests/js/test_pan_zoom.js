@@ -57,13 +57,13 @@ check("refits when the box changes size until the user zooms", /new ResizeObserv
 
 // ---- 3. wiring ----
 check("diagram viewer: a drawn mermaid diagram gets zoom and pan", /renderMermaid\(art\.code, elBody\.querySelector\("\.jv-ap-mermaid"\), function \(host\)/.test(CR) &&
-  /zoomOn\(host, svg, window\.JavisPanZoom\.svgSize\(svg\)\)/.test(CR) && /if \(done\) done\(host\)/.test(CR));
+  /zoomOn\(host, svg, window\.UniMatePanZoom\.svgSize\(svg\)\)/.test(CR) && /if \(done\) done\(host\)/.test(CR));
 check("SVG picture: an <img> (no scripts run), not an iframe, so it zooms", /new Blob\(\[art\.code\], \{ type: "image\/svg\+xml" \}\)/.test(CR) &&
   /zoomOn\(box, img, nat\)/.test(CR) && !/frame\("",/.test(CR));
 check("one zoom at a time: switching tab or closing the viewer drops it", /function renderTab\(\) \{\s*var art = curArt; if \(!art \|\| !elBody\) return;\s*dropZoom\(\);/.test(CR) &&
   /function closePanel\(\) \{\s*if \(!panel\) return;[\s\S]{0,200}dropZoom\(\);/.test(CR));
 check("a picture opened in the editor zooms too, dropped on the next open and on close",
-  /_nePz = window\.JavisPanZoom\.attach\(pic\.parentNode, pic, \{ w: pic\.naturalWidth, h: pic\.naturalHeight \}\)/.test(CON) &&
+  /_nePz = window\.UniMatePanZoom\.attach\(pic\.parentNode, pic, \{ w: pic\.naturalWidth, h: pic\.naturalHeight \}\)/.test(CON) &&
   (CON.match(/_neDropPz\(\);/g) || []).length >= 2);
 check("index.html loads pan-zoom.js before chat-render.js", HTML.indexOf("/static/pan-zoom.js") > 0 &&
   HTML.indexOf("/static/pan-zoom.js") < HTML.indexOf("/static/chat-render.js"));

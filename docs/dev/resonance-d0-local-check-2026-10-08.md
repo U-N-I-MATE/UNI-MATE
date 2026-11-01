@@ -5,7 +5,7 @@
 | Mục | Giá trị |
 |---|---|
 | Mã chạy | Worktree sạch tách từ commit phát hành `438f83097db4ee64e96b7b4880deb581521f217a` (VERSION 0.86.0). Lúc kiểm, `main` đã lên 0.86.1 (#589) nhưng bản kiểm cố ý ghim 0.86.0 |
-| Cách chạy | `python server/main.py` của worktree đó, cổng 7788, `JAVIS_STATE_DIR` và `BRAINS_DIR` tạm, `JAVIS_REQUIRE_LOGIN=0`, môi trường bỏ biến `CLAUDE*` / `ANTHROPIC*` của phiên Claude Code (giữ `CLAUDE_CONFIG_DIR`) |
+| Cách chạy | `python server/main.py` của worktree đó, cổng 7788, `UNIMATE_STATE_DIR` và `BRAINS_DIR` tạm, `UNIMATE_REQUIRE_LOGIN=0`, môi trường bỏ biến `CLAUDE*` / `ANTHROPIC*` của phiên Claude Code (giữ `CLAUDE_CONFIG_DIR`) |
 | Claude Code trên máy | 2.1.293 (cùng bản build vào image Docker 0.86.0) |
 | Script | `exports/reviews/D0-localhost-0860-smoke.py` (ngoài git). Log server và thư mục dữ liệu tạm đã xoá khi dọn; kết quả dưới đây chép từ đầu ra của lần chạy |
 
@@ -32,7 +32,7 @@ Ghi chú:
 ## Một lượt chat thật: đạt
 
 - Người dùng duyệt đúng 1 lượt. Engine chép từ settings thật chỉ phần chọn engine: `anthropic-cli` / `claude-opus-5-5`, gói Max; token còn khoảng 15.400 giây trước khi gửi.
-- Tin: "Chào Javis, đây là tin thử sau khi nâng cấp. Em trả lời ngắn một câu: em đang chạy phiên bản nào và bằng bộ não gì?"
+- Tin: "Chào Uni, đây là tin thử sau khi nâng cấp. Em trả lời ngắn một câu: em đang chạy phiên bản nào và bằng bộ não gì?"
 - Kết quả sau 10 giây: khung `turn_done` có `engine_status: ok`, `turn_status: completed`, không có lỗi engine. Câu trả lời nêu đúng Claude Code và `claude-opus-5-5`, nói không thấy số phiên bản trong ngữ cảnh nên không báo.
 - Hội thoại được lưu vào danh sách phiên. Log server không có Traceback.
 

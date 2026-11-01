@@ -15,11 +15,11 @@ const box = {
   adaptive: {cancel(){}, running:()=>false, input:()=>false, manual:()=>false, holding:()=>false, blocked:()=>false,start(){},save(){}},
   adaptiveOutbox:new Map(), adaptiveContinuation:'',
 
-  window: { JavisVoiceAttention: { Attention: class extends Attention { constructor() { super({now: () => now}); } } },
-    t: x => x, JavisVoiceLive: { start: async o => { liveOptions = o; events.push('live-start'); return startResult; },
+  window: { UniMateVoiceAttention: { Attention: class extends Attention { constructor() { super({now: () => now}); } } },
+    t: x => x, UniMateVoiceLive: { start: async o => { liveOptions = o; events.push('live-start'); return startResult; },
       attachMic: async () => { events.push('attach-mic'); return true; },
       stop: () => { stopCount++; }, isSpeaking: () => false, sendText: t => sent.push(t) } },
-  JavisVoice: class { constructor(o) { if (!voiceOptions) voiceOptions = o; else wakeOptions = o; this.lang = 'vi-VN'; }
+  UniMateVoice: class { constructor(o) { if (!voiceOptions) voiceOptions = o; else wakeOptions = o; this.lang = 'vi-VN'; }
     isSupported() { return true; } micHong() { return false; } isSpeaking() { return false; }
     waitForCaptureEnd() { return captureEnd; }
     setRecognitionLang(lang) { this.lang = lang; }
@@ -96,30 +96,30 @@ function final(text) { if (voiceOptions.acceptTranscript(text)) voiceOptions.onT
   liveOptions.onReady({});
   assert.deepEqual(sent, ['mở trò chuyện giúp anh'], 'the waking sentence becomes the first message, once');
   assert.deepEqual(stored, [['user', 'mở trò chuyện giúp anh']]);
-  run('_liveJavisText = "Latest answer"');
+  run('_liveUniMateText = "Latest answer"');
   liveOptions.onStopped(); liveOptions.onStopped();
-  assert.deepEqual(stored.at(-1), ['javis', 'Latest answer']);
+  assert.deepEqual(stored.at(-1), ['unimate', 'Latest answer']);
   assert.equal(stored.length, 2, 'reply without turn_done is saved exactly once on sleep');
   sent.length = 0; stored.length = 0;
-  await box.batLive('Javis câu của phiên A');
+  await box.batLive('UNI MATE câu của phiên A');
   const stale = liveOptions;
   box.tatRanhTay(); box.savedSessionId = 'session-B';
-  stale.onReady({session_id:'session-A'}); wakeOptions.onTranscript('Javis câu cũ của phiên trước');
+  stale.onReady({session_id:'session-A'}); wakeOptions.onTranscript('UNI MATE câu cũ của phiên trước');
   assert.equal(sent.length, 0); assert.equal(stored.length, 0);
   assert.equal(run('attention.running'), false); assert.equal(button.hidden, true);
   box.handsFree = true; run('attention.enabled = true; attention.start()');
   await box.batLive(); liveOptions.onReady({});
-  liveOptions.onTool('ask_javis', 'running'); liveOptions.onTool('ask_javis', 'running');
+  liveOptions.onTool('ask_unimate', 'running'); liveOptions.onTool('ask_unimate', 'running');
   liveOptions.onSpeakEnd(); liveOptions.onTurnDone();
   now += 29000; box.tickVoiceFocus();
   now += 2000; box.tickVoiceFocus();
   assert.equal(run('_liveWaitingWake'), false, 'a spoken acknowledgement must not cancel the running tool');
-  liveOptions.onTool('ask_javis', 'done');
+  liveOptions.onTool('ask_unimate', 'done');
   for (let i = 0; i < 8; i++) { now += 29000; box.tickVoiceFocus(); }
   assert.equal(run('_liveWaitingWake'), false, 'a legitimate long-running tool is not cancelled by an idle timer');
   now += 29000; box.tickVoiceFocus();
   assert.equal(run('_liveWaitingWake'), false, 'one tool finishing must not clear another');
-  liveOptions.onTool('ask_javis', 'done');
+  liveOptions.onTool('ask_unimate', 'done');
   now += 29000; box.tickVoiceFocus(); assert.equal(run('_liveWaitingWake'), false);
   now += 1001; box.tickVoiceFocus(); assert.equal(run('_liveWaitingWake'), true, 'new silent Live sleeps after 30s, not 60s');
   let release;
@@ -129,7 +129,7 @@ function final(text) { if (voiceOptions.acceptTranscript(text)) voiceOptions.onT
   box.tatRanhTay(); release(true); await opening;
   assert.equal(events.filter(e => e === 'live-start').length, starts, 'cancel while waiting for capture release never opens provider');
   // 0.65.25: nối lại hỏng GIỮA cuộc gọi không chuyển sang đường Cơ bản (giọng Edge khác hẳn, chủ dự án
-  // nghe như Javis tự đổi giọng nữ sang nam). Thử lại một lần đúng câu đó, rồi quay về chờ và báo.
+  // nghe như UNI MATE tự đổi giọng nữ sang nam). Thử lại một lần đúng câu đó, rồi quay về chờ và báo.
   captureEnd = Promise.resolve(true);
   box.handsFree = true; box.voiceMode = 'live';
   run('attention.enabled = true; attention.start(); _liveWaitingWake = false; _liveSom = null; _cuocGoiDaNoi = true');

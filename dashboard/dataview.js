@@ -1,4 +1,4 @@
-/* dataview.js - Dataview LITE cho Javis OS (cam hung obsidian-dataview + obsidian-tasks).
+/* dataview.js - Dataview LITE cho UNI MATE (cam hung obsidian-dataview + obsidian-tasks).
    Khoi ```dataview trong note/chat duoc chat-render.js do thanh <div class="jv-dataview"
    data-dv-q="...">; file nay tu phat hien (MutationObserver), tai chi muc note tu
    /files/mdindex roi CHAY TRUY VAN NGAY TREN TRINH DUYET va ve ket qua.
@@ -666,14 +666,14 @@
       e.preventDefault(); e.stopPropagation();
       var p = a.getAttribute("data-vault-path") || "";
       if (!p) return;
-      if (a.closest("#noteEditor") && typeof window.JavisOpenNote === "function") window.JavisOpenNote(p);
-      else if (typeof window.JavisEditFile === "function") window.JavisEditFile(p);
-      else if (typeof window.JavisOpenFiles === "function") window.JavisOpenFiles(p);
+      if (a.closest("#noteEditor") && typeof window.UniMateOpenNote === "function") window.UniMateOpenNote(p);
+      else if (typeof window.UniMateEditFile === "function") window.UniMateEditFile(p);
+      else if (typeof window.UniMateOpenFiles === "function") window.UniMateOpenFiles(p);
     }, true);
   }
 
   if (typeof window !== "undefined") {
-    window.JavisDataview = { run: run, parseQuery: parseQuery, execQuery: execQuery, dropCache: dropCache };
+    window.UniMateDataview = { run: run, parseQuery: parseQuery, execQuery: execQuery, dropCache: dropCache };
   }
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { parseQuery: parseQuery, execQuery: execQuery, compile: compile,

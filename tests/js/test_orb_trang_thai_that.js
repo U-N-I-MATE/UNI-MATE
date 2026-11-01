@@ -28,7 +28,7 @@ function check(name, cond) {
 }
 
 // 1. app.js đi qua đạo diễn
-check("app.js dựng đạo diễn từ voice-turn.js", /new window\.JavisVoiceTurn\.VoiceTurn\(/.test(app));
+check("app.js dựng đạo diễn từ voice-turn.js", /new window\.UniMateVoiceTurn\.VoiceTurn\(/.test(app));
 check("app.js không còn setOrbState('thinking') rải rác", !/setOrbState\("thinking"/.test(app));
 check("app.js không còn setOrbState('speaking') rải rác", !/setOrbState\("speaking"/.test(app));
 check("app.js không còn setOrbState('', ready) rải rác", !/setOrbState\("", window\.t\("orb\.ready"\)\)/.test(app));
@@ -45,12 +45,12 @@ check("nghe xong đi qua veTinTuGiong (luật CHỜ/DỪNG)", /text = veTinTuGio
 check("stop_turn bấm hộ nút Dừng", /case "stop_turn": stopCurrent\(\)/.test(app));
 check("pause_tts đặt đồng hồ chen ngang giả theo falseInterruptMs", /case "pause_tts":[\s\S]{0,300}turn\.opts\.falseInterruptMs/.test(app));
 check("orb nhãn tool dùng app.orb_tool", /app\.orb_tool/.test(app));
-check("dải việc nền báo số cho orb", /window\.JavisOrb\.setBackground/.test(read("dashboard/background-strip.js")));
+check("dải việc nền báo số cho orb", /window\.UniMateOrb\.setBackground/.test(read("dashboard/background-strip.js")));
 
 // 3. voice.js
 // 0.57.14: 2 nhịp = 200 ms là đủ để NGHI NGỜ, vì nghi ngờ chỉ dẫn tới một cú nhá tiếng 400 ms
 // chứ không dừng hẳn nữa (test_ngat_loi_nha_tieng.js). Bản cũ phải để 5 nhịp vì chạm ngưỡng
-// là câm luôn, và chính vì thế một tiếng "thôi" ngắn không bao giờ ngắt được lời Javis.
+// là câm luôn, và chính vì thế một tiếng "thôi" ngắn không bao giờ ngắt được lời UNI MATE.
 check("voice.js: 2 nhịp = 200 ms để nghi ngờ", /this\.bargeMinTicks = 2;/.test(voice) && /hits >= this\.bargeMinTicks/.test(voice));
 check("voice.js: _bargeIn ưu tiên onBargeConfirm (đã chắc), rồi mới tới onBargeStart cũ",
   /_bargeIn\(\) \{\s*\n\s*if \(this\.onBargeConfirm\)/.test(voice) && /if \(this\.onBargeStart\)/.test(voice));

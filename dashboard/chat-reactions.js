@@ -17,7 +17,7 @@
 (function () {
   "use strict";
 
-  var JR = (typeof window !== "undefined" && window.JavisReactions) || require("./reactions.js");
+  var JR = (typeof window !== "undefined" && window.UniMateReactions) || require("./reactions.js");
   var P = { prefix: "jr" };
 
   function tw(khoa, bien) {
@@ -117,7 +117,7 @@
 
   function expect(sid, el, entry) {
     if (!sid || !el) return;
-    // Lượt có hai khung response (bản sửa lại sau khi bóc JAVIS_LESSON): bong bóng đã có mã thì chỉ chép mã vào convo.
+    // Lượt có hai khung response (bản sửa lại sau khi bóc UNIMATE_LESSON): bong bóng đã có mã thì chỉ chép mã vào convo.
     if (el.dataset.mid) {
       if (entry && entry.mid == null && el._jr) { entry.mid = midValue(el._jr.mid); entry.sha = el._jr.sha || ""; changed(); }
       return;
@@ -136,7 +136,7 @@
 
   function bubbles(sid, mid) {
     if (!root) return [];
-    return Array.prototype.filter.call(root.querySelectorAll('.msg-javis[data-mid="' + String(mid).replace(/"/g, "") + '"]'),
+    return Array.prototype.filter.call(root.querySelectorAll('.msg-unimate[data-mid="' + String(mid).replace(/"/g, "") + '"]'),
       function (el) { return el._jr && el._jr.sid === String(sid); });
   }
 
@@ -180,7 +180,7 @@
 
   function stateOf(t) {
     var box = t && t.closest && t.closest(".jr-chat");
-    var el = box && box.closest(".msg-javis");
+    var el = box && box.closest(".msg-unimate");
     return el && el._jr ? el : null;
   }
 
@@ -219,7 +219,7 @@
         // Thả tim / like một câu trả lời là lúc dễ xin một ngôi sao GitHub nhất (star-nudge.js, chủ repo 25/10).
         var rv = (j.reaction || {}).value;
         if (rv === "love" || rv === "like") {
-          try { window.dispatchEvent(new CustomEvent("javis:react-positive", { detail: { value: rv } })); } catch (e) {}
+          try { window.dispatchEvent(new CustomEvent("unimate:react-positive", { detail: { value: rv } })); } catch (e) {}
         }
         return;
       }
@@ -292,7 +292,7 @@
   // items: [{el, entry}] các câu trả lời vừa khôi phục, theo thứ tự (tuỳ chọn; không có thì chỉ sửa bong bóng đã có mã).
   function refresh(sid, items) {
     if (!root || !sid || typeof fetch !== "function") return Promise.resolve(0);
-    var sel = '.msg-javis[data-mid][data-sid="' + String(sid).replace(/"/g, "") + '"]';
+    var sel = '.msg-unimate[data-mid][data-sid="' + String(sid).replace(/"/g, "") + '"]';
     var shown = items ? items.length : root.querySelectorAll(sel).length;
     if (!shown) return Promise.resolve(0);
     var limit = Math.min(200, shown * 2 + 10);
@@ -312,7 +312,7 @@
 
   function rerenderAll() {
     if (!root) return;
-    Array.prototype.forEach.call(root.querySelectorAll(".msg-javis[data-mid]"), function (el) { render(el); });
+    Array.prototype.forEach.call(root.querySelectorAll(".msg-unimate[data-mid]"), function (el) { render(el); });
   }
 
   function init(opts) {
@@ -324,15 +324,15 @@
     // Phone: holding the reaction corner opens the msg-press.js emoji row (slide to pick). Holding the message itself is
     // the phone's own text selection and Copy (owner, 0.266.0: the dimmed Reply / Copy card got in the way of copying);
     // Reply, Copy, Edit and Send again are in the row a tap on the message shows (.acts-on).
-    var MP = typeof window !== "undefined" && window.JavisMsgPress;
+    var MP = typeof window !== "undefined" && window.UniMateMsgPress;
     if (MP) {
       MP.bind(root, {
-        selector: ".msg-javis, .msg-user",
+        selector: ".msg-unimate, .msg-user",
         bubble: ".bubble",
         holdOn: ".jr-rx-btn",
         holdOnly: true,
         emoji: JR.EMOJI,
-        canReact: function (el) { return !!(el._jr && el.classList.contains("msg-javis")); },
+        canReact: function (el) { return !!(el._jr && el.classList.contains("msg-unimate")); },
         current: function (el) { return el._jr && el._jr.reaction ? el._jr.reaction.value : ""; },
         react: function (el, value) {
           if (el._jr && !el._jr.busy) send(el, JR.nextReaction((el._jr.reaction || {}).value, value));
@@ -340,22 +340,22 @@
       });
     }
     // Phone (0.216.0, owner): swipe a message to the left to quote it, like Zalo. It presses the message's own Quote
-    // button, so the quote is exactly what that button takes (the whole message, Javis's original markdown).
-    var SW = typeof window !== "undefined" && window.JavisMsgSwipe;
+    // button, so the quote is exactly what that button takes (the whole message, UNI MATE's original markdown).
+    var SW = typeof window !== "undefined" && window.UniMateMsgSwipe;
     if (SW) {
       SW.bind(root, {
-        selector: ".msg-javis, .msg-user",
+        selector: ".msg-unimate, .msg-user",
         bubble: ".bubble",
         can: function (el) { return !!el.querySelector('.msg-act[data-act="quote"]'); },
         run: function (el) { var b = el.querySelector('.msg-act[data-act="quote"]'); if (b) b.click(); }
       });
     }
     // Đổi ngôn ngữ giao diện: vẽ lại nhãn của mọi hàng reaction.
-    if (typeof window !== "undefined" && window.addEventListener) window.addEventListener("javis:i18n", rerenderAll);
+    if (typeof window !== "undefined" && window.addEventListener) window.addEventListener("unimate:i18n", rerenderAll);
   }
 
   var api = { init: init, attach: attach, expect: expect, turnDone: turnDone, onFrame: onFrame, apply: apply,
     refresh: refresh, rowHtml: rowHtml, reactionUrl: reactionUrl, norm: norm };
-  if (typeof window !== "undefined") window.JavisChatReactions = api;
+  if (typeof window !== "undefined") window.UniMateChatReactions = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

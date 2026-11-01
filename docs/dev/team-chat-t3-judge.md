@@ -107,7 +107,7 @@ Lời gọi trực tiếp không bao giờ phụ thuộc phán xử: lượt tr�
 - P phục vụ lý do `related_review` và `wait_unblocked` bằng `agent_judge.serve_reason(reason_id)` (bộ phán xử tự xét lại; lý do của
   nhóm đã được chính lô phán xử khép `served`, nên thường không còn gì). P không chạy lượt riêng cho hai loại này.
 - P đăng ký khung nhìn: `main._register_judge_view_part()` gọi `agent_pulse_host.register_view_part("judge", fn)` khi module có
-  (nạp lười, không có thì bỏ qua); `fn(agent_key)` trả `Judge.view(...)`. Phía trang: `window.JavisPulseParts` có phần
+  (nạp lười, không có thì bỏ qua); `fn(agent_key)` trả `Judge.view(...)`. Phía trang: `window.UniMatePulseParts` có phần
   `{name: "judge", render(part, el, {slug})}`.
 - P và J dùng chung `agent_pulse.apply_policy_change(store, agent_key, context_ref, change)` (nạp lười, `agent_pulse.default_store()`
   nếu có): J gọi khi nhãn dịch ngưỡng, khi `set_offset`, `set_eagerness`.
@@ -159,7 +159,7 @@ hạn), `tests/js/test_teams_ui.js` (hộp cấp quyền 6 dòng trần).
 ### 8.1 Sửa sau review T3 (nhánh `claude/team-adaptive-t3-fix`)
 
 - **Chốt test không có đường vòng (P2-2)**: `Judge._run_engine`/`_run_engine_claimed` từ chối mọi hàm hỏi khi
-  `JAVIS_NO_REAL_JUDGE_ENGINE == "1"`, trừ hàm `mark_test_fake`; biến đặt ở `tests/run.py`, `_paths.py`,
+  `UNIMATE_NO_REAL_JUDGE_ENGINE == "1"`, trừ hàm `mark_test_fake`; biến đặt ở `tests/run.py`, `_paths.py`,
   `test_adaptive_context_phase8.py` và pilot A5 dry.
 - **Lượt `say` của nhịp (P1)**: không truyền `engine`, có `payload` (`judge_daily` của nhóm). Lỗi ném trước `started()` hoàn dòng sổ
   và ra `engine_unavailable` (không tính trần).
@@ -183,7 +183,7 @@ hạn), `tests/js/test_teams_ui.js` (hộp cấp quyền 6 dòng trần).
 - **Sự cố đã khắc phục:** trước `1049027e`, một harness qua `main.py` (`test_team_t1_goal_host.py`, chạy lúc nối host mới xong)
   dựng engine phán xử thật và gọi Claude CLI MỘT lần (claude-opus-5-5, 122 token ra, 15/10/2026 11:16 +07). Nguyên nhân: harness
   cũ chỉ thay engine lượt nhóm, còn lô phán xử dùng model việc nền. Sửa: `tests/python/_paths.py` đặt
-  `JAVIS_NO_REAL_JUDGE_ENGINE=1` cho mọi test Python, `main._agent_judge_ask` ném `EngineUnavailable` trước khi dựng engine (lượt
+  `UNIMATE_NO_REAL_JUDGE_ENGINE=1` cho mọi test Python, `main._agent_judge_ask` ném `EngineUnavailable` trước khi dựng engine (lượt
   được hoàn, ứng viên im); kiểm hồi quy trong `test_agent_judge_labels.py`. Hai lượt chạy đầy đủ sau đó không tạo thư mục
   `agent_judge_cwd` nào mới.
 - Cùng lúc sửa: `team_runner.run_io` quay mãi khi chính tác vụ luồng phụ bị huỷ lúc event loop đóng (treo `test_team_api`);

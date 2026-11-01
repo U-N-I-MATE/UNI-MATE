@@ -1,6 +1,6 @@
 {
   "name": "poscake-order-create",
-  "origin": "A real POSCake delivery (event_type create, a test order, 2026-10-22) captured with webhook.site by the owner, then received by a local Javis host (event ev_08a1543b611e475b) and exported with tools/webhook_capture.py; customer, staff and link fields replaced",
+  "origin": "A real POSCake delivery (event_type create, a test order, 2026-10-22) captured with webhook.site by the owner, then received by a local UNI MATE host (event ev_08a1543b611e475b) and exported with tools/webhook_capture.py; customer, staff and link fields replaced",
   "content_type": "application/json",
   "headers": {
     "content-type": "application/json",

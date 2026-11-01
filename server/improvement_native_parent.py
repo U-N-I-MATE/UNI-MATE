@@ -248,7 +248,7 @@ class NativeParentBoundary:
                 or seed['request'] != {'version': 1, 'config_pin': self.pin}
                 or guardian._policy['scratch'] != str(scratch)):
             raise PermissionError('qualification_home_inconsistent')
-        expected = {'TEMP': 'tmp', 'TMP': 'tmp', 'JAVIS_STATE_DIR': 'host-state', 'BRAINS_DIR': 'empty-brains',
+        expected = {'TEMP': 'tmp', 'TMP': 'tmp', 'UNIMATE_STATE_DIR': 'host-state', 'BRAINS_DIR': 'empty-brains',
             'OBSIDIAN_VAULT_PATH': 'empty-vault', 'BRAIN_PATH': 'empty-brain', 'SOURCES_PATH': 'empty-sources'}
         if any(Path(environment[name]) != scratch / leaf for name, leaf in expected.items()):
             raise PermissionError('qualification_workspace_foreign')

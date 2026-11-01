@@ -3,11 +3,11 @@
        node tests/js/test_nhan_danh_muc.js
 
    Rà giao diện 20/09 thấy ba chỗ vẫn hiện tiếng Việt khi đã chọn tiếng Anh: chip lọc danh mục
-   ở trang Kết nối ("Văn phòng", "Nhắn tin"...), cột nhóm bên trái Javis Store, và nhóm "Khác"
+   ở trang Kết nối ("Văn phòng", "Nhắn tin"...), cột nhóm bên trái UNI MATE Store, và nhóm "Khác"
    trên thanh bên. Cả ba đều lấy chữ TỪ DỮ LIỆU (catalog, kho gói) chứ không qua từ điển, và
    chữ đó đồng thời là KHOÁ lọc nên không đổi ở nguồn được.
 
-   Cách sửa: `JavisI18n.catLabel(raw)` tra ngược từ điển gốc - khoá `cat.*` nào có bản tiếng
+   Cách sửa: `UniMateI18n.catLabel(raw)` tra ngược từ điển gốc - khoá `cat.*` nào có bản tiếng
    Việt bằng đúng tên gốc thì lấy bản dịch của khoá đó. Test này NẠP THẬT i18n/index.js với
    window và fetch giả, đọc đúng hai file từ điển trên đĩa, rồi gọi hàm ở cả hai ngôn ngữ. */
 const fs = require("fs");
@@ -42,7 +42,7 @@ global.fetch = (url) => {
 
 (async () => {
   require(path.join(ROOT, "dashboard/i18n/index.js"));
-  const I = global.window.JavisI18n;
+  const I = global.window.UniMateI18n;
   check("index.js export catLabel", I && typeof I.catLabel === "function");
   await I.init("vi");
   check("vi: 'Văn phòng' giữ nguyên", I.catLabel("Văn phòng") === "Văn phòng", I.catLabel("Văn phòng"));

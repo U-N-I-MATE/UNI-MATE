@@ -37,7 +37,7 @@ check("V3: voice false -> không có gì", U.build({ voice: false }) === "");
 check("V3: kênh=giọng đứng cuối, sau ngắt_lời", U.build({ page: "kanban", voice: true }) === "[NGỮ CẢNH GIAO DIỆN: trang=kanban; kênh=giọng]");
 
 check("app.js lột khối này khỏi bong bóng (_KHOI_NGU_CANH)", /_KHOI_NGU_CANH = \[[^\]]*"\[NGỮ CẢNH GIAO DIỆN:"/.test(app));
-check("app.js chèn khối trước khi gửi qua JavisUiContext.build", /JavisUiContext\.build\(/.test(app));
+check("app.js chèn khối trước khi gửi qua UniMateUiContext.build", /UniMateUiContext\.build\(/.test(app));
 check("sessions.py lột khối khỏi tiêu đề", /_KHOI_NGU_CANH_UI/.test(sessions));
 
 if (fails.length) { console.log("\nFAIL:", fails.length, fails); process.exit(1); }

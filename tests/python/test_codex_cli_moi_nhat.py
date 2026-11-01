@@ -1,4 +1,4 @@
-"""Regression 0.71.1: máy có nhiều bản Codex thì Javis phải hỏi bản MỚI NHẤT.
+"""Regression 0.71.1: máy có nhiều bản Codex thì UNI MATE phải hỏi bản MỚI NHẤT.
 
     python tests/run.py codex_cli_moi_nhat
 
@@ -38,7 +38,7 @@ def main():
         phien_ban = {str(desktop): (0, 147, 0), str(npm): (0, 160, 0)}
 
         old = (cc._home_dir, cc.tim_binary, cc._codex_version, os.environ.get("APPDATA"),
-               os.environ.pop("JAVIS_CODEX_BIN", None))
+               os.environ.pop("UNIMATE_CODEX_BIN", None))
         cc._home_dir = lambda: home
         cc.tim_binary = lambda ten: None
         cc._codex_version = lambda p: phien_ban.get(p)
@@ -61,7 +61,7 @@ def main():
             else:
                 os.environ["APPDATA"] = old[3]
             if old[4] is not None:
-                os.environ["JAVIS_CODEX_BIN"] = old[4]
+                os.environ["UNIMATE_CODEX_BIN"] = old[4]
     return 1 if _fails else 0
 
 

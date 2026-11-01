@@ -15,8 +15,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 SCRATCH = Path(tempfile.mkdtemp(prefix="main-rendering-"))
-for key, relative in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
-                      "BRAIN_PATH": "brain", "SOURCES_PATH": "sources", "JAVIS_SESSIONS_DB": "sessions.sqlite3"}.items():
+for key, relative in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "OBSIDIAN_VAULT_PATH": "vault",
+                      "BRAIN_PATH": "brain", "SOURCES_PATH": "sources", "UNIMATE_SESSIONS_DB": "sessions.sqlite3"}.items():
     os.environ[key] = str(SCRATCH / relative)
 
 import main
@@ -109,7 +109,7 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
                         include_skills: bool = True,
                         lang: "lang_mod.LangDecision | str | None" = None,
                         project_id: str = "", session_id: str = "") -> str:
-    """CLAUDE.md + nạp MEMORY.md của vault đang chọn → Javis luôn nhớ ngữ cảnh.
+    """CLAUDE.md + nạp MEMORY.md của vault đang chọn → UNI MATE luôn nhớ ngữ cảnh.
 
     `project_id`: hội thoại đang nằm trong project nào. Có thì ghép thêm hướng dẫn riêng +
     danh sách tài liệu của project đó (xem `_project_block`).
@@ -149,8 +149,8 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
             base += _session_block(session_id)
         except Exception:
             pass
-        base += _javis_core_block(session_id)
-    # Đường dẫn lớp Agentic của vault đang làm việc (để Javis tạo agent/workflow/loop qua chat)
+        base += _unimate_core_block(session_id)
+    # Đường dẫn lớp Agentic của vault đang làm việc (để UNI MATE tạo agent/workflow/loop qua chat)
     root = _brain_root(brain)
     system_sync.ensure_synced(root)   # brain nào cũng có đủ năng lực hệ thống (1 lần/process, rẻ)
     try:
@@ -166,7 +166,7 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
     except Exception:
         pass
     ag, wf = _agents_dir(brain), _workflows_dir(brain)
-    lp = Path(root) / "Javis" / "loops"
+    lp = Path(root) / "UNI MATE" / "loops"
     sk = _skills_dir(brain)
     base += (
         "\n\n# === LỚP AGENTIC (vault đang làm việc) ===\n"
@@ -188,32 +188,32 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
         "(xem mục 'Tạo/sửa Agent & Workflow qua chat' và 'Điều phối' trong system prompt) bằng "
         "ĐƯỜNG DẪN TUYỆT ĐỐI ở trên. Trang Agents/Workflows/Việc định kỳ sẽ tự nhận file mới."
     )
-    # Resonance (M2): chỉ brain đã bật mới có dòng này và mới thấy tool javis_goal. CLAUDE.md đã hết ngân sách
+    # Resonance (M2): chỉ brain đã bật mới có dòng này và mới thấy tool unimate_goal. CLAUDE.md đã hết ngân sách
     # ký tự, và brain chưa bật thì không được dài thêm chữ nào.
     # Đường tìm tool khác nhau theo engine. Khi engine Claude dựng được server plugin in-process
-    # "javis-plugins", hub bị báo bỏ nhóm plugin (X-Javis-No-Plugins), nên javis_search_tools của hub không
-    # trả về javis_goal; tool đến model qua namespace mcp__javis-plugins__. Claude Code có hoãn nạp nó sau
-    # ToolSearch hay không thì chưa xác minh (lần chạy 1 cho thấy javis_task từng bị hoãn như vậy), nên dòng
-    # dưới chỉ nói "chưa nạp thì tìm". Dòng cũ chỉ nêu javis_search_tools (pilot lần 2, 07/10/2026).
-    # Ranh giới bốn loại việc chỉ nằm ở dòng này và mô tả javis_goal: cả hai chỉ có trong lượt của agent đã bật.
-    # Mô tả javis_task giữ nguyên để brain tắt tính năng không nhận chỉ dẫn mới (review PR #579, P2).
+    # "unimate-plugins", hub bị báo bỏ nhóm plugin (X-UniMate-No-Plugins), nên unimate_search_tools của hub không
+    # trả về unimate_goal; tool đến model qua namespace mcp__unimate-plugins__. Claude Code có hoãn nạp nó sau
+    # ToolSearch hay không thì chưa xác minh (lần chạy 1 cho thấy unimate_task từng bị hoãn như vậy), nên dòng
+    # dưới chỉ nói "chưa nạp thì tìm". Dòng cũ chỉ nêu unimate_search_tools (pilot lần 2, 07/10/2026).
+    # Ranh giới bốn loại việc chỉ nằm ở dòng này và mô tả unimate_goal: cả hai chỉ có trong lượt của agent đã bật.
+    # Mô tả unimate_task giữ nguyên để brain tắt tính năng không nhận chỉ dẫn mới (review PR #579, P2).
     # A1: theo agent của LƯỢT (ngữ cảnh lượt do host gắn), không theo công tắc brain cũ; chat thường không có dòng này.
     if _resonance_turn_enabled(root):
         base += "\n- " + _RESONANCE_GOAL_HINT
-    # Quét cây skill MỘT lần cho cả hai khối dưới. Trước đây _javis_capability_summary
+    # Quét cây skill MỘT lần cho cả hai khối dưới. Trước đây _unimate_capability_summary
     # gọi list_skills còn _skill_router_block gọi list_enabled_meta (vốn chỉ là list_skills
     # lọc lại), nên cả cây skill bị đi và parse YAML HAI lần mỗi lượt chat - đo được 18ms
     # mỗi lần trên brain 30 skill. Lỗi thì để None và mỗi khối tự quét như cũ.
-    # Quét LUÔN, kể cả khi bỏ khối router. Khối "NĂNG LỰC JAVIS HIỆN CÓ" chỉ ĐẾM skill và
+    # Quét LUÔN, kể cả khi bỏ khối router. Khối "NĂNG LỰC UNI MATE HIỆN CÓ" chỉ ĐẾM skill và
     # liệt kê tên nhóm (vài chục ký tự), nên nó không phải chỗ tốn token; nhưng đưa cho nó một
-    # danh sách rỗng thì Javis sẽ tự khai là mình không có skill nào - một câu SAI, và sai theo
+    # danh sách rỗng thì UNI MATE sẽ tự khai là mình không có skill nào - một câu SAI, và sai theo
     # hướng khiến nó đi tạo lại thứ đã có.
     try:
         _skills = skill_router.list_skills(root, _lma)
     except Exception:
         _skills = None
     try:
-        base += _javis_capability_summary(brain, _skills)   # chỉ mục năng lực LIVE (mọi engine biết Javis có gì)
+        base += _unimate_capability_summary(brain, _skills)   # chỉ mục năng lực LIVE (mọi engine biết UNI MATE có gì)
     except Exception:
         pass
     try:
@@ -222,30 +222,30 @@ def build_system_prompt(brain: str = "brain", include_memory: bool = True,
     except Exception:
         pass
     # Đồng hồ. Cùng một dòng với capsule của đường tiết kiệm (context_compiler.dong_ho), để
-    # bật hay tắt tiết kiệm thì Javis vẫn biết bây giờ mấy giờ y như nhau. Model không có
-    # đồng hồ, và tool `javis_now` thì không phải đường nào cũng phát tool.
+    # bật hay tắt tiết kiệm thì UNI MATE vẫn biết bây giờ mấy giờ y như nhau. Model không có
+    # đồng hồ, và tool `unimate_now` thì không phải đường nào cũng phát tool.
     # Khối NGÔN NGỮ + đồng hồ đi CÙNG NHAU và đi CUỐI, sát chỗ model bắt đầu trả lời.
     # Ngôn ngữ đặt ở cuối vì luật càng gần chỗ sinh chữ thì model càng ít trôi; đồng hồ
     # đi kèm vì tên thứ trong tuần cũng phải theo ngôn ngữ đó.
     base += "\n\n# === BÂY GIỜ ===\n" + context_compiler.dong_ho(lang=_lma)
     base += lang_mod.khoi_ngon_ngu(_lq or lang_mod.LangDecision(_lma, "default", 1.0, True))
     try:
-        # 1 dòng MỨC DÙNG để Javis TRẢ LỜI được khi user hỏi "token tiêu bao nhiêu" (chi tiết ở panel).
+        # 1 dòng MỨC DÙNG để UNI MATE TRẢ LỜI được khi user hỏi "token tiêu bao nhiêu" (chi tiết ở panel).
         _t = usage_store.summary().get("today", {}).get("total", {})
         if _t.get("in") or _t.get("out"):
             _c = f", ~${_t.get('cost', 0):.4f}" if _t.get("cost") else ""
-            base += (f"\n\n# === MỨC DÙNG HÔM NAY (Javis tự đo) ===\n"
+            base += (f"\n\n# === MỨC DÙNG HÔM NAY (UNI MATE tự đo) ===\n"
                      f"{_t.get('in', 0):,} token vào + {_t.get('out', 0):,} token ra qua "
-                     f"{_t.get('turns', 0)} lượt{_c}. Đây là token Javis TỰ ĐO, KHÔNG phải hạn mức gói "
+                     f"{_t.get('turns', 0)} lượt{_c}. Đây là token UNI MATE TỰ ĐO, KHÔNG phải hạn mức gói "
                      f"thuê bao (đa số nhà cung cấp không cho lấy hạn mức tài khoản qua API). Chi tiết "
                      f"từng nhà cung cấp ở panel 'Mức dùng' trên dashboard.")
     except Exception:
         pass
     return base
 
-def _javis_capability_summary(brain: str, skills=None) -> str:
-    """Bản LIVE gọn (capped) chèn vào system prompt: để engine nào cũng biết Javis có gì.
-    Skill nhiều -> chỉ đếm + nhóm (chi tiết ở Javis/index.md), tránh phình context.
+def _unimate_capability_summary(brain: str, skills=None) -> str:
+    """Bản LIVE gọn (capped) chèn vào system prompt: để engine nào cũng biết UNI MATE có gì.
+    Skill nhiều -> chỉ đếm + nhóm (chi tiết ở UniMate/index.md), tránh phình context.
     skills: cây skill đã quét sẵn, xem _gather_capabilities."""
     try:
         c = _gather_capabilities(brain, skills)
@@ -253,7 +253,7 @@ def _javis_capability_summary(brain: str, skills=None) -> str:
         return ""
     if not any(c.values()):
         return ""
-    parts = ["\n\n# === NĂNG LỰC JAVIS HIỆN CÓ (đọc `Javis/index.md` để biết chi tiết + trigger) ==="]
+    parts = ["\n\n# === NĂNG LỰC UNI MATE HIỆN CÓ (đọc `UniMate/index.md` để biết chi tiết + trigger) ==="]
     if c["agents"]:
         parts.append("Agents: " + ", ".join(a["name"] for a in c["agents"][:30]))
     if c["skills"]:
@@ -276,7 +276,7 @@ def _javis_capability_summary(brain: str, skills=None) -> str:
 
 def _skill_router_block(brain: str, root: str, skills=None) -> str:
     """ROUTER SKILL đa-engine (chèn vào system prompt của MỌI engine). Liệt kê skill đang BẬT kèm
-    mô tả (trigger) + chỉ rõ 2 cách nạp: tool javis_use_skill (engine API có tool) HOẶC mở thẳng
+    mô tả (trigger) + chỉ rõ 2 cách nạp: tool unimate_use_skill (engine API có tool) HOẶC mở thẳng
     file SKILL.md bằng công cụ đọc file (Claude/Codex - dùng ĐƯỜNG DẪN TUYỆT ĐỐI vì cwd có thể là
     /app). Đây là thứ giúp skill chạy trên cả ChatGPT/Codex, không phụ thuộc cơ chế native của Claude.
     Cắt theo CẢ số mục lẫn ngân sách ký tự (skill_router.cat_theo_ngan_sach), và xếp theo mức
@@ -296,15 +296,15 @@ def _skill_router_block(brain: str, root: str, skills=None) -> str:
         desc = (s.get("description") or "").replace("\n", " ")[:skill_router.SKILL_DESC_MAX]
         lines.append(f"- {s['slug']} ({s['name']}): {desc}")
     if con_lai > 0:
-        # Nói rõ CÁCH LẤY chứ không chỉ nói còn bao nhiêu: `javis_use_skill` nạp được theo
+        # Nói rõ CÁCH LẤY chứ không chỉ nói còn bao nhiêu: `unimate_use_skill` nạp được theo
         # slug kể cả skill không nằm trong danh sách trên, nên một skill bị cắt vẫn dùng được
         # nếu model biết tên. Câu cũ chỉ trỏ sang một file mà model không đọc.
         lines.append(f"…(+{con_lai} skill nữa chưa liệt kê ở đây - xem đủ danh sách trong "
-                     f"`Javis/index.md`, và nạp thẳng bằng `javis_use_skill(name=<slug>)` "
+                     f"`UniMate/index.md`, và nạp thẳng bằng `unimate_use_skill(name=<slug>)` "
                      f"nếu đã biết tên)")
     lines.append(
         "CÁCH DÙNG: khi yêu cầu của user KHỚP mô tả 1 skill ở trên, hãy NẠP skill đó rồi LÀM THEO - "
-        "gọi tool `javis_use_skill(name=<slug>)` nếu engine có tool này; nếu không, mở file "
+        "gọi tool `unimate_use_skill(name=<slug>)` nếu engine có tool này; nếu không, mở file "
         f"`{sk_dir}/<slug>/SKILL.md` bằng công cụ đọc file rồi tuân theo hướng dẫn trong đó. "
         "Chỉ nạp khi thực sự khớp, không nạp tràn lan."
     )
@@ -332,7 +332,7 @@ class MainRenderingTests(unittest.TestCase):
         self.caps = {"agents": [{"name": "Editor"}], "skills": copy.deepcopy(self.skills),
                      "workflows": [{"name": "Review", "status": "active"}],
                      "loops": [{"name": "Daily", "enabled": False}],
-                     "plugins": [{"name": "Clock", "loaded": True, "tools": ["javis_now"]}]}
+                     "plugins": [{"name": "Clock", "loaded": True, "tools": ["unimate_now"]}]}
 
     def fixture(self, *, caps=None, resonance=False, usage=None):
         stack = ExitStack()
@@ -346,7 +346,7 @@ class MainRenderingTests(unittest.TestCase):
                    "_dong_lan_chay_gan_nhat": lambda brain: "Latest run: Review.",
                    "_project_block": lambda project_id: "\n<PROJECT RULES>",
                    "_session_block": lambda session_id: "\n<SESSION ASSET REFERENCES>",
-                   "_javis_core_block": lambda session_id: "\n<CORE ROLE>"}
+                   "_unimate_core_block": lambda session_id: "\n<CORE ROLE>"}
         for name, value in aliases.items():
             stack.enter_context(patch.object(main, name, value))
         stack.enter_context(patch.object(main.system_sync, "ensure_synced", lambda root: None))
@@ -382,7 +382,7 @@ class MainRenderingTests(unittest.TestCase):
         prompt = main.build_system_prompt(str(self.brain), project_id="project-1", session_id="session-1")
         blocks = ["KERNEL:", "HỒ SƠ NGƯỜI DÙNG", "BỘ NHỚ DÀI HẠN", "GHI NHỚ MỚI ĐANG TẮT", "<PROJECT RULES>",
                   "<SESSION ASSET REFERENCES>", "<CORE ROLE>", "LỚP AGENTIC", main._RESONANCE_GOAL_HINT,
-                  "NĂNG LỰC JAVIS HIỆN CÓ", "SKILL KHẢ DỤNG", "BÂY GIỜ", "NGÔN NGỮ", "MỨC DÙNG HÔM NAY"]
+                  "NĂNG LỰC UNI MATE HIỆN CÓ", "SKILL KHẢ DỤNG", "BÂY GIỜ", "NGÔN NGỮ", "MỨC DÙNG HÔM NAY"]
         self.assertEqual([prompt.index(block) for block in blocks], sorted(prompt.index(block) for block in blocks))
         without_memory = main.build_system_prompt(str(self.brain), include_memory=False)
         self.assertNotIn("Use anh/em", without_memory)
@@ -469,7 +469,7 @@ class MainRenderingTests(unittest.TestCase):
                 "workflows": [{"name": f"Workflow-{i}", "status": "active" if i % 2 else "draft"} for i in range(25)],
                 "loops": [{"name": f"Loop-{i}", "enabled": bool(i % 2)} for i in range(24)],
                 "plugins": [{"name": f"Plugin-{i}", "loaded": i % 2 == 0, "tools": [f"tool-{i}"]} for i in range(30)]}
-        old = self.legacy_namespace()["_javis_capability_summary"]
+        old = self.legacy_namespace()["_unimate_capability_summary"]
         with patch.object(main, "_gather_capabilities", return_value=caps):
             old.__globals__["_gather_capabilities"] = main._gather_capabilities
             expected = old(str(self.brain))
@@ -497,8 +497,8 @@ class MainRenderingTests(unittest.TestCase):
     def test_actual_production_skill_budget_selection_remains_outside_renderer(self):
         self.fixture()
         self.skills = [{"slug": f"skill-{i:02}", "name": f"Skill {i}", "description": "Do work", "enabled": True} for i in range(8)]
-        (self.brain / "Javis").mkdir()
-        (self.brain / "Javis" / "skill-usage.json").write_text('{"skill-07":{"pinned":true}}', encoding="utf-8")
+        (self.brain / "UNI MATE").mkdir()
+        (self.brain / "UNI MATE" / "skill-usage.json").write_text('{"skill-07":{"pinned":true}}', encoding="utf-8")
         with patch.object(main.skill_router, "SKILL_LIST_MAX", 2):
             old = self.legacy_namespace()["_skill_router_block"]
             actual = main._skill_router_block(str(self.brain), str(self.brain), self.skills)
@@ -520,8 +520,8 @@ class MainRenderingTests(unittest.TestCase):
         self.assertEqual(R.render_clock_language("FIXED CLOCK", "\nLANGUAGE"), "\n\n# === BÂY GIỜ ===\nFIXED CLOCK\nLANGUAGE")
         self.assertEqual(R.render_usage_block({}), "")
         self.assertEqual(R.render_usage_block({"in": 0, "out": 0, "turns": 2, "cost": 3.0}), "")
-        expected = ("\n\n# === MỨC DÙNG HÔM NAY (Javis tự đo) ===\n"
-                    "1,234 token vào + 5 token ra qua 2 lượt, ~$0.1200. Đây là token Javis TỰ ĐO, KHÔNG phải hạn mức gói "
+        expected = ("\n\n# === MỨC DÙNG HÔM NAY (UNI MATE tự đo) ===\n"
+                    "1,234 token vào + 5 token ra qua 2 lượt, ~$0.1200. Đây là token UNI MATE TỰ ĐO, KHÔNG phải hạn mức gói "
                     "thuê bao (đa số nhà cung cấp không cho lấy hạn mức tài khoản qua API). Chi tiết "
                     "từng nhà cung cấp ở panel 'Mức dùng' trên dashboard.")
         self.assertEqual(R.render_usage_block({"in": 1234, "out": 5, "turns": 2, "cost": 0.12}), expected)
@@ -536,7 +536,7 @@ class MainRenderingTests(unittest.TestCase):
             R.render_profile_block("Rule")
             R.render_memory_block("Memory", memory_cap=100)
             R.render_project_instructions("Project", "Rule", instructions_max=100)
-            paths = R.render_agentic_paths("/brain", "/brain/agents", "/brain/workflows", "/brain/Javis/loops", "/brain/skills")
+            paths = R.render_agentic_paths("/brain", "/brain/agents", "/brain/workflows", "/brain/UniMate/loops", "/brain/skills")
             R.render_capability_summary(self.caps)
             R.render_skill_router([], skills_dir="/brain/skills")
             R.render_clock_language("clock", "language")

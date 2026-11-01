@@ -44,7 +44,7 @@
       "scope": "consumer11 4.778s plus root-owned cancellation-failure1 .363s,14pins stable; two Important findings closed; no broad review"
     },
     "early_linux": {
-      "url": "https://github.com/blogminhquy/javis-os/actions/runs/40053479314",
+      "url": "https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40053479314",
       "commit": "cfdc8cd181a23b51a9585b22802c988ba5469cf5",
       "scripts": 10,
       "passed": 10,
@@ -82,5 +82,5 @@
     "All exact-source qualification must match current source closure; historical proofs remain scoped and cannot qualify changed sources",
     "Exact-final-head full CI, remaining D2/E/F and M3-M8 code, then all required Phase2 evidence remain open"
   ],
-  "upstream_reuse": "Goal14 assessment inspected pinned substrate/base and core/context; keep existing Javis M0/runtime/turn owner. No upstream code imported/copied into this unit. Goal15 prompt adaptation queued separately."
+  "upstream_reuse": "Goal14 assessment inspected pinned substrate/base and core/context; keep existing UNI MATE M0/runtime/turn owner. No upstream code imported/copied into this unit. Goal15 prompt adaptation queued separately."
 }

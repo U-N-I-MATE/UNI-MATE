@@ -26,7 +26,7 @@ import sys
 import tempfile
 from types import SimpleNamespace
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-agy-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-agy-"))
 
 from fastapi import WebSocketDisconnect  # noqa: E402
 
@@ -188,7 +188,7 @@ if __name__ == "__main__":
                 setattr(obj, name, old)
 
     mp = _Patch()
-    tmp = pathlib.Path(tempfile.mkdtemp(prefix="javis-agy-run-"))
+    tmp = pathlib.Path(tempfile.mkdtemp(prefix="unimate-agy-run-"))
     try:
         main_test(mp, tmp)
     finally:

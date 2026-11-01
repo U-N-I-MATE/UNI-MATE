@@ -21,7 +21,7 @@
    - `GoalRecord` có `agent_key` (đọc từ `goal_agents`);
    - `list_open` lọc theo `agent_key`;
    - `begin_action` nhận intent có `agent_key` cùng `agent_config_version`.
-2. **Tool `javis_goal`:**
+2. **Tool `unimate_goal`:**
    - Danh tính lấy từ `turn_context.current()`: phải có `agent`, `session_id`, `message_id`.
    - Lời người dùng lấy từ sổ lượt đang chạy theo ĐÚNG khoá `(web:<phiên>, id tin)` của ngữ cảnh lượt, không đoán "lượt duy nhất". Đây là bản lời host đã dùng cho lượt (đã bóc khối ngữ cảnh giao diện, giữ câu gốc của lượt giọng nói).
    - Thiếu một trong các thứ trên, hay cổng agent chặn: từ chối trước mọi lần ghi kho.
@@ -49,7 +49,7 @@
 9. **Test:**
    - Helper chung bật agent cho test cũ M2 đến M5. Nội dung kiểm của chúng giữ nguyên.
    - Test mới cho ma trận 1 đến 7 và 11, 12.
-   - Transport: plugin trong tiến trình, hub HTTP với khoá `X-Javis-Turn` (Codex), khoá giả hay đã chết.
+   - Transport: plugin trong tiến trình, hub HTTP với khoá `X-UniMate-Turn` (Codex), khoá giả hay đã chết.
 
 ## Nhóm 2: API của chủ dự án
 

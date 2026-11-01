@@ -4,11 +4,11 @@ lượt theo vai của pilot (`_a5_pilot_ledger.py`). Không đổi mã sản ph
     python tests/python/_a5_pilot_server.py        # bộ chạy test_resonance_a5_pilot.py dựng tiến trình này
 
 Biến môi trường (bộ chạy đặt; không có mặc định nào cho phép gọi model):
-- JAVIS_A5_PILOT_MODE: `dry` hay `real`. Thiếu hay lạ thì từ chối khởi động.
-- JAVIS_A5_PILOT_LEDGER: sổ lượt theo vai (JSON). BẮT BUỘC có sẵn (bộ chạy tạo một lần đầu đợt).
-- JAVIS_A5_PILOT_CAPS: JSON {"maker": n, "reviewer": n}: trần của GIAI ĐOẠN này (đếm cộng dồn trong sổ); vai khác
+- UNIMATE_A5_PILOT_MODE: `dry` hay `real`. Thiếu hay lạ thì từ chối khởi động.
+- UNIMATE_A5_PILOT_LEDGER: sổ lượt theo vai (JSON). BẮT BUỘC có sẵn (bộ chạy tạo một lần đầu đợt).
+- UNIMATE_A5_PILOT_CAPS: JSON {"maker": n, "reviewer": n}: trần của GIAI ĐOẠN này (đếm cộng dồn trong sổ); vai khác
   (bộ lập mục tiêu, mọi lời dặn hệ thống khác) luôn là 0.
-- JAVIS_A5_PILOT_SCRIPT (chỉ dry): file JSON {"work": [...], "review": [...]} cho engine giả.
+- UNIMATE_A5_PILOT_SCRIPT (chỉ dry): file JSON {"work": [...], "review": [...]} cho engine giả.
 
 Kết cục mỗi lượt theo đúng luật lỗi của host (xem `_a5_pilot_ledger.Counted`); thêm lớp bọc `GoalDeps._ask` để kết luận
 cuối của host (lỗi sau khi đã gọi engine) cũng hạ dòng sổ.
@@ -27,18 +27,18 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-MODE = os.environ.get("JAVIS_A5_PILOT_MODE", "")
-LEDGER = os.environ.get("JAVIS_A5_PILOT_LEDGER", "")
+MODE = os.environ.get("UNIMATE_A5_PILOT_MODE", "")
+LEDGER = os.environ.get("UNIMATE_A5_PILOT_LEDGER", "")
 if MODE not in ("dry", "real") or not LEDGER or not Path(LEDGER).is_file():
-    print("[a5-pilot] từ chối khởi động: thiếu JAVIS_A5_PILOT_MODE hay sổ lượt", file=sys.stderr)
+    print("[a5-pilot] từ chối khởi động: thiếu UNIMATE_A5_PILOT_MODE hay sổ lượt", file=sys.stderr)
     sys.exit(3)
-CAPS = json.loads(os.environ.get("JAVIS_A5_PILOT_CAPS") or "{}")
+CAPS = json.loads(os.environ.get("UNIMATE_A5_PILOT_CAPS") or "{}")
 if MODE == "dry":
     # Dry không bao giờ chạm model thật (review T3 J P2-2): chặn cả engine phán xử theo agent và lượt học của T3, vốn không
     # đi qua bẫy của pilot. Đặt TRƯỚC khi nạp main.
-    os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
-    os.environ["JAVIS_NO_REAL_REVIEW_ENGINE"] = "1"
-    os.environ["JAVIS_NO_REAL_TEAM_ENGINE"] = "1"
+    os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
+    os.environ["UNIMATE_NO_REAL_REVIEW_ENGINE"] = "1"
+    os.environ["UNIMATE_NO_REAL_TEAM_ENGINE"] = "1"
 
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(ROOT / "server"))
@@ -59,7 +59,7 @@ def role_of(system_prompt: str) -> str:
 
 
 if MODE == "dry":
-    SCRIPT = Path(os.environ.get("JAVIS_A5_PILOT_SCRIPT", ""))
+    SCRIPT = Path(os.environ.get("UNIMATE_A5_PILOT_SCRIPT", ""))
 
     def _tripwire(system_prompt, tag="resonance"):
         LED.tripwire(role_of(system_prompt))
@@ -97,7 +97,7 @@ if MODE == "dry":
             yield {"type": "final", "content": item, "tokens_in": 1, "tokens_out": 1}
 
     def _fake_factory(system_prompt, tag="resonance"):
-        if os.environ.get("JAVIS_A5_PILOT_DRY_FORCE_REAL") == "1":
+        if os.environ.get("UNIMATE_A5_PILOT_DRY_FORCE_REAL") == "1":
             # Ca dry `tripwire`: đi đúng đường của real tới hàm dựng "thật"; ở dry hàm đó là bẫy.
             return _tripwire(system_prompt, tag)
         return _Fake(role_of(system_prompt)), {"provider": "pilot-dry", "model": "fake", "text_only": True}
@@ -111,4 +111,4 @@ R.GoalDeps._ask = PL.wrap_ask(R.GoalDeps._ask, LED)
 print(f"[a5-pilot] mode={MODE} caps={CAPS} sổ đã gắn", file=sys.stderr)
 
 import uvicorn  # noqa: E402
-uvicorn.run(main.app, host="127.0.0.1", port=int(os.environ.get("JAVIS_PORT", "7793")), reload=False)
+uvicorn.run(main.app, host="127.0.0.1", port=int(os.environ.get("UNIMATE_PORT", "7793")), reload=False)

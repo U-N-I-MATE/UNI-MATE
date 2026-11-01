@@ -1,6 +1,6 @@
 """Endpoint /browse không được làm nghẽn event loop.
 
-SỰ CỐ THẬT 2026-07-28: bản VPS trả 404 cả trang. Container `javis` vẫn "Up" nhưng Docker
+SỰ CỐ THẬT 2026-07-28: bản VPS trả 404 cả trang. Container `unimate` vẫn "Up" nhưng Docker
 gắn nhãn unhealthy nên Traefik gỡ route. Log cho thấy healthcheck 200 đều mỗi 30 giây rồi
 CÂM HẲN ngay sau dòng `GET /browse?path=/home` - app không chết, app TREO.
 

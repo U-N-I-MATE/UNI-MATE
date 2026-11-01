@@ -19,8 +19,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-codingctx-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-codingctx-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 
 import coding_store  # noqa: E402
 import coding_ctx  # noqa: E402
@@ -140,7 +140,7 @@ check("session_id None không nổ", not coding_ctx.CodingToolContext.from_sessi
 
 def doc(rel, ws=None):
     tools, route = mcp_hub._builtin_tools("full", str(BRAIN), workspace_root=ws)
-    return asyncio.run(route["javis_read_file"]["call"]({"path": rel}))
+    return asyncio.run(route["unimate_read_file"]["call"]({"path": rel}))
 
 
 check("KHÔNG có workspace: đọc được file trong brain",
@@ -184,7 +184,7 @@ check("file chỉ có ở brain -> đọc từ brain", "ghi chú" in doc("notes/
 
 def ghi(rel, noi_dung, ws=None):
     tools, route = mcp_hub._builtin_tools("full", str(BRAIN), workspace_root=ws)
-    return asyncio.run(route["javis_write_file"]["call"]({"path": rel, "content": noi_dung}))
+    return asyncio.run(route["unimate_write_file"]["call"]({"path": rel, "content": noi_dung}))
 
 
 ghi("server/moi.py", "# file mới\n", ws)
@@ -217,7 +217,7 @@ check("câu lỗi khi ghi in ra thư mục làm việc", ws in r)
 
 def ls(rel, ws=None):
     tools, route = mcp_hub._builtin_tools("full", str(BRAIN), workspace_root=ws)
-    return asyncio.run(route["javis_list_dir"]["call"]({"path": rel}))
+    return asyncio.run(route["unimate_list_dir"]["call"]({"path": rel}))
 
 
 check("CÓ workspace: liệt kê được thư mục trong repo", "auth.py" in ls("server", ws))

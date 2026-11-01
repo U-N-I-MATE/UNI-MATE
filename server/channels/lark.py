@@ -1,12 +1,12 @@
 """Lark / Feishu channel (0.102.0): a dedicated bot answers customers through `lark_bot.LarkBot`.
 
-Same transport as the owner's Lark control channel (0.85.0): a long connection (WebSocket) that Javis
+Same transport as the owner's Lark control channel (0.85.0): a long connection (WebSocket) that UNI MATE
 opens OUT to Lark, so it works on a laptop or behind NAT with no public URL.
 
 The account secret is the App ID and App Secret of one Lark custom app in one string,
 "cli_... SECRET", because the channel-account store keeps exactly one encrypted secret per account
 (the same trick as Slack's two tokens). An optional third word "lark" or "feishu" pins the cloud;
-without it Javis tries Lark (international) first and then Feishu (mainland China), because an app
+without it UNI MATE tries Lark (international) first and then Feishu (mainland China), because an app
 made on one platform does not exist on the other and the owner rarely knows which API host it is.
 """
 from __future__ import annotations

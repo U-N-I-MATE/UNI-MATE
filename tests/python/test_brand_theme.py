@@ -12,8 +12,8 @@ import os
 import tempfile
 
 # Always a fresh temp dir: this test deletes branding/theme.css, and with an inherited
-# JAVIS_STATE_DIR it would delete a real operator theme.
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-themetest-")
+# UNIMATE_STATE_DIR it would delete a real operator theme.
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-themetest-")
 
 import main              # noqa: E402
 import config as cfgmod  # noqa: E402
@@ -44,16 +44,16 @@ html = page()
 i_link = html.find('href="/brand-theme.css?v=')
 check("theme link injected", i_link > 0)
 check("theme loads after bundled css", i_link > html.find("/static/console.css"))
-check("no default-mode seed without marker", "localStorage.setItem('javis.theme'" not in html)
+check("no default-mode seed without marker", "localStorage.setItem('unimate.theme'" not in html)
 
 v1 = html[i_link:i_link + 40]
 theme.write_text(":root{--accent:#1D3F4F}", encoding="utf-8")
 check("hash changes with content", page()[i_link:i_link + 40] != v1)
 
-theme.write_text("/* javis-default-mode: light */\n:root{}", encoding="utf-8")
+theme.write_text("/* unimate-default-mode: light */\n:root{}", encoding="utf-8")
 html = page()
-i_seed = html.find("localStorage.setItem('javis.theme','light')")
-i_inline = html.find("localStorage.getItem('javis.theme')", i_seed + 1)
+i_seed = html.find("localStorage.setItem('unimate.theme','light')")
+i_inline = html.find("localStorage.getItem('unimate.theme')", i_seed + 1)
 check("default-mode seed injected", i_seed > 0)
 check("seed runs before inline theme script", 0 < i_seed < i_inline)
 

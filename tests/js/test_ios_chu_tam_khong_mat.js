@@ -48,7 +48,7 @@ function napVoice(SRGia, ua) {
   // Audio giả cho _moKhoaAudioIOS (iOS mở khoá phần tử phát tiếng ngay khi bấm mic).
   const AudioGia = function () { return { play: () => Promise.resolve(), setAttribute() {} }; };
   return new Function("window", "localStorage", "navigator", "document", "Audio",
-    src + "; return JavisVoice;")(win, win.localStorage,
+    src + "; return UniMateVoice;")(win, win.localStorage,
       { userAgent: ua, platform: "x", mediaDevices: null }, doc, AudioGia);
 }
 
@@ -65,9 +65,9 @@ const UA_CHROME = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0
   // ---- 1. iPhone: chỉ có chữ tạm, không bao giờ final -> vẫn phải gửi ----
   {
     const { SRGia, d } = nhanDangGia();
-    const JavisVoice = napVoice(SRGia, UA_IPHONE);
+    const UniMateVoice = napVoice(SRGia, UA_IPHONE);
     const gui = [], tam = [];
-    const v = new JavisVoice({ onTranscript: (t) => gui.push(t), onInterim: (t) => tam.push(t) });
+    const v = new UniMateVoice({ onTranscript: (t) => gui.push(t), onInterim: (t) => tam.push(t) });
     v.silenceMs = 20;
     v.startListening();
     await cho(5);
@@ -84,9 +84,9 @@ const UA_CHROME = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0
   // ---- 2. Chrome máy tính: final chốt trước onend -> gửi đúng một lần, không lặp đuôi ----
   {
     const { SRGia, d } = nhanDangGia();
-    const JavisVoice = napVoice(SRGia, UA_CHROME);
+    const UniMateVoice = napVoice(SRGia, UA_CHROME);
     const gui = [];
-    const v = new JavisVoice({ onTranscript: (t) => gui.push(t) });
+    const v = new UniMateVoice({ onTranscript: (t) => gui.push(t) });
     v.silenceMs = 20;
     v.startListening();
     await cho(5);
@@ -100,9 +100,9 @@ const UA_CHROME = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0
   // ---- 3. Chrome: final một phần + đuôi tạm còn dở lúc onend -> ghép, không mất đuôi ----
   {
     const { SRGia, d } = nhanDangGia();
-    const JavisVoice = napVoice(SRGia, UA_CHROME);
+    const UniMateVoice = napVoice(SRGia, UA_CHROME);
     const gui = [];
-    const v = new JavisVoice({ onTranscript: (t) => gui.push(t) });
+    const v = new UniMateVoice({ onTranscript: (t) => gui.push(t) });
     v.silenceMs = 20;
     v.startListening();
     await cho(5);
@@ -112,12 +112,12 @@ const UA_CHROME = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0
       gui.length === 1 && gui[0] === "xem doanh thu tuần này", JSON.stringify(gui));
   }
 
-  // ---- 4. Mic bị tạm ngừng vì Javis đọc: bỏ cả chữ tạm, không gửi ----
+  // ---- 4. Mic bị tạm ngừng vì UNI MATE đọc: bỏ cả chữ tạm, không gửi ----
   {
     const { SRGia, d } = nhanDangGia();
-    const JavisVoice = napVoice(SRGia, UA_IPHONE);
+    const UniMateVoice = napVoice(SRGia, UA_IPHONE);
     const gui = [];
-    const v = new JavisVoice({ onTranscript: (t) => gui.push(t) });
+    const v = new UniMateVoice({ onTranscript: (t) => gui.push(t) });
     v.startListening();
     await cho(5);
     d.dangMo.onresult(ketQua([["tiếng của loa lọt vào", false]]));
@@ -129,9 +129,9 @@ const UA_CHROME = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 Chrome/128.0
   // ---- 5. Lượt mới không kéo đuôi tạm của lượt trước sang ----
   {
     const { SRGia, d } = nhanDangGia();
-    const JavisVoice = napVoice(SRGia, UA_IPHONE);
+    const UniMateVoice = napVoice(SRGia, UA_IPHONE);
     const gui = [];
-    const v = new JavisVoice({ onTranscript: (t) => gui.push(t) });
+    const v = new UniMateVoice({ onTranscript: (t) => gui.push(t) });
     v.silenceMs = 20;
     v.startListening();
     await cho(5);

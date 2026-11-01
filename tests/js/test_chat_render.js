@@ -50,7 +50,7 @@ check("http: thanh link", has(h, '<a href="http://localhost:8000"'));
 h = mdToHtml("Chi la van ban binh thuong.");
 check("khong url: khong co the a", !has(h, "<a "));
 
-// ---- 9. Link file vault CO KHOANG TRANG + NGOAC (nhu Javis gui that) ----
+// ---- 9. Link file vault CO KHOANG TRANG + NGOAC (nhu UNI MATE gui that) ----
 h = mdToHtml("[Cach Toi Lam Viec.md](06 - Sources/Cach Toi Lam Viec (Tu Duy Nguoc).md)");
 check("path co space+ngoac: bat DUNG ca duong dan",
   has(h, 'data-vault-path="06 - Sources/Cach Toi Lam Viec (Tu Duy Nguoc).md"'));
@@ -93,9 +93,9 @@ h = mdToHtml("dung cu phap `[[ten note]]` de link");
 check("wikilink trong code: khong thanh link", !has(h, "jv-wikilink"));
 
 // ---- 17. Inline code chua duong dan file vault -> bam mo duoc ----
-h = mdToHtml("Da tao `Javis/loops/ghi-ho-so.md` cho anh");
-check("code path: co link jv-floc", has(h, "jv-fcode") && has(h, 'data-vault-path="Javis/loops/ghi-ho-so.md"'));
-check("code path: van hien dang code", has(h, "<code>Javis/loops/ghi-ho-so.md</code>"));
+h = mdToHtml("Da tao `UniMate/loops/ghi-ho-so.md` cho anh");
+check("code path: co link jv-floc", has(h, "jv-fcode") && has(h, 'data-vault-path="UniMate/loops/ghi-ho-so.md"'));
+check("code path: van hien dang code", has(h, "<code>UniMate/loops/ghi-ho-so.md</code>"));
 
 // ---- 18. Inline code thuong / lenh KHONG thanh link ----
 h = mdToHtml("Dat `enabled: false` trong frontmatter");
@@ -146,22 +146,22 @@ check("raw .md: khong target blank", !has(h, 'target="_blank"'));
 global.currentBrainPath = function () { return "D:\\Vaults\\My Bullet Journal"; };
 global.window = {
   location: {
-    origin: "https://javis.example.com",
-    href: "https://javis.example.com/chat",
+    origin: "https://unimate.example.com",
+    href: "https://unimate.example.com/chat",
   },
 };
-const brokenExport = "/brains/My%20Bullet%20Journal/exports/javis-tiec-tra-ai-warrior-plus.html";
+const brokenExport = "/brains/My%20Bullet%20Journal/exports/unimate-tiec-tra-ai-warrior-plus.html";
 check("export /brains: giai ma dung path trong brain",
-  appFilePath(brokenExport) === "exports/javis-tiec-tra-ai-warrior-plus.html");
+  appFilePath(brokenExport) === "exports/unimate-tiec-tra-ai-warrior-plus.html");
 // Tu 0.24.5 .html mo TRINH SUA thay vi tai ve, nen phep thu o day doi tu "co dung endpoint
 // tai khong" sang "co doc dung path trong brain khong" - do van la dieu muc 25 canh (link
 // /brains/... sai kieu duoc tu sua ve file that), khong phai hanh vi bam.
 h = mdToHtml("[Tải export](" + brokenExport + ")");
 check("export /brains: render thanh link file trong vault",
-  has(h, 'class="jv-floc"') && has(h, 'data-vault-path="exports/javis-tiec-tra-ai-warrior-plus.html"'));
-h = mdToHtml("[Tải export](https://javis.example.com" + brokenExport + ")");
+  has(h, 'class="jv-floc"') && has(h, 'data-vault-path="exports/unimate-tiec-tra-ai-warrior-plus.html"'));
+h = mdToHtml("[Tải export](https://unimate.example.com" + brokenExport + ")");
 check("export URL day du cung domain: cung duoc sua",
-  has(h, 'class="jv-floc"') && has(h, 'data-vault-path="exports/javis-tiec-tra-ai-warrior-plus.html"'));
+  has(h, 'class="jv-floc"') && has(h, 'data-vault-path="exports/unimate-tiec-tra-ai-warrior-plus.html"'));
 
 // ---- 26. Editor nhan ca path goc brain va path da kem home cua Quan ly file ----
 const { ceilPath } = require("../../dashboard/file-editor.js");
@@ -217,9 +217,9 @@ check("bảng markdown giữ căn phải ở tiêu đề và ô dữ liệu",
   has(h, '<th style="text-align:right">Phải</th>') &&
   has(h, '<td style="text-align:right">c</td>'));
 check("copy giữa stream bỏ metadata đã đóng",
-  visibleMarkdown("Nội dung\n<!-- JAVIS_ASK: {hidden} -->\nTiếp") === "Nội dung\n\nTiếp");
+  visibleMarkdown("Nội dung\n<!-- UNIMATE_ASK: {hidden} -->\nTiếp") === "Nội dung\n\nTiếp");
 check("copy giữa stream bỏ metadata chưa đóng",
-  visibleMarkdown("Nội dung\n<!-- JAVIS_METRICS: {") === "Nội dung\n");
+  visibleMarkdown("Nội dung\n<!-- UNIMATE_METRICS: {") === "Nội dung\n");
 
 if (fails.length) {
   console.log("\nFAIL - " + fails.length + " test: " + fails.join(", "));

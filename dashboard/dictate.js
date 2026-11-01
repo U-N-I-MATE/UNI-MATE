@@ -318,6 +318,6 @@
   // The ear the last press found: "upload" (Groq or OpenAI listens again on stop), "" (browser text only) or null.
   var api = { create: create, joinText: joinText, plan: plan, isPhone: isPhone, isIOS: isIOS,
     ear: function () { return earKind; }, warm: askEar };
-  if (typeof window !== "undefined") window.JavisDictate = api;
+  if (typeof window !== "undefined") window.UniMateDictate = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

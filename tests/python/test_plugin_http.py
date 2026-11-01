@@ -2,7 +2,7 @@
 
     python tests/run.py plugin_http      (KHÔNG mạng)
 
-Sinh ra để "Javis trong ChatGPT" rời lõi thành một gói trong kho, nên file này khoá đúng những
+Sinh ra để "UNI MATE trong ChatGPT" rời lõi thành một gói trong kho, nên file này khoá đúng những
 ranh giới lõi phải giữ hộ mọi gói, kể cả gói viết ẩu:
 
 1. Mặc định một đường phải đăng nhập bằng TRÌNH DUYỆT (cookie), token API không mở được.
@@ -17,9 +17,9 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-plughttp-")
-os.environ["JAVIS_REQUIRE_LOGIN"] = "1"
-os.environ["JAVIS_ENABLE_USER_PLUGINS"] = "true"
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-plughttp-")
+os.environ["UNIMATE_REQUIRE_LOGIN"] = "1"
+os.environ["UNIMATE_ENABLE_USER_PLUGINS"] = "true"
 
 from fastapi.testclient import TestClient   # noqa: E402
 import config as cfg   # noqa: E402
@@ -58,7 +58,7 @@ def register(ctx):
     ctx.register_well_known("demo-meta", lambda r, c: PlainTextResponse("meta:" + r.url.path))
 ''', "page: \"\"\n")
 
-vault = Path(tempfile.mkdtemp(prefix="javis-plughttp-vault-"))
+vault = Path(tempfile.mkdtemp(prefix="unimate-plughttp-vault-"))
 viet_plugin(vault / "plugins", "vault-http", '''
 def register(ctx):
     ctx.register_http("x", lambda r, c: {"lot": True}, public=True)

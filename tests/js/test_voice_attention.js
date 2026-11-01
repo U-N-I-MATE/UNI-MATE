@@ -10,15 +10,15 @@ now += 29999;
 assert.equal(gate.waiting(), false, 'still awake just before 30 seconds');
 now += 2;
 assert.equal(gate.waiting(), true);
-for (const text of ['mua ngay hôm nay', 'ừ', 'Ich habe dich', 'anh vừa xem Javis trên TV', 'Javiscript']) {
+for (const text of ['mua ngay hôm nay', 'ừ', 'Ich habe dich', 'anh vừa xem UNI MATE trên TV', 'UNI MATEcript']) {
   assert.equal(gate.preview(text), false);
   assert.equal(gate.accept(text), false);
 }
 assert.equal(gate.waiting(), true, 'noise must not extend the conversation');
-assert.equal(gate.preview('Javis'), true);
+assert.equal(gate.preview('UNI MATE'), true);
 assert.equal(gate.waiting(), true, 'interim wake is not permission to accept a revised final');
 assert.equal(gate.accept('David'), false);
-assert.equal(gate.accept('Javis ơi, đưa anh về trò chuyện'), true);
+assert.equal(gate.accept('Uni ơi, đưa anh về trò chuyện'), true);
 assert.equal(gate.accept('không'), true, 'short followup preserved');
 now += 29000;
 assert.equal(gate.preview('anh muốn nói một câu dài'), true);
@@ -41,7 +41,7 @@ assert.equal(gate.waiting(), false);
 
 // 0.65.22: nối lại phiên Live đã ngắt bằng CÂU NÓI THẬT, không bắt buộc gọi tên.
 const w = new Attention({ now: () => 0 });
-for (const text of ['Javis', 'mở lịch', 'David ơi mở trang kết nối', 'Gia vít ơi', 'tiếng TV đang nói', 'ok Javis']) {
+for (const text of ['UNI MATE', 'mở lịch', 'David ơi mở trang kết nối', 'Gia vít ơi', 'tiếng TV đang nói', 'ok Uni']) {
   assert.equal(w.wakes(text), true, text);
 }
 for (const text of ['', '  ', 'ừ', 'ok.', '!!', '123 456']) {
@@ -55,7 +55,7 @@ near.start();
 for (const text of ['David ơi mở trang kết nối', 'hey Davis', 'Gia vít ơi', 'Javix, mở Telegram']) {
   assert.equal(near.wakeCandidate(text), true, text);
 }
-for (const text of ['mua ngay hôm nay', 'anh vừa gặp David', 'Davidson', 'Javis ơi']) {
+for (const text of ['mua ngay hôm nay', 'anh vừa gặp David', 'Davidson', 'Uni ơi']) {
   assert.equal(near.wakeCandidate(text), false, text);
 }
 

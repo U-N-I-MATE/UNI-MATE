@@ -2,7 +2,7 @@
 gói thuê bao, không có đường sang API trả phí hay nhà cung cấp đám mây chưa duyệt.
 
 Ba lớp, đều không gọi model:
-1. clean_env: môi trường cho server sandbox như một Javis bình thường của người dùng (bỏ biến của phiên Claude Code
+1. clean_env: môi trường cho server sandbox như một UNI MATE bình thường của người dùng (bỏ biến của phiên Claude Code
    đang chạy bộ chạy, khoá và bộ chọn nhà cung cấp).
 2. scan_settings: soát các nguồn settings Claude Code mà engine chat nạp (`setting_sources` user, project, local, và
    managed) tìm `apiKeyHelper`, lệnh làm mới credential đám mây, hay `env` chọn khoá/nhà cung cấp/đường gọi. Chỉ ghi
@@ -26,7 +26,7 @@ RISKY_ENV_PREFIXES = ("ANTHROPIC_", "CLAUDE_CODE_USE_", "CLAUDE_CODE_OAUTH", "AW
 
 
 # Giữ: thư mục cấu hình Claude của người dùng (nếu họ đặt). Bỏ nó thì tiến trình quay về thư mục mặc định, không phải
-# hồ sơ sạch, và không còn là cấu hình Javis bình thường của họ (review e2e P1-2). Cổng xác thực đọc thư mục cấu hình
+# hồ sơ sạch, và không còn là cấu hình UNI MATE bình thường của họ (review e2e P1-2). Cổng xác thực đọc thư mục cấu hình
 # từ CHÍNH môi trường này rồi soát settings ở đó.
 KEEP = ("CLAUDE_CONFIG_DIR",)
 
@@ -372,7 +372,7 @@ class TurnLedger:
         return len(self.entries())
 
 
-def snapshot_files(root: Path, skip=("Javis",)) -> dict:
+def snapshot_files(root: Path, skip=("UNI MATE",)) -> dict:
     """{đường dẫn tương đối: sha256} của mọi file trong brain (bỏ thư mục hệ thống trong `skip`). Dùng để biết bộ não
     đã ghi gì trong lượt chat, kể cả khi pilot dừng sớm (review pilot lần 2)."""
     import hashlib
@@ -392,11 +392,11 @@ def snapshot_diff(before: dict, after: dict) -> dict:
             "removed": sorted(k for k in before if k not in after)}
 
 
-SEARCH_TOOLS = ("ToolSearch", "javis_search_tools")
+SEARCH_TOOLS = ("ToolSearch", "unimate_search_tools")
 
 
 def search_calls(tool_frames) -> list:
-    """Các khung công cụ có dính tới việc TÌM tool (ToolSearch của Claude Code, javis_search_tools của hub), giữ cả
+    """Các khung công cụ có dính tới việc TÌM tool (ToolSearch của Claude Code, unimate_search_tools của hub), giữ cả
     đầu vào và kết quả như khung đã ghi. Không suy ra gì thêm: không thấy khung nào thì chỉ nghĩa là trace không ghi."""
     out = []
     for f in tool_frames or []:
@@ -407,6 +407,6 @@ def search_calls(tool_frames) -> list:
 
 
 def goal_tool_calls(tool_frames) -> list:
-    """Các khung công cụ có nhắc javis_goal hay javis_task (gọi, hay kết quả trả về)."""
+    """Các khung công cụ có nhắc unimate_goal hay unimate_task (gọi, hay kết quả trả về)."""
     return [f for f in tool_frames or [] if any(n in json.dumps(f, ensure_ascii=False)
-                                                for n in ("javis_goal", "javis_task"))]
+                                                for n in ("unimate_goal", "unimate_task"))]

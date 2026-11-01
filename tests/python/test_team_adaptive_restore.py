@@ -20,7 +20,7 @@ from contextlib import closing, redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-ta-restore-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-ta-restore-")
 TEMP = Path(tempfile.mkdtemp(prefix="ta-restore-"))
 
 sys.path.insert(0, str(ROOT / "tools"))
@@ -268,7 +268,7 @@ def section_failures():
     ok, info = intact(d, "lock")
     check("kho phán xử bị khoá khi gỡ: ok=false, cả bộ nguyên", res["ok"] is False and ok, (res, info))
 
-    # Javis chưa tắt: file kho bị giữ, không gỡ được. Kho chưa bị ghi nên tính là đã về đúng; lỗi gợi ý tắt Javis.
+    # UNI MATE chưa tắt: file kho bị giữ, không gỡ được. Kho chưa bị ghi nên tính là đã về đúng; lỗi gợi ý tắt UNI MATE.
     def locked(path):
         if path.name == "team.sqlite3":
             raise PermissionError(32, "The process cannot access the file because it is being used by another process")
@@ -277,8 +277,8 @@ def section_failures():
     with patch.object(RT, "_remove_db", side_effect=locked):
         res = RT.restore(str(d), "0.154.0")
     ok, info = intact(d, "locked")
-    check("kho nhóm bị tiến trình khác giữ: ok=false, kho chưa bị ghi không tính là mất, lỗi gợi ý tắt Javis",
-          res["ok"] is False and ok and not res.get("unrecoverable") and "Javis còn chạy" in res["error"], (res, info))
+    check("kho nhóm bị tiến trình khác giữ: ok=false, kho chưa bị ghi không tính là mất, lỗi gợi ý tắt UNI MATE",
+          res["ok"] is False and ok and not res.get("unrecoverable") and "UNI MATE còn chạy" in res["error"], (res, info))
 
     d = fixture("fail-rename", judge=True, pre156=True)
     res = RT.restore(str(d), "0.154.0", _fail_on="resonance.sqlite3.pre-0.156.0")
@@ -374,9 +374,9 @@ def section_rerun_cli():
 
     def run(argv, env=None):
         out, err = io.StringIO(), io.StringIO()
-        old = os.environ.get("JAVIS_STATE_DIR")
+        old = os.environ.get("UNIMATE_STATE_DIR")
         if env is not None:
-            os.environ["JAVIS_STATE_DIR"] = env
+            os.environ["UNIMATE_STATE_DIR"] = env
         try:
             with redirect_stdout(out), redirect_stderr(err):
                 try:
@@ -385,17 +385,17 @@ def section_rerun_cli():
                     code = ex.code
         finally:
             if old is None:
-                os.environ.pop("JAVIS_STATE_DIR", None)
+                os.environ.pop("UNIMATE_STATE_DIR", None)
             else:
-                os.environ["JAVIS_STATE_DIR"] = old
+                os.environ["UNIMATE_STATE_DIR"] = old
         return code, out.getvalue(), err.getvalue()
 
     d = fixture("cli", judge=True, pre156=True)
     before = listing(d)
     code, out, err = run(["--to", "0.154.0", "--state-dir", str(d)])
-    check("CLI không --yes: mã 2, in kế hoạch, nhắc tắt Javis, không ghi gì",
+    check("CLI không --yes: mã 2, in kế hoạch, nhắc tắt UNI MATE, không ghi gì",
           code == 2 and "agent_judge.sqlite3" in out and "conversations.db.pre-0.154.0" in out
-          and "Tắt Javis" in err and listing(d) == before, (code, out, err))
+          and "Tắt UNI MATE" in err and listing(d) == before, (code, out, err))
     check("CLI kế hoạch nhắc reaction của agent và kho Kanban không đổi",
           "agent:" in out and "kanban.sqlite3" in out, out)
     code, out, err = run(["--to", "0.154.0", "--state-dir", str(d), "--yes"])
@@ -404,7 +404,7 @@ def section_rerun_cli():
 
     d = fixture("cli-env")
     code, out, err = run(["--to", "0.154.0", "--yes"], env=str(d))
-    check("CLI không --state-dir: dùng JAVIS_STATE_DIR", code == 0 and live(d) == RESTORED, (code, out, err))
+    check("CLI không --state-dir: dùng UNIMATE_STATE_DIR", code == 0 and live(d) == RESTORED, (code, out, err))
     code, out, err = run(["--to", "0.154.0", "--yes"], env="")
     check("CLI thiếu thư mục state: mã 2, nói rõ", code == 2 and "--state-dir" in err, (code, err))
     code, out, err = run(["--to", "0.153.0", "--state-dir", str(d), "--yes"])

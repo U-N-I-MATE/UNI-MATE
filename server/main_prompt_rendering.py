@@ -142,7 +142,7 @@ def render_capability_summary(c: dict, latest_workflow_line: str = "") -> str:
     """Render already observed capabilities; never discover or load plugins here."""
     if not any(c.values()):
         return ""
-    parts = ["\n\n# === NĂNG LỰC JAVIS HIỆN CÓ (đọc `Javis/index.md` để biết chi tiết + trigger) ==="]
+    parts = ["\n\n# === NĂNG LỰC UNI MATE HIỆN CÓ (đọc `UniMate/index.md` để biết chi tiết + trigger) ==="]
     if c["agents"]:
         parts.append("Agents: " + ", ".join(a["name"] for a in c["agents"][:30]))
     if c["skills"]:
@@ -174,15 +174,15 @@ def render_skill_router(visible_metas: list, *, skills_dir, hidden_count: int = 
         desc = (s.get("description") or "").replace("\n", " ")[:description_max]
         lines.append(f"- {s['slug']} ({s['name']}): {desc}")
     if hidden_count > 0:
-        # Nói rõ CÁCH LẤY chứ không chỉ nói còn bao nhiêu: `javis_use_skill` nạp được theo
+        # Nói rõ CÁCH LẤY chứ không chỉ nói còn bao nhiêu: `unimate_use_skill` nạp được theo
         # slug kể cả skill không nằm trong danh sách trên, nên một skill bị cắt vẫn dùng được
         # nếu model biết tên. Câu cũ chỉ trỏ sang một file mà model không đọc.
         lines.append(f"…(+{hidden_count} skill nữa chưa liệt kê ở đây - xem đủ danh sách trong "
-                     f"`Javis/index.md`, và nạp thẳng bằng `javis_use_skill(name=<slug>)` "
+                     f"`UniMate/index.md`, và nạp thẳng bằng `unimate_use_skill(name=<slug>)` "
                      f"nếu đã biết tên)")
     lines.append(
         "CÁCH DÙNG: khi yêu cầu của user KHỚP mô tả 1 skill ở trên, hãy NẠP skill đó rồi LÀM THEO - "
-        "gọi tool `javis_use_skill(name=<slug>)` nếu engine có tool này; nếu không, mở file "
+        "gọi tool `unimate_use_skill(name=<slug>)` nếu engine có tool này; nếu không, mở file "
         f"`{sk_dir}/<slug>/SKILL.md` bằng công cụ đọc file rồi tuân theo hướng dẫn trong đó. "
         "Chỉ nạp khi thực sự khớp, không nạp tràn lan."
     )
@@ -199,9 +199,9 @@ def render_usage_block(today_total: dict) -> str:
     _t = today_total
     if _t.get("in") or _t.get("out"):
         _c = f", ~${_t.get('cost', 0):.4f}" if _t.get("cost") else ""
-        return (f"\n\n# === MỨC DÙNG HÔM NAY (Javis tự đo) ===\n"
+        return (f"\n\n# === MỨC DÙNG HÔM NAY (UNI MATE tự đo) ===\n"
                 f"{_t.get('in', 0):,} token vào + {_t.get('out', 0):,} token ra qua "
-                f"{_t.get('turns', 0)} lượt{_c}. Đây là token Javis TỰ ĐO, KHÔNG phải hạn mức gói "
+                f"{_t.get('turns', 0)} lượt{_c}. Đây là token UNI MATE TỰ ĐO, KHÔNG phải hạn mức gói "
                 f"thuê bao (đa số nhà cung cấp không cho lấy hạn mức tài khoản qua API). Chi tiết "
                 f"từng nhà cung cấp ở panel 'Mức dùng' trên dashboard.")
     return ""

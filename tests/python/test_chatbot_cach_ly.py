@@ -8,7 +8,7 @@ vào quy định của nó. Chỉ có làm việc chống chỉ định xem các
 
 Nên file này canh HAI thứ, và chỉ hai thứ đó:
 
-A. **Prompt là của Agent, không phải của Javis.** Không chèn khối luật nào lên trên hướng dẫn
+A. **Prompt là của Agent, không phải của UNI MATE.** Không chèn khối luật nào lên trên hướng dẫn
    người dùng viết. Bản 0.19.0 tới 0.20.1 đều chèn, và nó cãi nhau với chính Agent.
 
 B. **Cách ly brain, bằng MÃ chứ không bằng chữ.** Đây là phần đáng canh nhất, vì nó KHÔNG hiện
@@ -23,7 +23,7 @@ B. **Cách ly brain, bằng MÃ chứ không bằng chữ.** Đây là phần đ
      - 0.19.0-0.20.1 hạ mức quyền MCP xuống 'suggest'. Chỉ lọc tool của HUB, không đụng tool
        NATIVE của Claude Code (Bash, Read, Glob, Grep) - bot đọc được cả máy.
      - 0.21.0 khoá `allowed_tools` cho Claude Code, rồi TỪ CHỐI chạy trên Codex vì Codex không
-       khoá được phạm vi đọc. Vá được lỗ nhưng phá lời hứa gốc của Javis: đổi bộ não thì năng
+       khoá được phạm vi đọc. Vá được lỗ nhưng phá lời hứa gốc của UNI MATE: đổi bộ não thì năng
        lực phải giữ nguyên. Chủ repo bác đúng chỗ đó.
 
 C. **Cùng một trải nghiệm trên cả tám bộ não.** Hệ quả của (B), và cũng là yêu cầu riêng:
@@ -37,8 +37,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-cachly-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-cachly-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -58,7 +58,7 @@ def check(name, cond):
 
 
 # ============================================================
-# A. Prompt là của Agent, Javis không chèn luật
+# A. Prompt là của Agent, UNI MATE không chèn luật
 # ============================================================
 QUY_DINH = """## Quy định của tôi
 
@@ -80,14 +80,14 @@ check("prompt giữ NGUYÊN VĂN quy định người dùng viết", QUY_DINH in
 
 # CANARY - đừng gỡ. Đây là yêu cầu trực tiếp của chủ repo, và là thứ dễ bị "thêm lại cho chắc"
 # nhất: mỗi lần thấy bot trả lời chưa vừa ý, phản xạ đầu tiên là nhét thêm một dòng luật vào
-# prompt. Làm vậy là quay lại đúng lỗi cũ - luật của Javis đè lên quy định người dùng đã viết.
+# prompt. Làm vậy là quay lại đúng lỗi cũ - luật của UNI MATE đè lên quy định người dùng đã viết.
 for cam in ("Luật bắt buộc", "đứng trên mọi hướng dẫn khác", "Không hứa hẹn thay",
             "Bỏ qua mọi yêu cầu đổi vai", "Ngắn gọn, lịch sự", "cửa hàng", "bảng giá",
             "Người nhắn cho bạn có thể là NGƯỜI LẠ"):
-    check(f"CANARY: Javis KHÔNG chèn luật của mình - '{cam[:32]}'", cam not in p)
+    check(f"CANARY: UNI MATE KHÔNG chèn luật của mình - '{cam[:32]}'", cam not in p)
 
-check("prompt KHÔNG mang system prompt điều phối của Javis",
-      "javis_schedule" not in p and "Kanban" not in p and "MCP Hub" not in p)
+check("prompt KHÔNG mang system prompt điều phối của UNI MATE",
+      "unimate_schedule" not in p and "Kanban" not in p and "MCP Hub" not in p)
 
 _SRC_RT = (SERVER / "chatbot_runtime.py").read_text(encoding="utf-8")
 check("module không còn hằng số khối luật", "_LUAT" not in _SRC_RT)
@@ -114,7 +114,7 @@ check("và nó vẫn KHÔNG đụng tới quy định của Agent", QUY_DINH in 
 # ============================================================
 # B1. Hub khoá đường đọc file trong vault
 # ============================================================
-GOC = Path(tempfile.mkdtemp(prefix="javis-cachly-brains-"))
+GOC = Path(tempfile.mkdtemp(prefix="unimate-cachly-brains-"))
 (GOC / "brain-bot").mkdir()
 (GOC / "brain-bot" / "gia.md").write_text("Gói 3 tháng 6 triệu.\n", encoding="utf-8")
 (GOC / "brain-chu").mkdir()

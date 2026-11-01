@@ -1,17 +1,17 @@
-"""plugin_authoring.py - create, read and edit USER plugins in place, for the `javis_plugin` tool.
+"""plugin_authoring.py - create, read and edit USER plugins in place, for the `unimate_plugin` tool.
 
-Why this exists (owner, 2026-10-25): asked in chat to make a plugin, Javis used to hand the owner
+Why this exists (owner, 2026-10-25): asked in chat to make a plugin, UNI MATE used to hand the owner
 a zip to download and upload again. API engines only write inside the vault through the vault
-tools, and CLI engines are not guaranteed write access to `<JAVIS_STATE_DIR>`, so the model had no
+tools, and CLI engines are not guaranteed write access to `<UNIMATE_STATE_DIR>`, so the model had no
 way to put a plugin where the app loads it. This module is that way, behind one hub tool every
-engine reaches (`system/plugins/javis-plugin`).
+engine reaches (`system/plugins/unimate-plugin`).
 
 Safety rules (hard, no argument changes them):
     - A plugin written here is NEVER switched on by the model. Create writes `enabled: false`. An
       update that changes code (.py) or what the manifest declares (tools, hooks, min_mode, pages,
       anything that is not name/description/version/author) writes `enabled: false` again, so the
       owner re-reads the change before turning it back on. A docs-only update keeps the state.
-    - Only user plugins: the global dir (`<JAVIS_STATE_DIR>/plugins`, every brain) or this brain's
+    - Only user plugins: the global dir (`<UNIMATE_STATE_DIR>/plugins`, every brain) or this brain's
       `<vault>/plugins`. A slug owned by a bundled plugin or by a store pack is refused, as is a tool
       name the core or a bundled plugin already uses.
     - Files: relative paths only (no `..`, no absolute, no hidden parts, no symlinks), an extension
@@ -19,7 +19,7 @@ Safety rules (hard, no argument changes them):
       size cap. Every .py is `compile()`d (never imported, never run): a syntax error refuses the
       whole write and nothing on disk changes.
     - Writes are atomic per plugin: the new folder is built in a hidden staging dir next to the
-      plugin dirs (same filesystem), the previous version is moved to `.javis-authoring/bak/<slug>`
+      plugin dirs (same filesystem), the previous version is moved to `.unimate-authoring/bak/<slug>`
       (one-step undo by hand), then the new folder is renamed into place. Hidden dirs are never
       scanned as plugins (only direct children holding plugin.py are).
     - After a change the caller runs `refresh_hub()` (on the event loop) and `rebuild_index()`; the
@@ -54,7 +54,7 @@ MAX_MANIFEST_BYTES = 20_000
 READ_FILE_CHARS = 60_000
 READ_TOTAL_CHARS = 150_000
 
-STAGING = ".javis-authoring"
+STAGING = ".unimate-authoring"
 _SKIP_DIRS = frozenset({"__pycache__"})
 
 # Manifest keys that only describe the plugin to people. Changing anything else (tools, hooks,
@@ -219,8 +219,8 @@ def _check_manifest(m: dict, slug: str, warnings: List[str]) -> dict:
             raise _err("Tên tool không hợp lệ: {t} (chữ thường a-z, số, gạch dưới)",
                        "Invalid tool name: {t} (lowercase a-z, digits, underscore)", t=repr(t))
         if t in reserved:
-            raise _err("Tên tool {t} đã thuộc về Javis hoặc một plugin hệ thống. Đặt tên khác.",
-                       "The tool name {t} already belongs to Javis or a system plugin. Pick another name.",
+            raise _err("Tên tool {t} đã thuộc về UNI MATE hoặc một plugin hệ thống. Đặt tên khác.",
+                       "The tool name {t} already belongs to UNI MATE or a system plugin. Pick another name.",
                        t=repr(t))
     if not str(m.get("name") or "").strip():
         m["name"] = slug
@@ -606,8 +606,8 @@ def delete_plugin(slug: str, vault_root: Optional[str], scope: str = "") -> dict
     pdir = base / slug
     key = _ledger_key(sc, base, slug)
     if key not in _read_ledger():
-        raise _err("Plugin {s} không do Javis tạo trong chat, nên chỉ gỡ được ở trang Plugins.",
-                   "Plugin {s} was not created by Javis in chat, so only the Plugins page can remove it.", s=repr(slug))
+        raise _err("Plugin {s} không do UNI MATE tạo trong chat, nên chỉ gỡ được ở trang Plugins.",
+                   "Plugin {s} was not created by UNI MATE in chat, so only the Plugins page can remove it.", s=repr(slug))
     manifest, _e = plugins_host._read_manifest(pdir)
     if manifest.get("enabled"):
         raise _err("Plugin {s} đang BẬT. Chủ phải tắt nó ở trang Plugins trước.",
@@ -639,10 +639,10 @@ def refresh_hub() -> None:
 
 
 def rebuild_index(vault_root: Optional[str]) -> None:
-    """Rebuild this brain's operations index (Javis/index.md) when the server module is loaded."""
+    """Rebuild this brain's operations index (UniMate/index.md) when the server module is loaded."""
     host = sys.modules.get("main")
-    if vault_root and host is not None and callable(getattr(host, "rebuild_javis_index", None)):
+    if vault_root and host is not None and callable(getattr(host, "rebuild_unimate_index", None)):
         try:
-            host.rebuild_javis_index(str(vault_root))
+            host.rebuild_unimate_index(str(vault_root))
         except Exception as e:
             print(f"[plugin_authoring] index rebuild failed: {e}", file=sys.stderr)

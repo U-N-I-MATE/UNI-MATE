@@ -13,7 +13,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-toanquyen-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-toanquyen-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

@@ -10,7 +10,7 @@ import main < 1400ms.
 Lưu ý: KHÔNG phải test, không có pass/fail, nên tên file cố tình không bắt đầu bằng
 test_ để vòng lặp CI không nhặt. Chạy tay khi cần số.
 
-Chạy trên dữ liệu THẬT (không override JAVIS_STATE_DIR) thì số mới có nghĩa. Toàn bộ là
+Chạy trên dữ liệu THẬT (không override UNIMATE_STATE_DIR) thì số mới có nghĩa. Toàn bộ là
 thao tác đọc, trừ build_system_prompt có gọi system_sync mirror skill sang .claude/skills -
 đó đúng là việc app vẫn làm mỗi lượt chat, không phải tác dụng phụ do bench gây ra.
 """
@@ -95,7 +95,7 @@ def main_():
     bench("  skill_router.list_skills()", lambda: skill_router.list_skills(root))
     bench("  plugins_host.describe()", lambda: plugins_host.describe(str(root)))
     bench("  _gather_capabilities()", lambda: main._gather_capabilities(root))
-    bench("  _javis_capability_summary()", lambda: main._javis_capability_summary(brain))
+    bench("  _unimate_capability_summary()", lambda: main._unimate_capability_summary(brain))
     bench("  _skill_router_block()", lambda: main._skill_router_block(brain, root))
 
     print("\n== Endpoint dashboard gọi lúc boot ==")

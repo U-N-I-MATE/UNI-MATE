@@ -2,13 +2,13 @@
 
 Đội một agent làm, một agent review. Thiết kế đã chốt: [2026-10-11-resonance-a5-maker-reviewer-design.md](../superpowers/specs/2026-10-11-resonance-a5-maker-reviewer-design.md) (`56f7ab50`; phương án A cho file sửa tay). Hướng dẫn: [resonance-a5-team.md](resonance-a5-team.md).
 
-**Trạng thái: mã đạt review mã vòng 2 tại `05e9b065` (Codex, 12/10/2026); cổng pilot đạt review vòng 3 tại `33cec518`; pilot thật real-2 tại `33cec518` được reviewer chấp nhận trong phạm vi một mẫu `pass_first` (1 lượt làm, 1 lượt review, 0 chat; chưa chứng minh vòng sửa bằng model thật). Đã tích hợp `main` 0.108.0 với số 0.109.0 (review tích hợp cuối đạt tại `bd5663da`).** A5 **đã phát hành 0.109.0** (`bfb1c29f`, PR #616, 13/10/2026; CI `main` run 38369853756 và build image run 38369852881 thành công; image `ghcr.io/blogminhquy/javis-os:0.109.0`, digest `sha256:3890f824…`; VPS chưa kéo). Kịch bản và bộ chạy pilot: [resonance-a5-pilot.md](resonance-a5-pilot.md). Các mục kiểm mã dùng engine GIẢ; lượt model thật chỉ có ở mục [Pilot thật](#pilot-thật-13102026).
+**Trạng thái: mã đạt review mã vòng 2 tại `05e9b065` (Codex, 12/10/2026); cổng pilot đạt review vòng 3 tại `33cec518`; pilot thật real-2 tại `33cec518` được reviewer chấp nhận trong phạm vi một mẫu `pass_first` (1 lượt làm, 1 lượt review, 0 chat; chưa chứng minh vòng sửa bằng model thật). Đã tích hợp `main` 0.108.0 với số 0.109.0 (review tích hợp cuối đạt tại `bd5663da`).** A5 **đã phát hành 0.109.0** (`bfb1c29f`, PR #616, 13/10/2026; CI `main` run 38369853756 và build image run 38369852881 thành công; image `ghcr.io/u-n-i-mate/uni-mate:0.109.0`, digest `sha256:3890f824…`; VPS chưa kéo). Kịch bản và bộ chạy pilot: [resonance-a5-pilot.md](resonance-a5-pilot.md). Các mục kiểm mã dùng engine GIẢ; lượt model thật chỉ có ở mục [Pilot thật](#pilot-thật-13102026).
 
 ## Test mới
 
 | File | Nội dung | Ca |
 |---|---|---|
-| `tests/python/test_resonance_a5_team.py` | Luồng chính, gắn đội qua đường host thật (plugin `javis_goal`, route `/goal-requests`), bộ ghim và lịch, đồng thời, khởi động lại, tắt/bật/mất/nghỉ reviewer, file sửa tay và ảnh chụp, quyền và dừng, tag | T1 tới T4, T10 tới T14, T17 tới T29, T31 tới T46, T55 tới T60; parse đóng khi lỗi (T5, T26) |
+| `tests/python/test_resonance_a5_team.py` | Luồng chính, gắn đội qua đường host thật (plugin `unimate_goal`, route `/goal-requests`), bộ ghim và lịch, đồng thời, khởi động lại, tắt/bật/mất/nghỉ reviewer, file sửa tay và ảnh chụp, quyền và dừng, tag | T1 tới T4, T10 tới T14, T17 tới T29, T31 tới T46, T55 tới T60; parse đóng khi lỗi (T5, T26) |
 | `tests/python/test_resonance_a5_budget.py` | Sổ vai, bảng vết V1, V2, V3, V5, V8, hoàn lượt, bộ đếm thử lại, lịch đối soát, vòng sửa | T5 tới T9, T15, T16, T47 tới T54, T61 tới T67 |
 | `tests/python/test_resonance_a5_rollback.py` | Mã 0.108.0 THẬT (`c4fb614d`, qua `git show`; trước tích hợp `main` là 0.100.0 `a02663cb`): nâng, hạ không khôi phục (ghi nhận giới hạn), script khôi phục, nâng lại | T30 |
 | `tests/python/test_resonance_a5_api.py` | Route thật: chọn và bỏ chọn người review, từ chối trợ lý chưa bật hay chính nó, khối `team` của goal view, lệnh `team_detach` | 4.2, 11, 12 |
@@ -160,14 +160,14 @@ Giới hạn reviewer đã ghi nhận (không chặn cổng chuẩn bị pilot):
 |---|---|
 | `tests/python/_a5_pilot_ledger.py` | Sổ lượt theo vai: giữ chỗ trước khi dựng engine; có trần vai, trần tổng, trần giai đoạn; kết cục khác `ok` đóng sổ; sổ hỏng không cấp lượt; lần bị chặn ghi `refused`; phân nhánh |
 | `tests/python/_a5_pilot_server.py` | Chạy `main.app` của checkout, chỉ bọc `main._resonance_engine` bằng sổ; dry thay bằng engine giả, đường "thật" là bẫy |
-| `tests/python/test_resonance_a5_pilot.py` | Bộ chạy real và dry (đặt `JAVIS_RESONANCE_A5_PILOT` mới chạy) |
+| `tests/python/test_resonance_a5_pilot.py` | Bộ chạy real và dry (đặt `UNIMATE_RESONANCE_A5_PILOT` mới chạy) |
 | `tests/python/test_resonance_a5_pilot_gate.py` | Logic sổ, không cần server hay model |
 
 **Kết quả** (máy local, mã tại `18b2ab60`, mã sản phẩm bằng `05e9b065`):
 
 | Lệnh | Kết quả |
 |---|---|
-| `JAVIS_RESONANCE_A5_PILOT=dry python tests/python/test_resonance_a5_pilot.py` | 12/12 ca, exit 0. Mỗi ca: `commit 18b2ab60`, cây sạch, 0 lượt thật, sổ lượt engine của server sandbox đã xác minh bằng 0 |
+| `UNIMATE_RESONANCE_A5_PILOT=dry python tests/python/test_resonance_a5_pilot.py` | 12/12 ca, exit 0. Mỗi ca: `commit 18b2ab60`, cây sạch, 0 lượt thật, sổ lượt engine của server sandbox đã xác minh bằng 0 |
 | `python tests/python/test_resonance_a5_pilot_gate.py` | 35 ok, exit 0 |
 | `tests/run.py resonance_a5 ignore_files tai_lieu_song_ngu version_khop_changelog nhat_ky_song_ngu route_table phien_ban_moi_nhat` | 15/15 file, exit 0 |
 
@@ -207,7 +207,7 @@ Review: `exports/reviews/PR-616-A5-pilot-gate-r1-review.md`. Mã sản phẩm kh
 | R2: kết luận real không loại lỗi engine, hết giờ hay sổ mất ở lần đọc cuối | Hàm `decide_acceptance` có hợp đồng rõ: `stopped`, `technical_failed`, `pending_content_review`, `business_incomplete`; mã thoát 1, 1, 0, 2; đòi đủ bằng chứng của đúng nhánh. Thêm hai nhánh `maker_not_met` và `reviewer_error`. Real cũng đòi sổ usage xác minh được | Test cổng: 15 ca `technical_failed`, 3 nhánh nghiệp vụ, đối chứng. Dry: các ca âm đi qua đường điều phối và hàm kết luận thật |
 | R3: dọn sandbox làm mất log và kho khi lỗi | `preserve_sandbox` chép kho (SQLite backup), log đã che khoá, sổ usage, brain tạm vào thư mục mới trên MỌI nhánh, sau khi server đã dừng; xử lý đường dẫn dài của Windows. Real luôn giữ sandbox; ngoài ra chỉ dọn khi kỹ thuật đạt trọn và bảo toàn đủ. Có `a5-pilot-recovery.txt` | Test cổng: bảo toàn, không ghi đè, che khoá, lỗi khi lưu, thiếu mục bắt buộc, file hỏng, đường dẫn trên 260 ký tự, quyền dọn. Dry: `save_error`, `early_crash`, `ledger_corrupt`, `ledger_lost_end`, `timeout` |
 | Lưu ý 1: đơn gộp nền checkout với `main` | Đơn tách dòng: nền checkout pilot là 0.100.0 (`a02663cb`), `main` hiện tại là 0.102.0 (`57c40348`); pilot không phải nghiệm thu bản tích hợp | đơn |
-| Lưu ý 2: SHA và cây sạch chỉ được ghi lại, không phải cổng | `preflight_source` ở bước 0, trước mọi server: HEAD phải đúng `JAVIS_RESONANCE_A5_APPROVED_SHA` và cả checkout phải sạch (gồm chính bộ chạy). Real bắt buộc | Test cổng: repo git tạm. Dry: `sha_mismatch` |
+| Lưu ý 2: SHA và cây sạch chỉ được ghi lại, không phải cổng | `preflight_source` ở bước 0, trước mọi server: HEAD phải đúng `UNIMATE_RESONANCE_A5_APPROVED_SHA` và cả checkout phải sạch (gồm chính bộ chạy). Real bắt buộc | Test cổng: repo git tạm. Dry: `sha_mismatch` |
 
 **Script của reviewer.** Bản gốc chạy trên head mới: năm kiểm R1 (gọi thẳng API của sổ) PASS, rồi dừng ở `StopIteration`, vì phép gán `rep["acceptance"] = <biểu thức>` và điều kiện quanh `rmtree` đã thành lời gọi `decide_acceptance` và `may_delete_sandbox`. Bản chỉnh chỉ đổi adapter để gọi đúng hai lời gọi đó lấy từ AST của bộ chạy, có nhánh lùi về cấu trúc cũ:
 - Mẫu đối chứng thành công được bổ sung cho đủ bằng chứng của một lần `pass_first`.
@@ -224,7 +224,7 @@ Không đổi tình huống hay kỳ vọng. Kết quả bản chỉnh:
 
 | Lệnh | Kết quả |
 |---|---|
-| `JAVIS_RESONANCE_A5_PILOT=dry python tests/python/test_resonance_a5_pilot.py` | 21/21 ca, exit 0. Mỗi báo cáo: `commit f4b79b58`, 0 lượt thật, sổ lượt engine của server đã xác minh bằng 0 |
+| `UNIMATE_RESONANCE_A5_PILOT=dry python tests/python/test_resonance_a5_pilot.py` | 21/21 ca, exit 0. Mỗi báo cáo: `commit f4b79b58`, 0 lượt thật, sổ lượt engine của server đã xác minh bằng 0 |
 | `python tests/python/test_resonance_a5_pilot_gate.py` | 90 ok, exit 0 |
 | Script reviewer bản chỉnh `--expect-fixed` | 11/11, exit 0 |
 | `tests/run.py resonance_a5 ignore_files tai_lieu_song_ngu version_khop_changelog nhat_ky_song_ngu route_table phien_ban_moi_nhat` (tại `2468919c`) | 15/15 file, exit 0 |
@@ -285,7 +285,7 @@ Lần chạy thật cũng có thể gặp khe này.
 
 | Lệnh | Kết quả |
 |---|---|
-| `JAVIS_RESONANCE_A5_PILOT=dry python tests/python/test_resonance_a5_pilot.py` | 24/24 ca, exit 0. Mỗi ca: mã thoát đúng hợp đồng, báo cáo khớp dòng `A5_PILOT`, 0 lượt thật, sổ lượt engine của server đã xác minh bằng 0 |
+| `UNIMATE_RESONANCE_A5_PILOT=dry python tests/python/test_resonance_a5_pilot.py` | 24/24 ca, exit 0. Mỗi ca: mã thoát đúng hợp đồng, báo cáo khớp dòng `A5_PILOT`, 0 lượt thật, sổ lượt engine của server đã xác minh bằng 0 |
 | `python tests/python/test_resonance_a5_pilot_gate.py` | 100 ok, exit 0 |
 | Script vòng 1 (adapter đã chỉnh) `--expect-fixed` | 11/11, exit 0 |
 | Script finalization vòng 2 `--expect-fixed` | 5/5, exit 0 |
@@ -353,7 +353,7 @@ Hai góp ý câu chữ, không chặn:
 
 - Một mẫu, nhánh đạt ngay. Nhánh yêu cầu sửa, chạm trần, review không đọc được và lỗi engine chỉ có bằng chứng bằng engine giả.
 - Hai vai dùng chung model việc nền: độc lập về vai và ngữ cảnh, không phải hai model khác nhau.
-- 0 lượt chat: không kiểm bộ não chat tự định tuyến tới `javis_goal`.
+- 0 lượt chat: không kiểm bộ não chat tự định tuyến tới `unimate_goal`.
 - Máy local, nền 0.100.0; chưa đo hiệu năng VPS. Tích hợp `main` là diff riêng, review riêng.
 
 ### Hai việc cải tiến riêng (chưa triển khai, ngoài PR này)
@@ -391,7 +391,7 @@ Cả năm commit merge (`ba591f4f`, `d7276bc5`, `ef18c9f5`, `6c4f0b5a`): `--reme
 
 ### Tác động gián tiếp của `main` 0.107.0 và 0.108.0
 
-- **`claude_sdk_engine` (#623):** phiên có `allowed_tools` giờ được nạp plugin tool khi danh sách nêu đích danh `mcp__javis-plugins__<tên>`. Lượt làm và lượt review của A5 dựng bằng `main._resonance_engine`, với một tên canh gác không khớp công cụ nào. Test mới `tests/python/test_resonance_a5_engine_session_gate.py` dựng ĐÚNG đường đó (swap, `strip_tools`, `pick_text_only_link`) cho system prompt của hai vai, thay `ClaudeSDKClient` bằng client giả để bắt `options` thật đưa cho SDK. Kết quả, 26 kiểm:
+- **`claude_sdk_engine` (#623):** phiên có `allowed_tools` giờ được nạp plugin tool khi danh sách nêu đích danh `mcp__unimate-plugins__<tên>`. Lượt làm và lượt review của A5 dựng bằng `main._resonance_engine`, với một tên canh gác không khớp công cụ nào. Test mới `tests/python/test_resonance_a5_engine_session_gate.py` dựng ĐÚNG đường đó (swap, `strip_tools`, `pick_text_only_link`) cho system prompt của hai vai, thay `ClaudeSDKClient` bằng client giả để bắt `options` thật đưa cho SDK. Kết quả, 26 kiểm:
   - MCP rỗng và strict: không hub, không server plugin;
   - `allowed_tools` chỉ có tên canh gác, cổng `can_use_tool` bật; không nạp settings máy người dùng; công cụ native bị cấm sẵn;
   - cổng từ chối 14 tên công cụ (native, hub, plugin có và không tiền tố);
@@ -408,7 +408,7 @@ Cả năm commit merge (`ba591f4f`, `d7276bc5`, `ef18c9f5`, `6c4f0b5a`): `--reme
 | `python tests/python/test_resonance_a5_engine_session_gate.py` | `20d7c063` | 26 ok, exit 0 |
 | `tests/run.py` theo tác động: mọi `resonance_*`, `sdk_engine`, `aux`, `session`, `strip`, `kanban`, `workflow`, `agent_rules`, `learn`, `usage`, `plugin`, `reminder`, `task`, test mới của #623, phiên bản, changelog, route, i18n, `ignore_files` | `fecbb63d` + test mới | 101/102; file đỏ duy nhất `test_ignore_files` vì test mới chưa commit, xanh sau commit `79724208` |
 | Theo tác động sau merge 0.108.0: test engine và kho phiên, phiên bản, changelog, route, tài liệu song ngữ, hai test mới của #625, `ignore_files` | `20d7c063` | 9/9 và 1/1, exit 0 |
-| `JAVIS_RESONANCE_A5_PILOT=dry JAVIS_RESONANCE_A5_DRY_ONLY=main_pass,main_fix python tests/python/test_resonance_a5_pilot.py` | `79724208` | 2/2 ca, exit 0; đúng nhánh, sổ (1, 1) và (2, 2), sổ engine server 0, 0 lượt model thật |
+| `UNIMATE_RESONANCE_A5_PILOT=dry UNIMATE_RESONANCE_A5_DRY_ONLY=main_pass,main_fix python tests/python/test_resonance_a5_pilot.py` | `79724208` | 2/2 ca, exit 0; đúng nhánh, sổ (1, 1) và (2, 2), sổ engine server 0, 0 lượt model thật |
 
 **Không chạy lại** cả 24 ca dry hay toàn repo ở lượt cuối, vì:
 - bộ chạy pilot không đổi kể từ `33cec518`;

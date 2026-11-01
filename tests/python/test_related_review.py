@@ -10,13 +10,13 @@ bản, độ sâu > 2 từ tin gốc của chủ, quá một lượt mỗi (agen
 import json
 import os
 
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 from _judge_world import World, batch, check, finish, keys_in  # noqa: E402
 
 
 def op(**kw):
-    return f"\n<!-- JAVIS_TEAM: {json.dumps(kw, ensure_ascii=False)} -->"
+    return f"\n<!-- UNIMATE_TEAM: {json.dumps(kw, ensure_ascii=False)} -->"
 
 
 ROLES = {"lan": "Điều phối", "minh": "Quảng cáo", "hoa": "Kho hàng"}

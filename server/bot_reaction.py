@@ -1,16 +1,16 @@
 """Emoji reactions on personal Zalo (0.334.0): read the ones customers put on messages, and let the bot put one.
 
-Owner request 2026-10-26: "khách hàng đọc được emoji reaction trên zalo và javis thả được reaction vào". Decided the
+Owner request 2026-10-26: "khách hàng đọc được emoji reaction trên zalo và unimate thả được reaction vào". Decided the
 same day: whether a reaction alone deserves an answer is learned by the judge, never hard-coded ("phần này tự học trong
 bộ phán xử, đừng fix cứng"), and the bot reacts on the judge's say too ("bot được tự thả dựa theo bộ phán xử luôn").
 
-javis-zalo 1.7.0 puts each reaction in the live feed as an entry of type "reaction" pointing at the message it was put
+unimate-zalo 1.7.0 puts each reaction in the live feed as an entry of type "reaction" pointing at the message it was put
 on, and adds the tool `zalo_add_reaction`. Here:
   - `describe` turns a reaction into the line the inbox, the judge and the Agent read;
   - `pick` takes the bot's own `[CAM_XUC:<name>]` marker out of an answer (Agent turns, private chats included);
   - `NAMES` is the one list both the judge and the Agent choose from.
 
-Javis never decides on its own to answer or to react: the judge (group chats in "Tự đánh giá") or the Agent does.
+UNI MATE never decides on its own to answer or to react: the judge (group chats in "Tự đánh giá") or the Agent does.
 """
 from __future__ import annotations
 
@@ -20,8 +20,8 @@ from typing import Any, Optional, Tuple
 import localefmt
 
 MARK = "[CAM_XUC:<tên>]"
-# Same names as javis-zalo `REACTIONS` (src/mcp/reactions.js). The first six are Zalo's quick row; the bot is offered
-# only these, so it never picks an odd one. Any name javis-zalo knows is still shown when a customer uses it.
+# Same names as unimate-zalo `REACTIONS` (src/mcp/reactions.js). The first six are Zalo's quick row; the bot is offered
+# only these, so it never picks an odd one. Any name unimate-zalo knows is still shown when a customer uses it.
 EMOJI = {
     "heart": "❤️", "like": "👍", "haha": "😆", "wow": "😮", "cry": "😭", "angry": "😡",
     "kiss": "😘", "tears_of_joy": "😂", "rose": "🌹", "broken_heart": "💔", "dislike": "👎", "love": "😍",

@@ -5,12 +5,12 @@ Trạng thái: đã duyệt thiết kế, chờ kế hoạch triển khai
 
 ## Bối cảnh
 
-So sánh Javis với `NousResearch/hermes-agent` cho thấy Javis tạo skill/agent/workflow
+So sánh UNI MATE với `NousResearch/hermes-agent` cho thấy UNI MATE tạo skill/agent/workflow
 không kém, nhưng thiếu hoàn toàn **vòng đời sau khi tạo**: không đo, không gộp, không dọn.
-Javis có hệ miễn dịch mạnh (fork học read-only, Python là người ghi duy nhất, provenance
+UNI MATE có hệ miễn dịch mạnh (fork học read-only, Python là người ghi duy nhất, provenance
 tier, secret/injection scan, git undo) nhưng không có trao đổi chất. Hermes ngược lại.
 
-Định hướng: ghép cơ chế trao đổi chất của Hermes vào bộ khung an toàn sẵn có của Javis,
+Định hướng: ghép cơ chế trao đổi chất của Hermes vào bộ khung an toàn sẵn có của UNI MATE,
 không phải ngược lại.
 
 Toàn bộ lộ trình gồm 4 hệ con. Spec này CHỈ phủ A và B.
@@ -27,7 +27,7 @@ biết gộp về hình gì.
 
 Đây là lỗi CÓ THẬT, đang chạy, đo được, không phải suy đoán từ Hermes.
 
-Javis cắt description ở **ba** nơi, với **ba** hạn mức khác nhau:
+UNI MATE cắt description ở **ba** nơi, với **ba** hạn mức khác nhau:
 
 - `server/mcp_hub.py:256` - `(s['description'] or '')[:60]`, `metas[:20]`
 - `server/main.py:3471` - `(s.get("description") or "")[:100]`, `metas[:15]`
@@ -44,7 +44,7 @@ hành vi ở cả ba chỗ (60 lên 150, 100 lên 150, 140 lên 150) và đổi 
 đang bật đều bị cắt**:
 
 - `html-to-webcake` 376 ký tự, mất 316 (84%)
-- `javis-builder` 333, mất 273 (82%)
+- `unimate-builder` 333, mất 273 (82%)
 - `ingest-source` 266, mất 206
 - `query-wiki` 249, mất 189
 - `lint-wiki` 213, mất 153
@@ -56,7 +56,7 @@ khoảng 31 ký tự thật sự phân biệt được skill này với skill ki
 đúng cái phần khiến routing hoạt động, đều bị vứt sạch.
 
 Tệ nhất là **tài liệu đang chủ động dạy viết sai**. CLAUDE.md bảo description phải "viết rõ
-trigger", `javis-builder` bảo "viết kỹ", trong khi runtime cắt cụt. Hermes cảnh báo đúng
+trigger", `unimate-builder` bảo "viết kỹ", trong khi runtime cắt cụt. Hermes cảnh báo đúng
 hiện tượng này và gọi nó là lỗi không-cosmetic: mô tả quá hạn bị cắt im lặng và skill không
 bao giờ route được.
 
@@ -90,11 +90,11 @@ Kiến trúc: **index để tìm, thân file để làm.**
 
 ### A1. Nơi lưu
 
-File `<brain>/Javis/skill-usage.json`. Module mới `server/skill_usage.py`.
+File `<brain>/UniMate/skill-usage.json`. Module mới `server/skill_usage.py`.
 
-Đặt ở `Javis/` chứ không phải `skills/.usage.json` như Hermes, để bám quy ước Javis đã có.
+Đặt ở `UniMate/` chứ không phải `skills/.usage.json` như Hermes, để bám quy ước UNI MATE đã có.
 `server/self_improve.py` ghi rõ: "STATE runtime tách riêng, server sở hữu:
-`<vault>/Javis/loop-state.json`". Telemetry là state runtime, cùng loại với loop-state,
+`<vault>/UniMate/loop-state.json`". Telemetry là state runtime, cùng loại với loop-state,
 nên nằm cạnh nhau.
 
 Không nhét vào frontmatter SKILL.md: brain là git repo (`git_brain`), mỗi lần dùng skill sẽ
@@ -109,7 +109,7 @@ hỏng thì trả rỗng và đi tiếp. **Sidecar hỏng tuyệt đối không 
 
 ### A2. Điểm đếm
 
-Handler `_skill` trong `server/mcp_hub.py:259` (tool `javis_use_skill`). Một chỗ duy nhất,
+Handler `_skill` trong `server/mcp_hub.py:259` (tool `unimate_use_skill`). Một chỗ duy nhất,
 mọi engine đi qua (Claude Code, Codex, OpenRouter, OpenAI, Anthropic API). Bump khi nạp
 skill thành công, không bump khi slug sai.
 
@@ -127,7 +127,7 @@ Hệ quả bắt buộc, áp cho toàn bộ spec và mọi vòng sau:
 
 Hermes tự nó cũng ra đúng luật này vì lý do khác (bộ đếm còn mới): "use=0 is not evidence a
 skill is valuable; it's absence of evidence either way. Corollary: use=0 is ALSO not a reason
-to PRUNE." Với Javis luật đó còn bắt buộc hơn vì có điểm mù thật.
+to PRUNE." Với UNI MATE luật đó còn bắt buộc hơn vì có điểm mù thật.
 
 ### A4. Không có máy trạng thái
 
@@ -202,7 +202,7 @@ vì mọi skill đều mở đầu như vậy.
 ### B3. Bộ chuẩn dùng chung
 
 Một hằng số text (theo mẫu `_AUTHORING_STANDARDS` của `hermes/agent/learn_prompt.py`),
-nhúng vào cả prompt learn (`learn.py:_build_prompt`) lẫn `javis-builder/SKILL.md`.
+nhúng vào cả prompt learn (`learn.py:_build_prompt`) lẫn `unimate-builder/SKILL.md`.
 
 Nội dung:
 
@@ -217,7 +217,7 @@ Nội dung:
   Dài hơn thì đẩy xuống `references/`.
 - Cấm skill kiểu router chỉ trỏ sang skill khác.
 - Nội dung lớn đẩy xuống `scripts/` và `references/`, tham chiếu bằng đường dẫn tương đối.
-- Giữ luật hiện có của Javis: `group` bắt buộc, slug ASCII không dấu, cấm em dash.
+- Giữ luật hiện có của UNI MATE: `group` bắt buộc, slug ASCII không dấu, cấm em dash.
 
 ### B4. Skill thành package
 
@@ -265,17 +265,17 @@ Không đụng vào nó.
 5 skill hệ thống sửa ở NGUỒN `<project>/.claude/skills/`, KHÔNG sửa bản mirror trong brain:
 
 - `html-to-webcake` 376 ký tự, dư 226 (nặng nhất, rủi ro cao nhất)
-- `javis-builder` 333, dư 183
+- `unimate-builder` 333, dư 183
 - `ingest-source` 266, dư 116
 - `query-wiki` 249, dư 99
 - `lint-wiki` 213, dư 63 (nhẹ nhất)
 
 Sửa luôn hai chỗ tài liệu đang dạy sai: CLAUDE.md (mục description "viết rõ trigger") và
-`javis-builder` (mục description "viết kỹ").
+`unimate-builder` (mục description "viết kỹ").
 
 ### B6. Lỗi lệch phát hiện trong lúc đọc
 
-`javis-builder` đang dạy ghi skill vào `.claude/skills/`, trong khi CLAUDE.md và `skill_router`
+`unimate-builder` đang dạy ghi skill vào `.claude/skills/`, trong khi CLAUDE.md và `skill_router`
 nói canonical là `skills/<slug>/SKILL.md` còn `.claude/skills` chỉ là bản mirror phái sinh.
 Skill builder đang dạy ghi vào chỗ mirror.
 
@@ -293,10 +293,10 @@ thẳng, dùng helper tự viết `check(name, cond)` gom lỗi vào `_fails` r�
 cuối (mẫu chuẩn: `server/test_loop_ambient.py:23-30` và `:117-120`).
 
 Preamble bắt buộc, thứ tự load-bearing (env TRƯỚC import, vì module state đọc
-`JAVIS_STATE_DIR` lúc import):
+`UNIMATE_STATE_DIR` lúc import):
 
 ```python
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-<x>test-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-<x>test-"))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import <module>  # noqa: E402
 ```
@@ -339,7 +339,7 @@ hành vi cần theo dõi.
 `.claude/skills`, hoặc copy đè lên thứ người dùng sửa tay. Giữ nguyên tinh thần hiện tại
 (add/update-only, không xoá entry lạ).
 
-`Javis/skill-usage.json` là state runtime, không phải tri thức, nên PHẢI được gitignore ở
+`UniMate/skill-usage.json` là state runtime, không phải tri thức, nên PHẢI được gitignore ở
 brain. Đây không phải chuyện cân nhắc: `.gitignore` của brain đã nêu nguyên tắc dứt khoát
 là "Git chỉ version TRI THỨC ĐÃ CHƯNG CẤT (facts/wiki/skills/MEMORY.md)" và đã loại sẵn
 learn-log, loop-log, conversations, lock. Telemetry rơi đúng vào nhóm bị loại.
@@ -355,9 +355,9 @@ Vị trí chính xác (bản đầu ghi lệch, đã kiểm chứng lại):
 
 Hai chỗ này ở **hai không gian đường dẫn KHÁC NHAU**, dễ sai:
 
-- `.gitignore` tương đối với gốc BRAIN, nên viết `Javis/skill-usage.json` (không slash đầu).
+- `.gitignore` tương đối với gốc BRAIN, nên viết `UniMate/skill-usage.json` (không slash đầu).
 - `_BACKUP_SKIP_SUBSTR` so khớp chuỗi con trên rel tương đối với thư mục CHA của brain, và
-  `_backup_skip` bọc rel trong hai dấu slash. Nên phải viết `"/Javis/skill-usage.json/"`
+  `_backup_skip` bọc rel trong hai dấu slash. Nên phải viết `"/UniMate/skill-usage.json/"`
   đúng dạng đó (cả slash đầu lẫn slash cuối), giống mọi mục hiện có.
 
 **Câu hỏi brain cũ đã có lời đáp dứt khoát: KHÔNG, brain cũ sẽ không bao giờ nhận template
@@ -378,7 +378,7 @@ thì commit bằng `commit_paths` với prefix `chore:` (KHÔNG dùng `learn:`/`
 `revert_last_learn` sẽ undo). Không thêm `add -A` mới: dòng 95 tự ghi rõ đó là chỗ DUY NHẤT
 được phép dùng `-A`.
 
-Hai điều còn lại phải xử lý: (a) brain cũ có thể ĐÃ track `Javis/skill-usage.json` do
+Hai điều còn lại phải xử lý: (a) brain cũ có thể ĐÃ track `UniMate/skill-usage.json` do
 `add -A` baseline, mà gitignore không có tác dụng với file đã track, nên cần một lần
 `git rm --cached` khi path vừa bị ignore vừa đang được track; (b) không caller nào chạy lúc
 server khởi động (chỉ `/learn/enable` và `/reflect` gọi), nên việc reconcile chỉ xảy ra khi

@@ -87,17 +87,17 @@ class SpeechQueueTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_idle_model_reads_at_once(self):
         t0 = time.monotonic()
-        await self.prov.send_tool_result("h1", "ask_javis", "Doanh thu hôm nay 12 triệu.")
+        await self.prov.send_tool_result("h1", "ask_unimate", "Doanh thu hôm nay 12 triệu.")
         self.assertLess(time.monotonic() - t0, 0.1, "send_tool_result không chặn route")
         self.assertTrue(await self.until(lambda: self.fake.spoken() == ["Doanh thu hôm nay 12 triệu."], 0.3))
 
     async def test_second_result_waits_for_the_current_readback(self):
-        await self.prov.send_tool_result("h1", "ask_javis", "Kết quả một.")
+        await self.prov.send_tool_result("h1", "ask_unimate", "Kết quả một.")
         self.assertTrue(await self.until(lambda: len(self.fake.spoken()) == 1))
         self.speak(" Dạ, kết quả một")   # model bắt đầu đọc kết quả thứ nhất
         await asyncio.sleep(0.05)
         t0 = time.monotonic()
-        await self.prov.send_tool_result("h2", "ask_javis", "Kết quả hai.")
+        await self.prov.send_tool_result("h2", "ask_unimate", "Kết quả hai.")
         self.assertLess(time.monotonic() - t0, 0.1, "send_tool_result không chặn route dù đang đọc")
         await asyncio.sleep(0.5)
         self.assertEqual(self.fake.spoken(), ["Kết quả một."], "đang đọc thì kết quả hai phải chờ")
@@ -108,15 +108,15 @@ class SpeechQueueTests(unittest.IsolatedAsyncioTestCase):
     async def test_waits_while_the_model_answers_the_user(self):
         self.speak(" Dạ, để em kiểm tra luôn ạ")   # lời đáp của chính model, chưa xong
         await asyncio.sleep(0.05)
-        await self.prov.send_tool_result("h1", "ask_javis", "Kết quả.")
+        await self.prov.send_tool_result("h1", "ask_unimate", "Kết quả.")
         await asyncio.sleep(0.3)
         self.assertEqual(self.fake.spoken(), [], "không chen vào giữa câu model đang nói")
         self.done()
         self.assertTrue(await self.until(lambda: self.fake.spoken() == ["Kết quả."]))
 
     async def test_grace_after_push_before_the_model_starts(self):
-        await self.prov.send_tool_result("h1", "ask_javis", "Một.")
-        await self.prov.send_tool_result("h2", "ask_javis", "Hai.")
+        await self.prov.send_tool_result("h1", "ask_unimate", "Một.")
+        await self.prov.send_tool_result("h2", "ask_unimate", "Hai.")
         await asyncio.sleep(0.1)
         self.assertEqual(self.fake.spoken(), ["Một."], "model chưa kịp mở lời cho kết quả một thì chưa đẩy kết quả hai")
         self.assertTrue(await self.until(lambda: self.fake.spoken() == ["Một.", "Hai."], 1.0),
@@ -124,7 +124,7 @@ class SpeechQueueTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_interrupted_turn_without_done_does_not_block(self):
         self.speak(" Dạ kết quả một")    # người dùng chen ngang: model im, không có done
-        await self.prov.send_tool_result("h1", "ask_javis", "Kết quả hai.")
+        await self.prov.send_tool_result("h1", "ask_unimate", "Kết quả hai.")
         await asyncio.sleep(0.5)
         self.assertEqual(self.fake.spoken(), [], "còn trong khoảng có thể đang nói")
         self.assertTrue(await self.until(lambda: self.fake.spoken() == ["Kết quả hai."], 1.5),
@@ -133,14 +133,14 @@ class SpeechQueueTests(unittest.IsolatedAsyncioTestCase):
     async def test_never_stuck(self):
         self.prov.SPEECH_STALL = 60.0   # chỉ còn trần SPEECH_WAIT_MAX cứu
         self.speak(" Dạ")   # lượt nói không bao giờ có done (mất khung)
-        await self.prov.send_tool_result("h1", "ask_javis", "Kết quả.")
+        await self.prov.send_tool_result("h1", "ask_unimate", "Kết quả.")
         await asyncio.sleep(0.3)
         self.assertEqual(self.fake.spoken(), [])
         self.assertTrue(await self.until(lambda: self.fake.spoken() == ["Kết quả."], 3.0), "chờ quá trần thì vẫn đọc")
 
     async def test_hang_up_drops_pending_speech(self):
         self.speak(" Dạ đang đọc")
-        await self.prov.send_tool_result("h1", "ask_javis", "Kết quả.")
+        await self.prov.send_tool_result("h1", "ask_unimate", "Kết quả.")
         await self.prov.close()
         await asyncio.sleep(0.5)
         self.assertEqual(self.fake.spoken(), [], "cúp máy thì không đọc nốt")

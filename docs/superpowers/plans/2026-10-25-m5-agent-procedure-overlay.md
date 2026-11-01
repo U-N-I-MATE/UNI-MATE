@@ -6,14 +6,14 @@ Goal section 13 applies: code and technical checks first; an agent pilot and can
 ## Facts from the code (survey 25/10)
 
 - Every agent prompt except chatbots and goals comes from `_workflow_agent_helpers._agent_sysprompt(slug)`
-  (server/main.py): name/role/body, skills list, assets, the whole agent MEMORY.md, JAVIS_LESSON/JAVIS_RULE
+  (server/main.py): name/role/body, skills list, assets, the whole agent MEMORY.md, UNIMATE_LESSON/UNIMATE_RULE
   instructions, toolkit. It knows only the slug.
 - Surfaces and how the turn identifies them: dashboard DM (`kenh=dashboard`, `agent` set), CLI `/chat agent` and
   Telegram `@agent` (`kenh=cli|telegram`, no `agent`), workflow steps (slug only), Team (`_team_agent_info`, kenh
   team), Kanban "Giao việc" (`_agent_persona`, `kenh=kanban`, `job`), pulse/review personas. Goals never load an
   agent prompt; chatbots read only meta and body.
 - Owner content: `## Luật chủ dặn` in memory/agents/<slug>/MEMORY.md (never auto-removed), owner lines outside
-  managed sections (`agent_rules.missing_owner_lines`), `learn_lock`. Javis-managed today: `## Bổ sung (tự học)`,
+  managed sections (`agent_rules.missing_owner_lines`), `learn_lock`. UNI MATE-managed today: `## Bổ sung (tự học)`,
   `## Lịch sử (tự học)` in the agent file, `## Bài học (tự học)` in memory, `agent_lessons` rows.
 - Direct writers that bypass any staging: learn.py agent `op=update` (Bổ sung), `agent_review.apply_change`
   (offsets, eagerness, lessons). Out-of-scope review ideas stay as `agent_review_proposals` with no apply path.
@@ -26,7 +26,7 @@ Goal section 13 applies: code and technical checks first; an agent pilot and can
 A procedure overlay is an owner-approved text block (planning, source checks, output checks, handoff format,
 use of granted skills) appended to the agent prompt as its own section. The agent file, its MEMORY.md, owner rules,
 persona, model/provider/reasoning, skills list, grants, schedule and the Auto switch are never touched, so A01
-holds by construction. Host checks on the text: size bound; no `JAVIS_RULE:`/`JAVIS_LESSON:` or other host
+holds by construction. Host checks on the text: size bound; no `UNIMATE_RULE:`/`UNIMATE_LESSON:` or other host
 markers; no lines that try to set model, provider, reasoning, permissions or skills (closed keyword list, refusal
 rather than rewrite). Meaning-level contradiction with owner rules needs an independent reviewer (model) and the
 owner's judgement: the apply step requires the owner's explicit confirmation of the exact text; the automated

@@ -4,7 +4,7 @@
 
 - WebSocket compression (permessage-deflate) is never negotiated, however uvicorn is started: a real uvicorn CLI
   process with its default settings, and a client that offers compression.
-- JAVIS_WS_DEFLATE=1 keeps compression for whoever needs it.
+- UNIMATE_WS_DEFLATE=1 keeps compression for whoever needs it.
 - A page that got its socket back reports how it lost it; /health/loop shows the last reports, bounded.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -51,7 +51,7 @@ def free_port():
 
 
 def negotiated(env_extra):
-    d = Path(tempfile.mkdtemp(prefix="javis-ws-compat-"))
+    d = Path(tempfile.mkdtemp(prefix="unimate-ws-compat-"))
     (d / "wsapp.py").write_text(APP, encoding="utf-8")
     port = free_port()
     env = dict(os.environ, PYTHONPATH=os.pathsep.join([str(SERVER), str(d)]), **env_extra)
@@ -82,15 +82,15 @@ ext, n = negotiated({})
 check("uvicorn started from the CLI with its defaults does not negotiate compression", "permessage-deflate" not in ext,
       ext)
 check("a large message still arrives whole", n == 50000, n)
-ext, _ = negotiated({"JAVIS_WS_DEFLATE": "1"})
-check("JAVIS_WS_DEFLATE=1 keeps compression", "permessage-deflate" in ext, ext)
+ext, _ = negotiated({"UNIMATE_WS_DEFLATE": "1"})
+check("UNIMATE_WS_DEFLATE=1 keeps compression", "permessage-deflate" in ext, ext)
 
 # 0.274.0: ws_compat no longer loads uvicorn itself; when main comes first (`python main.py`), the patch lands as soon as
 # uvicorn.config loads.
 LATE = ("import sys, ws_compat; ws_compat.disable_deflate(); print('uvicorn' in sys.modules); "
         "import uvicorn.config as u; print(u.Config('x:y').ws_per_message_deflate)")
 late = subprocess.run([sys.executable, "-c", LATE], cwd=str(SERVER), capture_output=True, text=True,
-                      env={k: v for k, v in os.environ.items() if k != "JAVIS_WS_DEFLATE"})
+                      env={k: v for k, v in os.environ.items() if k != "UNIMATE_WS_DEFLATE"})
 check("disable_deflate does not load uvicorn, and a uvicorn loaded after it still has compression off",
       late.stdout.split() == ["False", "False"], (late.stdout, late.stderr[-300:]))
 
@@ -103,7 +103,7 @@ check("python main.py starts uvicorn without compression too",
       "ws_per_message_deflate=ws_compat.wanted()" in main_src)
 
 # ═════ drop reports ═════
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-ws-drops-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-ws-drops-")
 import main  # noqa: E402
 import loop_watch  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

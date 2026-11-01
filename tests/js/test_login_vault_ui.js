@@ -31,7 +31,7 @@ check("card escapes the name", h.includes("Shopee &lt;b&gt;") && !h.includes("Sh
 check("card shows the status in words", h.includes("Còn đăng nhập") && h.includes('class="lv-st ok"'));
 check("card shows the domains", h.includes("<span>shopee.vn</span>"));
 check("card shows how many cookies, not their values", h.includes("12 cookie") && !/value|SPC_/i.test(h));
-check("switch is on when Javis may use it", /data-act="toggle" checked/.test(h));
+check("switch is on when UNI MATE may use it", /data-act="toggle" checked/.test(h));
 check("card has Check, Update and more", h.includes('data-act="check"') && h.includes('data-act="replace"') && h.includes('data-act="more"'));
 
 h = LV.cardHtml(Object.assign({}, base, { allow_ai: false, status: "signed_out", status_note: "Trang chuyển về màn đăng nhập" }), NOW);
@@ -62,17 +62,17 @@ check("upload refuses files over 1 MB", /MAX_FILE = 1024 \* 1024/.test(lvSrc) &&
 
 const cons = D("console.js");
 check("sidebar: Connections group has logins", /ids: \["mcp", "packs", "channels", "logins"\]/.test(cons));
-// Owner, 2026-10-28: choosing the brain is Javis's own setting, not an outside connection: Models sits under System.
+// Owner, 2026-10-28: choosing the brain is UNI MATE's own setting, not an outside connection: Models sits under System.
 check("sidebar: Models is in the System group", /ids: \["models", "settings", "share", "account"\], foot: true/.test(cons));
 check("sidebar: logins has the cookie icon", /logins: "cookie"/.test(cons));
 check("page is called Cookies in both languages", VI["page.logins.label"] === "Cookies" && EN["page.logins.label"] === "Cookies");
 check("cookie and file-up icons are vendored", /"cookie":/.test(D("vendor/lucide-icons.js")) && /"file-up":/.test(D("vendor/lucide-icons.js")));
-check("page delegates to login-vault.js", /id === "logins"[\s\S]{0,200}JavisLoginVault\.mount\(el\)/.test(cons));
+check("page delegates to login-vault.js", /id === "logins"[\s\S]{0,200}UniMateLoginVault\.mount\(el\)/.test(cons));
 check("voice commands know the page", /"logins", "pet", "share"\]/.test(D("ui-actions.js")) && /"logins", "pet", "share",/.test(R("server/ui_targets.py")));
 check("index.html loads the module", /login-vault\.js\?v=\d+/.test(D("index.html")));
 const ww = D("web-watch.js");
 check("watch form offers a sign-in", ww.includes('id="wwLogin"') && ww.includes("login_id:"));
-check("watch form lists only sign-ins Javis may use", /filter\(function \(x\) \{ return x\.allow_ai; \}\)/.test(ww));
+check("watch form lists only sign-ins UNI MATE may use", /filter\(function \(x\) \{ return x\.allow_ai; \}\)/.test(ww));
 
 const keys = Object.keys(VI).filter((k) => k.startsWith("lv.") || k.startsWith("page.logins."));
 check("every lv key exists in English", keys.length > 30 && keys.every((k) => EN[k]));

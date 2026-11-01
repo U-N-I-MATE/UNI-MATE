@@ -3,7 +3,7 @@
     python tests/run.py resonance_mvp_handoff -v
 
 Không chỉ đọc AST: trích NGUYÊN các hàm `run_turn`, `run_voice_turn`, `_start_resumed_turn` từ main.py rồi
-chạy chúng với dịch vụ giả (bộ não giọng, _do_turn, runtime). `_do_turn` giả gọi tool javis_goal thật như
+chạy chúng với dịch vụ giả (bộ não giọng, _do_turn, runtime). `_do_turn` giả gọi tool unimate_goal thật như
 bộ não chính sẽ gọi, nên kiểm được sổ lượt và tool nhận đúng id tin, đúng lời người dùng (đã bóc khối ngữ cảnh
 giao diện, không kèm ghi chú host), và cùng một tin chỉ tạo một mục tiêu. Cách dựng theo script kiểm độc lập
 của ChatGPT ở vòng review 2. Không gọi model, micro hay dịch vụ giọng nói thật.
@@ -19,8 +19,8 @@ import types
 import uuid
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m2h-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m2h-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import localefmt  # noqa: E402
 import luot_dang_chay  # noqa: E402
@@ -41,13 +41,13 @@ def check(name, cond):
 
 
 BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-h-")).resolve())
-P = RS.Principal("agent", "javis", BRAIN)
+P = RS.Principal("agent", "unimate", BRAIN)
 goals = RS.GoalStore()
 import _resonance_agent as RA  # noqa: E402  - A1: tool chỉ chạy trong lượt của agent đã bật
 RA.preapprove()  # A4: chủ dự án cho phép phạm vi ngay sau khi lập (D1); xem _resonance_agent.preapprove
 AG = RA.enable(goals, BRAIN)
 _, routes = plugins_host.plugin_tools("full", BRAIN, scope_vault=False)
-call = routes["javis_goal"]["call"]
+call = routes["unimate_goal"]["call"]
 
 ORIGINAL = "Theo dõi hồ sơ đến ngày 11/10/2026, cần đủ 10 hồ sơ."
 PROPOSAL = {"understanding": "Theo dõi hồ sơ", "stage": "delivery", "relevant_quote": "Theo dõi hồ sơ",
@@ -77,7 +77,7 @@ async def fake_do_turn(conv_sid, message, *a, user_mid=0, user_text=None, **kw):
 
 
 async def _silent_stream(*a):
-    yield "JAVIS_BO_QUA: tạp âm"
+    yield "UNIMATE_BO_QUA: tạp âm"
 
 
 async def _brain_ok(*a):
@@ -123,7 +123,7 @@ def _ok(i, label):
           s.get("live_mid") == MID and s.get("mid") == MID)
     check(f"{label}: lời người dùng đúng nguyên văn, đã bóc khối ngữ cảnh giao diện, không kèm ghi chú host",
           s.get("live_text") == ORIGINAL and s.get("text") == ORIGINAL)
-    check(f"{label}: tool javis_goal chạy được trong lượt (không bị từ chối vì thiếu id)",
+    check(f"{label}: tool unimate_goal chạy được trong lượt (không bị từ chối vì thiếu id)",
           len(tool_outs) > i and not tool_outs[i].startswith("ERROR"))
 
 

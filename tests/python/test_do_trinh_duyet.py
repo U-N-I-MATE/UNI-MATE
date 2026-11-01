@@ -1,11 +1,11 @@
-"""Tải Chromium xong thì MỌI chỗ trong Javis phải thấy nó.
+"""Tải Chromium xong thì MỌI chỗ trong UNI MATE phải thấy nó.
 
     python tests/run.py do_trinh_duyet
 
 Lỗi thật, chủ repo báo 22/09 kèm ảnh hai trang cãi nhau trên CÙNG một máy:
 
     trang Công cụ  ->  "Trình duyệt (Chromium)  ● Sẵn sàng  · 260 MB"
-    trang Models   ->  "Chưa có trình duyệt nào Javis lái được. Mở trang Công cụ rồi bấm tải"
+    trang Models   ->  "Chưa có trình duyệt nào UNI MATE lái được. Mở trang Công cụ rồi bấm tải"
 
 Hệ quả không nhìn thấy ngay: nút "Đăng nhập ChatGPT" chỉ vẽ khi engine Web báo dùng được, nên
 chủ repo tải đủ 400 MB rồi vẫn không có chỗ nào bấm để kết nối.
@@ -33,7 +33,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-dotd-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-dotd-")
 
 import optional_tools as ot  # noqa: E402
 
@@ -133,7 +133,7 @@ _dung(("chromium_headless_shell-1243", "chrome-linux/headless_shell"),
 check("có cả hai ở bố cục lạ -> vẫn lấy bản đầy đủ",
       ot.duong_dan_chrome().endswith("chrome"), ot.duong_dan_chrome())
 
-# Báo lỗi 14/10/2026 (Javis 0.133.0, Playwright 1.64): bản headless của Chrome for Testing đổi cả
+# Báo lỗi 14/10/2026 (UNI MATE 0.133.0, Playwright 1.64): bản headless của Chrome for Testing đổi cả
 # thư mục lẫn TÊN file chạy thành `chrome-headless-shell`. Cài đủ, chạy được, mà trang Công cụ báo
 # "thiếu file chạy, bản tải về hỏng dở" vì tên mới không có trong danh sách. Dựng đúng bố cục đó,
 # kèm hai file đánh dấu Playwright để lại.
@@ -158,7 +158,7 @@ check("có bản đầy đủ cạnh bản chrome-headless-shell -> vẫn lấy 
 # 1c) Câu báo lỗi phải nói ĐÃ TÌM Ở ĐÂU, THẤY GÌ
 # ============================================================
 #
-# "Chưa có trình duyệt nào Javis lái được" là câu cụt: người đọc nó đã bấm tải và đã thấy báo
+# "Chưa có trình duyệt nào UNI MATE lái được" là câu cụt: người đọc nó đã bấm tải và đã thấy báo
 # xong. Nó nói họ sai mà không nói sai ở đâu, nên mỗi vòng hỏi lại tốn một lần cập nhật.
 
 _dung()
@@ -220,7 +220,7 @@ check("có ghi lại vì sao (hai thư mục, hai tên binary)", "headless_shell
 # 5) Không đụng tới thứ có sẵn của máy
 # ============================================================
 
-check("gỡ chỉ xoá thư mục Javis tải", "goc = BROWSERS_DIR" in _src)
+check("gỡ chỉ xoá thư mục UNI MATE tải", "goc = BROWSERS_DIR" in _src)
 check("vẫn dò Chrome/Edge có sẵn trên máy trước khi bắt tải",
       "_chrome_he_thong()" in _src[_src.index("def duong_dan_chrome"):])
 

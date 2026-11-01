@@ -17,8 +17,8 @@ Test này khoá ba trần đó tách bạch ở CẢ HAI engine, và khoá luôn
 dùng phải đọc ra được là nên mở hội thoại mới, chứ không phải chỉ được bảo đi sửa biến môi
 trường mà đa số không biết đặt ở đâu.
 
-Bổ sung 2026-08-07 (v0.25.6): trần 180s bị BỎ HẲN làm mặc định. Chủ repo gửi ảnh: bảo Javis
-"thiết kế cho anh file .md", Javis nói "viết file luôn" rồi bị chém ở giây 180. Lý do là phép
+Bổ sung 2026-08-07 (v0.25.6): trần 180s bị BỎ HẲN làm mặc định. Chủ repo gửi ảnh: bảo UNI MATE
+"thiết kế cho anh file .md", UNI MATE nói "viết file luôn" rồi bị chém ở giây 180. Lý do là phép
 đo sai chứ không phải con số nhỏ - SDK chỉ phát message khi model kết thúc một khối, nên suốt
 lúc model suy nghĩ ở mức nỗ lực cao hoặc soạn nội dung file dài để đưa vào tool Write, kênh im
 hoàn toàn dù mọi thứ đang chạy đúng. Nay hai trần đo-sự-im-lặng mặc định KHÔNG GIỚI HẠN; trần
@@ -43,9 +43,9 @@ cli = (SERVER / "claude_cli.py").read_text(encoding="utf-8")
 
 # ---- 1. Cả ba trần đều tồn tại, đều đọc được từ biến môi trường ----
 for ten, nguon in (("engine Claude SDK", sdk), ("engine Codex CLI", cli)):
-    for bien, mac_dinh in (("JAVIS_CLAUDE_IDLE_TIMEOUT", "0"),
-                           ("JAVIS_CLAUDE_TOOL_TIMEOUT", "3600"),
-                           ("JAVIS_CLAUDE_FIRST_TIMEOUT", "0")):
+    for bien, mac_dinh in (("UNIMATE_CLAUDE_IDLE_TIMEOUT", "0"),
+                           ("UNIMATE_CLAUDE_TOOL_TIMEOUT", "3600"),
+                           ("UNIMATE_CLAUDE_FIRST_TIMEOUT", "0")):
         check(f"{ten}: có trần {bien} (mặc định {mac_dinh})",
               re.search(rf'{bien}"\s*,\s*"{mac_dinh}"', nguon) is not None)
 
@@ -53,18 +53,18 @@ for ten, nguon in (("engine Claude SDK", sdk), ("engine Codex CLI", cli)):
 from claude_sdk_engine import tran_watchdog  # noqa: E402
 
 for raw in ("0", "-1", "0.0"):
-    os.environ["JAVIS_TEST_TRAN"] = raw
+    os.environ["UNIMATE_TEST_TRAN"] = raw
     check(f"đặt '{raw}' → không giới hạn (None)",
-          tran_watchdog("JAVIS_TEST_TRAN", "180") is None)
-os.environ["JAVIS_TEST_TRAN"] = "45"
-check("đặt số dương → giữ nguyên trần đó", tran_watchdog("JAVIS_TEST_TRAN", "180") == 45.0)
-os.environ["JAVIS_TEST_TRAN"] = "linh tinh"
+          tran_watchdog("UNIMATE_TEST_TRAN", "180") is None)
+os.environ["UNIMATE_TEST_TRAN"] = "45"
+check("đặt số dương → giữ nguyên trần đó", tran_watchdog("UNIMATE_TEST_TRAN", "180") == 45.0)
+os.environ["UNIMATE_TEST_TRAN"] = "linh tinh"
 check("giá trị rác → về mặc định chứ không làm nổ lượt chat",
-      tran_watchdog("JAVIS_TEST_TRAN", "180") == 180.0)
-os.environ.pop("JAVIS_TEST_TRAN", None)
+      tran_watchdog("UNIMATE_TEST_TRAN", "180") == 180.0)
+os.environ.pop("UNIMATE_TEST_TRAN", None)
 check("chưa đặt biến → dùng mặc định truyền vào",
-      tran_watchdog("JAVIS_TEST_TRAN", "0") is None
-      and tran_watchdog("JAVIS_TEST_TRAN", "3600") == 3600.0)
+      tran_watchdog("UNIMATE_TEST_TRAN", "0") is None
+      and tran_watchdog("UNIMATE_TEST_TRAN", "3600") == 3600.0)
 
 # ---- 2b. Hai trần đo SỰ IM LẶNG mặc định tắt, trần chờ TOOL thì không ----
 def _mac_dinh(nguon, bien):
@@ -74,11 +74,11 @@ def _mac_dinh(nguon, bien):
 
 for ten, nguon in (("engine Claude SDK", sdk), ("engine Codex CLI", cli)):
     check(f"{ten}: trần im-giữa-chừng mặc định KHÔNG giới hạn",
-          _mac_dinh(nguon, "JAVIS_CLAUDE_IDLE_TIMEOUT") == 0)
+          _mac_dinh(nguon, "UNIMATE_CLAUDE_IDLE_TIMEOUT") == 0)
     check(f"{ten}: trần chờ-chữ-đầu mặc định KHÔNG giới hạn",
-          _mac_dinh(nguon, "JAVIS_CLAUDE_FIRST_TIMEOUT") == 0)
+          _mac_dinh(nguon, "UNIMATE_CLAUDE_FIRST_TIMEOUT") == 0)
     check(f"{ten}: trần chờ TOOL vẫn còn (đo tiến trình con có thật, không phải sự im lặng)",
-          _mac_dinh(nguon, "JAVIS_CLAUDE_TOOL_TIMEOUT") >= 3600)
+          _mac_dinh(nguon, "UNIMATE_CLAUDE_TOOL_TIMEOUT") >= 3600)
 
 # ---- 2c. Chốt trần và LÝ DO cùng lúc: suy ngược lý do lúc hết giờ là int(None) nổ ----
 than_query = sdk.split("async def query")[1]
@@ -113,7 +113,7 @@ for ten, nguon in (("engine Claude SDK", sdk), ("engine Codex CLI", cli)):
     check(f"{ten}: thông báo nói rõ vì sao (hội thoại dài, nạp lại ngữ cảnh)",
           "hội thoại đã rất dài" in nguon)
     check(f"{ten}: vẫn nêu biến môi trường cho người biết chỉnh",
-          "JAVIS_CLAUDE_FIRST_TIMEOUT" in nguon)
+          "UNIMATE_CLAUDE_FIRST_TIMEOUT" in nguon)
 
 # ---- 5. Ba thông báo phải KHÁC nhau, nếu không thì lại không phân biệt được bệnh ----
 for ten, nguon in (("engine Claude SDK", sdk), ("engine Codex CLI", cli)):

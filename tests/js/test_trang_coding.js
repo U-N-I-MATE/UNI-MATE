@@ -17,7 +17,7 @@
 
    Và hai chỗ 0.63.2 sửa tiếp:
 
-   4. **Cột trái phải là CHÍNH cột hội thoại của trang Trò chuyện** (mượn qua JavisChatSide),
+   4. **Cột trái phải là CHÍNH cột hội thoại của trang Trò chuyện** (mượn qua UniMateChatSide),
       không phải một danh sách rút gọn tự vẽ. Đây là lần thứ hai cùng một lỗi "dựng bản thứ
       hai" trong cùng một trang, nên canh hẳn bằng test.
 
@@ -69,7 +69,7 @@ check("the page's own folder picker is gone (the composer pins the folder, 0.158
   !/moKhungThemThuMuc|menuThuMuc|boThuMuc|chip_pick_folder/.test(CD)
   && ["coding.add_folder", "coding.chip_pick_folder", "coding.detach_folder", "coding.forget_folder", "coding.forget_confirm"]
     .every((k) => !VI[k] && !EN[k]));
-check("the page refreshes its git chips when the composer pins or unpins", CD.indexOf('"javis:pinned-folder-changed"') !== -1);
+check("the page refreshes its git chips when the composer pins or unpins", CD.indexOf('"unimate:pinned-folder-changed"') !== -1);
 check("khoá cũ nói 'repo' đã bỏ hẳn",
   ["coding.add_repo", "coding.remove_repo", "coding.chip_pick_repo", "coding.ask_path"]
     .every((k) => !VI[k] && !EN[k]));
@@ -120,16 +120,16 @@ check("icon đó có thật trong bộ icon đã sinh sẵn", (() => {
 
 // ---- 4. Cột trái MƯỢN nguyên cột hội thoại của trang Trò chuyện ----
 check("gắn module lịch sử thật, không tự vẽ danh sách",
-  /JavisChatSide\.mount\(/.test(CD) && !/cdPhienDs|cd-phien-ds/.test(CD));
+  /UniMateChatSide\.mount\(/.test(CD) && !/cdPhienDs|cd-phien-ds/.test(CD));
 check("lọc theo kênh Coding và thay hành vi nút Hội thoại mới",
   /\{ kenh: S\.kenh, onNew: moPhienMoi \}/.test(CD));
 check("KHÔNG bật chế độ gọn, để giữ đủ tab và thanh gom nhóm", !/chiHoiThoai/.test(CD));
-check("có chỗ cho chip gom nhóm đậu vào", /proj-chip-host/.test(CD) && /JavisChatSide\.chip\(\)/.test(CD));
+check("có chỗ cho chip gom nhóm đậu vào", /proj-chip-host/.test(CD) && /UniMateChatSide\.chip\(\)/.test(CD));
 check("khung trang dùng lại bộ lớp .chatpage của trang Trò chuyện",
   /class="chatpage"/.test(CD) && /class="chatpage-side"/.test(CD) && /class="chatpage-slot"/.test(CD));
 check("và KHÔNG đẻ bộ lớp bố cục thứ hai", !/\.cd-left|\.cd-main|\.cd-page/.test(CSS));
 check("bấm một hội thoại ở cột trái thì dải chip cập nhật theo",
-  /function bocMoPhien\(\)/.test(CD) && /JavisSessions\.open = function/.test(CD)
+  /function bocMoPhien\(\)/.test(CD) && /UniMateSessions\.open = function/.test(CD)
   && /function traMoPhien\(\)/.test(CD) && /roi\(\)[\s\S]{0,200}traMoPhien\(\)/.test(CD));
 
 // ---- 4b. Ba chế độ, và Plan phải thật sự lập kế hoạch ----
@@ -195,7 +195,7 @@ const STYLE = D("style.css");
 check("KHÔNG gọi window.prompt", !/\bprompt\s*\(/.test(CD_MA));
 check("KHÔNG gọi window.alert", !/\balert\s*\(/.test(CD_MA));
 const CF = fs.readFileSync(path.join(ROOT, "dashboard", "composer-folder.js"), "utf8");
-check("browsing for a folder opens the shared folder picker (from the composer since 0.158.0)", /JavisFolderPicker\.open\(/.test(CF));
+check("browsing for a folder opens the shared folder picker (from the composer since 0.158.0)", /UniMateFolderPicker\.open\(/.test(CF));
 check("KHÔNG còn ô gõ đường dẫn làm đường chính",
   !/cd-tam-nen|id="cdPath"/.test(CD) && !VI["coding.path_ph"] && !EN["coding.path_ph"]);
 check("hộp duyệt đứng trên chính endpoint /browse đã có, không đẻ endpoint mới",
@@ -293,7 +293,7 @@ check("bề rộng hẹp thì cột hội thoại thành ngăn kéo (luật củ
 check("nút thu gọn cột dùng đúng lớp của trang Trò chuyện",
   /cp-side-toggle/.test(CD) && /classList\.toggle\("side-thu"\)/.test(CD));
 check("the Code page column gets the same corner collapse/expand pair, after mount",
-  /JavisChatSide\.mount\(el\.querySelector\("#cdSide"\)[\s\S]{0,300}W\.JavisSideFoldButtons\(/.test(CD));
+  /UniMateChatSide\.mount\(el\.querySelector\("#cdSide"\)[\s\S]{0,300}W\.UniMateSideFoldButtons\(/.test(CD));
 check("chữ trên điện thoại không nhỏ hơn 16px",
   /@media \(max-width: 900px\)[\s\S]{0,400}\.cd-chip \{ font-size: 16px/.test(CSS)
   && /@media \(max-width: 900px\)[\s\S]{0,600}\.cd-menu button \{ font-size: 16px/.test(CSS)

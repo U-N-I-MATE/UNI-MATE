@@ -1,4 +1,4 @@
-/* Javis TỰ HỎI THĂM khi việc nền chạy lâu (0.57.19).
+/* UNI MATE TỰ HỎI THĂM khi việc nền chạy lâu (0.57.19).
 
        node tests/js/test_hoi_tham_viec_nen.js
 
@@ -28,8 +28,8 @@ function check(name, cond, extra) {
 
 // ---- 1. Đường số liệu: server -> dải trạng thái -> app ----
 check("dải trạng thái đẩy voice_count sang app",
-  /window\.JavisOrb\.setVoiceJobs\(\(d && d\.voice_count\) \|\| 0\)/.test(strip));
-check("app nhận qua JavisOrb.setVoiceJobs", /setVoiceJobs: \(n\) => datSoViecGiong\(n\)/.test(app));
+  /window\.UniMateOrb\.setVoiceJobs\(\(d && d\.voice_count\) \|\| 0\)/.test(strip));
+check("app nhận qua UniMateOrb.setVoiceJobs", /setVoiceJobs: \(n\) => datSoViecGiong\(n\)/.test(app));
 check("có câu hỏi thăm trong cả hai ngôn ngữ",
   !!vi["app.voice_cho_viec"] && !!en["app.voice_cho_viec"]
   && !!vi["app.voice_cho_viec_lau"] && !!en["app.voice_cho_viec_lau"]);

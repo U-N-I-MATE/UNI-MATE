@@ -298,10 +298,10 @@ class WebhookWorker:
         mb = sp["used"] // webhook_store.MiB
         free = sp["disk_free"] // webhook_store.MiB
         msg = localefmt.chu(f"⚠ Kho sự kiện webhook {'đã đầy' if sp['level'] == 'full' else 'sắp đầy'}: {mb} MB "
-                            f"(trần {sp['cap'] // webhook_store.MiB} MB), đĩa còn {free} MB. Khi đầy, Javis trả lỗi tạm "
+                            f"(trần {sp['cap'] // webhook_store.MiB} MB), đĩa còn {free} MB. Khi đầy, UNI MATE trả lỗi tạm "
                             "thời để bên gửi gửi lại sau, không mất sự kiện đã nhận. Xoá bớt nhật ký cũ hoặc tăng đĩa.",
                             f"⚠ The webhook event store is {'full' if sp['level'] == 'full' else 'nearly full'}: {mb} MB "
-                            f"(cap {sp['cap'] // webhook_store.MiB} MB), {free} MB free on disk. When full, Javis answers "
+                            f"(cap {sp['cap'] // webhook_store.MiB} MB), {free} MB free on disk. When full, UNI MATE answers "
                             "a temporary error so senders retry later; no accepted event is lost. Clear old logs or "
                             "add disk.")
         await asyncio.to_thread(self.store().notify_enqueue, f"whsys:space:{sp['level']}:{day}", "system", msg,
@@ -608,7 +608,7 @@ class WebhookWorker:
             try:
                 await branch(b)
             except Exception as e:
-                # A fault in Javis itself. After the dispatch was recorded the delivery may already have acted: the
+                # A fault in UNI MATE itself. After the dispatch was recorded the delivery may already have acted: the
                 # owner decides (unknown). Before it nothing was sent: it is tried again shortly, within its deadline.
                 # The other deliveries keep running under the heartbeat (gather waits for all of them).
                 aid = b["action_id"]
@@ -788,9 +788,9 @@ class WebhookWorker:
             return
         name = h.get("name") or h.get("id")
         msg = localefmt.chu(f"⚠ Webhook \"{name}\": nơi nhận \"{aid}\" lỗi {webhook_store.BREAKER_FAILS} lần liền nên "
-                            f"Javis tạm ngừng gửi tới đó một lúc rồi thử lại. Lỗi cuối: {detail[:200]}",
+                            f"UNI MATE tạm ngừng gửi tới đó một lúc rồi thử lại. Lỗi cuối: {detail[:200]}",
                             f"⚠ Webhook \"{name}\": receiver \"{aid}\" failed {webhook_store.BREAKER_FAILS} times in a "
-                            f"row, so Javis pauses sending there for a while, then tries again. Last error: "
+                            f"row, so UNI MATE pauses sending there for a while, then tries again. Last error: "
                             f"{detail[:200]}")
         await self._enqueue(f"whb:{h.get('id')}:{aid}:{int(self.clock() // 600)}", "breaker", msg, h, status="failed")
         await self.deliver_notifications()

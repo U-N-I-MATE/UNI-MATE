@@ -2,10 +2,10 @@
 
     python tests/run.py agy_prompt_dai      (KHÔNG mạng, không cần cài agy)
 
-Người dùng báo 2026-08-30, kèm ảnh: hội thoại 33 tin bằng tiếng Việt, và Javis trả về hai
+Người dùng báo 2026-08-30, kèm ảnh: hội thoại 33 tin bằng tiếng Việt, và UNI MATE trả về hai
 bong bóng đỏ
 
-    OSError: [Errno 7] Argument list too long: '/opt/javis/agy'
+    OSError: [Errno 7] Argument list too long: '/opt/unimate/agy'
 
 rồi "(không có nội dung trả về)". Chat ngắn thì bình thường, nên nó trông như ngẫu nhiên.
 
@@ -18,7 +18,7 @@ Hai lỗi chồng nhau, và cái thứ nhất giải thích vì sao chỉ tiến
    trông như ngẫu nhiên.
 
 2. Không có lưới an toàn. E2BIG nổ ở `Popen` bị gói thành chuỗi `OSError: ...` rồi bắn thẳng
-   ra người dùng - một câu họ không sửa được gì, và lượt chat mất trắng, dù Javis có sẵn hai
+   ra người dùng - một câu họ không sửa được gì, và lượt chat mất trắng, dù UNI MATE có sẵn hai
    đường không trần (stdin, file ngữ cảnh) nằm ngay đó.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -30,7 +30,7 @@ import stat
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-agydai-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-agydai-"))
 
 import antigravity_cli as A  # noqa: E402
 
@@ -75,7 +75,7 @@ _HELP = ("Usage: agy [OPTIONS]\n  -p, --print <PROMPT>\n  --model <M>\n"
 
 def _gia_agy(dong_ra, ma=0):
     """`agy` giả: ghi lại argv/stdin nhận được rồi in ra dòng sự kiện đã khai."""
-    d = Path(tempfile.mkdtemp(prefix="javis-fakeagy-dai-"))
+    d = Path(tempfile.mkdtemp(prefix="unimate-fakeagy-dai-"))
     p = d / "agy"
     p.write_text(
         "#!/usr/bin/env python3\n"

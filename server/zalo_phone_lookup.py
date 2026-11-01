@@ -35,7 +35,7 @@ NEG_TTL = 86400            # "no Zalo account for this number": people sign up, 
 ERR_TTL = 600              # any other failure (rate limit, session down): do not hammer Zalo while the owner retypes
 CLI_TIMEOUT = 20           # seconds for one CLI call
 MAX_LIVE_PER_HOUR = 20     # live Zalo lookups per hour, all accounts together
-_NOT_FOUND = "No Zalo user found"   # javis-zalo `friend find` prints this when Zalo has no account for the number
+_NOT_FOUND = "No Zalo user found"   # unimate-zalo `friend find` prints this when Zalo has no account for the number
 
 _live: List[float] = []
 _running: Dict[str, "asyncio.Task"] = {}

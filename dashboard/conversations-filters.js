@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  var KEY = "javis.inbox.filters";
+  var KEY = "unimate.inbox.filters";
   // 2026-10-25, from the owner's Pancake screenshots: "waiting" is "need reply" sorted waiting-longest first ("đợi phản hồi
   // lâu nhất"), one more choice in the status dropdown. "The customer left a phone number or email" is its own on/off
   // filter (`contact`), so it combines with a status such as "need reply" (owner: "tách ô lọc riêng").
@@ -110,7 +110,7 @@
     if (s.tagsAny.length) q += "&tags_any=" + s.tagsAny.join(",");
     if (s.tagsNone.length) q += "&tags_none=" + s.tagsNone.join(",");
     // A quick range is turned into days at every request, so "last 7 days" moves with the calendar.
-    var DR = window.JavisDateRange, d = s.when && (DR ? DR.dates(s.when) : s.when.from ? s.when : null);
+    var DR = window.UniMateDateRange, d = s.when && (DR ? DR.dates(s.when) : s.when.from ? s.when : null);
     if (d && d.from && d.to) q += "&from=" + d.from + "&to=" + d.to;
     if (s.lastBy) q += "&last_by=" + s.lastBy;
     if (s.pinned) q += "&pinned=1";
@@ -202,7 +202,7 @@
         '<span class="ht-rm-t"><span>' + esc(tt("ht.rm_tag_new")) + '</span></span></button>';
   }
 
-  window.JavisConvFilters = {
+  window.UniMateConvFilters = {
     emptyState: emptyState, sanitize: sanitize, load: load, save: save, activeCount: activeCount, query: query,
     tagChips: tagChips, tagChip: tagChip, tagColor: tagColor,
     TAG_COLORS: TAG_COLORS, rowMenuItems: rowMenuItems, rowMenuHtml: rowMenuHtml, tagMenuHtml: tagMenuHtml, WHOS: WHOS,

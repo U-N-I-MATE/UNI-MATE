@@ -2,8 +2,8 @@
 
        node tests/js/test_chat_zoom_sang_trang.js
 
-   Chủ repo yêu cầu (0.12.4): "nên tắt luôn cái khung zoom của bên Javis và thay vào đó khi
-   zoom to thì sang trang trò chuyện, bên trang trò chuyện có nút thu nhỏ lại về màn Javis".
+   Chủ repo yêu cầu (0.12.4): "nên tắt luôn cái khung zoom của bên UNI MATE và thay vào đó khi
+   zoom to thì sang trang trò chuyện, bên trang trò chuyện có nút thu nhỏ lại về màn UNI MATE".
 
    Vì sao đúng: lớp nổi .chat-stage và trang Trò chuyện MƯỢN CHUNG đúng bốn node của HUD
    (#chatArea, #attachBar, #modelBar, #hudVoice). Hai chỗ giành một bộ node nên phải rải các
@@ -67,21 +67,21 @@ check("không nhảy trang khi đã ở sẵn trang đó (tránh nháy)",
 // ---- 4. Chiều VỀ: trang Trò chuyện phải có nút thu nhỏ ----
 // Thiếu nút này là người dùng vào được mà không ra được bằng đúng chỗ vừa bấm.
 check("CANARY: trang Trò chuyện có nút thu nhỏ", CONSOLE.indexOf('id="cpMinBtn"') !== -1);
-check("nút thu nhỏ đưa về màn Javis",
+check("nút thu nhỏ đưa về màn UNI MATE",
       /#cpMinBtn["']\)\.onclick = \(\) => navigateTo\(["']home["']\)/.test(CONSOLE_CODE));
 check("nút thu nhỏ có chữ cho biết nó làm gì", /Thu nhỏ/.test(CONSOLE));
 
 // ---- 5. Các API cũ vẫn gọi được, và trở thành vô hại ----
-// console.js/sessions-ui.js còn gọi JavisChatStage. Bỏ hẳn object là vỡ trang.
-check("còn xuất window.JavisChatStage", ZOOM.indexOf("window.JavisChatStage") !== -1);
+// console.js/sessions-ui.js còn gọi UniMateChatStage. Bỏ hẳn object là vỡ trang.
+check("còn xuất window.UniMateChatStage", ZOOM.indexOf("window.UniMateChatStage") !== -1);
 check("CANARY: isOpen() luôn false (các nhát 'thu lại' còn sót thành vô hại)",
       /isOpen: function \(\) \{ return false; \}/.test(ZOOM_CODE));
 check("nút Lịch sử vẫn có đường vào", ZOOM.indexOf("showSide") !== -1
-      && SESS.indexOf("JavisChatStage.showSide()") !== -1);
+      && SESS.indexOf("UniMateChatStage.showSide()") !== -1);
 
 // ---- 6. Không còn chỗ nào chờ lớp nổi ----
 check("CANARY: navigateTo không còn nhát thu lớp nổi",
-      CONSOLE_CODE.indexOf("JavisChatStage") === -1);
+      CONSOLE_CODE.indexOf("UniMateChatStage") === -1);
 check("sessions-ui đóng drawer bằng #chatPage chứ không phải .chat-stage",
       SESS.indexOf('getElementById("chatPage")') !== -1
       && khongComment(SESS).indexOf(".chat-stage") === -1);

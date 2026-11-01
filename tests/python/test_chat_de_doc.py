@@ -4,7 +4,7 @@
 
 Chủ repo gửi hai ảnh chụp khung chat (2026-08-09): những câu trả lời dài đổ ra thành hết đoạn
 văn xuôi này tới đoạn văn xuôi khác, không gạch đầu dòng, không tiêu đề, không chỗ nào cho mắt
-bám. Kèm lý do vì sao nó thành ra như vậy: "ngày xưa anh để Javis thể hiện cho dễ cho việc
+bám. Kèm lý do vì sao nó thành ra như vậy: "ngày xưa anh để UNI MATE thể hiện cho dễ cho việc
 voice, nhưng giờ khi anh dùng hầu như là chat nhiều. Và nó render ra văn xuôi rất khó đọc."
 
 Gốc rễ là một luật trong CLAUDE.md có thật: "KHÔNG dùng bảng markdown, dấu gạch ngang dày, hay
@@ -28,7 +28,7 @@ import os
 import re
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-dedoc-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-dedoc-"))
 
 import channel_context  # noqa: E402
 import context_compiler  # noqa: E402

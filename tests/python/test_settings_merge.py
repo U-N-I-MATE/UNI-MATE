@@ -14,7 +14,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-merge-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-merge-")
 
 import config as cfg  # noqa: E402
 
@@ -96,7 +96,7 @@ check("sửa settings.json ăn ngay, không cần restart",
       cfg.read_settings()["context_runtime"]["canary"]["allocation_basis_points"] == 250)
 
 # ---- 4. Endpoint đặt canary ----
-os.environ.setdefault("JAVIS_SKIP_HEAVY_IMPORT", "1")
+os.environ.setdefault("UNIMATE_SKIP_HEAVY_IMPORT", "1")
 import main  # noqa: E402
 
 check("_canary_keys lấy từ _DEFAULT, phủ đủ 10 đường",

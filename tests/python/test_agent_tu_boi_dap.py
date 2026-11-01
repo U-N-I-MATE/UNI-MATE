@@ -53,10 +53,10 @@ with tempfile.TemporaryDirectory() as td:
           "# Bộ nhớ của bạn" in sp and "chưa có ký ức" in sp)
     check("prompt chỉ rõ ĐƯỜNG DẪN file MEMORY.md", "MEMORY.md" in sp)
     check("prompt có luật tự bồi đắp qua marker (model đề xuất, code ghi)",
-          "Tự bồi đắp" in sp and "JAVIS_LESSON" in sp)
+          "Tự bồi đắp" in sp and "UNIMATE_LESSON" in sp)
     check("luật CẤM agent tự sửa file bộ nhớ", "KHÔNG tự sửa file bộ nhớ" in sp)
     check("luật có phanh chống ghi vụn vặt và chống lặp",
-          "ĐỪNG phát JAVIS_LESSON" in sp and "đừng lặp lại" in sp)
+          "ĐỪNG phát UNIMATE_LESSON" in sp and "đừng lặp lại" in sp)
 
     # Có ký ức thì nội dung phải vào prompt như cũ.
     memf = Path(brain, "memory", "agents", "chuyen-vien-test")
@@ -67,11 +67,11 @@ with tempfile.TemporaryDirectory() as td:
     check("có ký ức thì ký ức vào prompt", "Khách quen tên Ba" in sp2)
 
     # ---- Vòng "model đề xuất, code ghi" chạy THẬT qua closure _learn ----
-    out_tho = ("Đã xong việc.\nJAVIS_LESSON: Chủ thích báo cáo dạng bảng.\n"
-               "JAVIS_LESSON: Kho A thường trễ 2 ngày.\n")
+    out_tho = ("Đã xong việc.\nUNIMATE_LESSON: Chủ thích báo cáo dạng bảng.\n"
+               "UNIMATE_LESSON: Kho A thường trễ 2 ngày.\n")
     out_sach = _learn("chuyen-vien-test", out_tho)
     check("CANARY: marker bị BÓC khỏi output (không chảy vào {{prev}}/UI)",
-          "JAVIS_LESSON" not in out_sach and "Đã xong việc." in out_sach)
+          "UNIMATE_LESSON" not in out_sach and "Đã xong việc." in out_sach)
     mem = (memf / "MEMORY.md").read_text(encoding="utf-8")
     check("CANARY: bài học vào đúng mục tự học",
           main._BAI_HOC_HEADER in mem and "- Chủ thích báo cáo dạng bảng." in mem)
@@ -79,7 +79,7 @@ with tempfile.TemporaryDirectory() as td:
           and "- Khách quen tên Ba." in mem)
 
     # Chống trùng: cùng bài học (khác hoa thường/dấu chấm) không được nhân đôi.
-    _learn("chuyen-vien-test", "ok\nJAVIS_LESSON: chủ thích báo cáo dạng bảng\n")
+    _learn("chuyen-vien-test", "ok\nUNIMATE_LESSON: chủ thích báo cáo dạng bảng\n")
     mem = (memf / "MEMORY.md").read_text(encoding="utf-8")
     check("bài học trùng (khác hoa thường) không nhân đôi",
           mem.count("báo cáo dạng bảng") == 1)

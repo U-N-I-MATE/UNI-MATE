@@ -1,10 +1,10 @@
-/* Khung "response" thứ hai (bản sửa lại sau khi bóc JAVIS_LESSON của phiên trợ lý ở trang
+/* Khung "response" thứ hai (bản sửa lại sau khi bóc UNIMATE_LESSON của phiên trợ lý ở trang
    Cộng sự) KHÔNG được làm loa đọc lại lần hai.
 
        node tests/js/test_response_tts_resend.js
 
    Bối cảnh (fix round 2, task 5 cộng sự): server gửi khung "response" đầu tiên với text THÔ
-   (còn dòng JAVIS_LESSON), rồi gửi thêm một khung "response" thứ hai với text đã sạch kèm
+   (còn dòng UNIMATE_LESSON), rồi gửi thêm một khung "response" thứ hai với text đã sạch kèm
    "tts": false để ép vẽ lại đúng chữ trên bong bóng. Nhưng nhánh xử lý "response" trong
    app.js có một lối gọi voice.speak() DỰ PHÒNG ở cuối cho engine chỉ đọc một lần (API-key,
    phiên trợ lý...), và cờ `t.spoke` trước đó CHỈ được set từ nhánh "stream" (docCum), không

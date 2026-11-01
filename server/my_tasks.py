@@ -1,11 +1,11 @@
 """The owner's own tasks for the Tasks page, tab "Mine" (0.423.0). Spec: docs/dev/2026-10-nhiem-vu-spec.md 8.2.
 
-One JSON store per brain at <brain>/Javis/my-tasks.json:
+One JSON store per brain at <brain>/UniMate/my-tasks.json:
 
     {"tasks": [...], "projects": [...], "rev": n}
 
 A repeating task is ONE record; each finished occurrence is a key of `done_dates` ("YYYY-MM-DD" ->
-{"at": epoch, "by": "me" | "javis"}). The missed occurrence shown under Overdue, streaks and the like are
+{"at": epoch, "by": "me" | "unimate"}). The missed occurrence shown under Overdue, streaks and the like are
 computed from the schedule and `done_dates` (the page does it, see dashboard/tasks.js), never stored.
 
 Routes (all JSON bodies, `brain` like the other stores):
@@ -21,8 +21,8 @@ Routes (all JSON bodies, `brain` like the other stores):
     POST /my-tasks/project/delete {id}        its tasks keep living, without a project
     GET  /my-tasks/calendar?brain&days        read-only Google Calendar events (0.427.0), see gcal_read.py
 
-Habit coach (0.427.0): once a day the background model ("Javis Core") writes the habit lines the page and the
-reminders use, into <brain>/Javis/habit-coach.json, and learns which style of nudge was followed by the habit
+Habit coach (0.427.0): once a day the background model ("UNI MATE Core") writes the habit lines the page and the
+reminders use, into <brain>/UniMate/habit-coach.json, and learns which style of nudge was followed by the habit
 being done that day (see `coach_prompt`). No model, or a bad answer: the fixed lines stay.
 """
 from __future__ import annotations
@@ -141,8 +141,8 @@ def _apply(task: dict, p: dict) -> None:
                         for x in p["subs"][:50] if isinstance(x, dict) and str(x.get("t") or "").strip()]
     if "habit" in p:
         task["habit"] = clean_habit(p.get("habit"))
-    if "from_javis" in p:
-        task["from_javis"] = bool(p.get("from_javis"))
+    if "from_unimate" in p:
+        task["from_unimate"] = bool(p.get("from_unimate"))
     if "prep" in p:
         task["prep"] = str(p.get("prep") or "")[:500]
 
@@ -227,7 +227,7 @@ def usual_time(task: dict, tz=None) -> str:
 
 
 def nudge_time(task: dict, state: dict, tz=None) -> str:
-    """When today's reminder goes out: the set time, or for "Javis reminds" half an hour after the usual time
+    """When today's reminder goes out: the set time, or for "UNI MATE reminds" half an hour after the usual time
     (earlier while frozen, so there is room to thaw it)."""
     hb = task.get("habit") or {}
     if hb.get("remind") == "time":
@@ -300,7 +300,7 @@ def coach_prompt(habits: list, stats: dict, vi: bool) -> str:
         f"last14={h['last14']}" for h in habits)
     rates = "\n".join(f"- {s}: sent {v['sent']}, done after {v['done']}" for s, v in stats.items())
     lang = "Vietnamese, addressing the user as \"bạn\" and yourself as \"mình\"" if vi else "English"
-    return f"""You are Javis, a small star mascot coaching the user's daily habits. Write today's short lines in {lang}.
+    return f"""You are UNI MATE, a small star mascot coaching the user's daily habits. Write today's short lines in {lang}.
 
 Habits today:
 {rows}
@@ -372,7 +372,7 @@ class MyTasks:
 
     # ---- habit coach ----
     def _coach_path(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "Javis" / COACH
+        return Path(self.deps.brain_root(brain)) / "UNI MATE" / COACH
 
     def load_coach(self, brain: str) -> dict:
         try:
@@ -441,7 +441,7 @@ class MyTasks:
 
     # ---- store ----
     def _path(self, brain: str) -> Path:
-        return Path(self.deps.brain_root(brain)) / "Javis" / STORE
+        return Path(self.deps.brain_root(brain)) / "UNI MATE" / STORE
 
     def load(self, brain: str) -> dict:
         p = self._path(brain)
@@ -512,7 +512,7 @@ class MyTasks:
         task = self._find(data, tid)
         if task is None:
             return _err("không thấy việc này", "task not found")
-        by = "javis" if by == "javis" else "me"
+        by = "unimate" if by == "unimate" else "me"
         if task.get("repeat"):
             d = _clean_date(date) or time.strftime("%Y-%m-%d")
             dd = task.setdefault("done_dates", {})
@@ -544,7 +544,7 @@ class MyTasks:
             return _err("không thấy việc này", "task not found")
         data["tasks"] = [t for t in data["tasks"] if t.get("id") != tid]
         if handoff:
-            # "Give to Javis" (0.428.0): the stats count how many tasks the owner handed over.
+            # "Give to UNI MATE" (0.428.0): the stats count how many tasks the owner handed over.
             log = data.setdefault("log", {})
             log["handoffs"] = (list(log.get("handoffs") or []) + [_now()])[-2000:]
         self.save(brain, data)
@@ -623,7 +623,7 @@ class MyTasks:
     # ---- habit reminders (0.424.0) ----
     async def tick(self) -> int:
         """Send today's habit reminders that are due: once a day per habit, only on a scheduled day that is not done
-        yet, at the set time or (Javis reminds) half an hour after the usual time. Returns how many went out."""
+        yet, at the set time or (UNI MATE reminds) half an hour after the usual time. Returns how many went out."""
         if not self.deps.notify:
             return 0
         tz = self.deps.tz() if self.deps.tz else None
@@ -790,7 +790,7 @@ class MyTasks:
         return router
 
 
-# The running store, for the bundled plugin javis-mine (in-process, like tasks.current()).
+# The running store, for the bundled plugin unimate-mine (in-process, like tasks.current()).
 _FEATURE: Optional["MyTasks"] = None
 
 

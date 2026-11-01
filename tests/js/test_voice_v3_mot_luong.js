@@ -31,7 +31,7 @@ function check(name, cond) {
 // 1
 const iChunk = html.indexOf("/static/voice-chunker.js"), iApp = html.indexOf("/static/app.js");
 check("index.html nạp voice-chunker.js trước app.js", iChunk > 0 && iApp > iChunk);
-check("app.js dựng chunker từ JavisVoiceChunker", /const cum = new window\.JavisVoiceChunker\.Chunker\(\);/.test(app));
+check("app.js dựng chunker từ UniMateVoiceChunker", /const cum = new window\.UniMateVoiceChunker\.Chunker\(\);/.test(app));
 check("stream: đổ qua cum.push rồi docCum, bật đồng hồ", /docCum\(cum\.push\(data\.content \|\| "", Date\.now\(\)\), t\);\s*\n\s*batDongHoCum\(\);/.test(app));
 check("stream: KHÔNG còn enqueueSpeak thẳng từ khung stream", !/const safeChunk = \(data\.content \|\| ""\)\.replace/.test(app));
 check("response: flush phần đuôi rồi mới xét đọc cả câu (tts:false)", /if \(voice\.ttsEnabled && t && data\.tts !== false\) \{\s*docCum\(cum\.flush\(\), t\);[\s\S]*?if \(!t\.spoke && finalText\) \{ voice\.speak\(finalText\); t\.spoke = true; \}/.test(app));
@@ -55,14 +55,14 @@ check("khung WS: voice: _tuGiong || handsFree", /const payload = \{ message: out
 check("khối ngữ cảnh mang voice: _tuGiong || handsFree",
       /outMsg = boiNguCanh\(outMsg, _tuGiong \|\| handsFree\);/.test(app) && /interruptedAt: _ngatLoiTai, voice: voice,/.test(app));
 check("Live: gõ chữ thì sendText vào phiên Live và return, không đi ws chat",
-      /voiceMode === "live" && !atts\.length && window\.JavisVoiceLive && window\.JavisVoiceLive\.isOn\(\)\) \{[\s\S]{0,400}window\.JavisVoiceLive\.sendText\(msg\);\s*\n\s*return;/.test(app));
+      /voiceMode === "live" && !atts\.length && window\.UniMateVoiceLive && window\.UniMateVoiceLive\.isOn\(\)\) \{[\s\S]{0,400}window\.UniMateVoiceLive\.sendText\(msg\);\s*\n\s*return;/.test(app));
 
 // 5. Chữ hiện THEO LỜI ĐỌC (karaoke)
 const voiceJs = read("dashboard/voice.js"), liveJs = read("dashboard/voice-live.js"), css = read("dashboard/style.css");
 check("voice.js: đếm từ đã ra tiếng (spokenWords / resetSpokenWords / demTu)",
       /resetSpokenWords\(\) \{ this\._wordsDone = 0; \}/.test(voiceJs) && /spokenWords\(\) \{/.test(voiceJs) && /static demTu\(s\)/.test(voiceJs));
 check("voice.js: khúc đọc xong cộng từ, cả đường máy tính lẫn iOS lẫn giọng trình duyệt",
-      (voiceJs.match(/this\._wordsDone \+= JavisVoice\.demTu\(/g) || []).length >= 3);
+      (voiceJs.match(/this\._wordsDone \+= UniMateVoice\.demTu\(/g) || []).length >= 3);
 check("voice.js: enqueueSpeak(opts.uncounted) không tính vào số từ", /if \(opts\.uncounted\) this\._uncounted\.push\(clean\);/.test(voiceJs)
       && /this\._countThis = ui < 0;/.test(voiceJs));
 // (giữa hai dòng này còn một dòng áp âm lượng cho phép nhá tiếng, xem test_ngat_loi_nha_tieng.js)
@@ -74,11 +74,11 @@ check("app.js: stream ở phiên giọng -> batTheoLoi thay vì vẽ cả câu (
       /if \(dangTheoLoi\(\) && data\.tts !== false && !t\.imLoa\) batTheoLoi\(t\.bubble, t\.text, null, false\);/.test(app));
 check("app.js: response ở phiên giọng -> batTheoLoi mang ask, vẽ đủ + chip khi đọc xong",
       /if \(dangTheoLoi\(\) && t && finalText && !t\.imLoa\) \{\s*\n\s*batTheoLoi\(msgEl, shownText, ask, false\);/.test(app)
-      && /if \(s\.ask\) window\.JavisAsk\.render\(s\.el, s\.ask, true\);/.test(app));
+      && /if \(s\.ask\) window\.UniMateAsk\.render\(s\.el, s\.ask, true\);/.test(app));
 check("app.js: ngắt lời thật -> đóng băng chỗ đã nói kèm …", /a\.interrupted\) \{[^\n]*ketThucTheoLoi\(true\);/.test(app)
       && /takeWords\(full, s\.shown\)\) \+ " …";/.test(app));
 check("app.js: Live -> batTheoLoi live, ngắt -> ketThucTheoLoi(true), turn_done -> chuaXong=false",
-      /batTheoLoi\(_liveJavisBubble, _liveJavisText, null, true\)/.test(app) && /onInterrupted: \(\) => \{ ketThucTheoLoi\(true\);/.test(app)
+      /batTheoLoi\(_liveUniMateBubble, _liveUniMateText, null, true\)/.test(app) && /onInterrupted: \(\) => \{ ketThucTheoLoi\(true\);/.test(app)
       && /_theoLoi\.chuaXong = false;/.test(app));
 check("app.js: câu tiến độ và tin nền đọc với uncounted", /opts\.length\)\]\, \{ uncounted: true \}\)/.test(app)
       && /voice\.enqueueSpeak\(t, \{ uncounted: true \}\)/.test(app) && /voice\.enqueueSpeak\(_doc, \{ uncounted: true \}\)/.test(app));
@@ -95,11 +95,11 @@ check("style.css: có .msg-nhap-giong", /\.msg-nhap-giong \.bubble \{/.test(css)
 
 // 7. Tách nói khỏi làm: câu xác nhận kèm dòng "đang làm nền"
 // 0.64.48: dòng "đang làm nền" vẽ bằng chat-viec.js (có icon, chữ 16px, lưu kèm khối
-// JAVIS_VIEC nên F5 vẫn còn) thay cho div chữ nghiêng .voice-nen. Chi tiết: test_the_viec_nen.js.
+// UNIMATE_VIEC nên F5 vẫn còn) thay cho div chữ nghiêng .voice-nen. Chi tiết: test_the_viec_nen.js.
 check("app.js: response mang background -> dòng đang làm nền dưới bong bóng", /if \(data\.background\) \{/.test(app)
-      && /status: "giao", title: String\(data\.background\)/.test(app) && /window\.JavisViec\.ve\(msgEl, _v\)/.test(app));
+      && /status: "giao", title: String\(data\.background\)/.test(app) && /window\.UniMateViec\.ve\(msgEl, _v\)/.test(app));
 check("i18n vi/en có nhãn dòng đang làm nền", !!vi["viec.da_giao"] && !!en["viec.da_giao"]);
-check("style.css: có .viec-giao", /\.msg-javis \.viec-giao \{/.test(css));
+check("style.css: có .viec-giao", /\.msg-unimate \.viec-giao \{/.test(css));
 
 // 4
 check("channel_context.py giải thích kênh=giọng: trả lời như người đang nói, không dàn trang",

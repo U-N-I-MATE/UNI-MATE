@@ -3,10 +3,10 @@
 Vì sao tự viết thay vì cài `pywebpush`
 ======================================
 `pywebpush` kéo theo `http-ece`, mà gói đó chỉ phát hành dạng mã nguồn và phải BIÊN DỊCH
-lúc cài. Javis là app tự cài trên máy người dùng và trên VPS bằng một dòng
+lúc cài. UNI MATE là app tự cài trên máy người dùng và trên VPS bằng một dòng
 `pip install -r requirements.txt`; thêm một gói có thể gãy lúc build nghĩa là có máy cài
-Javis không lên được nữa - trả giá quá đắt cho một tính năng phụ. Toàn bộ phép mã hoá dưới
-đây chỉ cần `cryptography`, thứ Javis vốn đã có sẵn trong requirements.
+UNI MATE không lên được nữa - trả giá quá đắt cho một tính năng phụ. Toàn bộ phép mã hoá dưới
+đây chỉ cần `cryptography`, thứ UNI MATE vốn đã có sẵn trong requirements.
 
 Chuẩn áp dụng
 =============
@@ -14,7 +14,7 @@ Chuẩn áp dụng
 - RFC 8188 (khung dữ liệu aes128gcm: salt | rs | idlen | keyid | ciphertext).
 - RFC 8292 (VAPID): tự giới thiệu với dịch vụ đẩy bằng JWT ES256 ký bằng khoá riêng của
   chính máy này. Khoá sinh MỘT LẦN rồi giữ ở STATE_DIR - đổi khoá là mọi đăng ký cũ chết,
-  nên nó phải sống qua các lần cập nhật Javis.
+  nên nó phải sống qua các lần cập nhật UNI MATE.
 
 Bước dẫn khoá (đã đối chiếu với thư viện tham chiếu `http_ece`):
     ecdh   = ECDH(khoá_riêng_tạm, p256dh_của_trình_duyệt)
@@ -23,7 +23,7 @@ Bước dẫn khoá (đã đối chiếu với thư viện tham chiếu `http_ec
     nonce  = HKDF(salt=salt, info=b"Content-Encoding: nonce\\x00",      len=12)(ikm)
 
 Giới hạn thật, nói trước cho khỏi mất công dò:
-- Web Push CHỈ chạy trong secure context: https, hoặc localhost. Javis chạy trần bằng IP
+- Web Push CHỈ chạy trong secure context: https, hoặc localhost. UNI MATE chạy trần bằng IP
   qua http trong mạng LAN thì trình duyệt không cho đăng ký, không có cách nào lách.
 - iOS chỉ đẩy được khi người dùng đã "Thêm vào MH chính" (PWA đã cài), từ iOS 16.4.
 """
@@ -120,13 +120,13 @@ def lien_he() -> str:
     máy tính (Chrome/FCM) nhận thông báo bình thường còn iPhone thì im lặng tuyệt đối. Đúng
     lỗi chủ repo báo 27/08: bấm Gửi thử trên điện thoại thì máy tính hiện, điện thoại không.
 
-    Đổi được bằng biến môi trường JAVIS_PUSH_CONTACT (mailto:... hoặc https://...) cho ai
+    Đổi được bằng biến môi trường UNIMATE_PUSH_CONTACT (mailto:... hoặc https://...) cho ai
     muốn để địa chỉ thật của mình.
     """
-    v = str(os.getenv("JAVIS_PUSH_CONTACT") or "").strip()
+    v = str(os.getenv("UNIMATE_PUSH_CONTACT") or "").strip()
     if v.startswith("mailto:") or v.startswith("https://"):
         return v
-    return "mailto:javis-os@users.noreply.github.com"
+    return "mailto:UNI-MATE@users.noreply.github.com"
 
 
 def _jwt_vapid(endpoint: str, sub_lien_he: str = None) -> str:
@@ -341,7 +341,7 @@ def huy_theo_phien(phien: str) -> int:
         return truoc - len(d["subs"])
 
 
-async def gui_het(tieu_de: str, than: str, url: str = "/", tag: str = "javis", phien_hop_le=None) -> tuple:
+async def gui_het(tieu_de: str, than: str, url: str = "/", tag: str = "unimate", phien_hop_le=None) -> tuple:
     """Đẩy MỘT thông báo tới MỌI trình duyệt đã đăng ký. Trả (số_gửi_được, số_bị_dọn, chi_tiết).
 
     Gửi cho tất cả là cố ý: bật/tắt là việc của từng thiết bị, nên đã bật ở đâu thì ở đó phải

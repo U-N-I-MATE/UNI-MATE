@@ -1,13 +1,13 @@
 # Đề xuất: đấu 9Router vào trang Models
 
-Nhiều khách hàng hỏi Javis có dùng được API của 9Router không. Tài liệu này là bản đào trước
-khi làm: 9Router thật ra là cái gì, đấu vào Javis thì vướng chỗ nào, có mấy đường đi.
+Nhiều khách hàng hỏi Uni có dùng được API của 9Router không. Tài liệu này là bản đào trước
+khi làm: 9Router thật ra là cái gì, đấu vào UNI MATE thì vướng chỗ nào, có mấy đường đi.
 
 ## TRẠNG THÁI: GÁC LẠI, KHÔNG LÀM (chốt 2026-08-04)
 
 Chủ repo đọc xong và quyết định **không làm**, giữ tài liệu để đó. Lý do, ghi nguyên ý:
 
-> Tạm thời không phù hợp. Nó không thực tế và chỉ hợp với những người muốn rẻ. Javis sắp lên
+> Tạm thời không phù hợp. Nó không thực tế và chỉ hợp với những người muốn rẻ. UNI MATE sắp lên
 > môi trường doanh nghiệp nên không cần dùng trộn như vậy.
 
 Lý do này **bền hơn bản thân 9Router**, nên đọc kỹ trước khi mở lại đề xuất nào cùng dạng:
@@ -20,7 +20,7 @@ Lý do này **bền hơn bản thân 9Router**, nên đọc kỹ trước khi m�
   Điểm bán hàng của 9Router là tự nhảy sang nhà cung cấp khác khi hết quota. Với người dùng cá
   nhân đó là tiện. Với doanh nghiệp thì đó là "không ai biết câu trả lời vừa rồi do model nào
   sinh ra, dữ liệu đi qua đâu" - một câu hỏi kiểm toán không trả lời được.
-- **Nó đòi một tiến trình chạy trên máy người dùng.** Thêm một thứ có thể tắt, và Javis không
+- **Nó đòi một tiến trình chạy trên máy người dùng.** Thêm một thứ có thể tắt, và UNI MATE không
   quản được.
 
 **Điều này KHÔNG có nghĩa là mọi thứ trong tài liệu vô dụng.** Ba phần vẫn dùng lại được nếu
@@ -44,7 +44,7 @@ nhầm chỗ này thì cả kế hoạch sai theo.
 
 So sánh cho dễ hình dung:
 
-| | OpenRouter (Javis đang có) | 9Router |
+| | OpenRouter (UNI MATE đang có) | 9Router |
 |---|---|---|
 | Chạy ở đâu | Máy chủ của họ, trên Internet | **Máy của chính người dùng** |
 | Địa chỉ | `https://openrouter.ai/api/v1` cố định, ai cũng như ai | `http://localhost:20128/v1`, mỗi người một chỗ |
@@ -64,7 +64,7 @@ Hai thứ khiến người ta thích nó:
 - **Nén token (RTK)**, họ công bố giảm 20-40% token đầu vào bằng cách lọc bớt phần thừa trong
   kết quả tool trước khi gửi đi.
 
-Mặt kỹ thuật, phần Javis cần biết:
+Mặt kỹ thuật, phần UNI MATE cần biết:
 
 ```
 POST http://localhost:20128/v1/chat/completions
@@ -75,32 +75,32 @@ GET  http://localhost:20128/v1/models     → trả model + combo, định dạn
 ```
 
 Định dạng **giống hệt OpenAI**, tên model có tiền tố nhà cung cấp (`cc/`, `glm/`, `kr/`...).
-Đây là tin tốt: Javis đã có sẵn cả một đường xử lý cho endpoint kiểu OpenAI (OpenRouter,
+Đây là tin tốt: UNI MATE đã có sẵn cả một đường xử lý cho endpoint kiểu OpenAI (OpenRouter,
 Groq, Gemini, Ollama đều đi chung đường đó).
 
 ---
 
-## 2. Vướng ở đâu: đúng cái tường Javis đã đâm vào một lần rồi
+## 2. Vướng ở đâu: đúng cái tường UNI MATE đã đâm vào một lần rồi
 
-Ở bản **0.16.1**, Javis **cố ý bỏ** khả năng đấu Ollama bản chạy máy nhà, chỉ giữ Ollama
+Ở bản **0.16.1**, UNI MATE **cố ý bỏ** khả năng đấu Ollama bản chạy máy nhà, chỉ giữ Ollama
 Cloud. Lý do ghi thẳng trong mã (`server/engine.py:310`, `server/config.py:61`):
 
-> Javis CỐ Ý chỉ đấu bản Cloud: bản chạy trên máy nhà đòi một ô địa chỉ riêng, tức một ca đặc
-> biệt duy nhất xuyên suốt lớp nhà cung cấp, trong khi phần đông người dùng Javis chạy nó trên
+> UNI MATE CỐ Ý chỉ đấu bản Cloud: bản chạy trên máy nhà đòi một ô địa chỉ riêng, tức một ca đặc
+> biệt duy nhất xuyên suốt lớp nhà cung cấp, trong khi phần đông người dùng UNI MATE chạy nó trên
 > VPS - nơi "localhost" là chính cái container chứ không phải máy họ.
 
 9Router vấp **đúng hai điều đó**:
 
 1. **Nó đòi thêm một ô địa chỉ.** Tám nhà cung cấp hiện tại chỉ cần một ô API key, địa chỉ là
    hằng số trong mã. 9Router là cái đầu tiên mà mỗi người một địa chỉ.
-2. **`localhost` trên VPS không phải máy người dùng.** Javis của anh chạy trên VPS. Người dùng
-   cài 9Router trên máy tính cá nhân của họ. Javis gọi `http://localhost:20128` là gọi vào
-   chính cái container Javis, ở đó không có gì cả. Đây không phải lỗi có thể vá, đây là địa lý
+2. **`localhost` trên VPS không phải máy người dùng.** UNI MATE của anh chạy trên VPS. Người dùng
+   cài 9Router trên máy tính cá nhân của họ. UNI MATE gọi `http://localhost:20128` là gọi vào
+   chính cái container UNI MATE, ở đó không có gì cả. Đây không phải lỗi có thể vá, đây là địa lý
    mạng.
 
-Nên câu hỏi thật không phải "code thế nào" mà là: **người dùng của anh chạy Javis ở đâu?**
+Nên câu hỏi thật không phải "code thế nào" mà là: **người dùng của anh chạy UNI MATE ở đâu?**
 
-| Người dùng chạy Javis | 9Router chạy ở đâu | Đấu được không |
+| Người dùng chạy UNI MATE | 9Router chạy ở đâu | Đấu được không |
 |---|---|---|
 | Máy cá nhân (Windows, `setup.bat`) | Cùng máy đó | **Được**, `localhost:20128` đúng nghĩa |
 | VPS | Máy cá nhân của họ | **Không**, trừ khi họ mở 9Router ra Internet |
@@ -113,10 +113,10 @@ Nên câu hỏi thật không phải "code thế nào" mà là: **người dùng
 ## 3. Rủi ro lớn nhất, và nó không nằm ở chỗ ai cũng nghĩ
 
 Rủi ro không phải "kết nối không được". Kết nối được thì rất dễ thấy. Rủi ro là **kết nối
-được nhưng Javis mất năng lực mà không ai biết**.
+được nhưng UNI MATE mất năng lực mà không ai biết**.
 
-Javis sống bằng **gọi tool**: đọc MCP, ghi file vault, giao việc Kanban, chạy skill. Bỏ tool
-đi thì Javis chỉ còn là một khung chat.
+UNI MATE sống bằng **gọi tool**: đọc MCP, ghi file vault, giao việc Kanban, chạy skill. Bỏ tool
+đi thì UNI MATE chỉ còn là một khung chat.
 
 Mà 9Router **không ghi một chữ nào về tool calling** trong toàn bộ tài liệu công khai của họ
 (em đã đọc README 54KB, trang setup guide, và trang chủ). Không ghi không có nghĩa là không
@@ -129,7 +129,7 @@ gần như chắc chắn 9Router có chuyển tiếp `tools`.
 Nhưng **suy luận không đủ để phát hành**, và còn một tầng rủi ro nữa sâu hơn:
 
 > Điểm bán hàng của 9Router là **tự nhảy sang nhà cung cấp khác khi hết quota**. Không phải
-> model nào cũng hỗ trợ tool calling. Nếu cú nhảy rơi trúng một model không có tool, Javis sẽ
+> model nào cũng hỗ trợ tool calling. Nếu cú nhảy rơi trúng một model không có tool, UNI MATE sẽ
 > nhận lời rồi trả về một câu trả lời chay - không gọi MCP, không ghi file, không báo lỗi.
 
 Đây đúng loại hỏng mà repo này ghét nhất và đã vá một lần ở 0.17.1: *"engine sẽ TỰ TIN nhận
@@ -172,10 +172,10 @@ chỉ + key. Đấu được 9Router, LiteLLM, Ollama máy nhà, vLLM, one-api, 
 ### Đường C - Không đấu, hướng dẫn dùng qua Claude Code
 
 9Router đã hỗ trợ trỏ Claude Code vào nó. Về lý thuyết người dùng có thể cấu hình Claude Code
-trỏ vào 9Router rồi Javis dùng Claude Code như bình thường.
+trỏ vào 9Router rồi UNI MATE dùng Claude Code như bình thường.
 
 - **Được**: không viết dòng code nào.
-- **Mất**: rất mong manh. Javis quản vòng đời Claude Code khá sâu (đăng nhập, model, MCP,
+- **Mất**: rất mong manh. UNI MATE quản vòng đời Claude Code khá sâu (đăng nhập, model, MCP,
   phiên) nên chen một proxy vào giữa dễ vỡ ở chỗ khó lần. Và nó không trả lời được câu hỏi của
   khách: họ muốn thấy 9Router **trong trang Models**.
 
@@ -190,10 +190,10 @@ Bốn câu hỏi này chưa có câu trả lời chắc chắn, và cả bốn �
 Kiểm bằng cách cài 9Router lên một máy rồi chạy vài lệnh, khoảng 30 phút.
 
 1. **Có chuyển tiếp `tools` không?** Gửi một request kèm `tools` và xem có `tool_calls` trong
-   phản hồi không. Nếu KHÔNG thì dừng cả đề xuất, vì Javis không dùng được.
-2. **Có streaming kèm tool không?** Javis chạy chữ dần từng chữ. Nếu bật `stream: true` mà tool
+   phản hồi không. Nếu KHÔNG thì dừng cả đề xuất, vì UNI MATE không dùng được.
+2. **Có streaming kèm tool không?** UNI MATE chạy chữ dần từng chữ. Nếu bật `stream: true` mà tool
    gãy thì phải rơi về chế độ không stream, và điều đó phải nói trước cho người dùng.
-3. **`GET /v1/models` trả về hình dạng gì?** Trang Models của Javis liệt kê model động. Cần
+3. **`GET /v1/models` trả về hình dạng gì?** Trang Models của UNI MATE liệt kê model động. Cần
    biết combo hiện ra thế nào để phân biệt với model thường.
 4. **Combo nhảy sang model không có tool thì sao?** Đây là rủi ro ở mục 3. Cách kiểm: dựng một
    combo có model không hỗ trợ tool ở vị trí thứ hai, ép hết quota cái đầu, xem chuyện gì xảy ra.
@@ -255,7 +255,7 @@ Ghi ra đây để anh thấy khối lượng thật, không phải để làm n
 
 - `docs/10-models-va-engine.md` - mục mới, kèm nói thẳng chuyện VPS không thấy máy nhà.
 - `CLAUDE.md` - câu "**Tám** bộ não hiện dùng được..." phải sửa. Câu đó xuất hiện trong system
-  prompt mỗi lượt chat nên sai là Javis nói sai với mọi người dùng.
+  prompt mỗi lượt chat nên sai là UNI MATE nói sai với mọi người dùng.
 
 **Ước lượng**: khoảng một bản nhỏ (kiểu 0.19.0), phần lớn công sức nằm ở lớp an toàn và giao
 diện có ô địa chỉ, chứ không nằm ở việc gọi API.
@@ -266,11 +266,11 @@ diện có ô địa chỉ, chứ không nằm ở việc gọi API.
 
 - **Đừng ghim `localhost:20128` làm mặc định rồi thôi.** Nó đúng cho máy cá nhân và sai cho
   mọi bản chạy VPS. Phải có ô địa chỉ thật, và phải có câu giải thích ngay cạnh ô đó.
-- **Đừng hứa "tự tiết kiệm 20-40% token".** Con số RTK là của 9Router công bố, Javis không đo
+- **Đừng hứa "tự tiết kiệm 20-40% token".** Con số RTK là của 9Router công bố, UNI MATE không đo
   được và không kiểm soát được. Nói lại con số của người khác như thể của mình là chỗ mất uy
   tín rẻ tiền nhất.
 - **Đừng để 9Router thành nhà cung cấp mặc định.** Nó phụ thuộc một tiến trình chạy trên máy
-  người dùng; tiến trình đó tắt là Javis chết mà người dùng không hiểu vì sao.
+  người dùng; tiến trình đó tắt là UNI MATE chết mà người dùng không hiểu vì sao.
 
 ---
 
@@ -278,7 +278,7 @@ diện có ô địa chỉ, chứ không nằm ở việc gọi API.
 
 1. **Đường A hay đường B?** (Em nghiêng B: một mục "Máy chủ OpenAI-compat" kèm mẫu 9Router
    điền sẵn, mở ra cả họ thay vì một cái tên.)
-2. **Khách hàng của anh chạy Javis ở đâu?** Nếu phần lớn chạy VPS thì giá trị thật của tính
+2. **Khách hàng của anh chạy UNI MATE ở đâu?** Nếu phần lớn chạy VPS thì giá trị thật của tính
    năng này thấp hơn nhiều so với vẻ ngoài, và nên nói trước với họ thay vì làm xong mới biết.
 3. **Ai chạy được bước kiểm chứng ở mục 5?** Cần một máy cài 9Router. Máy dựng của em không
    cài được (không có tài khoản nhà cung cấp nào để khai vào 9Router).

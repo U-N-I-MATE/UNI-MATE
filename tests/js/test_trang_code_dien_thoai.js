@@ -12,7 +12,7 @@
 
       Đây là lần thứ ba cùng một kiểu lỗi trong cùng một trang ("dựng bản thứ hai của thứ đã
       có"), nên bản sửa KHÔNG vá tại chỗ mà gom về một hàm dùng chung
-      (`window.JavisNeoCotTrai`) cho cả trang Trò chuyện lẫn trang Code.
+      (`window.UniMateNeoCotTrai`) cho cả trang Trò chuyện lẫn trang Code.
 
    2. **Không thấy chỗ thêm thư mục và các chế độ.** Dải chip nhét vào `#modelBar`, mà màn hẹp
       ẩn hẳn node đó (`.model-bar{display:none}`) rồi dời riêng chip model lên header bằng JS.
@@ -37,25 +37,25 @@ const MAIN = fs.readFileSync(path.join(ROOT, "server", "main.py"), "utf8");
 
 // ---- 1. Cột trái: MỘT bản luật, dùng chung ----
 check("console.js phát ra hàm dùng chung cho cột trái",
-  /window\.JavisNeoCotTrai\s*=\s*_neoCotTrai/.test(CON) && /function _neoCotTrai\(/.test(CON));
+  /window\.UniMateNeoCotTrai\s*=\s*_neoCotTrai/.test(CON) && /function _neoCotTrai\(/.test(CON));
 check("hàm đó biết màn hẹp dùng lớp side-open, máy tính dùng side-thu", (() => {
   const i = CON.indexOf("function _neoCotTrai(");
-  const than = CON.slice(i, CON.indexOf("window.JavisNeoCotTrai", i));
+  const than = CON.slice(i, CON.indexOf("window.UniMateNeoCotTrai", i));
   return /max-width: 860px/.test(than)
     && /hep\(\)\)\s*\{\s*page\.classList\.toggle\("side-open"\)/.test(than)
     && /toggle\("side-thu", thu\)/.test(than);
 })());
 check("trang Code gọi hàm dùng chung chứ không tự viết",
-  /W\.JavisNeoCotTrai\(/.test(CD));
+  /W\.UniMateNeoCotTrai\(/.test(CD));
 check("trang Code KHÔNG còn tự toggle side-thu như đường chính", (() => {
   // Bỏ CHÚ THÍCH ra trước khi đếm: chú thích giải thích lỗi cũ có nhắc "side-thu", mà đếm
   // cả nó thì phép thử này bắt nhầm chính lời giải thích của bản sửa.
   const ma = CD.replace(/^\s*\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
   const dung = ma.match(/side-thu/g) || [];
   // Còn đúng MỘT chỗ: nhánh dự phòng khi console.js chưa nạp, và nó phải nằm sau dấu `:`
-  // của toán tử ba ngôi hỏi `W.JavisNeoCotTrai` - tức chỉ chạy khi hàm chung vắng mặt.
+  // của toán tử ba ngôi hỏi `W.UniMateNeoCotTrai` - tức chỉ chạy khi hàm chung vắng mặt.
   return dung.length === 1
-    && /W\.JavisNeoCotTrai\s*\?[\s\S]{0,260}:\s*function \(\) \{[^}]*side-thu/.test(ma);
+    && /W\.UniMateNeoCotTrai\s*\?[\s\S]{0,260}:\s*function \(\) \{[^}]*side-thu/.test(ma);
 })());
 check("trang Trò chuyện cũng đi qua hàm đó (không để hai bản trôi lệch)",
   /_neoCotTrai\(page,/.test(CON));

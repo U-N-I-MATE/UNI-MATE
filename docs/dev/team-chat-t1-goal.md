@@ -41,21 +41,21 @@ Output đầy đủ kèm lệnh và mã thoát: `exports/reviews/team-adaptive/t
 | Số người gọi (@) mỗi tin (`mentions`) | 3 | Chủ | Không |
 | Chờ trợ lý đang bận tối đa (`busy_wait_s`) | 1800 giây | Chủ | Không |
 | Việc chạy cùng lúc trong một nhóm (`running_jobs`) | 1 | Máy chủ cố định | Không |
-| Nhóm chạy việc cùng lúc trên cả máy (`max_parallel_teams`) | 4 (từ 0.257.0, trước đó 2) | Máy chủ (biến môi trường `JAVIS_TEAM_PARALLEL`) | Không |
+| Nhóm chạy việc cùng lúc trên cả máy (`max_parallel_teams`) | 4 (từ 0.257.0, trước đó 2) | Máy chủ (biến môi trường `UNIMATE_TEAM_PARALLEL`) | Không |
 | Lượt cùng lúc của một trợ lý trong MỘT nhóm (0.257.0: trước đó là trên mọi nhóm) | 1 | Máy chủ cố định | Không |
-| Lượt nhóm gọi model cùng lúc, mỗi engine gói đăng ký (0.257.0) | 3 | Máy chủ (biến môi trường `JAVIS_TEAM_CLI_SLOTS`) | Không |
-| Lượt nhóm gọi model cùng lúc, mỗi engine API key (0.257.0) | 6 | Máy chủ (biến môi trường `JAVIS_TEAM_API_SLOTS`) | Không |
-| Bước Làm chạy cùng lúc trong một việc (0.260.0) | 3 | Máy chủ (biến môi trường `JAVIS_TEAM_JOB_PARALLEL`) | Không |
-| Lượt có công cụ cùng lúc trong một thư mục làm việc (0.260.0, trước đó 1 mỗi brain) | 3 | Máy chủ (biến môi trường `JAVIS_TEAM_TOOL_SLOTS`) | Không |
+| Lượt nhóm gọi model cùng lúc, mỗi engine gói đăng ký (0.257.0) | 3 | Máy chủ (biến môi trường `UNIMATE_TEAM_CLI_SLOTS`) | Không |
+| Lượt nhóm gọi model cùng lúc, mỗi engine API key (0.257.0) | 6 | Máy chủ (biến môi trường `UNIMATE_TEAM_API_SLOTS`) | Không |
+| Bước Làm chạy cùng lúc trong một việc (0.260.0) | 3 | Máy chủ (biến môi trường `UNIMATE_TEAM_JOB_PARALLEL`) | Không |
+| Lượt có công cụ cùng lúc trong một thư mục làm việc (0.260.0, trước đó 1 mỗi brain) | 3 | Máy chủ (biến môi trường `UNIMATE_TEAM_TOOL_SLOTS`) | Không |
 | Nhiều @ trong một tin trả lời cùng lúc hay lần lượt (`reply_parallel`, 0.260.0) | Cùng lúc | Chủ | Không |
 | Hạn khoá bận (`BUSY_LEASE_S`), tự gia hạn khi lượt còn chạy | 900 giây | Máy chủ cố định | Không |
 | Kết quả giống hệt liên tiếp thì dừng (`no_progress`) | 2 | Máy chủ cố định | Không |
-| Thời gian một lần trả lời (`JAVIS_TEAM_TURN_TIMEOUT`) | 600 giây | Máy chủ (biến môi trường) | Không |
-| Thời gian một bước (`JAVIS_TEAM_STEP_TIMEOUT`) | 3600 giây | Máy chủ (biến môi trường) | Không |
+| Thời gian một lần trả lời (`UNIMATE_TEAM_TURN_TIMEOUT`) | 600 giây | Máy chủ (biến môi trường) | Không |
+| Thời gian một bước (`UNIMATE_TEAM_STEP_TIMEOUT`) | 3600 giây | Máy chủ (biến môi trường) | Không |
 | Lệnh quản trị mỗi lần trả lời của trưởng nhóm | 10 | Máy chủ cố định | Không |
 | Tin gần đây trợ lý đọc mỗi lượt | 20 tin, 8000 ký tự | Máy chủ cố định | Không |
 | Lượt nhóm chỉ chữ, không công cụ | luật | Máy chủ cố định | Không |
-| Trần lượt toàn máy (`JAVIS_RESONANCE_CALL_CEILING`, đọc bằng `resonance_store.call_ceiling()`; giá trị hỏng hay âm là 0, chặn hết) | chưa đặt | Máy chủ (biến môi trường) | Không |
+| Trần lượt toàn máy (`UNIMATE_RESONANCE_CALL_CEILING`, đọc bằng `resonance_store.call_ceiling()`; giá trị hỏng hay âm là 0, chặn hết) | chưa đặt | Máy chủ (biến môi trường) | Không |
 | Hạn mức gói thuê bao hay nhà cung cấp | luật | Nhà cung cấp | Không |
 | Quyền của tài khoản model | luật | Nhà cung cấp | Không |
 

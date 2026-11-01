@@ -1,16 +1,16 @@
-"""Resonance M1: một lượt engine qua đường thật của Javis, trả receipt do host quan sát được.
+"""Resonance M1: một lượt engine qua đường thật của UNI MATE, trả receipt do host quan sát được.
 
 Hai phần, báo cáo TÁCH RIÊNG:
   1. Engine giả (luôn chạy, CI chạy): kiểm luồng run_once và bộ chọn engine chỉ chữ.
-  2. Pilot thật (chỉ khi bật JAVIS_RESONANCE_PILOT=1): gọi engine việc nền đang chọn qua
-     main._resonance_engine, trên dữ liệu mô phỏng, trong JAVIS_STATE_DIR tạm.
+  2. Pilot thật (chỉ khi bật UNIMATE_RESONANCE_PILOT=1): gọi engine việc nền đang chọn qua
+     main._resonance_engine, trên dữ liệu mô phỏng, trong UNIMATE_STATE_DIR tạm.
 
     python tests/run.py resonance_mvp_integration -v
 
-Pilot thật cần thêm JAVIS_RESONANCE_PILOT_SETTINGS = đường dẫn settings.json thật. Test CHỈ
+Pilot thật cần thêm UNIMATE_RESONANCE_PILOT_SETTINGS = đường dẫn settings.json thật. Test CHỈ
 đọc khối model.auxiliary / model.main / model.engine / model.claude_model từ file đó (không
 đọc khoá), chép vào settings.json của thư mục tạm. Không ghi gì vào state thật.
-JAVIS_RESONANCE_PILOT_CALLS (mặc định 1, trần 5) giới hạn số lượt gọi model.
+UNIMATE_RESONANCE_PILOT_CALLS (mặc định 1, trần 5) giới hạn số lượt gọi model.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -21,14 +21,14 @@ import tempfile
 import types
 from pathlib import Path
 
-PILOT = os.environ.get("JAVIS_RESONANCE_PILOT") == "1"
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-m1-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+PILOT = os.environ.get("UNIMATE_RESONANCE_PILOT") == "1"
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-m1-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 if PILOT:
-    src = os.environ.get("JAVIS_RESONANCE_PILOT_SETTINGS", "")
+    src = os.environ.get("UNIMATE_RESONANCE_PILOT_SETTINGS", "")
     if not src or not Path(src).is_file():
-        print("FAIL pilot: thiếu JAVIS_RESONANCE_PILOT_SETTINGS trỏ tới settings.json thật")
+        print("FAIL pilot: thiếu UNIMATE_RESONANCE_PILOT_SETTINGS trỏ tới settings.json thật")
         sys.exit(1)
     live = json.loads(Path(src).read_text(encoding="utf-8"))
     m = live.get("model") or {}
@@ -81,7 +81,7 @@ def make_deps(engine, calls=5, info=None, **kw):
 
 
 def goal_in(tmp):
-    return R.GoalRecord(id="g_test", brain_id="b1", owner="javis", revision=3, output_root=str(tmp))
+    return R.GoalRecord(id="g_test", brain_id="b1", owner="unimate", revision=3, output_root=str(tmp))
 
 
 def run(deps, goal, aid, prompt="Viết ba gạch đầu dòng."):
@@ -183,7 +183,7 @@ check("quá giờ: failed timeout, không ghi", rt.status == "failed" and rt.err
 
 # 8. Vùng ghi và action_id
 dsc, bsc = make_deps(FakeEngine([{"type": "final", "content": "x"}]))
-rs = run(dsc, R.GoalRecord("g", "b", "javis", 1, str(Path(_STATE) / "khong-ton-tai")), "act_scope")
+rs = run(dsc, R.GoalRecord("g", "b", "unimate", 1, str(Path(_STATE) / "khong-ton-tai")), "act_scope")
 check("vùng ghi chưa cấp: cancelled output_scope", rs.status == "cancelled" and rs.error_code == "output_scope")
 ri = run(dsc, goal_in(Path(tempfile.mkdtemp())), "../../thoat")
 check("action_id lạ: cancelled invalid_action_id", ri.status == "cancelled" and ri.error_code == "invalid_action_id")
@@ -192,12 +192,12 @@ check("vùng ghi / id sai: không dựng engine", bsc["n"] == 0)
 
 # ─────────────── bộ chọn engine chỉ chữ, chạy trên aux_engine thật ───────────────
 
-def fake_cli(allowed_tools=("javis_reply_policy_khong_cong_cu",)):
+def fake_cli(allowed_tools=("unimate_reply_policy_khong_cong_cu",)):
     # Giống engine Claude của _reply_policy_sandbox_engine: allowed_tools có giá trị thì cổng can_use_tool
     # từ chối mọi công cụ. Đó là cơ chế chỉ chữ duy nhất bộ chọn tin cho mắt Claude.
     # cwd là thư mục tạm, như thư mục trống thật: strip_tools của Grok ghi .grok/config.toml vào cwd, và cwd
     # None thì nó ghi vào thư mục đang đứng (gốc repo), làm test_ignore_files đỏ.
-    return types.SimpleNamespace(system_prompt="s", javis_vault=None, javis_mode="suggest", tag="resonance",
+    return types.SimpleNamespace(system_prompt="s", unimate_vault=None, unimate_mode="suggest", tag="resonance",
                                  model=None, cwd=tempfile.mkdtemp(prefix="res-cwd-"),
                                  allowed_tools=list(allowed_tools) if allowed_tools else None)
 
@@ -255,7 +255,7 @@ try:
     import grok_cli  # noqa: E402
     CODEX = {"provider": "openai-oauth", "model": "gpt-5"}
     for sandbox_env in ("auto", "off"):
-        os.environ["JAVIS_CODEX_SANDBOX"] = sandbox_env
+        os.environ["UNIMATE_CODEX_SANDBOX"] = sandbox_env
         bc = fake_cli()
         swc = aux_engine.strip_tools(aux_engine.swap(bc, mode="suggest", tag="resonance", spec=CODEX,
                                                      settings={"model": {"auxiliary": CODEX}}), bc)
@@ -266,7 +266,7 @@ try:
         ec, ic = R.pick_text_only_link(swc, bc, CODEX, aux_engine._FallbackChain)
         check(f"chọn: Codex (sandbox={sandbox_env}) bị chặn trước khi gọi vì còn công cụ native",
               ec is None and "công cụ native" in ic.get("blocked", "") and ic.get("text_only") is False)
-    os.environ.pop("JAVIS_CODEX_SANDBOX", None)
+    os.environ.pop("UNIMATE_CODEX_SANDBOX", None)
     GROK = {"provider": "grok-cli", "model": ""}
     bg = fake_cli()
     swg = aux_engine.strip_tools(aux_engine.swap(bg, mode="suggest", tag="resonance", spec=GROK,
@@ -284,7 +284,7 @@ try:
           rcx.error_code == "engine_blocked" and dcx.budget.used == 0)
 finally:
     aux_engine.availability = _avail_that
-    os.environ.pop("JAVIS_CODEX_SANDBOX", None)
+    os.environ.pop("UNIMATE_CODEX_SANDBOX", None)
 
 
 # ─────────── Review PR #566 P1-1: Claude kết thúc LỖI nhưng vẫn có chữ (đi qua mapper SDK thật) ───────────
@@ -338,10 +338,10 @@ check("đầu ra quá dài: vẫn giữ usage", r_big.usage and r_big.usage["tok
 # ───────────────────────────── pilot thật ─────────────────────────────
 
 if PILOT:
-    import main  # noqa: E402  - nạp SAU khi JAVIS_STATE_DIR tạm đã đặt
-    calls = max(1, min(int(os.environ.get("JAVIS_RESONANCE_PILOT_CALLS", "1") or 1), 5))
+    import main  # noqa: E402  - nạp SAU khi UNIMATE_STATE_DIR tạm đã đặt
+    calls = max(1, min(int(os.environ.get("UNIMATE_RESONANCE_PILOT_CALLS", "1") or 1), 5))
     out_root = Path(tempfile.mkdtemp(prefix="res-pilot-"))
-    goal = R.GoalRecord(id="g_pilot", brain_id="pilot", owner="javis", revision=1, output_root=str(out_root))
+    goal = R.GoalRecord(id="g_pilot", brain_id="pilot", owner="unimate", revision=1, output_root=str(out_root))
     deps = R.GoalDeps(engine_factory=main._resonance_engine, budget=R.CallBudget(calls), max_wall_s=300)
     prompt = ("Dữ liệu mô phỏng, không phải việc thật. Danh sách việc đang dở: (1) viết ghi chú họp thứ Hai, "
               "(2) gom hoá đơn tháng 9, (3) trả lời email của nhà cung cấp A. Hãy viết một ghi chú Markdown "
@@ -373,7 +373,7 @@ if PILOT:
            "budget": {"max_calls": deps.budget.max_calls, "used": deps.budget.used},
            "disk_sha256": disk_sha, "output": out_text}
     print("PILOT_REPORT " + json.dumps(rep, ensure_ascii=False))
-    outp = os.environ.get("JAVIS_RESONANCE_PILOT_OUT")
+    outp = os.environ.get("UNIMATE_RESONANCE_PILOT_OUT")
     if outp:
         Path(outp).write_text(json.dumps(rep, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     check("pilot: receipt succeeded", receipt.status == "succeeded")
@@ -387,7 +387,7 @@ if PILOT:
     check("pilot: chạy lại cùng action_id không gọi model", replay.error_code == "action_exists"
           and deps.budget.used == 1)
 else:
-    print("pilot thật: bỏ qua (đặt JAVIS_RESONANCE_PILOT=1 để chạy)")
+    print("pilot thật: bỏ qua (đặt UNIMATE_RESONANCE_PILOT=1 để chạy)")
 
 if _fails:
     print(f"\n{len(_fails)} FAIL:", _fails)

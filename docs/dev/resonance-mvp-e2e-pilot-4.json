@@ -74,8 +74,8 @@
   "routing_versions": {
     "repo_CLAUDE.md": "e26f33b1660f8715",
     "main.py": "c7efac4429b5d030",
-    "javis_goal_plugin": "98b8b781770dd425",
-    "javis_task_plugin": "db0e738c593ac3c8"
+    "unimate_goal_plugin": "98b8b781770dd425",
+    "unimate_task_plugin": "db0e738c593ac3c8"
   },
   "auth_gate": {
     "cli_found": true,

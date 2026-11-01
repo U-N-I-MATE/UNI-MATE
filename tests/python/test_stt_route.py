@@ -10,7 +10,7 @@ from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-stt-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-stt-"))
 
 import main  # noqa: E402
 import stt  # noqa: E402
@@ -34,7 +34,7 @@ async def fake_nghe(data, ten, key, model="", ngon_ngu=None, hotwords=""):
     calls.append({"data": data, "ten": ten, "key": key, "model": model, "lang": ngon_ngu, "hotwords": hotwords})
     if not key:
         return {"ok": False, "ly_do": "thieu_key"}
-    # Whisper chép "Javis" thành "David": route phải sửa lại theo ngữ cảnh (nghe_sua) trước khi trả.
+    # Whisper chép "UNI MATE" thành "David": route phải sửa lại theo ngữ cảnh (nghe_sua) trước khi trả.
     return {"ok": True, "text": "xin chào David", "model": model or "whisper-large-v3-turbo"}
 
 
@@ -44,8 +44,8 @@ main.cfgmod.read_settings = lambda: {"model": {"groq_api_key": "gk"}, "voice": {
 antigravity_cli.list_models = lambda: [{"id": "gemini-3.8-flash-low", "label": "Gemini 3.8 Flash (Low)"}]
 
 r = client.post("/stt", files={"file": ("voice.webm", b"OggS-fake", "audio/webm")}, data={"lang": "vi-VN"})
-check("/stt: 200 ok=true kèm text đã sửa David -> Javis", r.status_code == 200 and r.json()["ok"] is True and r.json()["text"] == "xin chào Javis")
-check("/stt: mồi hotwords cho Whisper (Javis + từ người dùng khai, đứng cuối sát audio)", calls[-1]["hotwords"].endswith("Javis, Pancake, OpenRouter."))
+check("/stt: 200 ok=true kèm text đã sửa David -> UNI MATE", r.status_code == 200 and r.json()["ok"] is True and r.json()["text"] == "xin chào Uni")
+check("/stt: mồi hotwords cho Whisper (UNI MATE + từ người dùng khai, đứng cuối sát audio)", calls[-1]["hotwords"].endswith("UNI MATE, Pancake, OpenRouter."))
 check("/stt: mồi kèm từ tiếng Anh hay nói xen (GitHub Actions)", "GitHub Actions" in calls[-1]["hotwords"])
 check("/stt: byte file tới nguyên vẹn, tên file giữ", calls[-1]["data"] == b"OggS-fake" and calls[-1]["ten"] == "voice.webm")
 check("/stt: vi-VN rút thành vi", calls[-1]["lang"] == "vi")
@@ -55,7 +55,7 @@ check("/stt: key lấy từ model.groq_api_key", calls[-1]["key"] == "gk")
 # Bản nháp gần đúng về âm ("xin chào Gia vít") -> dùng chữ Groq.
 r = client.post("/stt", files={"file": ("voice.webm", b"OggS-fake", "audio/webm")},
                 data={"lang": "vi-VN", "draft": "xin chào Gia vít"})
-check("/stt: bản nháp gần âm -> dùng chữ Groq", r.json()["ok"] is True and r.json()["text"] == "xin chào Javis")
+check("/stt: bản nháp gần âm -> dùng chữ Groq", r.json()["ok"] is True and r.json()["text"] == "xin chào Uni")
 
 
 async def fake_bia(data, ten, key, model="", ngon_ngu=None, hotwords=""):
@@ -79,7 +79,7 @@ main.cfgmod.read_settings = lambda: {"model": {"groq_api_key": "gk", "gemini_api
 r = client.get("/voice/options")
 d = r.json()
 check("/voice/options: 200 + voice hiện tại", r.status_code == 200 and d["voice"]["mode"] == "fast")
-check("/voice/options: trả hotwords và từ gốc luôn có", "hotwords" in d["voice"] and d["hotwords_goc"] == ["Javis"])
+check("/voice/options: trả hotwords và từ gốc luôn có", "hotwords" in d["voice"] and d["hotwords_goc"] == ["UNI MATE"])
 bp = {x["id"]: x for x in d["brain_providers"]}
 check("/voice/options: antigravity available kèm model", bp["antigravity"]["available"] is True and bp["antigravity"]["models"][0]["id"] == "gemini-3.8-flash-low")
 check("/voice/options: groq available (có key), gemini không", bp["groq"]["available"] is True and bp["gemini"]["available"] is False)

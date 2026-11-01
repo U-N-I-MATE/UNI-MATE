@@ -100,7 +100,7 @@ def _make_router() -> APIRouter:
     async def gh_checks_set(brain: str = Form(""), full_name: str = Form(...), commands: str = Form(""),
                             reset: str = Form("")):
         """`commands`: one command per line (a line ending in a backslash continues). `reset=1` goes back to the
-        commands Javis suggests from the repo's CI."""
+        commands UNI MATE suggests from the repo's CI."""
         if str(reset).strip() in ("1", "true"):
             return await _call(github_repos.set_checks, brain, full_name, None)
         lines, buf = [], ""
@@ -136,7 +136,7 @@ def _make_router() -> APIRouter:
 
     @r.post("/github/session/{sid}/merge")
     async def gh_merge(sid: str, full_name: str = Form(...)):
-        """A person presses Merge (auto-merge off, no CI, or a change Javis would not merge alone)."""
+        """A person presses Merge (auto-merge off, no CI, or a change UNI MATE would not merge alone)."""
         import github_work
         try:
             return {"ok": True, **(await github_work.merge_by_person(sid, full_name))}

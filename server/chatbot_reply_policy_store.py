@@ -438,7 +438,7 @@ def insert_lesson(bot_id: str, text: str, now: Optional[float] = None, source: s
     """Like `add_lesson` but returns the new row id (None when empty or a duplicate).
 
     `source`: '' for the owner's own lessons (taught in the group, or older rows), 'owner_chat' when the owner asked
-    Javis in chat, 'review' when the self-review wrote it. Over the cap, machine-written 'review' lessons drop first,
+    UNI MATE in chat, 'review' when the self-review wrote it. Over the cap, machine-written 'review' lessons drop first,
     so the review can never push out what the owner taught."""
     now = time.time() if now is None else now
     line = " ".join(str(text or "").split())[:200]

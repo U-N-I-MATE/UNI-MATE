@@ -14,8 +14,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a1-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a1-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import resonance_store as RS  # noqa: E402
 
@@ -43,7 +43,7 @@ BRAIN = str(Path(tempfile.mkdtemp(prefix="brain-a-")).resolve())
 OTHER = str(Path(tempfile.mkdtemp(prefix="brain-b-")).resolve())
 OWNER = RS.Principal(kind="owner", id="owner", brain_id=BRAIN)
 OWNER_B = RS.Principal(kind="owner", id="owner", brain_id=OTHER)
-AGENT = RS.Principal(kind="agent", id="javis", brain_id=BRAIN)
+AGENT = RS.Principal(kind="agent", id="unimate", brain_id=BRAIN)
 
 store = RS.GoalStore(Path(_STATE) / "resonance.sqlite3")
 
@@ -206,14 +206,14 @@ check("dữ liệu A1 ở bảng riêng", {"resonance_agents", "resonance_agent_
 check("kho mới tinh không sinh bản sao pre-a1", not (Path(_STATE) / "resonance.sqlite3.pre-a1.bak").exists())
 
 # ───────────────────────────── bản sao lưu trước A1 ─────────────────────────────
-OLD_DIR = Path(tempfile.mkdtemp(prefix="javis-resonance-old-"))
+OLD_DIR = Path(tempfile.mkdtemp(prefix="unimate-resonance-old-"))
 old = OLD_DIR / "resonance.sqlite3"
 with sqlite3.connect(str(old)) as con:
     # Mô phỏng kho của bản 0.86.x: có goals và một mục tiêu, chưa có bảng sổ đăng ký.
     con.executescript(RS._SCHEMA.split("CREATE TABLE IF NOT EXISTS resonance_agents")[0])
     con.execute("INSERT INTO goals(id,brain_id,owner,revision,status,session_id,request_ref,idempotency_key,"
                 "output_root,user_constraints_json,budget_calls,calls_used,paused,created_at,updated_at) "
-                "VALUES('g_old',?, 'javis',1,'active','s1','m1','k1','/tmp/x','[]',3,1,0,1,1)", (BRAIN,))
+                "VALUES('g_old',?, 'unimate',1,'active','s1','m1','k1','/tmp/x','[]',3,1,0,1,1)", (BRAIN,))
 RS.GoalStore(old)
 bak = OLD_DIR / "resonance.sqlite3.pre-a1.bak"
 check("kho có từ trước: sinh bản .pre-a1.bak", bak.is_file())

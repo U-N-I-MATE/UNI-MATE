@@ -17,7 +17,7 @@ const sandbox = {
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(path.join(ROOT, "dashboard", "model-list.js"), "utf8"), sandbox);
-const ML = sandbox.window.JavisModelList;
+const ML = sandbox.window.UniMateModelList;
 const PROVS = [
   { id: "a", label: "Connected A", configured: true },
   { id: "b", label: "Locked B", configured: false },

@@ -1,17 +1,17 @@
 """What a chat turn changed in the brain's capabilities, shown under the answer with Undo (0.200.0).
 
 Idea borrowed from OpenMausBot ("changes a bot makes to itself"): a bot can schedule, edit skills and
-create agents on its own, and each change shows as one plain line with Undo. Javis already does this
+create agents on its own, and each change shows as one plain line with Undo. UNI MATE already does this
 for memory (memory_receipt.py, 0.190.0); this covers the rest of what a turn can create from chat:
 
-    reminders and cron jobs   Javis/reminders.json (pending ones)
-    loops                     Javis/loops/<slug>.md
+    reminders and cron jobs   UniMate/reminders.json (pending ones)
+    loops                     UniMate/loops/<slug>.md
     agents                    agents/<slug>.md
     workflows                 workflows/<slug>.md
     skills                    skills/<slug>/SKILL.md
 
 The truth comes from the files, not from what the model says: a snapshot before the turn and a diff
-after. The line is a hidden block (`<!-- JAVIS_DOI: {...} -->`) in a message stored through
+after. The line is a hidden block (`<!-- UNIMATE_DOI: {...} -->`) in a message stored through
 `push_to_chat`, so a refresh draws it again (dashboard/chat-doi.js). Undo calls the existing route for
 that kind (cancel a reminder, delete a loop, agent, workflow or skill); only NEW items get an Undo,
 because putting an edited file back needs its old text, which this snapshot does not keep.
@@ -49,7 +49,7 @@ def _mtimes(folder: Path, pattern: str) -> Dict[str, int]:
 
 def _pending_reminders(root: Path) -> Dict[str, str]:
     try:
-        d = json.loads((root / "Javis" / "reminders.json").read_text(encoding="utf-8"))
+        d = json.loads((root / "UNI MATE" / "reminders.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
     return {str(r.get("id")): str(r.get("label") or r.get("text") or "")[:120]
@@ -61,7 +61,7 @@ def snapshot(brain_root) -> dict:
     root = Path(brain_root)
     return {
         "reminder": _pending_reminders(root),
-        "loop": _mtimes(root / "Javis" / "loops", "*.md"),
+        "loop": _mtimes(root / "UNI MATE" / "loops", "*.md"),
         "agent": _mtimes(root / "agents", "*.md"),
         "workflow": _mtimes(root / "workflows", "*.md"),
         "skill": _mtimes(root / "skills", "*/SKILL.md"),
@@ -69,7 +69,7 @@ def snapshot(brain_root) -> dict:
 
 
 def _title(root: Path, kind: str, slug: str) -> str:
-    path = {"loop": root / "Javis" / "loops" / f"{slug}.md", "agent": root / "agents" / f"{slug}.md",
+    path = {"loop": root / "UNI MATE" / "loops" / f"{slug}.md", "agent": root / "agents" / f"{slug}.md",
             "workflow": root / "workflows" / f"{slug}.md", "skill": root / "skills" / slug / "SKILL.md"}.get(kind)
     if path is None:
         return slug
@@ -107,7 +107,7 @@ def receipt_block(items: List[dict], brain_key: str) -> str:
     gon = [{"kind": i["kind"], "id": str(i["id"])[:120], "title": str(i.get("title") or "")[:120],
             "act": i["act"] if i.get("act") in ("new", "updated", "removed") else "updated"} for i in items]
     data = {"brain": str(brain_key or ""), "items": gon}
-    return "<!-- JAVIS_DOI: " + json.dumps(data, ensure_ascii=False).replace("-->", "- ->") + " -->"
+    return "<!-- UNIMATE_DOI: " + json.dumps(data, ensure_ascii=False).replace("-->", "- ->") + " -->"
 
 
 _KIND_VI = {"reminder": "lịch", "loop": "việc lặp", "agent": "cộng sự", "workflow": "quy trình", "skill": "kỹ năng"}

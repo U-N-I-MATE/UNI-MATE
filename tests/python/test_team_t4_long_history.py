@@ -16,8 +16,8 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-t4-long-")
-TEMP = Path(tempfile.mkdtemp(prefix="javis-t4-long-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-t4-long-")
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-t4-long-w-"))
 
 import agent_pulse as AP  # noqa: E402
 import resonance_store as RS  # noqa: E402

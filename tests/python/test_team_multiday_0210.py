@@ -11,7 +11,7 @@ that walks hour by hour, one restart in the middle):
 - a job is done only when its product passes the owner's criteria;
 - teams do not interfere with each other.
 
-Fail fast if anything tries to build a real engine: JAVIS_NO_REAL_TEAM_ENGINE=1 and the runner only gets the fake.
+Fail fast if anything tries to build a real engine: UNIMATE_NO_REAL_TEAM_ENGINE=1 and the runner only gets the fake.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import asyncio
@@ -27,9 +27,9 @@ from unittest.mock import patch
 os.environ["TZ"] = "UTC"
 if hasattr(time, "tzset"):
     time.tzset()
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-multiday-")
-os.environ["JAVIS_NO_REAL_TEAM_ENGINE"] = "1"
-STATE = Path(os.environ["JAVIS_STATE_DIR"])
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-multiday-")
+os.environ["UNIMATE_NO_REAL_TEAM_ENGINE"] = "1"
+STATE = Path(os.environ["UNIMATE_STATE_DIR"])
 
 import mcp_catalog  # noqa: E402
 import mcp_client  # noqa: E402
@@ -196,8 +196,8 @@ with patch.object(main, "_team_agent_info", side_effect=info):
         except TR.EngineUnavailable as ex:
             return str(ex)
     why = run(_try_real())
-check("fail fast: the real team engine factory refuses to build an engine (JAVIS_NO_REAL_TEAM_ENGINE)",
-      "JAVIS_NO_REAL_TEAM_ENGINE" in why and team_engine.build is main._TEAM_ENGINE_BUILD_REAL, why)
+check("fail fast: the real team engine factory refuses to build an engine (UNIMATE_NO_REAL_TEAM_ENGINE)",
+      "UNIMATE_NO_REAL_TEAM_ENGINE" in why and team_engine.build is main._TEAM_ENGINE_BUILD_REAL, why)
 check("fail fast: this week runs on the fake engine factory only", r.engine_for == fake.engine_for)
 
 st.put(A["team_id"], {"outcome": "Mỗi yêu cầu nội dung có bài viết đạt chuẩn", "sources": ["folder:yeu-cau"],
@@ -294,7 +294,7 @@ SEND = {"threadId": "nhom-khach", "message": "Shop đã sửa giá kịch bản 
 fake.say("ag_minh", "work", sender(SEND), sender(SEND))
 eng.decide(B["team_id"], opp_b[0]["opp_id"], "accept")
 job_b = st.opportunity(opp_b[0]["opp_id"])["task_id"]
-fake.say("ag_hoa", "plan", "Giao Minh sửa và báo khách." + '\n<!-- JAVIS_TEAM: {"op": "assign", "agent": "ag_minh", "brief": "Sửa giá và báo nhóm khách"} -->')
+fake.say("ag_hoa", "plan", "Giao Minh sửa và báo khách." + '\n<!-- UNIMATE_TEAM: {"op": "assign", "agent": "ag_minh", "brief": "Sửa giá và báo nhóm khách"} -->')
 tick_hours(2)
 ap_b = r.approvals.pending_for_task(job_b)
 check("day 2: the outside send was stopped before it ran and became an exact-call request", EFFECTS == [] and ap_b
@@ -349,7 +349,7 @@ check("days 4-5: a rejected opportunity with unchanged data never came back",
 
 # Approval deadline expires overnight: nothing runs.
 clock.t = T0 + 5 * DAY + HOUR
-fake.say("ag_minh", "work", "Xin duyệt chi tiền." + '\n<!-- JAVIS_TEAM: {"op": "ask_approval", "title": "Chạy quảng cáo 2 triệu", '
+fake.say("ag_minh", "work", "Xin duyệt chi tiền." + '\n<!-- UNIMATE_TEAM: {"op": "ask_approval", "title": "Chạy quảng cáo 2 triệu", '
          '"action": "Chạy 2 ngày", "deadline_at": ' + str(clock.t + 6 * HOUR) + "} -->")
 job_d = r.submit(B["team_id"], "Đề xuất quảng cáo", mentions=["ag_minh"], as_job=True, client_msg_id="d1")["task_id"]
 tick_hours(1)

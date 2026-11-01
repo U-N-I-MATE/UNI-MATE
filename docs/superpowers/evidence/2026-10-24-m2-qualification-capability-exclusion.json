@@ -106,14 +106,14 @@
     "runs": [
       {
         "command": [
-          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
           "test_improvement_trial_admission.py",
           "AdmissionTests.test_unsupported_or_malformed_native_capability_reserves_nothing",
           "-v"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
         "start_utc": "2026-10-24T09:50:51.456267+00:00",
         "end_utc": "2026-10-24T09:50:55.732738+00:00",
         "logger_pid": 21388,
@@ -151,14 +151,14 @@
       },
       {
         "command": [
-          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
           "test_improvement_operation_execution.py",
           "OperationExecutionTests.test_no_native_capability_means_no_reserved_call_and_replay_after_off_is_cold",
           "-v"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
         "start_utc": "2026-10-24T09:50:55.747922+00:00",
         "end_utc": "2026-10-24T09:51:01.334806+00:00",
         "logger_pid": 21388,
@@ -196,15 +196,15 @@
       },
       {
         "command": [
-          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
           "test_improvement_trial_runner.py",
           "TrialRunnerTests.test_unsupported_adapter_refunds_before_any_query_or_recorder",
           "TrialRunnerTests.test_success_orders_marker_and_recorder_before_ack_and_cleanup_before_evaluation",
           "-v"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
         "start_utc": "2026-10-24T09:51:01.349971+00:00",
         "end_utc": "2026-10-24T09:51:06.430256+00:00",
         "logger_pid": 21388,
@@ -242,14 +242,14 @@
       },
       {
         "command": [
-          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
           "test_improvement_operation_runner.py",
           "OperationRunnerTests.test_actual_worker_profile_runner_retains_unknown_result_and_cleans_plaintext",
           "-v"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
         "start_utc": "2026-10-24T09:51:06.445778+00:00",
         "end_utc": "2026-10-24T09:51:18.181464+00:00",
         "logger_pid": 21388,
@@ -287,13 +287,13 @@
       },
       {
         "command": [
-          "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe",
+          "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe",
           "-B",
-          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
+          "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\root-check.py",
           "test_improvement_qualification_admission_fences.py",
           "-v"
         ],
-        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS",
+        "cwd": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE",
         "start_utc": "2026-10-24T09:51:59.868515+00:00",
         "end_utc": "2026-10-24T09:53:45.117643+00:00",
         "logger_pid": 13752,
@@ -375,7 +375,7 @@
       ]
     ],
     "conclusion": "success",
-    "url": "https://github.com/blogminhquy/javis-os/actions/runs/40083817343",
+    "url": "https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40083817343",
     "jobs_receipt": {
       "path": ".superpowers/sdd/2026-10-24-m2-qualification-capability-exclusion/early-linux-jobs.json",
       "bytes": 1735,
@@ -450,7 +450,7 @@
       "released_to": "root",
       "status": "RELEASED",
       "commit": "d0d5b27c143e5efcc1c89378c76914834d228094",
-      "report": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\Javis-OS\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\task-1-report.md",
+      "report": "C:\\Users\\admin\\.codex\\worktrees\\agent-skill-improvement-m2a\\UNI-MATE\\.superpowers\\sdd\\2026-10-24-m2-qualification-capability-exclusion\\task-1-report.md",
       "active_assigned_processes": 0,
       "observed_owned_temp_remaining": 0,
       "no_more_worker_tests_scheduled": true

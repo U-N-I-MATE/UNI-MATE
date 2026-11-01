@@ -40,7 +40,7 @@ const col = { w: 260, querySelector: () => null, appendChild(h) { h.parentNode =
   getBoundingClientRect() { return { width: this.w }; } };
 const props = {};
 const host = { style: { setProperty: (k, v) => { props[k] = v; col.w = parseInt(v, 10); }, removeProperty: (k) => { delete props[k]; } } };
-const opt = { host, varName: "--hud-left-w", key: "javis_hud_left_w", min: 200, max: 560, edge: "right", total: () => 1400,
+const opt = { host, varName: "--hud-left-w", key: "unimate_hud_left_w", min: 200, max: 560, edge: "right", total: () => 1400,
   other: () => 320, keep: 360, label: "common.resize_vault" };
 CR.attach(col, opt);
 check("tay kéo là separator có nhãn, focus được", handle.attrs.role === "separator" && handle.attrs["aria-orientation"] === "vertical"
@@ -48,13 +48,13 @@ check("tay kéo là separator có nhãn, focus được", handle.attrs.role === 
 listeners.pointerdown({ button: 0, clientX: 420, preventDefault() {}, pointerId: 1 });
 listeners.pointermove({ clientX: 520 });
 listeners.pointerup({});
-check("kéo mép phải sang phải 100px: rộng 360px, nhớ", props["--hud-left-w"] === "360px" && store.javis_hud_left_w === "360",
+check("kéo mép phải sang phải 100px: rộng 360px, nhớ", props["--hud-left-w"] === "360px" && store.unimate_hud_left_w === "360",
   JSON.stringify([props, store]));
 listeners.keydown({ key: "ArrowLeft", preventDefault() {} });
 check("mũi tên trái thu 16px", props["--hud-left-w"] === "344px", props["--hud-left-w"]);
 listeners.dblclick();
-check("nhấp đúp: về mặc định, quên số đã nhớ", !("--hud-left-w" in props) && !("javis_hud_left_w" in store));
-store.javis_hud_left_w = "999";
+check("nhấp đúp: về mặc định, quên số đã nhớ", !("--hud-left-w" in props) && !("unimate_hud_left_w" in store));
+store.unimate_hud_left_w = "999";
 CR.apply(opt);
 check("mở trang: áp lại số đã nhớ trong giới hạn", props["--hud-left-w"] === "560px", props["--hud-left-w"]);
 
@@ -65,7 +65,7 @@ check("trang đồ thị: lưới đọc biến bề rộng, thu cột vẫn v�
   style.includes("body.chatcol-thu .hud-body { grid-template-columns: var(--hud-left-w, 260px) minmax(0, 1fr) 44px; }"));
 check("trang Trò chuyện: cột Hội thoại đọc biến, gắn tay kéo sau khi dựng cột",
   consoleJs.includes(".chatpage-side{ width:var(--cp-side-w, 280px);") &&
-  /window\.JavisColResize\.attach\(sideEl, oSide\)/.test(consoleJs));
+  /window\.UniMateColResize\.attach\(sideEl, oSide\)/.test(consoleJs));
 check("CSS: tay kéo chỉ ở màn rộng, nằm trọn trong cột, ẩn khi cột thu hay bị mượn",
   /\.col-resize \{ display: none; \}/.test(css) && /\.col-resize-right \{ right: 0; \}/.test(css) &&
   /\.chatpage\.side-thu \.chatpage-side > \.col-resize \{ display: none; \}/.test(css) && /\.cside-pane \.col-resize \{ display: none !important; \}/.test(css));

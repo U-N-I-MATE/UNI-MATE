@@ -11,11 +11,11 @@ kho bài học có phạm vi, góp ý của đồng đội, tự rà soát có t
 | `server/agent_lessons.py` | kho bài học có phạm vi, góp ý của đồng đội, điểm nối `TeamLearning` cho bộ chạy nhóm | `agent_lessons`, `agent_lesson_events`, `agent_peer_feedback` |
 | `server/agent_review.py` | `ReviewHost`: lượt xem xét reaction (4.4), tự rà soát (8.3), hàm quay lại (6.4), mục "lessons" của khung nhịp, route của chủ | `agent_review_state`, `agent_review_changes`, `agent_review_consumed`, `agent_review_proposals` |
 | `server/agent_budget.py` | `try_spend` theo trần `agent_daily_calls` (mục 9) | `agent_budget`, `agent_budget_waits` |
-| `dashboard/agent-lessons-ui.js` | mục "Bài học và hạn mức" trong bảng Nhịp (sổ `window.JavisPulseParts`) | |
+| `dashboard/agent-lessons-ui.js` | mục "Bài học và hạn mức" trong bảng Nhịp (sổ `window.UniMatePulseParts`) | |
 
 Sửa nhỏ ở chỗ có sẵn: `feedback_projector.FeedbackProjector.review_source/set_review_status` (đọc nguồn `rx:*`, ghi trạng thái theo
 kết quả host thật), `team_runner` (khối bài học phạm vi nhóm, khối góp ý, lệnh `peer_feedback`, gắn tin vào bài học, dòng
-`agent_daily_calls` của bảng giới hạn), `team_api.TeamApiDeps.learning`, `main.py` (đường ghi `JAVIS_LESSON`, lời nhắc chat riêng,
+`agent_daily_calls` của bảng giới hạn), `team_api.TeamApiDeps.learning`, `main.py` (đường ghi `UNIMATE_LESSON`, lời nhắc chat riêng,
 nối host học, nhịp học trước nhịp của P, route).
 
 ### `agent_lessons`
@@ -75,10 +75,10 @@ Mỗi thay đổi tự rà soát đề xuất (áp hay không): `kind`, `signatu
 
 ### 2.2 Bài học có phạm vi (8.1)
 
-- Lượt nhóm: `_team_engine_for` chỉ BÓC `JAVIS_LESSON`/`JAVIS_RULE` (hạ thành bài học); `commit` (bộ chạy chỉ gọi khi đầu ra còn hợp lệ,
+- Lượt nhóm: `_team_engine_for` chỉ BÓC `UNIMATE_LESSON`/`UNIMATE_RULE` (hạ thành bài học); `commit` (bộ chạy chỉ gọi khi đầu ra còn hợp lệ,
   R3, một lần mỗi lượt) ghi `team:<team_id>`, nguồn `self`, nguồn tham chiếu `turn:<id>`, `task:<id>`, `step:<id>`; sau khi đăng tin bộ
   chạy gắn thêm `msg:<id>`. Đội giả của lượt quét/xem xét (không có `session_id`) không bao giờ ghi.
-- Chat riêng: `_ket_luot_agent(..., conv_sid)` ghi `JAVIS_RULE` vào "Luật chủ dặn" như cũ; `JAVIS_LESSON` (và `JAVIS_RULE` không có câu
+- Chat riêng: `_ket_luot_agent(..., conv_sid)` ghi `UNIMATE_RULE` vào "Luật chủ dặn" như cũ; `UNIMATE_LESSON` (và `UNIMATE_RULE` không có câu
   của chủ) vào `dm:<agent_key>` (mã: ghim của phiên, dòng sống của slug, không có thì cấp mã không bật Auto). Không còn vào MEMORY.md.
 - Lời nhắc: lượt nhóm nạp `team:<id>` + `*` (`TeamRunner._learning_lines`), chat riêng nạp `dm:<agent_key>` + `*`
   (`_dm_lessons_prompt`). `for_prompt` lọc đúng phạm vi đã cho, không bao giờ trả phạm vi khác.
@@ -89,7 +89,7 @@ Mỗi thay đổi tự rà soát đề xuất (áp hay không): `kind`, `signatu
 
 ### 2.3 Góp ý của đồng đội (8.2)
 
-Lệnh `<!-- JAVIS_TEAM: {"op": "peer_feedback", "message_id": .., "note": ..} -->` trong mọi vai, tối đa 3 mỗi lượt, xử lý trong
+Lệnh `<!-- UNIMATE_TEAM: {"op": "peer_feedback", "message_id": .., "note": ..} -->` trong mọi vai, tối đa 3 mỗi lượt, xử lý trong
 `accept_lock` cùng chỗ với lệnh `react`. Host gán `author_role` (trưởng nhóm của nhóm hay đồng đội), người nhận là tác giả tin
 (phải là tin của trợ lý khác trong đúng nhóm), gắn `task_id` và `revision` của tin, `turn_ref`, nonce `<turn>#pf<i>`. Đầu ra không còn
 hiệu lực (thành viên rời, huỷ, sửa yêu cầu, đổi trưởng nhóm, mất quyền giữ) hay người nhận đã rời: `status = evidence`, không bao giờ
@@ -163,7 +163,7 @@ lớp 3 theo `sort_by_priority`. Dòng `agent_daily_calls` vào bảng giới h�
 ## 5. Di trú và quay về bản cũ
 
 - Nâng cấp: chỉ tạo bảng mới. Không backfill: bài học cũ trong MEMORY.md giữ nguyên chỗ cũ; reaction cũ không thành lý do.
-- Quay về bản cũ: bản cũ bỏ qua bảng mới; `JAVIS_LESSON` lại ghi MEMORY.md như trước. Bài học có phạm vi ghi trong lúc chạy 0.156.0 vẫn ở
+- Quay về bản cũ: bản cũ bỏ qua bảng mới; `UNIMATE_LESSON` lại ghi MEMORY.md như trước. Bài học có phạm vi ghi trong lúc chạy 0.156.0 vẫn ở
   `agent_lessons` (không mất, chỉ không được nạp) cho tới khi nâng lại. Công cụ khôi phục T2 (`tools/team_adaptive_restore_pre.py`) chép
   nguyên `resonance.sqlite3`, nên các bảng mới nằm trong bộ sao lưu.
 

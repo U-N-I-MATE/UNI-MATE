@@ -29,11 +29,11 @@ import tempfile
 import time
 from pathlib import Path
 
-STATE = Path(tempfile.mkdtemp(prefix="javis-wh-m4-"))
-os.environ["JAVIS_STATE_DIR"] = str(STATE)
-os.environ["JAVIS_NO_REAL_JUDGE_ENGINE"] = "1"
-os.environ["JAVIS_WH_NO_NETWORK"] = "1"
-os.environ.pop("JAVIS_WH_MASTER_KEY", None)
+STATE = Path(tempfile.mkdtemp(prefix="unimate-wh-m4-"))
+os.environ["UNIMATE_STATE_DIR"] = str(STATE)
+os.environ["UNIMATE_NO_REAL_JUDGE_ENGINE"] = "1"
+os.environ["UNIMATE_WH_NO_NETWORK"] = "1"
+os.environ.pop("UNIMATE_WH_MASTER_KEY", None)
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -96,17 +96,17 @@ try:
 except wsec.SecretError as e:
     lost_ok = "missing" in str(e)
 check("a lost key gives a clear error, never a wrong value", lost_ok)
-os.environ["JAVIS_WH_MASTER_KEY"] = base64.b64encode(b"k" * 32).decode()
+os.environ["UNIMATE_WH_MASTER_KEY"] = base64.b64encode(b"k" * 32).decode()
 ve = wsec.Vault(Path(tempfile.mkdtemp(prefix="m4-env-")))
 ve.put("a/b", "v1")
-check("JAVIS_WH_MASTER_KEY: used instead of a key file", ve.get("a/b") == "v1" and not (ve.dir / "webhook_keys.json").exists())
+check("UNIMATE_WH_MASTER_KEY: used instead of a key file", ve.get("a/b") == "v1" and not (ve.dir / "webhook_keys.json").exists())
 try:
     ve.rotate()
     env_rot = False
 except wsec.SecretError as e:
     env_rot = "rotate it there" in str(e)
-check("JAVIS_WH_MASTER_KEY: rotation refused (rotate the variable)", env_rot)
-del os.environ["JAVIS_WH_MASTER_KEY"]
+check("UNIMATE_WH_MASTER_KEY: rotation refused (rotate the variable)", env_rot)
+del os.environ["UNIMATE_WH_MASTER_KEY"]
 check("secret names are restricted (no spaces or newlines)", wsec.NAME_RE.match("a b") is None and wsec.NAME_RE.match("a\nb") is None)
 
 # ---- 2. signatures ----
@@ -217,7 +217,7 @@ async def main():
     check("bad signature: 401, nothing stored", code == 401 and st._db.execute("SELECT COUNT(*) FROM events").fetchone()[0] == 0
           and st._db.execute("SELECT COUNT(*) FROM dedup").fetchone()[0] == 0)
     code, r = await f.accept(h["id"], "wrong-token", BODY, "application/json", "", headers={"stripe-signature": stripe_sig(BODY)})
-    check("the Javis token is still required before the signature", code == 401)
+    check("the UNI MATE token is still required before the signature", code == 401)
     f._kick = lambda: None
     code, r1 = await f.accept(h["id"], tok, BODY, "application/json", "", headers={"stripe-signature": stripe_sig(BODY)})
     check("good signature: accepted", code == 202, r1)

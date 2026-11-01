@@ -1,4 +1,4 @@
-"""0.201.0: JAVIS_CARD blocks degrade to plain text on Telegram and the other text channels.
+"""0.201.0: UNIMATE_CARD blocks degrade to plain text on Telegram and the other text channels.
 
 Run:
     python tests/run.py chat_cards
@@ -29,11 +29,11 @@ t = chat_cards.card_to_text(json.dumps({"type": "buttons", "title": "Duyệt?", 
 check("buttons become a numbered list", "1. Duyệt" in t and "2. Sửa" in t)
 check("broken or unknown card is empty", chat_cards.card_to_text("{bad") == "" and
       chat_cards.card_to_text(json.dumps({"type": "html", "x": 1})) == "")
-msg = "Tuần này tốt.\n<!-- JAVIS_CARD: " + json.dumps(chart, ensure_ascii=False) + " -->\nHết."
+msg = "Tuần này tốt.\n<!-- UNIMATE_CARD: " + json.dumps(chart, ensure_ascii=False) + " -->\nHết."
 out = channel_context.strip_control_blocks(msg)
-check("strip turns the card into text", "JAVIS_CARD" not in out and "- T3:" in out and "Hết." in out)
-check("prompt for the web chat explains cards", "JAVIS_CARD" in channel_context.build_channel_block("dashboard", {}))
-check("telegram prompt does not", "JAVIS_CARD" not in channel_context.build_channel_block("telegram", {"chat_id": "1"}))
+check("strip turns the card into text", "UNIMATE_CARD" not in out and "- T3:" in out and "Hết." in out)
+check("prompt for the web chat explains cards", "UNIMATE_CARD" in channel_context.build_channel_block("dashboard", {}))
+check("telegram prompt does not", "UNIMATE_CARD" not in channel_context.build_channel_block("telegram", {"chat_id": "1"}))
 blk = chat_recall.block([{"title": "Cũ", "snippet": "landing page nước mắm Phan Thiết màu cam"}])
 check("recall block stripped before titles and logs", chat_recall.strip_block(blk + "câu thật") == "câu thật")
 check("plain message untouched by strip", chat_recall.strip_block("[SKILL: x]\n\nhỏi") == "[SKILL: x]\n\nhỏi")

@@ -29,7 +29,7 @@ check("composer-dictate.js loads after dictate.js", html.indexOf("/static/dictat
 check("CSS: while dictating the bar shows and +, chips and both voice buttons hide",
   /\.hud-voice\.dictating \.dict-bar \{ display: flex; \}/.test(css)
   && /\.hud-voice\.dictating \.cp-plus, \.hud-voice\.dictating \.cp-chips[^{]*\.dict-btn, \.hud-voice\.dictating #voiceBtn \{ display: none; \}/.test(css));
-check("app.js shares its passing note for mic errors", /window\.JavisNoteFlash = ghiChuThoang;/.test(app));
+check("app.js shares its passing note for mic errors", /window\.UniMateNoteFlash = ghiChuThoang;/.test(app));
 ["bar.mic", "dict.btn", "dict.stop", "dict.cancel", "dict.busy", "dict.in_call", "dict.unsupported", "dict.denied", "dict.failed"]
   .forEach(k => check("key " + k + " in vi and en", !!(vi[k] && en[k])));
 check("the voice chat tooltip says it is a live conversation", /Đàm thoại/.test(vi["bar.mic"]) && /Voice chat/.test(en["bar.mic"]));
@@ -61,8 +61,8 @@ function buttons(state) {
 check("empty box: mic and voice chat, no send", buttons({}) === "dict,voiceBtn");
 check("typed text: voice chat turns into send", buttons({ text: "chào" }) === "dict,sendBtn");
 check("an attachment alone also shows send", buttons({ atts: [{ path: "a.png" }] }) === "dict,sendBtn");
-check("Javis answering, empty box: mic and stop", buttons({ processing: true }) === "dict,stopBtn");
-check("Javis answering with typed text: stop and send (add-on)", buttons({ processing: true, text: "thêm" }) === "dict,stopBtn,sendBtn");
+check("UNI MATE answering, empty box: mic and stop", buttons({ processing: true }) === "dict,stopBtn");
+check("UNI MATE answering with typed text: stop and send (add-on)", buttons({ processing: true, text: "thêm" }) === "dict,stopBtn,sendBtn");
 check("in a call: the red hang-up stays, the dictate mic steps aside", buttons({ call: true }) === "voiceBtn");
 check("the box value is watched, so code that empties or fills it flips the button too",
   /Object\.defineProperty\(chatInput, "value"/.test(app) && /set\(v\) \{ d\.set\.call\(this, v\); try \{ updateStopBtn\(\); \}/.test(app));
@@ -103,8 +103,8 @@ const tick = () => new Promise(r => setTimeout(r, 0));
   runs[0].say("xin chào", true);
   runs[0].onend();                       // Chrome stops after a silence, the owner has not pressed stop
   check("a run ended by the browser restarts while still recording", runs.length === 2 && d.active());
-  runs[1].say("Javis", false);
-  check("the new run keeps the words heard before", texts[texts.length - 1] === "xin chào Javis");
+  runs[1].say("UNI MATE", false);
+  check("the new run keeps the words heard before", texts[texts.length - 1] === "xin chào Uni");
   d.stop(); await tick();
   check("stop ends with idle and no further run", states[states.length - 1] === "idle" && runs.length === 2 && !d.active());
 

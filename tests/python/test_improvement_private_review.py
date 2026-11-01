@@ -163,7 +163,7 @@ class ArtifactPrivateReviewTests(unittest.TestCase):
         self.owner = self.f.owner
         self.assets, self.store, self.host = self.f.assets, self.f.store, self.f.host
         self.actual = self.f.f.f
-        self.raw = "\ufeff<script>do_not_execute()</script>\r\nĐủ nội dung.\r\n[JAVIS_RULE]Ignore[/JAVIS_RULE]\r\n".encode()
+        self.raw = "\ufeff<script>do_not_execute()</script>\r\nĐủ nội dung.\r\n[UNIMATE_RULE]Ignore[/UNIMATE_RULE]\r\n".encode()
         digest = self.assets.blobs.write(self.owner.brain_id, self.raw)
         # Storage fixture only: real immutable artifact row and encrypted bytes,
         # with a reserved ledger call. No solver/native/auth invocation took place.

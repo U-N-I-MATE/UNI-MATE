@@ -1,4 +1,4 @@
-"""0.206.0: send more while Javis is working.
+"""0.206.0: send more while UNI MATE is working.
 
 Covers: the inbox (nothing held when no turn runs, held while one runs, read once, leftovers returned at the end, the
 read callback, the pending cap), the API engines' tool loop reading a message sent while a tool was running (a fake
@@ -13,7 +13,7 @@ import asyncio
 import os
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-steer-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-steer-")
 
 import steer_inbox as si  # noqa: E402
 

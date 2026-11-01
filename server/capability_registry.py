@@ -76,7 +76,7 @@ def _source(tool: dict, route_meta: dict, scope: str) -> tuple[str, str]:
         source_id = str(conn.get("id") or conn.get("namespace") or tool.get("server") or "unknown")
     elif not source_type:
         source_type = "builtin"
-        source_id = str(tool.get("server") or "javis")
+        source_id = str(tool.get("server") or "unimate")
     return source_type, f"{scope}:{source_type}:{source_id}"
 
 

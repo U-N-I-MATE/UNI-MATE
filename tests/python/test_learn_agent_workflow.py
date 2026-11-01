@@ -71,7 +71,7 @@ def test_cap_mac_dinh_tat(tmp_path):
     assert caps["agent"] is False and caps["workflow"] is False
 
 
-# ---- ghi thật: đúng thư mục PHẲNG + đúng frontmatter mẫu javis-builder ----
+# ---- ghi thật: đúng thư mục PHẲNG + đúng frontmatter mẫu unimate-builder ----
 
 def test_ghi_agent_va_workflow(tmp_path):
     feature = _feature(tmp_path)
@@ -82,7 +82,7 @@ def test_ghi_agent_va_workflow(tmp_path):
 
     fm, body = _fm(tmp_path / "agents" / "viet-email.md")
     assert fm["type"] == "agent" and fm["slug"] == "viet-email"
-    assert fm["name"] == "Viết email chăm khách" and fm["origin"] == "javis-learned"
+    assert fm["name"] == "Viết email chăm khách" and fm["origin"] == "unimate-learned"
     assert fm["skills"] == [] and "chuyên viên email" in body
 
     fm, _ = _fm(tmp_path / "workflows" / "nghien-cuu-viet-bai.md")
@@ -163,18 +163,18 @@ def test_dry_run_chi_liet_ke(tmp_path):
     assert not (tmp_path / "agents" / "viet-email.md").exists()
 
 
-# ---- fallback thư mục CŨ Javis/agents: chưa migrate thì ghi vào đó, và dedup thấy nó ----
+# ---- fallback thư mục CŨ UniMate/agents: chưa migrate thì ghi vào đó, và dedup thấy nó ----
 
-def test_fallback_javis_agents_khi_chua_co_phang(tmp_path):
+def test_fallback_unimate_agents_khi_chua_co_phang(tmp_path):
     feature = _feature(tmp_path)
     cfg = feature.read_config()
-    _write(tmp_path / "Javis" / "agents" / "cu.md", "---\ntype: agent\n---\nx")
+    _write(tmp_path / "UNI MATE" / "agents" / "cu.md", "---\ntype: agent\n---\nx")
     rep = feature._promote_sync("brain", {"agents": [_agent(slug="cu")]}, cfg, CAPS, allow_write=True)
     assert rep["agents"] == [] and any("không ghi đè" in b for b in rep["blocked"])
     rep = feature._promote_sync("brain", {"agents": [_agent()]}, cfg, CAPS, allow_write=True)
     assert rep["agents"] == ["viet-email"]
-    assert (tmp_path / "Javis" / "agents" / "viet-email.md").exists(), \
-        "brain chưa migrate (chỉ có Javis/agents) thì ghi tiếp vào đó, không tách đôi kho"
+    assert (tmp_path / "UNI MATE" / "agents" / "viet-email.md").exists(), \
+        "brain chưa migrate (chỉ có UniMate/agents) thì ghi tiếp vào đó, không tách đôi kho"
 
 
 # ---- prompt: cap bật mới xin loại đó, kèm danh sách chống trùng ----
@@ -240,7 +240,7 @@ def test_update_workflow_sua_dung_file_cu(tmp_path):
     assert fm["name"] == "Chuỗi bài chuẩn của tôi", "tên chủ đặt phải giữ nguyên"
     assert fm["status"] == "active", "workflow chủ đang bật thì sửa xong vẫn bật"
     assert fm["ghi_chu_rieng"] == "chủ tự thêm field này", "field lạ của chủ không được nuốt"
-    assert fm["learned_updated"], "phải đánh dấu Javis từng sửa"
+    assert fm["learned_updated"], "phải đánh dấu UNI MATE từng sửa"
     assert "Mô tả của chủ." in body, "thân file chủ viết phải giữ"
     assert "## Lịch sử (tự học)" in body and "bước nghiên cứu thừa" in body
 
@@ -303,15 +303,15 @@ def test_learn_lock_thi_cam_dung(tmp_path):
 
 
 def test_update_ghi_dung_file_legacy_khong_tach_doi_kho(tmp_path):
-    """Brain chưa migrate (chỉ có Javis/workflows): sửa phải ghi vào ĐÚNG file đó, kẻo
+    """Brain chưa migrate (chỉ có UniMate/workflows): sửa phải ghi vào ĐÚNG file đó, kẻo
     thành hai bản và app đọc bản cũ - chủ tưởng sửa không ăn."""
     feature = _feature(tmp_path)
     cfg = feature.read_config()
-    _wf_cu(tmp_path, d="Javis/workflows")
+    _wf_cu(tmp_path, d="UniMate/workflows")
     rep = feature._promote_sync("brain", {"workflows": [_upd_wf()]}, cfg, CAPS, allow_write=True)
     assert rep["workflows_updated"] == ["nghien-cuu-viet-bai"], rep
     assert not (tmp_path / "workflows" / "nghien-cuu-viet-bai.md").exists()
-    fm, _ = _fm(tmp_path / "Javis" / "workflows" / "nghien-cuu-viet-bai.md")
+    fm, _ = _fm(tmp_path / "UNI MATE" / "workflows" / "nghien-cuu-viet-bai.md")
     assert fm["steps"][0]["task"] == "Viết thẳng từ {{input}}"
 
 

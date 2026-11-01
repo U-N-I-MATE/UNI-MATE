@@ -27,7 +27,7 @@ def register(ctx):
 
     def _on_post_tool_call(tool_name="", **_):
         # Đừng tự đếm chính tool đọc thống kê (tránh nhiễu), và bỏ tên rỗng.
-        if not tool_name or tool_name == "javis_tool_stats":
+        if not tool_name or tool_name == "unimate_tool_stats":
             return
         with lock:
             data = _load()
@@ -50,9 +50,9 @@ def register(ctx):
 
     ctx.register_hook("post_tool_call", _on_post_tool_call)
     ctx.register_tool(
-        name="javis_tool_stats",
+        name="unimate_tool_stats",
         description=("Thống kê số lần mỗi tool đã được gọi (do plugin tool-audit ghi qua hook post_tool_call). "
-                     "Xem tool/nguồn dữ liệu nào Javis hay dùng nhất."),
+                     "Xem tool/nguồn dữ liệu nào UNI MATE hay dùng nhất."),
         handler=_stats, min_mode="readonly",
         schema={"type": "object", "properties": {}},
     )

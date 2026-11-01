@@ -35,7 +35,7 @@ const win = {
 const ctx = { window: win, console, encodeURIComponent, String, Object, Array, Number, JSON };
 vm.createContext(ctx);
 vm.runInContext(MOD, ctx);
-const F = win.JavisConvFilters;
+const F = win.UniMateConvFilters;
 const icon = (n) => "[" + n + "]";
 
 // ---- 1. the "Hidden" filter ----
@@ -51,9 +51,9 @@ check("the hidden filter asks the server for status=hidden", F.query({ status: "
 check("the hidden filter counts as an active filter", F.activeCount({ status: "hidden" }) === 1);
 // Chatbot v5: the status choices live in the Filter menu (inbox-v5.js), one radio each.
 vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "..", "dashboard", "inbox-v5.js"), "utf8"), ctx);
-const so = win.JavisInboxV5.filterMenuHtml({ status: "hidden" }, "status", [], { status: { unread: 2, need_reply: 1, hidden: 3 } }, [], null, null);
+const so = win.UniMateInboxV5.filterMenuHtml({ status: "hidden" }, "status", [], { status: { unread: 2, need_reply: 1, hidden: 3 } }, [], null, null);
 check("Filter menu status ends with 'Hidden (N)', ticked when on", /data-v="hidden" checked> <span>ht\.f_st_hidden#3/.test(so), so);
-check("no count from an old server reads 0", win.JavisInboxV5.filterMenuHtml({}, "status", [], { status: {} }, []).indexOf("ht.f_st_hidden#0") > 0);
+check("no count from an old server reads 0", win.UniMateInboxV5.filterMenuHtml({}, "status", [], { status: {} }, []).indexOf("ht.f_st_hidden#0") > 0);
 
 // ---- 2. what the menu offers ----
 const acts = (c) => F.rowMenuItems(c).filter((x) => !x.sep).map((x) => x.act);

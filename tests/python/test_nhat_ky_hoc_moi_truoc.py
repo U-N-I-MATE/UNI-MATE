@@ -11,7 +11,7 @@ vẫn ghi "mới nhất trước", tức đúng một nửa.
 
 Vì sao đáng sửa chứ không phải chuyện thẩm mỹ: một ngày học 100-200 mục, dashboard chia 10
 mục mỗi trang, nên mục mới nhất nằm lẫn đâu đó giữa hai chục trang. Người dùng mở nhật ký ra
-chính là để xem Javis vừa học gì và có lỗi gì khi chạy model nền - thứ họ cần luôn là mục mới
+chính là để xem UNI MATE vừa học gì và có lỗi gì khi chạy model nền - thứ họ cần luôn là mục mới
 nhất, mà đó lại là thứ khó tìm nhất.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401

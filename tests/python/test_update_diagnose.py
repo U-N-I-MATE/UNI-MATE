@@ -4,7 +4,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-upd-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-upd-"))
 import updater  # noqa: E402
 
 fails = []
@@ -18,7 +18,7 @@ def check(name, condition):
 
 message = updater.chan_doan_pull("Already up to date.")
 check("đã mới nhất: nêu đúng nguồn phát hành chính thức",
-      "github.com/blogminhquy/javis-os.git/main" in message)
+      "github.com/U-N-I-MATE/UNI-MATE.git/main" in message)
 check("đã mới nhất: hướng dẫn Docker nếu cần", "Docker" in message)
 check("không khuyên bỏ nhánh riêng", "checkout main" not in message and "reset --hard" not in message)
 
@@ -49,12 +49,12 @@ check("file cục bộ chặn merge: hướng dẫn kiểm tra",
 check("lỗi lạ không bịa nguyên nhân",
       updater.chan_doan_pull_hong("fatal: một lỗi chưa từng gặp") == "")
 
-os.environ["JAVIS_UPDATE_REMOTE"] = "some-fork"
-os.environ["JAVIS_UPDATE_BRANCH"] = "stable"
+os.environ["UNIMATE_UPDATE_REMOTE"] = "some-fork"
+os.environ["UNIMATE_UPDATE_BRANCH"] = "stable"
 check("nút cập nhật luôn dùng cùng nguồn với /version",
-      updater.release_source() == ("https://github.com/blogminhquy/javis-os.git", "main"))
-os.environ.pop("JAVIS_UPDATE_REMOTE", None)
-os.environ.pop("JAVIS_UPDATE_BRANCH", None)
+      updater.release_source() == ("https://github.com/U-N-I-MATE/UNI-MATE.git", "main"))
+os.environ.pop("UNIMATE_UPDATE_REMOTE", None)
+os.environ.pop("UNIMATE_UPDATE_BRANCH", None)
 
 if fails:
     print(f"THẤT BẠI {len(fails)}: {fails}")

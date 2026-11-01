@@ -3,7 +3,7 @@
     .venv/bin/python tools/webhook_staging_rehearsal.py [--out report.json]
 
 What it runs (docs/webhook-platform/staging-pilot-pack.md):
-  - `main.app` under uvicorn in a CHILD process, a fresh temporary JAVIS_STATE_DIR, real HTTP sockets, real SQLite.
+  - `main.app` under uvicorn in a CHILD process, a fresh temporary UNIMATE_STATE_DIR, real HTTP sockets, real SQLite.
   - Local receivers on 127.0.0.1 (`allow_private` actions): one answers at once, one waits 6 s, one answers 500.
   - The child refuses every model path (run_task, run_workflow, incident triage): a call is written to a marker file
     and fails the run.
@@ -51,9 +51,9 @@ uvicorn.run(main.app, host="127.0.0.1", port=int(os.environ["REHEARSAL_PORT"]), 
 '''
 
 ORDER = {"shop_id": 7, "id": 1001, "status": 1, "bill_full_name": "Nguyen Lan", "bill_phone_number": "0912345678",
-         "items": [{"name": "Nuoc mam"}, {"name": "Goi TRO LY AI JAVIS 12 thang"}]}
+         "items": [{"name": "Nuoc mam"}, {"name": "Goi TRO LY AI UNI MATE 12 thang"}]}
 RULES = {"filter": {"all": [{"path": "status", "op": "eq", "value": 1},
-                            {"path": "items[*].name", "op": "contains", "value": "TRO LY AI JAVIS",
+                            {"path": "items[*].name", "op": "contains", "value": "TRO LY AI UNI MATE",
                              "quantifier": "any", "case_sensitive": False, "reason": "product_not_found"}]},
          "dedup": {"policy_version": 1, "business_paths": ["shop_id", "id", "status"], "ttl_s": 604800,
                    "missing": "quarantine"},
@@ -81,9 +81,9 @@ class Receiver(BaseHTTPRequestHandler):
     def do_POST(self):
         n = int(self.headers.get("content-length") or 0)
         body = self.rfile.read(n) if n else b""
-        did = self.headers.get("X-Javis-Delivery-Id") or self.headers.get("X-Javis-Event-Id") or ""
+        did = self.headers.get("X-UniMate-Delivery-Id") or self.headers.get("X-UniMate-Event-Id") or ""
         with LOG_LOCK:
-            LOG.append({"path": self.path, "delivery": did, "event": self.headers.get("X-Javis-Event-Id") or "",
+            LOG.append({"path": self.path, "delivery": did, "event": self.headers.get("X-UniMate-Event-Id") or "",
                         "at": time.time(), "len": len(body)})
         if self.path.startswith("/slow"):
             time.sleep(6)
@@ -116,8 +116,8 @@ class Host:
         self.base = f"http://127.0.0.1:{self.port}"
 
     def start(self) -> None:
-        env = dict(os.environ, JAVIS_STATE_DIR=str(self.state), REHEARSAL_PORT=str(self.port),
-                   REHEARSAL_MODEL_MARKER=str(self.marker), PYTHONPATH=str(SERVER), JAVIS_REQUIRE_LOGIN="0")
+        env = dict(os.environ, UNIMATE_STATE_DIR=str(self.state), REHEARSAL_PORT=str(self.port),
+                   REHEARSAL_MODEL_MARKER=str(self.marker), PYTHONPATH=str(SERVER), UNIMATE_REQUIRE_LOGIN="0")
         self.proc = subprocess.Popen([sys.executable, "-c", CHILD], env=env, cwd=str(SERVER),
                                      stdout=subprocess.DEVNULL, stderr=open(self.state / "host.log", "ab"))
         for _ in range(300):
@@ -154,7 +154,7 @@ class Host:
         return d["hook"]["id"], d["token"]
 
     def send(self, hid: str, token: str, doc, key: str = "") -> tuple:
-        h = {"X-Javis-Token": token, "content-type": "application/json"}
+        h = {"X-UniMate-Token": token, "content-type": "application/json"}
         if key:
             h["Idempotency-Key"] = key
         r = httpx.post(self.base + f"/hooks/{hid}", content=json.dumps(doc).encode(), headers=h, timeout=30)
@@ -189,7 +189,7 @@ def main() -> int:
     rport = free_port()
     srv = ThreadingHTTPServer(("127.0.0.1", rport), Receiver)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
-    state = Path(tempfile.mkdtemp(prefix="javis-rehearsal-"))
+    state = Path(tempfile.mkdtemp(prefix="unimate-rehearsal-"))
     marker = state / "model-calls.txt"
     host = Host(state, marker)
     t0 = time.time()

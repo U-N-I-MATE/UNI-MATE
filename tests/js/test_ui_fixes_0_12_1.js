@@ -38,14 +38,14 @@ check("CANARY: khong con lop noi muon node cua HUD",
     .indexOf("appendChild") === -1);
 
 // ---- 2. Dien thoai: khong mo trinh sua note ----
-const onStart = CONSOLE.indexOf("window.JavisOpenNote = function");
+const onStart = CONSOLE.indexOf("window.UniMateOpenNote = function");
 const onEnd = CONSOLE.indexOf("\n  };", onStart);
-check("tim thay JavisOpenNote", onStart !== -1 && onEnd > onStart);
+check("tim thay UniMateOpenNote", onStart !== -1 && onEnd > onStart);
 const ON = CONSOLE.slice(onStart, onEnd);
 check("dien thoai thi KHONG mo trinh sua note", ON.indexOf("isNarrow()") !== -1);
 // Im lang khong lam gi la dung loi UX vua sua o cho khac - phai noi ly do.
 check("khong im lang: co bao ly do cho nguoi dung",
-  ON.indexOf("JavisToast") !== -1 || ON.indexOf("alert(") !== -1);
+  ON.indexOf("UniMateToast") !== -1 || ON.indexOf("alert(") !== -1);
 check("chan TRUOC khi goi openNote", ON.indexOf("isNarrow()") < ON.indexOf("openNote("));
 
 // Trinh sua van phai thoat duoc neu toi day bang duong khac (trang Tep tin).

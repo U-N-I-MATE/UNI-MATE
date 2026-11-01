@@ -3,7 +3,7 @@
 Chạy: python tests/run.py watchtower_image
 
 Bối cảnh (2026-10-01): máy cài mới không bấm "Cập nhật ngay" được. Log container
-`javis-watchtower` trên VPS Hostinger:
+`unimate-watchtower` trên VPS Hostinger:
     client version 1.25 is too old. Minimum supported API version is 1.40
 Image `containrrr/watchtower` mặc định nói Docker API 1.25 và repo đó đã archive, nên nó
 Restarting mãi, app không nối được `watchtower:8080` và nút cập nhật chết trên MỌI máy mới.

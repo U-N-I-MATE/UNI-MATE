@@ -46,7 +46,7 @@ async def main():
           p["id"] == 1001 and p["status"] == 1 and p["shop_id"] == 7 and isinstance(p["total"], int)
           and [i["name"] for i in p["items"]] == [i["name"] for i in mx.ORDER["items"]]
           and isinstance(p["shipping_address"]["phone"], str), p)
-    check("export: the headers are the ones Javis keeps, no token", "x-javis-token" not in json.dumps(fx["headers"]).lower()
+    check("export: the headers are the ones UNI MATE keeps, no token", "x-unimate-token" not in json.dumps(fx["headers"]).lower()
           and fx["headers"].get("user-agent") == "POSCake-Webhook/1.0", fx["headers"])
     cfg = sd / "hook.json"
     cfg.write_text(json.dumps({"rules": mx.SPEC_RULES}), encoding="utf-8")

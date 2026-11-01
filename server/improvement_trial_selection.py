@@ -102,7 +102,7 @@ def _discovery_guard(cli, sdk, state_root):
             or cli._RX_BIEN_WIN.pattern != ast.literal_eval(expression.args[0])
             or cli._RX_BIEN_WIN.flags != re.compile(ast.literal_eval(expression.args[0])).flags):
         raise ValueError(error)
-    configured = (os.getenv("JAVIS_STATE_DIR", "") or "").strip()
+    configured = (os.getenv("UNIMATE_STATE_DIR", "") or "").strip()
     expected = Path(configured) if configured else Path(cli.__file__).resolve().parent
     if not state_root.is_absolute() or expected != state_root:
         raise ValueError("trial_selection_discovery_state_unavailable")
@@ -130,7 +130,7 @@ def _remembered_cli(cli, state_root):
 
 
 def _sdk_cli_path(cli, state_root):
-    override = (os.environ.get("JAVIS_CLAUDE_CLI") or "").strip()
+    override = (os.environ.get("UNIMATE_CLAUDE_CLI") or "").strip()
     selected = override or shutil.which("claude") or shutil.which("claude", path=cli._duong_dan_tim_binary())
     selected = selected or _remembered_cli(cli, state_root)
     if not selected or "_bundled" in selected.replace("\\", "/"):

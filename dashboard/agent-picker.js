@@ -14,7 +14,7 @@
  * Each <option> may carry `data-name` (full name) and `data-desc` (full description). Without them the option text
  * is used as the name. Usage:
  *
- *     JavisAgentPicker.enhance(selectEl, { title: t("ap.title"), placeholder: t("ap.search_ph") });
+ *     UniMateAgentPicker.enhance(selectEl, { title: t("ap.title"), placeholder: t("ap.search_ph") });
  *
  * The pure helpers (fold, itemsFrom, filterItems, rowsHtml, choose) need no DOM and are tested in a vm by
  * tests/js/test_agent_picker.js.
@@ -309,6 +309,6 @@
 
   var api = { enhance: enhance, close: close, fold: fold, itemsFrom: itemsFrom, filterItems: filterItems,
     rowsHtml: rowsHtml, choose: choose };
-  W.JavisAgentPicker = api;
+  W.UniMateAgentPicker = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

@@ -1,4 +1,4 @@
-"""Hòm thư của Javis - nơi MỌI kết quả chạy nền tìm được đường về với người dùng.
+"""Hòm thư của UNI MATE - nơi MỌI kết quả chạy nền tìm được đường về với người dùng.
 
 Vì sao có file này
 ==================
@@ -50,9 +50,9 @@ _LOCK = threading.RLock()
 MAX_ITEMS = 300
 
 # Loại thư. Chia làm hai nhóm ở giao diện: "Của tôi" (answer/report) và "Tin tức" (system).
-#   answer  - Javis trả lời một việc BẠN giao (task Kanban, câu hỏi chạy nền)
+#   answer  - UNI MATE trả lời một việc BẠN giao (task Kanban, câu hỏi chạy nền)
 #   report  - báo cáo định kỳ tự chạy (loop, nhắc hẹn) - bạn không hỏi lúc đó
-#   system  - Javis tự nói (lỗi việc nền, cảnh báo hết hạn mức...)
+#   system  - UNI MATE tự nói (lỗi việc nền, cảnh báo hết hạn mức...)
 KINDS = ("answer", "report", "system")
 
 # Tiêu đề cắt ngắn cho vừa một dòng thẻ; thân thư cắt cho vừa cái xem trước.
@@ -98,7 +98,7 @@ def _tieu_de(text: str) -> str:
     nhãn chung chung kiểu "Việc nền đã xong" cho mọi thứ.
 
     Bỏ dấu nhấn markdown ở CẢ HAI ĐẦU chứ không riêng đầu dòng: tiêu đề này đi thẳng ra
-    thông báo đẩy của hệ điều hành, nơi không ai dịch markdown cả. Câu trả lời của Javis hay
+    thông báo đẩy của hệ điều hành, nơi không ai dịch markdown cả. Câu trả lời của UNI MATE hay
     mở đầu bằng "**Nhắc bạn:** ..." nên cắt kiểu cũ (chỉ lstrip) để lại đúng cái đuôi "**"
     lơ lửng giữa tiêu đề trên màn hình khoá điện thoại.
     """
@@ -110,7 +110,7 @@ def _tieu_de(text: str) -> str:
         if s:
             return s[:MAX_TITLE]
     import localefmt
-    return localefmt.chu("Javis vừa gửi một tin", "Javis just sent a message")
+    return localefmt.chu("UNI MATE vừa gửi một tin", "UNI MATE just sent a message")
 
 
 def add(text: str, *, kind: str = "answer", session_id: str = "", brain: str = "",
@@ -150,12 +150,12 @@ def add(text: str, *, kind: str = "answer", session_id: str = "", brain: str = "
     # `dedup` (0.186.0): a retried report (a reminder sent again after a crash, a job reported twice) carries the
     # same key; the first item stands and the caller learns it was a repeat (`duplicate`), so no channel rings twice.
     # `routing` (0.186.0): why the report could not be delivered to a chat ("no_target": no chat and no source brain),
-    # kept so the owner sees it in the bell instead of Javis guessing a recipient.
+    # kept so the owner sees it in the bell instead of UNI MATE guessing a recipient.
     if dedup:
         item["dedup"] = str(dedup)[:200]
     if routing:
         item["routing"] = str(routing)[:40]
-    # 0.403.0 (notify_policy): what the notice is about, how serious it is, its kind, and whether Javis Core's rules kept
+    # 0.403.0 (notify_policy): what the notice is about, how serious it is, its kind, and whether UNI MATE Core's rules kept
     # it out of the main list ("filtered", shown under "Filtered" in the bell, always already read).
     if group:
         item["group"] = str(group)[:20]

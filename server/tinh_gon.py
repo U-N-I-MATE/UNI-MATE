@@ -17,7 +17,7 @@ template (`" target="_blank"` thành `"target="_blank"`), làm hỏng HTML mà k
 `tests/js/test_tinh_gon.mjs` chạy bộ này trên MỌI file JS của dashboard rồi so từng token với bản gốc bằng acorn.
 
 An toàn khi hỏng: mọi lỗi (file lạ, regex đoán sai, ngoại lệ) đều trả lại nguyên bản gốc. Tắt hẳn bằng
-JAVIS_MINIFY=0.
+UNIMATE_MINIFY=0.
 """
 from __future__ import annotations
 
@@ -265,7 +265,7 @@ def nen_css(src: str) -> str:
 
 
 def bat() -> bool:
-    return os.environ.get("JAVIS_MINIFY", "1").strip().lower() not in ("0", "false", "no", "off")
+    return os.environ.get("UNIMATE_MINIFY", "1").strip().lower() not in ("0", "false", "no", "off")
 
 
 def nen_duoc(rel: str) -> bool:
@@ -279,7 +279,7 @@ _NHO: dict = {}   # đường dẫn tuyệt đối -> (khoá (mtime_ns, size, ba
 
 def ban_phuc_vu(path: Path, rel: str) -> tuple[bytes, str]:
     """Bytes sẽ gửi cho trình duyệt (bản nén nếu nén được, không thì bản gốc) và crc32 của CHÍNH các bytes đó.
-    crc đi vào khoá `?v=` và khối javis-fresh, nên freshness.js so đúng thứ trình duyệt nhận được."""
+    crc đi vào khoá `?v=` và khối unimate-fresh, nên freshness.js so đúng thứ trình duyệt nhận được."""
     st = path.stat()
     khoa = (st.st_mtime_ns, st.st_size, bat())
     ent = _NHO.get(str(path))

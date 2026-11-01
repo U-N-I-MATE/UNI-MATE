@@ -1,7 +1,7 @@
 """
-system_sync.py - Tầng NĂNG LỰC HỆ THỐNG của Javis OS (tách khỏi dữ liệu người dùng trong brain).
+system_sync.py - Tầng NĂNG LỰC HỆ THỐNG của UNI MATE (tách khỏi dữ liệu người dùng trong brain).
 
-Vấn đề giải quyết: trước đây các chức năng mặc định (skill javis-builder, ingest/query/lint,
+Vấn đề giải quyết: trước đây các chức năng mặc định (skill unimate-builder, ingest/query/lint,
 loop tự-cải-tiến) được seed create-if-missing vào TỪNG brain → brain tạo ở bản cũ không bao
 giờ nhận bản skill mới; brain ngoài (path:) không có gì; đổi brain là "mất" chức năng hệ thống.
 
@@ -18,9 +18,9 @@ Kiến trúc mới - 2 tầng rõ ràng:
 Skill trong brain có CANONICAL phẳng <brain>/skills/<slug>/SKILL.md (cùng hướng agents/workflows/
 memory). Tầng hệ thống được cài vào canonical đó qua sync có manifest, rồi MIRROR sang
 <brain>/.claude/skills để Claude Code nạp NATIVE ở ngữ cảnh cwd=brain (workflow/loop/learn/lint) -
-mirror chỉ là bản phái sinh (bonus), router chính của Javis không phụ thuộc nó. Brain cũ để skill
+mirror chỉ là bản phái sinh (bonus), router chính của UNI MATE không phụ thuộc nó. Brain cũ để skill
 ở .claude/skills được migrate_brain() dời sang skills/ (idempotent, 1 chiều, không mất data):
-  - Manifest <brain>/.javis/system-manifest.json ghi hash bản đã cài của từng file hệ thống.
+  - Manifest <brain>/.unimate/system-manifest.json ghi hash bản đã cài của từng file hệ thống.
   - Thiếu → cài (kể cả khi user lỡ xoá: file hệ thống tự hồi phục như file HĐH; muốn ngừng
     dùng thì TẮT skill - chuyển vào skills/.disabled - sync tôn trọng, không bật lại).
   - Có + CHƯA bị user sửa (hash khớp manifest, hoặc khớp bộ hash các bản đã ship LEGACY_HASHES)
@@ -56,7 +56,7 @@ import fastyaml
 PROJECT_ROOT = Path(__file__).parent.parent
 SYSTEM_SKILLS_DIR = PROJECT_ROOT / ".claude" / "skills"
 SYSTEM_LOOPS_DIR = PROJECT_ROOT / "system" / "loops"
-MANIFEST_REL = Path(".javis") / "system-manifest.json"
+MANIFEST_REL = Path(".unimate") / "system-manifest.json"
 
 # Frontmatter key của loop mà user/UI chỉnh trong vận hành bình thường → KHÔNG tính là "đã sửa"
 # và được BẢO TOÀN khi update. (self_improve.save_loop rewrite các key này khi user bật/tắt.)
@@ -333,7 +333,7 @@ def _cap_desc(text: str, cap: int) -> Optional[str]:
     skill vượt trần 150 ký tự của chính dự án (dài nhất 1.018), tổng mô tả 10.095 ký tự nạp
     mỗi phiên; ép đúng trần còn 3.892, giảm 61%. Bản canonical trong `skills/` GIỮ NGUYÊN chữ
     của người dùng - mirror vốn là bản phái sinh. Không mất năng lực: mô tả chỉ để định tuyến,
-    thân skill vẫn nạp đủ khi được gọi, và router của Javis xưa nay đã cắt đúng ở 150 rồi.
+    thân skill vẫn nạp đủ khi được gọi, và router của UNI MATE xưa nay đã cắt đúng ở 150 rồi.
     """
     out = text or ""
     tran = _het_frontmatter(out)
@@ -597,7 +597,7 @@ def sync_brain(brain_root) -> dict:
                     enabled_p, disabled_p = _skill_paths(root, slug, rel)
                     dst = disabled_p if off else enabled_p
                 else:
-                    dst = root / "Javis" / "loops" / f"{slug}.md"
+                    dst = root / "UNI MATE" / "loops" / f"{slug}.md"
 
                 entry = files.get(key) or {}
                 if not dst.exists():
@@ -679,18 +679,18 @@ LEGACY_HASHES.update({
     "skills/ingest-source": {
         "313675bc61ad2aae69b282e9289a1a126ce89eb7688e1e2bfa3cfa409428878d",
     },
-    "skills/javis-builder": {
+    "skills/unimate-builder": {
         "24081f68ed0152b09fc482dc79680e68e249e8153bc1c442f4a01af15b7f012f",
         # bản v0.9.32 (trước khi thêm khung metaprompt v0.9.33)
         "6f040dde409adf27ee69fed22c2c0490a5717c53a640d02d02fd670ee1bbfd76",
         # bản v0.9.70 (trước khi vá I1 final-fix-gd2: mục Loop dạy gõ YAML tay, không gọi
-        # javis_schedule; thiếu owner_chat/goal trong template)
+        # unimate_schedule; thiếu owner_chat/goal trong template)
         "b399b173c59b4a6c61fdf294944aec06e9cd6cdcd28d02cabaf1cbb424dc844b",
         # bản 0.96.1 (trước khi agent đổi từ `group` sang `tags` ở 0.100.0)
         "407a1eebf9248304be7d7d9db11d627afb38ef2fdb446661f8a68df776acd8f2",
         # 0.227.0 (before the agent template gained model_provider, 0.228.0)
         "886c8abf0fbc02bf7d605cc398ae75e2e5e1505d3f9333679abf6ea0a7f5b8e2",
-        # before the plugin section switched to the javis_plugin tool (2026-10-25)
+        # before the plugin section switched to the unimate_plugin tool (2026-10-25)
         "614d78decdd8501f983bbb1fc14a7de491f1bdbc28817b062c87a3dfaaec8b8e",
     },
     # ingest-source bản trước contextual-retrieval (v0.9.33) = 313675bc... đã có ở trên

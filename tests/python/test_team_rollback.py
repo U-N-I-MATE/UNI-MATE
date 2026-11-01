@@ -22,7 +22,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-rb-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-rb-")
 
 import sessions as NEW_SS  # noqa: E402
 import task_store as NEW_TS  # noqa: E402

@@ -3,7 +3,7 @@
 //     python tests/run.py --js agent_pulse_ui -v
 //
 // Hàm thuần chạy dưới node: bảng theo từng ngữ cảnh (trạng thái, bậc, lần xem xét, lý do thức, đổi nhịp trước/sau và
-// nguồn, phản hồi đã xử lý, nút), sổ đăng ký `JavisPulseParts` cho phần J/L, escape. Bộ đếm "đã xem" với đồng hồ giả:
+// nguồn, phản hồi đã xử lý, nút), sổ đăng ký `UniMatePulseParts` cho phần J/L, escape. Bộ đếm "đã xem" với đồng hồ giả:
 // ≥ 1,5 giây trong khung nhìn khi tab hiển thị, gom lô, mỗi tin một lần, tab ẩn thì không tính, ngữ cảnh không phải của
 // trợ lý thì thôi gửi. Cộng các chỗ nối: script, cột phải trang Cộng sự, dòng thành viên nhóm, khung tin nhóm, CSS, i18n.
 "use strict";
@@ -91,7 +91,7 @@ check("lỗi máy chủ: báo chưa lưu, không báo thành công", (function (
 const reg = [{ name: "judge", render: function (v) { return "<div class=\"jx\">" + v.agent_key + "</div>"; } },
   { name: "broken", render: function () { throw new Error("x"); } }];
 h = P.panelHtml(view, { registry: reg });
-check("sổ đăng ký JavisPulseParts: mục của phần J/L hiện trong bảng, mục lỗi không làm hỏng bảng",
+check("sổ đăng ký UniMatePulseParts: mục của phần J/L hiện trong bảng, mục lỗi không làm hỏng bảng",
   h.includes('data-part="judge"') && h.includes("ag_1") && !h.includes('data-part="broken"'), h);
 check("changeLine: sự kiện bật Auto, nguồn chủ", P.changeLine({ kind: "on", source: "owner" }).includes(vi["pulse.ev.on"])
   && P.changeLine({ kind: "on", source: "owner" }).includes(vi["pulse.by_owner"]));
@@ -193,7 +193,7 @@ function fakeTimers() {
     === JSON.stringify({ ctx: "team:tm_a", mid: 9, sid: "" }));
   check("contextOf: tin của chủ trong nhóm không theo dõi", SEEN.contextOf(el("tm-msg tm-msg-owner", { "data-mid": 9 }, box))
     === null);
-  check("contextOf: bong bóng trả lời chat riêng", SEEN.contextOf(el("msg-javis", { "data-mid": 4, "data-sid": "s9" })).ctx
+  check("contextOf: bong bóng trả lời chat riêng", SEEN.contextOf(el("msg-unimate", { "data-mid": 4, "data-sid": "s9" })).ctx
     === "session:s9");
   check("contextOf: phần tử khác không theo dõi", SEEN.contextOf(el("msg-user", { "data-mid": 4, "data-sid": "s9" })) === null);
 
@@ -222,8 +222,8 @@ function fakeTimers() {
   const idx = read("index.html"), ws = read("workspace.js"), tm = read("teams.js"), css = read("console.css");
   check("index.html nạp agent-pulse.js và pulse-seen.js", idx.includes("/static/agent-pulse.js?v=") &&
     idx.includes("/static/pulse-seen.js?v="));
-  check("trang Cộng sự: khung #wsPulse dưới Cộng hưởng và gắn JavisPulse.mount", ws.includes('id="wsPulse"') &&
-    ws.includes("JavisPulse.mount(ph"));
+  check("trang Cộng sự: khung #wsPulse dưới Cộng hưởng và gắn UniMatePulse.mount", ws.includes('id="wsPulse"') &&
+    ws.includes("UniMatePulse.mount(ph"));
   check("ngăn Nhóm: dòng thành viên mở ra có nhịp đúng nhóm (only: team:<id>)", tm.includes("data-pulse-ctx=\"team:") &&
     tm.includes("only: el.getAttribute(\"data-pulse-ctx\")"));
   check("khung tin nhóm mang mã nhóm cho sự kiện đã xem", tm.includes('setAttribute("data-seen-team"'));

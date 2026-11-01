@@ -9,7 +9,7 @@
    Gốc: console.js khôi phục trang cuối (Trò chuyện hoặc Cộng sự) NGAY lúc khởi động, còn từ điển
    i18n được nạp bất đồng bộ (i18n/index.js). Từ điển về chậm hơn một nhịp (máy vừa cập nhật, server
    vừa khởi động lại, mạng chậm) thì workspace.js dựng khung bằng t() trong lúc từ điển còn rỗng, và
-   t() trả về chính cái khoá. Trang Trò chuyện không dính vì nó dùng `data-i18n` + nghe "javis:i18n";
+   t() trả về chính cái khoá. Trang Trò chuyện không dính vì nó dùng `data-i18n` + nghe "unimate:i18n";
    workspace.js không có cả hai nên nhãn kẹt mãi, dù phần danh sách vẽ sau (sau khi tải dữ liệu, lúc
    từ điển đã về) vẫn ra chữ đúng - đó là lý do ảnh chụp trông "nửa Việt nửa mã khoá".
 
@@ -17,7 +17,7 @@
    vẫn là mã khoá.
 
    Cách sửa: workspace.js nhớ "khung này dựng khi từ điển chưa sẵn sàng", console.js nghe
-   "javis:i18n" và dựng lại trang Cộng sự đúng một lần khi từ điển về. Dựng lại tại chỗ là đường đã
+   "unimate:i18n" và dựng lại trang Cộng sự đúng một lần khi từ điển về. Dựng lại tại chỗ là đường đã
    có sẵn (đổi brain cũng gọi renderPage thẳng), nên không thêm đường mới. */
 const fs = require("fs");
 const path = require("path");
@@ -46,7 +46,7 @@ function dungVoi(tuDienSan) {
     console,
     window: { t: (k) => k, ic: () => "", addEventListener() {}, removeEventListener() {},
               matchMedia: () => ({ matches: false }),
-              JavisI18n: { ready: () => tuDienSan } },
+              UniMateI18n: { ready: () => tuDienSan } },
     document: { getElementById: () => null, createElement: () => phanTuGia(), body: { classList: { add() {}, remove() {}, toggle() {} } },
                 addEventListener() {}, removeEventListener() {}, querySelector: () => null, querySelectorAll: () => [] },
     localStorage: { getItem: () => null, setItem() {} },
@@ -55,7 +55,7 @@ function dungVoi(tuDienSan) {
   ctx.globalThis = ctx;
   vm.createContext(ctx);
   vm.runInContext(WS, ctx);
-  const W = ctx.window.JavisWorkspace;
+  const W = ctx.window.UniMateWorkspace;
   try { W.render(phanTuGia(), {}); } catch (e) { /* DOM giả không đủ để dựng hết, không sao */ }
   return W;
 }
@@ -67,21 +67,21 @@ function dungVoi(tuDienSan) {
   const W2 = dungVoi(true);
   check("dựng lúc từ điển đã về thì KHÔNG đòi dựng lại (khỏi dựng lại vô ích mỗi lần vào trang)",
     typeof W2.dungKhiChuaCoTuDien === "function" && W2.dungKhiChuaCoTuDien() === false);
-  // Không có JavisI18n (trang lỗi tải) thì đừng đòi dựng lại: không bao giờ có sự kiện để gọi.
+  // Không có UniMateI18n (trang lỗi tải) thì đừng đòi dựng lại: không bao giờ có sự kiện để gọi.
   const ctx3 = { console, window: { t: (k) => k, ic: () => "", addEventListener() {}, removeEventListener() {}, matchMedia: () => ({ matches: false }) },
                  document: { getElementById: () => null, createElement: () => phanTuGia(), body: { classList: { add() {}, remove() {}, toggle() {} } }, addEventListener() {}, querySelector: () => null, querySelectorAll: () => [] },
                  localStorage: { getItem: () => null, setItem() {} }, setTimeout, clearTimeout, Promise, Date, Math, JSON, Object, Array, String, Number, RegExp, Error };
   ctx3.globalThis = ctx3; vm.createContext(ctx3); vm.runInContext(WS, ctx3);
-  try { ctx3.window.JavisWorkspace.render(phanTuGia(), {}); } catch (e) { /* như trên */ }
-  check("thiếu JavisI18n thì không đòi dựng lại", ctx3.window.JavisWorkspace.dungKhiChuaCoTuDien && ctx3.window.JavisWorkspace.dungKhiChuaCoTuDien() === false);
+  try { ctx3.window.UniMateWorkspace.render(phanTuGia(), {}); } catch (e) { /* như trên */ }
+  check("thiếu UniMateI18n thì không đòi dựng lại", ctx3.window.UniMateWorkspace.dungKhiChuaCoTuDien && ctx3.window.UniMateWorkspace.dungKhiChuaCoTuDien() === false);
 }
 
 // ---- 2. console.js dựng lại trang Cộng sự khi từ điển về ----
-const i = CON.indexOf('window.addEventListener("javis:i18n", () => {');
+const i = CON.indexOf('window.addEventListener("unimate:i18n", () => {');
 const NGHE = i === -1 ? "" : CON.slice(i, CON.indexOf("\n  });", i));
-check("tìm thấy bộ nghe javis:i18n của console.js", NGHE.length > 0);
+check("tìm thấy bộ nghe unimate:i18n của console.js", NGHE.length > 0);
 check("bộ nghe hỏi workspace.js xem khung có dựng khi chưa có từ điển không",
-  /JavisWorkspace\.dungKhiChuaCoTuDien\(\)/.test(NGHE));
+  /UniMateWorkspace\.dungKhiChuaCoTuDien\(\)/.test(NGHE));
 check("chỉ dựng lại khi đang đứng ở trang Cộng sự",
   /\.active === "workspace"/.test(NGHE));
 check("dựng lại bằng renderPage (đường tại chỗ đã có, giống lúc đổi brain)",
@@ -98,8 +98,8 @@ check("chỉ còn đúng hai chỗ ghi app.graph_stats vào graphStats: veGraphS
 check("veGraphStats nhớ số cuối", /function veGraphStats\(n, l\) \{\s*_graphStatsCuoi = \{ n: n, l: l \};/.test(APP));
 check("cả hai đường cập nhật (tải đồ thị, note mới sinh) đều đi qua veGraphStats",
   /veGraphStats\(stats\.total_notes, stats\.total_links\)/.test(APP) && /veGraphStats\(s\.nodes, s\.links\)/.test(APP));
-check("nghe javis:i18n để vẽ lại số đã nhớ",
-  /addEventListener\("javis:i18n", \(\) => \{\s*if \(_graphStatsCuoi\) graphStats\.textContent = window\.t\("app\.graph_stats", _graphStatsCuoi\);/.test(APP));
+check("nghe unimate:i18n để vẽ lại số đã nhớ",
+  /addEventListener\("unimate:i18n", \(\) => \{\s*if \(_graphStatsCuoi\) graphStats\.textContent = window\.t\("app\.graph_stats", _graphStatsCuoi\);/.test(APP));
 check("tải đồ thị lỗi thì xoá số đã nhớ (chuỗi lỗi không bị vẽ đè khi từ điển về)",
   /catch \(e\) \{ _graphStatsCuoi = null; graphStats\.textContent = window\.t\("models\.err"\)/.test(APP));
 

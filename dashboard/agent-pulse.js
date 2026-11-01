@@ -6,7 +6,7 @@
 
    Đọc GET /agents/{slug}/pulse; nút Đánh thức, Tạm dừng/Tiếp, Đặt lại nhịp, Quay lại thay đổi, Nhịp nhanh nhất gọi
    POST /agents/{slug}/pulse/<hành động>. Chỉ hiện "Đã lưu" và vẽ lại SAU khi máy chủ trả 200 (không hiện thành công
-   trước). Phần J (phán xử) và L (bài học) góp mục riêng qua sổ đăng ký `window.JavisPulseParts` (mảng {name, render(view)}):
+   trước). Phần J (phán xử) và L (bài học) góp mục riêng qua sổ đăng ký `window.UniMatePulseParts` (mảng {name, render(view)}):
    file này không biết gì về chúng.
 
    `panelHtml`, `contextLabel`, `changeLine`, `partsHtml` thuần (không DOM, không mạng) để test chạy dưới node. */
@@ -29,9 +29,9 @@
       .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
   // Nút "i" (info-tip.js, 0.175.0): có thì lời giải thích ẩn sau nút cạnh tiêu đề; không có (test Node) thì vẽ thẳng ra.
-  function infoBtn() { var J = typeof window !== "undefined" && window.JavisInfo; return J ? J.btn(tw("info.more")) : ""; }
+  function infoBtn() { var J = typeof window !== "undefined" && window.UniMateInfo; return J ? J.btn(tw("info.more")) : ""; }
   function infoBody(html) {
-    var J = typeof window !== "undefined" && window.JavisInfo;
+    var J = typeof window !== "undefined" && window.UniMateInfo;
     return J ? J.body(html) : '<div class="info-body">' + html + "</div>";
   }
 
@@ -126,7 +126,7 @@
   }
 
   function emojiOf(v) {
-    var JR = (typeof window !== "undefined" && window.JavisReactions) || null;
+    var JR = (typeof window !== "undefined" && window.UniMateReactions) || null;
     if (!JR) { try { JR = require("./reactions.js"); } catch (e) { JR = null; } }
     var r = JR && JR.emojiOf ? JR.emojiOf(v) : null;
     return r ? (r.emoji || "") : "";
@@ -184,7 +184,7 @@
 
   /* Mục của phần J/L (sổ đăng ký). Mỗi mục tự escape; lỗi của một mục không làm hỏng bảng. */
   function partsHtml(view, registry, ctx) {
-    var list = registry || (typeof window !== "undefined" ? window.JavisPulseParts : null) || [];
+    var list = registry || (typeof window !== "undefined" ? window.UniMatePulseParts : null) || [];
     return list.map(function (p) {
       try {
         // `render(view, null, {slug})`: mục nào cần slug (nút sửa của phán xử, nút thu hồi bài học) lấy từ ngữ cảnh.
@@ -254,7 +254,7 @@
      đang chờ chủ quyết, nếu có. Bảng đầy đủ vẫn ở hàng thành viên của ngăn Nhóm. */
   function compactHtml(view, opts) {
     var o = opts || {}, v = view || {};
-    var list = o.registry || (typeof window !== "undefined" ? window.JavisPulseParts : null) || [];
+    var list = o.registry || (typeof window !== "undefined" ? window.UniMatePulseParts : null) || [];
     var html = list.map(function (p) {
       try { return p && typeof p.compact === "function" ? p.compact(v) : ""; } catch (e) { return ""; }
     }).join("");
@@ -279,7 +279,7 @@
 
   function brainOf(o) {
     if (o && o.brain) return o.brain;
-    try { return (window.JavisSessions && window.JavisSessions.brain()) || "brain"; } catch (e) { return "brain"; }
+    try { return (window.UniMateSessions && window.UniMateSessions.brain()) || "brain"; } catch (e) { return "brain"; }
   }
 
   /* Gắn bảng vào `host`. Trả {reload}. Mọi hành động chỉ báo thành công sau khi máy chủ trả 200. */
@@ -335,9 +335,9 @@
     return { reload: load };
   }
 
-  if (typeof window !== "undefined" && !window.JavisPulseParts) window.JavisPulseParts = [];
+  if (typeof window !== "undefined" && !window.UniMatePulseParts) window.UniMatePulseParts = [];
   var apiOut = { panelHtml: panelHtml, contextLabel: contextLabel, changeLine: changeLine, feedbackLine: feedbackLine,
     partsHtml: partsHtml, compactHtml: compactHtml, proposalsHtml: proposalsHtml, policyHtml: policyHtml, tierLabel: tierLabel, stateLabel: stateLabel, mount: mount };
-  if (typeof window !== "undefined") window.JavisPulse = apiOut;
+  if (typeof window !== "undefined") window.UniMatePulse = apiOut;
   if (typeof module !== "undefined" && module.exports) module.exports = apiOut;
 })();

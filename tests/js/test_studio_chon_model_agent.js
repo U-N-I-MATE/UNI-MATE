@@ -15,7 +15,7 @@
    Bổ sung 21/09/2026 (0.62.3) - chủ repo: "phần lựa chọn về ui đang khác với chọn model nền
    thực sự, như việc không có tìm kiếm, không khoá những model không chọn được".
      4. Không còn <select> thuần: dùng CHUNG thân bảng chọn với thanh model dưới khung chat
-        (window.JavisModelList trong model-list.js), nên có ô tìm và có nhà bị khoá.
+        (window.UniMateModelList trong model-list.js), nên có ô tìm và có nhà bị khoá.
      5. Nhà CHƯA cắm key không bị lọc mất nữa - nó hiện ra kèm ổ khoá, model-list.js lo phần
         vẽ. Lọc `configured` như bản cũ là giấu mất lựa chọn người dùng cần biết. */
 const fs = require("fs");
@@ -72,8 +72,8 @@ check("tách bằng chỉ số ký tự đầu tiên (tên model có thể chứ
   FN.indexOf("raw.indexOf(MODEL_SEP)") !== -1);
 
 // ---- 4. Dùng CHUNG thân bảng với thanh model dưới khung chat ----
-check("gọi window.JavisModelList.render, không tự dựng bản thứ hai",
-  /window\.JavisModelList\.render\(/.test(CHAY));
+check("gọi window.UniMateModelList.render, không tự dựng bản thứ hai",
+  /window\.UniMateModelList\.render\(/.test(CHAY));
 check("CANARY: không còn <select> cho model của agent",
   CHAY.indexOf('<select id="agModel">') === -1);
 check("vẫn còn một ô mang id agModel để chỗ lưu đọc ra (nay là input ẩn)",

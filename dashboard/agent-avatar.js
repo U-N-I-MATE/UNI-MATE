@@ -3,15 +3,15 @@
   "use strict";
   const t = (k) => window.t ? window.t(k) : k;
   const esc = (s) => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
-  const catalog = () => ({ shapes: window.JavisPet.shapes(), palettes: window.JavisPet.palettes() });
+  const catalog = () => ({ shapes: window.UniMatePet.shapes(), palettes: window.UniMatePet.palettes() });
   // Dạng cổ điển của phép "có thuộc tính riêng": bản rút gọn trên Object cần Safari 15.4+, mà
   // iPhone cũ vẫn vào dashboard (xem các chốt WebKit khác trong repo). Vẫn chặn "__proto__".
   const co = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
   // toneOf trả null khi tên bảng màu lạ (dashboard/pet.js), nên mọi chỗ đọc [0] phải chốt:
   // một `data-palette` lạc sẽ ném ngay giữa vòng vẽ lại theo chủ đề và giết nốt phần còn lại.
-  const tone = (p) => (window.JavisPet.toneOf(p) || ["transparent"])[0];
-  // Mã màu "#rrggbb" chữ thường, sai thì "". Tự khai ở đây chứ không mượn JavisPet.hex: file
-  // này còn được nạp với một JavisPet giả trong test và ở trang cũ chưa có hàm đó.
+  const tone = (p) => (window.UniMatePet.toneOf(p) || ["transparent"])[0];
+  // Mã màu "#rrggbb" chữ thường, sai thì "". Tự khai ở đây chứ không mượn UniMatePet.hex: file
+  // này còn được nạp với một UniMatePet giả trong test và ở trang cũ chưa có hàm đó.
   const hex = (v) => /^#[0-9a-f]{6}$/i.test(String(v || "")) ? String(v).toLowerCase() : "";
   const MAT = ["den", "trang"];
   // Ảnh tự tải lên (0.176.0, server/avatar_upload.py): tên là băm nội dung + đuôi, do máy chủ đặt. Chỉ nhận đúng dạng đó,
@@ -60,7 +60,7 @@
   // hai trường hợp mất mặt: mắt trắng trên thân rất sáng (ngọc trai, nắng) và mắt đen trên
   // thân rất tối, vì ở đó con mắt biến mất và avatar thành một cục màu trống trơn.
   function matNgauNhien(palette, color) {
-    const l = doChoi((window.JavisPet.toneOf(palette, color) || ["#888888"])[0]);
+    const l = doChoi((window.UniMatePet.toneOf(palette, color) || ["#888888"])[0]);
     const m = MAT[Math.floor(Math.random() * MAT.length)];
     if (m === "trang" && l > 0.55) return "den";
     if (m === "den" && l < 0.06) return "trang";
@@ -68,7 +68,7 @@
   }
   // Mắt SUY TỰ ĐỘNG (trợ lý cũ chưa chọn): đúng luật của chân dung linh vật, để ô chọn đánh
   // dấu đúng màu đang hiện chứ không để trống.
-  const matTuDong = (a) => doChoi((window.JavisPet.toneOf(a.palette, a.color) || ["#888888"])[0]) > 0.179 ? "den" : "trang";
+  const matTuDong = (a) => doChoi((window.UniMatePet.toneOf(a.palette, a.color) || ["#888888"])[0]) > 0.179 ? "den" : "trang";
   // Ngẫu nhiên: hình, một trong các bảng màu CÓ SẴN (không bốc màu tự chọn), mắt trắng/đen.
   function random() {
     const {shapes, palettes} = catalog();
@@ -100,7 +100,7 @@
     if (v.palette === "custom") f.avatar_color = v.color;
     if (v.eye) f.avatar_eye = v.eye;
     if (v.eye === "custom") f.avatar_eye_color = v.eyeColor;
-    // Luôn gửi: "none" là gỡ ảnh tự tải (về hình Javis), có tên là dùng ảnh đó. Không gửi chuỗi rỗng: FastAPI coi ô
+    // Luôn gửi: "none" là gỡ ảnh tự tải (về hình UNI MATE), có tên là dùng ảnh đó. Không gửi chuỗi rỗng: FastAPI coi ô
     // form rỗng là không gửi, nên gỡ ảnh sẽ không ăn.
     f.avatar_image = anhHopLe(v.image) ? v.image : "none";
     return f;
@@ -110,7 +110,7 @@
   const LIEC = { trai_duoi: { liecX: -16, liecY: 9 } };
   function html(agent, size = 40, state = "idle", opts) {
     const a = of(agent);
-    // Ảnh tự tải lên thay hình Javis ở MỌI chỗ vẽ trợ lý (danh sách, đầu khung chat, ảnh ghép của nhóm). Không có mắt
+    // Ảnh tự tải lên thay hình UNI MATE ở MỌI chỗ vẽ trợ lý (danh sách, đầu khung chat, ảnh ghép của nhóm). Không có mắt
     // để chớp hay liếc nên không mang các biến đó; lớp has-img để vòng vẽ lại theo chủ đề bỏ qua.
     if (a.image) {
       return '<span class="agent-avatar has-img" data-state="' + esc(state) + '" style="--avatar-size:' + Number(size) + 'px">' +
@@ -123,7 +123,7 @@
     // vừa nhắm vừa trượt đi. Toạ độ tính trong hệ viewBox của chân dung (tâm 160/160).
     const l = LIEC[o.liec] || { liecX: 16, liecY: -12 };
     // esc() cả shape/palette: of() đã lọc về thư viện, nhưng html() là hàm CÔNG KHAI của
-    // window.JavisAvatar nên chỗ gọi khác có thể ném thẳng chuỗi lạ vào.
+    // window.UniMateAvatar nên chỗ gọi khác có thể ném thẳng chuỗi lạ vào.
     const them = (k, v) => v ? ' data-' + k + '="' + esc(v) + '"' : "";
     return '<span class="agent-avatar" data-shape="' + esc(a.shape) + '" data-palette="' + esc(a.palette) + '"' +
       them("color", a.color) + them("eye", a.eye) + them("eye-color", a.eyeColor) + them("eye-size", a.eyeSize) +
@@ -133,18 +133,18 @@
   }
   function svgOf(a, opts) {
     const o = opts || {};
-    return window.JavisPet.previewSvg(a.shape, a.palette, Object.assign({}, LIEC[o.liec] || {}, anh(a)))
+    return window.UniMatePet.previewSvg(a.shape, a.palette, Object.assign({}, LIEC[o.liec] || {}, anh(a)))
       .replace('<ellipse', '<g class="aa-gaze"><g class="aa-eyes"><ellipse')
       .replace('</svg>', '</g></g></svg>');
   }
   // Bộ chọn avatar trong cài đặt trợ lý. Từ 0.64.39 nó là ĐÚNG bộ chỉnh của trang Linh vật
-  // (JavisPet.editorHtml/editorBind): hình dáng, bảng màu + màu tự chọn, màu mắt trắng/đen/tự
+  // (UniMatePet.editorHtml/editorBind): hình dáng, bảng màu + màu tự chọn, màu mắt trắng/đen/tự
   // chọn, thanh trượt cỡ mắt. Chỉ bỏ thanh trượt cỡ thân, vì cỡ avatar do chỗ vẽ quyết.
   function picker(host, initial, onChange) {
     let value = initial || random();
     // Trợ lý cũ chưa chọn màu mắt thì đang hiện mắt suy tự động: đánh dấu đúng màu đó.
     if (!value.eye) value = {...value, eye: matTuDong(value)};
-    const P = window.JavisPet;
+    const P = window.UniMatePet;
     const veXemThu = () => {
       const o = host.querySelector('.aa-preview');
       if (o) o.innerHTML = html({avatar:value}, 100, "idle", {liec:"trai_duoi"});
@@ -164,7 +164,7 @@
         draw(true); host.querySelector('[data-random]').focus(); onChange({...value});
       };
       bindUpload(host, (img) => {
-        // Có ảnh: giữ hình Javis bên dưới (gỡ ảnh là về đúng hình đó). Gỡ ảnh: bỏ khoá image.
+        // Có ảnh: giữ hình UNI MATE bên dưới (gỡ ảnh là về đúng hình đó). Gỡ ảnh: bỏ khoá image.
         value = img ? {...value, image: img} : gon({...value, image: ""});
         draw(false); onChange({...value});
       });
@@ -177,7 +177,7 @@
     const r = preview.getBoundingClientRect(), gaze = preview.querySelector('.aa-gaze');
     if (gaze) gaze.style.transform = 'translate('+((e.clientX-r.left)/r.width*16-8)+'px,'+((e.clientY-r.top)/r.height*12-6)+'px)';
   });
-  window.addEventListener('javis-theme-change', () => {
+  window.addEventListener('unimate-theme-change', () => {
     // Vẽ lại theo tông mới nhưng GIỮ hướng liếc của từng ô: ô xem thử lớn (.aa-preview) liếc
     // trái-xuống, các avatar còn lại liếc chéo lên phải. Nhận ra bằng chính chỗ nó đang đứng,
     // khỏi phải nuôi thêm một thuộc tính chỉ để nhớ điều đó.
@@ -224,11 +224,11 @@
     if (!r.ok || !j.ok || !anhHopLe(j.image)) throw new Error(j.error || t("ws.avatar_upload_fail"));
     return j.image;
   }
-  // Hàng nút "Tải ảnh lên" / "Dùng hình Javis" dùng chung cho trợ lý và nhóm. `coAnh`: đang dùng ảnh tự tải.
-  function uploadRowHtml(coAnh, labelJavis) {
+  // Hàng nút "Tải ảnh lên" / "Dùng hình UNI MATE" dùng chung cho trợ lý và nhóm. `coAnh`: đang dùng ảnh tự tải.
+  function uploadRowHtml(coAnh, labelUniMate) {
     return '<div class="aa-upload"><button type="button" class="ws-btn" data-aa-upload>' +
       (typeof window.ic === "function" ? window.ic("image") : "") + esc(t("ws.avatar_upload")) + '</button>' +
-      (coAnh ? '<button type="button" class="ws-btn" data-aa-unimg>' + esc(labelJavis || t("ws.avatar_use_javis")) + '</button>' : '') +
+      (coAnh ? '<button type="button" class="ws-btn" data-aa-unimg>' + esc(labelUniMate || t("ws.avatar_use_unimate")) + '</button>' : '') +
       '<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-aa-file hidden></div>' +
       '<div class="aa-upload-msg" role="status" aria-live="polite"></div>';
   }
@@ -253,5 +253,5 @@
       }
     };
   }
-  window.JavisAvatar = {of, random, html, picker, formFields, uploadImage, uploadRowHtml, bindUpload};
+  window.UniMateAvatar = {of, random, html, picker, formFields, uploadImage, uploadRowHtml, bindUpload};
 })();

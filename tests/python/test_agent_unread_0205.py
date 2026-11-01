@@ -13,8 +13,8 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-agent-unread-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-agent-unread-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 
 import agent_notify as an  # noqa: E402
 import sessions  # noqa: E402

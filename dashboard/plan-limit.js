@@ -48,7 +48,7 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var tw = function (k, v) { return window.t ? window.t(k, v) : k; };
-  var LOC = function () { return (window.JavisI18n && window.JavisI18n.locale()) || "vi-VN"; };
+  var LOC = function () { return (window.UniMateI18n && window.UniMateI18n.locale()) || "vi-VN"; };
   var data = null, provider = "", busy = null, lastFetch = 0, names = {};
 
   function cur() {
@@ -143,7 +143,7 @@
   function openPop() {
     var p = $("limitPop"), b = $("limitBtn");
     if (!p || !b) return;
-    try { if (window.JavisModelBar && window.JavisModelBar.closeAll) window.JavisModelBar.closeAll(); } catch (e) {}
+    try { if (window.UniMateModelBar && window.UniMateModelBar.closeAll) window.UniMateModelBar.closeAll(); } catch (e) {}
     p.hidden = false;
     b.setAttribute("aria-expanded", "true");
     paintPop();
@@ -181,10 +181,10 @@
     if (e.key === "Escape" && popOpen()) { closePop(); var b = $("limitBtn"); if (b) b.focus(); }
   });
 
-  window.addEventListener("javis:i18n", paintRing);
+  window.addEventListener("unimate:i18n", paintRing);
 
   api.setProvider = setProvider;
   api.refresh = function () { return refresh(true); };
   api.close = closePop;
-  window.JavisPlanLimit = api;
+  window.UniMatePlanLimit = api;
 })();

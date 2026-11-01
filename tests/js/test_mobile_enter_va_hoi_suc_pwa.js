@@ -22,7 +22,7 @@ function check(name, cond) {
 }
 
 // ---- 1. Enter on a touch screen = new line ----
-// The rules moved to chat-acts.js (JavisActs.enterSends) so the Team chat shares them; checked by behaviour here.
+// The rules moved to chat-acts.js (UniMateActs.enterSends) so the Team chat shares them; checked by behaviour here.
 const Acts = require(path.join(root, "dashboard", "chat-acts.js"));
 const touch = { matchMedia: (q) => ({ matches: q === "(pointer: coarse)" }) };
 const mouse = { matchMedia: () => ({ matches: false }) };
@@ -35,7 +35,7 @@ check("computer: Enter sends, Shift+Enter is a new line",
 check("an IME composition never sends, on any device",
   Acts.enterSends(Object.assign({}, enter, { keyCode: 229 }), false, mouse) === false && Acts.enterSends(enter, true, mouse) === false);
 check("main chat keydown uses the shared rules",
-  /if \(window\.JavisActs\.enterSends\(e, chatInputComposing\(\)\)\) \{ e\.preventDefault\(\); sendMessage\(\); \}/.test(app));
+  /if \(window\.UniMateActs\.enterSends\(e, chatInputComposing\(\)\)\) \{ e\.preventDefault\(\); sendMessage\(\); \}/.test(app));
 
 // ---- 2. Hồi sức sau giấc ngủ nền ----
 check("connect() có chốt chống nối trùng (hai đường gọi: retry 3s + hồi sức)",

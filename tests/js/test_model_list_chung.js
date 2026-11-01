@@ -41,8 +41,8 @@ const sandbox = {
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(path.join(ROOT, "dashboard", "model-list.js"), "utf8"), sandbox);
-const ML = sandbox.window.JavisModelList;
-check("module tự gắn vào window.JavisModelList", !!(ML && ML.render && ML.models));
+const ML = sandbox.window.UniMateModelList;
+check("module tự gắn vào window.UniMateModelList", !!(ML && ML.render && ML.models));
 
 const PROVS = [
   { id: "anthropic-cli", label: "ANTHROPIC OAUTH (CLAUDE CODE)", configured: true },

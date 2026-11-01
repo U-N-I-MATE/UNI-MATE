@@ -81,7 +81,7 @@ def register(ctx):
     ctx.register_tool(
         name="messenger_check",
         description=("Kiểm tra kết nối bot Messenger của Fanpage: token có phải token Trang, đủ quyền, hết hạn chưa, "
-                     "App secret khớp, webhook của app trỏ về Javis và có nhận messages, Trang đã gắn app, có bot đang "
+                     "App secret khớp, webhook của app trỏ về UNI MATE và có nhận messages, Trang đã gắn app, có bot đang "
                      "trực. Dùng khi bot Messenger không trả lời khách. Trả từng dòng ok/FAIL/warn kèm cách sửa."),
         handler=_check, min_mode="readonly", schema=_SCHEMA,
     )

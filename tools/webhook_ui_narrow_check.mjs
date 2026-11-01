@@ -2,7 +2,7 @@
 //
 //   node tools/webhook_ui_narrow_check.mjs http://127.0.0.1:7791 /tmp/shots
 //
-// Start a LOCAL Javis first with a temporary state folder and outgoing calls refused, then create one hook and send it a
+// Start a LOCAL UNI MATE first with a temporary state folder and outgoing calls refused, then create one hook and send it a
 // few events (docs/webhook-platform/staging-pilot-pack.md, "UI check"). The script opens the Webhooks page, takes the
 // four parts (Configuration, Events with one event opened, Health, the test-send preview) as PNG files, and fails when
 // the page scrolls sideways or throws. It never presses Send, Stop receiving, Delete or View raw.
@@ -19,8 +19,8 @@ const p = await b.newPage({ viewport: { width: 390, height: 900 } });
 const errs = [];
 p.on("pageerror", (e) => errs.push(e.message));
 await p.goto(base + "/", { waitUntil: "networkidle" });
-await p.waitForFunction(() => window.JavisNav && window.JavisNav.go, null, { timeout: 20000 });
-await p.evaluate(() => { const w = document.getElementById("setupWizard"); if (w) w.remove(); window.JavisNav.go("webhooks"); });
+await p.waitForFunction(() => window.UniMateNav && window.UniMateNav.go, null, { timeout: 20000 });
+await p.evaluate(() => { const w = document.getElementById("setupWizard"); if (w) w.remove(); window.UniMateNav.go("webhooks"); });
 await p.waitForSelector(".wf-card", { timeout: 15000 });
 const card = p.locator(".wf-card").first();
 await card.screenshot({ path: out + "/1-config.png" });

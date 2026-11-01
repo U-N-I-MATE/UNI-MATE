@@ -27,7 +27,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-sub-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-sub-")
 
 import adaptive_context_runtime as acr  # noqa: E402
 import config as cfg  # noqa: E402
@@ -135,7 +135,7 @@ check("hàm đó thật sự gọi prepare() của Phase 8",
       "_get_adaptive_context().prepare," in _than)
 
 # Nền phải là build_system_prompt (GIỮ CLAUDE.md), không phải build_adaptive_source_prompt.
-# Bỏ CLAUDE.md là bỏ 21.500 ký tự luật hành xử của Javis để tiết kiệm thứ gói thuê bao không
+# Bỏ CLAUDE.md là bỏ 21.500 ký tự luật hành xử của UNI MATE để tiết kiệm thứ gói thuê bao không
 # tính tiền - đổi hành vi lấy một khoản không cần.
 check("CANARY: nền vẫn là build_system_prompt (giữ CLAUDE.md)",
       "build_system_prompt(" in _than)
@@ -172,7 +172,7 @@ _i_mirror = _bsp.find("system_sync.mirror_skills(root)")
 check("CANARY: mirror KHÔNG nằm trong nhánh if include_skills",
       "if include_skills:\n            system_sync.mirror_skills" not in _bsp)
 # Chỉ mục năng lực vẫn phải nói ĐÚNG số skill, kể cả khi bỏ khối router: đưa cho nó danh sách
-# rỗng là Javis tự khai mình không có skill nào rồi đi tạo lại thứ đã có.
+# rỗng là UNI MATE tự khai mình không có skill nào rồi đi tạo lại thứ đã có.
 check("CANARY: quét skill không phụ thuộc include_skills (chỉ mục phải nói thật)",
       "if include_skills" not in _bsp[:_bsp.find("_skills = skill_router.list_skills(root")]
       and "_skills = skill_router.list_skills(root" in _bsp)
@@ -182,7 +182,7 @@ check("khối ROUTER SKILL dài mới là thứ bị gập lại",
 # Cố ý KHÔNG gọi build_system_prompt() thật ở đây: nó quét brains/ của chính người dùng (dữ
 # liệu cá nhân, đã gitignore) và còn ghi mirror vào đó. Test không được đụng vào chỗ đó.
 check("khối ROUTER SKILL nằm SAU khối chỉ mục năng lực (bỏ cái dài, giữ cái ngắn)",
-      _bsp.find("_javis_capability_summary(") < _bsp.find("_skill_router_block("))
+      _bsp.find("_unimate_capability_summary(") < _bsp.find("_skill_router_block("))
 
 # ============================================================
 # 6. Nhận ra lỗi HẾT LƯỢT của gói thuê bao
@@ -210,7 +210,7 @@ _h = limit_learner.parse_subscription_limit(
 check("nhận ra dạng 'hit your session limit'", _h is not None and _h.source == "sub_session")
 check("đọc được mốc reset không giới từ 'resets 12pm'",
       _h is not None and _h.reset_text == "resets 12pm (UTC)")
-# Nhưng nới giới từ mà không đòi mốc thời gian thì câu văn thường cũng lọt, và Javis đi khoe
+# Nhưng nới giới từ mà không đòi mốc thời gian thì câu văn thường cũng lọt, và UNI MATE đi khoe
 # "Nhà cung cấp nói: reset your API key at console" - vô nghĩa với người đọc.
 _h = limit_learner.parse_subscription_limit(
     "Claude AI usage limit reached. Please reset your API key at console.anthropic.com",
@@ -304,7 +304,7 @@ check("hàm dịch nuốt mọi lỗi của chính nó (câu báo lỗi không �
       and main._subscription_limit_message(12345, "codex") == "")
 
 # TUYỆT ĐỐI không tự đổi engine hộ: đó là tiêu hạn mức của một tài khoản khác, có khi mất
-# tiền thật. Việc của Javis là nói rõ, không phải quyết thay.
+# tiền thật. Việc của UNI MATE là nói rõ, không phải quyết thay.
 check("CANARY: không tự đổi bộ não hộ người dùng",
       "_set_main_model" not in _MAIN_SRC.split("def _subscription_limit_message(")[1][:1400])
 

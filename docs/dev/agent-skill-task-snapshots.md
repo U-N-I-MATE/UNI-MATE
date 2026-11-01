@@ -30,7 +30,7 @@ already be counted while delivery is refused. It does not prove delivery to a
 provider, provider acceptance, model comprehension or downstream asset use.
 
 Scope is deliberately limited to lazy selection, prompt skill metadata and the
-in-process `javis_use_skill` handler in the final Dashboard API branch. It is not
+in-process `unimate_use_skill` handler in the final Dashboard API branch. It is not
 a complete effective view or a sandbox for arbitrary file/helper reads. Native,
 HTTP, resume, OAuth/subscription, workflow/voice/bot paths, candidates/activation
 and scoped helper materialization require their separate remaining integration

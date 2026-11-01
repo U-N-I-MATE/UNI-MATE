@@ -18,11 +18,11 @@ import os
 import tempfile
 from pathlib import Path
 
-state = tempfile.mkdtemp(prefix="javis-setup-")
-os.environ["JAVIS_STATE_DIR"] = state
+state = tempfile.mkdtemp(prefix="unimate-setup-")
+os.environ["UNIMATE_STATE_DIR"] = state
 os.environ["BRAINS_DIR"] = str(Path(state) / "brains")
-os.environ["JAVIS_SESSIONS_DB"] = str(Path(state) / "sessions.db")
-os.environ["JAVIS_REQUIRE_LOGIN"] = "1"      # giả lập deploy public
+os.environ["UNIMATE_SESSIONS_DB"] = str(Path(state) / "sessions.db")
+os.environ["UNIMATE_REQUIRE_LOGIN"] = "1"      # giả lập deploy public
 
 import main  # noqa: E402
 import config as cfgmod  # noqa: E402

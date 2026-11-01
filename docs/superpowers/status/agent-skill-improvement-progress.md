@@ -40,7 +40,7 @@ activation on a real brain.
 ## Checkpoint Claude Opus 5.5, 25/10/2026
 
 Owner re-issued the full M0–M8 Goal in a Claude Code session (Goal section 19); section 18
-narrowing is history. Worktree `D:/Project/Javis-OS/.claude/worktrees/javis-agent-skill-improvement-3dc1ea`,
+narrowing is history. Worktree `D:/Project/UNI-MATE/.claude/worktrees/unimate-agent-skill-improvement-3dc1ea`,
 pushed to `codex/agent-skill-improvement-m2d1` (PR #803, retitled 0.314.0). The Codex worktree
 `C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a` is untouched (two untracked WIP files left there).
 
@@ -48,7 +48,7 @@ Done in this session:
 - Merged origin/main 0.312.0 into the M2D1 branch (`44ee0349`): 10 conflicts, branch logic kept for
   task-scope skill reads, i18n and script tags unioned, route table regenerated. Version 0.314.0 reserved (`b9a4fe23`).
 - M2E manual activation (`a3359bff`): schema 11 `improvement_activations`, apply/revert/reconcile,
-  read-time resolver in lazy router, in-process `javis_use_skill` and task scope; CLI hub requests and
+  read-time resolver in lazy router, in-process `unimate_use_skill` and task scope; CLI hub requests and
   non-DM channels keep canonical. API `GET/POST /improvement-activations`, `POST .../{id}/revert`.
   Studio candidate panel: apply block and applied list with Revert. Ops doc `docs/dev/improvement-manual-apply.md`.
 - M2F simulated feasibility (`a3359bff`): `test_improvement_feasibility_simulated.py`, four labelled
@@ -59,7 +59,7 @@ Done in this session:
 | M0, M1, M2A–C | Released 0.287–0.296 (reused) | None claimed | Suggest-only |
 | M2 (D1 integrated, E manual apply, F simulated feasibility) | **Released 0.314.0** (`f3348f04`, #803): full CI green, 2 independent reviews fixed, native profile re-qualified on CLI 2.1.310 (20/20), Docker publish green | None; real feasibility PENDING | Manual, API engines, assistant chat only |
 | M3 (canary, owner verdicts, monitoring, promotion, grants, pilot conclusion) | **Released 0.316.0** (`b7c81dc7`, #822): CI green, review 2 important + 7 minor fixed, native re-qualified (20/20), Docker green | None; live canary and pilot PENDING | Off until the owner applies |
-| M4 (routing evaluator, description overlay for the main chat, telemetry, UI) | **Released 0.320.0** (`e1d57392`, #823): CI green, review fixed, native re-qualified (20/20). Open: API-engine trial adapter (spec 10.3), native CLI routing measurement, hub `javis_use_skill` description still canonical | None; real engine smoke PENDING | Main chat, API engines, off until the owner applies |
+| M4 (routing evaluator, description overlay for the main chat, telemetry, UI) | **Released 0.320.0** (`e1d57392`, #823): CI green, review fixed, native re-qualified (20/20). Open: API-engine trial adapter (spec 10.3), native CLI routing measurement, hub `unimate_use_skill` description still canonical | None; real engine smoke PENDING | Main chat, API engines, off until the owner applies |
 | M5 (agent procedure overlay, surfaces dm/team/kanban/workflow, session pin, owner-rule drift, learn/review staging, lesson linkage, UI) | **Released 0.323.0** (`22ef0375`, #825): CI green, review 4 important + 6 minor fixed, native re-qualified (20/20) | None; agent pilot and agent canary PENDING (owner) | Off until the owner applies |
 | M6 (agent-skill bundle: validator, atomic pointer, all-or-nothing read gate, recovery, attribution labels, UI) | **Released 0.325.0** (`485ad69f`, #828): CI green, review 1 critical + 7 important fixed, native re-qualified (20/20). Not built: executable helpers in the sandbox (owner grant for the executable kind), skill split/merge with alias, real ablation arms and a bundle qualification | None; real agent-only/skill-only arms PENDING | Off until the owner applies |
 | M7 (Team trial pins and comparison T01, scoped reports T02, untested recipe transfer, API) | **Released 0.327.0** (`409219ad`, #830): CI green, review 1 critical + 5 important fixed, native re-qualified (20/20). Not built: a real Team trial runner, per-step artifact handoff, aggregate trial acceptance, plan/source pinning, lesson freezing during arms, UI | None; a Team business comparison PENDING (owner, real runs) | API only |
@@ -587,7 +587,7 @@ full new migration/role/view validation stayed enabled. Final independent root5
 PASS21.636s/12stablepins/no findings, original reviewer-authored6 excluded from
 self-approval. Report9416129700e71677164fad7ee9b3c77ccc02031c9a2ddc26ae5b9900bfd72ca9.
 
-Early isolated [Linux40058375830](https://github.com/blogminhquy/javis-os/actions/runs/40058375830)
+Early isolated [Linux40058375830](https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40058375830)
 SUCCESS46/46: migration6/boundaries5/execution13/profile7/view15, exact12rawpins,
 commit4a2877aedbdd45e7978f65aa7d6d1757a543c631. Earlier40058040941 retained
 future-version exception failure after103PASS/104tested; unchanged candidate12/
@@ -631,7 +631,7 @@ new-output/current-ref preserving fix. Independent rootrace4+historical1 PASS5/5
 14.943s,15pins stable/no findings; own original7 excluded self-approval. Report
 e6c9055afaf75487ebdddb7590cc4bea80332dc13b381e7f5766f1433f774422.
 
-Early isolated [Linux40056590938](https://github.com/blogminhquy/javis-os/actions/runs/40056590938)
+Early isolated [Linux40056590938](https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40056590938)
 SUCCESS33/33 across protocol11,host7,races4,existing byte validator11. Exact8 raw
 source/test/license pins verified on isolated commit50a73cc28262e4bf1a9b9159c0d38e3df3f47890,
 fresh Ubuntu/Python3.12, serial no-real-engine fixtures. One initial dispatch500
@@ -668,7 +668,7 @@ Goal17's first functioning fixture slice now calls actual compose_round at t=k=1
 from the pinned upstream source. Nine extracted definitions/constants match exact
 source segments AND AST; raw original Git blob9ccacf23b64ac15b06a1939f26224960f56d757c
 and Apache2 LICENSE blobd645695673349e3947e8e5ae42332d0ac3164cd7 independently
-verified. Static narrow Javis body surface and context/notes→JSON mapping exclude
+verified. Static narrow UNI MATE body surface and context/notes→JSON mapping exclude
 upstream guardrail/plugin surfaces and filesystem access. Existing byte validator
 creates combined UTF8/CRLF bytes, KEEP_BASE or adoption; decisions remain model
 claims, semantics unreviewed, no source authority or inherited pass/activation.
@@ -716,8 +716,8 @@ Owner directive from the same authorized chat is saved in Goal§17. Next safe
 unit after current engineering-product boundaries: inspect exact pinned
 prompts.aggregate/compose_round and recursion compose call/direct dependencies,
 then actually import/vendor functioning independent implementation through a
-narrow Javis adapter. Follow with actual library entry/index/serialization via
-private authorized derived snapshots, retaining Javis immutable encrypted source,
+narrow UNI MATE adapter. Follow with actual library entry/index/serialization via
+private authorized derived snapshots, retaining UNI MATE immutable encrypted source,
 brain/scope/revocation/retention/trace authority. Assess whole orchestration only
 after those, counting executor/lease/cancel/restart/replay/ledger/migration/tests/
 qualification costs; do not duplicate authoritative runtimes/ledgers. No scaffold
@@ -765,7 +765,7 @@ and the targeted upstream reuse decision. Remaining M0–M8/Phase2 scope unchang
 ## Owner selective replacement update — Goal§16
 
 Direct owner update from the same authorized chat permits replacing existing
-Javis code/structure with pinned upstream when concrete benefits justify total
+UNI MATE code/structure with pinned upstream when concrete benefits justify total
 adapter/consumer/migration/backward-compatibility/qualification/test/review cost.
 This supersedes prior blanket no-rewrite restrictions only within that scope;
 database/authority/native lifecycle can also be replaced when justified with a
@@ -776,7 +776,7 @@ Goal§16 SHA-25676e349119bd3f7148204b2e57800d9769aac4f7cb73c271e6f8541ff0a6c5b18
 pre§16 e868339ebd3ad1a73fe9faea13b74e2af959c8b3f8148eb4c2ddbae63ac8fc20,
 all earlier source/evidence lineage preserved. Active code-first plan/reuse map
 carry this rule. Current proposer adaptation already uses real upstream method
-via a small renderer while preserving Javis output/authority validators; no
+via a small renderer while preserving UNI MATE output/authority validators; no
 additional infrastructure replacement is justified by this unit. Ongoing serial
 fixture regression ownership is preserved; no account/model or activation starts.
 
@@ -802,7 +802,7 @@ consumer11+root-owned cancellation1:12PASS5.141s,14pins stable; report
 fb8a1670e1f0776c1f1bc61c80fe8f9816c65f8af2a5a75e9a882dd70294883f.
 Own author tests/core are explicitly excluded from self-approval.
 
-Early genuine Linux [40053479314](https://github.com/blogminhquy/javis-os/actions/runs/40053479314)
+Early genuine Linux [40053479314](https://github.com/U-N-I-MATE/UNI-MATE/actions/runs/40053479314)
 succeeded10/10scripts17s on isolatedcfdc8cd181a23b51a9585b22802c988ba5469cf5,
 with nine exact selected raw files and fresh remote HOME/DB/filesystem. This is
 not exact-final-task-head full CI. [Public evidence](../evidence/2026-10-24-m2d2-task-skill-snapshots.json)
@@ -849,8 +849,8 @@ pre§14 f683ff6abba61e110ef8034fe1451d80390d6688866c2def5f2f964ec4fcd356 and
 all older original/spec/lineage hashes remain historical, never replaced.
 [The incremental reuse map](../plans/2026-10-24-harness2-reuse-map.md) records
 the first targeted decision: inspected actual upstream substrate protocols and
-context builder are benchmark staging, lack Javis private live-turn ownership,
-and delete/copy mutable destinations. Keep the narrow Javis task lifecycle using
+context builder are benchmark staging, lack UNI MATE private live-turn ownership,
+and delete/copy mutable destinations. Keep the narrow UNI MATE task lifecycle using
 its completed M0/runtime/core; no upstream code copied/imported for this unit.
 Upcoming prompt/compose/selection/recipe/bundle units must inspect upstream first.
 
@@ -2088,7 +2088,7 @@ pending. All81 isolated native pins remain unchanged, with no native/model query
 - Agent/skill spec SHA-256: `fceea3d375388eeb0f0e3eada48cc2c74a611b2bfcad9978441a683052b108bc`.
 - Team dependency spec SHA-256: `e01014f05bf3e090cc63a52e581049833b292dfe5e77a094bd75d8941504f2ff`.
 - Authoritative baseline: `a9ee52ff0d3a1ce0eaa61d18c1b9c83081e21b26`, main 0.286.0.
-- Worktree: `C:/Users/admin/.codex/worktrees/agent-skill-improvement-m0/Javis-OS`.
+- Worktree: `C:/Users/admin/.codex/worktrees/agent-skill-improvement-m0/UNI-MATE`.
 - M0 branch: `codex/agent-skill-improvement-m0`; release0.287.0, PR #794 merged
   `0990331574e617fa1a79cd69fcd7b87d465448c5`; publication39797072172 succeeded.
 - Original checkout remains untouched by implementation; only the three relevant source documents were copied.
@@ -2120,7 +2120,7 @@ pending. All81 isolated native pins remain unchanged, with no native/model query
   UNKNOWN and partial usage; it does not establish a business win or live grant.
 - Current engineering continuation is M2D1, branch
   `codex/agent-skill-improvement-m2d1` in the SAME isolated worktree
-  `C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS`.
+  `C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE`.
   DraftPR803 now reserves0.299.0 after rebasing onto main0.298.0; original
   reservation0.297.0 at c4991ec8 remains historical. Plan is
   `../plans/2026-10-23-agent-skill-improvement-m2d1.md`.
@@ -2801,7 +2801,7 @@ controls and independent whole-D1 review/CI remain open; Task3 is not done.
   limits and missing preparation/navigation. Those boundaries are in the plan;
   actual effort/internal semantic use stay unknown where unobservable.
 - Reserved VERSION/both changelogs in a2f1b074 and attached draft PR800 before
-  implementation: https://github.com/blogminhquy/javis-os/pull/800.
+  implementation: https://github.com/U-N-I-MATE/UNI-MATE/pull/800.
   Changed-candidate execution, compose, real activation and live canary remain
   unavailable until their actual prerequisites and owner scope grants exist.
 - Task1 tests preserve actual A encrypted authoring and M1 context/case/contract/
@@ -2905,9 +2905,9 @@ controls and independent whole-D1 review/CI remain open; Task3 is not done.
 
 ## M2A engineering continuation
 
-- Worktree: `C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS`;
+- Worktree: `C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE`;
   branch `codex/agent-skill-improvement-m2a`, release0.292.0 reservationf6d8d356,
-  attached draft PR799: https://github.com/blogminhquy/javis-os/pull/799.
+  attached draft PR799: https://github.com/U-N-I-MATE/UNI-MATE/pull/799.
 - Dependency M1 is published as0.291.0 on main9dd7a9f9. Replayed only A's six
   own commits onto that actual merged source; the resulting tree is byte-identical
   to the reviewed A checkpoint b01ddf1b. PR799 targets main for final CI/integration;
@@ -2982,7 +2982,7 @@ controls and independent whole-D1 review/CI remain open; Task3 is not done.
 
 ## Baseline verification
 
-- `D:/Project/Javis-OS/.venv/Scripts/python.exe tests/run.py learn_sua_skill -v`: PASS, 1 file.
+- `D:/Project/UNI-MATE/.venv/Scripts/python.exe tests/run.py learn_sua_skill -v`: PASS, 1 file.
 - `... tests/run.py agent_rules -v`: PASS, 1 file.
 - `... tests/run.py resonance_a3_learning -v`: PASS, 1 file in 132 seconds (session 92106 completed).
 - Python env reused by explicit executable, not by copying `.venv` or production config. Main imports in new tests must set scratch state/brain roots first.
@@ -3015,7 +3015,7 @@ Full M0–M8 Goal remains active; no business or live rollout gate is closed by 
 - Implemented immutable revisions/bundles and append-only events in the existing shared SQLite
   store, encrypted exact-byte blobs, owner-only policy/CAS/idempotency, canonical ownership
   capture and six authenticated metadata endpoints. No engine, canonical write or activation.
-- Final focused command: `D:/Project/Javis-OS/.venv/Scripts/python.exe tests/run.py improvement
+- Final focused command: `D:/Project/UNI-MATE/.venv/Scripts/python.exe tests/run.py improvement
   route_table prompt_budget team_quality_contracts team_quality_usage agent_rules learn_sua_skill -v`:
   **PASS 9/9 files, 51 seconds**. The three improvement scripts contain **39 behavioral tests**
   (20 store, 10 assets, 9 API), including actual-main authentication/CSRF and read-only access.
@@ -3102,7 +3102,7 @@ Full M0–M8 Goal remains active; no business or live rollout gate is closed by 
   now checks only that pin. A later timeout was a test-server query-string parsing defect;
   fixed without changing product behavior. Timeout cleanup terminates the owned process tree.
 - Owner delegated pilot selection on22October. Selected first additional pilot: Python bug
-  fixes in Javis-OS, using isolated repository snapshots and independent behavioral/regression
+  fixes in UNI-MATE, using isolated repository snapshots and independent behavioral/regression
   tests as the business criterion. Preserve source-family splits, frozen qualification and
   all attempts. This choice does not close the spec's data-reconciliation Pilot A or document
   Pilot B gates; no historical case or user skill has yet been selected or run.

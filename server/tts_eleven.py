@@ -1,6 +1,6 @@
-"""ElevenLabs voice for Javis (0.255.0): speech for read-aloud, the Basic call path and voice notes.
+"""ElevenLabs voice for UNI MATE (0.255.0): speech for read-aloud, the Basic call path and voice notes.
 
-Owner, 2026-10-20: "đang thiếu mất ElevenLabs để làm giọng của Javis". The provider existed since the
+Owner, 2026-10-20: "đang thiếu mất ElevenLabs để làm giọng của UNI MATE". The provider existed since the
 first settings page, but three things kept it out of reach:
 
 - The default model `eleven_multilingual_v2` has no Vietnamese (its 29 languages leave it out;
@@ -9,7 +9,7 @@ first settings page, but three things kept it out of reach:
   choosing it) is read as Flash v2.5 when the text is Vietnamese.
 - The voice had to be pasted as a raw Voice ID. `list_voices` reads the account's own voices
   (premade, cloned, designed) so the settings page can offer them by name.
-- Voice notes (`javis_voice_note`) always used Edge. They now use ElevenLabs when it is the chosen
+- Voice notes (`unimate_voice_note`) always used Edge. They now use ElevenLabs when it is the chosen
   voice, falling back to Edge if ElevenLabs fails (quota, key revoked), so a note is never lost.
 
 Sources: https://elevenlabs.io/docs/overview/models (languages per model), API reference for

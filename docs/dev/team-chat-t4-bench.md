@@ -15,8 +15,8 @@ Chưa đo VPS thì không kết luận đã hết lag.
 - Lệnh: `python tools/team_adaptive_bench.py --out exports/reviews/team-adaptive/t4-bench-2026-10-15.json` (mặc định).
 - Dữ liệu: 12 nhóm x 1.500 tin = 18.000 tin, 8 trợ lý (4 bật Auto), mỗi nhóm 4 thành viên, 1.500 reaction của chủ seed
   thẳng vào kho (outbox còn chờ chiếu), 12 ngữ cảnh nhóm ngủ đông và 12 ngữ cảnh đến hạn, 8 phiên chat riêng.
-- Engine giả: mỗi lượt 5 ms. Nhịp nền của scheduler dừng (`JAVIS_PULSE_TICK_PAUSED=1`), bench gọi tick trực tiếp. Không đặt
-  `JAVIS_RESONANCE_CALL_CEILING`. Số câu SQL đếm bằng trace callback của sqlite3 trên mọi kết nối.
+- Engine giả: mỗi lượt 5 ms. Nhịp nền của scheduler dừng (`UNIMATE_PULSE_TICK_PAUSED=1`), bench gọi tick trực tiếp. Không đặt
+  `UNIMATE_RESONANCE_CALL_CEILING`. Số câu SQL đếm bằng trace callback của sqlite3 trên mọi kết nối.
 
 ## API tuần tự (30 lần mỗi route, thời gian phía server)
 
@@ -104,7 +104,7 @@ phán xử vẫn có lúc giữ loop khoảng 70 ms ở máy này. Chưa đo VPS
    `resonance_store.agent_any` (qua `_agent_judge_resonance_on`) và `agent_ledger._tx` ngay trên luồng loop. Thuộc phần J;
    hướng sửa là đưa phần kho của lô sang luồng phụ. Lưu ý: bật `--stall-watch` làm chậm cả tiến trình (chụp ngăn xếp tranh
    GIL), chỉ dùng để chẩn đoán, không dùng số đo của lần chạy đó.
-2. **Nhịp pulse:** ở pha chỉ nhịp, không ngăn xếp nào của code Javis bị bắt trên luồng loop; độ trễ lớn nhất khoảng 0,2 s
+2. **Nhịp pulse:** ở pha chỉ nhịp, không ngăn xếp nào của code UNI MATE bị bắt trên luồng loop; độ trễ lớn nhất khoảng 0,2 s
    nhiều khả năng do luồng phụ của bộ chiếu (đối soát trạng thái từng reaction, mỗi dòng mở vài kết nối SQLite) tranh GIL.
    Phần L chưa ghép thì reaction "Chờ xem xét" không bao giờ được phục vụ, nên phần đối soát này lặp lại mỗi nhịp 30 giây
    (tối đa 200 dòng).

@@ -3,7 +3,7 @@
     python tests/run.py learned_mirror      (no network; uses git for one check when it is installed)
 
 What a chatbot's reply-policy judge and the agents learned lives in STATE_DIR SQLite stores keyed by machine-local
-random ids. This test checks that it is mirrored into `<brain>/Javis/learned/`, split by privacy (customer chat text
+random ids. This test checks that it is mirrored into `<brain>/UniMate/learned/`, split by privacy (customer chat text
 only in `*.private.json`, which the GitHub backup never takes), and restored on a "fresh machine" (new STATE_DIR, same
 brain folder, new bot id and new agent key), once only.
 """
@@ -17,9 +17,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-STATE_A = tempfile.mkdtemp(prefix="javis-lm-a-")
-BRAINS = tempfile.mkdtemp(prefix="javis-lm-brains-")
-os.environ["JAVIS_STATE_DIR"] = STATE_A
+STATE_A = tempfile.mkdtemp(prefix="unimate-lm-a-")
+BRAINS = tempfile.mkdtemp(prefix="unimate-lm-brains-")
+os.environ["UNIMATE_STATE_DIR"] = STATE_A
 os.environ["BRAINS_DIR"] = BRAINS
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -60,7 +60,7 @@ def sha(p):
 BRAIN = Path(BRAINS) / "Shop"
 BRAIN.mkdir(parents=True)
 ROOT_B = str(BRAIN.resolve())
-LEARNED = BRAIN / "Javis" / "learned"
+LEARNED = BRAIN / "UNI MATE" / "learned"
 NOW = 1_800_000_000.0
 CHAT_TEXT = "customer asks about shipping price to Hanoi"
 
@@ -78,7 +78,7 @@ def stores_in(d):
 # ---- 1. a bot that learned nothing: no file, no store ----
 bot_a = make_bot()
 LM.sync_all()
-check("bot with no learned data: no Javis/learned folder", not LEARNED.exists())
+check("bot with no learned data: no UniMate/learned folder", not LEARNED.exists())
 check("bot with no learned data: no SQLite store created", stores_in(STATE_A) == [], stores_in(STATE_A))
 check("bot with no learned data: no mirror state file", not (Path(STATE_A) / LM.STATE_NAME).exists())
 
@@ -157,7 +157,7 @@ chatbot_store.delete_bot(twin1)
 pub_before_restore = pub_p.read_bytes()
 
 # ---- 6. a fresh machine: new STATE_DIR, same brain folder ----
-STATE_B = tempfile.mkdtemp(prefix="javis-lm-b-")
+STATE_B = tempfile.mkdtemp(prefix="unimate-lm-b-")
 use_state(STATE_B)
 LM.sync_all()
 check("fresh machine, nothing local yet: no store created", stores_in(STATE_B) == [], stores_in(STATE_B))
@@ -218,23 +218,23 @@ check("agent revoke shows in the next export",
       {x["text"]: x["status"] for x in apub["lessons"]}.get("Answer in short bullets") == "revoked")
 
 # ---- 9. backup and .gitignore keep private files out ----
-check("backup skips Javis/learned/bots/x.private.json",
-      git_brain._backup_skip("Shop/Javis/learned/bots/x.private.json") is True)
-check("backup skips Javis/learned/agents/x.private.json",
-      git_brain._backup_skip("Shop/Javis/learned/agents/x.private.json") is True)
-check("backup keeps Javis/learned/bots/x.json", git_brain._backup_skip("Shop/Javis/learned/bots/x.json") is False)
-check("backup keeps a .private.json outside Javis/learned", git_brain._backup_skip("Shop/notes/a.private.json") is False)
-check("managed .gitignore names the private learned files", "Javis/learned/**/*.private.json" in git_brain._GITIGNORE)
+check("backup skips UniMate/learned/bots/x.private.json",
+      git_brain._backup_skip("Shop/UniMate/learned/bots/x.private.json") is True)
+check("backup skips UniMate/learned/agents/x.private.json",
+      git_brain._backup_skip("Shop/UniMate/learned/agents/x.private.json") is True)
+check("backup keeps UniMate/learned/bots/x.json", git_brain._backup_skip("Shop/UniMate/learned/bots/x.json") is False)
+check("backup keeps a .private.json outside UniMate/learned", git_brain._backup_skip("Shop/notes/a.private.json") is False)
+check("managed .gitignore names the private learned files", "UniMate/learned/**/*.private.json" in git_brain._GITIGNORE)
 if shutil.which("git"):
-    repo = Path(tempfile.mkdtemp(prefix="javis-lm-git-"))
+    repo = Path(tempfile.mkdtemp(prefix="unimate-lm-git-"))
     subprocess.run(["git", "init", "-q", str(repo)], check=True)
     git_brain._ensure_gitignore_lines(str(repo))
 
     def ignored(rel):
         return subprocess.run(["git", "-C", str(repo), "check-ignore", "-q", rel]).returncode == 0
 
-    check("git ignores Javis/learned/bots/x.private.json", ignored("Javis/learned/bots/x.private.json"))
-    check("git keeps Javis/learned/bots/x.json", not ignored("Javis/learned/bots/x.json"))
+    check("git ignores UniMate/learned/bots/x.private.json", ignored("UniMate/learned/bots/x.private.json"))
+    check("git keeps UniMate/learned/bots/x.json", not ignored("UniMate/learned/bots/x.json"))
 
 if _fails:
     print(f"\n{len(_fails)} FAIL")

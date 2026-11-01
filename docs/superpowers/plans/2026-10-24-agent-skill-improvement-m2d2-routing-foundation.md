@@ -36,7 +36,7 @@ PROFILE_SOURCES file; verify that fact rather than re-running qualified native20
   `list_skills` visits enabled entries first within each source. A same-source
   enabled/disabled collision can therefore disagree across discovery APIs.
 - `mcp_hub._builtin_tools` resolves and reads the file inside the real
-  `javis_use_skill` handler, then bumps usage only on successful loading.
+  `unimate_use_skill` handler, then bumps usage only on successful loading.
 - LazySkillSource refreshes manifests by stat signature and the real capability
   registry. Disabling an active canonical skill must invalidate its warmed
   selection even when an enabled stale mirror remains.
@@ -112,7 +112,7 @@ with baseline-only routing. E/F and M3–M8 remain mandatory under the full Goal
 ## Task 2 — one stable ordinary skill read for hub and lazy loader
 
 Impact before edits: skill_router gains a frozen per-read asset (not a durable task
-pin); actual mcp_hub.javis_use_skill and LazySkillSource consume the same bytes,
+pin); actual mcp_hub.unimate_use_skill and LazySkillSource consume the same bytes,
 source-relative reference and raw SHA256. Existing discovery remains header-only.
 No experiment/view/native/schema/activation source changes. D1 native81 proof can
 be reused only after exact source comparison. Full D2 task pins remain open.

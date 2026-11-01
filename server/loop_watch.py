@@ -30,7 +30,7 @@ from typing import Optional
 
 TICK_S = 0.25
 try:
-    BLOCK_S = max(0.2, float(os.environ.get("JAVIS_LOOP_BLOCK_S", "2")))
+    BLOCK_S = max(0.2, float(os.environ.get("UNIMATE_LOOP_BLOCK_S", "2")))
 except ValueError:
     BLOCK_S = 2.0
 INCIDENTS = 20
@@ -153,7 +153,7 @@ def start(loop: Optional[asyncio.AbstractEventLoop] = None, state_dir: Optional[
     _state["loop_thread"] = threading.get_ident()
     _state["tick"] = time.monotonic()
     loop.create_task(_ticker())
-    threading.Thread(target=_watch, name="javis-loop-watch", daemon=True).start()
+    threading.Thread(target=_watch, name="unimate-loop-watch", daemon=True).start()
     _state["started"] = True
     return True
 

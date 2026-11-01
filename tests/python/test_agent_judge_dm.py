@@ -15,7 +15,7 @@ import asyncio
 import json
 import os
 
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 
 from _judge_world import TEMP, check, finish  # noqa: E402
 import agent_judge as AJ  # noqa: E402

@@ -1,7 +1,7 @@
 """
 media_gc.py - Dọn vùng cache media của brain.
 
-Vì sao tồn tại: ảnh Javis tự tạo (image_gen.py:202) và file user gửi qua Telegram
+Vì sao tồn tại: ảnh UNI MATE tự tạo (image_gen.py:202) và file user gửi qua Telegram
 (main.py:6242) rơi vào `<brain>/attachments/` và `<brain>/inbox/` rồi nằm đó vĩnh viễn.
 Không ai dọn, mà trước đây chúng còn được commit vào git của brain nên xoá file cũng
 không lấy lại được dung lượng. Quyết định: hai thư mục đó là VÙNG CACHE, không phải tri

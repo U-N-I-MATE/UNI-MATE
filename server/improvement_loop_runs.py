@@ -1,7 +1,7 @@
 """Owner-started self-learning runs for one user skill (product side of server/improvement_loop.py).
 
 The owner keeps examples with known answers next to the skill (`skills/<slug>/examples.json`, a list of
-`{"prompt": ..., "expected": ..., "family"?: ...}`); Javis can write that file from chat. The host splits them
+`{"prompt": ..., "expected": ..., "family"?: ...}`); UNI MATE can write that file from chat. The host splits them
 deterministically into tuning and sealed qualification cases (at least 10 sealed, so a verdict is possible), runs
 the loop with the brain's selected engine in text-only mode (no tools, no MCP, no files) on the skill BODY only,
 and stores the report. The frontmatter (name, description, group...) is never handed to the improver.
@@ -152,7 +152,7 @@ class LoopRuns:
         """`engines(brain)` -> (solve, improve) for the brain's selected engine in text-only mode, raising when that
         engine cannot run text-only. `protected(brain, slug)` -> True for system/pack skills."""
         self.root, self.engines, self.protected, self.clock = Path(state_dir), engines, protected, clock
-        self.spawn = spawn or (lambda fn: threading.Thread(target=fn, daemon=True, name="javis-improvement-loop").start())
+        self.spawn = spawn or (lambda fn: threading.Thread(target=fn, daemon=True, name="unimate-improvement-loop").start())
         self._lock = threading.Lock()
         self._cancel: set = set()
         self._live: set = set()  # runs whose worker is alive in this process: never marked interrupted

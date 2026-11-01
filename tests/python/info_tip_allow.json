@@ -29,7 +29,7 @@
  "cs.mf_paste_hint": "content: hint in the add-MCP dialog, replaced by the paste result",
  "cs.oc_wa_need_https": "error: webhook not on HTTPS",
  "cs.ov_mig_confirm": "confirm: migrate brain layout",
- "cs.ov_upd_confirm": "confirm: update Javis",
+ "cs.ov_upd_confirm": "confirm: update UNI MATE",
  "cs.pl_del_confirm": "confirm: remove plugin",
  "cs.si_body_ph": "placeholder: loop body textarea",
  "cs.tfa_s1": "content: 2FA setup step after pressing Turn on",
@@ -59,7 +59,7 @@
  "resonance.a4_approved_draft_pending": "status: note after pressing Approve",
  "resonance.a4_revoked": "status: note after pressing Revoke",
  "resonance.a5_removed_line": "status: goal card state line in chat, paused awaiting owner",
- "resonance.drift": "status: goal card warning, file edited outside Javis",
+ "resonance.drift": "status: goal card warning, file edited outside UNI MATE",
  "resonance.t0_off_confirm": "confirm: confirm() before turning Auto off",
  "rp.owner_none": "status: no owner set, says what to press",
  "rp.stats": "status: numbers summary line of the panel",
@@ -87,5 +87,5 @@
  "star.step3": "content: a step of the star guide, inside a <details> the person opens on a phone",
  "star.wait_body": "content: the GitHub star invitation card is a message the owner wrote for this card (2026-10-25), not an explanation to fold into (i)",
  "star.thanks_body": "content: the thank-you shown after the person says they gave a star",
- "kanban.hint_msg": "content: the message sent to Javis in chat for the owner, never shown as page text"
+ "kanban.hint_msg": "content: the message sent to UNI MATE in chat for the owner, never shown as page text"
 }

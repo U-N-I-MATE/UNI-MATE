@@ -12,7 +12,7 @@
    Vòng lặp cũ cộng thẳng `interim += transcript` nên chép lại cả câu ở mỗi mảnh. Bản vá
    0.58.x đã chữa việc cộng dồn QUA các sự kiện, nhưng trong CÙNG một sự kiện thì chưa.
 
-   Chữa: nối các mảnh bằng JavisVoice.ghepManh - mảnh mới phủ đoạn đang có thì thay, đoạn mới
+   Chữa: nối các mảnh bằng UniMateVoice.ghepManh - mảnh mới phủ đoạn đang có thì thay, đoạn mới
    thật thì mới nối thêm. */
 const fs = require("fs");
 const path = require("path");
@@ -46,7 +46,7 @@ function napVoice(SRGia, ua) {
   const src = fs.readFileSync(path.join(ROOT, "dashboard", "voice.js"), "utf8");
   const AudioGia = function () { return { play: () => Promise.resolve(), setAttribute() {} }; };
   return new Function("window", "localStorage", "navigator", "document", "Audio",
-    src + "; return JavisVoice;")(win, win.localStorage,
+    src + "; return UniMateVoice;")(win, win.localStorage,
       { userAgent: ua, platform: "x", mediaDevices: null }, doc, AudioGia);
 }
 
@@ -60,11 +60,11 @@ const UA_ANDROID = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/12
 const CAU = "Em có nghe thấy anh nói gì không";
 
 (async () => {
-  const JavisVoiceTinh = napVoice(nhanDangGia().SRGia, UA_ANDROID);
+  const UniMateVoiceTinh = napVoice(nhanDangGia().SRGia, UA_ANDROID);
 
   // ---- 1. ghepManh: ba nước ghép ----
   {
-    const g = JavisVoiceTinh.ghepManh;
+    const g = UniMateVoiceTinh.ghepManh;
     check("ghepManh: mảnh dài hơn phủ đoạn cũ -> thay", g("Em có", "Em có nghe") === "Em có nghe");
     check("ghepManh: trùng khít -> không chép hai lần", g("Em có", "Em có") === "Em có");
     check("ghepManh: bỏ qua hoa thường và dấu câu cuối",
@@ -81,9 +81,9 @@ const CAU = "Em có nghe thấy anh nói gì không";
   // ---- 2. Chrome Android: nhiều mảnh tạm cùng lúc, mảnh sau dài hơn mảnh trước ----
   {
     const { SRGia, d } = nhanDangGia();
-    const JavisVoice = napVoice(SRGia, UA_ANDROID);
+    const UniMateVoice = napVoice(SRGia, UA_ANDROID);
     const gui = [], tam = [];
-    const v = new JavisVoice({ onTranscript: (t) => gui.push(t), onInterim: (t) => tam.push(t) });
+    const v = new UniMateVoice({ onTranscript: (t) => gui.push(t), onInterim: (t) => tam.push(t) });
     v.silenceMs = 20;
     v.userStopped = true;            // khỏi tự mở lại phiên, test chỉ xét một lượt
     v.startListening();
@@ -103,9 +103,9 @@ const CAU = "Em có nghe thấy anh nói gì không";
   // ---- 3. Câu thật nhiều đoạn (final + đuôi tạm) vẫn ghép đủ, không bị cắt ----
   {
     const { SRGia, d } = nhanDangGia();
-    const JavisVoice = napVoice(SRGia, UA_ANDROID);
+    const UniMateVoice = napVoice(SRGia, UA_ANDROID);
     const gui = [];
-    const v = new JavisVoice({ onTranscript: (t) => gui.push(t) });
+    const v = new UniMateVoice({ onTranscript: (t) => gui.push(t) });
     v.silenceMs = 20;
     v.userStopped = true;
     v.startListening();
@@ -122,7 +122,7 @@ const CAU = "Em có nghe thấy anh nói gì không";
   // nguyên văn mảnh trước mà SỬA nó: "Ford plat for" -> "ford plat" (ngắn đi, đổi hoa
   // thường) -> "ford plat form" -> ... Luật cũ chỉ nhận ra bản dài hơn nên nối thêm cả câu.
   {
-    const g = JavisVoiceTinh.ghepManh;
+    const g = UniMateVoiceTinh.ghepManh;
     const MANH = ["tìm hiểu cho anh Quốc cơ Ford plat for", "tìm hiểu cho anh Quốc cơ ford plat",
       "tìm hiểu cho anh Quốc cơ ford plat form", "tìm hiểu cho anh Quốc cơ ford plat form của",
       "tìm hiểu cho anh Quốc cơ ford plat form của clap Play"];
@@ -140,12 +140,12 @@ const CAU = "Em có nghe thấy anh nói gì không";
     check("ghepManh: mảnh ngắn (dưới 3 chữ) không bị coi là bản sửa",
       g("gửi cho anh", "gửi em") === "gửi cho anh gửi em");
     check("ghepDuoiTam: đuôi tạm là bản sửa của phần đã chốt -> thay",
-      JavisVoiceTinh.ghepDuoiTam(MANH[0], MANH[2]) === MANH[2]);
+      UniMateVoiceTinh.ghepDuoiTam(MANH[0], MANH[2]) === MANH[2]);
 
     const { SRGia, d } = nhanDangGia();
-    const JavisVoice = napVoice(SRGia, UA_ANDROID);
+    const UniMateVoice = napVoice(SRGia, UA_ANDROID);
     const gui = [];
-    const v = new JavisVoice({ onTranscript: (t) => gui.push(t) });
+    const v = new UniMateVoice({ onTranscript: (t) => gui.push(t) });
     v.silenceMs = 20;
     v.userStopped = true;
     v.startListening();

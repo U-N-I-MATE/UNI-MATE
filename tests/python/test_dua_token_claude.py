@@ -2,7 +2,7 @@
 
     python tests/run.py dua_token_claude
 
-Bệnh thật (chủ repo báo 02/09, hai vợ chồng dùng chung một javis.minhquy.vn): Javis chạy
+Bệnh thật (chủ repo báo 02/09, hai vợ chồng dùng chung một unimate.minhquy.vn): UNI MATE chạy
 nhiều tiến trình `claude` song song trên ĐÚNG MỘT file ~/.claude/.credentials.json. Refresh
 token OAuth là loại dùng một lần, nên khi token hết hạn đúng lúc hai người cùng chat thì lượt
 chạy sau ăn "refresh token was already used" - còn file thì vẫn lành, nên người kia không
@@ -35,7 +35,7 @@ def check(name, cond, them=""):
 
 def _dat_cred(han_giay, co_token=True):
     """Dựng ~/.claude/.credentials.json giả trong HOME tạm. han_giay = còn bao lâu nữa hết hạn."""
-    d = tempfile.mkdtemp(prefix="javis-cred-")
+    d = tempfile.mkdtemp(prefix="unimate-cred-")
     os.environ["HOME"] = d
     p = gate.duong_cred()
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -72,7 +72,7 @@ gate.duong_cred().write_text("{ hỏng", encoding="utf-8")
 check("file hỏng không làm nổ, trả 0", gate.han_token() == 0.0)
 check("file hỏng thì coi như chưa đăng nhập", not gate.con_dang_nhap())
 
-os.environ["HOME"] = tempfile.mkdtemp(prefix="javis-nohome-")
+os.environ["HOME"] = tempfile.mkdtemp(prefix="unimate-nohome-")
 # macOS cất token trong Keychain nên KHÔNG có file. Không đọc được hạn thì tuyệt đối không
 # được xếp hàng - làm vậy là bắt mọi lượt chat trên Mac chờ vô cớ.
 check("CANARY: không có file (macOS) thì trả 0, không xếp hàng", gate.han_token() == 0.0)

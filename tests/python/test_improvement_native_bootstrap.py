@@ -219,7 +219,7 @@ class WindowsBootstrapTests(unittest.TestCase):
         import msvcrt
         import improvement_native_image as image
         before_sdk = {name for name in sys.modules if name.startswith("claude_agent_sdk")}
-        # _paths may inherit a deep runner JAVIS_TEST_TMP. Keep this owned Windows
+        # _paths may inherit a deep runner UNIMATE_TEST_TMP. Keep this owned Windows
         # handle fixture short enough for the unchanged guard's MAX_PATH surface.
         short_temp = Path(os.environ.get("LOCALAPPDATA", str(Path.home() / "AppData" / "Local"))) / "Temp"
         with tempfile.TemporaryDirectory(prefix="jb-", dir=short_temp) as scratch:

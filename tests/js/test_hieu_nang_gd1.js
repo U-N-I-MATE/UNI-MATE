@@ -63,7 +63,7 @@ async function wrapper() {
 
 // ───────── black box (loi-may-khach.js) ─────────
 const L = require(path.join(ROOT, "dashboard/loi-may-khach.js"));
-check("an error from a Javis file is reported", L.nenGui("x is not defined", O + "/static/app.js?v=1", O));
+check("an error from a UNI MATE file is reported", L.nenGui("x is not defined", O + "/static/app.js?v=1", O));
 check("an error with no file (promise) is reported", L.nenGui("Load failed", "", O));
 check("browser extensions and other sites are ignored",
   !L.nenGui("boom", "chrome-extension://abc/x.js", O) && !L.nenGui("boom", "https://ads.example.com/x.js", O));

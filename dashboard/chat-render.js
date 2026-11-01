@@ -1,4 +1,4 @@
-/* chat-render.js - bo render chat "chan that nhu Claude" cho Javis OS.
+/* chat-render.js - bo render chat "chan that nhu Claude" cho UNI MATE.
    Thay bo markdownToHtml regex cu trong app.js: markdown day du (heading h1-h6,
    danh sach co thu tu + long + checkbox, blockquote, duong ke ngang, in nghieng,
    gach ngang, link, anh), code block co nhan ngon ngu + to mau cu phap, render an
@@ -54,7 +54,7 @@
   // Vi sao can: duong dan anh trong tin nhan la tuong doi ("attachments/x.png"), khong mang
   // brain. Truoc day moi lan ve lai deu ghep voi brain DANG chon, nen mo mot hoi thoai cu
   // trong khi dang o brain khac la anh tro sai cho, 404, roi bi thay bang o xam - nguoi dung
-  // tuong Javis tu xoa anh di. Gan brain cua chinh hoi thoai do vao luot render thi het.
+  // tuong UNI MATE tu xoa anh di. Gan brain cua chinh hoi thoai do vao luot render thi het.
   var _brainForRender = null;
   function brainPath() {
     if (_brainForRender != null) return _brainForRender;
@@ -89,11 +89,11 @@
   // thu cai ke tiep - khong phai hoi may chu truoc, va mot note tro dung duong van tai mot lan.
   //
   //   1. THEO THU MUC CUA CHINH FILE .md  - dung cach Obsidian, VS Code va GitHub hieu mot
-  //      duong dan tuong doi. Day la cai ma nguoi viet note mong doi, va la cai Javis thieu
+  //      duong dan tuong doi. Day la cai ma nguoi viet note mong doi, va la cai UNI MATE thieu
   //      truoc ban nay: no phan giai MOI duong dan theo GOC BRAIN, nen note nam trong thu muc
   //      con ma viet ![](anh.jpg) thi di tim <brain>/anh.jpg, khong bao gio co.
   //   2. THEO GOC BRAIN - dung hanh vi cu. Giu lai de note nao dang tro kieu do van chay.
-  //   3. attachments/<ten file> - cho Javis tu cat anh no sinh ra (quy uoc trong CLAUDE.md).
+  //   3. attachments/<ten file> - cho UNI MATE tu cat anh no sinh ra (quy uoc trong CLAUDE.md).
   function ungVienAnh(src) {
     var ra = [];
     var raw = String(src || "").trim().replace(/^\.\//, "");
@@ -245,7 +245,7 @@
       ? vaultDownload(rawpath, extraCls, brainOverride)
       : vaultLoc(rawpath, extraCls);
   }
-  // Inline code chua DUONG DAN FILE vault (vd `Javis/loops/x.md`)? Tra ve path da chuan hoa, "" neu khong phai.
+  // Inline code chua DUONG DAN FILE vault (vd `UniMate/loops/x.md`)? Tra ve path da chuan hoa, "" neu khong phai.
   // Chi nhan khi trong giong path that: co duoi file + (co thu muc / la .md tran), khong ky tu cam cua ten file
   // Windows (":" loai luon URL va lenh co cong cu), khong leo thang "..".
   function codeFilePath(c) {
@@ -459,7 +459,7 @@
   // Khoi `---\n...\n---` o DAU mot file .md la METADATA (type, status, created...), khong phai
   // van ban de soan. Truoc ban nay no roi vao luat "--- = duong ke ngang", nen mo mot note trong
   // trinh sua WYSIWYG roi bam Luu la frontmatter bien thanh "* * *" cong may dong chu roi: file
-  // hong that su, va moi thu doc metadata (Javis, dataview, Obsidian) doc truot tu do. Chu repo
+  // hong that su, va moi thu doc metadata (UNI MATE, dataview, Obsidian) doc truot tu do. Chu repo
   // gap dung canh nay 2026-08-13 ("mot so file .md dang khong doc duoc").
   //
   // Cach chua: cat ra thanh MOT khoi rieng, contenteditable=false, va giu NGUYEN VAN trong
@@ -614,15 +614,15 @@
   }
   function visibleMarkdown(raw) {
     raw = String(raw == null ? "" : raw);
-    // Bo HTML comment (khoi dieu khien JAVIS_* luon vo hinh), ke ca comment chua dong luc stream
+    // Bo HTML comment (khoi dieu khien UNIMATE_* luon vo hinh), ke ca comment chua dong luc stream
     return raw.replace(/<!--[\s\S]*?-->/g, "").replace(/<!--[\s\S]*$/, "");
   }
 
   function _mdToHtmlThan(raw) {
     var ph = [];
     function put(html) { ph.push(html); return OPEN + (ph.length - 1) + CLOSE; }
-    // 0.201.0: JAVIS_CARD blocks (charts, number tiles, buttons) are drawn in place before hidden comments go (chat-card.js).
-    if (typeof window !== "undefined" && window.JavisCard) raw = window.JavisCard.replaceIn(raw, put);
+    // 0.201.0: UNIMATE_CARD blocks (charts, number tiles, buttons) are drawn in place before hidden comments go (chat-card.js).
+    if (typeof window !== "undefined" && window.UniMateCard) raw = window.UniMateCard.replaceIn(raw, put);
     raw = visibleMarkdown(raw);
 
     // 0) frontmatter YAML o DAU file .md -> khoi rieng, KHONG cho sua, giu nguyen van de luu lai
@@ -637,7 +637,7 @@
       return "\n" + put(renderFence(info, code, true)) + "\n";
     });
     // 2) inline code (truoc bang/anh/link va truoc nhan manh). Code chua duong dan file vault
-    //    (vd `Javis/loops/x.md`) -> boc link bam mo khung doc/sua luon.
+    //    (vd `UniMate/loops/x.md`) -> boc link bam mo khung doc/sua luon.
     raw = raw.replace(/`([^`\n]+)`/g, function (_m, c) {
       var code = "<code>" + esc(c) + "</code>";
       var p = codeFilePath(c);
@@ -867,7 +867,7 @@
       elBody.innerHTML = '<div class="jv-ap-mermaid">' + esc(tw("crender.mm_drawing")) + "</div>";
       renderMermaid(art.code, elBody.querySelector(".jv-ap-mermaid"), function (host) {
         var svg = host.querySelector("svg");
-        if (svg && curArt === art && window.JavisPanZoom) zoomOn(host, svg, window.JavisPanZoom.svgSize(svg));
+        if (svg && curArt === art && window.UniMatePanZoom) zoomOn(host, svg, window.UniMatePanZoom.svgSize(svg));
       });
       return;
     }
@@ -876,7 +876,7 @@
   var curPz = null;
   function zoomOn(box, content, nat) {
     dropZoom();
-    if (window.JavisPanZoom) curPz = window.JavisPanZoom.attach(box, content, nat);
+    if (window.UniMatePanZoom) curPz = window.UniMatePanZoom.attach(box, content, nat);
   }
   function dropZoom() { if (curPz) { try { curPz.destroy(); } catch (e) {} curPz = null; } }
   // Natural size from the svg text (viewBox, else width/height), or null to read it off the loaded <img>.
@@ -913,7 +913,7 @@
   // Copy plain text through the shared helper (chat-acts.js, clipboard API with a textarea fallback on plain HTTP).
   // chat-acts.js loads after this file but before any click can happen; the inline copy is for pages without it.
   function copyPlain(text) {
-    if (typeof window !== "undefined" && window.JavisActs && window.JavisActs.copy) return window.JavisActs.copy(text);
+    if (typeof window !== "undefined" && window.UniMateActs && window.UniMateActs.copy) return window.UniMateActs.copy(text);
     var ta = document.createElement("textarea");
     ta.value = text; ta.style.cssText = "position:fixed;opacity:0";
     document.body.appendChild(ta); ta.select();
@@ -1065,7 +1065,7 @@
 
   // Mo mot FILE cua vault tu link (trong chat hoac trong ban render cua trinh sua).
   //
-  // Uu tien TRINH SUA DINH - window.JavisOpenNote, wrapper SAN CO cua console.js (cung cai
+  // Uu tien TRINH SUA DINH - window.UniMateOpenNote, wrapper SAN CO cua console.js (cung cai
   // click node do thi dung): nhan MOT chuoi path tuong doi GOC BRAIN, tu ghep tien to tran +
   // suy ten/duoi, tu so cay toi dung nhanh. O trang Tro chuyen no CHIEM CHO khung chat
   // (#chatPageEdit tu 0.15.2), o man chinh no noi len tren visual nao - cho do rong nen de la
@@ -1086,13 +1086,13 @@
     // Duong CHINH: console.js quyet dinh (file sua duoc -> trinh sua, con lai -> trang Tep tin).
     // Gom ve mot cho vi deep-link `#open=` cung goi dung ham do; hai ban sao luat se lech nhau,
     // ma trieu chung cua lech la "cung mot file luc thi sua duoc luc thi ve thu muc".
-    if (typeof window.JavisOpenVaultPath === "function") { window.JavisOpenVaultPath(rel); return; }
+    if (typeof window.UniMateOpenVaultPath === "function") { window.UniMateOpenVaultPath(rel); return; }
     // Duoi day la duong lui cho ban console.js cu chua co ham do.
     var hep = false;
     try { hep = window.matchMedia("(max-width: 860px)").matches; } catch (e) {}
-    if (!hep && typeof window.JavisOpenNote === "function") { window.JavisOpenNote(rel); return; }
-    if (typeof window.JavisEditFile === "function") { window.JavisEditFile(rel); return; }
-    if (typeof window.JavisOpenFiles === "function") window.JavisOpenFiles(rel);
+    if (!hep && typeof window.UniMateOpenNote === "function") { window.UniMateOpenNote(rel); return; }
+    if (typeof window.UniMateEditFile === "function") { window.UniMateEditFile(rel); return; }
+    if (typeof window.UniMateOpenFiles === "function") window.UniMateOpenFiles(rel);
   }
 
   // ---------------------------------------------------------------- tai file tren iPhone
@@ -1245,7 +1245,7 @@
     var img = a.querySelector ? a.querySelector("img") : null;
     var href = a.getAttribute("href") || (img && img.src) || "";
     if (a.classList && a.classList.contains("ht-anh")) {
-      return { url: href, ten: window.JavisHtMedia && window.JavisHtMedia.tenAnh ? window.JavisHtMedia.tenAnh(href) : "" };
+      return { url: href, ten: window.UniMateHtMedia && window.UniMateHtMedia.tenAnh ? window.UniMateHtMedia.tenAnh(href) : "" };
     }
     var vp = a.getAttribute("data-vault-path") || "";
     // `data-img-ten` la ten do NGUOI GUI dat, dung cho anh khong nam trong vault (vd file vua
@@ -1474,7 +1474,7 @@
     document.body.appendChild(_lb);
     document.body.classList.add("jv-lb-open");
     // Nut Back cua dien thoai (va cu vuot canh man hinh) phai DONG anh, khong phai roi khoi
-    // Javis. Chu repo bao 2026-09-13: dang xem anh thi vuot canh trai khong an gi, ma nut X thi
+    // UNI MATE. Chu repo bao 2026-09-13: dang xem anh thi vuot canh trai khong an gi, ma nut X thi
     // bi thanh trang thai che - khong con duong nao ra. Chen mot buoc lich su o day de cu Back
     // co cho ma lui ve.
     if (!_lbDayLichSu) {
@@ -1485,7 +1485,7 @@
   if (typeof document !== "undefined") {
     // Gan o TRONG khoi nay: file con duoc require duoi node de test ham thuan, ma duoi node
     // khong co `window` - gan o ngoai la module nem ngay luc nap.
-    window.JavisLightbox = { open: moLightbox, close: dongLightbox, openFrom: moTuLink };
+    window.UniMateLightbox = { open: moLightbox, close: dongLightbox, openFrom: moTuLink };
     document.addEventListener("keydown", function (e) {
       if (_lb && e.key === "Escape") { e.preventDefault(); dongLightbox(); }
       else if (_lb && _lbChuyen && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
@@ -1514,7 +1514,7 @@
     // TAI FILE TREN IPHONE (0.64.46). App cai ra man hinh chinh (standalone) KHONG co nut Back.
     // Mot link tai file (<a download>, hay link toi /files/raw, /files/zip, /upload/raw) ma di
     // trong CUNG cua so thi iOS khong tai gi ca: no THAY ca app bang trang xem file ("Open in
-    // Preview / More..."), va khong con duong nao quay lai Javis ngoai tat app (chu repo gui anh
+    // Preview / More..."), va khong con duong nao quay lai UNI MATE ngoai tat app (chu repo gui anh
     // 24/09). Moi cho tai file deu roi vao day: link trong chat, nut Tai ve cua lightbox, trang
     // Tep tin (_dlGo, tai ca thu muc zip), trinh sua file, tai khoi code.
     //   - anh trong chat  -> mo lightbox ngay trong app (co nut Dong, nut Back cung dong duoc)
@@ -1566,7 +1566,7 @@
       if (cs && cs.getAttribute("data-cs")) {
         if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button > 0) return;
         e.preventDefault();
-        if (typeof window.JavisOpenCongSu === "function") window.JavisOpenCongSu(cs.getAttribute("data-cs"));
+        if (typeof window.UniMateOpenCongSu === "function") window.UniMateOpenCongSu(cs.getAttribute("data-cs"));
         return;
       }
       // Wikilink [[..]]: bam la DI CHUYEN toi note dich - chay CA trong ban render dang sua (ne-wys/.jvfe-modal),
@@ -1599,7 +1599,7 @@
           var isDir = /\/$/.test(vp) || base === "" || base.indexOf(".") < 0;   // co duoi -> FILE (nhu openFilesAt)
           // FILE co duoi -> mo trong trinh sua; THU MUC / anh inline -> mo trang Tep tin dung vi tri.
           if (!isImg && !isDir) { moFileVault(trimmed); return; }
-          if (typeof window.JavisOpenFiles === "function") window.JavisOpenFiles(vp);
+          if (typeof window.UniMateOpenFiles === "function") window.UniMateOpenFiles(vp);
           else window.open(loc.href, "_blank");   // du phong: mo tab moi neu console.js chua san sang
           return;
         }
@@ -1652,17 +1652,17 @@
 
   if (typeof window !== "undefined") {
     window.mdToHtml = mdToHtml;
-    window.JavisVisibleMarkdown = visibleMarkdown;
+    window.UniMateVisibleMarkdown = visibleMarkdown;
     // Bo to mau chung: code-hl.js goi lai cho cac ngon ngu kieu C (js/py/sh...) de mot luat
     // chi nam o mot cho. Markup/CSS/JSON thi code-hl tu doc lay (xem chu thich ben do).
-    window.JavisHighlight = highlight;
+    window.UniMateHighlight = highlight;
     window.jvImgGone = imgGone;   // goi tu thuoc tinh onerror noi tuyen cua the <img>
     // get(id): cho turndown (console.js) tra artifact card ve lai dung fence ``` khi luu note WYSIWYG
-    window.JavisArtifacts = { open: openArtifact, close: closePanel,
+    window.UniMateArtifacts = { open: openArtifact, close: closePanel,
       get: function (id) { return registry[id] || null; } };
-    // console.js goi lai khi mot duong dan file:// lot toi openVaultPath/JavisOpenNote (deep-link,
+    // console.js goi lai khi mot duong dan file:// lot toi openVaultPath/UniMateOpenNote (deep-link,
     // chip file dang mo...) - mot luat go giao thuc, nam o mot cho.
-    window.JavisFileRef = appFileRef;
+    window.UniMateFileRef = appFileRef;
   }
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { mdToHtml: mdToHtml, visibleMarkdown: visibleMarkdown,

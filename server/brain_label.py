@@ -2,12 +2,12 @@
 
 Why this exists. A brain is addressed everywhere by its FOLDER: "brain" means `<BRAINS_DIR>/Brain Default`, any other
 brain is `path:<absolute folder>`. That address is stored in the browser, in chat bots, reminders, loops, Kanban tasks,
-sessions, the git backup (tombstones, mirror paths) and in links Javis writes into notes and chats
+sessions, the git backup (tombstones, mirror paths) and in links UNI MATE writes into notes and chats
 (`/brains/<folder>/wiki/x.md`). Renaming the folder would quietly cut all of them, which is why the dashboard never
 offered it, and why Brain Default could not be renamed at all (owner's chat, 2026-10-19: "sao lại fix cứng thế").
 
 So a rename only changes a LABEL. The folder, and every address and link built on it, stays exactly as it was. The
-label lives inside the brain (`Javis/brain.json`), so the git backup carries it to every machine that shares the brain,
+label lives inside the brain (`UniMate/brain.json`), so the git backup carries it to every machine that shares the brain,
 and a brain copied to another install keeps its name.
 """
 from __future__ import annotations
@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Optional
 
 MAX_LEN = 60
-FILE = Path("Javis") / "brain.json"
+FILE = Path("UNI MATE") / "brain.json"
 
 
 def _file(root) -> Path:

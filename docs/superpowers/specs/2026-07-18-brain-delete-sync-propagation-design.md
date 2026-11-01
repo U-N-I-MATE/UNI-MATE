@@ -5,7 +5,7 @@ Trạng thái: Đã duyệt thiết kế, chờ lập kế hoạch triển khai.
 
 ## 1. Bối cảnh và vấn đề
 
-Javis đồng bộ 2 chiều toàn bộ thư mục `brains/` giữa nhiều máy qua một repo GitHub riêng
+UNI MATE đồng bộ 2 chiều toàn bộ thư mục `brains/` giữa nhiều máy qua một repo GitHub riêng
 (`git_brain.sync_brains`, mô hình `máy A ⇄ repo ⇄ máy B/VPS`). Topology thực tế của user:
 **2+ máy chạy song song**, đều có thể sửa/xóa.
 
@@ -45,7 +45,7 @@ Ngoài phạm vi (v1):
 ## 4. Kiến trúc (các thành phần)
 
 ### 4.1 Tombstone store (đồng bộ)
-- Vị trí: `<BRAINS_DIR>/.javis-tombstones/<tên>.json` - tên file dùng ĐÚNG tên folder não (kết quả
+- Vị trí: `<BRAINS_DIR>/.unimate-tombstones/<tên>.json` - tên file dùng ĐÚNG tên folder não (kết quả
   `_safe_brain_name`, đã bỏ ký tự nguy hiểm `\/:*?"<>|` + cắt 60 ký tự, giữ dấu tiếng Việt). Một file
   cho mỗi não. Vì tên folder não là duy nhất và đã an toàn hệ thống file nên tên tombstone không đụng
   nhau, không cần slug riêng.
@@ -79,7 +79,7 @@ Thay đổi phần thực thi:
 1. `_safe_brain_name(name)` -> `root = BRAINS_DIR/<name>`.
 2. Chuyển `root` vào thùng rác: `<STATE_DIR>/brain-trash/<name>__<ts>/` (dùng `shutil.move`; nếu
    khác ổ đĩa thì copytree + rmtree). KHÔNG `rmtree` cứng nữa.
-3. Ghi tombstone `<BRAINS_DIR>/.javis-tombstones/<name>.json` (name = tên folder não) với
+3. Ghi tombstone `<BRAINS_DIR>/.unimate-tombstones/<name>.json` (name = tên folder não) với
    `deleted_at = now`, `host`.
 4. Kích hoạt một lần sync nền best-effort (nếu backup đã cấu hình) để remote nhận lệnh xóa + tombstone
    ngay, thay vì chờ chu kỳ 6 tiếng. Không chặn response; lỗi sync không làm hỏng việc xóa cục bộ.

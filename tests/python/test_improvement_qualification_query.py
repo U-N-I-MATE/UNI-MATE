@@ -85,7 +85,7 @@ def install(name,*args,**kwargs):
  module=original_import(name,*args,**kwargs)
  if name=='improvement_native_sdk' and not configured:
   configured=True
-  assert os.environ.get('ANTHROPIC_API_KEY')=='javis-native-qualification-dummy'
+  assert os.environ.get('ANTHROPIC_API_KEY')=='unimate-native-qualification-dummy'
   from improvement_native_capture import NativeDebugInvocation as RealCapture
   import anyio
   class Output:

@@ -8,15 +8,15 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-kenh-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
-os.environ["JAVIS_SESSIONS_DB"] = str(Path(_TMP) / "conv.db")
-# main.py:946 đọc BRAINS_DIR (KHÔNG có tiền tố JAVIS_) để tìm brain "brain" mặc định -
+_TMP = tempfile.mkdtemp(prefix="unimate-kenh-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
+os.environ["UNIMATE_SESSIONS_DB"] = str(Path(_TMP) / "conv.db")
+# main.py:946 đọc BRAINS_DIR (KHÔNG có tiền tố UNIMATE_) để tìm brain "brain" mặc định -
 # đặt về thư mục tạm TRƯỚC khi import main, không được đụng vào brains/ thật của máy.
-_BRAINS = tempfile.mkdtemp(prefix="javis-kenh-brains-")
+_BRAINS = tempfile.mkdtemp(prefix="unimate-kenh-brains-")
 os.environ["BRAINS_DIR"] = _BRAINS
 # TestClient gửi Host: testserver, không nằm trong allowlist mặc định của web_security.py.
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"
 
 import sessions  # noqa: E402
 
@@ -73,7 +73,7 @@ r = cl.get("/sessions", params={"brain": "brain", "channel": "agent:nguoi-viet"}
 check("GET /sessions?channel= tra dung phien", [s["id"] for s in r["sessions"]] == [row["id"]])
 
 # Slug CO DAU tieng Viet. _slugify giu nguyen chu tieng Viet, nen brain that co han
-# "javis-vu~.md" va "kiem-chung-vien.md" (dau day du). Khuon cu ^[a-z0-9][a-z0-9-]*$ chan dung
+# "unimate-vu~.md" va "kiem-chung-vien.md" (dau day du). Khuon cu ^[a-z0-9][a-z0-9-]*$ chan dung
 # nhung file do: bam vao trang Cong su la an 400 kem cau loi THO cua server hien thang ra man
 # hinh. Day la thu canh chuyen do.
 _slug_vn = "kiểm-chứng-viên"

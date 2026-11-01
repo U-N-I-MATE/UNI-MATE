@@ -20,16 +20,16 @@ Ba điểm đáng canh, vì cả ba đều có cách làm sai trông hợp lý h
    ta đã lưu bỗng biến mất sau một bản cập nhật.
 
 3. KHÔNG NỚI LỚP CÁCH LY. Cách "dễ" là thêm `allow-same-origin` vào CSP; làm thế là gỡ đúng
-   cái chốt khiến Javis dám phục vụ HTML người dùng viết trên cùng tên miền với dashboard.
+   cái chốt khiến UNI MATE dám phục vụ HTML người dùng viết trên cùng tên miền với dashboard.
    Test này khoá chuyện đó lại.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
 import os
 import tempfile
 
-_STATE = tempfile.mkdtemp(prefix="javis-cskl-")
-_BRAINS = tempfile.mkdtemp(prefix="javis-cskl-brains-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-cskl-")
+_BRAINS = tempfile.mkdtemp(prefix="unimate-cskl-brains-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 os.environ["BRAINS_DIR"] = _BRAINS
 
 BRAIN = os.path.join(_BRAINS, "brain")
@@ -60,20 +60,20 @@ def check(ten, dk, them=""):
 VA = share_render.chen_polyfill_luu_tru
 
 r = VA('<!doctype html><html><head><title>x</title></head><body><script>a()</script></body></html>')
-check("có <head> thì chèn ngay sau <head>", r.index("__javis_thu__") > r.index("<head>")
-      and r.index("__javis_thu__") < r.index("<title>"), r[:120])
-check("và vẫn đứng trước script của trang", r.index("__javis_thu__") < r.index("a()"))
+check("có <head> thì chèn ngay sau <head>", r.index("__unimate_thu__") > r.index("<head>")
+      and r.index("__unimate_thu__") < r.index("<title>"), r[:120])
+check("và vẫn đứng trước script của trang", r.index("__unimate_thu__") < r.index("a()"))
 
 r2 = VA('<!doctype html><h1>App</h1><script>a()</script>')
 check("không có <head> thì chèn sau doctype", r2.lower().startswith("<!doctype html>"), r2[:60])
-check("và vẫn trước script của trang", r2.index("__javis_thu__") < r2.index("a()"))
+check("và vẫn trước script của trang", r2.index("__unimate_thu__") < r2.index("a()"))
 
 r3 = VA('<html><body>x</body></html>')
 check("không doctype nhưng có <html> thì chèn sau <html>",
-      r3.index("__javis_thu__") > r3.index("<html>"), r3[:80])
+      r3.index("__unimate_thu__") > r3.index("<html>"), r3[:80])
 
 r4 = VA('<div>manh vun</div>')
-check("mảnh HTML rời cũng vá được", "__javis_thu__" in r4 and r4.endswith("<div>manh vun</div>"))
+check("mảnh HTML rời cũng vá được", "__unimate_thu__" in r4 and r4.endswith("<div>manh vun</div>"))
 
 # Doctype phải là thứ ĐẦU TIÊN trong file, không thì trình duyệt vào chế độ quirks.
 for goc in ('<!doctype html><html><head></head></html>', '<!DOCTYPE HTML><html></html>'):
@@ -96,9 +96,9 @@ check("chia sẻ được trang .html", bool(TOK), rs.text[:160])
 h = c.get("/s/" + TOK + "/")
 check("mở được trang", h.status_code == 200, h.status_code)
 check("nội dung của người dùng còn NGUYÊN VĂN", "<h1>Bảng giá</h1>" in h.text)
-check("bản vá kho lưu trữ được chèn vào", "__javis_thu__" in h.text)
+check("bản vá kho lưu trữ được chèn vào", "__unimate_thu__" in h.text)
 check("và đứng trước script của trang",
-      h.text.index("__javis_thu__") < h.text.index("localStorage.setItem"))
+      h.text.index("__unimate_thu__") < h.text.index("localStorage.setItem"))
 
 # Đây là cái chốt chính của cả tính năng chia sẻ. Thêm allow-same-origin để "chữa"
 # localStorage là trao cookie đăng nhập của chủ cho một file .html do AI viết.

@@ -21,7 +21,7 @@ Hai điều then chốt mà test này ghim:
    lại đúng URL ấy (lấy từ cache, không tốn mạng) rồi băm và đối chiếu.
 
 2. **Điểm tựa phải luôn mới.** `index.html` trả kèm `no-store` nên nó luôn mới kể cả khi
-   mọi file quanh nó đã cũ - khối `<script id="javis-fresh">` vì vậy luôn nói thật. Và
+   mọi file quanh nó đã cũ - khối `<script id="unimate-fresh">` vì vậy luôn nói thật. Và
    `freshness.js` nạp KHÔNG kèm `?v=`, được đóng dấu `no-cache`: người gác cổng mà cũ theo
    thì nó gác cái gì.
 
@@ -66,7 +66,7 @@ check("CANARY: /app-version KHÔNG chạm mạng (khác /version đi hỏi GitHu
 check("và trả cả phiên bản lẫn vân tay", '"version"' in _av and '"assets"' in _av)
 
 _root = MAIN.split("async def root()", 1)[1].split("\n@app.", 1)[0]
-check("trang nhúng khối javis-fresh", 'id="javis-fresh"' in _root)
+check("trang nhúng khối unimate-fresh", 'id="unimate-fresh"' in _root)
 # Regex tìm vân tay bám vào `?v=`, nên tính SAU khi đã đổi `?v=` là ra rỗng sạch.
 check("CANARY: vân tay tính TRƯỚC khi viết lại ?v= (tính sau là ra rỗng)",
       _root.index("_asset_fps(html)") < _root.index("re.sub("), _root[:200])
@@ -95,7 +95,7 @@ check("và nạp SỚM, trước cả i18n",
 # ============================================================
 check("freshness.js tự cài crc32, không GỌI crypto.subtle",
       "0xEDB88320" in FRESH and "crypto.subtle.digest" not in FRESH)
-# Vì sao không dùng crypto.subtle: nó chỉ tồn tại trong ngữ cảnh bảo mật, mà Javis rất hay
+# Vì sao không dùng crypto.subtle: nó chỉ tồn tại trong ngữ cảnh bảo mật, mà UNI MATE rất hay
 # chạy trên http:// theo IP của VPS - dùng nó là người gác cổng chết lặng đúng lúc cần nhất.
 check("CANARY: có ghi lý do không dùng crypto.subtle (http:// theo IP là ca thật)",
       "ngữ cảnh bảo mật" in FRESH)
@@ -134,7 +134,7 @@ check("nhưng /app-version thì hỏi thẳng máy chủ", 'cache: "no-store"' i
 # Tự tải lại là cướp mất câu người dùng đang gõ dở - tệ hơn hẳn cái nó chữa.
 check("CANARY: KHÔNG tự động tải lại trang, chỉ mời",
       "location.reload()" in FRESH and "KHÔNG tự tải lại trang" in FRESH)
-check("có chống vòng lặp tải lại vô tận", "javis-fresh-reloaded" in FRESH)
+check("có chống vòng lặp tải lại vô tận", "unimate-fresh-reloaded" in FRESH)
 check("tải lại rồi vẫn cũ thì đổi sang câu chỉ thẳng cách làm",
       "Ctrl+Shift+R" in FRESH)
 check("gọi ĐÚNG TÊN file đang cũ (để còn lần ra tầng cache nào giữ)",

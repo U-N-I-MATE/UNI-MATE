@@ -3,8 +3,8 @@
     python tests/run.py bot_gui_anh      (KHÔNG mạng, MCP và CLI giả)
 
 Trước bản này mọi lượt bot trả `"files": []`, nên không bot nào trên kênh nào gửi được ảnh, dù Telegram, Slack,
-WhatsApp đã biết gửi `files`. Javis cố ý KHÔNG tự đính kèm file mới sinh ra (người lạ đang lái model, file vừa xuất
-hiện là đường rò). Nay Agent CHỦ ĐỘNG viết `![mô tả](đường-dẫn)` và Javis chỉ gửi khi qua đủ rào.
+WhatsApp đã biết gửi `files`. UNI MATE cố ý KHÔNG tự đính kèm file mới sinh ra (người lạ đang lái model, file vừa xuất
+hiện là đường rò). Nay Agent CHỦ ĐỘNG viết `![mô tả](đường-dẫn)` và UNI MATE chỉ gửi khi qua đủ rào.
 
 File này canh:
   1. RÀO: chỉ ảnh có thật, trong brain của chính bot (kể cả symlink), không quá cỡ, tối đa 4 ảnh. Đường dẫn trượt rào
@@ -20,8 +20,8 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-botanh-")
-os.environ["JAVIS_REPLY_POLICY_SHADOW"] = "1"
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-botanh-")
+os.environ["UNIMATE_REPLY_POLICY_SHADOW"] = "1"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:

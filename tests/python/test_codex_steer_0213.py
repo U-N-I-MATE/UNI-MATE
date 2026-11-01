@@ -24,8 +24,8 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-TMP = Path(tempfile.mkdtemp(prefix="javis-codex-steer-"))
-os.environ["JAVIS_STATE_DIR"] = str(TMP / "state")
+TMP = Path(tempfile.mkdtemp(prefix="unimate-codex-steer-"))
+os.environ["UNIMATE_STATE_DIR"] = str(TMP / "state")
 os.environ["CODEX_HOME"] = str(TMP / "codex-home")
 (TMP / "codex-home").mkdir()
 
@@ -44,13 +44,13 @@ def check(name, cond):
 
 # ---- pure helpers ----
 ov = []
-codex_steer._flatten("", {"mcp_servers": {"javis": {"url": "http://h/mcp", "startup_timeout_sec": 20,
+codex_steer._flatten("", {"mcp_servers": {"unimate": {"url": "http://h/mcp", "startup_timeout_sec": 20,
                                                     "http_headers": {"Authorization": "Bearer x\"y",
-                                                                     "X-Javis-Mode": "full"}}}}, ov)
+                                                                     "X-UniMate-Mode": "full"}}}}, ov)
 check("profile flattens into -c overrides, header names unquoted",
-      'mcp_servers.javis.url="http://h/mcp"' in ov and "mcp_servers.javis.startup_timeout_sec=20" in ov
-      and 'mcp_servers.javis.http_headers.Authorization="Bearer x\\"y"' in ov
-      and 'mcp_servers.javis.http_headers.X-Javis-Mode="full"' in ov)
+      'mcp_servers.unimate.url="http://h/mcp"' in ov and "mcp_servers.unimate.startup_timeout_sec=20" in ov
+      and 'mcp_servers.unimate.http_headers.Authorization="Bearer x\\"y"' in ov
+      and 'mcp_servers.unimate.http_headers.X-UniMate-Mode="full"' in ov)
 try:
     codex_steer._flatten("", {"a.b": 1}, [])
     check("a dotted key cannot be passed with -c", False)
@@ -61,7 +61,7 @@ ei = codex_steer.exec_item({"type": "commandExecution", "id": "c1", "command": "
 check("commandExecution reads as exec's command_execution",
       ei == {"id": "c1", "type": "command_execution", "command": "ls", "aggregated_output": "x", "exit_code": 0,
              "status": "completed"})
-ei = codex_steer.exec_item({"type": "mcpToolCall", "id": "m1", "server": "javis", "tool": "pos_stats",
+ei = codex_steer.exec_item({"type": "mcpToolCall", "id": "m1", "server": "unimate", "tool": "pos_stats",
                             "arguments": {"a": 1}, "status": "inProgress"})
 check("mcpToolCall reads as mcp_tool_call", ei["type"] == "mcp_tool_call" and ei["tool"] == "pos_stats"
       and ei["status"] == "in_progress")
@@ -78,7 +78,7 @@ cli0.steer = False
 check("not for an engine that is not the chat engine", not codex_steer.wanted(cli0))
 cli0.steer = True
 os.environ[codex_steer.ENV_SWITCH] = "0"
-check("JAVIS_CODEX_STEER=0 turns it off", not codex_steer.wanted(cli0))
+check("UNIMATE_CODEX_STEER=0 turns it off", not codex_steer.wanted(cli0))
 del os.environ[codex_steer.ENV_SWITCH]
 si.INBOX.close("w0", token=tok)
 
@@ -168,16 +168,16 @@ if os.name == "nt":
     (TMP / "codex.cmd").write_text(f'@"{sys.executable}" "{fake}" %*\r\n', encoding="utf-8")
     fake = TMP / "codex.cmd"
 os.environ["FAKE_ARGV"] = str(TMP / "argv.jsonl")
-(TMP / "codex-home" / "javis.config.toml").write_text(
-    '[mcp_servers.javis]\nurl = "http://127.0.0.1:7777/hub/mcp"\nstartup_timeout_sec = 20\n'
-    '[mcp_servers.javis.http_headers]\n"Authorization" = "Bearer tok"\n"X-Javis-Mode" = "full"\n', encoding="utf-8")
+(TMP / "codex-home" / "unimate.config.toml").write_text(
+    '[mcp_servers.unimate]\nurl = "http://127.0.0.1:7777/hub/mcp"\nstartup_timeout_sec = 20\n'
+    '[mcp_servers.unimate.http_headers]\n"Authorization" = "Bearer tok"\n"X-UniMate-Mode" = "full"\n', encoding="utf-8")
 
 
 def new_cli(**kw):
     c = CodexCLI(cwd=str(TMP), tag="chat:t:1", model="gpt-5.5")
     c.cli_path = str(fake)
     c.steer = True
-    c.profile = "javis"
+    c.profile = "unimate"
     c.transport = "ws"
     for k, v in kw.items():
         setattr(c, k, v)
@@ -219,8 +219,8 @@ check("app-server: the message sent while the command ran reached the same turn"
 argv = rows[0] if rows else []
 check("app-server: started as app-server with the profile as -c, never -p",
       argv[-1:] == ["app-server"] and "-p" not in argv
-      and 'mcp_servers.javis.url="http://127.0.0.1:7777/hub/mcp"' in argv
-      and 'mcp_servers.javis.http_headers.X-Javis-Mode="full"' in argv)
+      and 'mcp_servers.unimate.url="http://127.0.0.1:7777/hub/mcp"' in argv
+      and 'mcp_servers.unimate.http_headers.X-UniMate-Mode="full"' in argv)
 tstart = next((r["thread/start"] for r in rows if isinstance(r, dict) and "thread/start" in r), {})
 check("app-server: model, sandbox and approval go in thread/start",
       tstart.get("model") == "gpt-5.5" and tstart.get("sandbox") == "danger-full-access"
@@ -279,7 +279,7 @@ check("background work stays on exec", any(e.get("content") == "EXEC PATH" for e
 # ---- 0.382.0: streamed text, instructions once, a warm process for the next turn ----
 import warm_pool  # noqa: E402
 
-os.environ["JAVIS_WARM_BUDGET_MB"] = "500"
+os.environ["UNIMATE_WARM_BUDGET_MB"] = "500"
 os.environ["FAKE_NO_CMD"] = "1"
 os.environ["FAKE_DELTA"] = "1"
 
@@ -298,8 +298,8 @@ async def turns(*clis):
     return out, st
 
 
-(r1, r2), st = asyncio.run(turns({"instructions": "LUAT JAVIS", "warm_key": "conv-w"},
-                                 {"instructions": "LUAT JAVIS", "warm_key": "conv-w"}))
+(r1, r2), st = asyncio.run(turns({"instructions": "LUAT UNI MATE", "warm_key": "conv-w"},
+                                 {"instructions": "LUAT UNI MATE", "warm_key": "conv-w"}))
 rows = argv_log()
 spawns = [r for r in rows if isinstance(r, list) and r[-1:] == ["app-server"]]
 tstart = [r["thread/start"] for r in rows if isinstance(r, dict) and "thread/start" in r]
@@ -308,9 +308,9 @@ check("deltas: the answer arrives piece by piece and is not sent again as a bloc
       [e["content"] for e in r1 if e["type"] == "text"] == ["DO", "NE"])
 check("deltas: final still carries the whole answer", any(e.get("content") == "DONE" for e in r1 if e["type"] == "final"))
 check("instructions go once, as developerInstructions of thread/start",
-      len(tstart) == 1 and tstart[0].get("developerInstructions") == "LUAT JAVIS")
+      len(tstart) == 1 and tstart[0].get("developerInstructions") == "LUAT UNI MATE")
 check("the message itself no longer carries the instructions",
-      len(tturns) == 2 and all("LUAT JAVIS" not in json.dumps(t["input"]) for t in tturns))
+      len(tturns) == 2 and all("LUAT UNI MATE" not in json.dumps(t["input"]) for t in tturns))
 check("warm: the second turn runs on the same process (one spawn, no resume, two turns)",
       len(spawns) == 1 and not any(isinstance(r, dict) and "thread/resume" in r for r in rows))
 check("warm: the second turn says it was warm and has its own answer",
@@ -318,10 +318,10 @@ check("warm: the second turn says it was warm and has its own answer",
       and any(e.get("content") == "DONE" for e in r2 if e["type"] == "final"))
 check("warm: the pool held one codex slot and served one hit", st["hits"] == 1 and st["admitted"] == 1)
 
-(r1,), st = asyncio.run(turns({"instructions": "LUAT JAVIS", "session_id": "old-thread"}))
+(r1,), st = asyncio.run(turns({"instructions": "LUAT UNI MATE", "session_id": "old-thread"}))
 tturns = [r["turn/start"] for r in argv_log() if isinstance(r, dict) and "turn/start" in r]
 check("a thread from before 0.382.0 (rules only in its first message) still gets them in front of the message",
-      len(tturns) == 1 and json.dumps(tturns[0]["input"], ensure_ascii=False).count("LUAT JAVIS") == 1)
+      len(tturns) == 1 and json.dumps(tturns[0]["input"], ensure_ascii=False).count("LUAT UNI MATE") == 1)
 check("a thread opened with developerInstructions is on record", codex_steer.carries_instructions("th1")
       and not codex_steer.carries_instructions("old-thread"))
 
@@ -335,12 +335,12 @@ argv_log()
 check("a turn that ran a shell command hands its process back (adoption on POSIX, Stop on Windows)",
       st["slots"] == [] and any(e["type"] == "final" for e in r1))
 
-os.environ["JAVIS_WARM_BUDGET_MB"] = "0"
+os.environ["UNIMATE_WARM_BUDGET_MB"] = "0"
 os.environ["FAKE_NO_CMD"] = "1"
 (r1,), st = asyncio.run(turns({"warm_key": "conv-z"}))
 argv_log()
 check("budget 0 turns the pool off", st["slots"] == [] and any(e["type"] == "final" for e in r1))
-for k in ("JAVIS_WARM_BUDGET_MB", "FAKE_NO_CMD", "FAKE_DELTA"):
+for k in ("UNIMATE_WARM_BUDGET_MB", "FAKE_NO_CMD", "FAKE_DELTA"):
     os.environ.pop(k, None)
 
 # ---- wiring ----

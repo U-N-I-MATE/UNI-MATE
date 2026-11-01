@@ -31,7 +31,7 @@ const win = { t: (k, v) => k + (v ? "#" + Object.keys(v).map((x) => v[x]).join("
 const ctx = { window: win, console, String, Object, Array, Number, JSON };
 vm.createContext(ctx);
 vm.runInContext(V5SRC, ctx);
-const V = win.JavisInboxV5;
+const V = win.UniMateInboxV5;
 
 // ---- 1. composer ----
 const COMP = fnBody("function veCompose(c) {");

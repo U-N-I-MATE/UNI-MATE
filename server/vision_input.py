@@ -5,7 +5,7 @@ Owner decision (2026-10-05): no second model "describing" the photo for the bot 
 300 MB) and sent as image input in the SAME turn to whatever model runs the bot. A model that cannot see images gets a description
 written by another connected brain (borrowed_eyes.py, 0.94.0), or the old honest label when no brain can look; it never guesses.
 
-The neutral shape inside Javis is the OpenAI Chat Completions content list, because six providers already speak it natively
+The neutral shape inside UNI MATE is the OpenAI Chat Completions content list, because six providers already speak it natively
 (OpenAI, Gemini's OpenAI endpoint, Groq, Ollama, OpenAI-compatible, OpenRouter):
     [{"type": "text", "text": "..."}, {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}}]
 Only the last user message of a turn ever carries it; history keeps plain text, so nothing heavy is resent on later turns.

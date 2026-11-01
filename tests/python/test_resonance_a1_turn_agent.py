@@ -21,8 +21,8 @@ import types
 import uuid
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-resonance-a1t-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-resonance-a1t-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 import main  # noqa: E402
 import luot_dang_chay  # noqa: E402

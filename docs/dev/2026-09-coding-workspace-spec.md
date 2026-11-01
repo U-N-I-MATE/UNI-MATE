@@ -19,9 +19,9 @@ Tài liệu cho người sửa lõi.
 
 ## 1. Vì sao
 
-Javis đã chạy được Claude Code, Codex, Grok Build, Antigravity qua CLI thật, cộng sáu engine
+UNI MATE đã chạy được Claude Code, Codex, Grok Build, Antigravity qua CLI thật, cộng sáu engine
 API qua `server/engine.py`. Cái thiếu không phải năng lực coding mà là **một chỗ để làm việc
-coding**: hôm nay muốn sai Javis sửa một repo thì phải nói trong khung chat chung, không chỗ
+coding**: hôm nay muốn sai UNI MATE sửa một repo thì phải nói trong khung chat chung, không chỗ
 nào ghi đang làm ở repo nào nhánh nào quyền tới đâu, và mở hai việc song song trên cùng repo
 là giẫm chân nhau.
 
@@ -54,7 +54,7 @@ Nên bề mặt mã THẬT SỰ mới chỉ còn ba thứ: **sổ repo**, **hàn
 Luật này không mới, nó đã nằm trong `console.js` từ lần làm tab Thư mục:
 
 > Không dựng lại cây thứ hai. Bản đầu của tính năng này viết hẳn một module cây riêng, và chủ
-> repo chỉ ra ngay: "sao không bê nguyên cái cây y hệt bên Javis sang mà phải dựng lại". Đúng
+> repo chỉ ra ngay: "sao không bê nguyên cái cây y hệt bên UNI MATE sang mà phải dựng lại". Đúng
 > [...] Dựng bản thứ hai là chép lại từng đó thứ rồi để hai bản trôi lệch nhau.
 
 Bảng dưới là **khế ước**. Không viết bản thứ hai của bất kỳ dòng nào bên phải.
@@ -63,7 +63,7 @@ Bảng dưới là **khế ước**. Không viết bản thứ hai của bất k
 |---|---|
 | Khung chat (stream, tool call, đính kèm, giọng nói) | `_borrowChatNodes` (`console.js`) |
 | Danh sách phiên, ghim, đổi tên, tìm | `sessions-ui.js`, lọc theo kênh `coding:` |
-| Cây thư mục repo | `JavisVaultPanel.borrow(host)` (`console.js:7005`) |
+| Cây thư mục repo | `UniMateVaultPanel.borrow(host)` (`console.js:7005`) |
 | Xem sửa file, tô màu cú pháp | `file-editor.js` + `code-hl.js` |
 | Terminal trong phiên | `code-term.js` |
 | Chọn engine và model | `model-picker.js` + `model-list.js` |
@@ -86,16 +86,16 @@ Bốn chỗ khai báo, mỗi chỗ một dòng, đúng như comment trong `code-
 
 ### 4.2 Sổ repo
 
-`server/coding_store.py`, một file JSON trong `JAVIS_STATE_DIR`, khoá theo brain:
+`server/coding_store.py`, một file JSON trong `UNIMATE_STATE_DIR`, khoá theo brain:
 
 ```json
 {
   "repos": [
-    {"id": "javis-os", "ten": "javis-os", "duong_dan": "/home/user/javis-os", "nhanh_goc": "main"}
+    {"id": "UNI-MATE", "ten": "UNI-MATE", "duong_dan": "/home/user/UNI-MATE", "nhanh_goc": "main"}
   ],
   "phien": {
-    "<session id>": {"repo": "javis-os", "nhanh": "main", "worktree": "/var/javis/wt/ab12",
-                     "muc_quyen": "full", "diem_hoi": "javis/ab12/3"}
+    "<session id>": {"repo": "UNI-MATE", "nhanh": "main", "worktree": "/var/unimate/wt/ab12",
+                     "muc_quyen": "full", "diem_hoi": "unimate/ab12/3"}
   }
 }
 ```
@@ -108,10 +108,10 @@ lý do, không im lặng nhận.
 Nằm ngay TRÊN ô nhập, không phải ở header. Đây là chỗ điều khiển chứ không phải chỗ hiển thị:
 
 ```text
-[ javis-os ▾ ]  [ main ▾ ]  [ ☑ worktree ]  [ Bypass ▾ ]  [ Claude Code · Opus ▾ ]
+[ UNI-MATE ▾ ]  [ main ▾ ]  [ ☑ worktree ]  [ Bypass ▾ ]  [ Claude Code · Opus ▾ ]
 ```
 
-Chip Engine mở thẳng `model-picker.js` đang có. Chip Mức quyền dùng lại ba mức của Javis
+Chip Engine mở thẳng `model-picker.js` đang có. Chip Mức quyền dùng lại ba mức của UNI MATE
 (`suggest` / `auto` / `full`), không đặt tên mới. Đổi giữa chừng được, áp dụng từ lượt sau.
 
 ### 4.4 Chạy engine trong repo
@@ -131,7 +131,7 @@ không đẩy xuống sau.
 - **Worktree**: mode `full` thì mặc định bật, hai mức kia mặc định tắt. `git worktree add` đặt
   ngoài cây repo chính, tên theo phiên. Đóng phiên mà worktree sạch thì dọn; còn sửa dở thì
   giữ và nói trong chat là giữ ở đâu.
-- **Điểm hồi**: trước mỗi lượt ở mode `full`, tạo một tag `javis/<phiên>/<n>` trên HEAD hiện
+- **Điểm hồi**: trước mỗi lượt ở mode `full`, tạo một tag `unimate/<phiên>/<n>` trên HEAD hiện
   tại. Rollback là `git reset --hard <tag>`, hiện thành một nút trong lượt đó.
 - **Không bao giờ** force push, và không bao giờ đụng nhánh không thuộc phiên.
 
@@ -266,20 +266,20 @@ Giữ lại vì lý do từ chối bền hơn thứ bị từ chối:
 - **Một tầng Handoff Layer riêng.** `conversation_state.py` đã là Working State. Chữ "handoff"
   cũng giữ nghĩa cũ (bot bàn giao cho người, `chatbot_store` / `chatbot_runtime`); việc đổi
   engine gọi là bàn giao phiên.
-- **Ép model chỉ có API qua Codex CLI.** v0.1 xếp đây là đường ưu tiên và runtime Javis là
-  fallback. Đảo lại: runtime Javis đang chạy thật, Codex-as-harness là giả định chưa kiểm
+- **Ép model chỉ có API qua Codex CLI.** v0.1 xếp đây là đường ưu tiên và runtime UNI MATE là
+  fallback. Đảo lại: runtime UNI MATE đang chạy thật, Codex-as-harness là giả định chưa kiểm
   chứng, hạ xuống một thử nghiệm một ngày.
 - **IDE, editor phức tạp, terminal UI nặng.** Đã có `file-editor.js` và Terminal.
 - **Sao chép toàn bộ transcript làm bản bàn giao.**
-- **Self-improve / ASA trong tài liệu này.** Javis đã có trang `selfimprove` riêng. Nếu làm,
+- **Self-improve / ASA trong tài liệu này.** UNI MATE đã có trang `selfimprove` riêng. Nếu làm,
   ràng buộc cứng: chỉ chạy trong worktree riêng, chỉ mở PR, không tự merge, không tự deploy
-  `javis-os`.
+  `UNI-MATE`.
 
 ---
 
 ## 12. North Star
 
-> Một Javis. Nhiều engine. Người dùng chọn engine, Javis lo phần còn lại.
+> Một UNI MATE. Nhiều engine. Người dùng chọn engine, UNI MATE lo phần còn lại.
 
 ---
 
@@ -291,8 +291,8 @@ Ghi lại vì cả ba lượt đều là CÙNG một loại sai, và loại đó
 - **0.63.1** bỏ màn chặn "Chưa có repo nào" (một bước cài đặt dựng chắn trước một trang CHAT),
   và đổi REPO thành THƯ MỤC (git là thứ đọc ra, không phải điều kiện vào cửa).
 - **0.63.2** thay danh sách phiên tự vẽ bằng chính cột hội thoại của trang Trò chuyện
-  (`JavisChatSide.mount`), và thêm chế độ Plan.
-- **0.63.4** thay ô gõ đường dẫn bằng hộp duyệt thư mục `JavisFolderPicker`, mặc lại bộ lớp
+  (`UniMateChatSide.mount`), và thêm chế độ Plan.
+- **0.63.4** thay ô gõ đường dẫn bằng hộp duyệt thư mục `UniMateFolderPicker`, mặc lại bộ lớp
   `.folder-modal/.fm-*` và endpoint `GET /browse` đã có; `/browse` thêm `md=0` (bỏ đếm .md) và
   cờ `git` cho từng thư mục con. Icon mục đổi sang `code-xml`.
 

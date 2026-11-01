@@ -7,7 +7,7 @@
 
    Hai đường chép, thử lần lượt:
    1. navigator.clipboard - chỉ sống trong ngữ cảnh bảo mật (https hoặc localhost).
-   2. một <textarea> ẩn + document.execCommand("copy") - đường DUY NHẤT còn chạy khi Javis
+   2. một <textarea> ẩn + document.execCommand("copy") - đường DUY NHẤT còn chạy khi UNI MATE
       phục vụ qua http trần trên mạng nội bộ hay trên VPS chưa gắn tên miền, tức là đúng
       cảnh dùng thật của phần lớn người dùng.
    Hỏng cả hai thì bày chuỗi ra trong prompt() để người dùng tự bôi đen - thà xấu còn hơn
@@ -91,5 +91,5 @@
     return quaApi(s).then(function () { nhay(btn, true); return true; }).catch(lui);
   }
 
-  window.JavisCopy = chep;
+  window.UniMateCopy = chep;
 })();

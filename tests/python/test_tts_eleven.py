@@ -2,7 +2,7 @@
 
     python tests/python/test_tts_eleven.py
 
-Owner, 2026-10-20: "đang thiếu mất ElevenLabs để làm giọng của Javis". No network: httpx is replaced
+Owner, 2026-10-20: "đang thiếu mất ElevenLabs để làm giọng của UNI MATE". No network: httpx is replaced
 by a fake client that records what would be sent to api.elevenlabs.io.
 """
 from _paths import ROOT, SERVER  # noqa: E402,F401
@@ -11,7 +11,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-eleven-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-eleven-"))
 
 import httpx  # noqa: E402
 
@@ -134,7 +134,7 @@ import voice_note  # noqa: E402
 
 FakeClient.post_resp = FakeResp(200, b"ID3note")
 main.cfgmod.read_settings = lambda: cfg
-vault = tempfile.mkdtemp(prefix="javis-eleven-vault-")
+vault = tempfile.mkdtemp(prefix="unimate-eleven-vault-")
 r = run(voice_note.make(vault, "Nhắc anh: 3 giờ chiều họp với nhà cung cấp"))
 check("voice note: ElevenLabs chosen -> the note is ElevenLabs audio",
       r["ok"] and open(os.path.join(vault, r["rel_path"]), "rb").read() == b"ID3note", r)

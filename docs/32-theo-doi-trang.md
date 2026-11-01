@@ -2,7 +2,7 @@
 
 ***Tiếng Việt** · [English](en/32-page-watch.md)*
 
-Từ 0.239.0 Javis canh được một trang web theo lịch mà **không tốn token**. Mỗi lượt canh Javis chỉ tải trang và so chữ với lần trước, không gọi AI. Có chuyện mới thì báo về khung chat và hòm thư.
+Từ 0.239.0 UNI MATE canh được một trang web theo lịch mà **không tốn token**. Mỗi lượt canh UNI MATE chỉ tải trang và so chữ với lần trước, không gọi AI. Có chuyện mới thì báo về khung chat và hòm thư.
 
 Dùng khi việc cần làm chỉ là canh một trang: giá bên đối thủ, offer mới trên WarriorPlus, trang chính sách quảng cáo, hàng về. Trước đây phải dựng loop, mà mỗi vòng loop là một lượt gọi AI.
 
@@ -14,7 +14,7 @@ Dùng khi việc cần làm chỉ là canh một trang: giá bên đối thủ, 
 
 ## Tạo bằng lời trong chat
 
-Nói với Javis như: "canh giúp anh trang này, giá áo xuống dưới 900k thì báo" kèm đường link. Javis dùng tool `javis_watch` và báo lại mã mục theo dõi. Mọi engine đều dùng được.
+Nói với UNI MATE như: "canh giúp anh trang này, giá áo xuống dưới 900k thì báo" kèm đường link. UNI MATE dùng tool `unimate_watch` và báo lại mã mục theo dõi. Mọi engine đều dùng được.
 
 ## Tạo trên trang Việc định kỳ
 
@@ -25,7 +25,7 @@ Nói với Javis như: "canh giúp anh trang này, giá áo xuống dưới 900k
 
 Mỗi mục có nút **Canh ngay**, **Tạm dừng** / **Mở lại** và **Xoá**. Thẻ hiện số lần đã canh, lần báo gần nhất và lỗi gần nhất nếu có.
 
-## Javis đọc được những kiểu giá nào
+## UNI MATE đọc được những kiểu giá nào
 
 `1.250.000đ`, `990.000 ₫`, `2.000.000 VND`, `4.500.000 đồng`, `1,25 triệu`, `1tr2`, `250k`, `99K`, `$12.99`, `1,299.00 USD`. Ngưỡng ghi theo kiểu nào cũng được. Ngưỡng bằng đồng chỉ so với giá bằng đồng, ngưỡng bằng đô chỉ so với giá bằng đô.
 
@@ -38,22 +38,22 @@ Mỗi mục có nút **Canh ngay**, **Tạm dừng** / **Mở lại** và **Xoá
 
 ## Khi trang lỗi
 
-Javis giãn dần lần thử: 2, 4, 8, 16 phút, tối đa 60 phút. Lỗi **5 lần liền** thì tự tạm dừng mục đó và báo bạn **đúng một lần**. Trang chạy lại thì bấm **Mở lại**.
+UNI MATE giãn dần lần thử: 2, 4, 8, 16 phút, tối đa 60 phút. Lỗi **5 lần liền** thì tự tạm dừng mục đó và báo bạn **đúng một lần**. Trang chạy lại thì bấm **Mở lại**.
 
 ## Tóm tắt bằng AI (tuỳ chọn)
 
-Tick **Tóm tắt thay đổi bằng AI** thì mỗi lần có thay đổi Javis gọi model nền **một lần** để nói thay đổi đó có ý nghĩa gì. Mặc định tắt. Model chỉ nhận chữ, không có công cụ nào, và được dặn coi nội dung trang là dữ liệu chứ không phải chỉ dẫn.
+Tick **Tóm tắt thay đổi bằng AI** thì mỗi lần có thay đổi UNI MATE gọi model nền **một lần** để nói thay đổi đó có ý nghĩa gì. Mặc định tắt. Model chỉ nhận chữ, không có công cụ nào, và được dặn coi nội dung trang là dữ liệu chứ không phải chỉ dẫn.
 
 ## Giới hạn
 
-- Javis đọc chữ của trang như trình duyệt tải về lần đầu. Trang chỉ hiện nội dung sau khi chạy JavaScript (một số sàn, trang cần đăng nhập) thì Javis không thấy phần đó. Khi ấy dùng loop với công cụ trình duyệt.
+- UNI MATE đọc chữ của trang như trình duyệt tải về lần đầu. Trang chỉ hiện nội dung sau khi chạy JavaScript (một số sàn, trang cần đăng nhập) thì UNI MATE không thấy phần đó. Khi ấy dùng loop với công cụ trình duyệt.
 - Trang có đồng hồ, mã chống bot hay quảng cáo đổi liên tục có thể báo "thay đổi" khá thường. Chuyển sang kiểu **Xuất hiện cụm chữ** hoặc **Có giá dưới ngưỡng** cho chắc.
 - Chỉ theo dõi được trang công khai ở cổng 80 hoặc 443. Địa chỉ trỏ vào mạng nội bộ (máy chủ của bạn, router, máy ảo đám mây) bị chặn, kể cả khi trang công khai chuyển hướng vào đó.
 - Báo về khung chat web và hòm thư. Muốn nhận trên điện thoại thì nối Telegram hoặc Zalo, xem [Telegram](11-telegram.md).
 
 ## Dữ liệu nằm ở đâu
 
-File `web_watch.sqlite3` trong thư mục state của Javis (`JAVIS_STATE_DIR`), cạnh `kanban.sqlite3`.
+File `web_watch.sqlite3` trong thư mục state của UNI MATE (`UNIMATE_STATE_DIR`), cạnh `kanban.sqlite3`.
 
 ## Liên quan
 

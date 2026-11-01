@@ -5,7 +5,7 @@ import os
 import tempfile
 from unittest.mock import patch
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-oc-connect-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-oc-connect-")
 
 import config as cfg  # noqa: E402
 import main  # noqa: E402

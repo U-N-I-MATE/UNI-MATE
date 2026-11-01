@@ -74,10 +74,10 @@ check("xem trước: chữ thường giữ nguyên", M.tomTat("chào shop", tw) 
 h = M.html({ anh: 'https://a.b/x.jpg" onload="alert(1)', file: null }, esc, ic, tw);
 check("CANARY: link ảnh được escape, không chèn được thuộc tính", h.indexOf('" onload="') < 0, h);
 
-// ---- 7. 0.231.0: a photo opens inside Javis (lightbox), not in a new tab ----
+// ---- 7. 0.231.0: a photo opens inside UNI MATE (lightbox), not in a new tab ----
 const src = fs.readFileSync(path.join(__dirname, "../../dashboard/ht-media.js"), "utf8");
-check("bấm ảnh mở lightbox trong Javis, Ctrl/Cmd/chuột giữa vẫn mở thẻ mới",
-  /closest\("a\.ht-anh"\)/.test(src) && /window\.JavisLightbox\.open\(href, tenAnh\(href\)\)/.test(src)
+check("bấm ảnh mở lightbox trong UNI MATE, Ctrl/Cmd/chuột giữa vẫn mở thẻ mới",
+  /closest\("a\.ht-anh"\)/.test(src) && /window\.UniMateLightbox\.open\(href, tenAnh\(href\)\)/.test(src)
   && /e\.ctrlKey \|\| e\.metaKey/.test(src) && /addEventListener\("click", function \(e\) \{[\s\S]*?\}, true\);/.test(src));
 check("ảnh hỏng thì để link tự mở", /classList\.contains\("hong"\)/.test(src));
 check("tên ảnh lấy từ ?p= của đường /media", M.tenAnh("/conversations/c1/media?p=%2Fdata%2Fb%2Finbox%2Fanh-khach.jpg") === "anh-khach.jpg");

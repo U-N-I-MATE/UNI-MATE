@@ -3,15 +3,15 @@
     python tests/python/test_telegram_agent.py        (no network, scratch brains)
 
 Customer report 0.270 (Code 24): "@TEST-Thẩm định viên ..." over Telegram got an answer from main
-Javis and the partner's run log had no turn; /agents only listed agents. Pinned here, through the
+UNI MATE and the partner's run log had no turn; /agents only listed agents. Pinned here, through the
 real owner bot functions and the real shell (`_tg_answer`), with only the model engine faked:
   1. Mention parsing: name or slug, case and diacritics insensitive, longest name wins, the bot's
      own @username is skipped, several agents with one name is ambiguous, no match is unknown.
   2. A whitelisted chat that writes `@<agent> ...` gets a turn of THAT agent (its prompt, model,
      own session, run log, lesson lines stripped), and the reply names the agent.
   3. Unknown or ambiguous mention: the list is the answer, before any turn runs.
-  4. /agent <name> makes the agent answer the whole chat, `@javis` asks Javis once, /agent off goes
-     back to Javis; /reset also resets the agent's session.
+  4. /agent <name> makes the agent answer the whole chat, `@unimate` asks UNI MATE once, /agent off goes
+     back to UNI MATE; /reset also resets the agent's session.
   5. A chat that is not on the whitelist (or an empty whitelist) never reaches an agent, and the
      customer-facing bot accounts never get the owner functions.
 """
@@ -23,8 +23,8 @@ import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-tg-agent-")
-os.environ["BRAINS_DIR"] = tempfile.mkdtemp(prefix="javis-tg-agent-brains-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-tg-agent-")
+os.environ["BRAINS_DIR"] = tempfile.mkdtemp(prefix="unimate-tg-agent-brains-")
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -84,7 +84,7 @@ class FakeClaude:
         FakeClaude.runs.append({"system_prompt": self.system_prompt, "model": self.model,
                                 "prompt": prompt, "engine": id(self)})
         yield {"type": "text", "content": "Done."}
-        yield {"type": "final", "content": "Done.\nJAVIS_LESSON: " + LESSON,
+        yield {"type": "final", "content": "Done.\nUNIMATE_LESSON: " + LESSON,
                "session_id": "fake-1", "tokens_in": 1, "tokens_out": 1, "cost_usd": 0}
 
 
@@ -102,7 +102,7 @@ main._get_adaptive_context = lambda: Recorder()
 main.claude_engine = lambda **kw: FakeClaude(**kw)
 main._apply_mcp = lambda *a, **k: None
 main._chat_provider = lambda mcfg: ("anthropic-cli", "cli", "", "opus")
-main.build_system_prompt = lambda *a, **k: "JAVIS MAIN PROMPT"
+main.build_system_prompt = lambda *a, **k: "UNI MATE MAIN PROMPT"
 main.usage_store.record = lambda *a, **k: None
 main.channel_context.collect_turn_files = lambda *a, **k: []
 main._schedule_cancel_action = _none
@@ -110,7 +110,7 @@ main.learn_feature.enqueue = _none
 
 
 def answer(text, chat=OWNER):
-    return asyncio.run(main._tg_owner_answer(text, {"chat_id": chat, "bot_username": "my_javis_bot"}))
+    return asyncio.run(main._tg_owner_answer(text, {"chat_id": chat, "bot_username": "my_unimate_bot"}))
 
 
 def command(cmd, arg="", chat=OWNER):
@@ -136,15 +136,15 @@ check("mention: the longest name wins (Writer Pro over Writer)", kind == "agent"
 kind, hits, rest = main._tg_agent_mention("@writer, draft a post", ROWS)
 check("mention: the shorter name still works", kind == "agent" and hits[0]["slug"] == "writer"
       and rest == "draft a post", (kind, hits, rest))
-kind, hits, rest = main._tg_agent_mention("@my_javis_bot @Writer hi", ROWS, "my_javis_bot")
+kind, hits, rest = main._tg_agent_mention("@my_unimate_bot @Writer hi", ROWS, "my_unimate_bot")
 check("mention: the bot's own @username in front is skipped", kind == "agent"
       and hits[0]["slug"] == "writer" and rest == "hi", (kind, rest))
 kind, hits, _ = main._tg_agent_mention("@Twin hello", ROWS)
 check("mention: two agents with one name is ambiguous", kind == "ambiguous" and len(hits) == 2, (kind, hits))
 kind, _, _ = main._tg_agent_mention("@Nobody hello", ROWS)
 check("mention: no such agent is unknown", kind == "unknown", kind)
-kind, _, rest = main._tg_agent_mention("@javis what time is it", ROWS)
-check("mention: @javis is Javis itself", kind == "javis" and rest == "what time is it", (kind, rest))
+kind, _, rest = main._tg_agent_mention("@unimate what time is it", ROWS)
+check("mention: @unimate is UNI MATE itself", kind == "unimate" and rest == "what time is it", (kind, rest))
 kind, _, rest = main._tg_agent_mention("hello @Writer", ROWS)
 check("mention: only a LEADING mention counts", kind == "" and rest == "hello @Writer", (kind, rest))
 check("pick by name: exact only, no partial guess",
@@ -157,14 +157,14 @@ check("pick by name: exact only, no partial guess",
 out = answer("@TEST-Thẩm định viên đánh giá giúp bản đề xuất")
 run = FakeClaude.runs[-1] if FakeClaude.runs else {}
 sp = run.get("system_prompt") or ""
-check("agent turn: the agent's role body is the prompt", "APPRAISER ROLE BODY" in sp and "JAVIS MAIN PROMPT" not in sp,
+check("agent turn: the agent's role body is the prompt", "APPRAISER ROLE BODY" in sp and "UNI MATE MAIN PROMPT" not in sp,
       sp[:200])
 check("agent turn: the closing channel line names Telegram", "qua Telegram" in sp, sp[-400:])
 check("agent turn: runs on the agent's model", run.get("model") == "sonnet", run.get("model"))
 check("agent turn: the mention is stripped from what the agent receives",
       "@TEST" not in str(run.get("prompt")) and "đánh giá giúp bản đề xuất" in str(run.get("prompt")), run.get("prompt"))
 check("agent turn: the reply names the agent and has no lesson line",
-      isinstance(out, dict) and out["text"].startswith("🤝 TEST-Thẩm định viên") and "JAVIS_LESSON" not in out["text"],
+      isinstance(out, dict) and out["text"].startswith("🤝 TEST-Thẩm định viên") and "UNIMATE_LESSON" not in out["text"],
       out)
 _runs_dir = main._brain_memory_dir(BRAIN) / "agents" / "test-tham-dinh-vien" / "runs"
 _runs = "".join(f.read_text(encoding="utf-8") for f in _runs_dir.glob("*.md")) if _runs_dir.is_dir() else ""
@@ -176,7 +176,7 @@ check("agent turn: /retry resends the message as written",
       main._tg_session(OWNER).get("last") == "@TEST-Thẩm định viên đánh giá giúp bản đề xuất")
 
 out = answer("plain question")
-check("no mention, nothing picked: Javis answers", "JAVIS MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"]
+check("no mention, nothing picked: UNI MATE answers", "UNI MATE MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"]
       and not out["text"].startswith("🤝"), out)
 
 # ================================================================
@@ -202,8 +202,8 @@ check("/agent <name>: picked", "TEST-Thẩm định viên" in res.get("reply", "
       and main._TG_AGENT_MAP.get(OWNER, {}).get("slug") == "test-tham-dinh-vien", res)
 answer("next message without a mention")
 check("/agent: a plain message now goes to the agent", "APPRAISER ROLE BODY" in FakeClaude.runs[-1]["system_prompt"])
-answer("@javis quick question")
-check("/agent: @javis still asks Javis once", "JAVIS MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"])
+answer("@unimate quick question")
+check("/agent: @unimate still asks UNI MATE once", "UNI MATE MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"])
 answer("@Writer one for the writer")
 check("/agent: a mention of another agent wins for that message",
       "WRITER ROLE BODY" in FakeClaude.runs[-1]["system_prompt"])
@@ -222,16 +222,16 @@ _k = OWNER + "@test-tham-dinh-vien"
 check("/reset also starts the agent conversation over", not main._TG_SID_MAP.get(_k)
       and main._tg_session(_k).get("sid") is None)
 res = command("agent", "off")
-check("/agent off: back to Javis", OWNER not in main._TG_AGENT_MAP and "Javis" in res.get("reply", ""), res)
+check("/agent off: back to UNI MATE", OWNER not in main._TG_AGENT_MAP and "UNI MATE" in res.get("reply", ""), res)
 answer("after off")
-check("/agent off: Javis answers", "JAVIS MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"])
+check("/agent off: UNI MATE answers", "UNI MATE MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"])
 
-# A pick whose agent is gone is dropped with a notice instead of silently answering as Javis.
+# A pick whose agent is gone is dropped with a notice instead of silently answering as UNI MATE.
 command("agent", "writer-pro")
 (Path(BRAIN) / "agents" / "writer-pro.md").unlink()
 out = answer("still there?")
-check("deleted agent: Javis answers and says the pick was dropped",
-      "JAVIS MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"] and "writer-pro" in out["text"]
+check("deleted agent: UNI MATE answers and says the pick was dropped",
+      "UNI MATE MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"] and "writer-pro" in out["text"]
       and OWNER not in main._TG_AGENT_MAP, out)
 check("/help mentions /agent and @<name>", "/agent" in command("help").get("reply", ""))
 
@@ -239,7 +239,7 @@ check("/help mentions /agent and @<name>", "/agent" in command("help").get("repl
 # 5. Only the owner's whitelisted chats
 # ================================================================
 out = answer("@TEST-Thẩm định viên hi", chat=STRANGER)
-check("not whitelisted: no agent turn", "JAVIS MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"])
+check("not whitelisted: no agent turn", "UNI MATE MAIN PROMPT" in FakeClaude.runs[-1]["system_prompt"])
 check("not whitelisted: precheck does not reveal the agent list",
       main._tg_owner_precheck("@Nobody hi", {"chat_id": STRANGER}) is None)
 res = command("agent", "writer", chat=STRANGER)

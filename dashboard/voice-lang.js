@@ -26,7 +26,7 @@
 
   // Letters that only Vietnamese uses among Latin scripts (đ, ư, ơ and the stacked tone marks).
   var VI_ONLY = /[đĐưƯơƠăĂ]|[ạảấầẩẫậắằẳẵặẹẻẽếềểễệỉĩịọỏốồổỗộớờởỡợụủũứừửữựỳỵỷỹ]/i;
-  // Marks Vietnamese shares with French or Spanish ("Chào anh, em là Javis." has only à). Dense
+  // Marks Vietnamese shares with French or Spanish ("Chào anh, em là UNI MATE." has only à). Dense
   // enough, and with no letter those languages have and Vietnamese lacks, they still mean Vietnamese.
   var VI_SHARED = /[àáâãèéêìíòóôõùúý]/gi;
   var NOT_VI = /[çœëïÿñßüöä¿¡]/i;
@@ -57,7 +57,7 @@
 
   function voiceFor(lang, fallback) { return VOICES[lang] || fallback || VOICES.en; }
 
-  // One tracker per JavisVoice. `start` is the language to read in before anything is detected.
+  // One tracker per UniMateVoice. `start` is the language to read in before anything is detected.
   function Tracker(start) {
     this.lang = VOICES[start] ? start : "vi";
     this.candidate = "";
@@ -90,6 +90,6 @@
   };
 
   var api = { VOICES: VOICES, detect: detect, words: words, voiceFor: voiceFor, Tracker: Tracker };
-  if (typeof window !== "undefined") window.JavisVoiceLang = api;
+  if (typeof window !== "undefined") window.UniMateVoiceLang = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

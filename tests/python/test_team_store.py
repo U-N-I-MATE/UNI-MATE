@@ -9,7 +9,7 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-store-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-store-")
 
 import team_store as TS  # noqa: E402
 
@@ -22,7 +22,7 @@ def check(name, cond, extra=""):
         fails.append(name)
 
 
-st = TS.TeamStore(Path(os.environ["JAVIS_STATE_DIR"]) / "team.sqlite3")
+st = TS.TeamStore(Path(os.environ["UNIMATE_STATE_DIR"]) / "team.sqlite3")
 B = "D:/brain-a"
 
 # ───────────── nhóm và thành viên ─────────────
@@ -62,7 +62,7 @@ st.add_member(t1["team_id"], "ag_lan", "lan")
 check("thêm lại người đã bỏ: hoạt động lại, là thành viên thường",
       [m["role"] for m in st.members(t1["team_id"]) if m["agent_key"] == "ag_lan"] == ["member"])
 gone = st.mark_agent_gone(B, "ag_lan")
-check("agent bị xoá khỏi Javis: mọi nhóm đánh dấu agent_gone, nhóm 2 mất trưởng nhóm",
+check("agent bị xoá khỏi UNI MATE: mọi nhóm đánh dấu agent_gone, nhóm 2 mất trưởng nhóm",
       set(gone) == {t1["team_id"], t2["team_id"]} and st.get(t2["team_id"])["leader_key"] is None
       and "ag_lan" not in {m["agent_key"] for m in st.members(t2["team_id"])})
 t2 = st.update(t2["team_id"], name="Nội dung tuần", status="paused")

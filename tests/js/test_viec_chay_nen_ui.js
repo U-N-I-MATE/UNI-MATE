@@ -13,12 +13,12 @@ check("thẻ việc chạy nền có nhãn riêng", the.includes("Việc chạy 
 check("thẻ việc chạy nền không có nút mở trang (không trang nào liệt kê nó)", !the.includes("viec-mo"));
 const theTask = V.dauThe({ kind: "task", status: "done", title: "x", id: "t1" });
 check("thẻ việc Kanban vẫn có nút mở trang Việc", theTask.includes("viec-mo"));
-check("khối JAVIS_VIEC kind job bóc ra đúng",
-  V.tach('<!-- JAVIS_VIEC: {"kind":"job","status":"cancelled","title":"t","id":"j"} -->\nx').viec.kind === "job");
+check("khối UNIMATE_VIEC kind job bóc ra đúng",
+  V.tach('<!-- UNIMATE_VIEC: {"kind":"job","status":"cancelled","title":"t","id":"j"} -->\nx').viec.kind === "job");
 
 const STEPS = fs.readFileSync(path.join(D, "chat-steps.js"), "utf8");
 check("khối bước vẽ lại khi từ điển về (hết chữ thô app.steps_done)",
-  STEPS.includes('addEventListener("javis:i18n"') && STEPS.includes("el._st = st"));
+  STEPS.includes('addEventListener("unimate:i18n"') && STEPS.includes("el._st = st"));
 
 const APP = fs.readFileSync(path.join(D, "app.js"), "utf8");
 check("quay lại app mà socket còn 'sống' vẫn đồng bộ nhẹ với server", /else if \(savedSessionId\) \{[\s\S]{0,600}_dongBoNeuLech\(\)/.test(APP));

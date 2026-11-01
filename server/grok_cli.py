@@ -1,6 +1,6 @@
 """Bộ não thứ 11: xAI Grok Build CLI (binary `grok`), chạy bằng GÓI SuperGrok / X Premium+.
 
-Đối xứng với `GeminiCLI` và `CodexCLI`: Javis không giữ token của ai cả, nó gọi đúng binary
+Đối xứng với `GeminiCLI` và `CodexCLI`: UNI MATE không giữ token của ai cả, nó gọi đúng binary
 `grok` của máy và mượn phiên đăng nhập mà chính CLI đó giữ trong `~/.grok/auth.json`.
 
 **Vì sao module này KHÔNG chép khuôn `antigravity_cli.py`** - hai chỗ đau nhất của `agy` đều
@@ -37,7 +37,7 @@ vòng quanh đúng chỗ này chỉ vì nó được ĐOÁN từ tài liệu ch�
 Ba chỗ lệch so với bảng đoán, ghi lại để không ai mắc lại:
 
 - Chữ nằm ở khoá **`data`**, không phải `text`. Đây là gốc rễ của "không trả về nội dung nào":
-  lượt chạy đúng, model trả lời đúng, mà Javis gom được toàn chuỗi rỗng.
+  lượt chạy đúng, model trả lời đúng, mà UNI MATE gom được toàn chuỗi rỗng.
 - Sự kiện `usage` **bọc** số liệu trong khoá `usage`, và tên khoá là `input_tokens` /
   `output_tokens` / `cache_read_input_tokens`.
 - Có loại `available_commands` (bảng khai báo tool, xuất hiện ở CẢ đầu lẫn cuối luồng) không
@@ -78,7 +78,7 @@ from claude_cli import _home_dir, _no_window, tim_binary
 
 try:                       # Python 3.11+ có sẵn; đọc TOML, KHÔNG ghi được.
     import tomllib
-except ModuleNotFoundError:   # pragma: no cover - Javis yêu cầu 3.11, đây chỉ là lưới đỡ
+except ModuleNotFoundError:   # pragma: no cover - UNI MATE yêu cầu 3.11, đây chỉ là lưới đỡ
     tomllib = None            # type: ignore[assignment]
 
 # Model DỰ PHÒNG, chỉ dùng khi chưa hỏi được danh sách live từ CLI. Cố ý để ngắn và cố ý KHÔNG
@@ -89,7 +89,7 @@ MODELS_DU_PHONG = ["grok-4.6", "grok-4.5"]
 LENH_CAI = "curl -fsSL https://x.ai/cli/install.sh | bash"
 LENH_CAI_WIN = "irm https://x.ai/cli/install.ps1 | iex"
 
-# Mức quyền Javis -> luật chặn của Grok. Xem `permission_cho_mode`.
+# Mức quyền UNI MATE -> luật chặn của Grok. Xem `permission_cho_mode`.
 #
 # TÊN TOOL Ở ĐÂY PHẢI LÀ TOOL CỦA GROK, KHÔNG PHẢI CỦA CLAUDE CODE. Bản trước chép nguyên
 # danh sách của Claude vào đây, kèm `NotebookEdit(*)` - một tool Grok không có. Grok CLI không
@@ -132,8 +132,8 @@ def _doc_json(p: Path):
 
 
 def find_grok_cli() -> Optional[str]:
-    """Tìm binary `grok`. Cửa thoát JAVIS_GROK_BIN cho máy cài chỗ lạ."""
-    envp = (os.environ.get("JAVIS_GROK_BIN") or "").strip()
+    """Tìm binary `grok`. Cửa thoát UNIMATE_GROK_BIN cho máy cài chỗ lạ."""
+    envp = (os.environ.get("UNIMATE_GROK_BIN") or "").strip()
     if envp:
         try:
             if Path(envp).exists():
@@ -163,7 +163,7 @@ def lenh_cai() -> str:
 def _moi_truong(home=None) -> dict:
     """Môi trường cho một lượt chạy `grok`: kế thừa của server, tắt bộ tự cập nhật.
 
-    Vì sao phải tắt: Javis chạy `grok` headless trên VPS và trong container. Bộ tự cập nhật của
+    Vì sao phải tắt: UNI MATE chạy `grok` headless trên VPS và trong container. Bộ tự cập nhật của
     CLI có thể xen vào giữa lượt - tải bản mới, ghi vào chỗ chỉ đọc, hoặc in thêm chữ vào
     stdout làm hỏng dòng NDJSON đang đọc. Tài liệu chính chủ khuyên đúng điều này cho container.
 
@@ -184,7 +184,7 @@ def _moi_truong(home=None) -> dict:
 # ---------------------------------------------------------------------------
 _HELP_CACHE: dict = {"path": None, "text": "", "ts": 0.0}
 _HELP_TTL = 300.0     # 5 phút: một phiên chat không đẻ tiến trình mỗi lượt, mà nâng cấp bản
-                      # CLI xong cũng không phải khởi động lại Javis mới nhận cờ mới.
+                      # CLI xong cũng không phải khởi động lại UNI MATE mới nhận cờ mới.
 _HELP_TTL_LOI = 120.0  # kết quả RỖNG cũng nhớ (TTL ngắn hơn): binary hỏng mà chạy lại `--help`
                        # 20s mỗi lượt là biến một CLI hỏng thành cả app chậm theo.
 
@@ -229,7 +229,7 @@ def co_co(*ten_co: str) -> bool:
 # cờ `--effort` có thật mà chỉ nhận `low|high` thì gửi "medium" là CLI thoát ngay, hỏng trọn
 # lượt chat. Nên phải thấy TÊN CỜ trong help, và thấy CẢ GIÁ TRỊ định gửi, mới truyền.
 #
-# Hệ quả thành thật: bản CLI nào không liệt kê giá trị trong help thì Javis không truyền gì
+# Hệ quả thành thật: bản CLI nào không liệt kê giá trị trong help thì UNI MATE không truyền gì
 # cả, và độ sâu suy nghĩ rơi về câu nhắc trong prompt. Đó là chủ ý - thà mất một tuỳ chọn còn
 # hơn đoán một giá trị rồi làm hỏng lượt chat của người dùng. Khi CLI khai rõ ra thì phần này
 # tự chạy, khỏi sửa code.
@@ -254,12 +254,12 @@ def phien_moi() -> str:
 
 
 def permission_cho_mode(mode: Optional[str]) -> list:
-    """Mức quyền của Javis -> cờ quyền của Grok. Giá trị lạ về nấc CHẶT NHẤT.
+    """Mức quyền của UNI MATE -> cờ quyền của Grok. Giá trị lạ về nấc CHẶT NHẤT.
 
     Fail-closed cố ý: một chuỗi mode gõ sai không được
     phép biến thành toàn quyền ghi file và chạy lệnh máy.
 
-    HÀNG RÀO THẬT nằm ở header `X-Javis-Mode` mà MCP hub áp cho mọi tool đi qua nó - cái đó
+    HÀNG RÀO THẬT nằm ở header `X-UniMate-Mode` mà MCP hub áp cho mọi tool đi qua nó - cái đó
     chặn được cả tool của MCP đã đấu. Cờ ở đây chỉ là lớp thứ hai, chặn tool NATIVE của chính
     Grok (Bash/Write/Edit), thứ hub không nhìn thấy.
     """
@@ -294,7 +294,7 @@ def _toml_gia_tri(v) -> str:
 def _toml_khoa(k: str) -> str:
     """Khoá TOML: để trần nếu hợp lệ, quote nếu không.
 
-    Bare key của TOML nhận A-Za-z0-9_- nên `mcp_servers`, `javis` lẫn `X-Javis-Mode` đều để
+    Bare key của TOML nhận A-Za-z0-9_- nên `mcp_servers`, `unimate` lẫn `X-UniMate-Mode` đều để
     trần được. Quote hết thì vẫn ĐÚNG nhưng ra một file đầy dấu nháy mà người mở lên đọc phải
     dụi mắt - file này nằm trong brain, người dùng có mở ra xem.
     """
@@ -312,7 +312,7 @@ def _toml_dump(d: dict, duong: tuple = ()) -> str:
     hai tầng. `tomllib` của stdlib chỉ ĐỌC được, nên phần ghi phải tự lo.
 
     HẠN CHẾ ĐÃ BIẾT: round-trip qua đây làm MẤT CHÚ THÍCH trong file. Chấp nhận được vì file
-    này nằm trong `<brain>/.grok/` - thư mục do chính Javis dựng trong brain, không phải
+    này nằm trong `<brain>/.grok/` - thư mục do chính UNI MATE dựng trong brain, không phải
     `~/.grok/config.toml` cá nhân của người dùng.
     """
     dong: list = []
@@ -353,7 +353,7 @@ def _doc_toml_ky(p: Path) -> tuple:
     File có mà parse KHÔNG được → (False, {}): tuyệt đối KHÔNG được ghi đè.
 
     Ca thứ ba là chỗ suýt mất dữ liệu: gộp nó vào ca đầu (trả `{}` rồi ghi tiếp) là mỗi lần
-    Javis chạm vào một `config.toml` gõ sai một dấu ngoặc - hoặc dùng cú pháp mà `tomllib` của
+    UNI MATE chạm vào một `config.toml` gõ sai một dấu ngoặc - hoặc dùng cú pháp mà `tomllib` của
     Python chưa biết - thì toàn bộ cấu hình Grok của người dùng trong brain đó bị xoá sạch,
     không một câu lỗi. Đây đúng là hạng lỗi im lặng mà module này viết ra để tránh.
     """
@@ -362,7 +362,7 @@ def _doc_toml_ky(p: Path) -> tuple:
             return True, {}
     except Exception:
         return False, {}
-    if tomllib is None:      # pragma: no cover - Javis yêu cầu Python 3.11
+    if tomllib is None:      # pragma: no cover - UNI MATE yêu cầu Python 3.11
         return False, {}
     try:
         with open(p, "rb") as f:
@@ -374,14 +374,14 @@ def _doc_toml_ky(p: Path) -> tuple:
 
 
 # ---------------------------------------------------------------------------
-# MCP: ghi hub của Javis vào `<brain>/.grok/config.toml`
+# MCP: ghi hub của UNI MATE vào `<brain>/.grok/config.toml`
 # ---------------------------------------------------------------------------
 def hub_entry(url: str, headers: Optional[dict] = None) -> dict:
     """Hình dạng entry MCP HTTP của Grok.
 
     Để hình dạng entry TRONG module engine chứ không viết tay ở `main.py` là bài học đắt của
     `agy`: nó đọc khoá `serverUrl`, còn `httpUrl` (khoá của Gemini CLI) bị bỏ qua không một
-    tiếng động, và đó là thứ làm bộ não đó chạy mấy bản mà không có lấy một tool nào của Javis.
+    tiếng động, và đó là thứ làm bộ não đó chạy mấy bản mà không có lấy một tool nào của UNI MATE.
     Grok dùng khoá `url`, khác cả hai. Giữ ở đây để nó không trôi theo file nào khác.
     """
     e: dict = {"url": url}
@@ -395,31 +395,31 @@ def mcp_config_path(vault_root) -> Path:
 
 
 def ghi_mcp_settings(vault_root, hub: Optional[dict]) -> Optional[str]:
-    """Ghi `<vault>/.grok/config.toml` với đúng một entry MCP trỏ về hub Javis.
+    """Ghi `<vault>/.grok/config.toml` với đúng một entry MCP trỏ về hub UNI MATE.
 
     Vì sao ghi vào brain chứ không vào `~/.grok`: file HOME là của người dùng và dùng chung cho
-    mọi thứ họ chạy bằng `grok`; đè lên đó là Javis giẫm vào cấu hình cá nhân, và nhiều brain
-    thì brain nọ đọc header brain kia. Grok đọc cấu hình theo thư mục làm việc, mà Javis luôn
+    mọi thứ họ chạy bằng `grok`; đè lên đó là UNI MATE giẫm vào cấu hình cá nhân, và nhiều brain
+    thì brain nọ đọc header brain kia. Grok đọc cấu hình theo thư mục làm việc, mà UNI MATE luôn
     chạy nó với cwd = gốc brain, nên đây vừa đúng chỗ vừa cô lập sẵn từng brain.
 
-    `hub=None` (chưa bật hub) → GỠ entry javis nếu có, giữ nguyên phần còn lại của file.
+    `hub=None` (chưa bật hub) → GỠ entry unimate nếu có, giữ nguyên phần còn lại của file.
     Trả đường dẫn file đã ghi, hoặc None nếu không ghi được.
     """
     try:
         p = mcp_config_path(vault_root)
         doc_duoc, cu = _doc_toml_ky(p)
         if not doc_duoc:
-            # Thà chạy KHÔNG có tool của Javis còn hơn xoá cấu hình của người dùng. Lỗi đã in
-            # ra stderr ở `_doc_toml_ky`; `trang_thai_mcp` sẽ báo `co_javis=False` nên nút
+            # Thà chạy KHÔNG có tool của UNI MATE còn hơn xoá cấu hình của người dùng. Lỗi đã in
+            # ra stderr ở `_doc_toml_ky`; `trang_thai_mcp` sẽ báo `co_unimate=False` nên nút
             # "Kiểm tra lại" trên trang Models nói được là hub chưa vào.
             return None
         servers = cu.get("mcp_servers")
         if not isinstance(servers, dict):
             servers = {}
         if hub:
-            servers["javis"] = hub
+            servers["unimate"] = hub
         else:
-            servers.pop("javis", None)
+            servers.pop("unimate", None)
         if servers:
             cu["mcp_servers"] = servers
         else:
@@ -440,11 +440,11 @@ def trang_thai_mcp(vault_root) -> dict:
     """ĐỌC LẠI chính file vừa ghi để trang Models nói được sự thật.
 
     Bài học của `agy` (0.43.0): cấu hình ghi thành công nhưng SAI CHỖ hoặc SAI KHOÁ thì CLI
-    chạy trơn tru mà không có lấy một tool nào của Javis, và không ở đâu có một câu lỗi để lần
+    chạy trơn tru mà không có lấy một tool nào của UNI MATE, và không ở đâu có một câu lỗi để lần
     ra. "Đã ghi xong" không phải bằng chứng; đọc lại mới là.
     """
     p = mcp_config_path(vault_root)
-    ra = {"file": str(p), "ton_tai": False, "co_javis": False, "url": "", "so_header": 0}
+    ra = {"file": str(p), "ton_tai": False, "co_unimate": False, "url": "", "so_header": 0}
     try:
         ra["ton_tai"] = p.exists()
     except Exception:
@@ -452,9 +452,9 @@ def trang_thai_mcp(vault_root) -> dict:
     if not ra["ton_tai"]:
         return ra
     d = _doc_toml(p)
-    e = ((d.get("mcp_servers") or {}) or {}).get("javis")
+    e = ((d.get("mcp_servers") or {}) or {}).get("unimate")
     if isinstance(e, dict):
-        ra["co_javis"] = True
+        ra["co_unimate"] = True
         ra["url"] = str(e.get("url") or "")
         h = e.get("headers")
         ra["so_header"] = len(h) if isinstance(h, dict) else 0
@@ -466,11 +466,11 @@ def trang_thai_mcp(vault_root) -> dict:
 # ---------------------------------------------------------------------------
 # Tên trường bên trong `auth.json` KHÔNG được xAI tài liệu hoá, và bản 0.50.0 đã đoán sai một
 # lần: nó đòi `access_token` hoặc `refresh_token` nằm ngay TẦNG CAO NHẤT. File thật lồng token
-# sâu hơn (hoặc gọi tên khác) là Javis báo "chưa đăng nhập" vĩnh viễn dù người dùng đã bấm
+# sâu hơn (hoặc gọi tên khác) là UNI MATE báo "chưa đăng nhập" vĩnh viễn dù người dùng đã bấm
 # xác nhận xong xuôi trên accounts.x.ai - đúng lỗi người dùng báo ngày 28/08/2026.
 #
 # Nên đọc theo HÌNH DẠNG, không theo một sơ đồ đoán trước: đi khắp cây JSON tìm một khoá nào
-# đó nghe như token, có giá trị chuỗi đủ dài. Sai hướng này chỉ làm Javis dễ tính hơn với một
+# đó nghe như token, có giá trị chuỗi đủ dài. Sai hướng này chỉ làm UNI MATE dễ tính hơn với một
 # file rác; sai hướng kia làm người dùng không đăng nhập được và không hiểu vì sao.
 _KHOA_TOKEN = ("access_token", "accesstoken", "refresh_token", "refreshtoken", "id_token",
                "idtoken", "session_token", "sessiontoken", "token", "api_key", "apikey",
@@ -536,7 +536,7 @@ def _doc_phien(home=None) -> tuple:
     """Tìm file phiên đăng nhập trong thư mục của `grok`. Trả (path|None, dict|None).
 
     Quét `_FILE_PHIEN` trước, rồi mới tới mọi `*.json` còn lại trong thư mục - CLI đổi tên file
-    là chuyện xảy ra, và Javis không nên chết vì một cái tên.
+    là chuyện xảy ra, và UNI MATE không nên chết vì một cái tên.
     """
     home = _grok_home(home)
     ten_da_thu = set()
@@ -597,10 +597,10 @@ def auth_status(home=None) -> dict:
         return {"connected": False, "method": "", "account": "", "plan": "",
                 "error": localefmt.chu(
                     "Thư mục " + str(_grok_home()) + " đã có file (" + ", ".join(co_file[:6])
-                    + ") nhưng Javis không nhận ra token đăng nhập trong đó. "
+                    + ") nhưng UNI MATE không nhận ra token đăng nhập trong đó. "
                       "Bấm \"Kiểm tra lại\" để xem chi tiết.",
                     "The folder " + str(_grok_home()) + " has files (" + ", ".join(co_file[:6])
-                    + ") but Javis does not recognize a sign-in token in them. "
+                    + ") but UNI MATE does not recognize a sign-in token in them. "
                       "Click \"Re-check\" for details.")}
     return {"connected": False, "method": "", "account": "", "plan": "",
             "error": localefmt.chu("Đã cài Grok CLI nhưng chưa đăng nhập. Bấm \"Đăng nhập\" ngay trên thẻ này.",
@@ -666,10 +666,10 @@ def login_huong_dan() -> dict:
         "ghi_chu": localefmt.chu(
             "Cách khác: chạy `grok login` trong terminal. Qua SSH thì thêm "
             "`--device-auth`, nó in ra một link và một mã để mở trên máy bạn. "
-            "Javis nhận ra cả tài khoản đăng nhập kiểu đó.",
+            "UNI MATE nhận ra cả tài khoản đăng nhập kiểu đó.",
             "Alternatively: run `grok login` in a terminal. Over SSH add "
             "`--device-auth`; it prints a link and a code to open on your own machine. "
-            "Javis recognizes accounts signed in that way too."),
+            "UNI MATE recognizes accounts signed in that way too."),
     }
 
 
@@ -678,11 +678,11 @@ def login_huong_dan() -> dict:
 # ---------------------------------------------------------------------------
 # `grok login --device-auth` KHÔNG phải một vòng trao đổi hai bước như OAuth của Gemini: nó in
 # ra một link và một mã, rồi TỰ ĐỨNG ĐÓ HỎI máy chủ cho tới khi người dùng bấm xong trên web.
-# Nên Javis không có "mã" nào để nhận lại và gửi đi - việc của nó là: mở tiến trình, bóc lấy
+# Nên UNI MATE không có "mã" nào để nhận lại và gửi đi - việc của nó là: mở tiến trình, bóc lấy
 # link + mã, trả cho giao diện, rồi để tiến trình chạy tiếp và theo dõi `auth.json` xuất hiện.
 #
 # Đây là chỗ Grok làm được thứ Antigravity không làm được: đăng nhập ngay trên dashboard, kể cả
-# khi Javis đang chạy trên VPS không có trình duyệt.
+# khi UNI MATE đang chạy trên VPS không có trình duyệt.
 _LOGIN: dict = {"proc": None, "url": "", "code": "", "loi": "", "bat_dau": 0.0,
                 "log": None, "ma_thoat": None}
 _URL_RE = None
@@ -772,7 +772,7 @@ def _doc_luong(proc) -> None:
                     _ghi_nhat_ky(buf)
                     buf = ""
     except Exception as e:
-        _ghi_nhat_ky(f"[Javis đọc output lỗi] {type(e).__name__}: {e}")
+        _ghi_nhat_ky(f"[UNI MATE đọc output lỗi] {type(e).__name__}: {e}")
     if buf.strip():
         _bat_url_code(buf)
         _ghi_nhat_ky(buf)
@@ -807,10 +807,10 @@ def login_start(cho_giay: float = 30.0, home=None) -> dict:
     from collections import deque
     _LOGIN.update(proc=proc, url="", code="", loi="", bat_dau=time.time(),
                   log=deque(maxlen=NHAT_KY_TOI_DA), ma_thoat=None)
-    # Ghi luôn lệnh đã chạy: bản CLI không khai `--device-auth` thì Javis chạy `grok login`
+    # Ghi luôn lệnh đã chạy: bản CLI không khai `--device-auth` thì UNI MATE chạy `grok login`
     # trần, và hai đường đó hỏng theo hai kiểu khác nhau. Không ghi lại thì đoán mò.
-    _ghi_nhat_ky("[Javis chạy] " + " ".join(args[1:]))
-    threading.Thread(target=_doc_luong, args=(proc,), name="javis-grok-login",
+    _ghi_nhat_ky("[UNI MATE chạy] " + " ".join(args[1:]))
+    threading.Thread(target=_doc_luong, args=(proc,), name="unimate-grok-login",
                      daemon=True).start()
     han = time.time() + cho_giay
     while time.time() < han:
@@ -937,7 +937,7 @@ def list_models() -> Optional[list]:
 # Bản 0.50.3 chỉ giữ 40 dòng ĐẦU, và đó là khiếm khuyết của chính phần chẩn đoán: câu trả lời
 # của model bao giờ cũng nằm ở CUỐI luồng, sau phần khai báo tool và một tràng `thought`.
 # Người dùng gửi ảnh chụp 29/08 - "in ra 40 dòng, thấy: available_commands, thought" - tức
-# Javis đã dừng ghi đúng trước đoạn cần nhìn. Trần kiểu đó chẩn được phần mở đầu và mù đúng
+# UNI MATE đã dừng ghi đúng trước đoạn cần nhìn. Trần kiểu đó chẩn được phần mở đầu và mù đúng
 # phần quan trọng.
 _CHAN_DAU_TOI_DA = 20
 _CHAN_DUOI_TOI_DA = 20
@@ -952,7 +952,7 @@ _CO_MANG_PROMPT = ("-p", "--single", "--prompt", "--prompt-file")
 def _cat_args(args: list) -> list:
     """Danh sách CỜ đã truyền, để hiện lên khi lượt chạy hụt. KHÔNG kèm nội dung prompt.
 
-    Prompt của Javis là cả system prompt cộng ngữ cảnh brain - vài chục nghìn ký tự, và là
+    Prompt của UNI MATE là cả system prompt cộng ngữ cảnh brain - vài chục nghìn ký tự, và là
     nội dung riêng của người dùng. Nó tuyệt đối không được lọt vào một câu báo lỗi. Nên chỉ
     giữ token bắt đầu bằng `-`, cộng giá trị NGẮN đi ngay sau một cờ.
     """
@@ -997,7 +997,7 @@ def _vot_tu_su_kien(ev) -> list:
 
     Dùng khi `_doi_su_kien` không nhận ra loại. Sơ đồ `streaming-json` của Grok chưa được
     tài liệu hoá tới từng loại, và luồng thật (đo 29/08) có ít nhất `available_commands` và
-    `thought` - hai loại không hề nằm trong bảng Javis đoán ban đầu. Bám tên loại thì cứ mỗi
+    `thought` - hai loại không hề nằm trong bảng UNI MATE đoán ban đầu. Bám tên loại thì cứ mỗi
     lần xAI đổi là hỏng câm thêm một lần nữa; bám HÌNH DẠNG thì không.
     """
     if str((ev or {}).get("type") or "") in _LOAI_KHONG_PHAI_TRA_LOI:
@@ -1059,7 +1059,7 @@ class GrokCLI:
         # closed, nên trên một bản CLI không khai `--permission-mode` nó không truyền cờ nào -
         # và headless mà CLI dừng lại hỏi duyệt là treo tới vô tận, im lặng, không một dòng ra
         # stdout để vòng readline thoát. Watchdog dưới đây là thứ duy nhất gỡ được ca đó.
-        self.timeout = float(os.environ.get("JAVIS_GROK_TIMEOUT") or 900)
+        self.timeout = float(os.environ.get("UNIMATE_GROK_TIMEOUT") or 900)
         # Folder of an extra Grok account (plan_accounts.use, 0.353.0). None = account 1 (~/.grok).
         self.grok_home = None
 
@@ -1082,14 +1082,14 @@ class GrokCLI:
             args.append("--no-auto-update")
         # Mạch cũ thì nối lại; mạch mới thì KHÔNG tự cấp id.
         #
-        # `-s/--session-id` có tồn tại, nhưng tài liệu nói id Grok tự sinh là UUIDv7 còn Javis
+        # `-s/--session-id` có tồn tại, nhưng tài liệu nói id Grok tự sinh là UUIDv7 còn UNI MATE
         # chỉ có uuid4 - cấp một id sai dạng là lượt đầu thoát lỗi và hỏng câm. Để CLI tự sinh
         # rồi ĐỌC LẠI id từ dòng sự kiện thì đúng trong mọi trường hợp. Khác Gemini CLI ở chỗ
         # này, và khác có chủ ý.
         if self.session_id and co_co("--resume"):
             args += ["--resume", self.session_id]
         args += list(self.extra_args)
-        # Prompt: ưu tiên FILE. System prompt của Javis kèm ngữ cảnh brain vượt trần dòng lệnh
+        # Prompt: ưu tiên FILE. System prompt của UNI MATE kèm ngữ cảnh brain vượt trần dòng lệnh
         # 32767 ký tự của Windows dễ như chơi (đã đo 36.045 ký tự trên một brain TRỐNG - xem
         # khối chú thích trong antigravity_cli.py), nên argv chỉ là đường lùi.
         if prompt_file and co_co("--prompt-file"):
@@ -1111,7 +1111,7 @@ class GrokCLI:
         full = (self.instructions.strip() + "\n\n" + prompt) if self.instructions else prompt
         tep = None
         try:
-            fd, tep = tempfile.mkstemp(prefix="javis-grok-", suffix=".txt")
+            fd, tep = tempfile.mkstemp(prefix="unimate-grok-", suffix=".txt")
             with os.fdopen(fd, "w", encoding="utf-8") as f:
                 f.write(full)
         except Exception:
@@ -1132,7 +1132,7 @@ class GrokCLI:
         # "Grok CLI chạy xong nhưng không trả về nội dung nào." Câu đó không nói được điều gì
         # và không có đường nào đi tiếp. Hai ca hoàn toàn khác nhau nấp sau nó:
         #
-        #   a) CLI CÓ in JSON, nhưng toàn loại sự kiện Javis chưa biết -> `_doi_su_kien` bỏ
+        #   a) CLI CÓ in JSON, nhưng toàn loại sự kiện UNI MATE chưa biết -> `_doi_su_kien` bỏ
         #      im lặng. Sơ đồ `streaming-json` là ĐOÁN từ tài liệu, chưa từng đo trên máy thật
         #      (Giai đoạn 0 bước 2), nên đây là ca rất dễ xảy ra. Chữa: vớt chữ ở mọi tầng.
         #   b) CLI in ra ĐÚNG KHÔNG GÌ CẢ và thoát 0. Nhiều CLI loại này coi `-p/--single` là
@@ -1163,7 +1163,7 @@ class GrokCLI:
             if text:
                 # Ghi lại để còn biết mà đổi hẳn định dạng mặc định nếu đường kia luôn hụt.
                 print("[grok] `--output-format streaming-json` không ra nội dung, `json` qua "
-                      "argv thì được. Sơ đồ sự kiện của bản CLI này khác bảng Javis đang đoán.",
+                      "argv thì được. Sơ đồ sự kiện của bản CLI này khác bảng UNI MATE đang đoán.",
                       file=sys.stderr)
             else:
                 # Giữ cả hai để câu lỗi kể được cả hai lần, không chỉ lần sau.
@@ -1253,9 +1253,9 @@ class GrokCLI:
                         {"_exit": -1, "_err": localefmt.chu(
                             f"Grok CLI chạy quá {int(self.timeout)}s nên bị "
                             f"cắt. Nếu việc thật sự dài thì nâng biến môi "
-                            f"trường JAVIS_GROK_TIMEOUT.",
+                            f"trường UNIMATE_GROK_TIMEOUT.",
                             f"Grok CLI ran over {int(self.timeout)}s and was cut off. "
-                            f"If the job really is long, raise the environment variable JAVIS_GROK_TIMEOUT.")})
+                            f"If the job really is long, raise the environment variable UNIMATE_GROK_TIMEOUT.")})
                 elif ma != 0:
                     loop.call_soon_threadsafe(hang.put_nowait, {"_exit": ma, "_err": err})
                 elif err:
@@ -1302,7 +1302,7 @@ class GrokCLI:
                         pass
                 loop.call_soon_threadsafe(hang.put_nowait, HET)
 
-        threading.Thread(target=doc_luong, name=f"javis-grok-{self.tag}", daemon=True).start()
+        threading.Thread(target=doc_luong, name=f"unimate-grok-{self.tag}", daemon=True).start()
 
         while True:
             ev = await hang.get()
@@ -1339,10 +1339,10 @@ class GrokCLI:
 
     @staticmethod
     def _loi_trong(chan: dict) -> str:
-        """Câu báo lỗi cho lượt không ra chữ nào - NÓI RA thứ Javis thật sự thấy.
+        """Câu báo lỗi cho lượt không ra chữ nào - NÓI RA thứ UNI MATE thật sự thấy.
 
         Bản 0.50.2 chỉ có đúng một câu "Grok CLI chạy xong nhưng không trả về nội dung nào",
-        không phân biệt "CLI im hoàn toàn" với "CLI nói cả tràng bằng thứ Javis chưa hiểu".
+        không phân biệt "CLI im hoàn toàn" với "CLI nói cả tràng bằng thứ UNI MATE chưa hiểu".
         Hai ca đó cần hai cách chữa khác nhau, mà câu kia thì không dẫn tới cách nào cả.
         """
         loai = sorted(x for x in (chan.get("loai") or []) if x)
@@ -1361,9 +1361,9 @@ class GrokCLI:
             en += (". Try running it by hand on the server to see what it says:\n"
                    "`grok -p \"hello\" --output-format streaming-json`")
         else:
-            noi = (f"Grok CLI in ra {n} dòng nhưng Javis không nhận ra loại sự kiện nào là "
+            noi = (f"Grok CLI in ra {n} dòng nhưng UNI MATE không nhận ra loại sự kiện nào là "
                    "câu trả lời")
-            en = f"Grok CLI printed {n} lines but Javis recognized no event type as the answer"
+            en = f"Grok CLI printed {n} lines but UNI MATE recognized no event type as the answer"
             if loai:
                 noi += " (thấy: " + ", ".join(loai[:12]) + ")"
                 en += " (seen: " + ", ".join(loai[:12]) + ")"
@@ -1402,7 +1402,7 @@ class GrokCLI:
         return mac_dinh
 
     def _doi_su_kien(self, ev: dict, cac_manh: list, chan: Optional[dict] = None) -> list:
-        """Một dòng NDJSON của Grok -> 0..n sự kiện theo hợp đồng của Javis."""
+        """Một dòng NDJSON của Grok -> 0..n sự kiện theo hợp đồng của UNI MATE."""
         if "_raw" in ev:
             cac_manh.append(str(ev["_raw"]))
             return []
@@ -1575,13 +1575,13 @@ def kiem_tra_nhanh(timeout: float = 30.0) -> dict:
                                    "`grok -p \"hello\" --output-format json`")}
     tra = str(d.get("text") or d.get("response") or "").strip()
     if not tra:
-        # Sơ đồ JSON khác cái Javis đoán. Vớt ở mọi tầng đã, rồi mới chịu thua - và nếu chịu
+        # Sơ đồ JSON khác cái UNI MATE đoán. Vớt ở mọi tầng đã, rồi mới chịu thua - và nếu chịu
         # thua thì NÓI RA nguyên văn, đừng báo "dùng được" trong khi chat vẫn ra ô trống.
         tra = GrokCLI._vot_chu({"raw": [tho]}).strip()
     if tra:
         return {"ok": True, "reply": tra[:200]}
     return {"ok": False,
-            "error": localefmt.chu("Grok CLI chạy xong nhưng Javis không đọc ra câu trả lời trong thứ nó "
+            "error": localefmt.chu("Grok CLI chạy xong nhưng UNI MATE không đọc ra câu trả lời trong thứ nó "
                                    "in ra. Nguyên văn: " + tho[:300],
-                                   "Grok CLI finished but Javis could not read an answer from its "
+                                   "Grok CLI finished but UNI MATE could not read an answer from its "
                                    "output. Raw output: " + tho[:300])}

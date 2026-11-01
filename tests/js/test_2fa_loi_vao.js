@@ -2,14 +2,14 @@
 
        node tests/js/test_2fa_loi_vao.js
 
-   Javis có HAI bề mặt cài đặt tài khoản, và đó là lịch sử chứ không phải thiết kế:
+   UNI MATE có HAI bề mặt cài đặt tài khoản, và đó là lịch sử chứ không phải thiết kế:
 
    1. Trang **Tài khoản** (console.js renderAccount) - đủ thứ, gồm cả luồng bật 2FA có QR.
    2. Khối **"Tài khoản đăng nhập"** trong #quickSet (index.html), được nhúng vào trang
       **Cài đặt** lúc render - chỉ có đổi mật khẩu / đăng xuất / tắt đăng nhập.
 
    0.26.20 thêm 2FA vào chỗ (1) mà quên chỗ (2). Hậu quả không phải "thiếu một nút": chủ repo
-   mở trang Cài đặt, thấy một khối tài khoản không nhắc gì tới 2FA, và kết luận Javis chưa có
+   mở trang Cài đặt, thấy một khối tài khoản không nhắc gì tới 2FA, và kết luận UNI MATE chưa có
    tính năng đó - trong khi nó đã chạy được cả ngày. Tính năng bảo mật mà người dùng không tìm
    ra thì bằng không.
 

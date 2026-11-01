@@ -7,7 +7,7 @@
    tiên, nên khung vẽ trống trơn (đo bằng Playwright: 0 điểm ảnh). Cùng lần đó chủ repo xin: kéo tự do, vài giây sau tự về
    giữa.
 
-   Phần đầu khoá hợp đồng đọc từ mã nguồn. Phần sau chạy THẬT lớp JavisGraph với đồng hồ giả: kéo, buông, đợi. */
+   Phần đầu khoá hợp đồng đọc từ mã nguồn. Phần sau chạy THẬT lớp UniMateGraph với đồng hồ giả: kéo, buông, đợi. */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -21,7 +21,7 @@ const check = (name, cond) => { console.log((cond ? "ok   " : "FAIL ") + name); 
 const con = read("dashboard/console.js");
 check("CANARY: liteMode chỉ còn theo công tắc Đồ thị, không theo bề ngang màn hình",
   /const liteMode = \(\) => !graphEnabled;/.test(con) && !/const liteMode = \(\) => !graphEnabled \|\| isNarrow\(\)/.test(con));
-check("CANARY: không còn lệnh dừng đồ thị sớm cho màn hẹp", !/if \(isNarrow\(\) && window\.__javisGraph\) \{ try \{ window\.__javisGraph\.pause\(\)/.test(con));
+check("CANARY: không còn lệnh dừng đồ thị sớm cho màn hẹp", !/if \(isNarrow\(\) && window\.__unimateGraph\) \{ try \{ window\.__unimateGraph\.pause\(\)/.test(con));
 check("thẻ Đồ thị trong Cài đặt thôi báo 'màn hẹp đang ép lite-mode'", !/cs\.ov_lite/.test(con));
 for (const lang of ["vi", "en"]) {
   check(`khoá cs.ov_lite đã gỡ khỏi ${lang}.json`, !("cs.ov_lite" in JSON.parse(read(`dashboard/i18n/${lang}.json`))));
@@ -53,7 +53,7 @@ const win = phanTu();
 win.dispatchEvent = () => {};
 const ctx = vm.createContext({ window: win, document: { createElement: () => ({ getContext: () => ({}) }) }, performance: { now: () => gio },
   setTimeout: setT, clearTimeout: clearT, Event: function () {}, Math, Set, Date, console });
-vm.runInContext(read("dashboard/graph.js") + "\n;window.__JG = JavisGraph;", ctx);
+vm.runInContext(read("dashboard/graph.js") + "\n;window.__JG = UniMateGraph;", ctx);
 const JG = win.__JG;
 const el = phanTu();
 const g = new JG(el);

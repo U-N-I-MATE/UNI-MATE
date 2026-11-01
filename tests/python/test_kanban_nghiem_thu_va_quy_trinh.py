@@ -1,4 +1,4 @@
-"""0.107.0: field report 2026-10-13 (javis.fiona-tools.com), twelve items. This file pins the
+"""0.107.0: field report 2026-10-13 (unimate.fiona-tools.com), twelve items. This file pins the
 code fixes so they do not slide back:
 
 - Kanban checks acceptance before Done (t_784c7a7b8fd6 went Done with "chưa xong").
@@ -6,7 +6,7 @@ code fixes so they do not slide back:
   (t_ae9309c4c70e showed "Đây là duyệt tự động của worker...").
 - A blocked parent names the jobs waiting on it (t_555f8db43bd7 sat in Todo silently).
 - Capability "image" grants exactly the image tools; a workflow step can declare `tools:`.
-- javis_task takes `route` (wf:<slug> of a real workflow) and warns on route auto.
+- unimate_task takes `route` (wf:<slug> of a real workflow) and warns on route auto.
 - Workflow verify is fail-closed and a step still failing after its retries stops the run.
 - A switched-off workflow does not run from Kanban; `status: off` (YAML False) reads as off.
 - Script reminders do not wait on the task-mode lock.
@@ -237,11 +237,11 @@ def test_blocked_parent_names_the_jobs_waiting_on_it(tmp_path):
 def test_image_capability_grants_only_the_image_tools(tmp_path):
     feature, _brain = _feature(tmp_path)
     tools, mode, disallowed = feature._lane_tools({"capability": "image", "execution_mode": "auto"})
-    assert "mcp__javis-plugins__javis_generate_image" in tools
-    assert "mcp__javis-plugins__javis_describe_image" in tools
+    assert "mcp__unimate-plugins__unimate_generate_image" in tools
+    assert "mcp__unimate-plugins__unimate_describe_image" in tools
     assert not any("fb_" in t or "zalo" in t for t in tools)
     assert "Bash" in disallowed and mode == "auto"
-    assert plugins_host.granted_plugin_tools(tools) == {"javis_generate_image", "javis_describe_image"}
+    assert plugins_host.granted_plugin_tools(tools) == {"unimate_generate_image", "unimate_describe_image"}
 
 
 def test_heuristic_spec_picks_image_without_eating_anh_huong(tmp_path):
@@ -251,8 +251,8 @@ def test_heuristic_spec_picks_image_without_eating_anh_huong(tmp_path):
 
 
 def test_grant_patterns_reject_odd_names():
-    assert plugins_host.grant_patterns(["javis_generate_image", "Bash", "x;rm", ""]) == [
-        "mcp__javis-plugins__javis_generate_image", "mcp__javis__javis_generate_image"]
+    assert plugins_host.grant_patterns(["unimate_generate_image", "Bash", "x;rm", ""]) == [
+        "mcp__unimate-plugins__unimate_generate_image", "mcp__unimate__unimate_generate_image"]
 
 
 # ---------------------------------------------------------------- workflow helpers
@@ -266,29 +266,29 @@ def test_workflow_status_reads_yaml_booleans():
 
 
 def test_step_tools_parse():
-    assert wg.step_tools({"tools": ["javis_generate_image", "javis_generate_image", "x y"]}) == (
-        "javis_generate_image",)
-    assert wg.step_tools({"tools": "WebFetch, javis_describe_image"}) == (
-        "WebFetch", "javis_describe_image")
+    assert wg.step_tools({"tools": ["unimate_generate_image", "unimate_generate_image", "x y"]}) == (
+        "unimate_generate_image",)
+    assert wg.step_tools({"tools": "WebFetch, unimate_describe_image"}) == (
+        "WebFetch", "unimate_describe_image")
     assert wg.step_tools({}) == ()
     g = wg.compile_legacy_workflow({"steps": [
-        {"agent": "a", "task": "t", "tools": ["javis_generate_image"]},
+        {"agent": "a", "task": "t", "tools": ["unimate_generate_image"]},
         {"agent": "b", "task": "t"}]}, "demo")
-    assert g.nodes[0].metadata.get("tools") == ["javis_generate_image"]
+    assert g.nodes[0].metadata.get("tools") == ["unimate_generate_image"]
     assert "tools" not in g.nodes[1].metadata
 
 
-# ---------------------------------------------------------------- javis_task route
+# ---------------------------------------------------------------- unimate_task route
 
 def _task_plugin():
     spec = importlib.util.spec_from_file_location(
-        "javis_task_plugin_t", ROOT / "system" / "plugins" / "javis-task" / "plugin.py")
+        "unimate_task_plugin_t", ROOT / "system" / "plugins" / "unimate-task" / "plugin.py")
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     return m
 
 
-def test_javis_task_route(tmp_path, monkeypatch):
+def test_unimate_task_route(tmp_path, monkeypatch):
     import tasks as tasks_mod
     m = _task_plugin()
     feature, brain = _feature(tmp_path)
@@ -482,18 +482,18 @@ def test_switched_off_workflow_does_not_run_from_kanban(tmp_path, monkeypatch):
 def test_step_tools_reach_a_gated_run(tmp_path, monkeypatch):
     ok = '{"pass": true}'
     main, calls, engines = _brain(tmp_path, monkeypatch, [ok], step_extra=(
-        "    tools: [javis_generate_image, WebSearch, Bash]\n"))
+        "    tools: [unimate_generate_image, WebSearch, Bash]\n"))
     _drain(main._execute_workflow_raw("brain", "demo", input="x",
                                       tools=["Read", "Write"], mode="auto"))
     writer = engines[0]
     allowed = writer.kw["allowed_tools"]
-    assert "mcp__javis-plugins__javis_generate_image" in allowed and "WebSearch" in allowed
+    assert "mcp__unimate-plugins__unimate_generate_image" in allowed and "WebSearch" in allowed
     assert "Bash" not in allowed and "Bash" in writer.disallowed_tools
     assert "WebSearch" not in writer.disallowed_tools
-    assert getattr(writer, "javis_mode", None) == "auto"
+    assert getattr(writer, "unimate_mode", None) == "auto"
     # The verify agent and the next step get nothing extra.
     for e in engines[1:]:
-        assert not any("javis-plugins" in t for t in e.kw["allowed_tools"])
+        assert not any("unimate-plugins" in t for t in e.kw["allowed_tools"])
 
 
 # ---------------------------------------------------------------- reminders

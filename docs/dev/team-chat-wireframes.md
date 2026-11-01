@@ -137,7 +137,7 @@ THÀNH VIÊN (4)                                           [+ Thêm] [+ Tạo ag
 (ảnh) Lan     Trưởng nhóm   Cộng hưởng: Bật  [công tắc]   [Đổi trưởng nhóm] [Bỏ khỏi nhóm]
 (ảnh) Minh    Thành viên    Cộng hưởng: Tắt  [công tắc]   [Đặt làm trưởng nhóm] [Bỏ khỏi nhóm]
 (ảnh) Hà      Thành viên    Cộng hưởng: Cần xác nhận (mở trang Cộng sự)
-(ảnh) Tú      Đã xoá khỏi Javis · 1 việc chuyển về chờ giao lại
+(ảnh) Tú      Đã xoá khỏi UNI MATE · 1 việc chuyển về chờ giao lại
 ```
 
 - **Công tắc ở đây** gọi cùng route với trang Cộng sự. Chỉ báo xong khi server xác nhận.
@@ -177,7 +177,7 @@ TRẦN TRẦN (Lan chỉnh được trong mức này)
   Bước mỗi việc          (•) Số [ 20 ] ( ) Không giới hạn
   Lượt mỗi nhóm mỗi ngày ( ) Số [  ]  (•) Không giới hạn
   Việc chạy cùng lúc     (•) Số [ 1 ]
-Luôn áp, không bỏ được: hạn mức gói thuê bao và nhà cung cấp; trần máy chủ JAVIS_RESONANCE_CALL_CEILING
+Luôn áp, không bỏ được: hạn mức gói thuê bao và nhà cung cấp; trần máy chủ UNIMATE_RESONANCE_CALL_CEILING
 (chỉ cho mục tiêu Cộng hưởng); dừng, huỷ, thu hồi của anh; cổng review A5.
 Vòng không tiến triển: luôn phát hiện; với "Không giới hạn" thì tạm dừng việc và báo anh.
                                             [Huỷ]  [Cấp Toàn quyền]
@@ -240,9 +240,9 @@ sequenceDiagram
   Chu->>Q: Giao việc (không @) -> team_queued
   R->>Q: nhận việc (CAS, một việc mỗi nhóm) -> team_running
   R->>L: bước plan
-  L->>R: javis_team assign(Minh), assign(Hà)
+  L->>R: unimate_team assign(Minh), assign(Hà)
   R->>M: bước work
-  M->>R: javis_team request_help(Hà)
+  M->>R: unimate_team request_help(Hà)
   R->>H: bước help (parent = bước của Minh)
   H-->>R: trả lời
   R->>M: lượt tiếp với trả lời của Hà

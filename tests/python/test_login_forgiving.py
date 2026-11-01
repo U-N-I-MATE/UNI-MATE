@@ -15,7 +15,7 @@ get in", after resetting the password twice. Two invisible causes were possible 
 
 Contract:
 - usernames match ignoring case and surrounding spaces;
-- every place that STORES a password (setup screen, password change, JAVIS_ADMIN_PASSWORD)
+- every place that STORES a password (setup screen, password change, UNIMATE_ADMIN_PASSWORD)
   stores it without surrounding whitespace;
 - signing in accepts the password as typed, or without its surrounding whitespace, so an
   older hash stored with a space still works when typed exactly;
@@ -26,11 +26,11 @@ import asyncio
 import os
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-login-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-login-")
 # Public-server mode, like the customer's VPS (and lets TestClient's host through the DNS-rebinding guard).
-os.environ["JAVIS_REQUIRE_LOGIN"] = "1"
-os.environ.pop("JAVIS_ADMIN_PASSWORD", None)
-os.environ.pop("JAVIS_ADMIN_USER", None)
+os.environ["UNIMATE_REQUIRE_LOGIN"] = "1"
+os.environ.pop("UNIMATE_ADMIN_PASSWORD", None)
+os.environ.pop("UNIMATE_ADMIN_USER", None)
 
 import config as c   # noqa: E402
 
@@ -78,12 +78,12 @@ cfg = c.read_settings()
 check("legacy hash with a trailing space: typed exactly still works",
       c.verify_password("co-dau-cach-cu ", cfg))
 
-# ---- 4. JAVIS_ADMIN_PASSWORD with stray whitespace (pasted into Hostinger) ----
+# ---- 4. UNIMATE_ADMIN_PASSWORD with stray whitespace (pasted into Hostinger) ----
 cfg = c.read_settings()
 cfg.pop("auth", None)
 c.write_settings(cfg)
-os.environ["JAVIS_ADMIN_PASSWORD"] = "  mat-khau-hostinger \n"
-os.environ["JAVIS_ADMIN_USER"] = " admin "
+os.environ["UNIMATE_ADMIN_PASSWORD"] = "  mat-khau-hostinger \n"
+os.environ["UNIMATE_ADMIN_USER"] = " admin "
 check("env with whitespace: admin created", c.provision_admin_from_env() == "created")
 cfg = c.read_settings()
 check("env with whitespace: signs in with the clean password",
@@ -99,15 +99,15 @@ cfg["auth"] = {"username": "admin", "password_hash": h, "salt": salt,
                "env_applied": {"username": "admin", "salt": m_salt,
                                "hash": c.hash_password("mat-khau-cu-co-cach ", m_salt)[0]}}
 c.write_settings(cfg)
-os.environ["JAVIS_ADMIN_PASSWORD"] = "mat-khau-cu-co-cach "
-os.environ["JAVIS_ADMIN_USER"] = "admin"
+os.environ["UNIMATE_ADMIN_PASSWORD"] = "mat-khau-cu-co-cach "
+os.environ["UNIMATE_ADMIN_USER"] = "admin"
 c.provision_admin_from_env()
 cfg = c.read_settings()
 check("old env applied with a trailing space: clean value now signs in",
       c.verify_password("mat-khau-cu-co-cach", cfg))
 check("and the next boot does not reset again", not c.provision_admin_from_env())
-os.environ.pop("JAVIS_ADMIN_PASSWORD", None)
-os.environ.pop("JAVIS_ADMIN_USER", None)
+os.environ.pop("UNIMATE_ADMIN_PASSWORD", None)
+os.environ.pop("UNIMATE_ADMIN_USER", None)
 
 # ---- 5. The real endpoints ----
 import main   # noqa: E402
@@ -127,21 +127,21 @@ cl2 = TestClient(main.app)
 r = cl2.post("/auth/login", data={"username": "phong", "password": "mat-khau-moi-1"})
 check(f"login: lower-case username + clean password ({r.status_code})",
       r.status_code == 200 and r.json().get("ok"))
-check("login: session cookie set", bool(r.cookies.get("javis_session") or cl2.cookies.get("javis_session")))
+check("login: session cookie set", bool(r.cookies.get("unimate_session") or cl2.cookies.get("unimate_session")))
 check("login: /auth/status then says signed in", cl2.get("/auth/status").json().get("authed") is True)
 
 main._LOGIN_FAILS.clear()
 r = TestClient(main.app).post("/auth/login", data={"username": "Phong", "password": "mat-khau-sai-1"})
 check(f"login: wrong password still 401 ({r.status_code})", r.status_code == 401)
 check("login: an account made on the setup screen gets no env hint (noise on a home PC)",
-      "JAVIS_ADMIN_USER" not in (r.json().get("error") or ""))
+      "UNIMATE_ADMIN_USER" not in (r.json().get("error") or ""))
 main._LOGIN_FAILS.clear()
 cfg = c.read_settings()
 cfg["auth"]["env_applied"] = {"username": "admin", "salt": "s", "hash": "h"}
 c.write_settings(cfg)
 r = TestClient(main.app).post("/auth/login", data={"username": "Phong", "password": "mat-khau-sai-1"})
-check("login: an env-provisioned account's error names JAVIS_ADMIN_USER (reset renames to admin)",
-      r.status_code == 401 and "JAVIS_ADMIN_USER" in (r.json().get("error") or ""))
+check("login: an env-provisioned account's error names UNIMATE_ADMIN_USER (reset renames to admin)",
+      r.status_code == 401 and "UNIMATE_ADMIN_USER" in (r.json().get("error") or ""))
 cfg["auth"].pop("env_applied")
 c.write_settings(cfg)
 main._LOGIN_FAILS.clear()

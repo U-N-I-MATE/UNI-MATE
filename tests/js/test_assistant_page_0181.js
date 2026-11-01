@@ -13,7 +13,7 @@ global.window = { t: (k) => k, ic: () => "", addEventListener() {}, removeEventL
 global.document = { getElementById: () => null, createElement: () => ({ classList: { add() {}, remove() {} }, appendChild() {} }), body: { classList: { add() {}, remove() {} } } };
 global.localStorage = { getItem: () => null, setItem() {} };
 require(path.join(D, "workspace.js"));
-const W = window.JavisWorkspace;
+const W = window.UniMateWorkspace;
 const src = fs.readFileSync(path.join(D, "workspace.js"), "utf8");
 const css = fs.readFileSync(path.join(D, "style.css"), "utf8");
 const ccss = fs.readFileSync(path.join(D, "console.css"), "utf8");
@@ -39,7 +39,7 @@ check("the list passes the Auto map to the filter", /loc\(danhSach\(\), S\.q, S\
 check("the pseudo filters are never turned into a tag key or reset as a missing tag",
   /S\.nhom && !laLocGia\(S\.nhom\)\) S\.nhom = laKhoa/.test(src) && /if \(S\.nhom && !laLocGia\(S\.nhom\)\) \{\s*var kLoc/.test(src));
 check("tag menu row: Auto on with its count and a bolt icon, only when the Auto module is loaded",
-  /if \(window\.JavisResonanceAgent\) \{\s*var soAuto = danhSach\(\)\.filter\(function \(x\) \{ return autoBat\(S\.rs, x\.slug\); \}\)\.length;/.test(src)
+  /if \(window\.UniMateResonanceAgent\) \{\s*var soAuto = danhSach\(\)\.filter\(function \(x\) \{ return autoBat\(S\.rs, x\.slug\); \}\)\.length;/.test(src)
   && /label: t\("ws\.tag_auto"\), icon: "zap", right: String\(soAuto\)/.test(src) && /S\.nhom === TAG_AUTO \? "zap"/.test(src));
 check("label in vi and en", vi["ws.tag_auto"] === "Đang bật Auto" && en["ws.tag_auto"] === "Auto on");
 

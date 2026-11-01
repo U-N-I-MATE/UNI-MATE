@@ -24,11 +24,11 @@ function functionSource(src, name) {
   const saved = JSON.stringify({ brain: "vault/other", sessionId: "last-viewed", convo: [] });
   let selected = "brain", onChange, resets = 0, opened = 0;
   const ctx = {
-    localStorage: { getItem: k => k === "javis.session.v1" ? saved : null, setItem() {} },
-    SESSION_KEY: "javis.session.v1", convo: [], savedSessionId: null, _tinCu: null,
+    localStorage: { getItem: k => k === "unimate.session.v1" ? saved : null, setItem() {} },
+    SESSION_KEY: "unimate.session.v1", convo: [], savedSessionId: null, _tinCu: null,
     graphSource: { value: "brain", addEventListener: (name, fn) => { if (name === "change") onChange = fn; } },
     currentBrainPath: () => selected,
-    window: { JavisResume: null },
+    window: { UniMateResume: null },
     datMoiTinCu() {}, notifySessions() {}, syncActiveUI() {},
     resetChatView() { resets++; }, openStoredSession() { opened++; }, capNhatManChinh() {}, tatRanhTay() {},
     _trangGiuKhungChat: () => false,

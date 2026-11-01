@@ -1,4 +1,4 @@
-"""Phần dùng chung để Javis chạy lại CLI Zalo `javis-zalo` (server/zalo_cli.py), cho plugin zalo-image và zalo-group.
+"""Phần dùng chung để UNI MATE chạy lại CLI Zalo `unimate-zalo` (server/zalo_cli.py), cho plugin zalo-image và zalo-group.
 
     python tests/run.py zalo_cli      (KHÔNG mạng, không gọi npx thật)
 
@@ -176,8 +176,8 @@ def fresh_install_dir():
 GHI = ("import sys, pathlib\n"
        "root = pathlib.Path(sys.argv[sys.argv.index('--prefix') + 1])\n"
        "sys.stderr.write(' '.join(sys.argv[1:]))\n"
-       "(root / 'node_modules' / 'javis-zalo' / 'src').mkdir(parents=True)\n"
-       "(root / 'node_modules' / 'javis-zalo' / 'src' / 'index.js').write_text('')\n")
+       "(root / 'node_modules' / 'unimate-zalo' / 'src').mkdir(parents=True)\n"
+       "(root / 'node_modules' / 'unimate-zalo' / 'src' / 'index.js').write_text('')\n")
 fresh_install_dir()
 OLD = ROOT_INST.parent / "zalo-agent-cli"
 (OLD / "node_modules" / "zalo-agent-cli" / "src").mkdir(parents=True)
@@ -284,7 +284,7 @@ Z.AUTO_INSTALL = False
 # ============================================================
 # 4. Chạy tiến trình con thật: HOME đúng, đọc đủ đầu ra, hết giờ thì giết
 # ============================================================
-home = tempfile.mkdtemp(prefix="javis-zcli-")
+home = tempfile.mkdtemp(prefix="unimate-zcli-")
 code = "import os,sys;print(os.environ['HOME']);print(os.environ['USERPROFILE']);sys.stderr.write('loi')"
 rc, out, err = asyncio.run(Z.run([sys.executable, "-c", code], home))
 check("CANARY: tiến trình con nhận HOME và USERPROFILE là thư mục phiên (không thì CLI đòi quét QR lại)",

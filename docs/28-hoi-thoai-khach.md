@@ -2,11 +2,11 @@
 
 ***Tiếng Việt** · [English](en/28-customer-conversations.md)*
 
-Mọi tin khách nhắn cho **bot chuyên trách** (Telegram hoặc Zalo Bot) và cho **tài khoản Zalo cá nhân** đã nối đều được gom về một hộp thư trong Javis. Bạn đọc lại cuộc trò chuyện giữa khách và bot, thấy cuộc nào bot đang bí, và **tiếp quản** một cuộc chat khi cần người thật.
+Mọi tin khách nhắn cho **bot chuyên trách** (Telegram hoặc Zalo Bot) và cho **tài khoản Zalo cá nhân** đã nối đều được gom về một hộp thư trong UNI MATE. Bạn đọc lại cuộc trò chuyện giữa khách và bot, thấy cuộc nào bot đang bí, và **tiếp quản** một cuộc chat khi cần người thật.
 
 Từ bản 0.61.0 trang này gộp luôn phần Chatbot: **một mục trên thanh bên, bốn tab** (Hội thoại, Bot, Kênh, Thống kê; tab Hội thoại tên cũ là Hòm thư bot, đổi tên và làm lại giao diện ở 0.372.0), và bạn **trả lời khách ngay trong tab Hội thoại**.
 
-## Mở ở đâu trong Javis
+## Mở ở đâu trong UNI MATE
 
 Thanh điều hướng bên trái, nhóm **Năng lực**, mục **Chatbot**. Trong trang có bốn tab:
 
@@ -32,7 +32,7 @@ Bên dưới, mọi kênh đều đưa tin về **một khuôn chung** rồi và
 
 ## Tab Hội thoại
 
-Từ 0.372.0 (Chatbot v5) máy tính chia **ba cột**: danh sách khách bên trái, khung chat ở giữa, bảng **Thông tin** bên phải. Từ 0.397.0 bảng Thông tin **đóng sẵn** để khung chat rộng, bấm nút ⓘ ở góc phải đầu cuộc chat mới mở (Javis nhớ lựa chọn của bạn trên trình duyệt đó); màn hẹp hơn 1200px thì bảng trượt đè lên khung chat. Chữ trên máy tính cũng gọn lại: danh sách 14px, tin nhắn 15px, và tin nằm trong một cột giữa vừa tầm mắt.
+Từ 0.372.0 (Chatbot v5) máy tính chia **ba cột**: danh sách khách bên trái, khung chat ở giữa, bảng **Thông tin** bên phải. Từ 0.397.0 bảng Thông tin **đóng sẵn** để khung chat rộng, bấm nút ⓘ ở góc phải đầu cuộc chat mới mở (UNI MATE nhớ lựa chọn của bạn trên trình duyệt đó); màn hẹp hơn 1200px thì bảng trượt đè lên khung chat. Chữ trên máy tính cũng gọn lại: danh sách 14px, tin nhắn 15px, và tin nằm trong một cột giữa vừa tầm mắt.
 
 **Trên điện thoại** (từ 0.397.0): không còn chữ "Chatbot" ở đầu trang, bốn tab chỉ còn icon (giữ ngón tay hay đọc màn hình vẫn nghe tên tab). Mở một cuộc chat là nó **chiếm cả màn hình**: một hàng đầu gồm nút quay lại, tên khách, kênh, và một **nút chế độ** màu tím (ví dụ "A.I. trả lời ▾"). Bấm nút đó là một bảng trượt từ dưới lên với ba chế độ, mỗi cái một dòng giải thích, cùng **Thông tin khách và cài đặt A.I.** Ô nhập một hàng, hai nút tròn: ✨ để A.I. soạn hộ, mũi tên để gửi.
 
@@ -58,9 +58,9 @@ Mọi lựa chọn được nhớ ở trình duyệt. Số trên tab **Hội tho
 
 **"Khách đang chờ" nghĩa là gì** (một trong các lý do của Cần bạn). Khách nhắn cuối, chưa ai đáp, **bạn chưa mở đọc** (mở chat là ra khỏi Cần bạn cho tới khi khách nhắn tiếp), tin đó không chỉ là báo kết bạn ("đã đồng ý kết bạn"), và: là chat riêng, hoặc là nhóm mà bot vừa **cân nhắc nói rồi im** (chưa chắc, hết hạn mức tự nói, hay bộ phán xử lỗi, trong 24 giờ qua và bạn chưa bấm Đúng/Sai). Nhóm thì phải có điều kiện thứ hai, vì bot chỉ nói khi được gọi thì khách nhắn cuối trong nhóm là chuyện bình thường; đếm hết vào thì bộ lọc đầy rác. Cần bật Tự đánh giá thì mới có dấu "bot cân nhắc" này (xem [Bộ phán xử](25-chatbot.md#bộ-phán-xử-bot-tự-quyết-nói-hay-im-và-học-từ-nhóm)).
 
-**Nhóm chỉ giữ 1.000 tin gần nhất** (từ 0.396.0; từ 0.65.12 tới trước đó là 100). Hòm thư lưu hết tin của chat riêng với khách, nhưng mỗi **nhóm** chỉ giữ 1.000 tin mới nhất; tin cũ hơn tự xoá khi có tin mới về. Lý do: kho không phình mãi, và Javis không giữ lời của người lạ trong nhóm lâu hơn cần thiết (nick Zalo cá nhân ở nhiều nhóm thì Hòm thư ghi cả nhóm bot chưa được phép trả lời). Lần đầu cập nhật lên 0.65.12, các nhóm cũ đang có hơn 100 tin đã được cắt xuống 100 (tin đó không tự quay lại khi nâng lên 1.000); Javis **sao lưu nguyên file kho một lần** trước khi cắt (file `customer_conversations.sqlite3.bak-truoc-cat-nhom-...` cạnh file kho) và **tự xoá bản sao lưu sau 14 ngày**. Muốn lấy lại tin đã cắt thì chép bản sao lưu đè lên file kho trong vòng 14 ngày đó. Số "tin từng nhận" của hội thoại không giảm theo.
+**Nhóm chỉ giữ 1.000 tin gần nhất** (từ 0.396.0; từ 0.65.12 tới trước đó là 100). Hòm thư lưu hết tin của chat riêng với khách, nhưng mỗi **nhóm** chỉ giữ 1.000 tin mới nhất; tin cũ hơn tự xoá khi có tin mới về. Lý do: kho không phình mãi, và UNI MATE không giữ lời của người lạ trong nhóm lâu hơn cần thiết (nick Zalo cá nhân ở nhiều nhóm thì Hòm thư ghi cả nhóm bot chưa được phép trả lời). Lần đầu cập nhật lên 0.65.12, các nhóm cũ đang có hơn 100 tin đã được cắt xuống 100 (tin đó không tự quay lại khi nâng lên 1.000); UNI MATE **sao lưu nguyên file kho một lần** trước khi cắt (file `customer_conversations.sqlite3.bak-truoc-cat-nhom-...` cạnh file kho) và **tự xoá bản sao lưu sau 14 ngày**. Muốn lấy lại tin đã cắt thì chép bản sao lưu đè lên file kho trong vòng 14 ngày đó. Số "tin từng nhận" của hội thoại không giảm theo.
 
-**Tải dần, không đơ máy** (từ 0.65.11). Danh sách chỉ tải 40 dòng đầu; cuộn gần tới cuối thì tự tải 40 dòng nữa (hoặc bấm **Xem thêm**). Khung tin cũng vậy: mở một hội thoại chỉ tải 40 tin **mới nhất**, kéo lên gần đầu (hoặc bấm **Xem tin cũ hơn**) thì tải thêm 40 tin cũ hơn và giữ nguyên chỗ bạn đang đọc. Cứ 5 giây Javis chỉ hỏi các tin **mới hơn tin cuối** rồi chèn vào cuối khung; đang đọc tin cũ mà có tin mới về thì khung đứng yên, không kéo bạn về đầu như trước.
+**Tải dần, không đơ máy** (từ 0.65.11). Danh sách chỉ tải 40 dòng đầu; cuộn gần tới cuối thì tự tải 40 dòng nữa (hoặc bấm **Xem thêm**). Khung tin cũng vậy: mở một hội thoại chỉ tải 40 tin **mới nhất**, kéo lên gần đầu (hoặc bấm **Xem tin cũ hơn**) thì tải thêm 40 tin cũ hơn và giữ nguyên chỗ bạn đang đọc. Cứ 5 giây UNI MATE chỉ hỏi các tin **mới hơn tin cuối** rồi chèn vào cuối khung; đang đọc tin cũ mà có tin mới về thì khung đứng yên, không kéo bạn về đầu như trước.
 
 Bấm một hội thoại là lịch sử tin hiện ở giữa: tin khách bên trái (nền trắng), câu A.I. (nền tím nhạt) và câu bạn (nền xanh) bên phải; tên người gửi và giờ nằm ngay dưới mỗi bong bóng, tên khách chỉ hiện trong nhóm. Đầu cuộc chat có tên khách kèm thẻ của cuộc chat và nút **+ Tag** (mở bảng Thông tin với bộ chọn thẻ), dòng dưới là kênh, nick và **số tin**. Lượt bot bị gãy cũng nằm đó kèm lý do kỹ thuật, để bạn phân biệt "bot trả lời sai" với "bot đang hỏng". Trang tự làm mới mỗi vài giây, không cần tải lại.
 
@@ -90,7 +90,7 @@ Mọi thay đổi hiện một dòng báo ở đáy màn hình kèm **Hoàn tác
 
 Dưới tin khách cuối có dòng **"Bot im: lý do"** khi bộ phán xử đã ghi lý do (ví dụ "Điểm thấp hơn ngưỡng (0.52 / 0.60)"), kèm nút **Vì sao** mở thẳng bảng Bộ phán xử của bot đó, và nút **Nhờ A.I. trả lời tin này**: A.I. trả lời ngay tin đó và gửi luôn, cuộc chat vẫn ở A.I. tự trả lời. Nếu đó đúng là tin bộ phán xử đã im, bot còn **học thêm một ca**: lần sau gặp tin giống vậy bot sẽ nói. Gửi hỏng mà A.I. đã soạn xong thì câu đó nằm trong ô nhập để bạn gửi tay.
 
-Tin đi qua đúng kênh của cuộc chat: bot Telegram hay Zalo Bot gửi bằng token của tài khoản đó, Zalo cá nhân gửi qua chính tài khoản bạn đã quét QR, **dưới tên bạn** (chữ mờ trong ô nhập nói rõ, ví dụ "Gửi dưới tên Javis Vũ..."). Kênh nào chưa gửi được từ Javis thì ô nhập thay bằng một dòng nói vậy.
+Tin đi qua đúng kênh của cuộc chat: bot Telegram hay Zalo Bot gửi bằng token của tài khoản đó, Zalo cá nhân gửi qua chính tài khoản bạn đã quét QR, **dưới tên bạn** (chữ mờ trong ô nhập nói rõ, ví dụ "Gửi dưới tên Uni Vũ..."). Kênh nào chưa gửi được từ UNI MATE thì ô nhập thay bằng một dòng nói vậy.
 
 Gửi tay ở một cuộc chat đang **A.I. tự trả lời** là bạn **tiếp quản** cuộc đó: A.I. im với khách này cho tới khi bạn chọn lại A.I. tự trả lời. Không thì khách đọc hai giọng một lúc. Chọn **Tôi trả lời** làm y như vậy mà không cần gửi gì; chọn xong bạn trả lời trong app của kênh cũng được.
 
@@ -111,7 +111,7 @@ Từ 0.377.0 mọi nick và Page nằm ở tab **Kênh** (trước đó là mụ
 
 Bấm một nick hay Page, bên phải hiện:
 
-- **A.I. trực Page này**: một hộp chọn bot. Đổi xong mới hiện **Huỷ** và **Lưu**; chưa bấm Lưu thì chưa có gì thay đổi. Chọn **Không cần A.I.** là nơi đó chỉ ghi lại tin và không bị đếm vào số việc trên tab. Đổi bot thì các cuộc chat cũ của nơi đó cũng theo bot mới. Bot cũ hết nơi để trực thì tự tắt, và Javis nói ra.
+- **A.I. trực Page này**: một hộp chọn bot. Đổi xong mới hiện **Huỷ** và **Lưu**; chưa bấm Lưu thì chưa có gì thay đổi. Chọn **Không cần A.I.** là nơi đó chỉ ghi lại tin và không bị đếm vào số việc trên tab. Đổi bot thì các cuộc chat cũ của nơi đó cũng theo bot mới. Bot cũ hết nơi để trực thì tự tắt, và UNI MATE nói ra.
 - **Thông tin**: nút cạnh hộp chọn bot. Bấm vào là thẻ tài khoản hiện lên dạng popup: trạng thái, ghi hội thoại, nhập tin cũ, sửa, xoá (như mô tả bên dưới), và **Cài đặt bot** khi đã có bot trực. Tài khoản đang lỗi thì nút có chấm đỏ. Từ 0.404.0 thẻ không còn nằm trên đầu danh sách chat.
 - **Nhóm và người**: mỗi cuộc chat một công tắc **A.I. ở đây**, câu nói ai đang lo, nút **Cho phép** khi có người gọi A.I. ở nhóm chưa cho phép, và **Mở chat**. Mọi thay đổi có Hoàn tác. Chưa chọn A.I. trực thì công tắc mờ đi, bấm vào sẽ nhắc chọn ở ô phía trên.
 
@@ -119,15 +119,15 @@ Số trên tab Kênh là số nơi cần bạn xử lý: tài khoản lỗi, ho�
 
 ## Tab Thống kê
 
-Bấm nút kỳ để mở bộ chọn ngày: chọn nhanh (hôm nay, hôm qua, 7, 30, 90 ngày qua, tháng trước, đầu tuần, đầu tháng đến nay) hoặc bấm ngày bắt đầu và ngày kết thúc trên lịch rồi **Áp dụng**. Javis nhớ kỳ bạn xem lần cuối. Từ 0.399.0 trang mở đầu bằng **khối lợi ích**: A.I. đã trả lời thay bạn bao nhiêu tin (so với kỳ trước), A.I. lo bao nhiêu phần trăm câu trả lời, **bạn được rảnh bao lâu** (ước 1 phút cho mỗi câu A.I. trả lời thay) và **bao nhiêu tin A.I. trả lời lúc bạn nghỉ** (21h đến 7h, theo múi giờ của brain). Bốn ô: Khách được phục vụ (kèm số khách mới, tức cuộc chat riêng có tin đầu tiên trong kỳ), Trả lời đầu tiên sau (A.I. so với trả lời tay, lấy mức điển hình), Trả lời tay, Đang chờ bạn (bấm vào là mở danh sách Cần bạn). Biểu đồ **Giờ khách nhắn nhiều nhất** có 24 cột, cột giờ bạn nghỉ tô đậm, ghi rõ giờ đông nhất. Dưới cùng là **A.I. và trả lời tay theo tài khoản** (mỗi nick một thanh hai màu kèm phần trăm A.I. lo của riêng nick đó) và A.I. trả lời theo bot. Từ 0.401.0 có ô **chọn tài khoản** cạnh nút kỳ: chọn một nick thì cả trang chỉ tính nick đó, nên nick có người gõ tay không kéo phần trăm của nick chỉ có A.I. trả lời. "Trả lời tay" là tin một người thật gõ, trong Javis hoặc trên điện thoại của chính nick đó. Số liệu tính từ hộp thư của Javis.
+Bấm nút kỳ để mở bộ chọn ngày: chọn nhanh (hôm nay, hôm qua, 7, 30, 90 ngày qua, tháng trước, đầu tuần, đầu tháng đến nay) hoặc bấm ngày bắt đầu và ngày kết thúc trên lịch rồi **Áp dụng**. UNI MATE nhớ kỳ bạn xem lần cuối. Từ 0.399.0 trang mở đầu bằng **khối lợi ích**: A.I. đã trả lời thay bạn bao nhiêu tin (so với kỳ trước), A.I. lo bao nhiêu phần trăm câu trả lời, **bạn được rảnh bao lâu** (ước 1 phút cho mỗi câu A.I. trả lời thay) và **bao nhiêu tin A.I. trả lời lúc bạn nghỉ** (21h đến 7h, theo múi giờ của brain). Bốn ô: Khách được phục vụ (kèm số khách mới, tức cuộc chat riêng có tin đầu tiên trong kỳ), Trả lời đầu tiên sau (A.I. so với trả lời tay, lấy mức điển hình), Trả lời tay, Đang chờ bạn (bấm vào là mở danh sách Cần bạn). Biểu đồ **Giờ khách nhắn nhiều nhất** có 24 cột, cột giờ bạn nghỉ tô đậm, ghi rõ giờ đông nhất. Dưới cùng là **A.I. và trả lời tay theo tài khoản** (mỗi nick một thanh hai màu kèm phần trăm A.I. lo của riêng nick đó) và A.I. trả lời theo bot. Từ 0.401.0 có ô **chọn tài khoản** cạnh nút kỳ: chọn một nick thì cả trang chỉ tính nick đó, nên nick có người gõ tay không kéo phần trăm của nick chỉ có A.I. trả lời. "Trả lời tay" là tin một người thật gõ, trong UNI MATE hoặc trên điện thoại của chính nick đó. Số liệu tính từ hộp thư của UNI MATE.
 
 ## Thẻ tài khoản kênh
 
-Mọi tài khoản khách nhắn tới hiện thành **cùng một kiểu thẻ**, bất kể kênh: logo và tên kênh, tên tài khoản, trạng thái (đang chạy, đang tắt, lỗi kèm lý do), bot đang trực, số hội thoại và số chưa đọc, và các năng lực của kênh đó (vào nhóm, gửi file, trả lời từ Javis). Không kênh nào có mục riêng, kể cả Zalo. Kênh thêm về sau chỉ việc xuất hiện thêm một thẻ.
+Mọi tài khoản khách nhắn tới hiện thành **cùng một kiểu thẻ**, bất kể kênh: logo và tên kênh, tên tài khoản, trạng thái (đang chạy, đang tắt, lỗi kèm lý do), bot đang trực, số hội thoại và số chưa đọc, và các năng lực của kênh đó (vào nhóm, gửi file, trả lời từ UNI MATE). Không kênh nào có mục riêng, kể cả Zalo. Kênh thêm về sau chỉ việc xuất hiện thêm một thẻ.
 
 Có hai loại tài khoản, khác nhau ở cách có nó chứ không ở cách hiện ra:
 
-**Tài khoản bot** (Telegram, Zalo Bot) là một token. Bấm **Thêm kênh**, chọn loại kênh, dán token, bấm **Kiểm tra** để Javis hỏi đúng nền tảng token đó là bot nào, đặt tên gợi nhớ rồi Lưu. Tài khoản bot ghi vào hộp thư khi bot trực nó đang bật; chưa có bot trực thì thẻ nói thẳng và có nút **Tạo bot cho kênh này** mở sẵn form Bot mới với kênh đó được tick.
+**Tài khoản bot** (Telegram, Zalo Bot) là một token. Bấm **Thêm kênh**, chọn loại kênh, dán token, bấm **Kiểm tra** để UNI MATE hỏi đúng nền tảng token đó là bot nào, đặt tên gợi nhớ rồi Lưu. Tài khoản bot ghi vào hộp thư khi bot trực nó đang bật; chưa có bot trực thì thẻ nói thẳng và có nút **Tạo bot cho kênh này** mở sẵn form Bot mới với kênh đó được tick.
 
 ### Tài khoản bot thuộc về một brain (0.62.4)
 
@@ -145,23 +145,23 @@ Zalo cá nhân (`kind: account`) không bị lọc: nó là một kết nối �
 
 Đây là bước đầu của hướng dài hơn: chia quyền quản lý tài khoản cho brain, rồi tới agent, skill, workflow và chatbot, để sau này lên được bản nhiều người dùng.
 
-**Xoá một tài khoản:** bấm **Xoá**. Nếu đang có bot trực nó, Javis nói rõ bot nào, ở brain nào, rồi hỏi một câu duy nhất: gỡ khỏi bot đó rồi xoá luôn? Đồng ý là xong trong một lần, không phải đổi brain rồi đi tìm bot để tự gỡ. Bot vẫn còn và vẫn trực các tài khoản khác của nó. Nếu đó là tài khoản **duy nhất** của bot thì Javis nói trước, và sau khi xoá sẽ tắt bot đó đi (bản ghi bot vẫn còn, gắn tài khoản khác vào là bật lại được). Hội thoại đã ghi vẫn nằm nguyên trong hộp thư.
+**Xoá một tài khoản:** bấm **Xoá**. Nếu đang có bot trực nó, UNI MATE nói rõ bot nào, ở brain nào, rồi hỏi một câu duy nhất: gỡ khỏi bot đó rồi xoá luôn? Đồng ý là xong trong một lần, không phải đổi brain rồi đi tìm bot để tự gỡ. Bot vẫn còn và vẫn trực các tài khoản khác của nó. Nếu đó là tài khoản **duy nhất** của bot thì UNI MATE nói trước, và sau khi xoá sẽ tắt bot đó đi (bản ghi bot vẫn còn, gắn tài khoản khác vào là bật lại được). Hội thoại đã ghi vẫn nằm nguyên trong hộp thư.
 
-**Tài khoản của chính bạn** (Zalo cá nhân) đến từ trang **Kết nối** (quét QR ở Zalo Agent MCP) và hiện ở đây với công tắc **Ghi hội thoại**. Bật lên là Javis đọc tin mới mỗi 20 giây qua MCP và đổ vào hộp thư. Ba điều về kênh này, nói thẳng:
+**Tài khoản của chính bạn** (Zalo cá nhân) đến từ trang **Kết nối** (quét QR ở Zalo Agent MCP) và hiện ở đây với công tắc **Ghi hội thoại**. Bật lên là UNI MATE đọc tin mới mỗi 20 giây qua MCP và đổ vào hộp thư. Ba điều về kênh này, nói thẳng:
 
-- **Mặc định tắt.** Bật là giữ phiên Zalo của bạn sống liên tục qua API không chính thức, tức tài khoản đăng nhập 24/7 trên máy chạy Javis. Đó là lựa chọn của bạn, không phải của Javis. Nên dùng tài khoản phụ.
-- **Chỉ lưu từ lúc bật.** Không kéo lịch sử cũ. Tin do chính bạn (hay nhân viên dùng chung nick) gửi từ điện thoại hiện là tin "Bạn". Với Zalo cá nhân điều này cần Javis 0.108.0 trở lên: các bản trước dùng javis-zalo 1.2.0, bản đó bỏ mọi tin của chính tài khoản khỏi luồng tin mới nên tin bạn nhắn tay không bao giờ vào Hộp thư.
+- **Mặc định tắt.** Bật là giữ phiên Zalo của bạn sống liên tục qua API không chính thức, tức tài khoản đăng nhập 24/7 trên máy chạy UNI MATE. Đó là lựa chọn của bạn, không phải của UNI MATE. Nên dùng tài khoản phụ.
+- **Chỉ lưu từ lúc bật.** Không kéo lịch sử cũ. Tin do chính bạn (hay nhân viên dùng chung nick) gửi từ điện thoại hiện là tin "Bạn". Với Zalo cá nhân điều này cần UNI MATE 0.108.0 trở lên: các bản trước dùng unimate-zalo 1.2.0, bản đó bỏ mọi tin của chính tài khoản khỏi luồng tin mới nên tin bạn nhắn tay không bao giờ vào Hộp thư.
 - **Không có bot trực.** Trả lời từ Hòm thư bot là gửi dưới tên bạn. Muốn nick này tự trả lời khách thì tạo một Bot chuyên trách và chọn kênh Zalo cá nhân (chat riêng từ 0.64.80, nhóm và chế độ Tự đánh giá từ 0.64.82), xem [Chatbot](25-chatbot.md).
 
 ## Dữ liệu lưu ở đâu, giữ gì
 
-Kho nằm trong thư mục trạng thái của Javis (`customer_conversations.sqlite3`), tách khỏi kho phiên chat. Giữ **chữ** lâu dài; ảnh, file, tin thoại chỉ giữ loại tin và mô tả, file gốc theo hạn dọn của Javis. Tin trùng (đọc lại cùng một tin sau khi khởi động lại) không sinh dòng thứ hai.
+Kho nằm trong thư mục trạng thái của UNI MATE (`customer_conversations.sqlite3`), tách khỏi kho phiên chat. Giữ **chữ** lâu dài; ảnh, file, tin thoại chỉ giữ loại tin và mô tả, file gốc theo hạn dọn của UNI MATE. Tin trùng (đọc lại cùng một tin sau khi khởi động lại) không sinh dòng thứ hai.
 
 Xoá một bot **không** xoá hội thoại của nó, và cũng không xoá tài khoản kênh nó trực: lịch sử khách là tài sản của bạn, token là thứ dùng lại được. Bot tạo trước 0.61.0 (token nằm trong bot) tự chuyển sang mô hình tài khoản khi bạn cập nhật; token, hội thoại, nhóm cho phép đều giữ nguyên.
 
 ## Cho ai muốn nối thêm kênh
 
-Từ 0.61.0 mọi thứ lõi biết về một kênh nằm trong **sổ đăng ký kênh** (`server/channels/`, mỗi kênh một file). Một file kênh khai: id, tên, khoá logo, loại (`bot` dùng token, `account` dùng phiên đăng nhập sẵn có, `webhook` cho nền tảng gọi ngược), năng lực (nhóm, gửi chữ, gửi file), cách lấy token; và một bộ hàm: kiểm token và lớp long-poll (loại bot), liệt kê tài khoản và bật ghi (loại account), `gui` để trả lời từ Javis. Tin nhận về thì đưa về khuôn chung (`channel`, `account_id`, `external_chat_id`, `sender_type`, `text`, `external_message_id`, `created_at`) rồi gọi kho.
+Từ 0.61.0 mọi thứ lõi biết về một kênh nằm trong **sổ đăng ký kênh** (`server/channels/`, mỗi kênh một file). Một file kênh khai: id, tên, khoá logo, loại (`bot` dùng token, `account` dùng phiên đăng nhập sẵn có, `webhook` cho nền tảng gọi ngược), năng lực (nhóm, gửi chữ, gửi file), cách lấy token; và một bộ hàm: kiểm token và lớp long-poll (loại bot), liệt kê tài khoản và bật ghi (loại account), `gui` để trả lời từ UNI MATE. Tin nhận về thì đưa về khuôn chung (`channel`, `account_id`, `external_chat_id`, `sender_type`, `text`, `external_message_id`, `created_at`) rồi gọi kho.
 
 Thêm một kênh = thêm một file ở sổ, một dòng đăng ký, một logo trong `icons.js`. Kho bot, bộ giám sát, API và cả hai tab tự nhận, không sửa gì khác. Chi tiết ở `docs/dev/2026-09-kenh-hoi-thoai-spec.md`. Đường API:
 
@@ -183,7 +183,7 @@ Thêm một kênh = thêm một file ở sổ, một dòng đăng ký, một log
 
 ## Muốn hơn thế: gói Quản lý khách hàng (CRM)
 
-Kho cài đặt có gói **Quản lý khách hàng (CRM)** (`javis.khach-hang-crm`, cần bản 0.60.1 trở lên) đặt lên chính hộp thư này. Cài xong hỏi Javis bằng lời: "khách nào chờ hơn 2 tiếng chưa được trả lời", "chị Lan đã hỏi gì", "gắn tag VIP cho chị Lan", "tuần này bao nhiêu khách mới", "xuất danh sách khách đã hỏi giá ra Excel". Kèm một trợ lý chăm sóc khách và một quy trình rà soát mỗi ngày. Gói chỉ đọc hộp thư và ghi tag, ghi chú lên khách; không gửi tin cho ai.
+Kho cài đặt có gói **Quản lý khách hàng (CRM)** (`unimate.khach-hang-crm`, cần bản 0.60.1 trở lên) đặt lên chính hộp thư này. Cài xong hỏi Uni bằng lời: "khách nào chờ hơn 2 tiếng chưa được trả lời", "chị Lan đã hỏi gì", "gắn tag VIP cho chị Lan", "tuần này bao nhiêu khách mới", "xuất danh sách khách đã hỏi giá ra Excel". Kèm một trợ lý chăm sóc khách và một quy trình rà soát mỗi ngày. Gói chỉ đọc hộp thư và ghi tag, ghi chú lên khách; không gửi tin cho ai.
 
 ## Tham khảo
 

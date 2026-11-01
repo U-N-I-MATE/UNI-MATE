@@ -4,7 +4,7 @@
 
 Không cần pytest, KHÔNG chạm mạng (`list_tools` của hai module này trả danh sách tĩnh).
 
-Bệnh (Javis tự chẩn ra 2026-08-08, đã kiểm lại bằng mã): kết nối Substack bật, quyền full,
+Bệnh (UNI MATE tự chẩn ra 2026-08-08, đã kiểm lại bằng mã): kết nối Substack bật, quyền full,
 token còn sống, trang Kết nối hiện "Đã kết nối" - mà KHÔNG bộ não nào gọi được tool nào của
 nó, và không có một dòng lỗi ở đâu cả.
 

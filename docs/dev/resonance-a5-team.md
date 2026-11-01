@@ -19,7 +19,7 @@ Chủ dự án chọn một agent Cộng hưởng khác làm người review cho
 
 ## Vòng đời
 
-**Cặp và đội.** `team_pairs` lưu cặp theo `agent_key` (không theo slug, không theo tag), chỉ chủ dự án đổi. `create` gọi `_attach_team` NGAY sau dòng `goal_agents`, trong cùng giao dịch: cặp đang bật thì ghi `goal_team` (ghim mã bền của reviewer), hai dòng `team_calls` (4/4) và đặt `budget_calls = 8`. Tool `javis_goal` và `POST /goal-requests` đều đi qua `form_goal`, tức qua `create`. `assign_goal` (mục tiêu cũ) không gắn đội; sự kiện ghi `not_attached_legacy`.
+**Cặp và đội.** `team_pairs` lưu cặp theo `agent_key` (không theo slug, không theo tag), chỉ chủ dự án đổi. `create` gọi `_attach_team` NGAY sau dòng `goal_agents`, trong cùng giao dịch: cặp đang bật thì ghi `goal_team` (ghim mã bền của reviewer), hai dòng `team_calls` (4/4) và đặt `budget_calls = 8`. Tool `unimate_goal` và `POST /goal-requests` đều đi qua `form_goal`, tức qua `create`. `assign_goal` (mục tiêu cũ) không gắn đội; sự kiện ghi `not_attached_legacy`.
 
 **Sổ vai.** `begin_action` suy vai từ loại hành động (`work` thì `maker`, `review` thì `reviewer`), kiểm `team_calls` TRƯỚC khi trừ, rồi tăng `calls_used` và phần vai trong cùng giao dịch; ghi `role` vào ý định. Mọi đường hoàn dùng vai đã ghi.
 
@@ -50,11 +50,11 @@ Chủ dự án chọn một agent Cộng hưởng khác làm người review cho
 ## Hành vi đổi so với 0.108.0
 
 - Agent có người review: mục tiêu mới có 8 lượt (4/4) thay vì 6, và chỉ chốt sau review `pass`.
-- Mục tiêu có đội không chốt trên file bị sửa ngoài Javis dù bản sửa đạt kiểm (phương án A); muốn giữ thì Bỏ yêu cầu review.
+- Mục tiêu có đội không chốt trên file bị sửa ngoài UNI MATE dù bản sửa đạt kiểm (phương án A); muốn giữ thì Bỏ yêu cầu review.
 - `heartbeat.v3` (test A3 khoá phiên bản chính sách được cập nhật theo).
 - Mọi mục tiêu (có đội hay không): lượt hỏng ở pha chuẩn bị, trước mốc gọi engine, được hoàn thay vì kết sổ `interrupted` có tính; ba fixture A2, A3, MVP mô phỏng "chết giữa lời gọi engine" giờ ghi mốc `mark_engine` như host thật.
 - Không đổi gì cho agent không có người review.
 
 ## Hạ phiên bản
 
-Tắt Javis, chạy `python tools/resonance_restore_pre_a5.py --yes` (giữ bản kho hiện tại `post-0.109.0-<thời điểm>`, rồi ghi snapshot `.pre-0.109.0`), chạy 0.108.0. Hạ KHÔNG khôi phục là không hỗ trợ: mã 0.108.0 bỏ qua bảng A5 nên chốt đạt mục tiêu có đội mà không có review (test `test_resonance_a5_rollback.py` ghi nhận đúng điều này).
+Tắt UNI MATE, chạy `python tools/resonance_restore_pre_a5.py --yes` (giữ bản kho hiện tại `post-0.109.0-<thời điểm>`, rồi ghi snapshot `.pre-0.109.0`), chạy 0.108.0. Hạ KHÔNG khôi phục là không hỗ trợ: mã 0.108.0 bỏ qua bảng A5 nên chốt đạt mục tiêu có đội mà không có review (test `test_resonance_a5_rollback.py` ghi nhận đúng điều này).

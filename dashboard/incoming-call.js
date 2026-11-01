@@ -1,19 +1,19 @@
-/* incoming-call.js - Javis calls you at a set time (0.203.0).
+/* incoming-call.js - UNI MATE calls you at a set time (0.203.0).
 
    Idea borrowed from OpenMausBot's calendar calls: a reminder created with the "call" option rings the open
-   dashboard like an incoming phone call. The server marks the pushed message's JAVIS_VIEC block with
+   dashboard like an incoming phone call. The server marks the pushed message's UNIMATE_VIEC block with
    "call": "1" (server/reminders.py). Answering starts the ordinary voice call (the mic button, so Live when
-   it is set up, the basic voice path otherwise) and its first line asks Javis to read the reminder or report
+   it is set up, the basic voice path otherwise) and its first line asks UNI MATE to read the reminder or report
    aloud, then keep talking. Declining or not answering in 45 seconds leaves the message in the chat as usual.
 
-   Nothing rings when no Javis tab is open: Telegram still gets the text (and the voice note when "read it
+   Nothing rings when no UNI MATE tab is open: Telegram still gets the text (and the voice note when "read it
    aloud" is on). The ringtone is a short synthesized double beep, so no audio file ships with it.
 
    `parse` and `script` are pure (tested under node); `show` draws the card. */
 (function () {
   "use strict";
 
-  var RE = /<!--\s*JAVIS_VIEC:\s*(\{[\s\S]*?\})\s*-->/;
+  var RE = /<!--\s*UNIMATE_VIEC:\s*(\{[\s\S]*?\})\s*-->/;
   var RING_MS = 45000, TEXT_MAX = 1500;
 
   function tr(t, key, vars) {
@@ -31,7 +31,7 @@
     });
   }
 
-  /* {title, text} when `raw` is a reminder push marked as a call, else null. `text` is what Javis reads:
+  /* {title, text} when `raw` is a reminder push marked as a call, else null. `text` is what UNI MATE reads:
      hidden blocks and the voice-note link removed, capped. */
   function parse(raw) {
     var m = RE.exec(String(raw || ""));
@@ -45,7 +45,7 @@
     return { title: String(v.title || "").slice(0, 160), text: text };
   }
 
-  /* The call's first line: what Javis is asked to read. */
+  /* The call's first line: what UNI MATE is asked to read. */
   function script(c, t) {
     return tr(t, "call.in_script", { title: c.title || tr(t, "call.in_title_none"), text: c.text });
   }
@@ -106,6 +106,6 @@
   }
 
   var API = { parse: parse, script: script, show: show, RING_MS: RING_MS };
-  if (typeof window !== "undefined") window.JavisIncomingCall = API;
+  if (typeof window !== "undefined") window.UniMateIncomingCall = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 })();

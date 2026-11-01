@@ -22,7 +22,7 @@ check("nút chỉ hiện khi kênh có năng lực nhập tin cũ và là tài k
 const CB = src("dashboard/chatbots.js");
 check("kênh đã có bot: chip Zalo trên thẻ bot là nút nhập tin cũ (thẻ kênh không hiện ở mục Kênh chưa có bot)",
   /\(k\.nang_luc \|\| \{\}\)\.nhap_lich_su/.test(CB) && /cb-kenh-nhap-cu/.test(CB) &&
-  /JavisConversations\.nhapTinCu/.test(CB) && /nhapTinCu: nhapTinCu/.test(CV));
+  /UniMateConversations\.nhapTinCu/.test(CB) && /nhapTinCu: nhapTinCu/.test(CV));
 check("bấm là hỏi lại trước khi chạy", /confirm\(window\.t\("ht\.xn_nhap_cu"/.test(CV));
 check("gọi đúng endpoint import-history kèm kênh", /\/import-history"/.test(CV) && /fd\(\{ channel: a\.channel \}\)/.test(CV));
 check("khoá nút trong lúc chạy, trả lại khi xong", /nut\.disabled = true/.test(CV) && /nut\.disabled = false/.test(CV));

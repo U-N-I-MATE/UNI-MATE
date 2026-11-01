@@ -22,7 +22,7 @@ def check(name, cond):
         fails.append(name)
 
 
-src = Path(tempfile.mkdtemp(prefix="javis-teamsrc-"))
+src = Path(tempfile.mkdtemp(prefix="unimate-teamsrc-"))
 (src / "agents").mkdir()
 (src / "skills" / "viet-email").mkdir(parents=True)
 (src / "workflows").mkdir()
@@ -60,11 +60,11 @@ check("preview lists members and skills", pv["ok"] and pv["members"] == ["lan", 
 check("plain bundle is not a team", tb.read_team_entry(zip_bytes) is None and not tb.preview(zip_bytes)["ok"])
 check("garbage is not a team", tb.read_team_entry(b"not a zip") is None)
 
-# An old Javis imports the same file as a plain bundle: the extra entry is ignored.
-dst = Path(tempfile.mkdtemp(prefix="javis-teamdst-"))
+# An old UNI MATE imports the same file as a plain bundle: the extra entry is ignored.
+dst = Path(tempfile.mkdtemp(prefix="unimate-teamdst-"))
 (dst / "agents").mkdir()
 (dst / "agents" / "minh.md").write_text("---\nname: Minh (mine)\n---\n", encoding="utf-8")
-res = share_bundle.import_bundle(data, "team.javis.zip", agents_dir=dst / "agents", workflows_dir=dst / "workflows",
+res = share_bundle.import_bundle(data, "team.unimate.zip", agents_dir=dst / "agents", workflows_dir=dst / "workflows",
                                  skills_root=dst / "skills")
 check("partners imported, existing one kept", "agent:lan" in res["imported"] and "agent:minh" in res["skipped"]
       and "Minh (mine)" in (dst / "agents" / "minh.md").read_text(encoding="utf-8"))

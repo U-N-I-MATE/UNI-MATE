@@ -1,4 +1,4 @@
-"""Bộ câu đo tai nghe: tiếng Việt thuần, tiếng Anh thuần, và câu Việt pha Anh kiểu ra lệnh cho Javis.
+"""Bộ câu đo tai nghe: tiếng Việt thuần, tiếng Anh thuần, và câu Việt pha Anh kiểu ra lệnh cho UNI MATE.
 
 Mỗi câu là các đoạn (ngôn ngữ, chữ): "v" tiếng Việt, "e" tiếng Anh. `terms` là thuật ngữ phải
 nghe ĐÚNG thì lệnh mới chạy được (tên công cụ, tên người, số liệu quảng cáo).
@@ -20,8 +20,8 @@ CORPUS = [
     dict(id="m1", kind="mixed", seg=[("v", "Mở"), ("e", "dashboard Facebook ads"), ("v", "rồi báo cáo"), ("e", "ROAS"),
                                      ("v", "tuần này")], terms=["dashboard", "Facebook ads", "ROAS"]),
     dict(id="m2", kind="mixed", seg=[("v", "Gửi"), ("e", "email"), ("v", "cho khách hàng về đơn hàng mới")], terms=["email"]),
-    dict(id="m3", kind="mixed", seg=[("e", "Javis"), ("v", "ơi"), ("e", "check inventory"), ("v", "của sản phẩm bulong")],
-         terms=["Javis", "check", "inventory"]),
+    dict(id="m3", kind="mixed", seg=[("e", "UNI MATE"), ("v", "ơi"), ("e", "check inventory"), ("v", "của sản phẩm bulong")],
+         terms=["UNI MATE", "check", "inventory"]),
     dict(id="m4", kind="mixed", seg=[("v", "Tạo một"), ("e", "workflow"), ("v", "mới tên là"), ("e", "daily report")],
          terms=["workflow", "daily report"]),
     dict(id="m5", kind="mixed", seg=[("v", "Kết nối"), ("e", "MCP"), ("v", "của"), ("e", "Pancake POS")],

@@ -40,7 +40,7 @@ check("display standalone giữ nguyên", manifest.display === "standalone");
 
 // ---- 1b. KHÔNG khoá chiều dọc (chủ báo 22/09/2026) ----
 // manifest khai "orientation": "portrait" thì Android/One UI khoá app ở chiều dọc: xoay ngang
-// tablet thì hệ điều hành ép app vào một cột hẹp giữa màn và làm mờ hai bên. Javis là dashboard
+// tablet thì hệ điều hành ép app vào một cột hẹp giữa màn và làm mờ hai bên. UNI MATE là dashboard
 // nhiều cột, cần bung hết chiều ngang, nên orientation phải để thiết bị tự quyết.
 check("manifest KHÔNG khoá portrait", manifest.orientation !== "portrait");
 check("manifest KHÔNG khoá landscape", manifest.orientation !== "landscape");

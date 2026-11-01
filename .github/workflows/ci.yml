@@ -196,9 +196,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build ảnh (không đẩy) và đọc kích thước từng lớp
         run: |
-          docker build -t javis-do:pr . 2>&1 | tail -5
-          tong=$(docker image inspect javis-do:pr --format '{{.Size}}')
-          lop=$(docker history javis-do:pr --no-trunc --format '{{.Size}}|{{.CreatedBy}}' \
+          docker build -t unimate-do:pr . 2>&1 | tail -5
+          tong=$(docker image inspect unimate-do:pr --format '{{.Size}}')
+          lop=$(docker history unimate-do:pr --no-trunc --format '{{.Size}}|{{.CreatedBy}}' \
                  | grep -i "playwright.*install-deps" | head -1 | cut -d'|' -f1)
           mb() { awk -v b="$1" 'BEGIN{printf "%.0f MB", b/1024/1024}'; }
           echo "Tổng ảnh: $(mb "$tong")"

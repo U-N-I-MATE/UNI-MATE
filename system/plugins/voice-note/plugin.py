@@ -1,4 +1,4 @@
-"""Plugin bundled: tool javis_voice_note - a short spoken message attached to the answer (0.202.0).
+"""Plugin bundled: tool unimate_voice_note - a short spoken message attached to the answer (0.202.0).
 
 Idea from OpenMausBot's voice notes. The audio is made by server/voice_note.py (Edge TTS) and saved in
 the brain's attachments/voice/; the answer embeds it as a markdown link, which the dashboard draws as
@@ -24,7 +24,7 @@ def register(ctx):
                 "và viết lại nội dung đó bằng chữ ngay dưới để người không nghe được vẫn đọc được.")
 
     ctx.register_tool(
-        name="javis_voice_note",
+        name="unimate_voice_note",
         description=("Ghi một TIN THOẠI ngắn (tối đa 1000 ký tự) thành file mp3 rồi nhúng vào câu trả lời. "
                      "Dùng khi user muốn NGHE thay vì đọc (\"đọc cho tôi nghe\", \"gửi tin thoại\", báo cáo "
                      "buổi sáng để nghe lúc lái xe). Tham số: text (câu cần đọc, văn nói, không markdown), "

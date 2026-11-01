@@ -3,7 +3,7 @@
 Trước đây trang Hội thoại hỏi `/conversations/channels` và nhận hai danh sách khác khuôn (bot
 một kiểu, Zalo cá nhân một kiểu); trang Chatbot hỏi `/chatbots` để biết kênh nào có. Nay:
 
-    GET  /channels                      các LOẠI kênh Javis hỗ trợ (từ sổ đăng ký) + năng lực
+    GET  /channels                      các LOẠI kênh UNI MATE hỗ trợ (từ sổ đăng ký) + năng lực
     GET  /channels/accounts             MỌI tài khoản kênh, MỘT khuôn, bất kể kênh
     POST /channels/verify-token         hỏi nền tảng token này là bot nào, chặn trùng
     POST /channels/accounts             thêm tài khoản token (kênh kind=bot)
@@ -158,7 +158,7 @@ def register(app, deps: ChannelsDeps):
 
     @router.get("/channels")
     async def channels_list():
-        """Các loại kênh Javis hỗ trợ, kèm năng lực và cách nối. Giao diện vẽ từ đây."""
+        """Các loại kênh UNI MATE hỗ trợ, kèm năng lực và cách nối. Giao diện vẽ từ đây."""
         return {"ok": True, "channels": channels.cho_giao_dien()}
 
     @router.get("/channels/accounts")

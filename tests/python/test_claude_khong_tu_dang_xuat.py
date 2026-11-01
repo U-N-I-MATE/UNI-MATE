@@ -3,9 +3,9 @@
     python tests/run.py claude_khong_tu_dang_xuat     (KHÔNG mạng, KHÔNG cần cài claude)
 
 Chủ báo 16/08: thi thoảng Claude Code bị đăng xuất phải đăng nhập lại, còn ChatGPT thì
-không bao giờ. Bất đối xứng đó chính là manh mối: token ChatGPT do CHÍNH JAVIS giữ và
+không bao giờ. Bất đối xứng đó chính là manh mối: token ChatGPT do CHÍNH UNI MATE giữ và
 ghi nguyên tử; còn Claude CLI TỰ quản ~/.claude/.credentials.json và tự ghi lại mỗi lần
-refresh OAuth - trong khi Javis chạy nhiều tiến trình claude song song VÀ có watchdog
+refresh OAuth - trong khi UNI MATE chạy nhiều tiến trình claude song song VÀ có watchdog
 SIGKILL tiến trình treo. Kill rơi đúng lúc CLI đang ghi file token là file cụt nửa
 chừng, lượt sau CLI đọc không ra và coi như chưa đăng nhập. Repo còn ghi sẵn bài học
 cùng họ ở connect_health.py: "tự refresh làm user bị đăng xuất".
@@ -50,7 +50,7 @@ _that_home = claude_cli._home_dir
 claude_cli._home_dir = lambda: _home
 try:
     p = _home / ".claude" / ".credentials.json"
-    b = _home / ".claude" / ".credentials.json.javis-bak"
+    b = _home / ".claude" / ".credentials.json.unimate-bak"
 
     # ---- 0. Máy chưa từng đăng nhập (macOS Keychain cũng rơi vào đây) → im lặng ----
     check("chưa có file + chưa có sao lưu → không làm gì", claude_cli.giu_credentials() == "")

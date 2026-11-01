@@ -4,10 +4,10 @@
 
 Bảng phải giữ, mỗi ô một phép thử:
 
-    chat thường                không javis_run_command, không javis_terminal
+    chat thường                không unimate_run_command, không unimate_terminal
     Coding mức Plan (suggest)  không công cụ chạy lệnh nào
-    Coding mức Tự động (auto)  javis_run_command (allowlist, không shell), không terminal
-    Coding mức Toàn quyền      javis_run_command + javis_terminal + javis_process
+    Coding mức Tự động (auto)  unimate_run_command (allowlist, không shell), không terminal
+    Coding mức Toàn quyền      unimate_run_command + unimate_terminal + unimate_process
     Toàn quyền nhưng lượt /plan (hub mode suggest)   không terminal
 
 Cộng: main.py thật sự truyền thư mục làm việc vào hub cho engine API (trước 0.256.0 không chỗ
@@ -21,8 +21,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-_TMP = tempfile.mkdtemp(prefix="javis-quyencd-")
-os.environ["JAVIS_STATE_DIR"] = _TMP
+_TMP = tempfile.mkdtemp(prefix="unimate-quyencd-")
+os.environ["UNIMATE_STATE_DIR"] = _TMP
 
 import mcp_hub  # noqa: E402
 from coding_ctx import CodingToolContext  # noqa: E402
@@ -52,13 +52,13 @@ def bo(mode, muc=None, sid="p1"):
     return set(r)
 
 
-CHAY = {"javis_run_command", "javis_terminal", "javis_process"}
+CHAY = {"unimate_run_command", "unimate_terminal", "unimate_process"}
 check("chat thường: không công cụ chạy lệnh nào", not (bo("full") & CHAY))
 check("Coding Plan: không công cụ chạy lệnh nào", not (bo("suggest", "suggest") & CHAY))
-check("Coding Tự động: chỉ javis_run_command", bo("auto", "auto") & CHAY == {"javis_run_command"})
+check("Coding Tự động: chỉ unimate_run_command", bo("auto", "auto") & CHAY == {"unimate_run_command"})
 check("Coding Toàn quyền: có cả terminal và process", bo("full", "full") & CHAY == CHAY)
-check("Toàn quyền nhưng lượt /plan: không terminal", not (bo("suggest", "full") & {"javis_terminal", "javis_process"}))
-check("mọi bậc đều có sửa và tìm file", all({"javis_edit_file", "javis_search_files"} <= bo(m, q)
+check("Toàn quyền nhưng lượt /plan: không terminal", not (bo("suggest", "full") & {"unimate_terminal", "unimate_process"}))
+check("mọi bậc đều có sửa và tìm file", all({"unimate_edit_file", "unimate_search_files"} <= bo(m, q)
                                           for m, q in (("full", None), ("auto", "auto"), ("full", "full"))))
 
 # Terminal của phiên chạy thật được qua route, và chặn cứng vẫn chặn.
@@ -66,9 +66,9 @@ ctx = CodingToolContext(session_id="p-chay", workspace_root=str(WS), workspace_r
                         permission_mode="full")
 _t, r = mcp_hub._builtin_tools("full", str(VAULT), workspace_root=[str(WS)], coding_ctx_cua_phien=ctx)
 if os.name != "nt":
-    ra = asyncio.run(r["javis_terminal"]["call"]({"command": "echo xin-chao | tr a-z A-Z"}))
+    ra = asyncio.run(r["unimate_terminal"]["call"]({"command": "echo xin-chao | tr a-z A-Z"}))
     check("terminal qua hub chạy được pipe", "XIN-CHAO" in ra)
-    ra = asyncio.run(r["javis_terminal"]["call"]({"command": "sudo rm -rf /"}))
+    ra = asyncio.run(r["unimate_terminal"]["call"]({"command": "sudo rm -rf /"}))
     check("terminal qua hub: chặn cứng vẫn chặn", ra.startswith("ERROR") and "chặn cứng" in ra)
 else:
     print("bỏ qua: chạy terminal thật cần bash (Windows CI)")
@@ -77,7 +77,7 @@ else:
 _src_hub = (SERVER / "mcp_hub.py").read_text(encoding="utf-8")
 check("khoá cache của hub có mã phiên Coding", "_sid_ctx" in _src_hub and "str(_sid_ctx or \"\")" in _src_hub)
 check("terminal có trong nhóm hạt nhân (không bị giấu sau tìm kiếm)",
-      {"javis_terminal", "javis_process"} <= set(mcp_hub.CORE_TOOL_FNS))
+      {"unimate_terminal", "unimate_process"} <= set(mcp_hub.CORE_TOOL_FNS))
 # Sửa và tìm file: hạt nhân trong phiên Coding, nằm trong pool ở chat thường (trần token của
 # test_prompt_budget không chừa chỗ cho chúng ở MỌI lượt chat).
 _t_cd, _r_cd = mcp_hub._builtin_tools("full", str(VAULT), workspace_root=[str(WS)], coding_ctx_cua_phien=ctx)
@@ -85,10 +85,10 @@ _t_th, _r_th = mcp_hub._builtin_tools("full", str(VAULT))
 _v_cd, _ = mcp_hub._apply_lazy(_t_cd, _r_cd, force=True)
 _v_th, _ = mcp_hub._apply_lazy(_t_th, _r_th, force=True)
 _ten = lambda ds: {x["fn"] for x in ds}
-check("phiên Coding: sửa và tìm file luôn hiện thẳng", {"javis_edit_file", "javis_search_files"} <= _ten(_v_cd))
-check("chat thường: sửa và tìm file nằm sau javis_search_tools",
-      not ({"javis_edit_file", "javis_search_files"} & _ten(_v_th)) and "javis_search_tools" in _ten(_v_th))
-check("terminal ghi nhật ký kiểm toán", '"conn_id": "javis-terminal"' in _src_hub)
+check("phiên Coding: sửa và tìm file luôn hiện thẳng", {"unimate_edit_file", "unimate_search_files"} <= _ten(_v_cd))
+check("chat thường: sửa và tìm file nằm sau unimate_search_tools",
+      not ({"unimate_edit_file", "unimate_search_files"} & _ten(_v_th)) and "unimate_search_tools" in _ten(_v_th))
+check("terminal ghi nhật ký kiểm toán", '"conn_id": "unimate-terminal"' in _src_hub)
 
 # main.py nối phiên Coding vào hub.
 _src_main = (SERVER / "main.py").read_text(encoding="utf-8")
@@ -109,7 +109,7 @@ import engine  # noqa: E402
 async def _thu():
     async def _gen():
         yield engine._max_tool_rounds()
-        yield engine._clip_tool_result("x" * 20_000, ten="javis_terminal")
+        yield engine._clip_tool_result("x" * 20_000, ten="unimate_terminal")
     ra = []
     async for v in engine.chay_trong_phien_coding(_gen):
         ra.append(v)
@@ -124,7 +124,7 @@ check("kết quả MCP vẫn cắt ở 8.000 kể cả trong phiên Coding (0.25
 check("ngoài phiên Coding: vẫn 30 vòng", engine._max_tool_rounds() == 30)
 check("ngoài phiên Coding: vẫn cắt ở 8.000", len(engine._clip_tool_result("x" * 20_000)) < 9_000)
 check("nhắc chốt việc khi còn 10 vòng", engine._nhac_sap_het(139, 150) != "" and engine._nhac_sap_het(10, 150) == "")
-os.environ["JAVIS_MAX_TOOL_ROUNDS_CODING"] = "9999"
+os.environ["UNIMATE_MAX_TOOL_ROUNDS_CODING"] = "9999"
 
 
 async def _thu2():
@@ -134,7 +134,7 @@ async def _thu2():
         return v
 
 
-check("JAVIS_MAX_TOOL_ROUNDS_CODING kẹp ở 500", asyncio.run(_thu2()) == 500)
+check("UNIMATE_MAX_TOOL_ROUNDS_CODING kẹp ở 500", asyncio.run(_thu2()) == 500)
 
 print()
 if _fails:

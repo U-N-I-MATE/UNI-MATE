@@ -17,9 +17,9 @@ import tempfile
 from contextlib import closing
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-peer-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-TEMP = Path(tempfile.mkdtemp(prefix="javis-peer-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-peer-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-peer-w-"))
 
 import agent_lessons as ALS  # noqa: E402
 import resonance_store as RS  # noqa: E402
@@ -89,7 +89,7 @@ def say(T, key, text="Làm tiếp nhé"):
 
 
 def pf(mid, note):
-    return f'Nhận xét xong.\n<!-- JAVIS_TEAM: {{"op": "peer_feedback", "message_id": {mid}, "note": "{note}"}} -->'
+    return f'Nhận xét xong.\n<!-- UNIMATE_TEAM: {{"op": "peer_feedback", "message_id": {mid}, "note": "{note}"}} -->'
 
 
 mB = say(T1, B)
@@ -100,7 +100,7 @@ rows = ALS.peer_feedback(gs, T1["team_id"], B)
 check("trưởng nhóm góp ý: host gán nguồn leader, gắn tin, lượt", len(rows) == 1 and rows[0]["author_role"] == "leader"
       and rows[0]["author_key"] == A and rows[0]["message_id"] == mB and rows[0]["turn_ref"].startswith("turn:")
       and rows[0]["status"] == "active", rows)
-check("lệnh bóc khỏi tin đăng (không hiện khối điều khiển)", "JAVIS_TEAM" not in ss.team_message(T1["session_id"],
+check("lệnh bóc khỏi tin đăng (không hiện khối điều khiển)", "UNIMATE_TEAM" not in ss.team_message(T1["session_id"],
                                                                                               mA)["content"])
 box["texts"][A] = "Đã rõ."
 say(T1, B)

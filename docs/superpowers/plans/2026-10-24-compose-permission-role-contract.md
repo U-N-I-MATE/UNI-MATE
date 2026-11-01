@@ -47,7 +47,7 @@ bounded runtime connection, not completed compose publication or M0–M8.
 Upstream decision: retain unchanged pinned prompts.compose_round vendor and
 existing authenticated ComposeInputs. The already inspected recursion._run_stage
 blobdda6b98cd5af100b8941f33cbb079462299c5280 owns benchmark filesystem/executor/
-retry/accounting rather than Javis owner/lease/CallLedger/native policy. Connect
+retry/accounting rather than UNI MATE owner/lease/CallLedger/native policy. Connect
 the actual renderer through existing OperationProtocol/Records/Execution/Profile/
 Workspace; do not import a second executor or increase proposal/repair/compose
 rounds. Full orchestration replacement comparison remains after actual library.

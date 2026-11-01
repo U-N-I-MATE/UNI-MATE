@@ -19,8 +19,8 @@ class EngineEnvironmentTests(unittest.TestCase):
         for configured in (None, '900'):
             with self.subTest(configured=configured), patch.dict(os.environ):
                 os.environ.pop('CLAUDE_CODE_STREAM_CLOSE_TIMEOUT', None)
-                os.environ.pop('JAVIS_CLAUDE_INIT_TIMEOUT', None)
-                if configured is not None: os.environ['JAVIS_CLAUDE_INIT_TIMEOUT'] = configured
+                os.environ.pop('UNIMATE_CLAUDE_INIT_TIMEOUT', None)
+                if configured is not None: os.environ['UNIMATE_CLAUDE_INIT_TIMEOUT'] = configured
                 expected, observed = dict(os.environ), []
                 profile = self.profile()
                 def create_client(options):
@@ -44,7 +44,7 @@ class EngineEnvironmentTests(unittest.TestCase):
         class ConstructionReached(Exception): pass
         with patch.dict(os.environ):
             os.environ.pop('CLAUDE_CODE_STREAM_CLOSE_TIMEOUT', None)
-            os.environ.pop('JAVIS_CLAUDE_INIT_TIMEOUT', None)
+            os.environ.pop('UNIMATE_CLAUDE_INIT_TIMEOUT', None)
             observed = []
             def default_client(*, options):
                 observed.append(os.environ.get('CLAUDE_CODE_STREAM_CLOSE_TIMEOUT'))

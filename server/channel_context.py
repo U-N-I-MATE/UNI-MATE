@@ -1,11 +1,11 @@
 """
 Ngữ cảnh kênh hội thoại - port ý tưởng gateway của hermes-agent (NousResearch).
 
-Vấn đề: Javis nhận tin từ nhiều "cửa" (Telegram, dashboard web) nhưng model
+Vấn đề: UNI MATE nhận tin từ nhiều "cửa" (Telegram, dashboard web) nhưng model
 không tự biết mình đang trả lời qua cửa nào, và file tạo ra không quay về
 đúng kênh. Hermes giải bằng cách gateway CHÈN metadata kênh vào context mỗi
 phiên (gateway/session.py: Source + User + Connected Platforms + Delivery
-options). Module này làm đúng việc đó cho Javis:
+options). Module này làm đúng việc đó cho UNI MATE:
 
 1. build_channel_block()  - block metadata kênh chèn vào system prompt.
 2. collect_turn_files()   - gom file sinh ra trong 1 lượt trả lời để gateway
@@ -34,7 +34,7 @@ _CHAT_APPS = {
         "cho lệnh của chính nó.")),
     "whatsapp": ("WhatsApp", "nhóm WhatsApp", (
         "- TRẦN khoảng 4000 ký tự một tin. Viết gọn ngay từ đầu, đừng để gateway cắt hộ.",
-        "- WhatsApp chỉ cho Javis nhắn trước trong vòng 24 GIỜ kể từ tin cuối người này "
+        "- WhatsApp chỉ cho UNI MATE nhắn trước trong vòng 24 GIỜ kể từ tin cuối người này "
         "gửi. Việc nền chạy lâu hơn thế thì kết quả có thể không tới được: nói rõ điều này "
         "khi giao việc dài hạn qua WhatsApp.")),
     "discord": ("Discord", "kênh Discord", (
@@ -70,7 +70,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
     # Cặp key-value brain để chèn vào JSON body của curl (rỗng nếu không rõ brain → giữ hành vi cũ).
     # json.dumps để path có KHOẢNG TRẮNG ("My Bullet Journal") vẫn là chuỗi JSON hợp lệ.
     brain_kv = f'"brain":{json.dumps(brain_root)},' if brain_root else ""
-    platforms = ["local (file trên máy chạy Javis)", "dashboard web"]
+    platforms = ["local (file trên máy chạy UNI MATE)", "dashboard web"]
     if telegram_running or source == "telegram":
         platforms.append("Telegram bot")
     if source == "zalo":
@@ -86,30 +86,30 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
 
     lines = [
         "", "",
-        "# === KÊNH HỘI THOẠI HIỆN TẠI (gateway Javis tự chèn - dữ liệu thật, không phải đoán) ===",
+        "# === KÊNH HỘI THOẠI HIỆN TẠI (gateway UNI MATE tự chèn - dữ liệu thật, không phải đoán) ===",
         "- Tin của user có thể đến từ MÁY NGHE GIỌNG NÓI (mic, tin thoại): từ tiếng Anh, tên riêng, "
-        "tên công cụ hay bị chép thành từ gần âm (Javis thành David/Jarvis). Hiểu câu theo ngữ "
+        "tên công cụ hay bị chép thành từ gần âm (tên gọi Uni thành Diu ni/Yu ni, UNI MATE thành U ni mết). Hiểu câu theo ngữ "
         "cảnh cuộc trò chuyện và làm theo ý họ định nói; không bám nghĩa đen từ nghe sai, không "
         "bình luận về nó. Chỉ hỏi lại khi đoán sai sẽ gây hại (số, người nhận, hành động ra ngoài).",
         "- Khi user hỏi trạng thái HIỆN TẠI của cron, việc định kỳ, nhắc hẹn hoặc lịch thuốc: BẮT BUỘC "
-        "gọi `javis_schedule` với `op=list` rồi mới trả lời. Không suy từ memory/index và không nói "
+        "gọi `unimate_schedule` với `op=list` rồi mới trả lời. Không suy từ memory/index và không nói "
         "\"không có tool\" khi tool này đang hiện trong danh sách.",
         "- Khi user yêu cầu TẠO/SỬA/XOÁ/HUỶ/TẮT cron, việc định kỳ hoặc nhắc hẹn: BẮT BUỘC dùng "
-        "`javis_schedule`. Riêng xoá/huỷ mà chưa có id thì gọi `op=list`, khớp đúng mục rồi gọi "
+        "`unimate_schedule`. Riêng xoá/huỷ mà chưa có id thì gọi `op=list`, khớp đúng mục rồi gọi "
         "`op=cancel`; không đẩy user sang trang Nhiệm vụ để tự làm và chỉ xác nhận sau khi tool "
         "trả thành công. Nếu tool lỗi: KHÔNG gọi DELETE, KHÔNG đoán body JSON và TUYỆT ĐỐI KHÔNG "
-        "sửa trực tiếp `Javis/reminders.json` - làm vậy có thể huỷ nhầm job.",
+        "sửa trực tiếp `UniMate/reminders.json` - làm vậy có thể huỷ nhầm job.",
         "- ĐỦ ĐIỀU KIỆN MỚI TẠO: trước khi tạo bất kỳ lịch/việc định kỳ nào, tự soát xem tới giờ nó "
         "chạy có ĐỦ thứ cần không - nguồn dữ liệu đã đấu chưa (Gmail/Lịch/POS... kiểm bằng "
-        "`javis_connections`), và có kênh nào để BÁO kết quả chưa. Thiếu thì NÓI THẲNG thiếu gì và "
+        "`unimate_connections`), và có kênh nào để BÁO kết quả chưa. Thiếu thì NÓI THẲNG thiếu gì và "
         "hỏi user muốn đấu trước hay vẫn tạo; TUYỆT ĐỐI không tạo cho xong rồi im lặng để việc đó "
         "chạy thất bại mỗi ngày mà user không biết.",
-        "- CHỈ gọi `javis_schedule` khi user ra lệnh rõ ràng đọc/tạo/sửa/xoá lịch tự động của Javis. "
+        "- CHỈ gọi `unimate_schedule` khi user ra lệnh rõ ràng đọc/tạo/sửa/xoá lịch tự động của UNI MATE. "
         "Nếu user chỉ nhắc tới \"đặt lịch\", booking, tư vấn 1-1, cuộc hẹn, hoặc đang hỏi ý kiến về "
         "sản phẩm/UX/marketing thì đó là hội thoại bình thường: trả lời đúng câu hỏi, KHÔNG `op=list`, "
         "KHÔNG liệt kê cron/reminder và KHÔNG tự tạo lịch.",
         "- Với mọi dữ liệu đang chạy hoặc dữ liệu tài khoản ngoài (MCP/Google/POS...): phải gọi tool "
-        "phù hợp, hoặc `javis_connections` / `javis_search_tools` để tìm tool. Nếu tool thật sự lỗi, "
+        "phù hợp, hoặc `unimate_connections` / `unimate_search_tools` để tìm tool. Nếu tool thật sự lỗi, "
         "nêu đúng lỗi vừa nhận; không bịa trạng thái từ ngữ cảnh cũ.",
         "- KHÔNG HỨA THỨ MÌNH KHÔNG LÀM ĐƯỢC. Lượt trả lời của bạn KẾT THÚC ngay khi bạn nói "
         "xong: không có ai đánh thức bạn dậy để làm nốt, và bạn KHÔNG chạy tiếp ở nền. Nên "
@@ -117,7 +117,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
         "ngay\", \"xong mình báo lại\", \"bạn chờ mình chút\", \"mình sẽ đợi rồi tổng hợp\", "
         "và mọi biến thể xưng hô khác của chúng. Chỉ có hai lối "
         "đúng: (1) LÀM LUÔN trong lượt này rồi trả kết quả thật, hoặc (2) giao thành việc nền "
-        "(`javis_task` op=add) / nhắc hẹn (`javis_schedule`) rồi nói rõ đã giao gì và kết quả sẽ "
+        "(`unimate_task` op=add) / nhắc hẹn (`unimate_schedule`) rồi nói rõ đã giao gì và kết quả sẽ "
         "về đâu. Không làm được cả hai thì nói thẳng là chưa làm, đừng hẹn.",
         "- CHỈ GIAO VIỆC NỀN KHI NGƯỜI DÙNG BẢO LÀM. Hàng đợi Kanban là chỗ CHẠY một việc user "
         "vừa yêu cầu mà lượt này không làm xong được, KHÔNG phải sổ ghi việc-cần-làm. Kế hoạch, "
@@ -132,13 +132,13 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
         "báo điều phối đang TẮT thì việc chỉ nằm xếp hàng chứ chưa chạy - phải nói thẳng câu đó "
         "và bảo user bật \"AI tự vận hành\" ở trang Nhiệm vụ, KHÔNG được rút gọn thành \"việc đang "
         "chạy, kết quả sẽ tự về\".",
-        "- THÊM MCP / đấu nguồn mới: BẮT BUỘC dùng tool `javis_add_mcp` (op=find để tra Kho kết nối "
-        "trước, op=add để đấu). Chỉ đường này nguồn mới mới nằm trong kho của Javis và HIỆN ở khu "
+        "- THÊM MCP / đấu nguồn mới: BẮT BUỘC dùng tool `unimate_add_mcp` (op=find để tra Kho kết nối "
+        "trước, op=add để đấu). Chỉ đường này nguồn mới mới nằm trong kho của UNI MATE và HIỆN ở khu "
         "'Đã kết nối' trang Kết nối cho người dùng thấy, đồng thời mọi bộ não dùng chung được. "
         "TUYỆT ĐỐI không thêm bằng `claude mcp add` / `codex mcp add` và không sửa tay file cấu hình "
         "MCP: kiểu đó chỉ một CLI thấy, người dùng nhìn trang Kết nối tưởng chưa thêm gì. Không thấy "
-        "`javis_add_mcp` trong danh sách tool thì nó đang nằm sau `javis_search_tools` - tìm rồi gọi "
-        "qua `javis_run_tool`, chứ đừng kết luận là không làm được. Thêm xong phải NÓI RÕ nó đang nằm "
+        "`unimate_add_mcp` trong danh sách tool thì nó đang nằm sau `unimate_search_tools` - tìm rồi gọi "
+        "qua `unimate_run_tool`, chứ đừng kết luận là không làm được. Thêm xong phải NÓI RÕ nó đang nằm "
         "ở trang Kết nối, đang bật hay tắt, và đang ở mức quyền nào.",
     ]
     if source == "telegram":
@@ -162,7 +162,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "## Gửi file cho user qua Telegram (2 cách)",
             "1. TỰ ĐỘNG (nên dùng - luôn về ĐÚNG người đang hỏi): file bạn tạo bằng tool Write trong "
             "lượt này, file có ĐƯỜNG DẪN TUYỆT ĐỐI trong câu trả lời cuối, HOẶC ảnh/tệp trong vault "
-            "nhúng dạng markdown ![](attachments/...) (vd ẢNH Javis vừa tạo) - đều được Javis tự đính "
+            "nhúng dạng markdown ![](attachments/...) (vd ẢNH UNI MATE vừa tạo) - đều được UNI MATE tự đính "
             f"kèm gửi qua Telegram ngay sau câu trả lời (tối đa {MAX_FILES_PER_TURN} file/lượt, mỗi file "
             f"dưới {MAX_FILE_MB}MB). Ảnh bạn vừa tạo: CHỈ cần nhúng ![](attachments/...) là đủ để user "
             "nhận, KHÔNG cần curl (curl dễ gửi nhầm cho chủ bot).",
@@ -176,10 +176,10 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "- KHÔNG nói \"mình đã gửi file\" khi chưa làm một trong hai cách trên.",
             "- File user gửi lên Telegram đã được gateway tải về máy sẵn - đường dẫn nằm ngay trong tin nhắn.",
             "",
-            "## Đặt nhắc hẹn (Javis TỰ thức dậy gửi sau - dùng khi user muốn được nhắc)",
+            "## Đặt nhắc hẹn (UNI MATE TỰ thức dậy gửi sau - dùng khi user muốn được nhắc)",
             "Khi user muốn được NHẮC vào lúc nào đó (\"30 phút nữa nhắc tôi...\", \"8h30 sáng mai nhắc...\", "
             "\"mỗi sáng 7h nhắc uống thuốc\", \"tối 9h báo doanh thu hôm nay\").",
-            "- CÁCH NÊN DÙNG: gọi tool `javis_schedule` (op=create) - nó TỰ gắn đúng brain phiên này, "
+            "- CÁCH NÊN DÙNG: gọi tool `unimate_schedule` (op=create) - nó TỰ gắn đúng brain phiên này, "
             "khỏi lo nhắc rơi nhầm brain. Chỉ dùng curl bên dưới nếu vì lý do gì không gọi được tool.",
             "- Cách curl (nếu cần): dùng tool Bash gọi "
             f"`curl -s -X POST http://127.0.0.1:{port}/reminders "
@@ -195,9 +195,9 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "hằng tháng = \"0 9 1 * *\". Bạn tự đổi câu user thành cron. Có cron thì tự lặp, KHỎI cần repeat_min.",
             "- LẶP đơn giản (không cần cron): thêm \"repeat_min\": số phút (vd 1440 = mỗi ngày, 60 = mỗi giờ).",
             "- \"mode\":\"notify\" (mặc định) = tới giờ nhắn lại đúng câu nhắc. \"mode\":\"task\" = tới giờ "
-            "Javis TỰ LÀM việc mô tả trong text (đọc số liệu MCP, soạn nháp) rồi gửi kết quả về đây.",
+            "UNI MATE TỰ LÀM việc mô tả trong text (đọc số liệu MCP, soạn nháp) rồi gửi kết quả về đây.",
             "- \"mode\":\"script\" = job giám sát KHÔNG cần AI (rẻ): chạy 1 file script CÓ SẴN trong "
-            "Javis/scripts (\"script\":\"<tên file .py/.sh/.ps1>\"), đẩy stdout về đây; stdout rỗng thì im lặng, "
+            "UniMate/scripts (\"script\":\"<tên file .py/.sh/.ps1>\"), đẩy stdout về đây; stdout rỗng thì im lặng, "
             "exit khác 0 thì báo lỗi. Chỉ chạy file user đã tự bỏ vào folder đó - KHÔNG bịa lệnh tuỳ ý.",
             f"- LUÔN giữ \"chat_id\":\"{chat_id}\" để nhắc về ĐÚNG người đang nói.",
             ("- LUÔN giữ NGUYÊN field \"brain\" có sẵn trong lệnh trên (nó trỏ brain đang chat) để nhắc "
@@ -206,7 +206,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "- Gọi curl xong, đọc JSON trả về: ok=true kèm due_human là đã đặt - xác nhận lại NGẮN bằng lời "
             "(vd \"Ok, 8h30 sáng mai mình nhắc bạn nhé\"). KHÔNG nói đã đặt nếu curl chưa trả ok=true.",
             "",
-            "## Fallback HUỶ nhắc hẹn khi javis_schedule thật sự lỗi",
+            "## Fallback HUỶ nhắc hẹn khi unimate_schedule thật sự lỗi",
             "- Chỉ dùng fallback này cho reminder có id dạng `r_...`; loop/file định kỳ phải dừng và báo đúng "
             "lỗi tool, không tự sửa/xoá file.",
             "- Chưa có id: đọc danh sách thật bằng "
@@ -221,14 +221,14 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "## Tạo Loop / Việc (Kanban) cho user qua chat - báo kết quả về ĐÚNG người",
             "Loop chạy nền (mỗi vòng) và việc Kanban (khi chạy xong) TỰ báo kết quả về Telegram của "
             "NGƯỜI YÊU CẦU. Để về đúng người đang chat (không phải chủ bot), gắn danh tính họ khi tạo:",
-            f"- Tạo LOOP: thêm dòng `owner_chat: \"{chat_id}\"` vào frontmatter file Javis/loops/<slug>.md.",
+            f"- Tạo LOOP: thêm dòng `owner_chat: \"{chat_id}\"` vào frontmatter file UniMate/loops/<slug>.md.",
             f"- Tạo VIỆC: khi POST http://127.0.0.1:{port}/kanban/task, kèm field \"chat_id\":\"{chat_id}\".",
-            "- Bỏ trống owner_chat/chat_id → báo vào khung Javis Core của brain đó (và Telegram của chính chủ nếu đã liên kết), không về người đang chat.",
+            "- Bỏ trống owner_chat/chat_id → báo vào khung UNI MATE Core của brain đó (và Telegram của chính chủ nếu đã liên kết), không về người đang chat.",
             "- Muốn 1 loop ngừng báo mỗi vòng (loop quá ồn): đặt `notify: false` trong frontmatter loop đó.",
         ]
     elif source == "zalo":
         # Kênh Zalo Bot. Cố ý KHÔNG gộp vào nhánh Telegram: hai chỗ khác nhau ở đúng những
-        # thứ mà một câu hướng dẫn sai sẽ dạy Javis hứa hão - gửi tài liệu, trần độ dài, và
+        # thứ mà một câu hướng dẫn sai sẽ dạy UNI MATE hứa hão - gửi tài liệu, trần độ dài, và
         # cách nhắc hẹn tìm đường về.
         who = (meta.get("user_name") or "").strip() or "user"
         conv = (f"nhóm '{meta.get('chat_title') or '?'}', tin nhắn từ {who}"
@@ -249,17 +249,17 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             ".md KHÔNG gửi ra được qua kênh này. TUYỆT ĐỐI không nói \"mình đã gửi file\" - hãy "
             "nói thẳng là chưa gửi được qua Zalo, rồi đưa ĐƯỜNG DẪN trong brain để user tự mở, "
             "hoặc đề nghị tóm tắt nội dung ngay trong tin nhắn.",
-            "- ẢNH thì Javis tự đính kèm khi bạn nhúng `![](attachments/...)` như thường lệ, "
+            "- ẢNH thì UNI MATE tự đính kèm khi bạn nhúng `![](attachments/...)` như thường lệ, "
             "nhưng đây là đường đang thử nghiệm: gửi hỏng thì user sẽ thấy một dòng báo lỗi.",
             "- Ảnh user gửi lên đã được gateway tải về máy sẵn - đường dẫn nằm ngay trong tin nhắn.",
             "",
             "## Đặt nhắc hẹn và giao việc nền",
-            "- Nhắc hẹn: gọi tool `javis_schedule` (op=create). Nó tự gắn đúng brain phiên này.",
+            "- Nhắc hẹn: gọi tool `unimate_schedule` (op=create). Nó tự gắn đúng brain phiên này.",
             f"- Kết quả loop và việc Kanban phải về ĐÚNG người đang hỏi: gắn `owner_chat: "
             f"\"{chat_id}\"` cho loop, hoặc field \"chat_id\":\"{chat_id}\" khi POST "
             f"http://127.0.0.1:{port}/kanban/task. Giữ NGUYÊN cả tiền tố `zalo:` - đó chính là "
             "thứ server đọc để biết gửi về Zalo chứ không phải Telegram.",
-            "- Bỏ trống thì kết quả vào khung Javis Core của brain trên dashboard, tức là người đang hỏi không thấy gì.",
+            "- Bỏ trống thì kết quả vào khung UNI MATE Core của brain trên dashboard, tức là người đang hỏi không thấy gì.",
         ]
     elif source in _CHAT_APPS:
         # Slack and WhatsApp (0.71.0), Discord and Lark/Feishu (0.85.0). One branch because the
@@ -282,12 +282,12 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             *dong_rieng,
             "",
             f"## Gửi file qua {ten}",
-            "- Javis tự đính kèm ảnh và tài liệu khi bạn nhúng `![](attachments/...)` hoặc link "
+            "- UNI MATE tự đính kèm ảnh và tài liệu khi bạn nhúng `![](attachments/...)` hoặc link "
             "file trong brain như thường lệ. Không nói \"đã gửi\" khi chưa nhúng gì.",
             "- File user gửi lên đã được gateway tải về máy sẵn - đường dẫn nằm ngay trong tin nhắn.",
             "",
             "## Đặt nhắc hẹn và giao việc nền",
-            "- Nhắc hẹn: gọi tool `javis_schedule` (op=create). Nó tự gắn đúng brain phiên này.",
+            "- Nhắc hẹn: gọi tool `unimate_schedule` (op=create). Nó tự gắn đúng brain phiên này.",
             f"- Kết quả loop và việc Kanban phải về ĐÚNG người đang hỏi: gắn `owner_chat: "
             f"\"{chat_id}\"` cho loop, hoặc field \"chat_id\":\"{chat_id}\" khi POST "
             f"http://127.0.0.1:{port}/kanban/task. Giữ NGUYÊN cả tiền tố `{tien_to}` - đó là thứ "
@@ -295,11 +295,11 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
         ]
     elif source == "cli":
         # Terminal. Khác web ở chỗ KHÔNG render được gì: không ảnh, không bảng, không link bấm
-        # được. Nói thẳng ra đây, nếu không Javis sẽ trả về markdown của web và người dùng nhận
+        # được. Nói thẳng ra đây, nếu không UNI MATE sẽ trả về markdown của web và người dùng nhận
         # một đống ký tự gạch dọc.
         who = (meta.get("host") or "").strip()
         lines += [
-            "- Nguồn tin nhắn này: Javis CLI (user đang gõ trong terminal"
+            "- Nguồn tin nhắn này: UNI MATE CLI (user đang gõ trong terminal"
             + (f", máy {who}" if who else "") + ").",
             f"- Nền tảng đang kết nối: {', '.join(platforms)}.",
             "- Terminal KHÔNG render markdown: TUYỆT ĐỐI không dùng bảng, không nhúng ảnh "
@@ -316,7 +316,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
     else:
         web_sid = str(meta.get("session_id") or "").strip()
         lines += [
-            "- Nguồn tin nhắn này: Dashboard web Javis (user mở bằng trình duyệt, file hiện dạng đường dẫn).",
+            "- Nguồn tin nhắn này: Dashboard web UNI MATE (user mở bằng trình duyệt, file hiện dạng đường dẫn).",
             f"- Nền tảng đang kết nối: {', '.join(platforms)}.",
             "",
             "## Cách trình bày trong khung chat này (kênh ĐỌC, không phải kênh nghe)",
@@ -334,7 +334,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "- Bảng thì kênh này VẼ ĐƯỢC, nên dùng khi so sánh cùng một bộ trường giữa 2 mục trở "
             "lên. Chỉ một danh sách phẳng thì gạch đầu dòng đọc nhanh hơn bảng.",
             "- Thẻ tương tác (chỉ khung chat này vẽ, kênh khác tự hạ thành chữ): chèn khối ẩn "
-            "`<!-- JAVIS_CARD: {...} -->` một dòng JSON. `{\"type\":\"chart\",\"title\",\"kind\":\"bar|line\","
+            "`<!-- UNIMATE_CARD: {...} -->` một dòng JSON. `{\"type\":\"chart\",\"title\",\"kind\":\"bar|line\","
             "\"labels\":[..],\"series\":[{\"name\",\"data\":[số]}]}` cho xu hướng theo ngày/tuần; "
             "`{\"type\":\"stats\",\"items\":[{\"label\",\"value\",\"delta\"}]}` cho vài con số chính; "
             "`{\"type\":\"buttons\",\"buttons\":[{\"label\",\"reply\"}]}` (tối đa 4) khi cần chủ chọn nhanh, "
@@ -346,8 +346,8 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "cái cớ để viết dài ra hay bẻ một ý nhỏ thành ba gạch đầu dòng.",
             "",
             "## Điều khiển dashboard và máy tính bằng lời (Voice V1)",
-            "- User bảo MỞ một trang / file / việc trên Javis (\"mở trang Nhiệm vụ\", \"mở file X\", "
-            "\"cho xem việc vừa giao\", \"cuộn xuống\"): gọi tool `javis_ui` (action open_page | "
+            "- User bảo MỞ một trang / file / việc trên UNI MATE (\"mở trang Nhiệm vụ\", \"mở file X\", "
+            "\"cho xem việc vừa giao\", \"cuộn xuống\"): gọi tool `unimate_ui` (action open_page | "
             "open_file | open_task | scroll) rồi thuật đúng kết quả tool trả về. Không mô tả "
             "đường bấm tay khi tool làm được.",
             "- \"cuộn xuống\" là cuộn THỨ HỌ ĐANG NHÌN, không phải lúc nào cũng là khung chat: "
@@ -355,8 +355,8 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
             "`chat_top`/`chat_bottom` hay `page_top`/`page_bottom` khi user nói rõ cuộn cái nào. "
             "Tool trả về đúng thứ vừa cuộn, cứ thuật lại theo đó.",
             "- User bảo MỞ hay TẮT một app trên máy (\"mở Chrome\", \"tắt Excel\", \"đang mở app "
-            "nào\"): gọi `javis_app_open` / `javis_app_close` / `javis_app_list`. Tool tự nói nếu "
-            "Javis đang chạy trên máy chủ chứ không phải máy user; khi đó thuật lại đúng câu đó. "
+            "nào\"): gọi `unimate_app_open` / `unimate_app_close` / `unimate_app_list`. Tool tự nói nếu "
+            "UNI MATE đang chạy trên máy chủ chứ không phải máy user; khi đó thuật lại đúng câu đó. "
             "Đóng app là làm ngay theo ý user, chỉ truyền `force=true` khi họ nói ép tắt.",
             "- Khối `[NGỮ CẢNH GIAO DIỆN: ...]` (nếu có) ở đầu tin là thứ user ĐANG NHÌN: `trang=` là "
             "trang đang mở, `chọn=` là đoạn họ đang bôi đen. \"cái này\", \"đoạn này\", \"chỗ này\" "
@@ -386,7 +386,7 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
                 "sẽ tự hiện ở đây, xem tiến độ ở trang Nhiệm vụ. Muốn có bản tổng hợp so sánh thì bảo user "
                 "nhắn lại một câu sau khi kết quả về, HOẶC giao luôn một việc cuối chuyên đi tổng hợp "
                 "(dùng `deps` trỏ vào các việc trước) thay vì tự hứa suông.",
-                "- Javis TỰ KIỂM lời hứa: cuối mỗi lượt server dò câu trả lời xem có hẹn báo lại "
+                "- UNI MATE TỰ KIỂM lời hứa: cuối mỗi lượt server dò câu trả lời xem có hẹn báo lại "
                 "không, rồi đối chiếu với việc nền thật đang có. Hứa mà không có việc nào thì "
                 "server tự dán một dòng đính chính ngay dưới câu của bạn cho user thấy. Nên câu "
                 "hẹn suông không giúp bạn thoát, chỉ làm câu trả lời trông tệ hơn.",
@@ -398,11 +398,11 @@ def build_channel_block(source: str, meta: dict = None, telegram_running: bool =
                 "-H \"Content-Type: application/json\" "
                 "-d '{\"path\":\"<đường dẫn tuyệt đối>\",\"caption\":\"...\"}'`",
                 "- Nếu user muốn được NHẮC sau (\"30 phút nữa nhắc...\", \"8h sáng mai...\"): nên gọi tool "
-                "`javis_schedule` (op=create) để nhắc vào ĐÚNG brain đang chọn; hoặc dùng tool Bash gọi "
+                "`unimate_schedule` (op=create) để nhắc vào ĐÚNG brain đang chọn; hoặc dùng tool Bash gọi "
                 f"`curl -s -X POST http://127.0.0.1:{port}/reminders -H \"Content-Type: application/json\" "
                 f"-d '{{\"text\":\"<nội dung>\",{brain_kv}\"delay_min\":30}}'` (hoặc \"at\":\"HH:MM\" / "
                 "\"at\":\"YYYY-MM-DD HH:MM\", thêm \"repeat_min\" để lặp). Giữ nguyên field \"brain\" để nhắc "
-                "thuộc đúng brain. Server tính giờ VN; tới giờ Javis tự báo vào khung Javis Core của brain đó (và Telegram của chủ nếu đã liên kết).",
+                "thuộc đúng brain. Server tính giờ VN; tới giờ UNI MATE tự báo vào khung UNI MATE Core của brain đó (và Telegram của chủ nếu đã liên kết).",
             ]
     return "\n".join(lines) + "\n"
 
@@ -597,7 +597,7 @@ def collect_turn_files(reply_text: str, written_paths: list, t0: float,
 
     Ứng viên = file agent ghi bằng tool Write (written_paths) + đường dẫn tuyệt đối
     nhắc trong câu trả lời cuối + đường dẫn TƯƠNG ĐỐI trong vault nhúng dạng markdown
-    (![](attachments/x.png) - ảnh Javis tạo) khi có vault_root. Chỉ giữ file THẬT SỰ
+    (![](attachments/x.png) - ảnh UNI MATE tạo) khi có vault_root. Chỉ giữ file THẬT SỰ
     vừa thay đổi trong lượt (mtime >= t0) - nhắc tới file cũ sẽ không spam gửi lại; muốn
     gửi file cũ thì agent gọi endpoint /telegram/send-file. exclude = set path (normcase)
     đã gửi trong lượt qua endpoint, tránh gửi trùng.
@@ -612,7 +612,7 @@ def collect_turn_files(reply_text: str, written_paths: list, t0: float,
         except Exception:
             continue
     cands += extract_paths(reply_text)
-    # Ảnh/tệp Javis tạo trong lượt thường được NHÚNG dạng path tương đối trong vault
+    # Ảnh/tệp UNI MATE tạo trong lượt thường được NHÚNG dạng path tương đối trong vault
     # (![](attachments/x.png)); resolve về gốc vault để tự đính kèm về ĐÚNG phiên chat.
     cands += resolve_vault_relative(reply_text, vault_root)
 
@@ -646,21 +646,21 @@ def collect_turn_files(reply_text: str, written_paths: list, t0: float,
 # ============================================================
 # Hạ khối điều khiển xuống chữ cho kênh không phải web
 # ============================================================
-# Javis nhúng khối điều khiển dạng HTML comment ở cuối câu trả lời cho dashboard
-# đọc (hiện chỉ còn JAVIS_ASK - vẽ nút lựa chọn). Kênh chữ thuần như Telegram không
+# UNI MATE nhúng khối điều khiển dạng HTML comment ở cuối câu trả lời cho dashboard
+# đọc (hiện chỉ còn UNIMATE_ASK - vẽ nút lựa chọn). Kênh chữ thuần như Telegram không
 # hiểu mấy khối này, mà md_to_mdv2 chỉ escape chứ không bóc, nên không lọc là người
-# dùng nhìn thấy nguyên cụm "<\!\-\- JAVIS\_ASK: ...".
-# Regex để CHUNG cho mọi JAVIS_*, không liệt kê từng tên: khối lạ (vd JAVIS_METRICS
+# dùng nhìn thấy nguyên cụm "<\!\-\- UNI MATE\_ASK: ...".
+# Regex để CHUNG cho mọi UNIMATE_*, không liệt kê từng tên: khối lạ (vd UNIMATE_METRICS
 # thời còn bảng số liệu, hoặc ký ức cũ trong brain còn nhắc) thì lặng lẽ rơi mất
 # thay vì lọt nguyên xi ra chat.
-_CTRL_RE = re.compile(r"<!--\s*JAVIS_([A-Z_]+):\s*([\s\S]*?)\s*-->")
+_CTRL_RE = re.compile(r"<!--\s*UNIMATE_([A-Z_]+):\s*([\s\S]*?)\s*-->")
 _MAX_ASK_OPTS = 4
 
 
 def _ask_to_text(payload: str) -> str:
-    """JSON của khối JAVIS_ASK -> câu hỏi + danh sách đánh số. JSON hỏng -> chuỗi rỗng.
+    """JSON của khối UNIMATE_ASK -> câu hỏi + danh sách đánh số. JSON hỏng -> chuỗi rỗng.
 
-    Người dùng Telegram nhắn lại "1" là xong: Javis đọc "1" trong ngữ cảnh câu hỏi
+    Người dùng Telegram nhắn lại "1" là xong: UNI MATE đọc "1" trong ngữ cảnh câu hỏi
     vừa hỏi thì tự hiểu, không cần lưu state.
     """
     try:
@@ -702,9 +702,9 @@ def is_silent_report(text: str) -> bool:
 
 
 def strip_control_blocks(text: str) -> str:
-    """Bóc mọi khối <!-- JAVIS_*: ... --> khỏi text.
+    """Bóc mọi khối <!-- UNIMATE_*: ... --> khỏi text.
 
-    JAVIS_ASK -> thay bằng câu hỏi + danh sách đánh số. Khối khác -> bỏ hẳn.
+    UNIMATE_ASK -> thay bằng câu hỏi + danh sách đánh số. Khối khác -> bỏ hẳn.
     Khối sai cú pháp cũng bị bỏ: một khối hỏng KHÔNG được phép nuốt mất câu trả lời.
     """
     def _sub(m):

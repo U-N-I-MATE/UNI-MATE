@@ -304,7 +304,7 @@ with tempfile.TemporaryDirectory(prefix="a4-pilot-gate-r2-") as td:
         body = FINALLY[KEEP_AT:KEEP_AT + 2] + [n for n in FINALLY[KEEP_AT + 2:] if isinstance(n, ast.If)
                                                 and "rmtree" in ast.unparse(n)]
         with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("JAVIS_RESONANCE_A4_KEEP", None)
+            os.environ.pop("UNIMATE_RESONANCE_A4_KEEP", None)
             exec(compile(ast.Module(body=body, type_ignores=[]), str(SRC), "exec"), ns)
         kept = base.exists() and (base / "state" / "usage.json").read_text(encoding="utf-8") == '{"total":'
         ok_(f"vòng 2 bằng chứng ca, lượt engine {etl!r}: {'giữ nguyên thư mục và tệp hỏng' if want_kept else 'dọn'}",
@@ -315,7 +315,7 @@ with tempfile.TemporaryDirectory(prefix="a4-pilot-gate-r2-") as td:
         sent = []
 
         def fake_run(*a, **kw):
-            sc = kw["env"]["JAVIS_RESONANCE_A4_SCENARIO"]
+            sc = kw["env"]["UNIMATE_RESONANCE_A4_SCENARIO"]
             sent.append(sc)
             rep = {"acceptance": "stopped", "model_turns": {"chat_simulated": 0, "chat_real": 0},
                    "engine_turns_logged": 0, "engine_turns_status": "verified"}
@@ -331,7 +331,7 @@ with tempfile.TemporaryDirectory(prefix="a4-pilot-gate-r2-") as td:
               "subprocess": types.SimpleNamespace(run=fake_run), "print": lambda *a, **k: None,
               "DRY_CASES": {"first": ({}, "stopped", "dừng như mong đợi"), "second": ({}, "stopped", "dừng như mong đợi")},
               "DRY_TURNS": {"first": 0, "second": 0}}
-        env = {"JAVIS_RESONANCE_A4_DRY_DIR": str(dry_dir)} if dry_dir else {}
+        env = {"UNIMATE_RESONANCE_A4_DRY_DIR": str(dry_dir)} if dry_dir else {}
         with patch.dict(os.environ, env, clear=True):
             exec(compile(ast.Module(body=[DRIVER], type_ignores=[]), str(SRC), "exec"), ns)
         return sent, ns["bad"]
@@ -382,7 +382,7 @@ with tempfile.TemporaryDirectory(prefix="a4-pilot-gate-r3-") as td:
             body = body + FINALLY[KEEP_AT:KEEP_AT + 2] + [n for n in FINALLY[KEEP_AT + 2:] if isinstance(n, ast.If)
                                                           and "rmtree" in ast.unparse(n)]
         with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("JAVIS_RESONANCE_A4_KEEP", None)
+            os.environ.pop("UNIMATE_RESONANCE_A4_KEEP", None)
             exec(compile(ast.Module(body=body, type_ignores=[]), str(SRC), "exec"), ns)
         rep = ns["rep"]
         ok_(f"vòng 3 {name}: số đếm None, nhãn unverified, câu kiểm dry không đạt",
@@ -404,8 +404,8 @@ with tempfile.TemporaryDirectory(prefix="a4-pilot-gate-r3-") as td:
 RSID, RGID = "aa2c8660c01540a2b2e78487c4e3173d", "g_8163e17553dc"
 T1, T2 = f"turn:msg:{RSID}:1", f"turn:msg:{RSID}:4"
 REAL_CARDS = [  # (id tin, khoá, revision, câu)
-    (3, T1, 1, "Javis đã lập mục tiêu từ việc này."),
-    (6, T2, 2, "Javis đã cập nhật cách hiểu mục tiêu."),
+    (3, T1, 1, "UNI MATE đã lập mục tiêu từ việc này."),
+    (6, T2, 2, "UNI MATE đã cập nhật cách hiểu mục tiêu."),
     (7, "outbox:3", 2, "Đã xong phần kiểm được của mục tiêu: ..."),
 ]
 REAL_OUTBOX = [(1, "goal.created", 1), (2, "goal.revised", 2), (3, "goal.waiting_human", 2)]
@@ -474,7 +474,7 @@ else:
         for mid, key, rev, text in REAL_CARDS:
             block = json.dumps({"goal_id": RGID, "revision": rev, "report": key})
             s.execute("INSERT INTO messages VALUES (?, ?, 'assistant', ?)",
-                      (mid, RSID, f"{text}\n<!-- JAVIS_RESONANCE: {block} -->"))
+                      (mid, RSID, f"{text}\n<!-- UNIMATE_RESONANCE: {block} -->"))
             s.execute("INSERT INTO report_receipts VALUES (?, ?, ?, ?)", (RSID, key, RGID, mid))
         g = sqlite3.connect(str(goal))
         g.executescript("CREATE TABLE outbox (id INTEGER PRIMARY KEY, goal_id TEXT, kind TEXT, payload_json TEXT, "

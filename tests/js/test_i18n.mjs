@@ -61,7 +61,7 @@ for (const [ten, o] of [["vi.json", vi], ["en.json", en]]) {
 
 // ---- 5. Bản tiếng Anh phải THẬT SỰ được dịch ----
 // Chép nguyên tiếng Việt sang en.json thì test khớp key vẫn xanh mà người dùng vẫn thấy
-// tiếng Việt. Bắt bằng dấu riêng của tiếng Việt; tên riêng ("Javis", "Telegram") không có dấu
+// tiếng Việt. Bắt bằng dấu riêng của tiếng Việt; tên riêng ("UNI MATE", "Telegram") không có dấu
 // nên không dính.
 const DAU_VIET = /[ăđơưảãạằắẳẵặầấẩẫậẻẽẹềếểễệỉĩịỏõọồốổỗộờớởỡợủũụừứửữựỳỷỹỵ]/i;
 const chuaDich = Object.entries(en).filter(([, v]) => DAU_VIET.test(String(v)));
@@ -69,7 +69,7 @@ check("en.json không còn chuỗi tiếng Việt", chuaDich.length === 0,
       chuaDich.map(([k]) => k).slice(0, 6).join(", "));
 
 // ---- 6. XƯNG HÔ: dùng "bạn", không dùng "anh" ----
-// Javis phục vụ NHIỀU NGƯỜI, không phải một người. Xưng "anh" với người dùng là đoán giới
+// UNI MATE phục vụ NHIỀU NGƯỜI, không phải một người. Xưng "anh" với người dùng là đoán giới
 // tính và đoán quan hệ, và đoán sai với phần lớn người đọc. Chủ repo nói rõ điều này
 // (2026-08-14) sau khi thấy chữ "anh" trong chính mấy chuỗi vừa thêm.
 //
@@ -99,7 +99,7 @@ for (const [ten, o] of [["vi.json", vi], ["en.json", en]]) {
 {
   const html = fs.readFileSync(path.join(ROOT, "dashboard", "index.html"), "utf8")
     .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->/g, "");
-  const NGOAI_LE_TEXT = ["Ngọc Thu", "by Javis Foundation", "1.10×"];
+  const NGOAI_LE_TEXT = ["Ngọc Thu", "by UNI MATE Foundation", "1.10×"];
   const ID_JS_TU_QUAN = ["themeToggle", "sslToggle"];
   const tuQuan = (attrs) => ID_JS_TU_QUAN.some((id) => attrs.includes('id="' + id + '"'));
   const chuaGan = [];
@@ -205,7 +205,7 @@ for (const [ten, o] of [["vi.json", vi], ["en.json", en]]) {
 //
 // NGOAI_LE_DU_LIEU: file mà tiếng Việt còn lại là DỮ LIỆU chứ không phải chữ hiện ra - regex và
 // danh sách từ khớp câu người Việt GÕ hoặc NÓI, lời dặn gửi cho AI, tên nhóm dùng làm khoá lọc.
-// Dịch mấy thứ đó là làm hỏng tính năng: người dùng vẫn nói "javis ơi" dù giao diện đang tiếng
+// Dịch mấy thứ đó là làm hỏng tính năng: người dùng vẫn nói "uni ơi" dù giao diện đang tiếng
 // Anh. Mỗi file ghi kèm `tran` = số dòng mã chạy có dấu Việt ĐO ĐƯỢC hôm nay.
 //
 // Trần là bánh cóc HAI CHIỀU, không phải mức trần lỏng:
@@ -222,8 +222,8 @@ const NGOAI_LE_DU_LIEU = {
   "console.js": { tran: 8, vi_sao: "từ khoá xếp loại nhật ký thay đổi, đơn vị thời gian người dùng gõ, tên danh mục làm khoá lọc, gập dấu" },
   "packs.js": { tran: 11, vi_sao: "tên nhóm của kho gói là khoá lọc data-kho-nhom, nhãn hiện ra đã dịch qua tw()" },
   "ui-context.js": { tran: 4, vi_sao: "khối [NGỮ CẢNH GIAO DIỆN: ...] gửi cho AI, server đọc đúng các nhãn này" },
-  "voice-adaptive-ui.js": { tran: 1, vi_sao: "regex bóc lời gọi \"javis ơi\" người dùng nói" },
-  "voice-attention.js": { tran: 1, vi_sao: "regex bắt lời gọi tên Javis nghe nhầm khi nói tiếng Việt" },
+  "voice-adaptive-ui.js": { tran: 1, vi_sao: "regex bóc lời gọi \"uni ơi\" người dùng nói" },
+  "voice-attention.js": { tran: 1, vi_sao: "regex bắt lời gọi tên UNI MATE nghe nhầm khi nói tiếng Việt" },
   "voice-chunker.js": { tran: 1, vi_sao: "liên từ tiếng Việt để cắt câu cho giọng đọc" },
   "voice-lang.js": { tran: 2, vi_sao: "Vietnamese letters used to recognise the language of the text being read" },
   "voice-turn-policy.js": { tran: 5, vi_sao: "regex phân loại câu người dùng nói (chờ, gọi, lệnh, chưa nói xong)" },

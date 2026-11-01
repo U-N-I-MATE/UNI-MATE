@@ -12,8 +12,8 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-acc-")
-STATE = Path(os.environ["JAVIS_STATE_DIR"])
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-acc-")
+STATE = Path(os.environ["UNIMATE_STATE_DIR"])
 
 import sessions  # noqa: E402
 import task_store  # noqa: E402
@@ -255,7 +255,7 @@ except (NotImplementedError, OSError) as exc:
 else:
     verdict, ev = TA.check_one({"kind": "file_exists", "path": "link.md"}, brain)
     check("a symlink leaving the brain fails the check", verdict == "fail" and ev.get("error"), (verdict, ev))
-fake.say("ag_minh", "work", "Xong." + '\n<!-- JAVIS_TEAM: {"op": "set_acceptance", "criteria": []} -->')
+fake.say("ag_minh", "work", "Xong." + '\n<!-- UNIMATE_TEAM: {"op": "set_acceptance", "criteria": []} -->')
 j = job(r, T, "Việc S")
 r.set_acceptance(T["team_id"], j, [{"kind": "file_exists", "path": "khong-co.md"}], fix_rounds=0)
 settle(r)

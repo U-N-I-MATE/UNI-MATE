@@ -9,8 +9,8 @@ Bố trí thư mục skill trong 1 brain:
         <brain>/.agents/<slug>          - vị trí rất cũ
   - Skill TẮT: <base>/.disabled/<slug>
 
-Nguyên tắc độc lập engine: đây là router do Javis SỞ HỮU. Mọi engine (Claude/Codex/OpenRouter/
-OpenAI/Anthropic API) dùng skill qua router này (list bơm vào system prompt + tool javis_use_skill),
+Nguyên tắc độc lập engine: đây là router do UNI MATE SỞ HỮU. Mọi engine (Claude/Codex/OpenRouter/
+OpenAI/Anthropic API) dùng skill qua router này (list bơm vào system prompt + tool unimate_use_skill),
 KHÔNG phụ thuộc cơ chế native của Claude. `.claude/skills` chỉ là bản mirror phái sinh (bonus).
 
 Mọi hàm ở đây CHỈ ĐỌC, an toàn OSError. Việc GHI/DI CHUYỂN (migration legacy → canonical, mirror
@@ -44,18 +44,18 @@ _KHOA_NGON_NGU_RE = re.compile(r"^(name|description)_([a-z]{2})$")
 # Thứ tự ưu tiên đọc: canonical trước, rồi các fallback (canonical "thắng" khi trùng slug).
 _READ_BASES = ("skills", ".claude/skills", ".agents")
 
-# Trần độ dài description khi bơm vào router (system prompt + mô tả tool javis_use_skill).
+# Trần độ dài description khi bơm vào router (system prompt + mô tả tool unimate_use_skill).
 # Dài hơn là BỊ CẮT IM LẶNG → phần đuôi không tới engine, skill không route được. Vì vậy
 # trần này được ÉP ở mọi chỗ GHI (POST /skills, learn.py), không chỉ cắt lúc hiển thị.
 # Ví dụ trigger đầy đủ thuộc về mục '## Khi nào dùng' trong thân file, nơi không bị cắt.
 SKILL_DESC_MAX = 150
 
-# Số skill tối đa liệt kê trong router. Nhiều hơn → trỏ sang Javis/index.md.
+# Số skill tối đa liệt kê trong router. Nhiều hơn → trỏ sang UniMate/index.md.
 #
 # 20 là con số của thời brain còn ít skill, và nó có một tác dụng phụ không ai đo: `list_skills`
 # trả theo THỨ TỰ THƯ MỤC, nên `metas[:20]` cắt theo bảng chữ cái. Skill nào tên đứng sau thì
 # KHÔNG BAO GIỜ được router nhìn thấy - không phải vì nó kém quan trọng, mà vì nó tên vần v.
-# Một brain dùng lâu chắc chắn vượt 20, và lúc đó Javis mất skill một cách hoàn toàn tuỳ tiện,
+# Một brain dùng lâu chắc chắn vượt 20, và lúc đó UNI MATE mất skill một cách hoàn toàn tuỳ tiện,
 # im lặng (đo 2026-09-22).
 #
 # Nay có HAI trần, và chúng làm hai việc khác nhau:
@@ -116,7 +116,7 @@ def theo_ngon_ngu(meta: dict, khoa: str, lang: str = "") -> str:
     được cả hai), còn mô tả rỗng thì skill BIẾN MẤT khỏi router - hỏng nặng hơn hẳn.
 
     Đây cũng là lý do bản dịch mô tả skill là bước TUỲ CHỌN khi thêm một ngôn ngữ mới: thiếu
-    nó Javis vẫn chạy đúng, chỉ là danh sách skill hiện chữ Việt.
+    nó UNI MATE vẫn chạy đúng, chỉ là danh sách skill hiện chữ Việt.
     """
     if not isinstance(meta, dict):
         return ""
@@ -385,7 +385,7 @@ def xep_theo_uu_tien(metas: list, root=None) -> list:
     Vì sao cần. Danh sách skill bị CẮT khi quá trần (xem SKILL_LIST_MAX), mà `list_skills` trả
     theo thứ tự thư mục, tức thứ tự bảng chữ cái. Cắt theo thứ tự đó là để một skill quan
     trọng biến mất khỏi router chỉ vì tên nó vần cuối - hỏng im lặng, và người dùng chỉ thấy
-    "Javis tự dưng không biết làm việc X nữa".
+    "UNI MATE tự dưng không biết làm việc X nữa".
 
     `skill_usage` đã đếm sẵn số lần dùng cho đúng việc này, chỉ là chưa ai đọc nó ở đây.
 
@@ -437,7 +437,7 @@ def cat_theo_ngan_sach(metas: list, so_max: int = None, ngan_sach: int = None) -
         desc = (s.get("description") or "").replace("\n", " ")[:SKILL_DESC_MAX]
         dong = len(f"- {s.get('slug', '')} ({s.get('name', '')}): {desc}") + 1
         # Luôn giữ ÍT NHẤT một mục: ngân sách nhỏ tới đâu cũng không được trả về danh sách
-        # rỗng rồi để Javis tự khai là mình không có skill nào - câu đó sai, và sai theo
+        # rỗng rồi để UNI MATE tự khai là mình không có skill nào - câu đó sai, và sai theo
         # hướng khiến nó đi tạo lại thứ đã có.
         if giu and tot + dong > ngan_sach:
             break
@@ -447,7 +447,7 @@ def cat_theo_ngan_sach(metas: list, so_max: int = None, ngan_sach: int = None) -
 
 
 def list_enabled_meta(root, lang: str = "") -> list:
-    """Chỉ các skill đang BẬT (dùng để bơm router vào system prompt + mô tả tool javis_use_skill)."""
+    """Chỉ các skill đang BẬT (dùng để bơm router vào system prompt + mô tả tool unimate_use_skill)."""
     task_metadata = _task_metadata(root, lang)
     if task_metadata is not None:
         return task_metadata

@@ -12,11 +12,11 @@ Bốn thứ file này canh, theo đúng thứ tự rủi ro.
 2. **Token là cửa MỚI vào một máy chủ đang phơi ra Internet.** Nên: băm khi lưu, so bằng
    compare_digest, thu hồi là chết ngay, và KHÔNG được dùng token để đẻ token.
 
-3. **Kênh phải đi tới tận hợp đồng đầu ra.** Thiếu nhánh `cli` thì Javis trả markdown của web
+3. **Kênh phải đi tới tận hợp đồng đầu ra.** Thiếu nhánh `cli` thì UNI MATE trả markdown của web
    và người dùng nhận một đống ký tự gạch dọc trong terminal.
 
 4. **Luật Unix của CLI.** Câu trả lời ra stdout, mọi thứ khác ra stderr. Hỏng luật đó thì
-   `javis "..." > ghi-chu.md` dính spinner vào giữa nội dung.
+   `unimate "..." > ghi-chu.md` dính spinner vào giữa nội dung.
 """
 from _paths import ROOT, SERVER, moi_duong_dan  # noqa: E402,F401
 import asyncio
@@ -25,7 +25,7 @@ import os
 import sys
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-cli-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-cli-")
 
 import config as cfg  # noqa: E402
 import channel_context  # noqa: E402
@@ -64,7 +64,7 @@ check("CANARY: lượt CLI đi qua đúng vỏ chung, không đẻ lõi thứ ha
 check("vỏ chung nhận tham số kênh", 'async def _tg_answer(text, meta=None, progress=None, channel="telegram"' in _SRC)
 check("trace runtime gắn đúng kênh", 'conv_sid or f"{channel}:{chat_id}", brain, channel)' in _SRC)
 check("chấm chất lượng cũng theo kênh", "(out.get(\"text\") or \"\") if isinstance(out, dict) else str(out or \"\"),\n            channel," in _SRC)
-# Bật cờ telegram_running cho lượt CLI là dạy Javis công thức gửi file qua Telegram trong khi
+# Bật cờ telegram_running cho lượt CLI là dạy UNI MATE công thức gửi file qua Telegram trong khi
 # người hỏi đang ngồi ở terminal - nó sẽ hứa gửi rồi không ai nhận được gì.
 check("CANARY: lượt CLI không bị dạy công thức gửi file Telegram",
       'telegram_running=(channel == "telegram")' in _SRC)
@@ -157,12 +157,12 @@ check("nhánh token đặt sau nhánh cookie",
 # 3. Kênh cli đi tới tận hợp đồng đầu ra
 # ============================================================
 _khoi = channel_context.build_channel_block("cli", {"host": "macbook"})
-check("khối kênh nhận diện đúng nguồn", "Javis CLI" in _khoi)
-check("có tên máy để Javis biết đang nói với ai", "macbook" in _khoi)
+check("khối kênh nhận diện đúng nguồn", "UNI MATE CLI" in _khoi)
+check("có tên máy để UNI MATE biết đang nói với ai", "macbook" in _khoi)
 check("CANARY: cấm bảng markdown trong terminal", "không dùng bảng" in _khoi.lower()
       or "TUYỆT ĐỐI không dùng bảng" in _khoi)
 check("CANARY: cấm nhúng ảnh, bắt in đường dẫn", "ĐƯỜNG DẪN TUYỆT ĐỐI" in _khoi)
-# Khối của web dạy công thức "chat_id":"web:..." - lọt sang CLI là Javis gắn sai người nhận.
+# Khối của web dạy công thức "chat_id":"web:..." - lọt sang CLI là UNI MATE gắn sai người nhận.
 check("CANARY: không lẫn công thức của kênh web", "web:" not in _khoi)
 
 _hd = context_compiler.ContextCompiler._channel_contract("cli")
@@ -178,8 +178,8 @@ check("phần cách trả lời cũng biết kênh cli", "CLI" in _out)
 _CLI = ROOT / "cli"
 check("có gói CLI", (_CLI / "pyproject.toml").is_file())
 _pyproj = (_CLI / "pyproject.toml").read_text(encoding="utf-8")
-check("lệnh cài xong tên là javis", 'javis = "javis_cli.__main__:main"' in _pyproj)
-# Gói này phải cài được trên máy chưa từng có Javis. Kéo theo fastapi/uvicorn là bắt người
+check("lệnh cài xong tên là unimate", 'unimate = "unimate_cli.__main__:main"' in _pyproj)
+# Gói này phải cài được trên máy chưa từng có UNI MATE. Kéo theo fastapi/uvicorn là bắt người
 # dùng tải cả một web framework về chỉ để gõ một câu hỏi.
 #
 # Soát ĐÚNG dòng dependencies chứ không quét cả file: chính lời giải thích trong pyproject có
@@ -194,27 +194,27 @@ for _cam in ("fastapi", "uvicorn", "starlette", "pydantic", "rich"):
     check(f"CANARY: CLI không kéo theo {_cam}", _cam not in _deps)
 check("chỉ phụ thuộc httpx", _deps.strip() == 'dependencies = ["httpx>=0.24"]')
 
-_render = (_CLI / "javis_cli" / "render.py").read_text(encoding="utf-8")
+_render = (_CLI / "unimate_cli" / "render.py").read_text(encoding="utf-8")
 check("câu trả lời ra stdout", "sys.stdout.write" in _render)
 check("trạng thái ra stderr", "sys.stderr.write" in _render)
 # Đây là luật sống còn: chỉ hàm tra_loi được ghi stdout. Thêm một chỗ nữa là pipe dính rác.
 check("CANARY: đúng MỘT chỗ ghi stdout", _render.count("sys.stdout.write") == 1)
 check("không tô màu khi đổ vào pipe", "isatty" in _render)
 
-_cmds = (_CLI / "javis_cli" / "commands.py").read_text(encoding="utf-8")
+_cmds = (_CLI / "unimate_cli" / "commands.py").read_text(encoding="utf-8")
 check("CANARY: gói lạ bị bỏ qua im lặng, không làm vỡ CLI",
       "Mọi `type` lạ: BỎ QUA im lặng" in _cmds)
 check("lỗi thì thoát khác 0", "return 1" in _cmds)
-check("javis up nói rõ nó KHÔNG chứa server",
+check("unimate up nói rõ nó KHÔNG chứa server",
       "KHÔNG chứa server bên trong" in _cmds)
 
-_cfg_cli = (_CLI / "javis_cli" / "config.py").read_text(encoding="utf-8")
+_cfg_cli = (_CLI / "unimate_cli" / "config.py").read_text(encoding="utf-8")
 check("CANARY: file cấu hình chứa token phải chmod 600", "0o600" in _cfg_cli)
-check("biến môi trường đè lên file (cho CI/Docker)", "JAVIS_TOKEN" in _cfg_cli)
+check("biến môi trường đè lên file (cho CI/Docker)", "UNIMATE_TOKEN" in _cfg_cli)
 
-# Chạy THẬT bộ phân tích tham số: `javis "câu hỏi"` phải là đường chính, không bắt gõ lệnh con.
+# Chạy THẬT bộ phân tích tham số: `unimate "câu hỏi"` phải là đường chính, không bắt gõ lệnh con.
 sys.path.insert(0, str(_CLI))
-import javis_cli.__main__ as cli_main  # noqa: E402
+import unimate_cli.__main__ as cli_main  # noqa: E402
 
 _goi = {}
 _goc_hoi = cli_main.cmd.hoi
@@ -245,10 +245,10 @@ try:
           _seen.get("cau") == "hôm nay thế nào")
     _seen.clear()
     cli_main.main(["chat", "--agent", "quick-check"])
-    check("javis chat --agent <slug> keeps the agent", _seen.get("chat_agent") == "quick-check")
+    check("unimate chat --agent <slug> keeps the agent", _seen.get("chat_agent") == "quick-check")
     _seen.clear()
     cli_main.main(["--agent", "quick-check", "chat"])
-    check("javis --agent <slug> chat keeps the agent", _seen.get("chat_agent") == "quick-check")
+    check("unimate --agent <slug> chat keeps the agent", _seen.get("chat_agent") == "quick-check")
     _seen.clear()
     cli_main.main(["hôm nay thế nào"])
     check("no --agent: the agent stays empty", not _seen.get("agent"))

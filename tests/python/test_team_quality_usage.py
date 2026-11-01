@@ -12,10 +12,10 @@ from unittest.mock import patch
 from unittest.mock import AsyncMock
 
 TMP = Path(tempfile.mkdtemp(prefix="team-quality-usage-"))
-os.environ["JAVIS_STATE_DIR"] = str(TMP)
-os.environ["JAVIS_CLAUDE_PROJECTS_DIR"] = str(TMP / "claude")
-os.environ["JAVIS_CODEX_SESSIONS_DIR"] = str(TMP / "codex")
-os.environ["JAVIS_NO_REAL_TEAM_ENGINE"] = "1"
+os.environ["UNIMATE_STATE_DIR"] = str(TMP)
+os.environ["UNIMATE_CLAUDE_PROJECTS_DIR"] = str(TMP / "claude")
+os.environ["UNIMATE_CODEX_SESSIONS_DIR"] = str(TMP / "codex")
+os.environ["UNIMATE_NO_REAL_TEAM_ENGINE"] = "1"
 
 import usage_store as us
 import usage_index as ui
@@ -235,7 +235,7 @@ class UsageTests(unittest.TestCase):
     def test_delayed_raw_claude_detail_reconciles_only_new_sessions(self):
         rawdir = self.tmp / "claude"
         rawdir.mkdir()
-        with patch.dict(os.environ, {"JAVIS_CLAUDE_PROJECTS_DIR": str(rawdir)}):
+        with patch.dict(os.environ, {"UNIMATE_CLAUDE_PROJECTS_DIR": str(rawdir)}):
             ex = self.execution("cli", cli_session_id="fresh", cli_session_new=True)
             us.record("anthropic-cli", "claude-sonnet-5", 300, 30, cost=2,
                       execution=ex, event_kind="cli_fallback")

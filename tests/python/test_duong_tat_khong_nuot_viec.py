@@ -5,12 +5,12 @@
 Ca thật đã đo được (chủ repo báo 21/09/2026, brain TN88). Mức "Siêu tiết kiệm" là mặc định
 xuất xưởng từ 0.24.7, tức `canary.allocation_basis_points = 10000`: MỌI lượt chat đều đi qua
 cổng này. Đường tắt cố ý không phát tool, không đọc ký ức, không đọc lịch sử hội thoại - nên
-mỗi lượt nó nhận nhầm là một lượt Javis trả lời như thể không có bộ não.
+mỗi lượt nó nhận nhầm là một lượt UNI MATE trả lời như thể không có bộ não.
 
 Ba lượt trong cùng một hội thoại, ba kiểu hỏng khác nhau, cùng một gốc:
 
     "viết bài ... dùng dữ liệu dự án TN88 ... dùng workflow viết bài chuyên sâu"
-        -> ALLOW khớp chữ "là gì" trong TIÊU ĐỀ bài -> đi tắt -> Javis trả lời "chưa có dữ
+        -> ALLOW khớp chữ "là gì" trong TIÊU ĐỀ bài -> đi tắt -> UNI MATE trả lời "chưa có dữ
            liệu dự án TN88 và chưa được cấp công cụ", rồi đòi người dùng tự dán tài liệu vào.
 
     "uh, vậy viết bài đi"
@@ -21,7 +21,7 @@ Ba lượt trong cùng một hội thoại, ba kiểu hỏng khác nhau, cùng m
         -> resolver hard-filter kind `workflow`/`skill` khỏi `ranked`, nên điểm của chúng
            KHÔNG tới được cổng. Gọi đúng tên một workflow của chính mình vẫn đi tắt.
 
-Luật chốt ở đây: trỏ vào BỘ NÃO (dữ liệu, dự án, ghi chú), trỏ vào NĂNG LỰC CỦA JAVIS
+Luật chốt ở đây: trỏ vào BỘ NÃO (dữ liệu, dự án, ghi chú), trỏ vào NĂNG LỰC CỦA UNI MATE
 (workflow, skill, agent, plugin), hoặc trỏ vào LƯỢT TRƯỚC (câu nối) thì đi đường đầy đủ. Trả
 giá bằng token, không trả giá bằng một câu trả lời rỗng.
 """
@@ -86,7 +86,7 @@ def _stack(tmp_path, workflows=(), skills=()):
     return brain, registry, resolver, runtime, trace, canary
 
 
-# --- 1. Trỏ vào bộ não / năng lực của Javis thì không được đi tắt --------------------
+# --- 1. Trỏ vào bộ não / năng lực của UNI MATE thì không được đi tắt --------------------
 
 BAI_TN88 = (
     'viết cho tôi bài viết chuyên sâu với tiêu đề " Gà Khét Là Gì? Tìm Hiểu Đặc Điểm Và '

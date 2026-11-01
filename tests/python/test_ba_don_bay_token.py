@@ -3,24 +3,24 @@
     python tests/run.py ba_don_bay_token
 
 Bối cảnh, đo trên máy thật của chủ repo. Sau khi chế độ tiết kiệm chạy đúng (0.13.2 tới
-0.13.4), số liệu cho thấy phần Javis gọt được NHỎ hơn tưởng tượng rất nhiều:
+0.13.4), số liệu cho thấy phần UNI MATE gọt được NHỎ hơn tưởng tượng rất nhiều:
 
-  - Bộ luật + bộ nhớ 9.749 token, mô tả công cụ 896 token. Tổng phần Javis gói vào khoảng
+  - Bộ luật + bộ nhớ 9.749 token, mô tả công cụ 896 token. Tổng phần UNI MATE gói vào khoảng
     10.600 token.
   - Nhưng token VÀO thật của mỗi lượt chạy từ 35.720 tới 412.730, và bảng đo 24 giờ ghi
     Đầy đủ 103.997 so với Tối ưu 90.743, tức chỉ giảm 13%.
   - Cột "Ra" chỉ 266 tới 1.496 token. Vào gấp Ra từ 88 tới 340 lần.
   - Cột "Lệch" âm 86% tới 96%.
 
-Ba con số đó cùng chỉ về một chỗ: phần lớn token KHÔNG nằm ở thứ Javis gói, mà ở vòng lặp
+Ba con số đó cùng chỉ về một chỗ: phần lớn token KHÔNG nằm ở thứ UNI MATE gói, mà ở vòng lặp
 agentic của engine gói thuê bao. Codex nhận prompt rồi tự gọi model nhiều vòng, mỗi vòng gửi
-lại toàn bộ ngữ cảnh đã tích. Javis không nhìn thấy các vòng đó, chỉ nhận tổng ở cuối. Nên ba
+lại toàn bộ ngữ cảnh đã tích. UNI MATE không nhìn thấy các vòng đó, chỉ nhận tổng ở cuối. Nên ba
 đòn bẩy còn lại, theo đúng thứ tự tác động:
 
   1. ĐƯỜNG TẮT cho câu hỏi không cần tra cứu: đi thẳng một vòng thay vì cả vòng lặp. Trước
      bản này đường tắt chỉ chạy trên engine API key, nên mức "Siêu tiết kiệm" chỉ là cái tên
      với người dùng gói ChatGPT.
-  2. XOAY MẠCH khi mạch hội thoại phình: engine thuê bao tự quản transcript, Javis chỉ có
+  2. XOAY MẠCH khi mạch hội thoại phình: engine thuê bao tự quản transcript, UNI MATE chỉ có
      đúng con số token vào của lượt trước làm dấu hiệu.
   3. HIỆU CHỈNH BỘ ĐOÁN: đoán thấp hơn thật bảy lần thì hàng rào chặn-trước-khi-vượt gần như
      không tồn tại.
@@ -33,7 +33,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-3db-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-3db-")
 
 from fastapi import WebSocketDisconnect  # noqa: E402
 
@@ -53,7 +53,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-BRAIN = Path(tempfile.mkdtemp(prefix="javis-3db-brain-"))
+BRAIN = Path(tempfile.mkdtemp(prefix="unimate-3db-brain-"))
 (BRAIN / "Memory" / "facts").mkdir(parents=True, exist_ok=True)
 (BRAIN / "Memory" / "MEMORY.md").write_text("- [user] chu ho nuoc mam\n", encoding="utf-8")
 (BRAIN / "Memory" / "facts" / "a.md").write_text(
@@ -190,7 +190,7 @@ def chay(cau_hoi, sid, store):
     }
 
 
-STORE = SessionStore(Path(os.environ["JAVIS_STATE_DIR"]) / "c.db")
+STORE = SessionStore(Path(os.environ["UNIMATE_STATE_DIR"]) / "c.db")
 
 # ============================================================
 # 1. Đường tắt: câu không cần tra cứu thì KHÔNG đi qua vòng lặp Codex
@@ -279,7 +279,7 @@ for _rac in (None, "abc", -5, 0):
 # 4. Hiệu chỉnh bộ đoán
 # ============================================================
 _rt2 = context_runtime.ObserveRuntime(
-    Path(tempfile.mkdtemp(prefix="javis-3db-rt-")), cfg.read_settings)
+    Path(tempfile.mkdtemp(prefix="unimate-3db-rt-")), cfg.read_settings)
 _db = _rt2._conn()
 
 
@@ -327,7 +327,7 @@ check("và vẫn giữ lại con số thô để lần ngược được",
 # ============================================================
 # Chủ repo chụp lại: câu trả lời thời tiết hiện ra "Độ ẩm 70-99%. \ue200cite\ue202turn4view0
 # \ue201" - ba ký tự vùng Private Use, trình duyệt vẽ thành ô vuông trống. Tệ hơn phần nhìn:
-# nó đi thẳng vào lịch sử hội thoại, nên lượt sau chính Javis đọc lại rồi tưởng "turn4view0"
+# nó đi thẳng vào lịch sử hội thoại, nên lượt sau chính UNI MATE đọc lại rồi tưởng "turn4view0"
 # là nguồn có thật. Được hỏi lấy tin ở đâu, nó trả lời "mình chỉ còn mã tham chiếu
 # turn4view0, không có URL nguồn gốc".
 import engine  # noqa: E402
@@ -362,8 +362,8 @@ check("CANARY: đường gọi thẳng của gói ChatGPT cũng bóc",
 _msgs = [{"role": "user" if _i % 2 == 0 else "assistant",
           "content": f"noi dung luot {_i} " * 200} for _i in range(120)]
 _moi = compaction.bootstrap_prompt(_msgs, "cau hoi moi")
-_giu = _moi.count("<User>") + _moi.count("<Javis>")
-_giu_cu = (lambda p: p.count("<User>") + p.count("<Javis>"))(
+_giu = _moi.count("<User>") + _moi.count("<UNI MATE>")
+_giu_cu = (lambda p: p.count("<User>") + p.count("<UNI MATE>"))(
     compaction.bootstrap_prompt(_msgs, "cau hoi moi", max_chars=60_000))
 check("CANARY: trần mồi lại đủ dày cho phiên làm việc dài",
       compaction.CODEX_BOOTSTRAP_MAX_CHARS >= 300_000)
@@ -373,11 +373,11 @@ check("câu hỏi hiện tại luôn còn nguyên, không bị cắt", _moi.ends
 # Tóm tắt đã nén đại diện cho hàng chục lượt đã rơi khỏi ngân sách. Bỏ nó để nhét thêm hai
 # lượt thô là đổi sai chiều, nên nó đứng TRƯỚC transcript và không bị cắt.
 _co_tt = compaction.bootstrap_prompt(_msgs, "cau hoi moi",
-                                     summary="Hai ben da chot kien truc Javis Gateway.")
+                                     summary="Hai ben da chot kien truc UNI MATE Gateway.")
 check("CANARY: bản tóm tắt đã nén được mang theo khi mồi lại",
-      "Javis Gateway" in _co_tt)
+      "UNI MATE Gateway" in _co_tt)
 check("và đứng TRƯỚC phần transcript thô",
-      _co_tt.find("Javis Gateway") < _co_tt.find("<User>"))
+      _co_tt.find("UNI MATE Gateway") < _co_tt.find("<User>"))
 check("phiên chưa có tóm tắt vẫn chạy y như cũ",
       compaction.bootstrap_prompt(_msgs, "x", summary="") == compaction.bootstrap_prompt(_msgs, "x"))
 check("tóm tắt rác không làm hỏng gì",
@@ -424,7 +424,7 @@ check("CANARY: gói Claude Code cũng ăn được (mở ở 0.14.4)",
 # Và khi một lượt KHÔNG đi đường tắt, phải nói được vì sao. Lý do vốn đã ghi vào trace từ
 # đầu nhưng chưa ai đưa ra màn hình, nên bấm mức xong thấy vẫn "Tối ưu" là chịu.
 _rt3 = context_runtime.ObserveRuntime(
-    Path(tempfile.mkdtemp(prefix="javis-3db-ld-")), cfg.read_settings)
+    Path(tempfile.mkdtemp(prefix="unimate-3db-ld-")), cfg.read_settings)
 _t1 = _rt3.start_turn("s-ld1", "brain", "dashboard")
 _rt3.pin_execution_path(_t1, "legacy", 1, "fast-path-canary-v1", "requires_live_data")
 _hang = [x for x in _rt3.diagnostics_snapshot()["tasks"] if x["task_id"] == _t1.task_id][0]
@@ -506,7 +506,7 @@ check("tra không ra thì trả nguyên, không tự đoán tên khác",
 # chạy bằng engine đầy đủ vẫn đeo nhãn "Tức thì" và con số tiết kiệm bị thổi lên bằng đúng
 # những lượt không hề tiết kiệm.
 _rt4 = context_runtime.ObserveRuntime(
-    Path(tempfile.mkdtemp(prefix="javis-3db-nha-")), cfg.read_settings)
+    Path(tempfile.mkdtemp(prefix="unimate-3db-nha-")), cfg.read_settings)
 _tn = _rt4.start_turn("s-nha", "brain", "dashboard")
 _rt4.pin_execution_path(_tn, "fast", 1, "fast-path-canary-v1", "admitted")
 check("đường tắt ghim được", _tn.execution_path == "fast")

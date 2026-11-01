@@ -1,8 +1,8 @@
 """Resonance A3: pilot làn M với engine thật, cổng tối đa 5 lượt model thật ở biên gọi engine.
 
-    JAVIS_RESONANCE_A3_PILOT=dry  python tests/python/test_resonance_a3_pilot.py      # KHÔNG gọi model, mọi nhánh
-    JAVIS_RESONANCE_A3_PILOT=real JAVIS_RESONANCE_PILOT_SETTINGS=<settings.json thật> \\
-        JAVIS_RESONANCE_A3_OUT=<thư mục báo cáo> python tests/python/test_resonance_a3_pilot.py   # cần người dùng duyệt
+    UNIMATE_RESONANCE_A3_PILOT=dry  python tests/python/test_resonance_a3_pilot.py      # KHÔNG gọi model, mọi nhánh
+    UNIMATE_RESONANCE_A3_PILOT=real UNIMATE_RESONANCE_PILOT_SETTINGS=<settings.json thật> \\
+        UNIMATE_RESONANCE_A3_OUT=<thư mục báo cáo> python tests/python/test_resonance_a3_pilot.py   # cần người dùng duyệt
 
 Không đặt biến thì bỏ qua (CI và tests/run.py không gọi gì). Gói và review: exports/reviews/A3-pilot-approval-request.md,
 PR-598-A3-ui-224a109a-review.md (ngoài git).
@@ -16,7 +16,7 @@ Kịch bản (đóng băng, mục FROZEN dưới đây):
   sản phẩm bằng lượt đã giữ. Không đổi luật M5 hay oracle để ép kết quả.
 
 Hai lớp trần, khác nhau và không thay nhau:
-- Trần KHO `JAVIS_RESONANCE_CALL_CEILING=8`: đếm mọi lượt trong kho tạm (3 lượt giả + tối đa 5 lượt sau đó), giữ qua
+- Trần KHO `UNIMATE_RESONANCE_CALL_CEILING=8`: đếm mọi lượt trong kho tạm (3 lượt giả + tối đa 5 lượt sau đó), giữ qua
   khởi động lại. Không phải hạn mức model thật.
 - Cổng LƯỢT THẬT (RealCallGate): tối đa 5 lời gọi engine thật, ghi sổ xuống đĩa TRƯỚC mỗi lời gọi, không đặt lại, không
   hoàn. Lời gọi lỗi, hết giờ, bị huỷ, đầu ra hỏng, gọi công cụ, hay token sắp hết hạn: cổng ĐÓNG, mọi lời gọi sau bị
@@ -40,10 +40,10 @@ import tempfile
 import time
 from pathlib import Path
 
-MODE = os.environ.get("JAVIS_RESONANCE_A3_PILOT", "").strip().lower()
+MODE = os.environ.get("UNIMATE_RESONANCE_A3_PILOT", "").strip().lower()
 CHILD = "--child" in sys.argv
 if MODE not in ("dry", "real", "preflight") and not CHILD:
-    print("pilot A3: bỏ qua (đặt JAVIS_RESONANCE_A3_PILOT=dry hoặc real để chạy)")
+    print("pilot A3: bỏ qua (đặt UNIMATE_RESONANCE_A3_PILOT=dry hoặc real để chạy)")
     print("\nOK")
     sys.exit(0)
 
@@ -401,7 +401,7 @@ def child(scenario: str, phase: int, base: Path, mode: str) -> dict:
         state_file.write_text(json.dumps(st, ensure_ascii=False), encoding="utf-8", newline="\n")
 
     brain = main._brain_key("brain")
-    P = RS.Principal("agent", "javis", brain)
+    P = RS.Principal("agent", "unimate", brain)
     owner = RS.Principal("owner", "owner", brain)
     store = main._resonance_store()
     ss = main.get_store()
@@ -413,7 +413,7 @@ def child(scenario: str, phase: int, base: Path, mode: str) -> dict:
         if mode == "real":
             import claude_token_gate
             from claude_cli import tim_binary
-            bg = Path(os.environ["JAVIS_STATE_DIR"]) / "resonance_cwd"
+            bg = Path(os.environ["UNIMATE_STATE_DIR"]) / "resonance_cwd"
             bg.mkdir(parents=True, exist_ok=True)
             try:
                 stt = json.loads(subprocess.run([tim_binary("claude"), "auth", "status", "--json"], cwd=str(bg),
@@ -631,10 +631,10 @@ def branch(exps, halted, holds, lessons) -> str:
 
 def run_child(scenario: str, phase: int, base: Path, mode: str, env_extra=None) -> tuple:
     env = dict(G.clean_env(dict(os.environ)) if mode == "real" else os.environ)
-    env.update({"JAVIS_STATE_DIR": str(base / "state"), "BRAINS_DIR": str(base / "brains"),
-                "JAVIS_RESONANCE_TICK_PAUSED": "1", "PYTHONIOENCODING": "utf-8",
-                "JAVIS_RESONANCE_CALL_CEILING": str(STORE_CEILING), "JAVIS_RESONANCE_A3_PILOT": mode})
-    env.pop("JAVIS_PORT", None)
+    env.update({"UNIMATE_STATE_DIR": str(base / "state"), "BRAINS_DIR": str(base / "brains"),
+                "UNIMATE_RESONANCE_TICK_PAUSED": "1", "PYTHONIOENCODING": "utf-8",
+                "UNIMATE_RESONANCE_CALL_CEILING": str(STORE_CEILING), "UNIMATE_RESONANCE_A3_PILOT": mode})
+    env.pop("UNIMATE_PORT", None)
     env.update(env_extra or {})
     cp = subprocess.run([sys.executable, str(HERE), "--child", scenario, str(phase), str(base), mode],
                         cwd=str(ROOT), env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
@@ -709,11 +709,11 @@ def main_dry() -> None:
     t0 = time.time()
     report = {"mode": "dry", "frozen": frozen_hashes(), "scenarios": {}}
     dry_model = {"auxiliary": {"provider": "dry-as-real", "model": "dry"}}
-    only = [s for s in os.environ.get("JAVIS_RESONANCE_A3_ONLY", "").split(",") if s]
+    only = [s for s in os.environ.get("UNIMATE_RESONANCE_A3_ONLY", "").split(",") if s]
     for sc in [s for s in list(EXPECT) + ["store_ceiling"] if not only or s in only]:
         base = root / sc
         prepare(base, dry_model, limit=3 if sc == "gate_limit_mid" else REAL_LIMIT)
-        extra = {"JAVIS_RESONANCE_CALL_CEILING": "7"} if sc == "store_ceiling" else None
+        extra = {"UNIMATE_RESONANCE_CALL_CEILING": "7"} if sc == "store_ceiling" else None
         rc1, p1 = run_child(sc, 1, base, "dry", extra)
         rc2, p2 = run_child(sc, 2, base, "dry", extra)
         report["scenarios"][sc] = {"rc": [rc1, rc2], "phase1": p1, "phase2": p2}
@@ -761,7 +761,7 @@ def main_dry() -> None:
     report["seconds"] = round(time.time() - t0)
     (root / "dry-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=1, default=str),
                                           encoding="utf-8", newline="\n")
-    out = os.environ.get("JAVIS_RESONANCE_A3_OUT", "")
+    out = os.environ.get("UNIMATE_RESONANCE_A3_OUT", "")
     if out:
         Path(out).mkdir(parents=True, exist_ok=True)
         shutil.copy(root / "dry-report.json", Path(out) / "dry-report.json")
@@ -788,7 +788,7 @@ def selftests(root: Path, report: dict) -> dict:
     # P2-1 qua chính main_real: run và auth giả trả ảnh chụp dry; kiểm report.json và FAIL được ghi hay không.
     settings = root / "selftest-settings.json"
     settings.write_text(json.dumps({"model": {"auxiliary": APPROVED["aux"]}}), encoding="utf-8", newline="\n")
-    env_keep = {k: os.environ.get(k) for k in ("JAVIS_RESONANCE_PILOT_SETTINGS", "JAVIS_RESONANCE_A3_OUT")}
+    env_keep = {k: os.environ.get(k) for k in ("UNIMATE_RESONANCE_PILOT_SETTINGS", "UNIMATE_RESONANCE_A3_OUT")}
     tampered = json.loads(json.dumps(sc["win"]))
     tampered["phase2"]["after"]["real_calls"] = tampered["phase2"]["after"]["real_calls"][:4]
     tampered["phase2"]["before"]["real_calls"] = tampered["phase2"]["before"]["real_calls"][:4]
@@ -809,8 +809,8 @@ def selftests(root: Path, report: dict) -> dict:
         subprocess.run = lambda argv, **kw: type("R", (), {"stdout": "selftest" if "rev-parse" in argv else "",
                                                            "returncode": 0})()
         for name, (data, auth_ok, want) in cases.items():
-            os.environ["JAVIS_RESONANCE_PILOT_SETTINGS"] = str(settings)
-            os.environ["JAVIS_RESONANCE_A3_OUT"] = str(root / "selftest-real" / name)
+            os.environ["UNIMATE_RESONANCE_PILOT_SETTINGS"] = str(settings)
+            os.environ["UNIMATE_RESONANCE_A3_OUT"] = str(root / "selftest-real" / name)
             n0 = len(_fails)
             calls = []
 
@@ -920,7 +920,7 @@ def resolve_engines(state: Path, env0: dict) -> dict:
             "m = (config.read_settings().get('model') or {}); "
             "print(json.dumps({'main': aux_engine.main_spec(), 'aux': aux_engine.read_spec(), "
             "'claude_model': m.get('claude_model')}))")
-    cp = subprocess.run([sys.executable, "-c", code], cwd=str(ROOT), env={**env0, "JAVIS_STATE_DIR": str(state)},
+    cp = subprocess.run([sys.executable, "-c", code], cwd=str(ROOT), env={**env0, "UNIMATE_STATE_DIR": str(state)},
                         capture_output=True, text=True, timeout=120)
     try:
         return json.loads((cp.stdout or "").strip().splitlines()[-1])
@@ -976,9 +976,9 @@ def auth_gate(base: Path, env0: dict) -> dict:
 
 def main_preflight() -> None:
     """Chỉ cổng xác thực trên settings thật (bốn trường chọn engine), không dựng mục tiêu, không gọi model."""
-    src = os.environ.get("JAVIS_RESONANCE_PILOT_SETTINGS", "")
+    src = os.environ.get("UNIMATE_RESONANCE_PILOT_SETTINGS", "")
     if not src or not Path(src).is_file():
-        print("FAIL preflight: cần JAVIS_RESONANCE_PILOT_SETTINGS")
+        print("FAIL preflight: cần UNIMATE_RESONANCE_PILOT_SETTINGS")
         sys.exit(1)
     m = json.loads(Path(src).read_text(encoding="utf-8")).get("model") or {}
     model = {k: m[k] for k in ("auxiliary", "main", "engine", "claude_model") if k in m}
@@ -1050,10 +1050,10 @@ def main_real(run=None, auth=None) -> dict:
     này với ảnh chụp dry. Kết luận lấy từ `finalize`; lỗi kỹ thuật thì ghi FAIL nên tiến trình thoát khác 0."""
     run = run or globals()["run_child"]
     auth = auth or globals()["auth_gate"]
-    src = os.environ.get("JAVIS_RESONANCE_PILOT_SETTINGS", "")
-    outd = os.environ.get("JAVIS_RESONANCE_A3_OUT", "")
+    src = os.environ.get("UNIMATE_RESONANCE_PILOT_SETTINGS", "")
+    outd = os.environ.get("UNIMATE_RESONANCE_A3_OUT", "")
     if not src or not Path(src).is_file() or not outd:
-        print("FAIL pilot: cần JAVIS_RESONANCE_PILOT_SETTINGS (settings.json thật) và JAVIS_RESONANCE_A3_OUT")
+        print("FAIL pilot: cần UNIMATE_RESONANCE_PILOT_SETTINGS (settings.json thật) và UNIMATE_RESONANCE_A3_OUT")
         sys.exit(1)
     m = json.loads(Path(src).read_text(encoding="utf-8")).get("model") or {}
     model = {k: m[k] for k in ("auxiliary", "main", "engine", "claude_model") if k in m}

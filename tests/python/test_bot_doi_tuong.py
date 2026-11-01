@@ -23,7 +23,7 @@ import sys
 import tempfile
 import time
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-doituong-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-doituong-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -46,7 +46,7 @@ def check(name, cond, them=""):
 
 G, G2 = "5550001", "5550009"       # nhóm đã chọn / nhóm lạ
 P, Q = "5550002", "5550003"        # người đã chọn / người lạ
-CONN = {"id": "dt-1", "label": "Javis Vũ", "connector_id": "zalo"}
+CONN = {"id": "dt-1", "label": "Uni Vũ", "connector_id": "zalo"}
 CONN2 = {"id": "dt-2", "label": "Nick hai", "connector_id": "zalo"}   # mỗi tài khoản chỉ một bot
 zc._ket_noi = lambda: [dict(CONN), dict(CONN2)]
 
@@ -155,7 +155,7 @@ check("với `all` mọi nhóm đã được phép nên KHÔNG có gì để ch�
 now = time.time()
 for i, (chat, loai, ten, ai) in enumerate([
         (P, "private", "", "Học viên A"), (Q, "private", "", "Học viên B"),
-        (G, "group", "Lớp Javis OS", "Học viên A"), (G2, "group", "", "Học viên C")]):
+        (G, "group", "Lớp UNI MATE", "Học viên A"), (G2, "group", "", "Học viên C")]):
     conversations.ghi_su_kien({
         "channel": "zalo_personal", "account_id": "dt-2", "account_name": "Nick hai",
         "external_chat_id": chat, "chat_type": loai, "chat_title": ten, "sender_type": "customer",
@@ -167,7 +167,7 @@ ds = chatbot_cuoc_chat.danh_sach(bot5.get("accounts") or [], "", 50, chatbot_run
 by = {d["id"]: d for d in ds}
 check("liệt kê đủ cuộc chat đã biết của tài khoản, cả nhóm lẫn người", set(by) >= {P, Q, G, G2}, list(by))
 check("có loại và tên hiển thị (người: tên khách; nhóm: tên nhóm)",
-      by[G]["loai"] == "group" and by[G]["ten"] == "Lớp Javis OS" and by[P]["loai"] == "private"
+      by[G]["loai"] == "group" and by[G]["ten"] == "Lớp UNI MATE" and by[P]["loai"] == "private"
       and by[P]["ten"] == "Học viên A", (by[G], by[P]))
 check("nhóm chưa rõ tên hiện tên dự phòng, KHÔNG mượn tên người nhắn",
       by[G2]["ten"].startswith("Nhóm") and "Học viên C" not in by[G2]["ten"], by[G2])
@@ -202,7 +202,7 @@ async def _goi_gia(conn, tool, args):
         GUI.append(dict(args))
         return {"success": True}
     if tool == "zalo_list_threads":
-        return {"threads": [{"threadId": G, "name": "Lớp Javis OS", "threadType": "group"},
+        return {"threads": [{"threadId": G, "name": "Lớp UNI MATE", "threadType": "group"},
                             {"threadId": G2, "name": "Nhóm lạ", "threadType": "group"},
                             {"threadId": P, "name": "Học viên A", "threadType": "dm"},
                             {"threadId": Q, "name": "Học viên B", "threadType": "dm"}]}
@@ -268,14 +268,14 @@ async def dau_cuoi():
 
     GUI.clear()
     del LUOT[:]
-    KHO.append(_tin(G2, "7770001", "@Javis Vũ cho hỏi", "e4", 1))
+    KHO.append(_tin(G2, "7770001", "@Uni Vũ cho hỏi", "e4", 1))
     await doc()
     check("audience=chon: nhóm lạ có tag vẫn im (chưa cho phép)", not GUI and not LUOT, (GUI, LUOT))
 
     ok, err = chatbot_store.update_bot(e2e, {"audience": "all", "xac_nhan_rui_ro": True})
     assert ok, err
     chatbot_runtime.bo_nhom_cho(e2e)
-    KHO.append(_tin(G2, "7770001", "@Javis Vũ hỏi cái này", "e5", 1))
+    KHO.append(_tin(G2, "7770001", "@Uni Vũ hỏi cái này", "e5", 1))
     await doc()
     check("audience=all: nhóm CHƯA khai mà có tag thì được trả lời (type=1 vào đúng nhóm)",
           len(GUI) == 1 and GUI[0]["threadId"] == G2 and GUI[0]["threadType"] == 1, GUI)

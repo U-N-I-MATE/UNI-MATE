@@ -27,7 +27,7 @@ hệ thống, `_scheduler_loop` (`server/main.py:3613-3656`), tick đúng 6 vi�
 | 3 | kanban | `main.py:3631` → `tasks.py:296` | Có |
 | 4 | reminders | `main.py:3636` → `reminders.py:312` | Có |
 | 5 | backup GitHub | `main.py:3641-3645` | Có |
-| 6 | javis index | `main.py:3650-3651` | Có |
+| 6 | unimate index | `main.py:3650-3651` | Có |
 | - | **automations** | **không ở đâu cả** | **KHÔNG** |
 
 Hệ quả cụ thể: tạo một dòng `type: cron, status: active` ở tab Lịch thì nó hiện badge xanh
@@ -69,15 +69,15 @@ nên nó không thuộc về cuộc hợp nhất này.
 
 Chủ dự án nói người dùng sống ở chat. Đường chat tạo việc định kỳ hiện tại:
 
-Toàn bộ tool surface của hub là `javis_connections`, `javis_read_file`, `javis_list_dir`,
-`javis_write_file`, `javis_use_skill` (`server/mcp_hub.py:207-272`). **Không có
-`javis_schedule`.** `grep -rn "javis_schedule\|create_loop\|javis_remind\|javis_task"` = 0 hit.
+Toàn bộ tool surface của hub là `unimate_connections`, `unimate_read_file`, `unimate_list_dir`,
+`unimate_write_file`, `unimate_use_skill` (`server/mcp_hub.py:207-272`). **Không có
+`unimate_schedule`.** `grep -rn "unimate_schedule\|create_loop\|unimate_remind\|unimate_task"` = 0 hit.
 
 Nên hôm nay:
-- Tạo loop = model **tự tay gõ YAML frontmatter** vào `Javis/loops/<slug>.md` qua
-  `javis_write_file`.
+- Tạo loop = model **tự tay gõ YAML frontmatter** vào `UniMate/loops/<slug>.md` qua
+  `unimate_write_file`.
 - Tạo nhắc hẹn = model **shell ra `curl` POST /reminders qua Bash** (`reminders.py:17` ghi
-  thẳng: "engine (Javis) tự gọi POST /reminders qua Bash curl từ localhost").
+  thẳng: "engine (UNI MATE) tự gọi POST /reminders qua Bash curl từ localhost").
 - Tạo task Kanban = tương tự, curl.
 
 Đường thứ hai còn tự mâu thuẫn: loop ở mode suggest/auto bị chặn Bash (`self_improve.py:112`,
@@ -95,7 +95,7 @@ phải mỗi job một file markdown). `parse_schedule()` chuẩn hoá **mọi**
 Bài học cốt lõi: **"mỗi 2 tiếng" và "7h sáng" là cùng một primitive; `kind` chỉ là một
 field.** Claude Code xác nhận độc lập: nó convert interval thành cron ngay lúc tạo.
 
-Bên Javis hôm nay chúng là hai code path không chung một dòng:
+Bên UNI MATE hôm nay chúng là hai code path không chung một dòng:
 - Loop: interval-since-last-run (`self_improve.py:465`), nên nó **trôi** dần theo thời gian
   chạy.
 - Reminders: wall-clock tuyệt đối `due_at`, lặp qua `cron_next` (`reminders.py:391-399`) dùng
@@ -149,11 +149,11 @@ Xoá:
   (`:3224`), `/automations/delete` (`:3251`), `/automations/sync` (`:3264`).
 - `_automations_path` (`:3145`), `_read_automations` (`:3149`), `_write_automations` (`:3161`).
 - Khối `caps["automations"]` (`_gather_capabilities`, `main.py:3324, 3352-3354`) và mục "##
-  Lịch (automations)" trong `_render_javis_index` (`main.py:3411-3413`). Đính chính khi soát
-  plan: khối này **không** rác vào system prompt. Nó đi vào `Javis/index.md` qua
-  `rebuild_javis_index` (`main.py:3462`), và vì list luôn rỗng nên `if caps["automations"]:`
+  Lịch (automations)" trong `_render_unimate_index` (`main.py:3411-3413`). Đính chính khi soát
+  plan: khối này **không** rác vào system prompt. Nó đi vào `UniMate/index.md` qua
+  `rebuild_unimate_index` (`main.py:3462`), và vì list luôn rỗng nên `if caps["automations"]:`
   luôn falsy, section không bao giờ render. Là code chết, dọn cho sạch chứ không phải sửa bug.
-  (`_javis_capability_summary` tại `main.py:3477` không hề nhắc automations.)
+  (`_unimate_capability_summary` tại `main.py:3477` không hề nhắc automations.)
 - Form `editAutomation` (`dashboard/studio.js:358-370`), rail `automations`
   (`dashboard/console.js:49, 65, 97, 107`).
 
@@ -179,7 +179,7 @@ claude.ai thì viết lại thành nút riêng ở trang Model, có `allowed_too
 thời gian và đường tạo**, KHÔNG phải nhét mọi thứ vào một file store.
 
 - **Việc bền** (lặp lại, chạy engine: loop hôm nay + cron chưa từng có executor) → `.md` trong
-  `Javis/loops/`. Chúng là tài liệu: user mở trong Obsidian, sửa prompt, commit theo brain.
+  `UniMate/loops/`. Chúng là tài liệu: user mở trong Obsidian, sửa prompt, commit theo brain.
 - **Nhắc hẹn một lần** (`action: notify`, `kind: once`) → **ở nguyên `reminders.py` store**.
   Lý do: "30 phút nữa nhắc anh uống thuốc" mà đẻ một file `.md` trong vault rồi xoá đi là rác,
   và nó mâu thuẫn với chính lý do chọn `.md` (để người dùng mở trong Obsidian). Nhắc hẹn là
@@ -187,7 +187,7 @@ thời gian và đường tạo**, KHÔNG phải nhét mọi thứ vào một fi
 
 Cái được hợp nhất giữa hai kho:
 1. **`parse_schedule()` dùng chung** cho cả hai (một field `schedule`, ba `kind`).
-2. **`javis_schedule` tạo được cả hai**, tự route theo `kind`/`action` (xem dưới). User và
+2. **`unimate_schedule` tạo được cả hai**, tự route theo `kind`/`action` (xem dưới). User và
    model chỉ thấy một khái niệm "Việc"; chuyện nó rơi vào kho nào là chi tiết triển khai.
 3. **Một trang "Việc" duy nhất** hiển thị cả hai, đúng như `_loops_as_routines` +
    `pending_as_automations` đang làm sẵn.
@@ -195,11 +195,11 @@ Cái được hợp nhất giữa hai kho:
 Đây là lý do giữ `reminders.py` chứ không xoá: nó không trùng loop, nó phủ đúng nửa "phù du"
 mà loop không nên phủ.
 
-**Lưu trữ việc bền: giữ nguyên `<brain>/Javis/loops/<slug>.md`.** Frontmatter sửa được trong Obsidian
-là giá trị thật của Javis (`self_improve.py:11` có comment cố ý tách state ra
+**Lưu trữ việc bền: giữ nguyên `<brain>/UniMate/loops/<slug>.md`.** Frontmatter sửa được trong Obsidian
+là giá trị thật của UNI MATE (`self_improve.py:11` có comment cố ý tách state ra
 `loop-state.json` để "tránh giẫm chân user đang mở file trong Obsidian"). Đổi tên thư mục phải
 đụng 6 file loop trên 4 brain cộng `LEGACY_HASHES` (`system_sync.py:536`) và loop builtin
-`tu-cai-tien-javis` có mặt ở cả 4 brain, để đổi lấy đúng con số không. Đường dẫn là chi tiết
+`tu-cai-tien-unimate` có mặt ở cả 4 brain, để đổi lấy đúng con số không. Đường dẫn là chi tiết
 triển khai; user nhìn thấy chữ "Việc".
 
 Frontmatter mới:
@@ -215,7 +215,7 @@ Các field cũ giữ nguyên nghĩa: `name`, `slug`, `enabled`, `owner_chat`, `n
 `quiet_hours`, `max_runs_per_day`, `workspace`, `tools_profile`, `ambient_mcp`. Thân file vẫn
 là prompt.
 
-Không có field `action` ở đây: file `.md` trong `Javis/loops/` **luôn** là `action: run`.
+Không có field `action` ở đây: file `.md` trong `UniMate/loops/` **luôn** là `action: run`.
 `notify` và `script` là chuyện của kho nhắc hẹn (`reminders.py:48` đã có sẵn ba mode
 `notify|task|script`), không phải của việc bền.
 
@@ -241,7 +241,7 @@ mới bị `_ascii_slug`. Comment giải thích vì sao: nếu không, toggle m�
 San cửa sổ 5 phút đang ép ở 3 chỗ (`self_improve.py:257, 929, 213`) cần rà lại cho `cron`:
 "mỗi 5 phút tối thiểu" là luật của interval, không phải của cron.
 
-**Jitter (cho bản fork):** cron cộng jitter suy từ `hash(slug)`, 0 tới 5 phút. Nếu Javis được
+**Jitter (cho bản fork):** cron cộng jitter suy từ `hash(slug)`, 0 tới 5 phút. Nếu UNI MATE được
 fork rộng thì mọi bản đều `0 7 * * *` và cùng đập vào Pancake lúc 7:00:00. Deterministic theo
 slug nên ổn định qua các lần chạy.
 
@@ -253,7 +253,7 @@ chạy hôm nay** (`mcp_hub.py:314`). Toàn bộ cưỡng chế giữ nguyên, c
 hại, và đó chính là thứ user muốn khi bật một việc.
 
 `connectors: [...]` là phần **mới thật sự**, và là rủi ro triển khai chính của spec:
-- Hub cần header `X-Javis-Connectors` (cạnh `X-Javis-Mode` sẵn có tại `mcp_hub.py:457, 483`).
+- Hub cần header `X-UniMate-Connectors` (cạnh `X-UniMate-Mode` sẵn có tại `mcp_hub.py:457, 483`).
 - `mcp_hub.py:304` (`mcp_store.resolved(enabled_only=True)`) lọc thêm theo danh sách đó.
 - Danh sách rỗng hoặc thiếu field = giữ hành vi cũ (mọi connector đang bật), để 6 file loop
   hiện có không đổi hành vi.
@@ -261,12 +261,12 @@ hại, và đó chính là thứ user muốn khi bật một việc.
 Giá trị: một việc không gắn connector POS thì **không cách nào** tạo đơn, bất kể prompt
 injection nói gì. `mode: suggest` chỉ là lời xin; scoping là rào.
 
-### Tool `javis_schedule` (đường chat)
+### Tool `unimate_schedule` (đường chat)
 
-Thêm vào hub cạnh `javis_use_skill` (`mcp_hub.py:272`):
+Thêm vào hub cạnh `unimate_use_skill` (`mcp_hub.py:272`):
 
 ```
-javis_schedule(op: create|list|cancel, name, schedule, prompt,
+unimate_schedule(op: create|list|cancel, name, schedule, prompt,
                kind_hint?, connectors?, notify_only?)
 ```
 
@@ -276,7 +276,7 @@ javis_schedule(op: create|list|cancel, name, schedule, prompt,
 - `notify_only: true` hoặc schedule parse ra `kind: once` → vào kho **nhắc hẹn**
   (`reminders.py`), **bật ngay**. Nó chỉ bắn một tin Telegram, và đây là hành vi hiện tại
   user đang dựa vào ("30 phút nữa nhắc anh...").
-- Còn lại (lặp lại, chạy engine) → ghi `.md` vào `Javis/loops/`, `enabled: false`, user tự
+- Còn lại (lặp lại, chạy engine) → ghi `.md` vào `UniMate/loops/`, `enabled: false`, user tự
   bật. Đúng luật CLAUDE.md hiện hành.
 
 `op: list` và `op: cancel` phải nhìn thấy **cả hai kho** (union), nếu không model sẽ báo với
@@ -298,16 +298,16 @@ bắt đầu phụ thuộc context chat.
   `tasks_feature.tick(["brain"])` với brain **hardcode**, trong khi `tick(brains)` nhận list.
   Board ở brain khác không bao giờ được dispatch. Đây là bug độc lập, nên tách issue riêng.)
 - TTL/auto-expire bắt buộc cho việc bị bỏ quên. Prior art nói nên có (Claude Code hết hạn sau
-  7 ngày, ChatGPT tự pause khi user thôi tương tác); Javis mới có `max_runs_per_day` tuỳ chọn
+  7 ngày, ChatGPT tự pause khi user thôi tương tác); UNI MATE mới có `max_runs_per_day` tuỳ chọn
   và auto-pause theo `fail_streak`. Đáng làm, nhưng vòng sau.
 - Bọc dữ liệu MCP trả về như untrusted (kiểu `<routine-fire-payload>`). Đáng làm, vòng sau.
 
 ## Rủi ro
 
-1. **`X-Javis-Connectors` là phần duy nhất phải sửa hub.** Hub là lớp cứng của mô hình bảo
+1. **`X-UniMate-Connectors` là phần duy nhất phải sửa hub.** Hub là lớp cứng của mô hình bảo
    mật; sai ở đây là hỏng rào cho mọi engine, không chỉ loop. Cần test riêng cho: danh sách
    rỗng = hành vi cũ, danh sách sai tên = fail-closed chứ không fail-open.
-2. **Đổi `_eligible_overdue` đụng vòng chạy của loop builtin `tu-cai-tien-javis`** đang sống ở
+2. **Đổi `_eligible_overdue` đụng vòng chạy của loop builtin `tu-cai-tien-unimate`** đang sống ở
    cả 4 brain. Cần test migration đọc được cả frontmatter cũ lẫn mới.
 3. **Zero test hiện phủ automations**, nên xoá thì an toàn, nhưng cũng nghĩa là không có lưới
    an toàn cho phần đổi tên UI. Cần test mới cho trang "Việc".

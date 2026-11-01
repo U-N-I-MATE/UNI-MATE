@@ -59,7 +59,7 @@ Chồng trên T4 (PR #643). Nguồn: buổi soi giao diện ngày 14/10/2026 (�
      - "Nâng cao" (đóng sẵn) chứa số giới hạn, hộp quyền chi tiết của T3 và sổ lần trả lời.
 
 9. **Ảnh đại diện đúng ảnh trợ lý và ghim nhóm** (chủ dặn thêm cùng ngày, mẫu tham khảo: Zalo, "Offsite crew").
-   - Mọi chỗ vẽ trợ lý (tin, danh sách thành viên, gợi ý @) dùng bộ `JavisAvatar` của trang Cộng sự, theo slug và `avatar` trong file trợ lý. `_resonance_agents_meta` kèm `avatar`; `member_views` trả `avatar` cho từng thành viên.
+   - Mọi chỗ vẽ trợ lý (tin, danh sách thành viên, gợi ý @) dùng bộ `UniMateAvatar` của trang Cộng sự, theo slug và `avatar` trong file trợ lý. `_resonance_agents_meta` kèm `avatar`; `member_views` trả `avatar` cho từng thành viên.
    - Ảnh nhóm ghép từ ảnh thành viên đang hoạt động (trưởng nhóm trước): 1 người một ảnh, 2 người chéo, 3 người tam giác, 4 người lưới 2x2. Hơn 4 người thì ba ảnh và ô "+N" (quá 99 ghi "99+"). `GET /teams` kèm `faces` (tối đa 4) và `member_count`; đầu khung chat suy từ thành viên.
    - Ghim: cột `pinned_at` trong `teams` (tự thêm cho kho cũ), `TeamStore.set_pinned` (sự kiện `pinned` / `unpinned`), route `POST /teams/{id}/pin {on}`. Trang đầu của danh sách mở bằng các nhóm đã ghim (ghim sau đứng trước), trang sau chỉ gồm nhóm không ghim nên không lặp. Dòng nhóm có dấu ghim; công tắc "Ghim nhóm lên đầu danh sách" nằm trong tab Nhóm.
 

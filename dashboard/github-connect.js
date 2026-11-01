@@ -1,7 +1,7 @@
 /* github-connect.js - GitHub inside chat, phase G1 (0.362.0, docs/dev/2026-10-github-trong-chat-spec.md).
  *
  * Three pieces, one module:
- *   1. The GitHub card on the Connections page. It is built into Javis (owner, 2026-10-27): always shown, connected
+ *   1. The GitHub card on the Connections page. It is built into UNI MATE (owner, 2026-10-27): always shown, connected
  *      or not, no Store pack. Connect with a token, or reuse the brain-backup token after the server checks it.
  *      The card also lists the repos cloned in this brain, each with "Remove from brain" (the clone only; GitHub
  *      is never touched, and the server refuses while work would be lost).
@@ -62,11 +62,11 @@
   }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function ic(n) { return typeof window.ic === "function" ? window.ic(n) : ""; }
-  function infoBtn() { return window.JavisInfo ? window.JavisInfo.btn(tw("info.more")) : ""; }
-  function infoBody(html) { return window.JavisInfo ? window.JavisInfo.body(html) : '<div class="info-body">' + html + "</div>"; }
-  function chatBrain() { try { return (window.JavisSessions && window.JavisSessions.brain()) || "brain"; } catch (e) { return "brain"; } }
+  function infoBtn() { return window.UniMateInfo ? window.UniMateInfo.btn(tw("info.more")) : ""; }
+  function infoBody(html) { return window.UniMateInfo ? window.UniMateInfo.body(html) : '<div class="info-body">' + html + "</div>"; }
+  function chatBrain() { try { return (window.UniMateSessions && window.UniMateSessions.brain()) || "brain"; } catch (e) { return "brain"; } }
   function pageBrain() { try { return (window.currentBrainPath && window.currentBrainPath()) || chatBrain(); } catch (e) { return chatBrain(); } }
-  function sid() { try { return (window.JavisSessions && window.JavisSessions.current()) || ""; } catch (e) { return ""; } }
+  function sid() { try { return (window.UniMateSessions && window.UniMateSessions.current()) || ""; } catch (e) { return ""; } }
   function narrow() { return !!(window.matchMedia && window.matchMedia("(max-width: 860px)").matches); }
   function api(url, body) {
     var opt = { credentials: "same-origin" };
@@ -153,7 +153,7 @@
   }
   // The repos of this brain, one row each with its switches. Checks and Numbers open in the same dialog and come back here.
   function openRepos(local) {
-    var M = window.JavisConnModal;
+    var M = window.UniMateConnModal;
     if (!M) return;
     var back = function () { openRepos(local); };
     var m = M.open(M.head(esc(tw("gh.local_head", { n: local.length })) + infoBtn()) + '<div class="conn-form gh-local">' +
@@ -189,7 +189,7 @@
   }
   // Local check commands of one repo (spec 7.2): suggested from its CI, editable, one command per line.
   async function openChecks(name, back) {
-    var M = window.JavisConnModal;
+    var M = window.UniMateConnModal;
     if (!M) return;
     var d = await api("/github/local/checks?brain=" + encodeURIComponent(pageBrain()) + "&full_name=" + encodeURIComponent(name));
     if (!d || d.ok === false) { window.alert((d && d.error) || tw("gh.err_net")); return; }
@@ -217,7 +217,7 @@
   }
   // Numbers per engine and model for one repo (spec 13.2): pick a model with data, not with a hunch.
   async function openMetrics(name, back) {
-    var M = window.JavisConnModal;
+    var M = window.UniMateConnModal;
     if (!M) return;
     var d = await api("/github/local/metrics?full_name=" + encodeURIComponent(name));
     var rows = (d && d.rows) || [];
@@ -234,7 +234,7 @@
     if (bk) bk.onclick = back;
   }
   function openForm(st) {
-    var M = window.JavisConnModal;
+    var M = window.UniMateConnModal;
     if (!M) return;
     var html = M.head(esc(tw("gh.dialog_head"))) + '<div class="conn-form gh-form">' +
       '<div class="si-field"><label>' + esc(tw("gh.token")) + infoBtn() + "</label>" + infoBody(esc(tw("gh.token_how"))) +
@@ -269,7 +269,7 @@
   var attached = [], held = null, heldBrain = "", heldBase = {}, seq = 0;
   function names() { return attached.map(function (r) { return r.full_name; }); }
   function announce() {
-    try { window.dispatchEvent(new CustomEvent("javis:github-repos-changed", { detail: { sid: sid(), repos: attached } })); } catch (e) {}
+    try { window.dispatchEvent(new CustomEvent("unimate:github-repos-changed", { detail: { sid: sid(), repos: attached } })); } catch (e) {}
   }
   function renderChip() {
     var host = document.getElementById("cpChips");
@@ -280,7 +280,7 @@
     if (!chip) {
       chip = document.createElement("button");
       chip.type = "button"; chip.id = "ghChip"; chip.className = "cp-pin gh-chip";
-      chip.addEventListener("click", function (e) { e.stopPropagation(); if (window.JavisComposerMenu) window.JavisComposerMenu.openItem("github"); });
+      chip.addEventListener("click", function (e) { e.stopPropagation(); if (window.UniMateComposerMenu) window.UniMateComposerMenu.openItem("github"); });
     }
     var after = document.getElementById("pinChip") || document.getElementById("limitBtn");
     if (chip.parentElement !== host || chip.previousElementSibling !== after) host.insertBefore(chip, after ? after.nextSibling : null);
@@ -349,7 +349,7 @@
         }, Promise.resolve(d)).then(apply);
       }
       apply(null);
-      if (window.JavisAttach) window.JavisAttach.note((d && d.error) || tw("gh.err_net"));
+      if (window.UniMateAttach) window.UniMateAttach.note((d && d.error) || tw("gh.err_net"));
     });
   }
 
@@ -659,14 +659,14 @@
   }
 
   function init() {
-    if (window.JavisComposerMenu) {
-      window.JavisComposerMenu.register({ id: "github", order: 25, icon: LOGO, label: "gh.menu",
+    if (window.UniMateComposerMenu) {
+      window.UniMateComposerMenu.register({ id: "github", order: 25, icon: LOGO, label: "gh.menu",
         hint: function () { return chipText(held || names(), 18); }, panel: panel });
     }
-    window.addEventListener("javis:sessions-changed", refresh);
+    window.addEventListener("unimate:sessions-changed", refresh);
     window.addEventListener("resize", renderChip);
-    window.addEventListener("javis:i18n", renderChip);
-    window.addEventListener("javis:pinned-folder-changed", renderChip);
+    window.addEventListener("unimate:i18n", renderChip);
+    window.addEventListener("unimate:pinned-folder-changed", renderChip);
     refresh();
     // CI and merges move on their own: refresh the icons and the chip every 30 seconds while the page is visible.
     setInterval(function () {
@@ -677,6 +677,6 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 
-  window.JavisGithubRepos = { mount: mount, claimPending: claimPending, refresh: refresh, decorate: decorate, openDetail: openDetail,
+  window.UniMateGithubRepos = { mount: mount, claimPending: claimPending, refresh: refresh, decorate: decorate, openDetail: openDetail,
     current: function () { return attached.slice(); } };
 })();

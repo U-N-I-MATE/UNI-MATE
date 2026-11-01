@@ -14,7 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-macdinh-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-macdinh-"))
 
 import engine  # noqa: E402
 import main  # noqa: E402
@@ -40,7 +40,7 @@ known = set(engine.DEFAULT_MODELS.values()) | {"gpt-5.5", "gpt-5-codex"}   # Cod
 check("engine không có giá trị dự phòng nào nằm ngoài bảng", fallbacks <= known, str(sorted(fallbacks - known)))
 
 # ---- 2. tên mặc định từng thẻ ----
-home = Path(tempfile.mkdtemp(prefix="javis-macdinh-home-"))
+home = Path(tempfile.mkdtemp(prefix="unimate-macdinh-home-"))
 os.environ["HOME"] = str(home)
 for v in ("CODEX_HOME", "GROK_HOME", "CLAUDE_CONFIG_DIR"):
     os.environ.pop(v, None)
@@ -50,7 +50,7 @@ try:
     check("Groq: tên model mặc định", main._default_model_name({}, "groq") == engine.GROQ_DEFAULT_MODEL)
     check("OpenRouter theo model đã đặt ở cài đặt cũ",
           main._default_model_name({"openrouter_model": "x/y"}, "openrouter") == "x/y")
-    check("ChatGPT: model Javis truyền cho Codex khi để trống",
+    check("ChatGPT: model UNI MATE truyền cho Codex khi để trống",
           main._default_model_name({}, "openai-oauth") == "gpt-5.6-luna")
     check("Claude Code: model Claude đã đặt", main._default_model_name({"claude_model": "opus"}, "anthropic-cli") == "opus")
     (home / ".claude").mkdir()

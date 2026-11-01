@@ -21,8 +21,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_TMP = Path(tempfile.mkdtemp(prefix="javis-npx-cache-"))
-os.environ["JAVIS_STATE_DIR"] = str(_TMP / "state")
+_TMP = Path(tempfile.mkdtemp(prefix="unimate-npx-cache-"))
+os.environ["UNIMATE_STATE_DIR"] = str(_TMP / "state")
 os.environ["HOME"] = str(_TMP / "home")
 for _d in ("state", "home"):
     (_TMP / _d).mkdir(parents=True, exist_ok=True)

@@ -27,7 +27,7 @@ check("flag clears on compositionend", composing() === false);
 check("keydown blocked by the standard isComposing", Acts.enterSends(Object.assign({}, enter, { isComposing: true }), false, mouse) === false);
 check("keydown blocked by the IME keyCode 229 fallback", Acts.enterSends(Object.assign({}, enter, { keyCode: 229 }), false, mouse) === false);
 check("plain Enter still sends", Acts.enterSends(enter, false, mouse) === true);
-check("main chat wires the composition tracker on its input", /const chatInputComposing = window\.JavisActs\.trackComposition\(chatInput\);/.test(app));
+check("main chat wires the composition tracker on its input", /const chatInputComposing = window\.UniMateActs\.trackComposition\(chatInput\);/.test(app));
 const appVersion = Number((html.match(/app\.js\?v=(\d+)/) || [])[1] || 0);
 check("app.js đã bump cache", appVersion >= 80);
 

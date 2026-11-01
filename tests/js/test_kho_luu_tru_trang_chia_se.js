@@ -33,7 +33,7 @@ const check = (ten, ok, them) => {
 const m = PY.match(/POLYFILL_LUU_TRU = """<script>[\s\S]*?\n([\s\S]*?)<\/script>\n"""/);
 const JS = m ? m[1] : "";
 check("bóc được đoạn script trong share_render.py", JS.length > 200, JS.length + " ký tự");
-check("CANARY: đoạn bóc ra đúng là bản vá (có lượt thăm dò)", JS.includes("__javis_thu__"));
+check("CANARY: đoạn bóc ra đúng là bản vá (có lượt thăm dò)", JS.includes("__unimate_thu__"));
 
 /** Chạy bản vá trong một `window` giả rồi trả lại chính window đó. */
 function chay(window) {
@@ -110,7 +110,7 @@ tot.localStorage.setItem("da-luu-tu-truoc", "quan-trong");
 chay(tot);
 check("kho thật được GIỮ NGUYÊN, không bị thay bằng kho tạm", tot.localStorage.THAT === true);
 check("dữ liệu đã lưu còn nguyên", tot.localStorage.getItem("da-luu-tu-truoc") === "quan-trong");
-check("lượt thăm dò không để lại rác", tot.localStorage.getItem("__javis_thu__") === null
+check("lượt thăm dò không để lại rác", tot.localStorage.getItem("__unimate_thu__") === null
       && tot.localStorage._soKhoa() === 1, tot.localStorage._soKhoa());
 
 // ============================================================

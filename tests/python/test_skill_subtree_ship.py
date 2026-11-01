@@ -27,7 +27,7 @@ import shutil
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-subtree-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-subtree-"))
 
 import system_sync  # noqa: E402
 
@@ -55,7 +55,7 @@ def _fake_source(tmp):
 
 def main():
     from pathlib import Path
-    tmp = Path(tempfile.mkdtemp(prefix="javis-subtree-run-"))
+    tmp = Path(tempfile.mkdtemp(prefix="unimate-subtree-run-"))
     try:
         src = _fake_source(tmp)
         system_sync.SYSTEM_SKILLS_DIR = src
@@ -85,7 +85,7 @@ def main():
               (sk / "tools" / "run.js").read_text(encoding="utf-8").strip() == "console.log('v1');")
         check("2f. bao cao installed du 4 muc", len(res["installed"]) == 4)
 
-        man = json.loads((brain / ".javis" / "system-manifest.json").read_text(encoding="utf-8"))
+        man = json.loads((brain / ".unimate" / "system-manifest.json").read_text(encoding="utf-8"))
         check("3. khoa manifest cua SKILL.md GIU nguyen dang cu 'skills/<slug>'",
               "skills/demo-skill" in man["files"] and "skills/demo-skill/SKILL.md" not in man["files"])
         check("3b. file con co khoa rieng", "skills/demo-skill/tools/run.js" in man["files"])

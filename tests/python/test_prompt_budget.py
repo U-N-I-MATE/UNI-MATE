@@ -7,7 +7,7 @@ thời gian đang xây adaptive runtime để CHỐNG phình, và không ai bi�
 Mỗi ký tự thêm vào các khối dưới đây là thuế đánh lên MỌI lượt chat của MỌI model.
 
 Bối cảnh số học, để các trần dưới đây không phải con số cảm tính: gói Groq on_demand miễn
-phí cho `llama-3.3-70b-versatile` là 12.000 token mỗi phút. Một lượt Javis từng gửi 21.446
+phí cho `llama-3.3-70b-versatile` là 12.000 token mỗi phút. Một lượt UNI MATE từng gửi 21.446
 token nên bị chặn trước khi kịp trả lời. Đó là bài toán gốc của cả nhánh này.
 
 Ba trần, ba mục đích khác nhau:
@@ -21,7 +21,7 @@ import os
 import sys
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-budget-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-budget-"))
 
 _fails = []
 
@@ -78,7 +78,7 @@ def _tok(chars):
 #     python -m pip install tiktoken
 #     python -c "import tiktoken; print(len(tiktoken.get_encoding('cl100k_base').encode(open('CLAUDE.md', encoding='utf-8').read())))"
 # 0.345.0: lowered to 29,200 after condensing four on-demand sections into pointers to the
-# javis-builder skill (CLAUDE.md 33,591 -> 28,599 chars, measured 12,361 -> about 10,500 Claude tokens).
+# unimate-builder skill (CLAUDE.md 33,591 -> 28,599 chars, measured 12,361 -> about 10,500 Claude tokens).
 KERNEL_MAX_CHARS = 29_200
 
 _claude_md = (ROOT / "CLAUDE.md").read_text(encoding="utf-8")
@@ -91,7 +91,7 @@ check(
 
 # Mục "Dev conventions" đã ĐẨY RA NGOÀI ngày 2026-09-22 (đúng cách file này dặn: chạm trần thì
 # cắt thật hoặc đẩy một mục ra, đừng nâng số). Nó chỉ dành cho phiên Claude Code sửa repo, còn
-# người dùng Javis không bao giờ cần, nên để trong prompt là đánh thuế mọi lượt chat. Trong
+# người dùng UNI MATE không bao giờ cần, nên để trong prompt là đánh thuế mọi lượt chat. Trong
 # CLAUDE.md giờ chỉ còn một dòng trỏ sang. Hai canary dưới đây giữ cho dòng trỏ không rỗng:
 # xoá file mà quên dòng trỏ, hay đổi tên file mà quên sửa CLAUDE.md, đều đỏ ở đây.
 _QUY_UOC = ROOT / "docs" / "quy-uoc-dev.md"
@@ -198,7 +198,7 @@ CORE_TOOLS_MAX_CHARS = 3_000
 import mcp_hub  # noqa: E402
 import config  # noqa: E402
 
-_vault = tempfile.mkdtemp(prefix="javis-budget-vault-")
+_vault = tempfile.mkdtemp(prefix="unimate-budget-vault-")
 os.makedirs(os.path.join(_vault, "skills"), exist_ok=True)
 # 30 skill mô tả dài: mô phỏng brain thật, để bắt được đúng kiểu phình theo N.
 for _i in range(30):

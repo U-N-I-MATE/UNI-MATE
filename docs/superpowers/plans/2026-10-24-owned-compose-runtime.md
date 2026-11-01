@@ -21,7 +21,7 @@ Pinned recursion.py blobdda6b98cd5af100b8941f33cbb079462299c5280 `_run_stage`
 its own retry/accounting, harvests a broad filesystem tree, auto-triggers skills
 and validates benchmark/substrate rules. Retain actual copied compose_round from
 prompts.py blob9ccacf23b64ac15b06a1939f26224960f56d757c. Adapt its one result to
-the existing narrow patch validator and actual Javis role owner/lease/native
+the existing narrow patch validator and actual UNI MATE role owner/lease/native
 runtime/ledger/stop/recovery rather than importing a second executor/ledger or
 upstream broad edit/autotrigger/extra repair. Full orchestration comparison is
 still deferred until actual library reuse, as Goal17 requires.
@@ -73,7 +73,7 @@ Run meaningful RED/GREEN per bounded unit, serial local app/native tests, affect
 regression and independent review, reuse unchanged proofs. Final exact-head full
 required CI remains mandatory. After actual compose integration, implement actual
 experience-library entry/index serialization as a private authorized derived
-snapshot; canonical encrypted Javis evidence/retention/revocation remains owner.
+snapshot; canonical encrypted UNI MATE evidence/retention/revocation remains owner.
 
 Primary SQLite migration references: [ALTER TABLE](https://www.sqlite.org/lang_altertable.html)
 and [DROP TABLE/foreign-key behavior](https://www.sqlite.org/lang_droptable.html).

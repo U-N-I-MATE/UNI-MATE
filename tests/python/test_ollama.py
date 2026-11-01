@@ -3,7 +3,7 @@
     python tests/run.py ollama
 
 Bản 0.16.0 đấu CẢ hai đường của Ollama: chạy trên máy nhà và chạy trên Cloud. Chủ repo dùng
-Javis trên VPS nên chỉ cần Cloud, và yêu cầu gỡ hẳn phần máy nhà.
+UNI MATE trên VPS nên chỉ cần Cloud, và yêu cầu gỡ hẳn phần máy nhà.
 
 Gỡ đi là được nhiều hơn mất về mặt mã: đường máy nhà đòi một ô ĐỊA CHỈ riêng, tức là
 `host_field` - ca đặc biệt duy nhất xuyên suốt lớp nhà cung cấp, kéo theo một nhánh riêng ở
@@ -22,7 +22,7 @@ import sys
 import tempfile
 import types
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-ollama-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-ollama-")
 
 import config as cfg  # noqa: E402
 import engine  # noqa: E402

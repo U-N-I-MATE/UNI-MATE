@@ -13,9 +13,9 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-fix-pm-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-BR = Path(tempfile.mkdtemp(prefix="javis-fix-pm-brain-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-fix-pm-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+BR = Path(tempfile.mkdtemp(prefix="unimate-fix-pm-brain-"))
 (BR / "agents").mkdir()
 (BR / "agents" / "lan.md").write_text("---\nname: Lan\nrole: Trợ lý\n---\nBạn là Lan.\n", encoding="utf-8", newline="\n")
 

@@ -11,9 +11,9 @@ import os
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-t3-int-")
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
-BR = Path(tempfile.mkdtemp(prefix="javis-t3-int-brain-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-t3-int-")
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
+BR = Path(tempfile.mkdtemp(prefix="unimate-t3-int-brain-"))
 (BR / "agents").mkdir()
 (BR / "agents" / "lan.md").write_text("---\nname: Lan\nrole: Trợ lý\n---\nBạn là Lan.\n", encoding="utf-8", newline="\n")
 
@@ -42,7 +42,7 @@ def _no_real_engine(*a, **k):
 main.team_engine.build = _no_real_engine
 main.claude_engine = _no_real_engine
 main.CodexCLI = _no_real_engine
-check("chốt phán xử không dựng engine thật đang bật cho test", os.environ.get("JAVIS_NO_REAL_JUDGE_ENGINE") == "1")
+check("chốt phán xử không dựng engine thật đang bật cho test", os.environ.get("UNIMATE_NO_REAL_JUDGE_ENGINE") == "1")
 
 rs = main._resonance_store()
 BK = main._brain_key(str(BR))

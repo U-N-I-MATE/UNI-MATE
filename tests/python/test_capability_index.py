@@ -15,7 +15,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-capidx-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-capidx-")
 
 import capability_index as ci  # noqa: E402
 
@@ -103,7 +103,7 @@ check("fusion: semantic KHÔNG kéo được mục rác lên trên mục khớp 
 from capability_registry import CapabilityRegistry  # noqa: E402
 from capability_resolver import ActorPolicy, DeterministicResolver  # noqa: E402
 
-_tmp = Path(tempfile.mkdtemp(prefix="javis-capidx-reg-"))
+_tmp = Path(tempfile.mkdtemp(prefix="unimate-capidx-reg-"))
 _brain = _tmp / "brain"
 _reg = CapabilityRegistry(_tmp / "registry")
 _tools = [
@@ -135,7 +135,7 @@ check("quyền readonly: tool GHI không lọt vào kết quả dù có nới r�
 # Dựng lại với limit bé để widening THẬT SỰ nạp thêm ứng viên mới.
 from capability_resolver import ResolverPolicy  # noqa: E402
 
-_tmp2 = Path(tempfile.mkdtemp(prefix="javis-capidx-widen-"))
+_tmp2 = Path(tempfile.mkdtemp(prefix="unimate-capidx-widen-"))
 _brain2 = _tmp2 / "brain"
 _reg2 = CapabilityRegistry(_tmp2 / "registry")
 _tools2, _routes2 = [], {}

@@ -39,7 +39,7 @@ Chữ: model đã tự viết "@Tên" thì tag đúng chỗ đó, chưa thì đ�
 (`npm install --prefix`, khoảng 7 giây, một lần) và chạy thẳng `node index.js`; chưa cài xong thì vẫn chạy bằng npx như cũ.
 
 - Cài ngầm bắt đầu ở lượt `run_cli` đầu tiên khi chưa có bản cài. Lượt đó vẫn đi bằng npx, không chờ cài. Hỏng thì chờ 30 phút mới thử lại.
-- Dấu `.javis-installed` (ghi SAU KHI cài xong, chứa đúng chuỗi phiên bản ghim) quyết định có dùng hay không: cài dở hoặc đổi phiên bản ghim thì không dùng.
+- Dấu `.unimate-installed` (ghi SAU KHI cài xong, chứa đúng chuỗi phiên bản ghim) quyết định có dùng hay không: cài dở hoặc đổi phiên bản ghim thì không dùng.
 - Trên Linux, HOME của phiên Zalo là thư mục riêng nên npx có thể tải lại cả gói vào cache của HOME đó ở mỗi kết nối; thư mục cài cố định tránh luôn chuyện này.
 - Windows không tìm thấy `npm-cli.js` thì bỏ qua việc cài (không đưa đường dẫn vào cmd.exe); đường npx vẫn chạy.
 - Lần chạy đầu sau khi cài có thể chậm vì phần mềm diệt virus quét file mới (đo được 7,7 giây một lần, sau đó 0,7 giây); vẫn nằm trong trần 40 giây.

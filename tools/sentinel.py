@@ -1,13 +1,13 @@
-"""Javis health scan from outside the server (0.199.0). Read-only, no model calls.
+"""UNI MATE health scan from outside the server (0.199.0). Read-only, no model calls.
 
-Works while the server is down, so it is the first thing to run when "Javis stopped doing my jobs".
+Works while the server is down, so it is the first thing to run when "UNI MATE stopped doing my jobs".
 
     python tools/sentinel.py                         # human-readable report
     python tools/sentinel.py --json                  # one JSON document
     python tools/sentinel.py --state-dir DIR --brains-dir DIR --hours 48
-    python tools/sentinel.py --out ~/javis-health    # also write report.json and report.md there
+    python tools/sentinel.py --out ~/unimate-health    # also write report.json and report.md there
 
---out refuses a folder inside the state dir: the scan never writes where Javis keeps its data.
+--out refuses a folder inside the state dir: the scan never writes where UNI MATE keeps its data.
 Exit code is always 0; read the report, not the exit code.
 """
 from __future__ import annotations
@@ -27,12 +27,12 @@ import sentinel  # noqa: E402
 def _brains(brains_dir: Path) -> list:
     if not brains_dir.is_dir():
         return []
-    return [p for p in sorted(brains_dir.iterdir()) if p.is_dir() and (p / "Javis").is_dir()]
+    return [p for p in sorted(brains_dir.iterdir()) if p.is_dir() and (p / "UNI MATE").is_dir()]
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description="Read-only Javis health scan")
-    ap.add_argument("--state-dir", default=os.getenv("JAVIS_STATE_DIR", str(ROOT / "server")))
+    ap = argparse.ArgumentParser(description="Read-only UNI MATE health scan")
+    ap.add_argument("--state-dir", default=os.getenv("UNIMATE_STATE_DIR", str(ROOT / "server")))
     ap.add_argument("--brains-dir", default=os.getenv("BRAINS_DIR", str(ROOT / "brains")))
     ap.add_argument("--hours", type=float, default=24.0)
     ap.add_argument("--json", action="store_true")

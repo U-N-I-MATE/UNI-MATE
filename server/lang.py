@@ -7,7 +7,7 @@ thế là xong - nó bám đúng cho MỌI thứ tiếng.
 Đây là một bước LÙI có chủ ý của module này, và lý do là số liệu đo được từ chính bản trước:
 
   - bộ dò tự chốt ngôn ngữ trả lời, và dò tiếng Anh trên câu hỏi thật chỉ đạt 16/18 - tức vẫn
-    có câu người ta gõ tiếng Anh mà Javis đáp tiếng Việt;
+    có câu người ta gõ tiếng Anh mà UNI MATE đáp tiếng Việt;
   - người viết tiếng Thái, Nhật, Pháp, Tây Ban Nha thì LUÔN bị đáp tiếng Việt, kể cả khi bộ
     dò nhận ra đúng, vì các thứ tiếng đó không có trong sổ đăng ký nên rơi hết về mặc định.
 
@@ -22,8 +22,8 @@ BỘ DÒ VẪN CÒN, và vẫn cần, ở những chỗ KHÔNG CÓ MODEL trong v
 
 Ba biến ngôn ngữ tách rời (spec mục 4.1), đừng nhập một:
   ui_lang       chữ trên màn hình      - user chọn, lưu theo thiết bị
-  reply_lang    Javis trả lời          - mặc định "auto" = để model bám theo người dùng
-  content_lang  nội dung trong brain   - của user, Javis không đụng
+  reply_lang    UNI MATE trả lời          - mặc định "auto" = để model bám theo người dùng
+  content_lang  nội dung trong brain   - của user, UNI MATE không đụng
 
 Dò ngôn ngữ KHÔNG dùng thư viện ngoài. Chỉ cần phân biệt giữa các ngôn ngữ ĐÃ ĐĂNG KÝ, nên
 hai tầng là đủ: nhận hệ chữ qua khoảng mã Unicode (xong ngay tiếng Nhật, Thái, Hàn, Ả Rập,
@@ -61,7 +61,7 @@ class LangDecision:
 
         KHÁC `self.lang`, và phân biệt được hai cái là chuyện sống còn:
 
-      - `lang`        = Javis TRẢ LỜI bằng tiếng gì. Không bao giờ rỗng (rơi về mặc định).
+      - `lang`        = UNI MATE TRẢ LỜI bằng tiếng gì. Không bao giờ rỗng (rơi về mặc định).
       - `lang_cau_hoi` = người dùng đang VIẾT tiếng gì. Rỗng nghĩa là chưa biết.
 
         Cổng chặn đọc CÂU HỎI, nên nó phải dùng cái thứ hai. Đưa nhầm `lang` xuống cổng là
@@ -73,7 +73,7 @@ class LangDecision:
         # Chỉ có một câu trả lời đúng: thứ dò được từ CHÍNH lượt này. Không dò được (câu quá
         # ngắn: "ok thanks", "cho anh xem") thì trả rỗng, và cổng chặn phải suy biến an toàn.
         #
-        # TUYỆT ĐỐI không mượn `self.lang` khi nó đến từ một cái GHIM: cái ghim nói Javis phải
+        # TUYỆT ĐỐI không mượn `self.lang` khi nó đến từ một cái GHIM: cái ghim nói UNI MATE phải
         # TRẢ LỜI bằng tiếng gì, nó không nói gì về ngôn ngữ người dùng đang VIẾT. Mượn nhầm
         # là đúng con bệnh đã đo được - user ghim trả lời tiếng Anh rồi hỏi tiếng Việt thì
         # cổng đem bộ từ vựng tiếng Anh ra chấm một câu tiếng Việt.
@@ -85,7 +85,7 @@ class LangDecision:
                 "lang_has_lexicon": self.has_lexicon,
                 "lang_detected": self.detected,
                 # Đọc trace mà không có cờ này thì `lang` gây hiểu nhầm: nó là ngôn ngữ để
-                # NÊU TÊN ở vài chỗ trong prompt, không phải ngôn ngữ Javis đã trả lời.
+                # NÊU TÊN ở vài chỗ trong prompt, không phải ngôn ngữ UNI MATE đã trả lời.
                 "lang_theo_nguoi_dung": self.theo_nguoi_dung}
 
 
@@ -171,7 +171,7 @@ _DAU_CHUNG = re.compile(r"[éáíóúàèìòù]", re.I)
 # Dấu RIÊNG của tiếng Việt. Cố ý KHÔNG lấy cả bộ dấu: à á è é ì í ò ó ù ú â ê ô dùng chung
 # với tiếng Pháp, Tây Ban Nha, Bồ Đào Nha, Ý. Bản đầu vơ hết vào đây, nên
 # "Peux-tu me résumer les ventes du mois de juin ?" bị nhận là tiếng Việt với độ tin 0.97
-# chỉ vì một chữ "é", rồi Javis được lệnh trả lời người Pháp bằng tiếng Việt.
+# chỉ vì một chữ "é", rồi UNI MATE được lệnh trả lời người Pháp bằng tiếng Việt.
 #
 # Còn lại đây là những ký tự gần như chỉ tiếng Việt dùng: ă đ ơ ư, cùng các tổ hợp dấu hỏi,
 # ngã, nặng. Một ký tự trong nhóm này là đủ chắc.
@@ -291,7 +291,7 @@ def _yeu_cau_thang(text: str) -> str:
 
     Cố ý đòi một ĐỘNG TỪ ra lệnh đứng gần tên ngôn ngữ, chứ không chỉ thấy chữ "tiếng Anh" là
     đổi. Câu "anh cần dịch bài này sang tiếng Anh" là một YÊU CẦU DỊCH, không phải yêu cầu
-    Javis đổi ngôn ngữ trả lời, mà hai câu đó rất giống nhau ở mặt chữ.
+    UNI MATE đổi ngôn ngữ trả lời, mà hai câu đó rất giống nhau ở mặt chữ.
     """
     s = _bo_dau(text)
     if not s:
@@ -318,7 +318,7 @@ def _yeu_cau_thang(text: str) -> str:
     # Dạng đảo ("in English please", "bang tieng Anh nhe") CHỈ tính khi cả tin nhắn là một
     # câu ra lệnh ngắn. Câu dài chỉ NHẮC TỚI một ngôn ngữ thì không phải lệnh: "File hợp đồng
     # bằng tiếng Anh nằm ở đâu trong brain" là một câu hỏi về vị trí file, không phải yêu cầu
-    # Javis đổi sang tiếng Anh - mà bản đầu hiểu đúng thành lệnh và đổi cả cuộc trò chuyện.
+    # UNI MATE đổi sang tiếng Anh - mà bản đầu hiểu đúng thành lệnh và đổi cả cuộc trò chuyện.
     if len(s) <= 40:
         for code in lang_registry.ma_list():
             for tu in lang_registry.get(code).request_words:
@@ -362,7 +362,7 @@ def co_lexicon(code: str) -> bool:
 
 def resolve(*, turn_text: str = "", reply_pref: str = "auto", chatbot_pin: str = "",
             brain_pin: str = "", channel_default: str = "", ui_lang: str = "") -> LangDecision:
-    """Chốt xem lượt này Javis trả lời bằng tiếng gì.
+    """Chốt xem lượt này Uni trả lời bằng tiếng gì.
 
     NGUYÊN TẮC (đổi ở 0.35.0, sau khi đo): **model tự bám theo ngôn ngữ người dùng, hàm này
     chỉ lo phần con người đã GHIM.**

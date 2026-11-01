@@ -2,7 +2,7 @@
 
 Vì sao cần một module riêng cho đúng một cái cờ
 -----------------------------------------------
-Javis trên Windows khởi động qua `start-javis.vbs`, tức tiến trình server chạy **không có
+UNI MATE trên Windows khởi động qua `start-unimate.vbs`, tức tiến trình server chạy **không có
 console**. Trong Windows, một tiến trình không console mà sinh ra chương trình dạng console
 (git, curl, node, python...) thì hệ điều hành TỰ CẤP cho đứa con một cửa sổ console mới. Người
 dùng thấy đúng một cái nháy đen giữa màn hình rồi tắt - chủ repo báo 2026-08-13: "thi thoảng

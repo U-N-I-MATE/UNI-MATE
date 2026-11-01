@@ -1,11 +1,11 @@
-"""Sổ đăng ký kênh + tài khoản kênh + trả lời khách từ Javis (Chatbot V2, 0.61.0).
+"""Sổ đăng ký kênh + tài khoản kênh + trả lời khách từ UNI MATE (Chatbot V2, 0.61.0).
 
     python tests/run.py kenh_tai_khoan      (KHÔNG mạng)
 
 Bốn thứ file này canh, đều là loại hỏng lặng lẽ:
 
 1. **Sổ đăng ký kênh** (`server/channels`): kho bot, kho hội thoại và bộ giám sát đều đọc từ
-   MỘT sổ; năng lực suy từ chính module (có hàm `gui` mới có "trả lời từ Javis").
+   MỘT sổ; năng lực suy từ chính module (có hàm `gui` mới có "trả lời từ UNI MATE").
 2. **Di trú**: bot cũ giữ token TRONG bản ghi -> tài khoản kênh id = id bot, token còn nguyên,
    hội thoại cũ vẫn khớp khoá `kenh:bot_id`, và token KHÔNG còn nằm trong chatbots.json.
 3. **Một bot nhiều tài khoản**: mỗi tài khoản một poller, lượt qua tài khoản nào thì ghi vào
@@ -21,8 +21,8 @@ import os
 import sys
 import tempfile
 
-_STATE = tempfile.mkdtemp(prefix="javis-kenh-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-kenh-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -71,11 +71,11 @@ check("kho bot, kho hội thoại đọc CÙNG sổ",
 check("mặc định kênh bot vẫn là Telegram (bản ghi cũ không có channel là bot Telegram)",
       chatbot_store.KENH_DEFAULT == "telegram")
 zp = channels.spec("zalo_personal")
-check("Zalo cá nhân là kênh kind=account, có công tắc ghi, có trả lời từ Javis",
-      zp and zp.kind == "account" and zp.nl("ghi_theo_cong_tac") and zp.nl("tra_loi_tu_javis"))
+check("Zalo cá nhân là kênh kind=account, có công tắc ghi, có trả lời từ UNI MATE",
+      zp and zp.kind == "account" and zp.nl("ghi_theo_cong_tac") and zp.nl("tra_loi_tu_unimate"))
 tg = channels.spec("telegram")
-check("Telegram: kind=bot, có nhóm, gửi file, trả lời từ Javis",
-      tg and tg.kind == "bot" and tg.nl("nhom") and tg.nl("gui_file") and tg.nl("tra_loi_tu_javis"))
+check("Telegram: kind=bot, có nhóm, gửi file, trả lời từ UNI MATE",
+      tg and tg.kind == "bot" and tg.nl("nhom") and tg.nl("gui_file") and tg.nl("tra_loi_tu_unimate"))
 ui = channels.cho_giao_dien()
 check("bản cho giao diện có logo, nhãn, năng lực, cách lấy token (giao diện không đoán theo id)",
       all(k in ui[0] for k in ("id", "nhan", "logo", "kind", "nang_luc", "lay_token", "tom_tat")))

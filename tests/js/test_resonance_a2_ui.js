@@ -4,7 +4,7 @@
 //
 // Lần thức tới hiện nhãn DỊCH ĐƯỢC theo mã lý do (không còn câu tiếng Việt thô trên giao diện tiếng Anh), sổ các lần
 // thức gần đây, trạng thái theo dõi điều kiện bảo vệ (đã ngừng thì nói rõ, không hiện như đang an toàn), và dòng báo
-// file bị sửa ngoài Javis. Chạy dưới node, hàm thuần.
+// file bị sửa ngoài UNI MATE. Chạy dưới node, hàm thuần.
 "use strict";
 const fs = require("fs");
 const path = require("path");
@@ -23,13 +23,13 @@ function check(name, cond, extra) {
 const base = {
   goal_id: "g_a2", revision: 1, status: "active", run_state: "waiting", block_reason: "scheduled", paused: false,
   understanding: "Ghi chú tổng hợp", fit: "unknown", criteria: [], calls_used: 1, budget_calls: 6, timeline: [],
-  next_wake: { at: 1800000000, reason: "kiểm lại file bị sửa ngoài Javis", code: "drift_recheck" },
+  next_wake: { at: 1800000000, reason: "kiểm lại file bị sửa ngoài UNI MATE", code: "drift_recheck" },
   observe: { state: "none", next_at: null, lost_reason: "" }, wakes_recent: [], source_drift: null,
 };
 
 const h1 = RS.viewHtml(base);
 check("lần thức tới hiện nhãn theo mã, không hiện câu thô của máy chủ",
-  h1.includes(vi["resonance.wake.drift_recheck"]) && !h1.includes("kiểm lại file bị sửa ngoài Javis"));
+  h1.includes(vi["resonance.wake.drift_recheck"]) && !h1.includes("kiểm lại file bị sửa ngoài UNI MATE"));
 const h2 = RS.viewHtml(Object.assign({}, base, { next_wake: { at: 1800000000, reason: "x", code: "ma_moi_chua_biet" } }));
 check("mã lạ hiện như xem lại định kỳ, không lộ mã thô",
   h2.includes(vi["resonance.wake.review"]) && !h2.includes("ma_moi_chua_biet"));

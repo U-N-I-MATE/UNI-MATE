@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 SCRATCH = Path(tempfile.mkdtemp(prefix="trial-semantics-"))
-for key, child in {"JAVIS_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
+for key, child in {"UNIMATE_STATE_DIR": "state", "BRAIN_PATH": "brain", "BRAINS_DIR": "brains",
                    "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources"}.items():
     os.environ[key] = str(SCRATCH / child)
 

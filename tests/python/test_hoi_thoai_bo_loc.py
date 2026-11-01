@@ -14,9 +14,9 @@ import os
 import sys
 import tempfile
 
-_STATE = tempfile.mkdtemp(prefix="javis-htloc-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
-os.environ["JAVIS_ALLOWED_HOSTS"] = "testserver"
+_STATE = tempfile.mkdtemp(prefix="unimate-htloc-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
+os.environ["UNIMATE_ALLOWED_HOSTS"] = "testserver"
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -41,7 +41,7 @@ if _STATE not in str(conversations.DB_PATH):
     print(f"FAIL kho không nằm trong thư mục tạm: {conversations.DB_PATH}. DỪNG.")
     sys.exit(1)
 
-bot_a, _ = chatbot_store.create_bot({"name": "Javis Vũ", "agent_slug": "a", "brain": "brain"})
+bot_a, _ = chatbot_store.create_bot({"name": "Uni Vũ", "agent_slug": "a", "brain": "brain"})
 bot_b, _ = chatbot_store.create_bot({"name": "Nhi Mai", "agent_slug": "b", "brain": "brain"})
 check("(chuẩn bị) có hai bot", bool(bot_a and bot_b))
 
@@ -118,12 +118,12 @@ cl = TestClient(main.app)
 r = cl.get("/conversations", params={"limit": 50}).json()
 check("endpoint trả items, facets, bots, stats", r["ok"] and len(r["items"]) == 6 and "facets" in r and "bots" in r and "stats" in r)
 byid = {x["id"]: x for x in r["items"]}
-check("mỗi hàng có bot_name", byid[c1]["bot_name"] == "Javis Vũ" and byid[c3]["bot_name"] == "Nhi Mai" and byid[c5]["bot_name"] == "",
+check("mỗi hàng có bot_name", byid[c1]["bot_name"] == "Uni Vũ" and byid[c3]["bot_name"] == "Nhi Mai" and byid[c5]["bot_name"] == "",
       {k: v["bot_name"] for k, v in byid.items()})
 check("bot đã xoá thì hiện 'Bot đã xoá', không lòi id thô", byid[c6]["bot_name"] == "Bot đã xoá" and "bot_da_xoa" not in byid[c6]["bot_name"])
 names = {b["id"]: b["name"] for b in r["bots"]}
 check("danh sách bot cho dropdown: chỉ bot có hội thoại, kèm tên và số đếm",
-      names.get(bot_a) == "Javis Vũ" and names.get(bot_b) == "Nhi Mai" and "" not in names and "bot_da_xoa" in names, names)
+      names.get(bot_a) == "Uni Vũ" and names.get(bot_b) == "Nhi Mai" and "" not in names and "bot_da_xoa" in names, names)
 r = cl.get("/conversations", params={"bot_id": bot_b, "status": "need_reply", "chat_type": "private"}).json()
 check("endpoint lọc theo tổ hợp", [x["id"] for x in r["items"]] == [c4], [x["id"] for x in r["items"]])
 allr = cl.get("/conversations", params={"limit": 50}).json()

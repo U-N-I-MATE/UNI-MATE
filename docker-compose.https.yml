@@ -10,8 +10,8 @@
 #   3) Trỏ DNS (bản ghi A: ten-mien → <ip-vps>) theo hướng dẫn hiện trong app.
 #   4) Mở https://ten-mien-cua-ban → chứng chỉ tự cấp + tự gia hạn. Xong.
 #
-# CHỈ DÙNG CHO MÁY CHẠY MỘT BẢN JAVIS. Caddy ở đây nằm CHUNG project với Javis, mà một máy chỉ
-# có một cổng 443 - dựng bản Javis thứ hai kèm file này là hai Caddy tranh cổng và con sau chết.
+# CHỈ DÙNG CHO MÁY CHẠY MỘT BẢN UNI MATE. Caddy ở đây nằm CHUNG project với UNI MATE, mà một máy chỉ
+# có một cổng 443 - dựng bản UNI MATE thứ hai kèm file này là hai Caddy tranh cổng và con sau chết.
 # Nhiều bản, mỗi bản một tên miền → dùng docker-compose.proxy.yml + docker-compose.multi.yml
 # (proxy đứng ngoài, chạy một lần cho cả VPS, tự phát hiện bản mới qua nhãn Docker).
 #
@@ -20,18 +20,18 @@
 # Cần Docker Compose v2.23.1+ (hỗ trợ configs.content). Kiểm tra: docker compose version
 # ============================================================================
 configs:
-  javis_caddyfile:
+  unimate_caddyfile:
     content: |
       {
         on_demand_tls {
-          ask http://javis:7777/tls-check
+          ask http://unimate:7777/tls-check
         }
       }
       https:// {
         tls {
           on_demand
         }
-        reverse_proxy javis:7777
+        reverse_proxy unimate:7777
       }
       http:// {
         redir https://{host}{uri}
@@ -41,15 +41,15 @@ services:
   # Backend giữ nguyên; cookie Secure tự bật khi Host khớp tên miền (server tự xử, không cần env).
   caddy:
     image: caddy:2-alpine
-    container_name: javis-caddy
+    container_name: unimate-caddy
     restart: unless-stopped
     depends_on:
-      - javis
+      - unimate
     ports:
       - "80:80"
       - "443:443"
     configs:
-      - source: javis_caddyfile
+      - source: unimate_caddyfile
         target: /etc/caddy/Caddyfile
     volumes:
       - caddy-data:/data       # chứng chỉ đã cấp - giữ qua restart, không xin lại

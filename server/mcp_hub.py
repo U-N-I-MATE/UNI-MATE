@@ -1,12 +1,12 @@
 """
-JAVIS MCP HUB - điểm đấu DUY NHẤT cho mọi engine.
-- Claude Code / Codex thấy hub như MỘT MCP server http tên "javis" (config 1 entry).
+UNI MATE MCP HUB - điểm đấu DUY NHẤT cho mọi engine.
+- Claude Code / Codex thấy hub như MỘT MCP server http tên "unimate" (config 1 entry).
 - Engine API (OpenRouter/OpenAI/Anthropic) gọi in-process qua discover_all().
 Hub lo trọn: gộp tool mọi connection (namespaced), ENFORCE quyền 3 mức + mode loop
 (lớp CỨNG, không phụ thuộc prompt), audit log, cache, rate limit, meta-tool.
 
 Quyền: mcp_catalog.allowed(connector, perm_connection, mode_lượt_chạy, tool, args).
-Mode đến từ header X-Javis-Mode (Claude/Codex) hoặc tham số (engine API).
+Mode đến từ header X-UniMate-Mode (Claude/Codex) hoặc tham số (engine API).
 """
 import asyncio
 import hashlib
@@ -90,7 +90,7 @@ def hub_token():
 
 def hub_port():
     try:
-        return int(os.getenv("JAVIS_PORT", "7777"))
+        return int(os.getenv("UNIMATE_PORT", "7777"))
     except ValueError:
         return 7777
 
@@ -100,27 +100,27 @@ def hub_url():
 
 
 def allow_patterns():
-    """Pattern cho --allowedTools của loop: mọi tool qua hub đều mang tên mcp__javis__*."""
-    return ["mcp__javis"]
+    """Pattern cho --allowedTools của loop: mọi tool qua hub đều mang tên mcp__unimate__*."""
+    return ["mcp__unimate"]
 
 
 # Tools that only the OWNER's own sessions may see (0.77.0). A dedicated bot at the "can write" / "full" level gets
 # hub tools, and there the person steering the model is a stranger. These two read every customer chat the reply
 # judge logged and retune the bot itself, so a customer must never reach them, not even through the lazy
-# `javis_run_tool`. `discover_all(for_bot=True)` drops them before the lazy tier; bot paths pass that flag (API
-# engines directly, Claude Code through the X-Javis-Bot header written by `claude_config_path(bot=True)`).
-# `javis_team` (0.173.0) creates, edits and deletes team chats and writes assistant files: owner-only for the same reason.
-# `javis_watch` (0.239.0) makes the server fetch an address on a schedule and message the owner: not a customer's call.
-# `javis_login` (0.251.0) opens pages signed in as the owner (login vault): a customer must never browse as them.
-OWNER_ONLY_TOOLS = frozenset({"javis_reply_policy", "javis_reply_policy_tune", "javis_team", "javis_memory",
-                              "javis_watch", "javis_login",
+# `unimate_run_tool`. `discover_all(for_bot=True)` drops them before the lazy tier; bot paths pass that flag (API
+# engines directly, Claude Code through the X-UniMate-Bot header written by `claude_config_path(bot=True)`).
+# `unimate_team` (0.173.0) creates, edits and deletes team chats and writes assistant files: owner-only for the same reason.
+# `unimate_watch` (0.239.0) makes the server fetch an address on a schedule and message the owner: not a customer's call.
+# `unimate_login` (0.251.0) opens pages signed in as the owner (login vault): a customer must never browse as them.
+OWNER_ONLY_TOOLS = frozenset({"unimate_reply_policy", "unimate_reply_policy_tune", "unimate_team", "unimate_memory",
+                              "unimate_watch", "unimate_login",
                               # 0.403.0: changes which notices reach the owner. A customer must never mute the owner.
-                              "javis_notify",
+                              "unimate_notify",
                               # 2026-10-25: writes code that runs in the server (installed OFF, still owner's call).
-                              "javis_plugin",
+                              "unimate_plugin",
                               # 0.259.0: tìm và đọc web. Bot nói chuyện với khách lạ không được biến
                               # máy chủ của chủ thành máy đi đọc web hộ bất kỳ ai nhắn tới.
-                              "javis_web_search", "javis_web_fetch"})
+                              "unimate_web_search", "unimate_web_fetch"})
 
 
 # ============================================================
@@ -278,12 +278,12 @@ def _guard(ent, fn, mode):
                        "args_keys": sorted((args or {}).keys()), **team_gate.audit_fields()})
         # Lỗi từ dịch vụ trả về NGUYÊN VĂN tiếng Anh thì model phải tự đoán, và nó đoán sai:
         # vụ 2026-07-30 Google trả "The caller does not have permission", model kết luận là hub
-        # của Javis chặn quyền rồi đi sửa nhầm tầng. GẮN THÊM chẩn đoán (không thay thế - giữ
+        # của UNI MATE chặn quyền rồi đi sửa nhầm tầng. GẮN THÊM chẩn đoán (không thay thế - giữ
         # nguyên văn để còn lần ra manh mối) khi nhận ra họ lỗi quen mặt.
         if str(result).startswith("ERROR:"):
             chan_doan = chan_doan_loi(str(result).split("ERROR:", 1)[1].strip(), conn["id"])
             if chan_doan:
-                return f"{result}\n\n[Javis chẩn đoán] {chan_doan}"
+                return f"{result}\n\n[UNI MATE chẩn đoán] {chan_doan}"
         return result
 
     return _call
@@ -292,7 +292,7 @@ def _guard(ent, fn, mode):
 # ============================================================
 # AMBIENT / ACCOUNT MCP - connector đấu vào TÀI KHOẢN Claude (claude.ai: Drive/Gmail/lịch...).
 # Chúng KHÔNG đi qua hub: engine Claude nạp thẳng qua setting_sources thành tool NATIVE
-# mcp__<server>__*. Trước đây lazy layer + javis_connections MÙ với nhóm này → model tưởng chỉ
+# mcp__<server>__*. Trước đây lazy layer + unimate_connections MÙ với nhóm này → model tưởng chỉ
 # có connector của hub, báo "không có Drive" dù tài khoản đã đấu. Ở đây hub ĐỌC danh sách
 # (claude mcp list, cache nền vì chậm) để KỂ cho model biết + chỉ cách gọi (native, KHÔNG qua run).
 # ============================================================
@@ -348,7 +348,7 @@ def _ambient_servers():
 
 def _match_ambient(ambient, query):
     """Connector tài khoản khớp query (tên xuất hiện trong query, hoặc chung từ khoá). query
-    rỗng → []. Dùng cho javis_search_tools chỉ model sang tool native khi hỏi đúng nguồn đó."""
+    rỗng → []. Dùng cho unimate_search_tools chỉ model sang tool native khi hỏi đúng nguồn đó."""
     q = (query or "").strip().lower()
     if not q or not ambient:
         return []
@@ -421,7 +421,7 @@ def _safe_path(vault_root, p, workspace_root=None):
                                         GHI file mới, đổi ở 0.256.0)
       3. Không đâu có                -> vault, để câu báo lỗi nói về brain như cũ
 
-    Bước 2 là thứ làm `javis_write_file` ghi đúng chỗ: ghi `server/moi.py` trong một phiên
+    Bước 2 là thứ làm `unimate_write_file` ghi đúng chỗ: ghi `server/moi.py` trong một phiên
     coding thì brain không có thư mục `server/` còn repo có, nên file rơi vào repo.
     """
     tv = _trong_goc(vault_root, p)
@@ -470,7 +470,7 @@ def _safe_read_path(vault_root, p, cho_phep_staging=False, workspace_root=None):
 
     Vì sao phải có: dashboard chèn vào câu hỏi khối "[File đính kèm để ĐỌC (đường dẫn): …]"
     với ĐƯỜNG DẪN TUYỆT ĐỐI trong `.staging` rồi dặn model "đọc thẳng file rồi trả lời".
-    Sáu engine API không có tool đọc file nào ngoài `javis_read_file`, mà tool đó khoá trong
+    Sáu engine API không có tool đọc file nào ngoài `unimate_read_file`, mà tool đó khoá trong
     vault - nên lượt nào đính kèm file cũng nổ `ValueError: nằm ngoài vault`, và model đọc
     lỗi đó xong quay ra bảo người dùng "chuyển file vào thư mục Brain đi rồi tôi đọc". Người
     dùng báo đúng cảnh này 23/08 với một đoạn văn dán dài.
@@ -521,7 +521,7 @@ def _connections_json(include_ambient=False, hidden=None, bo_qua=None, owner_cha
     # này" rồi còn ghi điều đó vào bộ nhớ dài hạn. KHÔNG có khái niệm ấy: hub dựng tool từ
     # mcp_store.resolved() cho MỌI vault như nhau. Không thấy tool chỉ có hai lý do thật -
     # nguồn đang tắt, hoặc nguồn đang hỏng lúc dò - và cả hai đều phải nói ra ở đây.
-    out = [{"ghi_chu": ("Kết nối là của CẢ Javis, dùng chung cho MỌI brain. Không có chuyện "
+    out = [{"ghi_chu": ("Kết nối là của CẢ UNI MATE, dùng chung cho MỌI brain. Không có chuyện "
                         "'gắn nguồn vào brain' - đừng bao giờ nói vậy. Nguồn có mặt ở danh sách "
                         "này mà không thấy tool của nó thì xem trang_thai: đang TẮT (bật lại ở "
                         "trang Kết nối) hoặc đang HỎNG lúc dò (bảo người dùng bấm Kiểm tra ở "
@@ -531,7 +531,7 @@ def _connections_json(include_ambient=False, hidden=None, bo_qua=None, owner_cha
         rec = {"connector": con.get("name") or c.get("connector_id"), "label": c.get("label"),
                "namespace": c.get("slug"), "perm": c.get("perm"), "enabled": c.get("enabled"),
                "is_default": c.get("is_default"), "transport": c.get("transport"),
-               "source": "javis_hub"}
+               "source": "unimate_hub"}
         sk = suc_khoe.get(c.get("id")) or {}
         if not c.get("enabled"):
             rec["trang_thai"] = "ĐANG TẮT - bật lại ở trang Kết nối là mọi brain dùng được ngay."
@@ -549,15 +549,15 @@ def _connections_json(include_ambient=False, hidden=None, bo_qua=None, owner_cha
             rec["tool_bi_an_do_quyen"] = sorted(h["tools"])[:15]
             rec["cach_mo"] = (f"Các tool này CÓ THẬT nhưng bị ẩn vì kết nối đang ở mức "
                               f"'{h.get('perm')}'. Muốn dùng thì bảo user tự nâng mức ở trang "
-                              "Kết nối - Javis KHÔNG tự nâng quyền.")
+                              "Kết nối - UNI MATE KHÔNG tự nâng quyền.")
         out.append(rec)
     # Connector đấu vào TÀI KHOẢN Claude (Drive/Gmail/lịch...): engine Claude đã có sẵn dưới dạng
-    # tool native mcp__<server>__* → chỉ model gọi THẲNG, KHÔNG bọc qua javis_run_tool/hub.
+    # tool native mcp__<server>__* → chỉ model gọi THẲNG, KHÔNG bọc qua unimate_run_tool/hub.
     if include_ambient:
         for s in _ambient_servers():
             out.append({"connector": s["name"], "label": s["name"], "source": "claude_account",
                         "goi_the_nao": f"Đã có sẵn trong danh sách tool: mcp__{_ambient_prefix(s['name'])}__* "
-                                       "- GỌI THẲNG, không qua javis_run_tool."})
+                                       "- GỌI THẲNG, không qua unimate_run_tool."})
     elif owner_chat:
         # 0.228.0: an engine with no Claude account (Anthropic API, OpenAI API...) never gets these connectors. Not
         # listing them let the model answer "there is no such tool" with no way forward (customer report 2026-10-19,
@@ -568,7 +568,7 @@ def _connections_json(include_ambient=False, hidden=None, bo_qua=None, owner_cha
                         "dung_duoc_o_luot_nay": False,
                         "ly_do": ("Kết nối này gắn với TÀI KHOẢN Claude của chủ, chỉ có khi model chat là Claude "
                                   "Code. Model đang chạy bằng API key nên không gọi được. Nói đúng lý do đó, rồi "
-                                  "chỉ hai cách: nối nguồn này ở trang Kết nối của Javis (mọi model đều dùng "
+                                  "chỉ hai cách: nối nguồn này ở trang Kết nối của UNI MATE (mọi model đều dùng "
                                   "được), hoặc đổi model chat sang Claude Code.")})
     return json.dumps(out, ensure_ascii=False, indent=1)
 
@@ -586,18 +586,18 @@ def _list_skills(vault_root):
 def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang="", staging=False,
                    bo_qua=None, workspace_root=None, coding_ctx_cua_phien=None):
     """(tools_spec, route) các tool nội bộ cho engine API. Claude/Codex có tool file native
-    nên hub HTTP không trả nhóm này (chỉ meta javis_connections).
-    include_ambient=True (đường engine Claude): javis_connections kèm cả connector tài khoản
+    nên hub HTTP không trả nhóm này (chỉ meta unimate_connections).
+    include_ambient=True (đường engine Claude): unimate_connections kèm cả connector tài khoản
     Claude (Drive/Gmail...) để model biết chúng tồn tại (gọi qua tool native mcp__*, không qua hub).
     hidden: {conn_id: {perm, tools}} tool bị mức quyền lọc khỏi danh sách - kể ra trong
-    javis_connections để model biết mà nói đúng lý do thay vì tưởng nguồn thiếu năng lực.
-    staging=True: `javis_read_file` đọc được thêm file trong vùng nhận file của khung chat
+    unimate_connections để model biết mà nói đúng lý do thay vì tưởng nguồn thiếu năng lực.
+    staging=True: `unimate_read_file` đọc được thêm file trong vùng nhận file của khung chat
     (xem `_safe_read_path`). CHỈ đường chat của CHỦ bật; bot chuyên trách để nguyên False.
     workspace_root: thư mục làm việc của phiên Coding (0.64). Có giá trị thì tool FILE nhận
     thêm gốc đó, để engine không có tool file native chạm được vào cây mã nguồn. MCP, cron và
     nhắc hẹn KHÔNG đổi gốc - chúng thuộc về brain, xem `coding_ctx`.
     coding_ctx_cua_phien: `CodingToolContext` của phiên. Có nó VÀ có workspace_root thì hub
-    cấp thêm `javis_run_command`. Thiếu một trong hai thì tool đó không tồn tại - phiên chat
+    cấp thêm `unimate_run_command`. Thiếu một trong hai thì tool đó không tồn tại - phiên chat
     thường không được thấy tool chạy lệnh."""
     tools, route = [], {}
     # Phiên Coding nào đang dùng nhóm tool này (0.256.0). Rỗng ở chat thường. Dùng cho sổ "đã
@@ -649,12 +649,12 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
             pass
 
     def add(name, description, props, required, call, effect="read"):
-        tools.append({"fn": name, "server": "javis", "name": name, "description": description,
+        tools.append({"fn": name, "server": "unimate", "name": name, "description": description,
                       "schema": {"type": "object", "properties": props, "required": required}})
         route[name] = {
             "call": call,
             "source_type": "builtin",
-            "source_id": "javis-core",
+            "source_id": "unimate-core",
             "effect": effect,
             "required_mode": "readonly" if effect in ("none", "read") else (
                 "safe" if effect == "write" else "full"
@@ -662,11 +662,11 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
             "health": "healthy",
         }
 
-    add("javis_connections", "Liệt kê các nguồn dữ liệu (connector/tài khoản MCP) đang đấu vào Javis, "
+    add("unimate_connections", "Liệt kê các nguồn dữ liệu (connector/tài khoản MCP) đang đấu vào UNI MATE, "
         "kèm mức quyền, trạng thái sống/hỏng, và các tool đang bị mức quyền ẩn (tool_bi_an_do_quyen). "
         "Kết nối DÙNG CHUNG cho mọi brain - không có khái niệm gắn nguồn vào brain. Gồm cả connector đấu "
         "vào TÀI KHOẢN Claude (Drive/Gmail/lịch...) - loại source='claude_account' gọi THẲNG qua "
-        "tool native mcp__<tên>__*, KHÔNG qua javis_run_tool. Dùng khi cần biết đang có nguồn nào / "
+        "tool native mcp__<tên>__*, KHÔNG qua unimate_run_tool. Dùng khi cần biết đang có nguồn nào / "
         "tài khoản nào là mặc định, hoặc khi không tìm thấy tool tưởng phải có.",
         {}, [], lambda args: _async_const(_connections_json(include_ambient, hidden, bo_qua, owner_chat=staging)))
 
@@ -690,7 +690,7 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
                         f"tương đối so với một trong số đó, hoặc file vừa đính kèm vào khung "
                         f"chat.")
             return (f"ERROR: '{rel}' nằm ngoài bộ não đang làm việc nên tool này không đọc "
-                    f"được. Javis khoá tool file trong brain để một lượt chat không đọc lung "
+                    f"được. UNI MATE khoá tool file trong brain để một lượt chat không đọc lung "
                     f"tung trên máy. Đọc được: đường dẫn tương đối trong brain, và file người "
                     f"dùng vừa đính kèm vào khung chat.")
         if not p.is_file():
@@ -699,7 +699,7 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
             # Reading a photo as text hands the model a page of mojibake it then "describes" with confidence. Say what the
             # file is and how to actually see it (0.73.0).
             return (f"'{rel}' là file ẢNH ({p.stat().st_size // 1024} KB), tool này chỉ đọc chữ nên không cho bạn thấy ảnh. "
-                    f"Muốn biết trong ảnh có gì, gọi tool javis_describe_image với images=['{rel}'] (ChatGPT nhìn ảnh thật "
+                    f"Muốn biết trong ảnh có gì, gọi tool unimate_describe_image với images=['{rel}'] (ChatGPT nhìn ảnh thật "
                     f"rồi tả lại). Muốn người dùng xem ảnh thì nhúng ![]({rel}) vào câu trả lời.")
         if p.suffix.lower() in doc_text.SUFFIXES:
             # PDF/Word đọc thô ra toàn mã nhị phân: bóc chữ trước để engine API và Ollama máy nhà đọc được file đính kèm (0.92.2).
@@ -727,10 +727,10 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
             rows.append(("[d] " if e.is_dir() else "    ") + e.name)
         return "\n".join(rows) or "(trống)"
 
-    async def _kiem_ghi(args, ten_tool="javis_write_file"):
+    async def _kiem_ghi(args, ten_tool="unimate_write_file"):
         """(đường dẫn đã duyệt, lỗi). Mọi rào trước khi GHI, dùng chung cho ghi và sửa file."""
         if mcp_catalog.effective_perm("full", mode) == "readonly":
-            # Câu này phải NÓI RÕ ĐÂY LÀ QUYỀN CỦA JAVIS, không phải lỗi máy. Bản cũ chỉ ghi
+            # Câu này phải NÓI RÕ ĐÂY LÀ QUYỀN CỦA UNI MATE, không phải lỗi máy. Bản cũ chỉ ghi
             # "chế độ hiện tại (suggest/chỉ đọc) không được ghi file", và model đọc xong tự
             # dựng ra một nguyên nhân nghe hợp lý mà sai hoàn toàn - người dùng thật nhận
             # được câu "môi trường filesystem đang lỗi quyền sandbox" rồi đi tìm lỗi ổ đĩa,
@@ -755,7 +755,7 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
                         f"trong số đó.")
             return None, (f"ERROR: '{(args or {}).get('path')}' nằm ngoài bộ não đang làm việc nên "
                     f"tool này không ghi được. Dùng đường dẫn tương đối trong brain.")
-        # 0.188.0 (Javis Core spec 13, 14): the learning switch and the forgotten list are the person's, never the
+        # 0.188.0 (UNI MATE Core spec 13, 14): the learning switch and the forgotten list are the person's, never the
         # model's; and with learning off nothing new is written under memory/.
         try:
             import memory_control
@@ -765,12 +765,12 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
                 return None, "ERROR: công tắc ghi nhớ và danh sách đã quên do người dùng quản lý, tool không ghi được."
             if (rp == mem or mem in rp.parents) and not memory_control.learning_enabled(mem):
                 return None, ("ERROR: người dùng đã TẮT việc lưu ghi nhớ mới cho brain này nên không ghi vào memory/. "
-                        "Nói với người dùng rằng ghi nhớ đang tắt (bật lại ở Javis Core > Trí nhớ).")
+                        "Nói với người dùng rằng ghi nhớ đang tắt (bật lại ở UNI MATE Core > Trí nhớ).")
         except Exception:
             pass
         if mode == team_gate.HUB_MODE:
             # 0.207.0 review: a gated Team step writes its deliverables, never files that run or configure code
-            # (plugins/, .claude/, Javis/ loops and reminders...). Those go through the owner's approval like any action.
+            # (plugins/, .claude/, UniMate/ loops and reminders...). Those go through the owner's approval like any action.
             rel = None
             for base in [vault_root] + list(workspace_root if isinstance(workspace_root, (list, tuple)) else
                                             ([workspace_root] if workspace_root else [])):
@@ -795,9 +795,9 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
         if _sid_coding and _trong_lam_viec(p):
             # 0.256.0: trong thư mục làm việc, chặn ghi đè mù và chặn dán nguyên output có số dòng.
             if coding_files.giong_output_doc(noi_dung):
-                return ("ERROR: nội dung trông như output của javis_read_file (mỗi dòng mở đầu bằng "
+                return ("ERROR: nội dung trông như output của unimate_read_file (mỗi dòng mở đầu bằng "
                         "'số|'). Ghi vậy là ghi cả số dòng vào file. Bỏ tiền tố số dòng, hoặc dùng "
-                        "javis_edit_file để sửa đúng đoạn cần.")
+                        "unimate_edit_file để sửa đúng đoạn cần.")
             chan = coding_files.chan_ghi_de(_sid_coding, p)
             if chan:
                 return chan
@@ -811,11 +811,11 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
 
     async def _edit(args):
         args = args or {}
-        p, loi = await _kiem_ghi(args, "javis_edit_file")
+        p, loi = await _kiem_ghi(args, "unimate_edit_file")
         if loi:
             return loi
         if not p.is_file():
-            return (f"ERROR: không có file '{args.get('path')}'. Tạo file mới thì dùng javis_write_file.")
+            return (f"ERROR: không có file '{args.get('path')}'. Tạo file mới thì dùng unimate_write_file.")
         canh_bao = _moc_truoc(p, f"sửa {args.get('path')}") if (_sid_coding and _trong_lam_viec(p)) else ""
         ra = await asyncio.to_thread(
             coding_files.sua_file, p, str(args.get("old_string") or ""), str(args.get("new_string") or ""),
@@ -898,25 +898,25 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
             return 'ERROR: task_skill_scope_unavailable'
         return text
 
-    add("javis_read_file", "Đọc 1 file trong vault (Second Brain). path tương đối so với gốc vault; "
+    add("unimate_read_file", "Đọc 1 file trong vault (Second Brain). path tương đối so với gốc vault; "
         "nhận CẢ đường dẫn tuyệt đối của file người dùng vừa đính kèm/dán vào khung chat. PDF, Word, Excel "
         "(.xlsx: mọi sheet, giá trị công thức, ô lỗi) được bóc thành chữ. File dài: "
         "đọc từng đoạn bằng offset/limit (có số dòng).",
         {"path": {"type": "string"}, "offset": {"type": "integer"}, "limit": {"type": "integer"}},
         ["path"], _read)
-    add("javis_list_dir", "Liệt kê file/thư mục trong vault. path tương đối, bỏ trống = gốc vault.",
+    add("unimate_list_dir", "Liệt kê file/thư mục trong vault. path tương đối, bỏ trống = gốc vault.",
         {"path": {"type": "string"}}, [], _ls)
-    add("javis_write_file", "Ghi/tạo file trong vault (ghi đè nếu có). Dùng khi cần lưu ghi chú, "
+    add("unimate_write_file", "Ghi/tạo file trong vault (ghi đè nếu có). Dùng khi cần lưu ghi chú, "
         "báo cáo, nháp. KHÔNG dùng cho hành động ra ngoài.",
         {"path": {"type": "string"}, "content": {"type": "string"}}, ["path", "content"], _write,
         effect="write")
-    add("javis_edit_file", "Sửa MỘT đoạn trong file có sẵn: thay old_string (chép nguyên văn từ file, đủ "
+    add("unimate_edit_file", "Sửa MỘT đoạn trong file có sẵn: thay old_string (chép nguyên văn từ file, đủ "
         "dài để chỉ khớp một chỗ) bằng new_string. Sửa vài dòng thì LUÔN dùng tool này, đừng ghi đè cả "
-        "file bằng javis_write_file. replace_all=true để thay mọi chỗ khớp. Trả về diff.",
+        "file bằng unimate_write_file. replace_all=true để thay mọi chỗ khớp. Trả về diff.",
         {"path": {"type": "string"}, "old_string": {"type": "string"},
          "new_string": {"type": "string"}, "replace_all": {"type": "boolean"}},
         ["path", "old_string", "new_string"], _edit, effect="write")
-    add("javis_search_files", "Tìm trong file: target='content' tìm theo nội dung (regex), target='files' "
+    add("unimate_search_files", "Tìm trong file: target='content' tìm theo nội dung (regex), target='files' "
         "tìm theo tên file (glob như '*.py' hoặc một đoạn tên). path: thư mục để tìm (bỏ trống = thư mục "
         "làm việc, hoặc gốc brain). file_glob lọc loại file, context = số dòng kèm quanh chỗ khớp.",
         {"pattern": {"type": "string"}, "target": {"type": "string", "enum": ["content", "files"]},
@@ -928,7 +928,7 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
             route[_fn]["hat_nhan"] = True
 
     # 0.259.0: tìm và đọc web cho engine API (Claude Code, Codex, Grok có WebSearch/WebFetch riêng).
-    # Không vào nhóm hạt nhân: lượt nào cần web thì model tìm thấy qua javis_search_tools khi tầng
+    # Không vào nhóm hạt nhân: lượt nào cần web thì model tìm thấy qua unimate_search_tools khi tầng
     # lazy đang bật, còn lại chúng hiện thẳng như mọi tool khác. Xem web_tools.
     async def _web_search(args):
         import web_tools
@@ -941,12 +941,12 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
         return await web_tools.doc(str(args.get("url") or ""), args.get("offset") or 0,
                                    args.get("limit") or web_tools.DOC_MAC_DINH)
 
-    add("javis_web_search", "Tìm trên web (tin mới, giá cả, tài liệu, bất cứ thứ gì cần thông tin hiện tại). "
-        "Trả danh sách tiêu đề, địa chỉ, đoạn trích; đọc kỹ trang nào thì gọi javis_web_fetch.",
+    add("unimate_web_search", "Tìm trên web (tin mới, giá cả, tài liệu, bất cứ thứ gì cần thông tin hiện tại). "
+        "Trả danh sách tiêu đề, địa chỉ, đoạn trích; đọc kỹ trang nào thì gọi unimate_web_fetch.",
         {"query": {"type": "string"}, "limit": {"type": "integer", "description": "số kết quả, mặc định 5"}},
         ["query"], _web_search)
-    add("javis_web_fetch", "Đọc một trang web hoặc file PDF theo url, trả nội dung dạng chữ (markdown). Trang "
-        "dài thì gọi lại với offset để đọc tiếp. Trang cần đăng nhập thì dùng javis_login.",
+    add("unimate_web_fetch", "Đọc một trang web hoặc file PDF theo url, trả nội dung dạng chữ (markdown). Trang "
+        "dài thì gọi lại với offset để đọc tiếp. Trang cần đăng nhập thì dùng unimate_login.",
         {"url": {"type": "string"}, "offset": {"type": "integer"},
          "limit": {"type": "integer", "description": "số ký tự, mặc định 15000, tối đa 50000"}},
         ["url"], _web_fetch)
@@ -964,13 +964,13 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
                         for s in _hien)
     if _con_lai > 0:
         listing += (f"; …(+{_con_lai} skill nữa không liệt kê ở đây, vẫn nạp được bằng "
-                    f"name=<slug> nếu biết tên - xem Javis/index.md)")
-    add("javis_use_skill",
+                    f"name=<slug> nếu biết tên - xem UniMate/index.md)")
+    add("unimate_use_skill",
         "Nạp nội dung 1 skill (hướng dẫn chuyên sâu) rồi LÀM THEO. Truyền name=<slug>. "
         "Skill khả dụng (slug: mô tả): " + (listing or "(chưa có)"),
         {"name": {"type": "string"}}, ["name"], _skill)
 
-    # `javis_run_command` chỉ hiện khi phiên CÓ thư mục làm việc. Phiên chat thường không thấy
+    # `unimate_run_command` chỉ hiện khi phiên CÓ thư mục làm việc. Phiên chat thường không thấy
     # nó, nên không có chuyện một câu hỏi bình thường lại gọi được lệnh máy. Mức quyền vẫn do
     # chính `run_command` cưỡng chế lần nữa theo chip của phiên (hai lớp, không thay nhau).
     # 0.256.0: mức Plan (chip suggest, hoặc lượt /plan hạ trần xuống chỉ đọc) không thấy tool này
@@ -991,7 +991,7 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
             )
             return run_command.ket_qua_cho_model(kq)
 
-        add("javis_run_command",
+        add("unimate_run_command",
             "Chạy MỘT lệnh trong thư mục làm việc của phiên (chạy test, lint, git chỉ đọc). "
             "KHÔNG qua shell: '&&', ';', '|', '$(...)' đều không có tác dụng, tách thành "
             "nhiều lời gọi. Trả về mã thoát rồi tới output đã cắt bớt.",
@@ -1012,8 +1012,8 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
 
         def _nhat_ky(lenh, ket, nguy):
             try:
-                _audit_append({"ts": datetime.now().isoformat(timespec="seconds"), "conn_id": "javis-terminal",
-                               "tool": "javis_terminal", "session": _sid_coding, "cmd": str(lenh)[:500],
+                _audit_append({"ts": datetime.now().isoformat(timespec="seconds"), "conn_id": "unimate-terminal",
+                               "tool": "unimate_terminal", "session": _sid_coding, "cmd": str(lenh)[:500],
                                "nguy_hiem": bool(nguy), "ok": not str(ket).startswith("ERROR"),
                                "head": str(ket)[:80]})
             except Exception:
@@ -1045,16 +1045,16 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
                                            args.get("offset") or 0, args.get("limit") or 0,
                                            args.get("timeout") or 0)
 
-        add("javis_terminal",
+        add("unimate_terminal",
             "Terminal thật (bash) trong thư mục làm việc của phiên: pipe, &&, cd đều được, nhớ thư mục "
             "và biến export giữa các lệnh. Dev server hay lệnh chạy mãi thì background=true rồi xem bằng "
-            "javis_process. timeout mặc định 180 giây, tối đa 600 (xin lâu hơn thì tự chạy nền). workdir: "
-            "thư mục con chỉ cho lệnh này. Trước lệnh thay đổi file Javis tự tạo mốc khôi phục.",
+            "unimate_process. timeout mặc định 180 giây, tối đa 600 (xin lâu hơn thì tự chạy nền). workdir: "
+            "thư mục con chỉ cho lệnh này. Trước lệnh thay đổi file UNI MATE tự tạo mốc khôi phục.",
             {"command": {"type": "string"}, "background": {"type": "boolean"},
              "timeout": {"type": "number"}, "workdir": {"type": "string"}},
             ["command"], _terminal, effect="full")
-        add("javis_process",
-            "Quản lý tiến trình nền do javis_terminal bật: action=list | poll (trạng thái + vài dòng cuối) | "
+        add("unimate_process",
+            "Quản lý tiến trình nền do unimate_terminal bật: action=list | poll (trạng thái + vài dòng cuối) | "
             "log (offset/limit dòng, mặc định 200 dòng cuối) | wait (chờ tới timeout giây, tối đa 600) | kill.",
             {"action": {"type": "string", "enum": ["list", "poll", "log", "wait", "kill"]},
              "process_id": {"type": "string"}, "offset": {"type": "integer"},
@@ -1071,15 +1071,15 @@ async def _async_const(v):
 # ============================================================
 # LAZY TOOLS - chống phình context khi đấu nhiều connector.
 # Thay vì phơi hết hàng trăm schema tool MCP MỖI lượt (câu nào cũng gánh), hub chỉ phơi
-# builtins + plugin + 2 meta-tool: javis_search_tools (tìm tool theo nhu cầu) và
-# javis_run_tool (gọi tool tìm được). Model tự tìm theo NGỮ CẢNH rồi mới nạp schema →
+# builtins + plugin + 2 meta-tool: unimate_search_tools (tìm tool theo nhu cầu) và
+# unimate_run_tool (gọi tool tìm được). Model tự tìm theo NGỮ CẢNH rồi mới nạp schema →
 # câu không cần MCP tốn gần 0 token tool. Kế thừa NGUYÊN lớp quyền/audit/rate-limit vì
 # run đi qua đúng call_route của route ĐẦY ĐỦ (đã _guard). Model chỉ THẤY meta-tool nên
 # không thể gọi thẳng tool pool → buộc qua run (protocol tự ép).
 # Kế hoạch gốc: docs/dev/2026-07-ke-hoach-ket-noi-hub.md mục 3.3 ("lazy tools", để sau).
 # ============================================================
-_LAZY_SEARCH = "javis_search_tools"
-_LAZY_RUN = "javis_run_tool"
+_LAZY_SEARCH = "unimate_search_tools"
+_LAZY_RUN = "unimate_run_tool"
 _WORD_RE = re.compile(r"[^\W_]{2,}", re.UNICODE)   # từ khoá ≥2 ký tự (giữ Unicode/tiếng Việt)
 
 # Nhóm tool HẠT NHÂN: luôn hiện thẳng, không bao giờ vào tầng lazy.
@@ -1093,22 +1093,22 @@ _WORD_RE = re.compile(r"[^\W_]{2,}", re.UNICODE)   # từ khoá ≥2 ký tự (g
 #   1. Schema NHỎ và CỐ ĐỊNH, không lớn lên theo số thứ user cắm thêm.
 #   2. Cần cho hầu hết mọi lượt, nên bắt model tìm trước khi dùng là lỗ vốn.
 #
-# Vì sao javis_use_skill KHÔNG ở đây dù skill là thứ trung tâm của Javis: mô tả của nó nhúng
+# Vì sao unimate_use_skill KHÔNG ở đây dù skill là thứ trung tâm của UNI MATE: mô tả của nó nhúng
 # nguyên danh sách skill (tới SKILL_LIST_MAX mục × SKILL_DESC_MAX ký tự), tức là chính cái
 # số hạng lớn theo N. Cho nó vào pool thì danh sách chỉ vào ngữ cảnh khi model tìm thứ khớp
 # một skill, mà _rank_tools đọc description nên tìm "viết email" vẫn trúng nó như thường.
-# javis_connections cũng vậy: đó là tool dùng khi bí, không phải mọi lượt.
+# unimate_connections cũng vậy: đó là tool dùng khi bí, không phải mọi lượt.
 CORE_TOOL_FNS = frozenset({
-    "javis_read_file",
-    "javis_list_dir",
-    "javis_write_file",
+    "unimate_read_file",
+    "unimate_list_dir",
+    "unimate_write_file",
     # Chỉ tồn tại trong phiên có thư mục làm việc, và ở đó thì gần như lượt nào cũng cần.
     # Schema nhỏ và cố định, nên đủ tiêu chí hạt nhân. Bắt model đi tìm nó trước khi dùng là
     # đốt thêm một vòng web, đúng cái hệ số 2 của tầng lazy mà engine Web phải tránh.
-    "javis_run_command",
+    "unimate_run_command",
     # Chỉ tồn tại ở mức Toàn quyền của phiên Coding, và ở đó lượt nào cũng dùng.
-    "javis_terminal",
-    "javis_process",
+    "unimate_terminal",
+    "unimate_process",
 })
 
 # 0.256.0: hạt nhân CHỈ TRONG PHIÊN CODING. Ở đó gần như lượt nào cũng sửa và tìm code, bắt model
@@ -1116,12 +1116,12 @@ CORE_TOOL_FNS = frozenset({
 # mọi tool khác: hai schema này cộng lại gần 1.000 ký tự, và trần CORE_TOOLS_MAX_CHARS của
 # test_prompt_budget (gói Groq miễn phí) không chừa chỗ cho chúng ở MỌI lượt chat.
 # Route của chúng mang cờ `hat_nhan` khi dựng cho một phiên Coding; `_apply_lazy` đọc cờ đó.
-CORE_CODING_FNS = frozenset({"javis_edit_file", "javis_search_files"})
+CORE_CODING_FNS = frozenset({"unimate_edit_file", "unimate_search_files"})
 
 # Mô tả nhóm tool nội bộ cho thực đơn lazy. Builtin/plugin không có connector trong
-# mcp_catalog nên không tự có mô tả; thiếu dòng này thì model chỉ thấy "javis (javis, N tool)".
+# mcp_catalog nên không tự có mô tả; thiếu dòng này thì model chỉ thấy "unimate (unimate, N tool)".
 _LOCAL_GROUP_DESC = {
-    "javis": "skill của brain, danh sách nguồn đang đấu, tiện ích nội bộ",
+    "unimate": "skill của brain, danh sách nguồn đang đấu, tiện ích nội bộ",
     "plugin": "tool do plugin cài thêm",
 }
 
@@ -1147,7 +1147,7 @@ def _lazy_char_budget():
     """Trần ký tự schema tool được phép hiện thẳng, trước khi bắt buộc bật lazy.
 
     Vì sao cần thêm ngưỡng THEO KÍCH THƯỚC bên cạnh ngưỡng theo SỐ LƯỢNG: đếm tool không
-    nói lên chi phí. Một tool duy nhất có thể rất đắt (javis_use_skill nhúng cả danh sách
+    nói lên chi phí. Một tool duy nhất có thể rất đắt (unimate_use_skill nhúng cả danh sách
     skill, phình theo số skill người dùng cài), trong khi mười tool schema gọn lại rẻ. Đếm
     số lượng để quyết định là đo nhầm đại lượng, và đó là lý do máy có 26 tool nặng 17k ký
     tự vẫn nằm dưới ngưỡng 40 nên lazy chưa từng kích hoạt lần nào.
@@ -1204,7 +1204,7 @@ def _connector_menu(pool, ambient=None):
                 desc = str(t.get("group_desc") or "").strip()
             if not desc and ns in _LOCAL_GROUP_DESC:
                 # Nhóm nội bộ (builtin/plugin) không có connector trong catalog nên trước đây
-                # hiện trơ là "javis (javis, N tool)" - model không đoán được skill nằm trong
+                # hiện trơ là "unimate (unimate, N tool)" - model không đoán được skill nằm trong
                 # đó mà tìm. Nêu rõ có gì thì nó mới biết đường gọi search.
                 desc = _LOCAL_GROUP_DESC[ns]
             seen[ns] = {"label": t.get("label") or con.get("name") or ns,
@@ -1334,7 +1334,7 @@ def _lazy_tools_and_route(visible_tools, visible_route, pool, full_route, top_k,
 
     tools = list(visible_tools)
     route = dict(visible_route)
-    tools.append({"fn": _LAZY_SEARCH, "server": "javis", "name": _LAZY_SEARCH,
+    tools.append({"fn": _LAZY_SEARCH, "server": "unimate", "name": _LAZY_SEARCH,
                   "description": ("TÌM tool MCP theo NHU CẦU rồi mới nạp (tiết kiệm token: tool chỉ vào "
                                   "ngữ cảnh khi cần). query = mô tả việc cần làm hoặc tên nguồn. Nguồn "
                                   "đang đấu: " + (menu or "(chưa có nguồn nào)") + f". Kết quả trả tên + "
@@ -1344,7 +1344,7 @@ def _lazy_tools_and_route(visible_tools, visible_route, pool, full_route, top_k,
                       "query": {"type": "string",
                                 "description": "Việc cần làm / nguồn / từ khoá, vd 'doanh thu POS hôm nay'"}},
                       "required": ["query"]}})
-    tools.append({"fn": _LAZY_RUN, "server": "javis", "name": _LAZY_RUN,
+    tools.append({"fn": _LAZY_RUN, "server": "unimate", "name": _LAZY_RUN,
                   "description": (f"GỌI một tool MCP đã tìm được qua {_LAZY_SEARCH}. name = tên tool (đúng "
                                   "y hệt kết quả tìm), args = tham số (object). Quyền/audit/giới hạn tần "
                                   "suất áp y như gọi trực tiếp."),
@@ -1401,12 +1401,12 @@ async def discover_all(mode="full", vault_root=None, include_plugins=True, inclu
                        coding_ctx_cua_phien=None, for_bot=False):
     """(tools_spec, route) đầy đủ cho 1 mode. route entries ĐÃ bọc quyền + audit.
     include_plugins=False: bỏ nhóm tool plugin - dùng khi engine SDK đã đấu plugin
-    IN-PROCESS (header X-Javis-No-Plugins) để model không thấy tool trùng chức năng.
-    include_ambient=True (đường engine Claude, header X-Javis-Engine=claude): javis_connections +
+    IN-PROCESS (header X-UniMate-No-Plugins) để model không thấy tool trùng chức năng.
+    include_ambient=True (đường engine Claude, header X-UniMate-Engine=claude): unimate_connections +
     lazy search kèm connector tài khoản Claude (Drive/Gmail...) - chúng là tool native mcp__* của
     engine, KHÔNG qua hub, hub chỉ mách chỗ cho model. Engine API (in-process) để False (không có
     tool native để mà chỉ tới).
-    staging=True: cho `javis_read_file` đọc thêm vùng nhận file của khung chat - CHỈ đường chat
+    staging=True: cho `unimate_read_file` đọc thêm vùng nhận file của khung chat - CHỈ đường chat
     của chủ truyền vào (xem `_safe_read_path`).
     workspace_root: thư mục làm việc của phiên Coding - tool FILE nhận thêm gốc đó (0.64).
         Nhận cả DANH SÁCH: một phiên gắn được nhiều thư mục từ 0.63.9.
@@ -1426,7 +1426,7 @@ async def discover_all(mode="full", vault_root=None, include_plugins=True, inclu
         lang = localefmt.ngon_ngu_tra_loi()
     except Exception:
         lang = ""
-    # Mức quyền của phiên nằm TRONG khoá: route của `javis_run_command` ôm sẵn ctx của phiên
+    # Mức quyền của phiên nằm TRONG khoá: route của `unimate_run_command` ôm sẵn ctx của phiên
     # dựng ra nó, nên hai phiên cùng repo mà khác chip quyền dùng chung cache là phiên
     # `suggest` chạy được lệnh bằng quyền của phiên `full`.
     _quyen_ctx = getattr(coding_ctx_cua_phien, "permission_mode", "") or ""
@@ -1542,7 +1542,7 @@ async def discover_all(mode="full", vault_root=None, include_plugins=True, inclu
     except Exception as e:
         print(f"[hub] plugin host lỗi: {type(e).__name__}: {e}", file=sys.stderr)
 
-    # Owner-only tools leave a bot's list BEFORE the lazy tier, or `javis_run_tool` would still dispatch them.
+    # Owner-only tools leave a bot's list BEFORE the lazy tier, or `unimate_run_tool` would still dispatch them.
     if for_bot:
         tools_spec = [t for t in tools_spec if t.get("fn") not in OWNER_ONLY_TOOLS]
         for fn in OWNER_ONLY_TOOLS:
@@ -1625,12 +1625,12 @@ def _rpc_error(mid, code, message):
 # ============================================================
 # Brain (vault) của một lượt gọi hub
 # ============================================================
-# Sự cố 2026-09-21: hub chỉ biết brain qua header `X-Javis-Vault`, mà chỗ DUY NHẤT ghi header
-# đó là khi CHÍNH Javis khởi động tiến trình engine (`codex_vault_override` nhét vào argv `-c`,
+# Sự cố 2026-09-21: hub chỉ biết brain qua header `X-UniMate-Vault`, mà chỗ DUY NHẤT ghi header
+# đó là khi CHÍNH UNI MATE khởi động tiến trình engine (`codex_vault_override` nhét vào argv `-c`,
 # Claude/Antigravity/Grok ghi file cấu hình riêng từng lượt). Profile dùng chung
 # `~/.codex/<tên>.config.toml` thì CỐ Ý không mang header, vì nhét vào file dùng chung sẽ race
 # khi hai brain chạy đồng thời. Hệ quả không ai lường: mọi phiên Codex NGƯỜI DÙNG tự mở đều tới
-# hub với vault rỗng, và `javis_task`/`javis_schedule`/`javis_workflow` fail-closed với câu
+# hub với vault rỗng, và `unimate_task`/`unimate_schedule`/`unimate_workflow` fail-closed với câu
 # "chưa biết đang làm việc trên brain nào" - đúng, nhưng vô phương chẩn đoán từ phía client.
 #
 # Luật fail-closed sinh ra để chặn một chuyện CỤ THỂ: chạy nhầm sang brain của người khác. Nó
@@ -1769,12 +1769,12 @@ def _ghi_chu_brain(nguon, vault_root, header_hong):
     """Dòng gắn vào kết quả tool để người dùng luôn biết lượt đó chạy trên brain nào."""
     if nguon not in _NGUON_CHU:
         return ""
-    ra = (f"(Javis đang làm việc trên brain \"{_ten_hien_brain(vault_root)}\" - {vault_root}. "
-          f"Lượt gọi này tới hub không kèm header X-Javis-Vault nên hub lấy "
+    ra = (f"(UNI MATE đang làm việc trên brain \"{_ten_hien_brain(vault_root)}\" - {vault_root}. "
+          f"Lượt gọi này tới hub không kèm header X-UniMate-Vault nên hub lấy "
           f"{_NGUON_CHU[nguon]}. Muốn brain khác thì đổi brain trên dashboard, hoặc thêm "
-          f"header X-Javis-Vault vào cấu hình MCP của client.)")
+          f"header X-UniMate-Vault vào cấu hình MCP của client.)")
     if header_hong:
-        ra = (f"(Header X-Javis-Vault có gửi nhưng trỏ vào \"{header_hong}\" - đường dẫn này "
+        ra = (f"(Header X-UniMate-Vault có gửi nhưng trỏ vào \"{header_hong}\" - đường dẫn này "
               f"không có thật trên máy chủ nên hub không dùng được.) ") + ra
     return ra
 
@@ -1784,16 +1784,16 @@ def _chan_doan_thieu_brain(header_hong):
     thiếu và ai gây ra nó, vì đứng từ phía client thì lỗi gốc nói y như một lỗi cấu hình máy."""
     dau = ""
     if header_hong:
-        dau = (f"Header X-Javis-Vault có gửi nhưng trỏ vào \"{header_hong}\", đường dẫn này "
+        dau = (f"Header X-UniMate-Vault có gửi nhưng trỏ vào \"{header_hong}\", đường dẫn này "
                f"không có thật trên máy chủ. ")
-    return ("\n\n(CHẨN ĐOÁN: " + dau + "lượt gọi này tới hub không mang brain nào, và Javis "
+    return ("\n\n(CHẨN ĐOÁN: " + dau + "lượt gọi này tới hub không mang brain nào, và UNI MATE "
             "cũng chưa suy ra được brain đang mở (chưa có cuộc trò chuyện nào, mà thư mục "
             f"{_brains_dir()} đang có nhiều hơn một brain nên hub không đoán bừa). Thiếu header "
-            "là chuyện của cấu hình MCP phía client: Javis chỉ tự gắn X-Javis-Vault khi CHÍNH "
+            "là chuyện của cấu hình MCP phía client: UNI MATE chỉ tự gắn X-UniMate-Vault khi CHÍNH "
             "nó khởi động engine, còn phiên Codex do người dùng tự mở thì dùng profile chung "
-            "vốn không mang header. Cách chữa: chat một lượt ở dashboard để Javis biết brain "
-            "đang mở, hoặc thêm \"X-Javis-Vault\" = \"<đường dẫn brain>\" vào http_headers của "
-            "server javis trong cấu hình MCP.)")
+            "vốn không mang header. Cách chữa: chat một lượt ở dashboard để UNI MATE biết brain "
+            "đang mở, hoặc thêm \"X-UniMate-Vault\" = \"<đường dẫn brain>\" vào http_headers của "
+            "server unimate trong cấu hình MCP.)")
 
 
 async def _handle_one(msg, mode, include_plugins=True, include_ambient=False, vault_root=None,
@@ -1805,7 +1805,7 @@ async def _handle_one(msg, mode, include_plugins=True, include_ambient=False, va
         return {"jsonrpc": "2.0", "id": mid, "result": {
             "protocolVersion": params.get("protocolVersion") or mcp_client.PROTOCOL,
             "capabilities": {"tools": {}},
-            "serverInfo": {"name": "javis-hub", "version": "1.0"},
+            "serverInfo": {"name": "unimate-hub", "version": "1.0"},
         }}
     if method.startswith("notifications/"):
         return None
@@ -1854,20 +1854,20 @@ async def handle_http(request):
     # → so sánh hằng-thời-gian chống dò theo timing.
     if not _secrets.compare_digest(auth, f"Bearer {hub_token()}"):
         return JSONResponse({"error": "unauthorized"}, status_code=401)
-    mode = (request.headers.get("x-javis-mode") or "full").strip().lower()
+    mode = (request.headers.get("x-unimate-mode") or "full").strip().lower()
     # Engine SDK đấu plugin in-process gửi header này để hub bỏ nhóm plugin (tránh tool trùng)
-    include_plugins = (request.headers.get("x-javis-no-plugins") or "").strip() != "1"
-    # Chỉ engine Claude (config claude_config_path gắn X-Javis-Engine=claude) mới có tool native
+    include_plugins = (request.headers.get("x-unimate-no-plugins") or "").strip() != "1"
+    # Chỉ engine Claude (config claude_config_path gắn X-UniMate-Engine=claude) mới có tool native
     # mcp__* của connector tài khoản Claude → chỉ nó cần gợi ý ambient. Codex/engine API không có.
-    include_ambient = (request.headers.get("x-javis-engine") or "").strip().lower() == "claude"
+    include_ambient = (request.headers.get("x-unimate-engine") or "").strip().lower() == "claude"
     # Codex chạy MCP qua HTTP hub (khác Claude SDK đấu plugin in-process), nên nếu không mang
-    # brain hiện tại thì plugin javis_schedule có tool nhưng không biết phải đọc kho cron nào.
+    # brain hiện tại thì plugin unimate_schedule có tool nhưng không biết phải đọc kho cron nào.
     # Header chỉ nhận đường dẫn thư mục có thật; thiếu header thì `resolve_vault` suy ra brain
     # đang mở rồi NÓI RA ở kết quả tool (xem khối chú thích ở `_brain_dang_mo`). Bearer
     # hub_token vẫn là lớp auth bắt buộc phía trên.
-    # A dedicated bot's Claude Code config carries X-Javis-Bot: 1 (see `claude_config_path(bot=True)`), so the hub
+    # A dedicated bot's Claude Code config carries X-UniMate-Bot: 1 (see `claude_config_path(bot=True)`), so the hub
     # hides OWNER_ONLY_TOOLS from it. The header can only take tools AWAY; leaving it out grants nothing new.
-    for_bot = (request.headers.get("x-javis-bot") or "").strip() == "1"
+    for_bot = (request.headers.get("x-unimate-bot") or "").strip() == "1"
     # Who is talking (`turn` for tool hooks). The CLI engine of a chat turn sends the opaque key
     # that turn issued; the header names nobody by itself, so a forged or stale key is just None.
     # ALWAYS bind, even to None: this request must never inherit a turn from whatever context
@@ -1880,7 +1880,7 @@ async def handle_http(request):
         with improvement_activation.cli_transport():
             return await tra_loi_jsonrpc(request, mode, include_plugins=include_plugins,
                                          include_ambient=include_ambient,
-                                         raw_vault=request.headers.get("x-javis-vault"), for_bot=for_bot)
+                                         raw_vault=request.headers.get("x-unimate-vault"), for_bot=for_bot)
     finally:
         turn_context.reset(tok)
 
@@ -1907,7 +1907,7 @@ async def tra_loi_jsonrpc(request, mode, include_plugins=True, include_ambient=F
     lệch nhau.
     """
     vault_root, vault_nguon, vault_header_hong = resolve_vault(raw_vault)
-    # "read_docs" opens documents of ONE brain, the bot's, named by the X-Javis-Vault header Javis
+    # "read_docs" opens documents of ONE brain, the bot's, named by the X-UniMate-Vault header UNI MATE
     # writes into the bot's config. Without a valid header `resolve_vault` would fall back to the
     # brain the owner has open, i.e. hand a stranger the owner's documents. No header, no tools.
     if (mode or "").strip().lower() == chatbot_doc_tools.MODE and vault_nguon != "header":
@@ -1947,11 +1947,11 @@ def _has_connections():
 
 
 def claude_config_path(mode="full", vault_root=None, bot=False):
-    """Ghi file --mcp-config 1 entry 'javis'. 0 connection bật → None (giữ hành vi cũ:
+    """Ghi file --mcp-config 1 entry 'unimate'. 0 connection bật → None (giữ hành vi cũ:
     không config → Claude dùng MCP sẵn của máy).
 
-    `vault_root` gắn thêm header X-Javis-Vault, tức hub cấp CẢ nhóm tool file
-    (javis_read_file/javis_write_file/javis_use_skill) và khoá chúng vào đúng brain đó qua
+    `vault_root` gắn thêm header X-UniMate-Vault, tức hub cấp CẢ nhóm tool file
+    (unimate_read_file/unimate_write_file/unimate_use_skill) và khoá chúng vào đúng brain đó qua
     `_safe_path`. Mặc định KHÔNG gắn, và đó là chủ ý: engine Claude bình thường đã có Read/
     Write native nên thêm nhóm này chỉ tạo hai bộ tool trùng chức năng.
 
@@ -1959,7 +1959,7 @@ def claude_config_path(mode="full", vault_root=None, bot=False):
     quyền. Bot không được chạm Read/Write của Claude Code (nó nhận đường dẫn tuyệt đối, trèo
     ra khỏi brain được), nên tool file phải đi qua hub để `_safe_path` chặn.
 
-    `bot=True` (0.77.0) adds X-Javis-Bot: 1 so the hub hides OWNER_ONLY_TOOLS, and writes a separate file (suffix
+    `bot=True` (0.77.0) adds X-UniMate-Bot: 1 so the hub hides OWNER_ONLY_TOOLS, and writes a separate file (suffix
     `_bot`) so the owner's own config for the same brain never carries the header.
 
     File tách riêng theo brain (hậu tố băm) vì đây là file DÙNG CHUNG cho mọi phiên: hai bot
@@ -1969,23 +1969,23 @@ def claude_config_path(mode="full", vault_root=None, bot=False):
     # The "read_docs" bot level needs no connection at all: its tools come from the bot's own brain.
     if not _has_connections() and mode != chatbot_doc_tools.MODE:
         return None
-    headers = {"Authorization": f"Bearer {hub_token()}", "X-Javis-Mode": mode,
-               "X-Javis-Engine": "claude"}
+    headers = {"Authorization": f"Bearer {hub_token()}", "X-UniMate-Mode": mode,
+               "X-UniMate-Engine": "claude"}
     hau_to = ""
     if vault_root:
         try:
             vault = str(Path(vault_root).expanduser().resolve())
         except Exception:
             vault = str(vault_root)
-        headers["X-Javis-Vault"] = vault
+        headers["X-UniMate-Vault"] = vault
         hau_to = "_" + hashlib.sha1(vault.encode("utf-8")).hexdigest()[:10]
     if bot:
-        headers["X-Javis-Bot"] = "1"
+        headers["X-UniMate-Bot"] = "1"
         hau_to += "_bot"
     p = STATE_DIR / f".mcp_hub_{mode}{hau_to}.json"
-    # X-Javis-Engine=claude: báo hub đây là engine Claude (có tool native mcp__* của connector
-    # tài khoản Claude) → javis_connections/lazy search kèm gợi ý ambient. Codex/engine API không gắn.
-    p.write_text(json.dumps({"mcpServers": {"javis": {
+    # X-UniMate-Engine=claude: báo hub đây là engine Claude (có tool native mcp__* của connector
+    # tài khoản Claude) → unimate_connections/lazy search kèm gợi ý ambient. Codex/engine API không gắn.
+    p.write_text(json.dumps({"mcpServers": {"unimate": {
         "type": "http", "url": hub_url(), "headers": headers,
     }}}, ensure_ascii=False), encoding="utf-8")
     try:
@@ -2001,20 +2001,20 @@ def antigravity_config_path(mode="full", vault_root=None):
     Chỉ có tác dụng nếu bản `agy` trên máy khai một cờ nhận file cấu hình - `AntigravityCLI.
     _build_args` hỏi `co_co()` rồi mới truyền. Vì sao vẫn ghi dù chưa chắc dùng được: cấu hình
     HOME mà `agy` thật sự nạp là file DÙNG CHUNG, nên hai brain chạy đồng thời sẽ ghi đè header
-    X-Javis-Vault của nhau. Bên Codex chỗ này chữa bằng override argv; ở đây file per-brain là
+    X-UniMate-Vault của nhau. Bên Codex chỗ này chữa bằng override argv; ở đây file per-brain là
     thứ tương đương, và nó nằm sẵn đó cho ngày cờ kia có thật.
 
     Hình dạng entry lấy từ `antigravity_cli.hub_entry` - KHÔNG viết tay `httpUrl` như bên Gemini.
     """
     mode = (mode or "full").strip().lower()
-    headers = {"Authorization": f"Bearer {hub_token()}", "X-Javis-Mode": mode}
+    headers = {"Authorization": f"Bearer {hub_token()}", "X-UniMate-Mode": mode}
     hau_to = ""
     if vault_root:
         try:
             vault = str(Path(vault_root).expanduser().resolve())
         except Exception:
             vault = str(vault_root)
-        headers["X-Javis-Vault"] = vault
+        headers["X-UniMate-Vault"] = vault
         hau_to = "_" + hashlib.sha1(vault.encode("utf-8")).hexdigest()[:10]
     try:
         import antigravity_cli
@@ -2022,7 +2022,7 @@ def antigravity_config_path(mode="full", vault_root=None):
     except Exception:
         entry = {"serverUrl": hub_url(), "url": hub_url(), "headers": headers, "disabled": False}
     p = STATE_DIR / f".mcp_agy_{mode}{hau_to}.json"
-    p.write_text(json.dumps({"mcpServers": {"javis": entry}}, ensure_ascii=False),
+    p.write_text(json.dumps({"mcpServers": {"unimate": entry}}, ensure_ascii=False),
                  encoding="utf-8")
     try:
         os.chmod(p, 0o600)   # chứa hub token
@@ -2038,16 +2038,16 @@ def _toml_str(s):
 def codex_profile_name():
     """Tên profile Codex của BẢN NÀY (file `~/.codex/<tên>.config.toml`).
 
-    Vì sao không phải hằng số "javis": nhiều bản Javis cài native trên cùng một VPS chạy chung
+    Vì sao không phải hằng số "unimate": nhiều bản UNI MATE cài native trên cùng một VPS chạy chung
     một user, tức chung `$HOME`. Tên cố định là bản khởi động sau ghi đè profile của bản trước,
     mà profile đó chứa URL + token của hub, nên Codex của bản A quay sang gọi hub của bản B - sai
     im lặng, không lỗi nào hiện ra. Gắn cổng vào tên là hết đụng (Docker thì mỗi container một
     HOME nên vốn đã không dính).
 
-    Cổng mặc định giữ nguyên tên "javis" để máy đang chạy không phải sinh file mới.
+    Cổng mặc định giữ nguyên tên "unimate" để máy đang chạy không phải sinh file mới.
     """
     p = hub_port()
-    return "javis" if p == 7777 else f"javis-{p}"
+    return "unimate" if p == 7777 else f"unimate-{p}"
 
 
 def codex_profile_path():
@@ -2055,17 +2055,17 @@ def codex_profile_path():
 
 
 def codex_profile(mode="full"):
-    """Ghi ~/.codex/<profile>.config.toml 1 entry hub → `codex exec -p <profile>` thấy MỌI MCP của Javis."""
+    """Ghi ~/.codex/<profile>.config.toml 1 entry hub → `codex exec -p <profile>` thấy MỌI MCP của UNI MATE."""
     path = codex_profile_path()
     try:
-        # Hub còn cung cấp plugin nội bộ (javis_schedule, datetime-vn...) ngay cả khi user chưa
+        # Hub còn cung cấp plugin nội bộ (unimate_schedule, datetime-vn...) ngay cả khi user chưa
         # đấu connector ngoài. Không được xoá profile chỉ vì mcp_store đang rỗng.
-        lines = ["[mcp_servers.javis]",
+        lines = ["[mcp_servers.unimate]",
                  f"url = {_toml_str(hub_url())}",
                  "startup_timeout_sec = 20",
-                 "[mcp_servers.javis.http_headers]",
+                 "[mcp_servers.unimate.http_headers]",
                  f'{_toml_str("Authorization")} = {_toml_str("Bearer " + hub_token())}',
-                 f'{_toml_str("X-Javis-Mode")} = {_toml_str(mode)}', ""]
+                 f'{_toml_str("X-UniMate-Mode")} = {_toml_str(mode)}', ""]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("\n".join(lines), encoding="utf-8")
         try:
@@ -2080,12 +2080,12 @@ def codex_profile(mode="full"):
 
 # Tiền tố của override brain. KHÔNG được bọc tên header trong dấu nháy: Codex tách khoá của
 # `-c` bằng `path.split('.')` (codex-rs/config/src/overrides.rs, apply_toml_override) và giữ
-# NGUYÊN dấu nháy, nên `http_headers."X-Javis-Vault"` thành header tên `"X-Javis-Vault"` - có
+# NGUYÊN dấu nháy, nên `http_headers."X-UniMate-Vault"` thành header tên `"X-UniMate-Vault"` - có
 # cả hai dấu nháy. Đó không phải tên header HTTP hợp lệ, và rmcp-client của Codex bỏ qua nó
 # với đúng một dòng warn (rmcp-client/src/utils.rs, build_default_headers). Hub không bao giờ
 # nhận được brain, rơi về "phiên cập nhật gần nhất" của CẢ MÁY - sự cố 27/09/2026: dashboard
 # đang ở My Bullet Journal mà lệnh tạo đơn TTS chạy trên brain Ngọc Thu Phạm.
-CODEX_VAULT_KEY = "mcp_servers.javis.http_headers.X-Javis-Vault"
+CODEX_VAULT_KEY = "mcp_servers.unimate.http_headers.X-UniMate-Vault"
 
 
 def ma_hoa_vault(vault: str) -> str:
@@ -2098,7 +2098,7 @@ def ma_hoa_vault(vault: str) -> str:
 def codex_vault_override(vault_root):
     """Override `-c` theo từng tiến trình Codex để hub nhận đúng brain mà không ghi đè profile chung.
 
-    Profile javis là file dùng chung cho mọi cuộc chat. Nhét X-Javis-Vault thẳng vào file đó sẽ
+    Profile unimate là file dùng chung cho mọi cuộc chat. Nhét X-UniMate-Vault thẳng vào file đó sẽ
     race khi hai brain chạy đồng thời; override argv giữ context tách biệt theo đúng phiên.
     """
     if not vault_root:
@@ -2110,14 +2110,14 @@ def codex_vault_override(vault_root):
     return f"{CODEX_VAULT_KEY}={_toml_str(ma_hoa_vault(vault))}"
 
 
-CODEX_MODE_KEY = "mcp_servers.javis.http_headers.X-Javis-Mode"
+CODEX_MODE_KEY = "mcp_servers.unimate.http_headers.X-UniMate-Mode"
 _CODEX_MODES = ("suggest", "auto", "full", "gated")
 
 
 def dat_codex_mode(extra_config, mode):
     """Pin the hub permission level of ONE Codex process with a `-c` override, replacing any earlier one.
 
-    The shared Codex profile is written with `X-Javis-Mode: full` (the chat path). Before 0.117.0 a
+    The shared Codex profile is written with `X-UniMate-Mode: full` (the chat path). Before 0.117.0 a
     background job at suggest or auto (reminder, loop, Kanban) reached hub tools at FULL through that
     profile, while Grok and Antigravity already got the job's own level. An unknown level falls back to
     the strictest one, as every other mode mapping here does."""
@@ -2135,7 +2135,7 @@ def dat_codex_vault(extra_config, vault_root):
     Engine Telegram giữ nguyên một CodexCLI qua nhiều lượt. Chỉ nối thêm khi chuỗi chưa có thì
     đổi brain A -> B -> A để lại cả [A, B] trong argv, và Codex lấy giá trị đứng sau: lượt đang
     ở A vẫn chạy trên B. Bỏ cả dạng cũ có dấu nháy để bản vá này không để lại rác."""
-    cu = (CODEX_VAULT_KEY + "=", 'mcp_servers.javis.http_headers."X-Javis-Vault"=')
+    cu = (CODEX_VAULT_KEY + "=", 'mcp_servers.unimate.http_headers."X-UniMate-Vault"=')
     extra_config[:] = [x for x in extra_config if not str(x).startswith(cu)]
     override = codex_vault_override(vault_root)
     if override:
@@ -2150,12 +2150,12 @@ def dat_codex_vault(extra_config, vault_root):
 # (codex-mcp/src/connection_manager/tool_catalog.rs). Hub trả `tools/list` qua `discover_all`,
 # cache 60 giây hết hạn là dò lại mọi connector, mất khoảng 2 giây. Hai con số đua nhau nên việc
 # nền lúc có tool hub lúc không (canary 08-09/10/2026: 4 trên 12 lượt nhắc hẹn không thấy
-# `mcp__javis__*`), model đi vòng qua app ChatGPT hoặc báo không làm được mà nhắc hẹn vẫn ghi xong.
+# `mcp__unimate__*`), model đi vòng qua app ChatGPT hoặc báo không làm được mà nhắc hẹn vẫn ghi xong.
 # `required = true` bắt Codex chờ hub tới `startup_timeout_sec` của profile; hub không lên thì
 # phiên không mở và `codex exec` thoát lỗi TRƯỚC khi gọi model (core/src/session/session.rs); câu
 # lỗi đó do claude_cli.codex_error_text đọc. Chỉ gắn khi profile hub có mặt: override vào
-# `mcp_servers.javis` mà thiếu entry đó thì Codex từ chối khởi động ("invalid transport").
-CODEX_REQUIRED_KEY = "mcp_servers.javis.required"
+# `mcp_servers.unimate` mà thiếu entry đó thì Codex từ chối khởi động ("invalid transport").
+CODEX_REQUIRED_KEY = "mcp_servers.unimate.required"
 # `features.apps = false` gỡ hẳn server `codex_apps` (app ChatGPT gắn với tài khoản,
 # codex-mcp/src/mcp/mod.rs). Tool của nó không đi qua hub nên không chịu mức quyền của việc, và
 # là đường vòng model từng chọn cả khi hub có mặt (canary 08/10/2026).
@@ -2234,7 +2234,7 @@ def _extract_label(text, paths):
 # Nên "đăng nhập lại mà không thấy ô tick nào" là đúng cơ chế, không phải hỏng - đường duy
 # nhất để tick lại từ đầu là gỡ ứng dụng ở trang quyền của tài khoản Google.
 REVOKE_HINT = (" Đăng nhập lại mà Google không hiện ô tick quyền nào là bình thường: quyền đã"
-               " cấp thì nó cho qua thẳng. Muốn tick lại từ đầu thì gỡ Javis tại"
+               " cấp thì nó cho qua thẳng. Muốn tick lại từ đầu thì gỡ UNI MATE tại"
                " https://myaccount.google.com/permissions rồi Kết nối lại.")
 
 
@@ -2259,9 +2259,9 @@ def chan_doan_loi(err, conn_id=""):
     Vì sao tách riêng khỏi _friendly_tool_error: bộ dịch này trước đây chỉ cắm vào nút Test,
     trong khi 99% lần người dùng gặp lỗi là lúc GỌI TOOL THẬT - và ở đó model chỉ nhận được
     nguyên văn tiếng Anh của Google rồi tự suy diễn. Vụ 2026-07-30: Google trả "The caller does
-    not have permission", Javis đọc xong kết luận nhầm là "hub chặn quyền" và đi sửa tầng
+    not have permission", UNI MATE đọc xong kết luận nhầm là "hub chặn quyền" và đi sửa tầng
     permission, trong khi hub không hề chặn (mức full thì allowed() cho qua ngay, và thông báo
-    chặn của Javis là tiếng Việt chứ không phải tiếng Anh).
+    chặn của UNI MATE là tiếng Việt chứ không phải tiếng Anh).
 
     conn_id (tuỳ chọn): có thì nhánh thiếu scope nói luôn THIẾU CÁI GÌ, không bắt người dùng đoán."""
     e = (err or "").strip()
@@ -2279,11 +2279,11 @@ def chan_doan_loi(err, conn_id=""):
         return "API này chưa được bật trong project Google Cloud của bạn." + link + extra
     if "insufficient authentication scopes" in low or "access_token_scope_insufficient" in low:
         # Đây KHÔNG phải lỗi hỏng key: token đúng nhưng thiếu đúng một phạm vi quyền. Xoá đi cài
-        # lại không chữa được nếu bản Javis đang chạy xin thiếu scope (vụ suggest_time cần
+        # lại không chữa được nếu bản UNI MATE đang chạy xin thiếu scope (vụ suggest_time cần
         # calendar.events.freebusy) - nên phải nói rõ là đăng nhập LẠI sau khi cập nhật.
         return ("Tài khoản đã kết nối nhưng token chưa đủ phạm vi quyền cho tool này."
                 + _missing_scope_note(conn_id) +
-                " Bấm Đăng nhập lại và tick chọn đầy đủ các quyền. Nếu vừa cập nhật Javis thì"
+                " Bấm Đăng nhập lại và tick chọn đầy đủ các quyền. Nếu vừa cập nhật UNI MATE thì"
                 " BẮT BUỘC đăng nhập lại: token cũ chỉ mang những quyền xin ở bản trước, xoá"
                 " kết nối rồi tạo lại cũng không thêm được quyền mới." + REVOKE_HINT)
     if ("missing required authentication credential" in low or "unauthenticated" in low
@@ -2296,7 +2296,7 @@ def chan_doan_loi(err, conn_id=""):
     # phải ghi danh lại - đúng bẫy của người dùng khi chuyển từ gmail cá nhân sang mail tên miền.
     if "caller does not have permission" in low or "permission_denied" in low:
         return ("Google từ chối chính TÀI KHOẢN đang đăng nhập (403 PERMISSION_DENIED). Đây KHÔNG"
-                " phải Javis chặn: mức quyền của kết nối chặn thì Javis báo bằng tiếng Việt kèm chữ"
+                " phải UNI MATE chặn: mức quyền của kết nối chặn thì UNI MATE báo bằng tiếng Việt kèm chữ"
                 " 'bị chặn'. Với server MCP của Google, lỗi này thường do 1 trong 2: tài khoản đó"
                 " chưa ghi danh Google Workspace Developer Preview Program, hoặc project chưa bật"
                 " API MCP riêng. Ghi danh tính theo TỪNG tài khoản Google, nên vừa đổi sang tài"
@@ -2350,7 +2350,7 @@ async def validate_connection(conn_id):
                             + ". Press Sign in again and tick every permission box."
                             " If Google shows no permission boxes when you sign in again, that is"
                             " normal: permissions already granted are passed straight through. To"
-                            " tick them again from scratch, remove Javis at"
+                            " tick them again from scratch, remove UNI MATE at"
                             " https://myaccount.google.com/permissions and then Connect again.")}
         except Exception as e:
             print(f"[hub scope] {e}", file=sys.stderr)

@@ -6,7 +6,7 @@ A hook may carry `rules`, all optional, all data (JSON), never code:
       "schema":  {"fields": {"data.order.id": {"type": "string", "required": true},
                              "data.order.total": {"type": "number"}}},
       "filter":  {"all": [{"path": "status", "op": "eq", "value": 1},
-                          {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI JAVIS",
+                          {"path": "items[*].name", "op": "contains", "value": "TRỢ LÝ AI UNI MATE",
                            "quantifier": "any", "case_sensitive": false, "reason": "product_not_found"}]},
       "mapping": {"order_id": "data.order.id",
                   "email": {"path": "data.customer.email", "transform": ["trim", "lower"]},

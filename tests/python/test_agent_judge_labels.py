@@ -14,10 +14,10 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 import _paths  # noqa: E402,F401  - thư mục tạm riêng, tự xoá khi thoát (xem _paths.py)
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-judge-labels-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-judge-labels-")
 
 from _judge_world import World, batch, check, finish, keys_in  # noqa: E402
 
@@ -98,7 +98,7 @@ check("'Sao ... không trả lời?' chỉ GỢI Ý quyết định im gần nh�
       hint)
 
 # ═════ qua host thật: route lịch sử quyết định và nút sửa ═════
-BR = Path(tempfile.mkdtemp(prefix="javis-judge-labels-brain-"))
+BR = Path(tempfile.mkdtemp(prefix="unimate-judge-labels-brain-"))
 (BR / "agents").mkdir()
 for slug in ("lan", "minh"):
     (BR / "agents" / f"{slug}.md").write_text(f"---\nname: {slug.capitalize()}\nrole: Thành viên\n---\nBạn là {slug}.\n",
@@ -156,12 +156,12 @@ check("POST label rỗng: bỏ nhãn", r.status_code == 200 and st.get_decision(
 # ═════ chốt chung: engine phán xử thật không bao giờ được dựng trong test ═════
 import asyncio as _asyncio  # noqa: E402
 
-check("_paths đặt JAVIS_NO_REAL_JUDGE_ENGINE cho mọi test Python", os.environ.get("JAVIS_NO_REAL_JUDGE_ENGINE") == "1")
+check("_paths đặt UNIMATE_NO_REAL_JUDGE_ENGINE cho mọi test Python", os.environ.get("UNIMATE_NO_REAL_JUDGE_ENGINE") == "1")
 built = []
 main._reply_policy_sandbox_engine = lambda *a, **k: built.append(1) or _no_real()
 src_main = (Path(main.__file__)).read_text(encoding="utf-8")
 ask_src = src_main[src_main.index("async def _agent_judge_ask"):src_main.index("def _agent_judge_engine_label")]
-check("_agent_judge_ask kiểm chốt TRƯỚC khi dựng engine", ask_src.index("JAVIS_NO_REAL_JUDGE_ENGINE")
+check("_agent_judge_ask kiểm chốt TRƯỚC khi dựng engine", ask_src.index("UNIMATE_NO_REAL_JUDGE_ENGINE")
       < ask_src.index("_reply_policy_sandbox_engine("))
 try:
     _asyncio.run(ORIG_ASK("x", "agent_judge", None))

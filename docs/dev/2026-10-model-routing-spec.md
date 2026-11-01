@@ -1,13 +1,13 @@
 # Spec: thứ tự model, nhiều tài khoản và model việc nền
 
-Ngày chốt: 27/10/2026. Chủ repo duyệt từng ý qua bản duyệt giao diện (artifact "Trang Model Javis",
+Ngày chốt: 27/10/2026. Chủ repo duyệt từng ý qua bản duyệt giao diện (artifact "Trang Model UNI MATE",
 bản 14). Tài liệu này là nguồn chân lý khi triển khai: mọi quyết định dưới đây đã chốt, đừng đổi
 khi chưa hỏi lại chủ repo.
 
 ## 1. Mục tiêu
 
 Người dùng sắp một danh sách nhà cung cấp đã đăng nhập theo thứ tự muốn dùng. Mỗi nhà có thể có
-nhiều tài khoản hoặc nhiều API key. Javis dùng hết tài khoản của nhà trên rồi mới sang nhà dưới.
+nhiều tài khoản hoặc nhiều API key. UNI MATE dùng hết tài khoản của nhà trên rồi mới sang nhà dưới.
 Việc nền có model riêng, cố định, không chạy theo MAIN. Trang Models gọn lại còn hai phần chính:
 **Thứ tự dùng** và **Model việc nền**.
 
@@ -39,9 +39,9 @@ Việc nền có model riêng, cố định, không chạy theo MAIN. Trang Mode
 2. **Tự xoay vòng tuần tự:** dùng tài khoản 1 tới khi hết lượt, sang 2, ... hết cả nhà thì sang
    thẻ kế. Tài khoản 1 hồi lượt thì quay lại dùng nó trước. Không chia đều từng câu.
 3. Thêm nhiều tài khoản gói thuê bao: người dùng **tự chịu rủi ro**. Form thêm hiện một dòng nhắc
-   giọng nhẹ nhàng (chủ repo, 0.352.0): có nguy cơ bị khoá nhưng Javis chưa ghi nhận trường hợp
+   giọng nhẹ nhàng (chủ repo, 0.352.0): có nguy cơ bị khoá nhưng UNI MATE chưa ghi nhận trường hợp
    nào, gặp thì báo nhà phát triển qua Issues. Không bắt tích ô xác nhận.
-4. Nhiều key API trong một nhà được hỗ trợ đầy đủ. Không bắt khai nhóm hạn mức: Javis thử lần
+4. Nhiều key API trong một nhà được hỗ trợ đầy đủ. Không bắt khai nhóm hạn mức: UNI MATE thử lần
    lượt, key đang nghỉ thì bỏ qua ngay.
 5. Antigravity CLI chỉ 1 tài khoản (token trong keyring của máy), thẻ ghi rõ lý do, không có nút thêm.
 6. Tài khoản mới vào **cuối** danh sách của thẻ đó. Gỡ một tài khoản chỉ đăng xuất đúng tài khoản đó.
@@ -54,13 +54,13 @@ Việc nền có model riêng, cố định, không chạy theo MAIN. Trang Mode
    Chip hiện ví dụ `Extra → High`. **Lựa chọn đã lưu không bị sửa**, đổi lại model cũ là về mức cũ.
 4. **Off = không gửi tham số suy luận.** Model bắt buộc suy luận thì tự chạy mức mặc định của nó.
 5. Model không có suy luận thì chạy như Off.
-6. Javis Core khi chưa tự chọn mức thì lấy Effort của thẻ MAIN. Agent có mức riêng thì giữ nguyên.
+6. UNI MATE Core khi chưa tự chọn mức thì lấy Effort của thẻ MAIN. Agent có mức riêng thì giữ nguyên.
 
 ### 2.4. Model việc nền
 
 1. Ô **Model việc nền** giữ kiểu ô hiện tại (tên model màu cam, tên nhà, nút **Đổi model ▾**),
    nằm **ngay dưới** phần Thứ tự dùng, có thêm chip Effort. **Không có** "Về như MAIN".
-2. **Lần đầu** (người mới, hoặc lúc nâng cấp mà chưa đặt): Javis chọn sẵn **cấu hình mặc định
+2. **Lần đầu** (người mới, hoặc lúc nâng cấp mà chưa đặt): UNI MATE chọn sẵn **cấu hình mặc định
    của nhà cung cấp** (nhà đầu tiên đã đăng nhập): model mặc định và Effort mặc định của model đó.
    Sau đó **giữ cố định**, đổi MAIN không kéo theo.
 3. Thứ tự chạy của việc nền: **Model nền → Dự phòng 1 → Dự phòng 2 → ... → MAIN sau cùng**.
@@ -179,18 +179,18 @@ Mỗi bản là một PR, CI xanh thì merge, mỗi bản một số phiên bả
    Grok (`GROK_HOME`) và Claude Code (`CLAUDE_CONFIG_DIR`), mỗi tài khoản thêm một thư mục
    `STATE_DIR/accounts/<id>/<codex|grok|claude>/`; tài khoản 1 giữ nguyên thư mục mặc định của CLI.
    Mã ở `server/plan_accounts.py`. Đăng nhập tài khoản thêm: ChatGPT bằng luồng device code của
-   Javis (token ghi vào `auth.json` của thư mục đó), Grok bằng `grok login --device-auth`, Claude
+   UNI MATE (token ghi vào `auth.json` của thư mục đó), Grok bằng `grok login --device-auth`, Claude
    bằng `claude auth login` (link rồi dán mã). Hết lượt: tài khoản đó nghỉ (`mark_rest`), tài
    khoản kế chạy; chỉ khi không còn tài khoản nào thì thẻ mới tính là hết lượt (`_PIN_LIMITED`).
    Chưa đi theo tài khoản (ghi rõ trong hướng dẫn): đồng hồ hạn mức, tạo ảnh, giọng nói và các
    đường ChatGPT không qua Codex CLI vẫn dùng tài khoản 1. Claude trên macOS giữ token trong
-   Keychain; Javis coi tài khoản là đã đăng nhập khi thấy lượt đăng nhập xong (file đánh dấu).
+   Keychain; UNI MATE coi tài khoản là đã đăng nhập khi thấy lượt đăng nhập xong (file đánh dấu).
 4. **0.354.0: chat tự chuyển khi hết lượt.** Lượt chat hỏng vì hết lượt trước khi có chữ hoặc công
    cụ nào thì chạy lại ngay bằng đường kế tiếp, kèm một dòng "Đang dùng ChatGPT vì Claude hết lượt".
    Hỏng giữa chừng thì dừng, có nút "Chạy lại". Trước bản này, chat vẫn chọn đường còn lượt ngay
    từ đầu lượt (bản 1).
    Cách làm: `_SendProxy` của lượt đếm chữ đã stream và công cụ đã gọi (dòng nén mạch, co ngữ cảnh
-   của Javis không tính), giữ lại khung lỗi tới cuối lượt khi chưa có gì. Cuối `_do_turn`, lỗi hết
+   của UNI MATE không tính), giữ lại khung lỗi tới cuối lượt khi chưa có gì. Cuối `_do_turn`, lỗi hết
    lượt (gói: `_limit_frame`; API: `limit_exceeded` không phải "co nhỏ" hoặc lỗi 429/quota, key đó
    nghỉ qua `_note_api_limit`) mà chưa có gì thì `_chat_next_route` chọn đường kế (tài khoản/key kế
    cùng thẻ, rồi thẻ kế, bỏ thẻ đã thử), bỏ các khung đã giữ, không lưu câu báo; `run_turn` gửi khung

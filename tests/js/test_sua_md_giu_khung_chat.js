@@ -1,5 +1,5 @@
 /* Mở file .md từ tab Thư mục ở trang Trò chuyện (desktop): trình sửa bên TRÁI, khung
-   chat co thành CỘT PHẢI như màn Javis - hội thoại trên, ô nhập dưới đáy cột (chủ chỉnh
+   chat co thành CỘT PHẢI như màn UNI MATE - hội thoại trên, ô nhập dưới đáy cột (chủ chỉnh
    27/08: bản xếp chồng dọc trước đó để chat nằm TRÊN trình sửa theo thứ tự DOM, nhìn
    ngược). Kèm nút thu khung chat phải - co vào bên phải, có nhớ. Màn hẹp giữ lối cũ
    (trình sửa chiếm chỗ) vì không đủ chỗ.
@@ -36,7 +36,7 @@ check("HỘI THOẠI đứng cột phải",
   CSS.indexOf(".chatpage-main.edit-on > .chatpage-slot > .transcript{ grid-row:2; grid-column:2") !== -1);
 check("Ô NHẬP trải dài TOÀN BỀ RỘNG dưới cùng (không nhét vào cột 340px - chủ chỉnh 0.47.5)",
   CSS.indexOf(".chatpage-main.edit-on > .chatpage-slot > .hud-voice{ grid-row:6; grid-column:1 / -1; }") !== -1);
-check("thanh model + file chip + bg-strip cũng vắt ngang đáy như màn Javis",
+check("thanh model + file chip + bg-strip cũng vắt ngang đáy như màn UNI MATE",
   CSS.indexOf(".chatpage-main.edit-on > .chatpage-slot > .model-bar{ grid-row:5; grid-column:1 / -1; }") !== -1
   && CSS.indexOf(".chatpage-main.edit-on > .chatpage-slot > .attach-bar{ grid-row:4; grid-column:1 / -1; }") !== -1
   && CSS.indexOf(".chatpage-main.edit-on > .chatpage-slot > .bg-strip{ grid-row:3; grid-column:1 / -1; }") !== -1);
@@ -54,8 +54,8 @@ check("thu chỉ ẩn CỘT HỘI THOẠI - ô nhập vẫn trải dài (không 
   /\.chatpage-main\.edit-on\.echat-thu > \.chatpage-slot > \.transcript,\s*\.chatpage-main\.edit-on\.echat-thu > \.chatpage-slot > \.cedit-thu-btn\{ display:none; \}/.test(CSS));
 check("icon lật gương thành panel-right (bộ icon chưa có panel-right)",
   /\.cedit-thu-btn svg, \.cedit-expand svg\{ transform:scaleX\(-1\); \}/.test(CSS));
-check("JS gắn nút + nhớ localStorage javis_editchat_thu",
-  cjs.indexOf('"javis_editchat_thu"') !== -1 && cjs.indexOf('et.className = "cedit-thu-btn"') !== -1);
+check("JS gắn nút + nhớ localStorage unimate_editchat_thu",
+  cjs.indexOf('"unimate_editchat_thu"') !== -1 && cjs.indexOf('et.className = "cedit-thu-btn"') !== -1);
 
 // ---- 3. Màn hẹp giữ lối cũ, trang Tệp tin không vạ lây ----
 check("màn hẹp vẫn ẩn khung chat (không đủ chỗ)",

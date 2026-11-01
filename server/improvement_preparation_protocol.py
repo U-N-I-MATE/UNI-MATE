@@ -18,7 +18,7 @@ def preparation_schedule(value, case_ids, case_seed):
         raise ValueError("invalid_preparation_schedule")
     for identifier in case_ids:
         _id(identifier)
-    seed = _hash(["javis-preparation-schedule-v1", _hash(value), case_seed])
+    seed = _hash(["unimate-preparation-schedule-v1", _hash(value), case_seed])
     ordered = sorted(case_ids, key=lambda identifier: (_hash([seed, identifier]), identifier))
     return {"version": 1, "experiment_id": value["experiment_id"], "definition_hash": _hash(value),
             "context_id": value["context_id"], "case_set_id": value["case_set_id"],

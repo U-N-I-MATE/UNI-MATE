@@ -1,6 +1,6 @@
 """Lark / Feishu gateway for the owner's control channel (0.85.0).
 
-Why the long connection (长连接) instead of the event webhook: Javis opens the WebSocket OUT to
+Why the long connection (长连接) instead of the event webhook: UNI MATE opens the WebSocket OUT to
 Lark, so it works on a laptop or behind NAT with no public URL and no encrypt key to configure,
 the same way Telegram long-polling and Slack Socket Mode do. In the Lark developer console the owner
 picks "Receive events through persistent connection" and subscribes `im.message.receive_v1`.
@@ -459,9 +459,9 @@ class LarkBot(HangLuot):
                 try:
                     kq = await self.stt_fn(data, name)
                 except Exception as e:
-                    kq = {"ok": False, "noi_voi_javis": stt.loi_thanh_dong("loi", f"{type(e).__name__}: {e}")}
+                    kq = {"ok": False, "noi_voi_unimate": stt.loi_thanh_dong("loi", f"{type(e).__name__}: {e}")}
                 return (stt.khoi_thoai(kq.get("text"), "Lark") if (kq or {}).get("ok")
-                        else ((kq or {}).get("noi_voi_javis") or stt.loi_thanh_dong("loi")))
+                        else ((kq or {}).get("noi_voi_unimate") or stt.loi_thanh_dong("loi")))
             chat = meta.get("chat_id", "")
             ddir = self.download_dir(chat) if callable(self.download_dir) else self.download_dir
             d = Path(ddir) if ddir else Path("lark-inbox")
@@ -488,7 +488,7 @@ class LarkBot(HangLuot):
             return            # a group: only when @mentioned
         if self.chat_ids and meta["user_id"] not in self.chat_ids and chat not in self.chat_ids:
             await self._send(client, chat, localefmt.chu(
-                "Bạn không có quyền dùng bot Javis này.", "You are not allowed to use this Javis bot."))
+                "Bạn không có quyền dùng bot Uni này.", "You are not allowed to use this UNI MATE bot."))
             return
         if self.giau_trang_thai:
             await self._fill_names(client, meta)
@@ -727,7 +727,7 @@ class LarkBot(HangLuot):
 
 def handshake_error(e) -> str:
     """Lark refuses a socket with headers `handshake-status` / `handshake-msg` (for example too many
-    connections for one app: each app allows a few, and a second Javis with the same app counts).
+    connections for one app: each app allows a few, and a second UNI MATE with the same app counts).
     Returns that message for the owner, or "" when the error is something else."""
     headers = getattr(e, "headers", None)
     if headers is None:

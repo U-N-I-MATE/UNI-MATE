@@ -6,7 +6,7 @@
       "id": "identity",
       "any_of": [
         "AI agentic ĐỔI ĐƯỢC BỘ NÃO",
-        "năng lực của Javis KHÔNG đổi theo model",
+        "năng lực của UNI MATE KHÔNG đổi theo model",
         "SWAPPABLE BRAIN",
         "capabilities do NOT change with the model"
       ]
@@ -41,7 +41,7 @@
     {
       "id": "brain-memory",
       "any_of": [
-        "Javis có bộ nhớ sống",
+        "UNI MATE có bộ nhớ sống",
         "MEMORY.md",
         "living memory"
       ]

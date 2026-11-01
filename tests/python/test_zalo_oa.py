@@ -26,7 +26,7 @@ import tempfile
 import time
 import types
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-zalo-oa-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-zalo-oa-")
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -141,7 +141,7 @@ check("no accounts = nothing accepted", not zo.verify_signature(body, "mac=" + m
 s = channels.spec("zalo_oa")
 check("zalo_oa is a bot channel in the registry", s is not None and s.kind == "bot")
 check("zalo_oa carries a bot, private only, sends text and files",
-      s and s.nl("bot") and not s.nl("nhom") and s.nl("gui_chu") and s.nl("gui_file") and s.nl("tra_loi_tu_javis"),
+      s and s.nl("bot") and not s.nl("nhom") and s.nl("gui_chu") and s.nl("gui_file") and s.nl("tra_loi_tu_unimate"),
       s and s.nang_luc)
 ui = {k["id"]: k for k in channels.cho_giao_dien()}
 check("UI entry carries the webhook path", ui.get("zalo_oa", {}).get("webhook") == "/zalo-oa/webhook")

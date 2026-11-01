@@ -7,7 +7,7 @@ copied under another name does not decrypt.
 
 Keys: `STATE_DIR/webhook_keys.json` (mode 600) holds `{"active": kid, "keys": {kid: base64}}`. `rotate()` adds a new
 key, makes it active, re-encrypts every secret with it and then drops the old keys. A crash in the middle leaves both
-keys in the file, so every secret still decrypts. `JAVIS_WH_MASTER_KEY` (base64 of 32 bytes) replaces the key file,
+keys in the file, so every secret still decrypts. `UNIMATE_WH_MASTER_KEY` (base64 of 32 bytes) replaces the key file,
 for a machine where the state folder is backed up or synced elsewhere.
 
 What this protects: a copy of `webhooks.json` (backup, export, a pasted file) no longer carries the keys, and the
@@ -32,7 +32,7 @@ _lock = threading.RLock()
 
 
 class _FileLock:
-    """Several Javis processes may share one state folder (M1 supports that): the read-modify-write of the secrets
+    """Several UNI MATE processes may share one state folder (M1 supports that): the read-modify-write of the secrets
     file and the key file is serialised across processes with an advisory lock (POSIX flock; a no-op where it is
     missing)."""
 
@@ -109,14 +109,14 @@ class Vault:
 
     # ── keys ──
     def _keys(self, create: bool = True) -> dict:
-        env = os.environ.get("JAVIS_WH_MASTER_KEY", "").strip()
+        env = os.environ.get("UNIMATE_WH_MASTER_KEY", "").strip()
         if env:
             try:
                 k = _unb64(env)
             except (ValueError, TypeError):
-                raise SecretError("JAVIS_WH_MASTER_KEY is not valid base64")
+                raise SecretError("UNIMATE_WH_MASTER_KEY is not valid base64")
             if len(k) != 32:
-                raise SecretError("JAVIS_WH_MASTER_KEY must be base64 of 32 bytes")
+                raise SecretError("UNIMATE_WH_MASTER_KEY must be base64 of 32 bytes")
             return {"active": "env", "keys": {"env": env}}
         if self.keys_path.exists():
             try:
@@ -205,8 +205,8 @@ class Vault:
     def rotate(self) -> dict:
         """New active key; every secret re-encrypted with it; old keys dropped only after the secrets file is
         written. Returns {"active", "rewrapped", "dropped"}."""
-        if os.environ.get("JAVIS_WH_MASTER_KEY", "").strip():
-            raise SecretError("the key comes from JAVIS_WH_MASTER_KEY: rotate it there")
+        if os.environ.get("UNIMATE_WH_MASTER_KEY", "").strip():
+            raise SecretError("the key comes from UNIMATE_WH_MASTER_KEY: rotate it there")
         with self.lock:
             keys = self._keys()
             d = self._load()

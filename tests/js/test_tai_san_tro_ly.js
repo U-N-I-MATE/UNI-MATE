@@ -102,7 +102,7 @@ check("trang Cộng sự gọi được ngăn kéo của trợ lý",
   /moKhungAgent: openAgentDrawer/.test(SU));
 check("trình sửa trợ lý có nút mở khung tài liệu", /id="agAssets"/.test(ST));
 check("nút gọi đúng cầu nối, không dựng khung riêng",
-  /window\.JavisChatSide\.moKhungAgent\(a\.slug, a\.name \|\| a\.slug\)/.test(ST));
+  /window\.UniMateChatSide\.moKhungAgent\(a\.slug, a\.name \|\| a\.slug\)/.test(ST));
 // Trợ lý chưa lưu thì chưa có slug để gắn vào. Ẩn nút đi thì người dùng tưởng không có chức
 // năng; để nút bấm được thì bấm vào không có gì xảy ra. Đứng im kèm một câu là đường thứ ba.
 check("trợ lý chưa lưu thì nút đứng im", /a && a\.slug \? "" : " disabled"/.test(ST));

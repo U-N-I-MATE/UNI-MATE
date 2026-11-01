@@ -1,4 +1,4 @@
-"""Tasks page stats (0.428.0): what Javis did next to what the owner did, over any date range.
+"""Tasks page stats (0.428.0): what UNI MATE did next to what the owner did, over any date range.
 
 Expected:
   - Kanban jobs count from their events (done, asked the owner, stopped, retried), with the assistant that ran them;
@@ -6,9 +6,9 @@ Expected:
   - reminders and page watches count from work_log (one line per run), plus the last run of a reminder fired before
     the log existed, never twice;
   - the owner's side counts one-off tasks done, repeating ticks (habits apart), and appointments that are over;
-  - Javis's share, time given back (minutes per kind, editable), the previous period of the same length, 8 weeks,
-    the 84-day map, habits' 30-day rate, projects, tasks moved twice or more and ideas Javis could take over;
-  - moving a one-off task to a later day counts a move; "Give to Javis" counts a hand-off.
+  - UNI MATE's share, time given back (minutes per kind, editable), the previous period of the same length, 8 weeks,
+    the 84-day map, habits' 30-day rate, projects, tasks moved twice or more and ideas UNI MATE could take over;
+  - moving a one-off task to a later day counts a move; "Give to UNI MATE" counts a hand-off.
 
 Run:
     python tests/python/test_task_stats_0428.py
@@ -41,7 +41,7 @@ TZ = timezone(timedelta(hours=7))
 now = time.time()
 today = datetime.now(TZ).date()
 d = lambda n: (today + timedelta(days=n)).isoformat()  # noqa: E731
-brain = Path(tempfile.mkdtemp(prefix="javis-stats-"))
+brain = Path(tempfile.mkdtemp(prefix="unimate-stats-"))
 root = str(brain.resolve())
 
 
@@ -51,9 +51,9 @@ def atomic_write(path, text):
 
 
 mt = my_tasks.MyTasks(my_tasks.MyTasksDeps(brain_root=lambda b: str(brain), atomic_write_text=atomic_write, tz=lambda: TZ))
-store = TaskStore(Path(tempfile.mkdtemp(prefix="javis-stats-kb-")) / "kanban.sqlite3")
+store = TaskStore(Path(tempfile.mkdtemp(prefix="unimate-stats-kb-")) / "kanban.sqlite3")
 
-# ---- Javis: Kanban ----
+# ---- UNI MATE: Kanban ----
 a = store.enqueue(root, "Tổng hợp đơn hôm qua", "x", status="ready")
 store.claim(a, "w1")
 store.complete(a, "w1", "xong", metadata={"run_seconds": 120, "agent": {"slug": "kho", "name": "Trợ lý Kho"}})
@@ -72,20 +72,20 @@ other = store.enqueue(str(Path(tempfile.mkdtemp()).resolve()), "Việc brain kh�
 store.claim(other, "w1")
 store.complete(other, "w1", "xong")
 
-# ---- Javis: loops (markdown log, local time) ----
-ld = brain / "Javis" / "loop-log"
+# ---- UNI MATE: loops (markdown log, local time) ----
+ld = brain / "UNI MATE" / "loop-log"
 ld.mkdir(parents=True)
 hm = datetime.now(TZ) - timedelta(minutes=5)
 (ld / f"{hm.date().isoformat()}.md").write_text(
     f"\n## [{hm:%Y-%m-%d %H:%M}] soi-don · loop (custom/full) - scheduled\nĐã soi 12 đơn.\n"
     f"\n## [{hm:%Y-%m-%d %H:%M}] soi-don · loop (custom/full) - scheduled\nLỗi: hết hạn mức\n", encoding="utf-8")
 
-# ---- Javis: reminders and watches ----
+# ---- UNI MATE: reminders and watches ----
 work_log.append(str(brain), "reminder", "r_1", "Báo cáo POS", "ok", seconds=40, mode="task", ts=now - 60)
 work_log.append(str(brain), "reminder", "r_2", "Nhắc gọi khách", "ok", mode="notify", ts=now - 50)
 work_log.append(str(brain), "reminder", "r_1", "Báo cáo POS", "retry", mode="task", ts=now - 70)
 work_log.append(str(brain), "watch", "w_1", "Giá đối thủ", "ok", ts=now - 30)
-(brain / "Javis" / "reminders.json").write_text(json.dumps({"reminders": [
+(brain / "UNI MATE" / "reminders.json").write_text(json.dumps({"reminders": [
     {"id": "r_1", "mode": "task", "fired_at": now - 60, "label": "Báo cáo POS"},      # same run as the log line
     {"id": "r_old", "mode": "task", "fired_at": now - 3600, "label": "Bản tin cũ"},   # before the log: last run
 ]}), encoding="utf-8")
@@ -100,7 +100,7 @@ mt.update("brain", {"id": r2["task"]["id"], "date": d(2)})  # moved twice
 mt.update("brain", {"id": r2["task"]["id"], "date": d(1)})  # moved back: not a move
 habit = mt.create("brain", {"title": "Đọc sách", "date": d(-3), "repeat": {"unit": "day", "n": 1}, "habit": {"start": d(-3)}})
 for n in (-3, -2, -1, 0):
-    mt.check("brain", habit["task"]["id"], d(n), "javis" if n == 0 else "me", True)
+    mt.check("brain", habit["task"]["id"], d(n), "unimate" if n == 0 else "me", True)
 chore = mt.create("brain", {"title": "Chốt sổ quỹ", "date": d(-10), "repeat": {"unit": "day", "n": 1}})
 for n in (-6, -5, -4):
     mt.check("brain", chore["task"]["id"], d(n), "me", True)
@@ -123,17 +123,17 @@ check("loops: one run done, the run starting with Lỗi counts as failed", ai["b
 check("reminders: the logged run counts once, the old one by its last run",
       ai["by_kind"]["reminder"]["n"] == 2 and ai["by_kind"]["notify"]["n"] == 1, ai["by_kind"])
 check("page watches count their alerts", ai["by_kind"]["watch"]["n"] == 1)
-check("Javis done = everything that finished well", ai["done"] == 2 + 1 + 2 + 1 + 1, ai["done"])
+check("UNI MATE done = everything that finished well", ai["done"] == 2 + 1 + 2 + 1 + 1, ai["done"])
 check("time given back follows the minutes per kind",
       ai["saved"] == 2 * 20 + 5 + 2 * 10 + 2 + 3, ai["saved"])
 ag = {x["key"]: x for x in ai["agents"]}
-check("the assistant that ran a job is named, the rest is Javis Core",
+check("the assistant that ran a job is named, the rest is UNI MATE Core",
       ag["kho"]["name"] == "Trợ lý Kho" and ag["kho"]["n"] == 1 and ag["core"]["n"] == ai["done"] - 1, ag)
 check("average run time from the jobs that report it", ai["avg_seconds"] in (40, 73), ai["avg_seconds"])
 check("owner: one task, four habit ticks, three chore ticks, one appointment", me["done"] == 1 + 4 + 3 + 1, me["done"])
-check("a tick Javis made on the owner's word is counted apart", me["javis_ticks"] == 1)
+check("a tick UNI MATE made on the owner's word is counted apart", me["unimate_ticks"] == 1)
 check("on time: the task done a day late is late", me["on_time"] is not None and me["on_time"] < 100)
-check("Javis's share", ai["share"] == round(100 * ai["done"] / (ai["done"] + me["done"])))
+check("UNI MATE's share", ai["share"] == round(100 * ai["done"] / (ai["done"] + me["done"])))
 check("hand-offs are counted", ai["handoffs"] == 1)
 check("the map covers 84 days ending on the last day", len(me["heat"]) == 84 and me["heat"][-1]["d"] == d(0))
 check("8 weeks, the last one ending on the last day", len(s["weeks"]) == 8 and s["weeks"][-1]["to"] == d(0)

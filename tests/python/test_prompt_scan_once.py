@@ -2,7 +2,7 @@
 
     python tests/run.py prompt_scan_once     (KHÔNG mạng)
 
-Bối cảnh: trước 0.9.237, _javis_capability_summary gọi skill_router.list_skills còn
+Bối cảnh: trước 0.9.237, _unimate_capability_summary gọi skill_router.list_skills còn
 _skill_router_block gọi list_enabled_meta (vốn là list_skills lọc lại), nên mỗi lượt chat
 đi và parse YAML cả cây skill hai lần. Nay build_system_prompt quét một lần rồi truyền
 xuống. Rủi ro của kiểu tối ưu này là im lặng đổi nội dung system prompt, nên test khoá
@@ -14,7 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-scanonce-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-scanonce-"))
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -34,7 +34,7 @@ def check(name, cond):
 
 
 # --- brain giả có skill thật để quét ---
-brain_dir = Path(tempfile.mkdtemp(prefix="javis-scanonce-brain-"))
+brain_dir = Path(tempfile.mkdtemp(prefix="unimate-scanonce-brain-"))
 skills_dir = brain_dir / "skills"
 for slug, group, enabled in [("viet-email", "Nội dung", True),
                              ("bao-cao-doanh-thu", "Bán hàng", True),
@@ -57,8 +57,8 @@ check("2 skill bật, 1 skill tắt",
 # --- 1. Chia sẻ kết quả KHÔNG được đổi nội dung sinh ra ---
 check("_gather_capabilities: truyền sẵn == tự quét",
       main._gather_capabilities(brain, skills) == main._gather_capabilities(brain))
-check("_javis_capability_summary: truyền sẵn == tự quét",
-      main._javis_capability_summary(brain, skills) == main._javis_capability_summary(brain))
+check("_unimate_capability_summary: truyền sẵn == tự quét",
+      main._unimate_capability_summary(brain, skills) == main._unimate_capability_summary(brain))
 check("_skill_router_block: truyền sẵn == tự quét",
       main._skill_router_block(brain, root, skills) == main._skill_router_block(brain, root))
 
@@ -96,7 +96,7 @@ check(f"build_system_prompt quét cây skill đúng 1 lần (đếm được {n_
 
 # --- 4. Nội dung system prompt phải giống hệt đường KHÔNG chia sẻ ---
 # Dựng lại thủ công theo đường cũ rồi so hai khối liên quan.
-khoi_cu = main._javis_capability_summary(brain) + main._skill_router_block(brain, root)
+khoi_cu = main._unimate_capability_summary(brain) + main._skill_router_block(brain, root)
 check("hai khối năng lực + router có mặt nguyên vẹn trong system prompt",
       khoi_cu and khoi_cu in prompt_moi)
 

@@ -36,7 +36,7 @@ def khoi_doc(files, hoi=""):
 
 
 # ---- 1. ĐÚNG CA ĐƯỢC BÁO: có file + có câu hỏi -> lấy câu hỏi ----
-that = khoi_doc(["/data/state/.staging/javis-tiec-tra-ai-warrior-plus_2.html"],
+that = khoi_doc(["/data/state/.staging/unimate-tiec-tra-ai-warrior-plus_2.html"],
                 "nhóm zalo cho cái này nên để là gì nhỉ, hiện tại anh đang để là bí mật ai, "
                 "có nên đổi thành tiệc trà ai không nhỉ?")
 t = tt(that)

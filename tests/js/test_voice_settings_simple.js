@@ -1,6 +1,6 @@
 /* Thẻ Giọng nói gọn (0.65.19, docs/dev/2026-10-voice-call-spec.md mục 5).
 
-   Bấm mic là gọi Javis, nên trang Cài đặt chỉ còn: dòng "Đang dùng", Giọng Javis (danh sách đổi
+   Bấm mic là gọi Uni, nên trang Cài đặt chỉ còn: dòng "Đang dùng", Giọng UNI MATE (danh sách đổi
    theo đường gọi); Nâng cao có Đường gọi, Bộ não trả lời nhanh (trả lại ở 0.65.25), Tốc độ đọc,
    ElevenLabs. Mọi ô tự lưu, không còn nút Lưu. Phần máy tự lo (ngôn ngữ nghe, im lặng rồi gửi,
    ngắt lời, nhịp hội thoại, tai nghe lại, đọc trả lời bằng giọng, key OpenAI) không còn ô nhập.
@@ -46,12 +46,12 @@ check("console.js: thẻ đọc /voice/options?brains=0 (không chờ agy models
 check("console.js: mở tab Giọng nói là vẽ lại thẻ", /if \(tab === "voice"\) renderVoiceCard\(\);/.test(cs));
 check("console.js: không còn hàm thẻ V2 cũ", !/renderVoiceV2Card/.test(cs));
 check("app.js: ngôn ngữ nghe theo ngôn ngữ giao diện", /function recLangTheoGiaoDien\(\)/.test(app) && /const recNow = recLangTheoGiaoDien\(\);/.test(app));
-check("app.js: đổi ngôn ngữ giao diện thì đổi ngôn ngữ nghe", /addEventListener\("javis:i18n", \(\) => \{\s*\n\s*const lang = recLangTheoGiaoDien\(\);/.test(app));
-check("app.js: ngắt lời bằng giọng luôn bật", /voice\.bargeEnabled = true;/.test(app) && !/getItem\("javis\.bargeIn"\)/.test(app));
+check("app.js: đổi ngôn ngữ giao diện thì đổi ngôn ngữ nghe", /addEventListener\("unimate:i18n", \(\) => \{\s*\n\s*const lang = recLangTheoGiaoDien\(\);/.test(app));
+check("app.js: ngắt lời bằng giọng luôn bật", /voice\.bargeEnabled = true;/.test(app) && !/getItem\("unimate\.bargeIn"\)/.test(app));
 check("app.js: im lặng rồi gửi mặc định 1,2 giây, giữ mức cũ hợp lệ",
   /turn\.opts\.minDelay = \[500, 800, 1200\]\.includes\(ep\) \? ep : 1200;/.test(app)
-  && /minDelay: parseInt\(localStorage\.getItem\("javis\.endpoint"\) \|\| "1200", 10\) \|\| 1200,/.test(app));
-check("app.js: nút Nghe thử của đường Cơ bản đi qua window.JavisVoiceSample", /window\.JavisVoiceSample = \(\) => voice\.speak\(/.test(app));
+  && /minDelay: parseInt\(localStorage\.getItem\("unimate\.endpoint"\) \|\| "1200", 10\) \|\| 1200,/.test(app));
+check("app.js: nút Nghe thử của đường Cơ bản đi qua window.UniMateVoiceSample", /window\.UniMateVoiceSample = \(\) => voice\.speak\(/.test(app));
 check("0.65.22: công tắc Tập trung đã gỡ (im 30 giây thì ngắt, nói là nối lại)", !card.includes('id="vcFocus"') && !/vcFocus/.test(cs));
 for (const k of ["settings.vc_title", "settings.vc_voice", "settings.vc_advanced",
   "settings.vc_engine", "settings.vc_engine_auto", "settings.vc_engine_api", "settings.vc_engine_basic", "settings.vc_hear_call", "settings.vc_hear_read", "settings.vc_hear_basic",
@@ -108,7 +108,7 @@ async function run(options, edgeVoice = "vi-VN-HoaiMyNeural", models = null) {
       return options;
     } }), urls: [],
     saveSetting: async (section, data) => { saves.push([section, data]); return { ok: true }; },
-    window: { JavisVoiceMode: { refresh: () => refreshes.push(1) }, JavisVoiceCatalog: require("../../dashboard/voice-catalog.js") },
+    window: { UniMateVoiceMode: { refresh: () => refreshes.push(1) }, UniMateVoiceCatalog: require("../../dashboard/voice-catalog.js") },
     setTimeout: () => 0, clearTimeout: () => {}, Event: class { constructor(type) { this.type = type; } },
     Audio: class { constructor(src) { ctx.played = src; } play() { return Promise.resolve(); } pause() {} },
     Date, Math, Number, Array, String, JSON, Promise,

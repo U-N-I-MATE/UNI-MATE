@@ -1,6 +1,6 @@
 """Bộ từ vựng theo ngôn ngữ cho các CỔNG CHẶN - thay cho regex nhúng cứng tiếng Việt.
 
-Vì sao có lớp này. Hành vi của Javis đang phụ thuộc vào việc người dùng gõ tiếng Việt ở hơn
+Vì sao có lớp này. Hành vi của UNI MATE đang phụ thuộc vào việc người dùng gõ tiếng Việt ở hơn
 mười chỗ: cổng đường tắt tiết kiệm token, cổng một bước chỉ đọc, bộ bắt khai man hành động,
 bộ dò lời hứa suông, cò ghi ký ức, bộ dò bot bí. Mỗi chỗ là một `re.compile` chứa từ khoá
 tiếng Việt bỏ dấu.
@@ -28,7 +28,7 @@ Luật suy biến (spec mục 4.3), theo LOẠI cổng chứ không theo một l
                                                    nhìn thấy được.
   TRÌNH BÀY      (cắt câu, cron ra chữ)         -> suy biến thô, không ai chết.
 
-Một câu để nhớ: **thiếu bộ từ vựng làm Javis TỐN HƠN, không làm Javis LỎNG HƠN.**
+Một câu để nhớ: **thiếu bộ từ vựng làm UNI MATE TỐN HƠN, không làm UNI MATE LỎNG HƠN.**
 
 Thêm ngôn ngữ: thêm `lexicon/<mã>.py` khai đủ các tên trong `BAT_BUOC`. Thiếu tên nào thì
 `_kiem_parity` báo đỏ ngay lúc nạp chứ không để hỏng âm thầm giữa đường chạy.

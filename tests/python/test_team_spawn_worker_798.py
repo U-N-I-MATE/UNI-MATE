@@ -13,7 +13,7 @@ import asyncio
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-team-spawn-798-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-team-spawn-798-"))
 
 import team_api  # noqa: E402
 

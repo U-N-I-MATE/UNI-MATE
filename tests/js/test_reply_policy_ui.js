@@ -24,11 +24,11 @@ const fails = [];
 const check = (name, cond, extra) => { console.log((cond ? "ok   " : "FAIL ") + name + (!cond && extra ? "  [" + extra + "]" : "")); if (!cond) fails.push(name); };
 
 // ---- nạp module với window giả ----
-const win = { t: (k, v) => (v ? k + JSON.stringify(v) : k), JavisI18n: { locale: () => "vi-VN" } };
+const win = { t: (k, v) => (v ? k + JSON.stringify(v) : k), UniMateI18n: { locale: () => "vi-VN" } };
 const ctx = { window: win, document: { createElement: () => ({ set innerHTML(x) {}, firstChild: null }) }, fetch: () => Promise.reject(new Error("no net")), console, Date };
 vm.createContext(ctx);
 vm.runInContext(MOD, ctx);
-const RP = win.JavisReplyPolicy;
+const RP = win.UniMateReplyPolicy;
 check("module chỉ phơi ra bốn hàm: formHtml, summary, openPanel, codeLabel (nhãn mã im cho Hộp thư)",
   RP && JSON.stringify(Object.keys(RP).sort()) === JSON.stringify(["codeLabel", "formHtml", "openPanel", "summary"]), RP && Object.keys(RP).join(","));
 
@@ -47,8 +47,8 @@ check("dòng giải thích chỉ hiện khi chọn Tự đánh giá (veRw)", /rp
 check("lưu bot KHÔNG gửi reply_policy nữa (form không được ghi đè aliases và người được dạy)",
   CB.indexOf("chung.reply_policy") < 0 && CB.indexOf("RP.read") < 0 && CB.indexOf("RP.bind") < 0);
 check("thẻ bot có mục menu Bộ phán xử (chỉ khi Tự đánh giá) và mở panel",
-  /b\.reply_when === "auto"\s*\?\s*'<button class="cb-rp"/.test(CB) && /JavisReplyPolicy\.openPanel\(b\)/.test(CB));
-check("dòng tóm tắt của thẻ dùng JavisReplyPolicy.summary", /JavisReplyPolicy\.summary\(b\)/.test(CB));
+  /b\.reply_when === "auto"\s*\?\s*'<button class="cb-rp"/.test(CB) && /UniMateReplyPolicy\.openPanel\(b\)/.test(CB));
+check("dòng tóm tắt của thẻ dùng UniMateReplyPolicy.summary", /UniMateReplyPolicy\.summary\(b\)/.test(CB));
 check("index.html nạp module TRƯỚC chatbots.js", HTML.indexOf("chatbots-reply-policy.js") > 0
   && HTML.indexOf("chatbots-reply-policy.js") < HTML.indexOf("/static/chatbots.js"));
 check("panel gọi đủ các đường API còn lại", ["/reply-policy", "?limit=100", "/label", "/forget", "/cases/", "/delete"].every((s) => MOD.indexOf(s) >= 0));

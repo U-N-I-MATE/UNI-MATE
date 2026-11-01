@@ -30,9 +30,9 @@ const teams = [
 
 // ---- one implementation, two pages (owner: "cái gì mà có rồi thì tái sử dụng") ----
 check("the Partners page draws its filter bar and its tag picker with the shared module",
-  ws.includes("window.JavisTagPicker.barHtml({") && ws.includes("m.innerHTML = TP.pickerHtml(dongChonTag(item, danhSach()))") &&
+  ws.includes("window.UniMateTagPicker.barHtml({") && ws.includes("m.innerHTML = TP.pickerHtml(dongChonTag(item, danhSach()))") &&
   ws.includes("TP.bind(m, {") && !ws.includes('class="ws-tag-new"'));
-check("the Teams page uses the same module and the shared dropdown (JavisChatSide.menu)",
+check("the Teams page uses the same module and the shared dropdown (UniMateChatSide.menu)",
   src.includes("TP.barHtml({") && src.includes("picker.pickerHtml(tagPickRows(") && src.includes("TP.bind(m, {") &&
   src.includes("cs.menu(t, tagMenuRows(") && !src.includes("tm-tagf") && !src.includes("tm-tag-input"));
 check("tag-picker.js loads before workspace.js and teams.js",
@@ -85,7 +85,7 @@ check("the page opens it once per visit, after the list arrives, unless a team w
   /else if \(!append && !S\.autoOpened && !S\.activeId\)/.test(src) && src.includes("openTeam(lastT.team_id)"));
 check("opening a team tells the server (any device opens it next time)", src.includes('call("POST", "/teams/" + q(id) + "/opened", {})'));
 check("the chosen filter is remembered per device and survives a blocked storage",
-  src.includes('var TAG_FILTER_KEY = "javis.teams.tagFilter"') && /try \{ return \(typeof localStorage/.test(src));
+  src.includes('var TAG_FILTER_KEY = "unimate.teams.tagFilter"') && /try \{ return \(typeof localStorage/.test(src));
 ["teams.tags_all", "teams.tags_none", "teams.tag_pick_title", "teams.tags_title", "ws.tag_menu", "ws.tag_none"].forEach((k) =>
   check("i18n " + k + " in vi and en", !!vi[k] && !!en[k]));
 

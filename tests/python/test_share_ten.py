@@ -12,9 +12,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-share-ten-")
-_BRAINS = tempfile.mkdtemp(prefix="javis-share-ten-brains-")
-os.environ["JAVIS_STATE_DIR"] = _STATE
+_STATE = tempfile.mkdtemp(prefix="unimate-share-ten-")
+_BRAINS = tempfile.mkdtemp(prefix="unimate-share-ten-brains-")
+os.environ["UNIMATE_STATE_DIR"] = _STATE
 os.environ["BRAINS_DIR"] = _BRAINS
 
 BRAIN = os.path.join(_BRAINS, "brain")

@@ -37,12 +37,12 @@ check("missing CLI is flagged as cli_missing", d.get("cli_missing") is True and 
 check("the full message is still there for callers that print it", "npm install -g @anthropic-ai/claude-code" in d.get("error", ""))
 
 main_src = (SERVER / "main.py").read_text(encoding="utf-8")
-check("provider label no longer says OAuth (Javis never reads that token)",
+check("provider label no longer says OAuth (UNI MATE never reads that token)",
       '"id": "anthropic-cli", "label": "Claude Code"' in main_src)
 check("Claude and Codex cards learn whether this is the Docker build",
       main_src.count('item["docker"] = deploy_info.deploy_mode() == "docker"') == 2)
-check("and which variable points at the binary", 'item["cli_env"] = "JAVIS_CLAUDE_BIN"' in main_src
-      and 'item["cli_env"] = "JAVIS_CODEX_BIN"' in main_src)
+check("and which variable points at the binary", 'item["cli_env"] = "UNIMATE_CLAUDE_BIN"' in main_src
+      and 'item["cli_env"] = "UNIMATE_CODEX_BIN"' in main_src)
 
 # ---- 2. The card ----
 js = (ROOT / "dashboard" / "console.js").read_text(encoding="utf-8")

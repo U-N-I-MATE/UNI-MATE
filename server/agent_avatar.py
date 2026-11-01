@@ -61,7 +61,7 @@ def for_agent(meta, slug):
     size = _eye_size(avatar.get("eyeSize"))
     if size is not None and size != 1:
         out["eyeSize"] = size
-    # Ảnh tự tải lên (0.176.0): có thì mọi chỗ vẽ trợ lý hiện ảnh này; hình Javis ở trên vẫn giữ để gỡ ảnh là về như cũ.
+    # Ảnh tự tải lên (0.176.0): có thì mọi chỗ vẽ trợ lý hiện ảnh này; hình UNI MATE ở trên vẫn giữ để gỡ ảnh là về như cũ.
     if avatar_upload.hop_le(avatar.get("image")):
         out["image"] = avatar["image"]
     return out
@@ -101,7 +101,7 @@ def for_save(previous, slug, shape=None, palette=None, color=None, eye=None, eye
         raise ValueError("avatar_eye_color")
     if avatar.get("eyeSize") == 1:
         avatar.pop("eyeSize", None)
-    # image: None = giữ như cũ, "none" (hay "") = gỡ ảnh tự tải (về hình Javis), tên ảnh = dùng ảnh đó (phải có trong
+    # image: None = giữ như cũ, "none" (hay "") = gỡ ảnh tự tải (về hình UNI MATE), tên ảnh = dùng ảnh đó (phải có trong
     # kho ảnh). Form gửi "none" chứ không gửi chuỗi rỗng: FastAPI coi ô form rỗng là không gửi, gỡ ảnh sẽ không ăn.
     if image is not None:
         if image in ("", "none"):

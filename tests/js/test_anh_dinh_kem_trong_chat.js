@@ -2,7 +2,7 @@
 
        node tests/js/test_anh_dinh_kem_trong_chat.js
 
-   Chủ repo báo 01/09: "gửi ảnh vào javis để javis đọc thì sẽ không lưu lại tấm ảnh đó ở đoạn
+   Chủ repo báo 01/09: "gửi ảnh vào unimate để unimate đọc thì sẽ không lưu lại tấm ảnh đó ở đoạn
    chat, và khi dán ảnh vào cũng không zoom lên được".
 
    Bong bóng tin của người dùng vẽ ảnh bằng `URL.createObjectURL(file)` - một URL chỉ sống

@@ -8,7 +8,7 @@ MỌI plugin, cộng đọc lại plugins.json cho TỪNG plugin bundled. Nay ca
 (mtime_ns, size).
 
 Hai rủi ro thật của kiểu cache này, test khoá cả hai:
-- THIU: sửa file mà cache không hết hạn -> user bật plugin mà Javis vẫn thấy tắt.
+- THIU: sửa file mà cache không hết hạn -> user bật plugin mà UNI MATE vẫn thấy tắt.
 - BẨN: _read_state và _read_manifest đều bị nơi gọi SỬA TẠI CHỖ rồi ghi ngược ra file
   (plugins_host toggle), nên trả thẳng object trong cache là hỏng dữ liệu ngầm.
 """
@@ -20,8 +20,8 @@ import tempfile
 import time
 from pathlib import Path
 
-_STATE = tempfile.mkdtemp(prefix="javis-plgcache-")
-os.environ.setdefault("JAVIS_STATE_DIR", _STATE)
+_STATE = tempfile.mkdtemp(prefix="unimate-plgcache-")
+os.environ.setdefault("UNIMATE_STATE_DIR", _STATE)
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -39,7 +39,7 @@ def check(name, cond):
         _fails.append(name)
 
 
-VAULT = Path(tempfile.mkdtemp(prefix="javis-plgcache-vault-"))
+VAULT = Path(tempfile.mkdtemp(prefix="unimate-plgcache-vault-"))
 PDIR = VAULT / "plugins" / "thu-nghiem"
 PDIR.mkdir(parents=True, exist_ok=True)
 MANIFEST = PDIR / "plugin.yaml"

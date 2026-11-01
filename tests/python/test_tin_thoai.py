@@ -1,4 +1,4 @@
-"""Ghi âm gửi qua Telegram / Zalo thì Javis NGHE được (Whisper qua Groq), chưa đấu key thì nói rõ.
+"""Ghi âm gửi qua Telegram / Zalo thì UNI MATE NGHE được (Whisper qua Groq), chưa đấu key thì nói rõ.
 
     python tests/run.py tin_thoai
 
@@ -24,7 +24,7 @@ import asyncio
 import os
 import tempfile
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-thoai-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-thoai-"))
 
 import stt  # noqa: E402
 import telegram_bot as tb  # noqa: E402
@@ -50,7 +50,7 @@ def chay(coro):
 # ============================================================
 kq = chay(stt.groq_nghe(b"xxx", "voice.ogg", ""))
 check("chưa có key -> không ok", not kq["ok"] and kq["ly_do"] == "thieu_key")
-_cau = kq["noi_voi_javis"]
+_cau = kq["noi_voi_unimate"]
 check("câu thiếu key gọi đúng tên Groq", "Groq" in _cau)
 check("câu thiếu key chỉ đúng chỗ dán key", "Models" in _cau)
 check("câu thiếu key nói được cả ca đóng vai người thật với khách",
@@ -110,7 +110,7 @@ try:
     _FakeClient.tra = (401, {"error": {"message": "Invalid API Key"}})
     kq = chay(stt.groq_nghe(b"audio", "voice.ogg", "sai"))
     check("Groq từ chối -> nhắc lại LÝ DO THẬT chứ không phải mã HTTP trơn",
-          not kq["ok"] and "Invalid API Key" in kq["noi_voi_javis"])
+          not kq["ok"] and "Invalid API Key" in kq["noi_voi_unimate"])
 finally:
     stt.httpx.AsyncClient = _that
 
@@ -176,7 +176,7 @@ check("ảnh + caption lệnh -> vẫn chỉ lấy dòng marker như trước",
 
 # --- nghe hỏng: vẫn phải ra một câu ---
 async def _stt_loi(data, ten):
-    return {"ok": False, "ly_do": "loi", "noi_voi_javis": stt.loi_thanh_dong("loi", "mạng chết")}
+    return {"ok": False, "ly_do": "loi", "noi_voi_unimate": stt.loi_thanh_dong("loi", "mạng chết")}
 
 
 out = chay(_bot(_stt_loi)._ingest_attachment(None, _voice_msg()))

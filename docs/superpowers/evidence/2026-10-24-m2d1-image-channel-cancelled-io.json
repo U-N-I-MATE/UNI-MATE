@@ -9,7 +9,7 @@
   },
   "historical_component_evidence": "2026-10-24-m2d1-image-metadata-channel.json",
   "historical_source_sha256": "12cce11132a77d024cf678f54982bb3d97bc0e9b6e6a0c1b6c3d36af96434297",
-  "test_command": "D:\\Project\\Javis-OS\\.venv\\Scripts\\python.exe -B -m unittest discover -s tests/python -p test_improvement_image_channel.py -v",
+  "test_command": "D:\\Project\\UNI-MATE\\.venv\\Scripts\\python.exe -B -m unittest discover -s tests/python -p test_improvement_image_channel.py -v",
   "runs": [
     {
       "stage": "raw_cancelled_io_red",

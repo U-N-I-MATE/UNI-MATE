@@ -21,7 +21,7 @@ unimplemented tasks complete. See docs/handoffs/claude-opus-5-5/HANDOFF.md.
 
 ## Global Constraints
 
-- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/Javis-OS only. Never modify/reset/clean D:/Project/Javis-OS; its .venv Python may execute with -B. English code/comments/commits; VERSION0.299.0 unchanged.
+- Managed checkout C:/Users/admin/.codex/worktrees/agent-skill-improvement-m2a/UNI-MATE only. Never modify/reset/clean D:/Project/UNI-MATE; its .venv Python may execute with -B. English code/comments/commits; VERSION0.299.0 unchanged.
 - Preserve historical SQL1–10 literals, immutable events/rows/ciphertext and old sealed recipes=[] input bytes. Preserve two ordinary candidates, one compose, repair limits and baseline/unknown behavior; no model/reasoning/owner-rule/guardrail change.
 - No actual CLI/SDKClient/provider/account/model query, qualification registration, deploy/restart, real-brain migration, activation or physical erasure. Fixture/DI engineering is not business/native proof. Full M0–M8 Goal stays active.
 - Never modify tests/python/test_improvement_view_reservations.py (rawSHA0577b5181fb090ba897ec8c3d0fce10fe88d2d09d03839497150cdacf6e793e0). New actual native dependencies enter PROFILE_SOURCES; changed footprint stays UNQUALIFIED and both reviewed registries stay closed.
@@ -40,7 +40,7 @@ unimplemented tasks complete. See docs/handoffs/claude-opus-5-5/HANDOFF.md.
 
 Pinned core/library.py is already used directly through RecipeSnapshot9e098a52;
 this unit does not replace its serializer or create another plaintext authority.
-Javis HostContextRecords._decode, actual Dashboard _capture, BrainFileFixtures,
+UNI MATE HostContextRecords._decode, actual Dashboard _capture, BrainFileFixtures,
 TrialResults.read and archive immutable helpers already own the required source
 and history checks. Reusing those plus one fresh-source contract costs less than
 normalizing catalog/target/directory exceptions or adding a second permission

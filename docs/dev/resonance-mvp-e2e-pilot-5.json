@@ -67,7 +67,7 @@
         {
           "type": "tool_call",
           "tool": "ToolSearch",
-          "detail": "select:mcp__javis-plugins__javis_goal",
+          "detail": "select:mcp__unimate-plugins__unimate_goal",
           "content": "\u2699 \u0110ang g\u1ecdi: ToolSearch"
         },
         {
@@ -85,8 +85,8 @@
         },
         {
           "type": "tool_call",
-          "tool": "mcp__javis-plugins__javis_goal",
-          "content": "\u2699 \u0110ang g\u1ecdi: mcp__javis-plugins__javis_goal"
+          "tool": "mcp__unimate-plugins__unimate_goal",
+          "content": "\u2699 \u0110ang g\u1ecdi: mcp__unimate-plugins__unimate_goal"
         },
         {
           "type": "tool_result",
@@ -97,7 +97,7 @@
         {
           "type": "tool_call",
           "tool": "ToolSearch",
-          "detail": "select:mcp__javis-plugins__javis_goal",
+          "detail": "select:mcp__unimate-plugins__unimate_goal",
           "content": "\u2699 \u0110ang g\u1ecdi: ToolSearch"
         }
       ],
@@ -105,13 +105,13 @@
         {
           "type": "tool_call",
           "tool": "ToolSearch",
-          "detail": "select:mcp__javis-plugins__javis_goal",
+          "detail": "select:mcp__unimate-plugins__unimate_goal",
           "content": "\u2699 \u0110ang g\u1ecdi: ToolSearch"
         },
         {
           "type": "tool_call",
-          "tool": "mcp__javis-plugins__javis_goal",
-          "content": "\u2699 \u0110ang g\u1ecdi: mcp__javis-plugins__javis_goal"
+          "tool": "mcp__unimate-plugins__unimate_goal",
+          "content": "\u2699 \u0110ang g\u1ecdi: mcp__unimate-plugins__unimate_goal"
         }
       ],
       "files_written": {
@@ -200,8 +200,8 @@
         },
         {
           "type": "tool_call",
-          "tool": "mcp__javis-plugins__javis_goal",
-          "content": "\u2699 \u0110ang g\u1ecdi: mcp__javis-plugins__javis_goal"
+          "tool": "mcp__unimate-plugins__unimate_goal",
+          "content": "\u2699 \u0110ang g\u1ecdi: mcp__unimate-plugins__unimate_goal"
         },
         {
           "type": "tool_result",
@@ -212,8 +212,8 @@
       "goal_or_task_calls": [
         {
           "type": "tool_call",
-          "tool": "mcp__javis-plugins__javis_goal",
-          "content": "\u2699 \u0110ang g\u1ecdi: mcp__javis-plugins__javis_goal"
+          "tool": "mcp__unimate-plugins__unimate_goal",
+          "content": "\u2699 \u0110ang g\u1ecdi: mcp__unimate-plugins__unimate_goal"
         }
       ],
       "files_written": {
@@ -340,8 +340,8 @@
   "routing_versions": {
     "repo_CLAUDE.md": "e26f33b1660f8715",
     "main.py": "411864c293e94be3",
-    "javis_goal_plugin": "98b8b781770dd425",
-    "javis_task_plugin": "db0e738c593ac3c8"
+    "unimate_goal_plugin": "98b8b781770dd425",
+    "unimate_task_plugin": "db0e738c593ac3c8"
   },
   "auth_gate": {
     "cli_found": true,

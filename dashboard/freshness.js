@@ -18,7 +18,7 @@
  * máy chủ có.
  *
  * ĐIỂM TỰA: index.html được trả kèm `no-store` nên nó LUÔN mới, kể cả khi mọi file JS
- * quanh nó đã cũ. Khối <script id="javis-fresh"> nằm trong đó vì vậy luôn nói thật.
+ * quanh nó đã cũ. Khối <script id="unimate-fresh"> nằm trong đó vì vậy luôn nói thật.
  * Chính file này cũng nạp KHÔNG kèm `?v=` và được đóng dấu `no-cache` (xem middleware
  * _static_cache_headers) - người gác cổng mà cũ theo thì nó gác cái gì.
  */
@@ -26,21 +26,21 @@
   "use strict";
 
   var CHU_KY_MS = 5 * 60 * 1000;     // nhịp hỏi lại máy chủ xem đã có bản mới chưa
-  var KHOA_DA_TAI = "javis-fresh-reloaded";   // chống vòng lặp tải lại vô tận
+  var KHOA_DA_TAI = "unimate-fresh-reloaded";   // chống vòng lặp tải lại vô tận
   // 0.415.0: vân tay của bộ file đã đo là KHỚP trên máy này. Bộ file không đổi thì lần mở sau khỏi đo lại: đo là tải lại
   // từ cache và băm từng file (hơn trăm file, gần 4 MB) ngay sau lúc mở trang, việc nặng nhất của một chiếc điện thoại
   // vào đúng lúc nó đang bận dựng giao diện. Lệch chỉ xảy ra khi bộ file vừa đổi (bản cập nhật), và lúc đó vân tay đổi
   // theo nên vẫn đo như cũ.
-  var KHOA_DA_DO = "javis-fresh-checked";
+  var KHOA_DA_DO = "unimate-fresh-checked";
 
   function moc() {
-    var el = document.getElementById("javis-fresh");
+    var el = document.getElementById("unimate-fresh");
     if (!el) return null;
     try { return JSON.parse(el.textContent || "{}"); } catch (e) { return null; }
   }
 
   /* crc32 khớp từng bit với zlib.crc32 bên Python (server dùng chính hàm đó).
-   * Không dùng crypto.subtle: nó chỉ có trong ngữ cảnh bảo mật, mà Javis rất hay chạy
+   * Không dùng crypto.subtle: nó chỉ có trong ngữ cảnh bảo mật, mà UNI MATE rất hay chạy
    * trên http:// theo IP của VPS - dùng nó là người gác cổng chết lặng đúng lúc cần nhất. */
   var BANG = null;
   function bangCrc() {
@@ -93,29 +93,29 @@
 
   // ── Dải báo ───────────────────────────────────────────────────────────────────
   function veDai(tieuDe, chiTiet, nhanNut, khiBam) {
-    if (document.getElementById("javis-fresh-bar")) return;
+    if (document.getElementById("unimate-fresh-bar")) return;
     var css = document.createElement("style");
     css.textContent =
-      "#javis-fresh-bar{position:fixed;left:50%;transform:translateX(-50%);top:14px;z-index:99999;" +
+      "#unimate-fresh-bar{position:fixed;left:50%;transform:translateX(-50%);top:14px;z-index:99999;" +
       "display:flex;align-items:center;gap:12px;width:min(92vw,720px);box-sizing:border-box;padding:12px 16px;" +
       "border-radius:12px;border:1px solid var(--yellow,#e0a800);background:var(--bg2,#1b1f2a);" +
       "color:var(--text,#e8eaf0);font-size:16px;line-height:1.5;box-shadow:0 10px 30px rgba(0,0,0,.4)}" +
-      "#javis-fresh-bar .jf-txt{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}" +
-      "#javis-fresh-bar .jf-sub{display:block;margin-top:3px;font-size:14px;opacity:.8}" +
+      "#unimate-fresh-bar .jf-txt{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}" +
+      "#unimate-fresh-bar .jf-sub{display:block;margin-top:3px;font-size:14px;opacity:.8}" +
       // Owner screenshot 25/10/2026: "Tải lại" was near-black on the light theme's dark amber (3.1:1) and
       // cramped, "Để sau" was grey text with a border at 1.3:1, barely there. Ink now flips with the theme
       // (--on-accent: white on paper, near-black on dark), and both buttons share one height and padding.
-      "#javis-fresh-bar button{flex:none;cursor:pointer;border-radius:8px;font-size:16px;line-height:1.25;" +
+      "#unimate-fresh-bar button{flex:none;cursor:pointer;border-radius:8px;font-size:16px;line-height:1.25;" +
       "padding:8px 16px;min-height:40px;font-family:inherit;font-weight:600;" +
       "border:1px solid var(--btn-line,rgba(140,140,160,.5))}" +
-      "#javis-fresh-bar .jf-ok{background:var(--yellow,#e0a800);border-color:var(--yellow,#e0a800);" +
+      "#unimate-fresh-bar .jf-ok{background:var(--yellow,#e0a800);border-color:var(--yellow,#e0a800);" +
       "color:var(--on-accent,#1a1a1a);font-weight:700}" +
-      "#javis-fresh-bar .jf-x{background:var(--btn-fill,transparent);color:var(--text,#e8eaf0)}" +
-      "#javis-fresh-bar .jf-x:hover{background:var(--btn-fill-hover,transparent)}" +
-      "@media(max-width:600px){#javis-fresh-bar{flex-wrap:wrap;gap:10px;top:max(12px,env(safe-area-inset-top))}" +
-      "#javis-fresh-bar .jf-txt{flex:1 0 100%}#javis-fresh-bar button{white-space:nowrap}}";
+      "#unimate-fresh-bar .jf-x{background:var(--btn-fill,transparent);color:var(--text,#e8eaf0)}" +
+      "#unimate-fresh-bar .jf-x:hover{background:var(--btn-fill-hover,transparent)}" +
+      "@media(max-width:600px){#unimate-fresh-bar{flex-wrap:wrap;gap:10px;top:max(12px,env(safe-area-inset-top))}" +
+      "#unimate-fresh-bar .jf-txt{flex:1 0 100%}#unimate-fresh-bar button{white-space:nowrap}}";
     var bar = document.createElement("div");
-    bar.id = "javis-fresh-bar";
+    bar.id = "unimate-fresh-bar";
     bar.setAttribute("role", "status");
     var txt = document.createElement("div");
     txt.className = "jf-txt";
@@ -184,7 +184,7 @@
     }
     thu();
   }
-  window.JavisReloadWhenReady = choSanRoiTaiLai;
+  window.UniMateReloadWhenReady = choSanRoiTaiLai;
 
   // ── Chạy ──────────────────────────────────────────────────────────────────────
   var m = moc();
@@ -212,7 +212,7 @@
         try { sessionStorage.removeItem(KHOA_DA_TAI); } catch (e) { /* noop */ }
         return;
       }
-      console.warn("[javis fresh] running a stale copy of:", ds.join(", "));
+      console.warn("[unimate fresh] running a stale copy of:", ds.join(", "));
       baoChayBanCu(ds, daThu);
     });
   }
@@ -234,7 +234,7 @@
         daBao = true;
         // Đang chờ ở nút Cập nhật ngay: bản mới đã lên đúng như người dùng vừa bấm, tải lại luôn
         // chứ đừng hỏi thêm một lần nữa.
-        if (window.__javisUpdating) { choSanRoiTaiLai(); return; }
+        if (window.__unimateUpdating) { choSanRoiTaiLai(); return; }
         baoCoBanMoi(d.version);
       })
       .catch(function () { /* mất mạng một nhịp không phải chuyện để làm phiền người dùng */ });
@@ -245,7 +245,7 @@
   /* 0.418.0: hỏi phiên bản NGAY sau khi mở, thử lại tới khi máy chủ trả lời. Khi máy chủ không với tới được, sw.js đưa ra
    * khung trang đã giữ lần trước; khung đó có thể là bản trước một lần cập nhật. Lệch số phiên bản thì: trang vừa mở
    * (dưới 2 phút), ô chat còn trống và chưa tự tải lại trong 30 giây qua: tải lại luôn; còn lại hiện thanh mời tải lại. */
-  var batDau = Date.now(), KHOA_TU_TAI = "javis-fresh-autoreload";
+  var batDau = Date.now(), KHOA_TU_TAI = "unimate-fresh-autoreload";
   function kiemSom(lan) {
     fetch("/app-version", { credentials: "same-origin", cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })

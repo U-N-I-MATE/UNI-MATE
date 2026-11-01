@@ -1,7 +1,7 @@
-"""Voice notes: Javis records a short spoken message and attaches it to its answer (0.202.0).
+"""Voice notes: UNI MATE records a short spoken message and attaches it to its answer (0.202.0).
 
 Idea borrowed from OpenMausBot's voice notes. Some answers are better heard than read: a morning
-summary to play while driving, a reminder read out to someone at home. The tool `javis_voice_note`
+summary to play while driving, a reminder read out to someone at home. The tool `unimate_voice_note`
 (bundled plugin `voice-note`) turns a short text into an mp3 in the brain's `attachments/voice/`,
 and the answer embeds it; the dashboard draws an audio player (chat-render.js), Telegram and the
 other channels send the file. The same text stays as the visible caption, so the chat is still
@@ -10,7 +10,7 @@ readable and searchable without playing anything.
 Edge TTS (free, the app's default voice engine), picked by the language of the text unless a
 voice is named. At most MAX_CHARS characters, the same limit OpenMausBot uses.
 
-0.255.0: when ElevenLabs is the chosen voice (Settings > Voice) the note is spoken by it, so Javis
+0.255.0: when ElevenLabs is the chosen voice (Settings > Voice) the note is spoken by it, so UNI MATE
 sounds the same in a note as in the chat. If ElevenLabs fails (quota, key revoked) the note falls
 back to Edge rather than not being made.
 """

@@ -1,13 +1,13 @@
-"""Nhờ Javis qua chat thêm một MCP thì nó phải HIỆN ở trang Kết nối.
+"""Nhờ Uni qua chat thêm một MCP thì nó phải HIỆN ở trang Kết nối.
 
     python tests/run.py them_mcp_qua_chat
 
-Bug gốc (người dùng báo 2026-08-06): "yêu cầu Javis thêm mcp nào đó thì nó đang không hiện ra
-phần kết nối". Nguyên nhân: Javis không có tool nào ghi được vào kho kết nối, nên đường duy nhất
+Bug gốc (người dùng báo 2026-08-06): "yêu cầu UNI MATE thêm mcp nào đó thì nó đang không hiện ra
+phần kết nối". Nguyên nhân: UNI MATE không có tool nào ghi được vào kho kết nối, nên đường duy nhất
 là `claude mcp add` - thứ rơi vào config riêng của Claude Code, không nằm ở khu "Đã kết nối" của
 trang Kết nối mà lọt xuống khu gập "Kết nối sẵn của Claude Code và Codex" (mặc định ĐÓNG).
 
-Test này canh plugin bundled `javis-connect`, và canh mạnh nhất đúng cái người dùng cần: kể cả khi
+Test này canh plugin bundled `unimate-connect`, và canh mạnh nhất đúng cái người dùng cần: kể cả khi
 thử kết nối THẤT BẠI, mục đó vẫn phải nằm lại kho để họ nhìn thấy và biết vì sao chưa chạy - khác
 hẳn `/connect/add` (xoá sạch khi validate lỗi, hợp lý cho form nhưng sai cho chat).
 """
@@ -21,7 +21,7 @@ from pathlib import Path
 
 import mcp_store
 
-PLUGIN_DIR = ROOT / "system" / "plugins" / "javis-connect"
+PLUGIN_DIR = ROOT / "system" / "plugins" / "unimate-connect"
 
 _fails = []
 
@@ -33,7 +33,7 @@ def check(name, cond):
 
 
 def nap_plugin():
-    spec = importlib.util.spec_from_file_location("javis_connect_plugin", PLUGIN_DIR / "plugin.py")
+    spec = importlib.util.spec_from_file_location("unimate_connect_plugin", PLUGIN_DIR / "plugin.py")
     mod = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = mod
     spec.loader.exec_module(mod)
@@ -44,7 +44,7 @@ plugin = nap_plugin()
 
 # Kho riêng cho test: KHÔNG đụng mcp_servers.json thật. Phải chặn cả _LEGACY_STORE, vì _load()
 # rơi về vị trí cũ (server/mcp_servers.json) khi STORE chưa tồn tại - trên máy dev file đó có thật.
-_tmp = Path(tempfile.mkdtemp(prefix="javis-mcp-test-"))
+_tmp = Path(tempfile.mkdtemp(prefix="unimate-mcp-test-"))
 mcp_store.STORE = _tmp / "mcp_servers.json"
 mcp_store._LEGACY_STORE = _tmp / "khong-co.json"
 mcp_store.CONFIG = _tmp / ".mcp_config.json"
@@ -65,7 +65,7 @@ def tim_theo_ten(ten):
 # ---- manifest ----
 raw_yaml = (PLUGIN_DIR / "plugin.yaml").read_text(encoding="utf-8")
 raw_py = (PLUGIN_DIR / "plugin.py").read_text(encoding="utf-8")
-check("manifest khai đúng tool javis_add_mcp", "javis_add_mcp" in raw_yaml)
+check("manifest khai đúng tool unimate_add_mcp", "unimate_add_mcp" in raw_yaml)
 check("manifest min_mode: safe (chế độ chỉ đọc không đấu được nguồn)", "min_mode: safe" in raw_yaml)
 check("plugin không có em dash (U+2014)", "—" not in raw_yaml and "—" not in raw_py)
 
@@ -122,7 +122,7 @@ r = chay(op="add", name="Context7", url="https://mcp.context7.com/mcp",
 c = tim_theo_ten("Context7")
 check("MCP qua mạng đấu được từ chat", c is not None)
 check("thử kết nối OK thì để BẬT", bool(c) and c.get("enabled") is True)
-check("mức quyền mặc định là chỉ đọc (Javis không tự nâng quyền)", bool(c) and c.get("perm") == "readonly")
+check("mức quyền mặc định là chỉ đọc (UNI MATE không tự nâng quyền)", bool(c) and c.get("perm") == "readonly")
 check("header xác thực có được lưu", bool(c) and "Authorization" in (c.get("header_keys") or []))
 check("báo lại số tool tìm thấy", "7 tool" in r)
 
@@ -153,7 +153,7 @@ check("perm truyền rõ thì tôn trọng", bool(c) and c.get("perm") == "full"
 
 # ---- luật trong system prompt: engine phải biết dùng tool này thay cho claude mcp add ----
 rule = (SERVER / "channel_context.py").read_text(encoding="utf-8")
-check("system prompt dặn dùng javis_add_mcp", "javis_add_mcp" in rule)
+check("system prompt dặn dùng unimate_add_mcp", "unimate_add_mcp" in rule)
 check("system prompt cấm claude mcp add", "claude mcp add" in rule)
 
 # ---- kho ghi ra đúng file JSON v2 ----

@@ -10,7 +10,7 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..", "..");
 const vi = JSON.parse(fs.readFileSync(path.join(ROOT, "dashboard", "i18n", "vi.json"), "utf8"));
 // Khoá mới của bản này: lấy từ file i18n thật; khi chưa gộp thì đọc bản phủ ở scratchpad (biến môi trường).
-const overlayPath = process.env.JAVIS_JOBS_I18N || "";
+const overlayPath = process.env.UNIMATE_JOBS_I18N || "";
 const overlay = overlayPath && fs.existsSync(overlayPath) ? JSON.parse(fs.readFileSync(overlayPath, "utf8")) : { vi: {}, en: {} };
 const S = Object.assign({}, vi, overlay.vi);
 const src = fs.readFileSync(path.join(ROOT, "dashboard", "agent-jobs.js"), "utf8");
@@ -125,7 +125,7 @@ check("huy hiệu: số Đang làm và Cần bạn, có nhãn đọc được", 
   && /ws-jb-run">[^<]*2</.test(h) && /ws-jb-need">[^<]*1</.test(h) && h.includes(T("ajobs.badge_aria", { running: 2, needs: 1 })), h);
 check("thẻ trợ lý vẽ huy hiệu ở ô riêng, tách khỏi công tắc Auto",
   /badgeHtml\(S\.jc\[x\.slug\]\)/.test(ws) && ws.indexOf("badgeHtml(S.jc[x.slug])") < ws.indexOf("rowToggleHtml(S.rs[x.slug]"));
-check("huy hiệu tải lại theo cùng sự kiện với tab Công việc", /\["javis:team-event", "javis:sessions-changed", "javis:agent-jobs-changed"\]/.test(ws)
+check("huy hiệu tải lại theo cùng sự kiện với tab Công việc", /\["unimate:team-event", "unimate:sessions-changed", "unimate:agent-jobs-changed"\]/.test(ws)
   && /function henDemViec\(\)[\s\S]{0,800}800\)/.test(ws));
 check("rời trang Cộng sự gỡ tab Công việc", /function roi\(\) \{[\s\S]{0,400}_congViec\.destroy\(\); _congViec = null;/.test(ws));
 
@@ -186,7 +186,7 @@ function field(cls, value) { return { classList: { contains: (c) => c === cls },
   check("gắn: tải trang đầu với nguồn và ngăn ở server", calls.length === 1 && /source=all/.test(calls[0].url) && /limit=30/.test(calls[0].url),
     calls.map((c) => c.url).join(" | "));
   check("đồng bộ trực tiếp: nghe nhóm, mục tiêu, việc nền, việc vừa đổi ở tab",
-    ["javis:team-event", "javis:resonance-agents-changed", "javis:sessions-changed", "javis:agent-jobs-changed"]
+    ["unimate:team-event", "unimate:resonance-agents-changed", "unimate:sessions-changed", "unimate:agent-jobs-changed"]
       .every((e) => (winL[e] || []).length === 1), Object.keys(winL).map((k) => k + ":" + winL[k].length).join(","));
   check("nhịp hỏi thưa cho Kanban (không giữ tiến trình node)", intervals.length === 1 && intervals[0].ms >= 10000 && intervals[0].unrefd);
 
@@ -217,9 +217,9 @@ function field(cls, value) { return { classList: { contains: (c) => c === cls },
 
   // Đồng bộ trực tiếp: nhiều sự kiện gộp một lần tải, sau 800ms, giữ số việc đang xem.
   calls = [];
-  window.dispatchEvent({ type: "javis:team-event" });
-  window.dispatchEvent({ type: "javis:sessions-changed" });
-  window.dispatchEvent({ type: "javis:resonance-agents-changed" });
+  window.dispatchEvent({ type: "unimate:team-event" });
+  window.dispatchEvent({ type: "unimate:sessions-changed" });
+  window.dispatchEvent({ type: "unimate:resonance-agents-changed" });
   check("sự kiện chưa tới hạn gộp nhịp: chưa tải", calls.length === 0 && timers.filter((t) => !t.cleared).length === 1
     && timers.filter((t) => !t.cleared)[0].ms === AJ.RELOAD_MS && AJ.RELOAD_MS === 800);
   runTimers(); await flush(); await flush();
@@ -331,13 +331,13 @@ function field(cls, value) { return { classList: { contains: (c) => c === cls },
   check("mở mục được kiểm đi đúng nhóm và việc", JSON.stringify(opened[opened.length - 1]) === JSON.stringify(["team", "tm9", "t9"]));
 
   // Rời tab: gỡ trình nghe, nhịp hỏi, hẹn tải lại; sự kiện sau đó không tải gì.
-  window.dispatchEvent({ type: "javis:team-event" });
+  window.dispatchEvent({ type: "unimate:team-event" });
   m.destroy();
-  check("destroy: gỡ hết trình nghe sự kiện của window", ["javis:team-event", "javis:resonance-agents-changed", "javis:sessions-changed",
-    "javis:agent-jobs-changed"].every((e) => (winL[e] || []).length === 0));
+  check("destroy: gỡ hết trình nghe sự kiện của window", ["unimate:team-event", "unimate:resonance-agents-changed", "unimate:sessions-changed",
+    "unimate:agent-jobs-changed"].every((e) => (winL[e] || []).length === 0));
   check("destroy: dừng nhịp hỏi và huỷ hẹn tải lại", intervals[0].cleared && timers.every((t) => t.cleared));
   calls = [];
-  window.dispatchEvent({ type: "javis:team-event" });
+  window.dispatchEvent({ type: "unimate:team-event" });
   runTimers(); await flush();
   check("sau destroy: sự kiện không gây tải", calls.length === 0);
 
@@ -352,7 +352,7 @@ function field(cls, value) { return { classList: { contains: (c) => c === cls },
     check("mọi khoá ajobs.* có bản tiếng Anh", missEn.length === 0, missEn.join(", "));
     check("bản phủ i18n không có em dash hay en dash", !/[\u2013\u2014]/.test(JSON.stringify(overlay)));
   }
-  const cssPath = process.env.JAVIS_JOBS_CSS || path.join(ROOT, "dashboard", "console.css");
+  const cssPath = process.env.UNIMATE_JOBS_CSS || path.join(ROOT, "dashboard", "console.css");
   const css = fs.readFileSync(cssPath, "utf8");
   // Owner, 2026-10-15: the Work tab text was too big for the narrow column. Panel text is 12 to 14px now;
   // touch screens keep 44px targets through a pointer: coarse rule.

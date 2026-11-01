@@ -7,7 +7,7 @@ Lỗi thật chủ repo báo 2026-08-06 (kèm ảnh chụp khung chat):
      không? Không giống như claude nếu đang chạy ngầm thì vẫn có báo ở đầu hội thoại. Đây là
      không thấy gì luôn và không chạy luôn."
 
-Câu Javis nói trong ảnh: "Em đang dò code để xem trong nhóm bot có lọc tin nhắn (theo mention,
+Câu UNI MATE nói trong ảnh: "Em đang dò code để xem trong nhóm bot có lọc tin nhắn (theo mention,
 reply, hay AI tự quyết định) trước khi trả lời hay không, có kết quả em báo ngay." Rồi hết.
 
 Ba gốc rễ, test này canh cả ba:
@@ -20,7 +20,7 @@ Ba gốc rễ, test này canh cả ba:
      endpoint `/background` + dải trạng thái trong khung chat.
 
   3. **Không chạy luôn.** Điều phối Kanban mặc định `off`, nên việc giao từ chat nằm im vô
-     thời hạn. Plugin `javis-task` có sẵn một dòng cảnh báo cho chuyện này, nhưng cổng viết
+     thời hạn. Plugin `unimate-task` có sẵn một dòng cảnh báo cho chuyện này, nhưng cổng viết
      sai (`not view.get("orchestration")` - mà giá trị là chuỗi "off", luôn truthy) nên nó
      CHƯA TỪNG in ra lần nào, và `op=add` thì còn hứa thẳng "Việc chạy nền. Kết quả tự về".
 
@@ -35,7 +35,7 @@ import tempfile
 
 from _paths import ROOT, SERVER, DASHBOARD, SYSTEM  # noqa: E402,F401
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-bgstatus-test-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-bgstatus-test-"))
 
 import background_status as bg  # noqa: E402
 import channel_context  # noqa: E402
@@ -191,7 +191,7 @@ BLOCK_WEB = channel_context.build_channel_block("dashboard", {"session_id": "s1"
 BLOCK_TG = channel_context.build_channel_block("telegram", {"chat_id": "42"})
 BLOCK_CLI = channel_context.build_channel_block("cli", {})
 for ten, blk in (("web", BLOCK_WEB), ("telegram", BLOCK_TG), ("cli", BLOCK_CLI)):
-    # Câu mẫu trong prompt viết theo giọng xưng hô HIỆN TẠI của Javis ("mình"), còn bộ dò ở
+    # Câu mẫu trong prompt viết theo giọng xưng hô HIỆN TẠI của UNI MATE ("mình"), còn bộ dò ở
     # mục 1 vẫn phải bắt được mọi biến thể (em/anh/chị/tôi) vì máy đang chạy có thể còn giọng cũ.
     check(f"{ten}: prompt cấm hứa 'có kết quả mình báo ngay'",
           "có kết quả mình báo ngay" in blk and "KHÔNG HỨA THỨ MÌNH KHÔNG LÀM ĐƯỢC" in blk)
@@ -203,8 +203,8 @@ check("web: prompt nói rõ server tự kiểm lời hứa",
       "server tự dán một dòng đính chính" in BLOCK_WEB)
 
 
-# ─────────── 5. Plugin javis-task: cổng điều phối phải ĐÚNG ───────────
-PLUGIN = (SYSTEM / "plugins" / "javis-task" / "plugin.py").read_text(encoding="utf-8")
+# ─────────── 5. Plugin unimate-task: cổng điều phối phải ĐÚNG ───────────
+PLUGIN = (SYSTEM / "plugins" / "unimate-task" / "plugin.py").read_text(encoding="utf-8")
 check("bỏ cổng sai `not view.get(\"orchestration\")` (chuỗi 'off' luôn truthy)",
       'not view.get("orchestration")' not in PLUGIN)
 check("cổng mới so đúng với 'auto'", '== "auto"' in PLUGIN)
@@ -251,9 +251,9 @@ check("dải nói thẳng khi việc KHÔNG tự chạy",
 check("dải không vẽ lại DOM khi trạng thái không đổi (đỡ nháy)",
       "lastKey" in STRIP and "if (key === lastKey) { capNhatTuoi(); return; }" in STRIP)
 check("app.js làm tươi dải khi lượt xong và khi việc nền báo về",
-      APPJS.count("window.JavisBackground.refresh()") >= 2)
+      APPJS.count("window.UniMateBackground.refresh()") >= 2)
 check("app.js dọn dải khi đổi/mở hội thoại khác",
-      APPJS.count("window.JavisBackground.reset()") >= 2)
+      APPJS.count("window.UniMateBackground.reset()") >= 2)
 check("CSS có hai tông run/stall", ".bg-run" in CSS and ".bg-stall" in CSS)
 
 

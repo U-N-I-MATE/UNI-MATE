@@ -2,7 +2,7 @@
 
     python tests/run.py vault_soi_md_mot_lan
 
-Chủ repo báo 01/09/2026: *"tìm kiếm trên cây thư mục ở phần javis load rất lâu và chậm"*.
+Chủ repo báo 01/09/2026: *"tìm kiếm trên cây thư mục ở phần unimate load rất lâu và chậm"*.
 
 Thủ phạm không nằm ở ô tìm kiếm. Mỗi lần mở trang Tệp tin, dashboard gọi `/files/md-hong`, mà
 vòng đó ĐỌC TOÀN BỘ file .md của brain rồi chạy regex trên từng file. Brain vài nghìn note là
@@ -21,7 +21,7 @@ import tempfile
 
 from _paths import ROOT, SERVER  # noqa: E402,F401
 
-os.environ.setdefault("JAVIS_STATE_DIR", tempfile.mkdtemp(prefix="javis-mdhong-"))
+os.environ.setdefault("UNIMATE_STATE_DIR", tempfile.mkdtemp(prefix="unimate-mdhong-"))
 
 import asyncio  # noqa: E402
 import pathlib  # noqa: E402
@@ -39,7 +39,7 @@ def check(ten, dieu_kien, them=""):
         _fails.append(ten)
 
 
-brain = tempfile.mkdtemp(prefix="javis-brain-")
+brain = tempfile.mkdtemp(prefix="unimate-brain-")
 pathlib.Path(brain, "ghi-chu.md").write_text("# lành\n", encoding="utf-8")
 
 _dem = {"n": 0}
@@ -72,7 +72,7 @@ try:
     check("force=1 thì soi lại", _dem["n"] == 2, _dem["n"])
 
     # --- Brain CÒN file hỏng: phải soi lại mỗi lần, vì người dùng chưa chữa ---
-    brain2 = tempfile.mkdtemp(prefix="javis-brain-hong-")
+    brain2 = tempfile.mkdtemp(prefix="unimate-brain-hong-")
     pathlib.Path(brain2, "hong.md").write_text("* * *\n", encoding="utf-8")
     _ket_qua["items"] = [{"path": "hong.md", "name": "hong.md", "van_de": ["fm"], "mo_ta": "x"}]
     truoc = _dem["n"]

@@ -14,8 +14,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 _BOOT = Path(tempfile.mkdtemp(prefix="dc-"))
-for key, child in {"JAVIS_STATE_DIR": "state", "BRAINS_DIR": "brains", "BRAIN_PATH": "brain",
-                  "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources", "JAVIS_SESSIONS_DB": "sessions.db"}.items():
+for key, child in {"UNIMATE_STATE_DIR": "state", "BRAINS_DIR": "brains", "BRAIN_PATH": "brain",
+                  "OBSIDIAN_VAULT_PATH": "vault", "SOURCES_PATH": "sources", "UNIMATE_SESSIONS_DB": "sessions.db"}.items():
     os.environ[key] = str(_BOOT / child)
 
 import improvement_trial_dashboard as D

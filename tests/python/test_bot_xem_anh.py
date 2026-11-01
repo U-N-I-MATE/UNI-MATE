@@ -2,7 +2,7 @@
 
     python tests/run.py bot_xem_anh      (NO network: httpx MockTransport, fake ChatGPT)
 
-The owner (2026-10-04) tagged the bot "Javis Vũ" on a photo in a group ("@Javis Vũ đây em") and it answered that it could only read the
+The owner (2026-10-04) tagged the bot "Uni Vũ" on a photo in a group ("@Uni Vũ đây em") and it answered that it could only read the
 caption. Two breaks, both pinned here:
   1. THE LINK WAS DROPPED. The MCP normalizes a photo as `attachment: {url: content.href, ...}` (zalo-agent-cli 1.6.2), and
      `chuan_hoa_tin` kept only a few metadata keys, so the link never reached the inbox or the bot.
@@ -20,7 +20,7 @@ import time
 import types
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-bxa-")
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-bxa-")
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -48,11 +48,11 @@ URL = "https://f21-zpc.zdn.vn/jpg/7316/abc.jpg"
 # ============================================================
 # 1. The link survives normalization (real MCP shape)
 # ============================================================
-conn = {"id": "zalo-1", "label": "Javis Vũ"}
-ten = {"G1": {"name": "Zoom | Javis OS", "type": "group"}}
+conn = {"id": "zalo-1", "label": "Uni Vũ"}
+ten = {"G1": {"name": "Zoom | UNI MATE", "type": "group"}}
 anh = {"id": "m1", "threadId": "G1", "threadType": "group", "senderId": "777", "senderName": "Minh Quý", "type": "chat.photo",
-       "text": "@Javis Vũ đây em", "timestamp": int(time.time() * 1000),
-       "attachment": {"type": "chat.photo", "url": URL, "description": "@Javis Vũ đây em"}}
+       "text": "@Uni Vũ đây em", "timestamp": int(time.time() * 1000),
+       "attachment": {"type": "chat.photo", "url": URL, "description": "@Uni Vũ đây em"}}
 ev = zc.chuan_hoa_tin(conn, anh, ten)
 check("photo with caption: the link is kept in metadata", ev["message_type"] == "image" and ev["metadata"].get("image_url") == URL, ev)
 tron = zc.chuan_hoa_tin(conn, {k: v for k, v in anh.items() if k != "attachment"} | {"id": "m2", "text": URL}, ten)
@@ -77,7 +77,7 @@ t = zp.Transport("zalo-1", [], answer_fn)
 zc.chu_vua_nhan_tay = lambda conn_id, thread: False
 priv = zc.chuan_hoa_tin(conn, anh | {"threadId": "U9", "threadType": "dm"}, {"U9": {"name": "Quý", "type": "user"}})
 asyncio.run(t.xu_ly(priv))
-check("the bot is called with the caption, co_anh and the link", GOT and GOT[0][0] == "@Javis Vũ đây em"
+check("the bot is called with the caption, co_anh and the link", GOT and GOT[0][0] == "@Uni Vũ đây em"
       and GOT[0][1].get("co_anh") is True and GOT[0][1].get("image_url") == URL, GOT)
 
 conv = {"id": 1, "channel_account_id": "zalo_personal:zalo-1", "external_chat_id": "G1", "chat_type": "group", "title": "Zoom",
@@ -90,7 +90,7 @@ check("owner's 'reply for me' from the inbox carries the link too", mm.get("co_a
 # 3. The photo goes INTO the chat (0.81.0): saved in the bot's brain, returned as a path for the bot's own model.
 #    No ChatGPT describing it any more; every failure falls back to the honest label.
 # ============================================================
-brain = Path(tempfile.mkdtemp(prefix="javis-bxa-brain-"))
+brain = Path(tempfile.mkdtemp(prefix="unimate-bxa-brain-"))
 cr._deps["brain_root"] = lambda b: str(brain)
 CFG = {"id": "bot1", "brain": "Bot Brain"}
 HTTP = []
@@ -124,7 +124,7 @@ META = {"co_anh": True, "image_url": URL, "chat_id": "G1", "message_id": "m1"}
 LABEL = cr._KEM_ANH
 
 
-def see(meta, text="[Minh Quý] @Javis Vũ đây em"):
+def see(meta, text="[Minh Quý] @Uni Vũ đây em"):
     HTTP.clear()
     return asyncio.run(cr.anh_cho_bot(text, meta, CFG))
 
@@ -133,7 +133,7 @@ out, paths = see(META)
 saved = list((brain / "attachments" / "zalo" / "G1").glob("m1.*"))
 check("the photo is saved into the bot's brain under attachments/zalo/<chat>", len(saved) == 1 and saved[0].read_bytes() == JPEG, saved)
 check("the photo path is returned for the bot's own model, the caption kept as the text",
-      paths == [str(saved[0].resolve())] and out == "[Minh Quý] @Javis Vũ đây em", (out, paths))
+      paths == [str(saved[0].resolve())] and out == "[Minh Quý] @Uni Vũ đây em", (out, paths))
 check("no second model describes the photo (ChatGPT is not called)", DESCRIBED == [])
 see(META)
 check("the same message is not downloaded twice", HTTP == [], HTTP)

@@ -40,9 +40,9 @@ function makeEnv() {
   const env = { brain: "D:/brains/A", sid: "", calls: [], replies: {}, notes: [], events: [], registered: null };
   const win = {
     t: (k, v) => k + (v ? JSON.stringify(v) : ""),
-    JavisSessions: { brain: () => env.brain, current: () => env.sid },
-    JavisComposerMenu: { register(it) { env.registered = it; }, openItem() {}, icon: { folder: "<svg></svg>" } },
-    JavisAttach: { note(s) { env.notes.push(s); } },
+    UniMateSessions: { brain: () => env.brain, current: () => env.sid },
+    UniMateComposerMenu: { register(it) { env.registered = it; }, openItem() {}, icon: { folder: "<svg></svg>" } },
+    UniMateAttach: { note(s) { env.notes.push(s); } },
     matchMedia: () => ({ matches: false }),
     addEventListener() {},
     dispatchEvent(e) { env.events.push(e); },
@@ -62,7 +62,7 @@ function makeEnv() {
   };
   vm.createContext(ctx);
   vm.runInContext(SRC, ctx);
-  env.api = win.JavisPinnedFolder;
+  env.api = win.UniMatePinnedFolder;
   env.chip = () => elems.pinChip || null;
   return env;
 }

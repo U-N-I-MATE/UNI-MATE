@@ -2,7 +2,7 @@
 
     python tests/run.py moi_lai_mach
 
-Lỗi thật (người dùng báo 18/08/2026): giữa hội thoại, Javis đột nhiên hỏi lại "bạn muốn
+Lỗi thật (người dùng báo 18/08/2026): giữa hội thoại, UNI MATE đột nhiên hỏi lại "bạn muốn
 so sánh cái gì?" như thể chưa từng nói chuyện. Nguyên nhân: nhánh anthropic-cli chỉ
 bootstrap_prompt khi `_cli_xoay_mach` (xoay mạch chủ động vì vượt ngưỡng token), trong khi
 mạch còn trống ở BA ca khác:

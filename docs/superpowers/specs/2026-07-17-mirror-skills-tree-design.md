@@ -135,7 +135,7 @@ Dựng `server/test_system_sync.py` từ số 0 - hôm nay KHÔNG một test nà
 `mirror_skills`, và file mà spec A+B giả định là có thì không tồn tại.
 
 Quy ước nhà (bắt buộc): KHÔNG pytest. Script chạy thẳng, `check(name, cond)` + `_fails` +
-`sys.exit(1)`. Mẫu: `server/test_loop_ambient.py:23-30` và `:117-120`. Env `JAVIS_STATE_DIR`
+`sys.exit(1)`. Mẫu: `server/test_loop_ambient.py:23-30` và `:117-120`. Env `UNIMATE_STATE_DIR`
 đặt TRƯỚC import. Tên file phải là `server/test_*.py` thì CI (`.github/workflows/ci.yml:29-39`)
 mới glob thấy. Lệnh chạy: `cd server && ../.venv/Scripts/python.exe test_system_sync.py`.
 

@@ -3,7 +3,7 @@
     python tools/resonance_restore_pre_a4.py --yes
     python tools/resonance_restore_pre_a4.py --state-dir /duong/dan/state --yes
 
-CHẠY KHI JAVIS ĐÃ TẮT. Script làm đúng hai bước, đều bằng SQLite backup API (lấy cả phần còn trong WAL, không chép thô
+CHẠY KHI UNI MATE ĐÃ TẮT. Script làm đúng hai bước, đều bằng SQLite backup API (lấy cả phần còn trong WAL, không chép thô
 file `.sqlite3`):
 1. Chép kho HIỆN TẠI sang `resonance.sqlite3.post-0.96.0-<thời điểm>` để giữ hồ sơ sau nâng (lượt đã chạy, bản đã
    đăng, phản hồi, quyền đã cấp và thu hồi).
@@ -54,16 +54,16 @@ def restore(state_dir: str) -> dict:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description="Khôi phục kho Resonance về snapshot trước 0.96.0 (chạy khi Javis đã tắt).")
-    ap.add_argument("--state-dir", default=os.environ.get("JAVIS_STATE_DIR", ""),
-                    help="thư mục state của Javis (mặc định JAVIS_STATE_DIR)")
-    ap.add_argument("--yes", action="store_true", help="xác nhận Javis đã tắt và chấp nhận mất thay đổi sau lúc nâng")
+    ap = argparse.ArgumentParser(description="Khôi phục kho Resonance về snapshot trước 0.96.0 (chạy khi UNI MATE đã tắt).")
+    ap.add_argument("--state-dir", default=os.environ.get("UNIMATE_STATE_DIR", ""),
+                    help="thư mục state của UNI MATE (mặc định UNIMATE_STATE_DIR)")
+    ap.add_argument("--yes", action="store_true", help="xác nhận UNI MATE đã tắt và chấp nhận mất thay đổi sau lúc nâng")
     a = ap.parse_args(argv)
     if not a.state_dir:
-        print("Thiếu --state-dir (hay biến JAVIS_STATE_DIR).", file=sys.stderr)
+        print("Thiếu --state-dir (hay biến UNIMATE_STATE_DIR).", file=sys.stderr)
         return 2
     if not a.yes:
-        print("Tắt Javis trước, rồi chạy lại với --yes. Mọi thay đổi của mục tiêu sau lúc nâng lên 0.96.0 sẽ không còn "
+        print("Tắt UNI MATE trước, rồi chạy lại với --yes. Mọi thay đổi của mục tiêu sau lúc nâng lên 0.96.0 sẽ không còn "
               "trong kho chạy; bản sao kho hiện tại được giữ cạnh file kho.", file=sys.stderr)
         return 2
     res = restore(a.state_dir)

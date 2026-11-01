@@ -1314,8 +1314,8 @@
  {
   "order": 131,
   "type": "APIRoute",
-  "path": "/javis-core/session",
-  "name": "javis_core_session",
+  "path": "/unimate-core/session",
+  "name": "unimate_core_session",
   "methods": [
    "POST"
   ],
@@ -3092,8 +3092,8 @@
  {
   "order": 310,
   "type": "APIRoute",
-  "path": "/javis/index",
-  "name": "javis_index",
+  "path": "/unimate/index",
+  "name": "unimate_index",
   "methods": [
    "GET"
   ],
@@ -3272,8 +3272,8 @@
  {
   "order": 328,
   "type": "APIRoute",
-  "path": "/javis-core/cite",
-  "name": "javis_core_cite",
+  "path": "/unimate-core/cite",
+  "name": "unimate_core_cite",
   "methods": [
    "POST"
   ],

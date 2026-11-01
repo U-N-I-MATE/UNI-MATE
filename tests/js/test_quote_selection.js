@@ -1,5 +1,5 @@
 // Quoting a message with part of it selected quotes just that part, in the main chat and the Team chat (one helper,
-// JavisActs.selectedIn in chat-acts.js).
+// UniMateActs.selectedIn in chat-acts.js).
 //
 //     node tests/js/test_quote_selection.js
 "use strict";
@@ -30,7 +30,7 @@ check("no ranges: nothing", A.selectedIn(msg, win({ isCollapsed: false, rangeCou
 check("no selection API: nothing, no throw", A.selectedIn(msg, {}) === "" && A.selectedIn(msg, win(null)) === "");
 check("no element: nothing", A.selectedIn(null, win(sel("x", inside))) === "");
 
-check("main chat quote uses the shared helper", /const chon = window\.JavisActs\.selectedIn\(msgEl\);/.test(app)
+check("main chat quote uses the shared helper", /const chon = window\.UniMateActs\.selectedIn\(msgEl\);/.test(app)
   && !/sel\.getRangeAt\(0\)\.commonAncestorContainer/.test(app));
 check("Team reply reads the selection in the message before redrawing",
   /S\.replyTo = replyTarget\(m, A && A\.selectedIn && el \? A\.selectedIn\(el\) : ""\);/.test(teamsJs)

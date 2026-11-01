@@ -93,7 +93,7 @@ class QualificationSessionTests(unittest.TestCase):
         self.assertEqual(list(Path(second['HOME']).iterdir()), [])
         self.assertTrue(Path(first['HOME']).is_relative_to(session.root))
         self.assertEqual(first['USERPROFILE'], first['HOME'])
-        self.assertEqual(first['ANTHROPIC_API_KEY'], 'javis-native-qualification-dummy')
+        self.assertEqual(first['ANTHROPIC_API_KEY'], 'unimate-native-qualification-dummy')
         self.assertEqual(first['ANTHROPIC_BASE_URL'], self.endpoint)
         self.assertNotIn('CLAUDE_CONFIG_DIR', first)
         self.assertNotIn('host-key-never-copy', str(first))

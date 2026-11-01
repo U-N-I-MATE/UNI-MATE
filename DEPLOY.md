@@ -1,38 +1,38 @@
-# Cài đặt Javis OS trên server / VPS
+# Cài đặt UNI MATE trên server / VPS
 
 ***Tiếng Việt** · [English](DEPLOY.en.md)*
 
-Javis OS là một AI agent cá nhân + Second Brain. "Bộ não" của nó là **Claude Code CLI**
+UNI MATE là một AI agent cá nhân + Second Brain. "Bộ não" của nó là **Claude Code CLI**
 (đăng nhập một lần, không cần API key). Có 3 cách chạy - chọn 1.
 
-> ⚠️ **An toàn:** Javis chạy Claude với toàn quyền trên máy. Khi chạy public (Docker/VPS/Hostinger),
-> Javis **tự bật bắt buộc đăng nhập** - mở app ra là màn **tạo tài khoản admin / đăng nhập**, không
-> ai điều khiển được khi chưa đặt mật khẩu. (Chạy nội bộ muốn tắt: `JAVIS_REQUIRE_LOGIN=0`.)
+> ⚠️ **An toàn:** UNI MATE chạy Claude với toàn quyền trên máy. Khi chạy public (Docker/VPS/Hostinger),
+> UNI MATE **tự bật bắt buộc đăng nhập** - mở app ra là màn **tạo tài khoản admin / đăng nhập**, không
+> ai điều khiển được khi chưa đặt mật khẩu. (Chạy nội bộ muốn tắt: `UNIMATE_REQUIRE_LOGIN=0`.)
 
 ---
 
 ## Cách 1 - Hostinger Docker Manager (1-click, nhanh nhất) ⚡
 
-> 🛒 **Chưa có VPS?** [Đăng ký VPS Hostinger tại đây](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). VPS có sẵn Docker Manager nên cài Javis đúng một cú bấm. Thuê xong quay lại làm các bước dưới.
+> 🛒 **Chưa có VPS?** [Đăng ký VPS Hostinger tại đây](https://www.hostinger.com?REFERRALCODE=UTRBLOGMIDSN). VPS có sẵn Docker Manager nên cài UNI MATE đúng một cú bấm. Thuê xong quay lại làm các bước dưới.
 
 VPS Hostinger → **Docker Manager → Compose → URL** → dán link rồi **Deploy**:
 ```
-https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.yml
+https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml
 ```
 Hostinger pull image + chạy. Mở app bằng `http://<ip-vps>:7777` (IP xem ở hPanel → VPS) → ra
 màn **tạo tài khoản admin**.
 
 > 🌐 **Muốn LINK RIÊNG có HTTPS (bỏ `:7777`, để mic/voice chạy) mà KHÔNG cần mua tên miền?** Dùng
-> `docker-compose.hostinger.yml` + đặt `DOMAIN_NAME=javis.<hostname-vps>.hstgr.cloud` - xem mục
+> `docker-compose.hostinger.yml` + đặt `DOMAIN_NAME=unimate.<hostname-vps>.hstgr.cloud` - xem mục
 > **"Link mặc định + HTTPS trên Hostinger"** ở phần HTTPS bên dưới. Compose gốc này chỉ vào được bằng IP:7777.
 
 **3 việc làm 1 lần:**
-1. **Để image GHCR ở chế độ Public:** GitHub → repo `javis-os` → **Packages** → `javis-os`
+1. **Để image GHCR ở chế độ Public:** GitHub → repo `UNI-MATE` → **Packages** → `UNI-MATE`
    → *Package settings* → Visibility = **Public** (để Hostinger pull không cần đăng nhập registry).
    Image do CI tự build mỗi lần push lên `main` (xem mục Cập nhật).
 2. **Tạo tài khoản admin an toàn** (Claude chạy full quyền nên không để ai cũng tạo được):
    - **Cách A (khuyến nghị):** trong compose Hostinger, điền hai trường có sẵn
-     `JAVIS_ADMIN_USER` + `JAVIS_ADMIN_PASSWORD` → admin tạo sẵn lúc khởi động,
+     `UNIMATE_ADMIN_USER` + `UNIMATE_ADMIN_PASSWORD` → admin tạo sẵn lúc khởi động,
      mở app ra **đăng nhập luôn**.
    - **Cách B:** bỏ trống → mở app **ngay sau khi deploy** và tự đặt tên đăng nhập + mật khẩu
      (tối thiểu 8 ký tự). Lưu ý: khi chưa có admin, **ai mở link trước sẽ tạo được admin**, nên đừng
@@ -49,10 +49,10 @@ màn **tạo tài khoản admin**.
 
 Cần Docker. Chưa có? `curl -fsSL https://get.docker.com | sh`
 ```bash
-mkdir javis && cd javis
-curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.yml
+mkdir unimate && cd unimate
+curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml
 
-docker compose run --rm javis claude auth login --claudeai   # ĐĂNG NHẬP CLAUDE 1 LẦN (link + code)
+docker compose run --rm unimate claude auth login --claudeai   # ĐĂNG NHẬP CLAUDE 1 LẦN (link + code)
 docker compose up -d                                          # pull image GHCR + chạy
 ```
 Mở `http://<ip-vps>:7777` (hoặc qua tunnel ở dưới) → ra màn tạo tài khoản admin.
@@ -61,13 +61,13 @@ Muốn build từ source thay vì pull: `curl -O .../docker-compose.build.yml` r
 
 Lệnh hằng ngày:
 ```bash
-docker compose logs -f     # xem Javis đang làm gì
+docker compose logs -f     # xem UNI MATE đang làm gì
 docker compose restart     # khởi động lại
 docker compose down        # tắt
 docker compose build --pull && docker compose up -d   # cập nhật
 ```
 
-Mọi ghi chú / vault / settings nằm trong Docker volume (`javis-data`, `claude-auth`) →
+Mọi ghi chú / vault / settings nằm trong Docker volume (`unimate-data`, `claude-auth`) →
 **không mất** khi restart hay update.
 
 ### 🔒 HTTPS tự động
@@ -93,47 +93,47 @@ link riêng chạy HTTPS mà không cần mua tên miền. **Lưu ý (đã kiể
 1. Xem **hostname VPS** ở hPanel → VPS (vd `srv1782015.hstgr.cloud`).
 2. Docker Manager → Compose → URL:
    ```
-   https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.hostinger.yml
+   https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.hostinger.yml
    ```
 3. Ô **Environment** của mẫu mới chỉ còn 3 trường có ý nghĩa:
-   - `DOMAIN_NAME`: đặt `javis.<hostname-vps>.hstgr.cloud`
-     (vd `javis.srv1782015.hstgr.cloud`), hoặc tên miền riêng đã trỏ DNS A về IP VPS.
-   - `JAVIS_ADMIN_USER`: tên đăng nhập, mặc định `admin`.
-   - `JAVIS_ADMIN_PASSWORD`: mật khẩu mạnh anh tự đặt; để trống thì phải tự tạo tài khoản trên
+   - `DOMAIN_NAME`: đặt `unimate.<hostname-vps>.hstgr.cloud`
+     (vd `unimate.srv1782015.hstgr.cloud`), hoặc tên miền riêng đã trỏ DNS A về IP VPS.
+   - `UNIMATE_ADMIN_USER`: tên đăng nhập, mặc định `admin`.
+   - `UNIMATE_ADMIN_PASSWORD`: mật khẩu mạnh anh tự đặt; để trống thì phải tự tạo tài khoản trên
      màn chạy lần đầu ngay sau khi deploy (ai mở link trước sẽ tạo được admin).
-   - `JAVIS_AUTO_UPDATE` (tuỳ chọn): đặt `true` thì Javis TỰ cập nhật mỗi ngày. Bỏ trống thì
+   - `UNIMATE_AUTO_UPDATE` (tuỳ chọn): đặt `true` thì UNI MATE TỰ cập nhật mỗi ngày. Bỏ trống thì
      vẫn cập nhật được bằng nút **⬆ Cập nhật ngay** trong app - từ 0.55.56 stack Hostinger đã
      kèm sẵn Watchtower nên nút đó có ngay từ lần cài đầu.
 
-   Các trường kỹ thuật cũ như `JAVIS_HOST`, `JAVIS_PORT`, đường dẫn state/brain và
+   Các trường kỹ thuật cũ như `UNIMATE_HOST`, `UNIMATE_PORT`, đường dẫn state/brain và
    `CLAUDE_CWD` đã được dọn khỏi form; Docker image vẫn tự dùng đúng giá trị mặc định.
 4. **Deploy** → đợi 1-3 phút Traefik cấp SSL → mở `https://<DOMAIN_NAME>`.
 
 > **Mở ra là có link VPS (từ 0.302.0):** trên VPS không có Traefik (Ubuntu 26 trắng), bỏ trống `DOMAIN_NAME` cũng
-> được. Gateway đọc tên VPS (`srvXXXX.hstgr.cloud`) và tự cấp HTTPS cho cả `javis.srvXXXX.hstgr.cloud` lẫn chính
+> được. Gateway đọc tên VPS (`srvXXXX.hstgr.cloud`) và tự cấp HTTPS cho cả `unimate.srvXXXX.hstgr.cloud` lẫn chính
 > `srvXXXX.hstgr.cloud` (từ 0.304.0; tên nào trỏ về máy thì tên đó có chứng chỉ). **Cài đặt → Tên miền** cho biết
 > link đã chạy chưa, hay còn đang chờ chứng chỉ. Bấm **Open** ra `http://<ip>:7777`, trang tự chuyển sang link
-> HTTPS đó ngay khi nó chạy và đúng là Javis này. Thêm `?stay=1` vào link IP nếu muốn ở lại. Ứng dụng cài từ Catalog
+> HTTPS đó ngay khi nó chạy và đúng là Uni này. Thêm `?stay=1` vào link IP nếu muốn ở lại. Ứng dụng cài từ Catalog
 > của Hostinger (vd `omniroute-xxxx.srv....hstgr.cloud`) được Hostinger báo sẵn tên VPS lúc cài; cài bằng
 > "Compose from URL" thì không, nên nút Open không tự ghi được link đó. Trên mẫu Ubuntu 24 có Traefik thì vẫn
-> phải đặt `DOMAIN_NAME` một lần: mở Javis bằng IP → **Cài đặt → Tên miền** có sẵn dòng để sao chép.
+> phải đặt `DOMAIN_NAME` một lần: mở UNI MATE bằng IP → **Cài đặt → Tên miền** có sẵn dòng để sao chép.
 >
 > **VPS Hostinger cài Ubuntu 26 (hoặc hệ điều hành trắng, không có Traefik) - từ 0.300.0:** vẫn dán ĐÚNG link trên,
-> không phải đổi gì. Compose có thêm container `javis-gateway` (Caddy): thấy cổng 80/443 trống là nó tự xin và tự gia
+> không phải đổi gì. Compose có thêm container `unimate-gateway` (Caddy): thấy cổng 80/443 trống là nó tự xin và tự gia
 > hạn SSL Let's Encrypt cho `DOMAIN_NAME`; máy có Traefik của Hostinger thì nó đứng yên nhường Traefik. Cần hai điều:
 > máy đã có Docker (Docker Manager cài sẵn, hoặc `curl -fsSL https://get.docker.com | sh`), và tường lửa mở cổng
-> 80 + 443. Trước khi Deploy, kiểm tra tên miền đã trỏ về VPS: `ping javis.<hostname-vps>.hstgr.cloud` phải ra
-> đúng IP VPS (tên miền riêng thì tạo bản ghi A về IP VPS). Xem log `javis-gateway` để biết nó đang làm gì.
+> 80 + 443. Trước khi Deploy, kiểm tra tên miền đã trỏ về VPS: `ping unimate.<hostname-vps>.hstgr.cloud` phải ra
+> đúng IP VPS (tên miền riêng thì tạo bản ghi A về IP VPS). Xem log `unimate-gateway` để biết nó đang làm gì.
 >
 > **Traefik không lo việc cập nhật.** Traefik (hay Caddy) chỉ lo HTTPS cho tên miền. Cập nhật là việc của container
-> `javis-watchtower` đi kèm, nên nút **⬆ Cập nhật ngay** trong app chạy như nhau trên Ubuntu 24 lẫn 26.
+> `unimate-watchtower` đi kèm, nên nút **⬆ Cập nhật ngay** trong app chạy như nhau trên Ubuntu 24 lẫn 26.
 
 > Thiếu `DOMAIN_NAME` thì vẫn deploy được (chạy tạm ở `:7777`, chưa có HTTPS), và từ 0.302.0 nút **Open** mở
 > `http://<ip-vps>:7777` chứ không ra `localhost` nữa (nút Open đi theo tên miền trong nhãn Traefik, bản cũ ghi
-> `localhost` ở đó). Không biết hostname VPS? Mở Javis bằng IP → **Cài đặt → Tên miền**: Javis tự dò và hiện sẵn
-> dòng `DOMAIN_NAME=javis.srvXXXX.hstgr.cloud` kèm nút sao chép. Không thấy ô Environment? Bấm **Manage → sửa .yaml**,
+> `localhost` ở đó). Không biết hostname VPS? Mở UNI MATE bằng IP → **Cài đặt → Tên miền**: UNI MATE tự dò và hiện sẵn
+> dòng `DOMAIN_NAME=unimate.srvXXXX.hstgr.cloud` kèm nút sao chép. Không thấy ô Environment? Bấm **Manage → sửa .yaml**,
 > đổi hai dòng nhãn thành `- traefik.enable=true` và
-> `- traefik.http.routers.javis.rule=Host(\`javis.srv1782015.hstgr.cloud\`)`.
+> `- traefik.http.routers.unimate.rule=Host(\`unimate.srv1782015.hstgr.cloud\`)`.
 > **Điểm mấu chốt:** nhãn Traefik gắn thẳng vào service, **KHÔNG khai báo
 > `networks:` / `external: traefik-proxy`** (chỗ này trước đây làm deploy báo "network not found").
 > **Đừng ghép thêm `docker-compose.https.yml` trên Hostinger**: nó publish cổng 80/443, đụng Traefik của họ. Compose
@@ -145,10 +145,10 @@ link riêng chạy HTTPS mà không cần mua tên miền. **Lưu ý (đã kiể
 Không cần đặt `DOMAIN` lúc chạy nữa - bật Caddy một lần rồi khai báo tên miền trong giao diện.
 1. Bật Caddy (On-Demand TLS): `docker compose -f docker-compose.yml -f docker-compose.https.yml up -d`
    *(cần Docker Compose v2.23.1+ - kiểm tra `docker compose version`)*
-2. Mở `http://<ip-vps>:7777` → **Cài đặt → Giọng nói, thương hiệu & truy cập → Tên miền & SSL** → nhập `javis.tencuaban.com` → **Lưu & kiểm tra**.
-3. Wizard hiện đúng bản ghi DNS cần tạo (A: `javis.tencuaban.com → <ip-vps>`) và có nút sao chép.
+2. Mở `http://<ip-vps>:7777` → **Cài đặt → Giọng nói, thương hiệu & truy cập → Tên miền & SSL** → nhập `unimate.tencuaban.com` → **Lưu & kiểm tra**.
+3. Wizard hiện đúng bản ghi DNS cần tạo (A: `unimate.tencuaban.com → <ip-vps>`) và có nút sao chép.
    Trỏ DNS xong, đợi lan.
-4. Mở `https://javis.tencuaban.com` → Caddy **tự xin + gia hạn** chứng chỉ ở lần mở đầu, cookie
+4. Mở `https://unimate.tencuaban.com` → Caddy **tự xin + gia hạn** chứng chỉ ở lần mở đầu, cookie
    Secure tự bật. Xong.
 
 > An toàn: Caddy hỏi backend (`/tls-check`) trước khi xin cert → **chỉ** cấp cho đúng tên miền bạn đã
@@ -159,20 +159,20 @@ Không cần đặt `DOMAIN` lúc chạy nữa - bật Caddy một lần rồi k
 
 ---
 
-## 🏢 Chạy NHIỀU bản Javis trên cùng một VPS (mỗi bản một link riêng)
+## 🏢 Chạy NHIỀU bản UNI MATE trên cùng một VPS (mỗi bản một link riêng)
 
-Một VPS chạy được bao nhiêu bản Javis cũng được - mỗi bản một tên miền phụ, một kho dữ liệu
+Một VPS chạy được bao nhiêu bản UNI MATE cũng được - mỗi bản một tên miền phụ, một kho dữ liệu
 riêng, không bản nào thấy brain hay tài khoản của bản nào.
 
 **Ba thứ phải KHÁC NHAU giữa các bản.** Trùng cái nào là hỏng đúng cái đó:
 
 | Biến | Vì sao phải khác | Trùng thì bị gì |
 |---|---|---|
-| `JAVIS_NAME` | Docker đặt tên container theo phạm vi cả máy | `name is already in use`, bản sau không lên |
-| `JAVIS_HOST_PORT` | Một cổng máy chủ chỉ một container giữ được | `port is already allocated` |
+| `UNIMATE_NAME` | Docker đặt tên container theo phạm vi cả máy | `name is already in use`, bản sau không lên |
+| `UNIMATE_HOST_PORT` | Một cổng máy chủ chỉ một container giữ được | `port is already allocated` |
 | `DOMAIN_NAME` | Mỗi link phải trỏ về đúng một bản | Hai bản giành nhau một link |
 
-Bỏ trống cả ba = `javis` + cổng `7777`, tức **y hệt cách cài cũ** - đang chạy một bản thì không
+Bỏ trống cả ba = `unimate` + cổng `7777`, tức **y hệt cách cài cũ** - đang chạy một bản thì không
 phải sửa gì.
 
 ### Trên Hostinger Docker Manager
@@ -180,8 +180,8 @@ phải sửa gì.
 Deploy `docker-compose.hostinger.yml` **thêm một lần nữa** thành stack mới, điền Environment:
 
 ```
-Stack 1:  DOMAIN_NAME=shop.srv1782015.hstgr.cloud     (JAVIS_NAME, JAVIS_HOST_PORT bỏ trống)
-Stack 2:  DOMAIN_NAME=canhan.srv1782015.hstgr.cloud   JAVIS_NAME=javis-canhan   JAVIS_HOST_PORT=7778
+Stack 1:  DOMAIN_NAME=shop.srv1782015.hstgr.cloud     (UNIMATE_NAME, UNIMATE_HOST_PORT bỏ trống)
+Stack 2:  DOMAIN_NAME=canhan.srv1782015.hstgr.cloud   UNIMATE_NAME=unimate-canhan   UNIMATE_HOST_PORT=7778
 ```
 
 Wildcard DNS `*.hstgr.cloud` có sẵn nên tên miền phụ nào cũng trỏ được ngay, Traefik tự cấp SSL.
@@ -192,41 +192,41 @@ Một máy chỉ có **một cổng 443**, nên Caddy phải đứng NGOÀI mọ
 máy**:
 
 ```bash
-docker network create javis-web
-curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.proxy.yml
-docker compose -f docker-compose.proxy.yml -p javis-proxy up -d
+docker network create unimate-web
+curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.proxy.yml
+docker compose -f docker-compose.proxy.yml -p unimate-proxy up -d
 ```
 
 Rồi mỗi bản một **thư mục riêng**:
 
 ```bash
-mkdir -p ~/javis-shop && cd ~/javis-shop
-curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.yml
-curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.multi.yml
+mkdir -p ~/unimate-shop && cd ~/unimate-shop
+curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml
+curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.multi.yml
 cat > .env <<'EOF'
-JAVIS_NAME=javis-shop
-JAVIS_HOST_PORT=7777
-JAVIS_BIND=127.0.0.1
+UNIMATE_NAME=unimate-shop
+UNIMATE_HOST_PORT=7777
+UNIMATE_BIND=127.0.0.1
 DOMAIN_NAME=shop.tencuaban.com
-JAVIS_ADMIN_USER=admin
-JAVIS_ADMIN_PASSWORD=matkhau-manh-cua-ban
+UNIMATE_ADMIN_USER=admin
+UNIMATE_ADMIN_PASSWORD=matkhau-manh-cua-ban
 EOF
 chmod 600 .env
 
 CF="-f docker-compose.yml -f docker-compose.multi.yml"
-docker compose $CF run --rm javis claude auth login --claudeai   # đăng nhập Claude cho BẢN NÀY
+docker compose $CF run --rm unimate claude auth login --claudeai   # đăng nhập Claude cho BẢN NÀY
 docker compose $CF up -d
 ```
 
-Bản thứ hai làm y hệt ở `~/javis-canhan`, đổi `.env` thành `javis-canhan` / `7778` /
+Bản thứ hai làm y hệt ở `~/unimate-canhan`, đổi `.env` thành `unimate-canhan` / `7778` /
 `canhan.tencuaban.com`. Trỏ DNS bản ghi A cho từng tên miền phụ về IP VPS là xong - proxy **tự
 phát hiện bản mới qua nhãn Docker**, không phải sửa gì ở proxy, cũng không phải restart nó.
 
-> Mỗi bản là một tài khoản admin riêng, nên đặt `JAVIS_ADMIN_*` cho **từng** `.env` (mật khẩu
+> Mỗi bản là một tài khoản admin riêng, nên đặt `UNIMATE_ADMIN_*` cho **từng** `.env` (mật khẩu
 > khác nhau). Bỏ trống thì bản đó mở ra màn tạo tài khoản, ai vào link trước sẽ tạo được admin,
 > nên phải tạo ngay sau khi chạy.
 
-> `JAVIS_BIND=127.0.0.1` thu cổng về loopback vì đã có proxy lo HTTPS. Vẫn vào gỡ rối được bằng
+> `UNIMATE_BIND=127.0.0.1` thu cổng về loopback vì đã có proxy lo HTTPS. Vẫn vào gỡ rối được bằng
 > `ssh -L 7777:localhost:7777 user@<ip-vps>` khi DNS chưa lan tới.
 
 **Cập nhật** vẫn là `./update.sh` trong từng thư mục - script đọc `.env` của thư mục đang đứng
@@ -239,11 +239,11 @@ Caddy tranh cổng 443.
 Clone vào thư mục khác rồi đặt hai biến trước khi chạy:
 
 ```bash
-JAVIS_NAME=javis-shop JAVIS_PORT=7778 ./install.sh
+UNIMATE_NAME=unimate-shop UNIMATE_PORT=7778 ./install.sh
 ```
 
-Dịch vụ systemd sẽ là `javis-shop.service` (`journalctl -u javis-shop -f`) thay vì ghi đè
-`javis.service` của bản trước. Phần HTTPS tự lo bằng nginx/Caddy sẵn có trên máy.
+Dịch vụ systemd sẽ là `unimate-shop.service` (`journalctl -u unimate-shop -f`) thay vì ghi đè
+`unimate.service` của bản trước. Phần HTTPS tự lo bằng nginx/Caddy sẵn có trên máy.
 
 ### Cái gì dùng chung, cái gì riêng
 
@@ -257,20 +257,20 @@ volume `claude-auth` - làm được nhưng tự chịu trách nhiệm, vì hai 
 
 ### 🌐 Truy cập từ xa (Hostinger / VPS bất kỳ) - Cloudflare Tunnel
 
-Mở giao diện Javis từ máy khác mà KHÔNG cần mở port / không cần tên miền:
+Mở giao diện UNI MATE từ máy khác mà KHÔNG cần mở port / không cần tên miền:
 
-1. **Đặt mật khẩu TRƯỚC (bắt buộc):** mở Javis (qua SSH tunnel ở bước 5) → Dashboard → **Tài khoản** → đặt mật khẩu admin. Javis chạy Claude toàn quyền trên máy → TUYỆT ĐỐI không phơi ra Internet khi chưa có mật khẩu. (Server cũng in cảnh báo nếu chạy public mà chưa đặt.)
+1. **Đặt mật khẩu TRƯỚC (bắt buộc):** mở UNI MATE (qua SSH tunnel ở bước 5) → Dashboard → **Tài khoản** → đặt mật khẩu admin. UNI MATE chạy Claude toàn quyền trên máy → TUYỆT ĐỐI không phơi ra Internet khi chưa có mật khẩu. (Server cũng in cảnh báo nếu chạy public mà chưa đặt.)
 2. Bật tunnel: `docker compose --profile tunnel up -d`
-3. Lấy URL: `docker compose logs tunnel | grep trycloudflare` → mở `https://<ngẫu-nhiên>.trycloudflare.com` trên trình duyệt bất kỳ, đăng nhập mật khẩu. Giờ xem & thao tác Javis từ xa.
+3. Lấy URL: `docker compose logs tunnel | grep trycloudflare` → mở `https://<ngẫu-nhiên>.trycloudflare.com` trên trình duyệt bất kỳ, đăng nhập mật khẩu. Giờ xem & thao tác UNI MATE từ xa.
 
-**URL cố định (tên miền riêng, kiểu `*.hstgr.cloud`):** tạo *named tunnel* ở Cloudflare Zero Trust (miễn phí) → lấy token → `TUNNEL_TOKEN=...` vào `.env` → đổi dòng `command` của service `tunnel` sang bản `run --token` (comment sẵn trong `docker-compose.yml`), trỏ tới `http://javis:7777`. Quick tunnel đổi URL mỗi lần restart; named tunnel cho URL ổn định.
+**URL cố định (tên miền riêng, kiểu `*.hstgr.cloud`):** tạo *named tunnel* ở Cloudflare Zero Trust (miễn phí) → lấy token → `TUNNEL_TOKEN=...` vào `.env` → đổi dòng `command` của service `tunnel` sang bản `run --token` (comment sẵn trong `docker-compose.yml`), trỏ tới `http://unimate:7777`. Quick tunnel đổi URL mỗi lần restart; named tunnel cho URL ổn định.
 
 ---
 
 ## Cách 2 - Cài trực tiếp lên Linux/macOS (không Docker)
 
 ```bash
-git clone https://github.com/blogminhquy/javis-os.git javis && cd javis
+git clone https://github.com/U-N-I-MATE/UNI-MATE.git unimate && cd unimate
 chmod +x install.sh && ./install.sh
 ```
 
@@ -279,14 +279,14 @@ boot (systemd) và in ra địa chỉ. Nếu nó báo Claude chưa đăng nhập
 ```bash
 claude auth login --claudeai
 ```
-Quản lý dịch vụ: `journalctl -u javis -f` · `sudo systemctl restart javis`
+Quản lý dịch vụ: `journalctl -u unimate -f` · `sudo systemctl restart unimate`
 
 ---
 
 ## Cách 3 - Windows (máy cá nhân)
 
-Double-click `setup.bat` (chạy hiện cửa sổ) hoặc `start-javis.vbs` (chạy ngầm).
-Dừng bằng `stop-javis.bat`. Mở http://localhost:7777
+Double-click `setup.bat` (chạy hiện cửa sổ) hoặc `start-unimate.vbs` (chạy ngầm).
+Dừng bằng `stop-unimate.bat`. Mở http://localhost:7777
 
 ---
 
@@ -294,9 +294,9 @@ Dừng bằng `stop-javis.bat`. Mở http://localhost:7777
 
 | Biến | Ý nghĩa | Mặc định |
 |---|---|---|
-| `JAVIS_HOST` | Địa chỉ nghe. `127.0.0.1` = chỉ máy này; `0.0.0.0` = mọi nơi (Docker tự đặt) | `127.0.0.1` |
-| `JAVIS_PORT` | Cổng | `7777` |
-| `JAVIS_STATE_DIR` | Nơi Javis ghi state (settings, sessions, loop config) | `server/` (Docker: `/data/state`) |
+| `UNIMATE_HOST` | Địa chỉ nghe. `127.0.0.1` = chỉ máy này; `0.0.0.0` = mọi nơi (Docker tự đặt) | `127.0.0.1` |
+| `UNIMATE_PORT` | Cổng | `7777` |
+| `UNIMATE_STATE_DIR` | Nơi UNI MATE ghi state (settings, sessions, loop config) | `server/` (Docker: `/data/state`) |
 | `OBSIDIAN_VAULT_PATH` | Vault Second Brain chính | `vault/` trong repo (Docker: `/data/vault`) |
 | `BRAIN_PATH` | Thư mục brain | `brain/` trong repo (Docker: `/data/brain`) |
 | `CLAUDE_CWD` | Thư mục dự phòng của Claude CLI (chat chạy trong thư mục brain) | repo root |
@@ -305,7 +305,7 @@ Dừng bằng `stop-javis.bat`. Mở http://localhost:7777
 
 ## 🔄 Cập nhật khi có code mới
 
-> **Nhanh nhất - bấm ngay trong app:** mở **Cập nhật** (rail trái) → khung **Javis OS** hiện
+> **Nhanh nhất - bấm ngay trong app:** mở **Cập nhật** (rail trái) → khung **UNI MATE** hiện
 > phiên bản đang chạy + tự kiểm tra bản mới trên GitHub. Có bản mới → bấm **⬆ Cập nhật ngay**,
 > app tự kéo bản mới + khởi động lại (~20-40s), khỏi vào terminal.
 > - **Docker/VPS:** nút này chạy nhờ service **watchtower**, và từ 0.55.56 nó **đi kèm sẵn**
@@ -313,37 +313,37 @@ Dừng bằng `stop-javis.bat`. Mở http://localhost:7777
 >   Máy nào còn thiếu nút là đang chạy bằng file compose cũ (trước đó Watchtower nằm trong
 >   `profiles: ["update"]` nên `docker compose up -d` không bật nó). Lấy bản mới rồi dựng lại:
 >   ```bash
->   curl -fsSLO https://raw.githubusercontent.com/blogminhquy/javis-os/main/docker-compose.yml
+>   curl -fsSLO https://raw.githubusercontent.com/U-N-I-MATE/UNI-MATE/main/docker-compose.yml
 >   docker compose up -d --pull always
 >   ```
 >   Chưa muốn đổi file compose thì bật riêng cũng được: `docker compose --profile update up -d`.
->   Chỉ Watchtower được cấp quyền Docker (socket); app Javis KHÔNG → an toàn. Không có nó cũng
+>   Chỉ Watchtower được cấp quyền Docker (socket); app UNI MATE KHÔNG → an toàn. Không có nó cũng
 >   được, khung sẽ chỉ *báo có bản mới* + chỉ cách cập nhật tay.
-> - **Có nút mà bấm không chạy, container `javis-watchtower` cứ Restarting:** stack dựng bằng
+> - **Có nút mà bấm không chạy, container `unimate-watchtower` cứ Restarting:** stack dựng bằng
 >   compose trước 0.65.20 dùng image `containrrr/watchtower` (đã ngừng phát triển), log báo
 >   `client version 1.25 is too old`. Docker mới từ chối bản đó. Dựng lại MỘT LẦN bằng compose
 >   mới (Hostinger: Docker Manager, dán lại URL compose rồi Deploy; VPS: hai lệnh ở trên), compose
 >   mới dùng bản fork `ghcr.io/nicholas-fedor/watchtower:1` tự thương lượng phiên bản với Docker.
 > - **Bấm cập nhật mà vẫn đứng ở bản cũ, `image:` trong file compose là một tên lạ** (ví dụ
->   `javis-cwi:pc-0.206.0`, không có `ghcr.io/...`): đây là image tự đóng gói, thường gặp khi nhờ
->   AI chuyển Javis từ máy tính lên VPS bằng `docker save` rồi `docker load`. Image đó không nằm trên
+>   `unimate-cwi:pc-0.206.0`, không có `ghcr.io/...`): đây là image tự đóng gói, thường gặp khi nhờ
+>   AI chuyển UNI MATE từ máy tính lên VPS bằng `docker save` rồi `docker load`. Image đó không nằm trên
 >   kho nào nên kéo lại hay Redeploy vẫn ra đúng bản cũ (từ 0.267.0 trang Cập nhật nói thẳng điều này).
 >   Đổi sang image chính thức MỘT LẦN, dữ liệu giữ nguyên vì nó nằm trong các thư mục gắn vào:
 >   ```bash
->   cd /opt/javis                      # thư mục có file compose
+>   cd /opt/unimate                      # thư mục có file compose
 >   cp compose.yml compose.yml.bak     # tên file có thể là docker-compose.yml
 >   docker compose config | grep -A1 "target:"   # đường dẫn bên trong phải là /data, /brains,
->                                                 # /home/javis/.claude, /home/javis/.codex
->   sed -i 's#^\(\s*image:\s*\).*#\1ghcr.io/blogminhquy/javis-os:latest#' compose.yml
+>                                                 # /home/unimate/.claude, /home/unimate/.codex
+>   sed -i 's#^\(\s*image:\s*\).*#\1ghcr.io/u-n-i-mate/uni-mate:latest#' compose.yml
 >   docker compose up -d --pull always
 >   ```
 >   Dòng `sed` đổi MỌI dòng `image:` trong file, nên chỉ dùng khi file có đúng một service; có nhiều
->   service thì mở file sửa tay đúng dòng của Javis. Muốn có nút cập nhật trong app thì thêm service
+>   service thì mở file sửa tay đúng dòng của UNI MATE. Muốn có nút cập nhật trong app thì thêm service
 >   `watchtower` y như trong [`docker-compose.yml`](docker-compose.yml). Lỗi quyền ghi sau khi đổi: thư
 >   mục gắn vào phải thuộc user 10001 của container, chạy `sudo chown -R 10001:10001 brains data claude-auth codex-auth`.
-> - **Muốn TỰ cập nhật, khỏi bấm nút:** đặt `JAVIS_AUTO_UPDATE=true` trong `.env` (Hostinger: ô
+> - **Muốn TỰ cập nhật, khỏi bấm nút:** đặt `UNIMATE_AUTO_UPDATE=true` trong `.env` (Hostinger: ô
 >   Environment) rồi dựng lại. Mặc định tắt vì tự cập nhật là app tự khởi động lại bất cứ lúc
->   nào có bản mới, cắt ngang việc nền. Chu kỳ đổi bằng `JAVIS_AUTO_UPDATE_INTERVAL` (giây).
+>   nào có bản mới, cắt ngang việc nền. Chu kỳ đổi bằng `UNIMATE_AUTO_UPDATE_INTERVAL` (giây).
 > - **Native/Windows:** nút chạy `update.sh` (git pull + restart) giúp bạn.
 
 Repo & image GHCR đều **Public** → `git clone`/`pull` và `docker pull` không cần đăng nhập.
@@ -351,17 +351,17 @@ Repo & image GHCR đều **Public** → `git clone`/`pull` và `docker pull` kh�
 Mỗi khi bạn push code mới, trên VPS chỉ cần:
 
 ```bash
-cd javis && ./update.sh
+cd unimate && ./update.sh
 ```
 
 Script tự `git pull` rồi:
 - **Docker**: `docker compose build && docker compose up -d` - dữ liệu trong volume KHÔNG mất.
-- **Native (systemd)**: `pip install -r requirements.txt` + `systemctl restart javis`.
+- **Native (systemd)**: `pip install -r requirements.txt` + `systemctl restart unimate`.
 
 Ép chế độ: `./update.sh docker` hoặc `./update.sh native`. Làm tay tương đương:
 ```bash
 git pull && docker compose build && docker compose up -d          # Docker
-git pull && ./.venv/bin/pip install -r requirements.txt && sudo systemctl restart javis   # Native
+git pull && ./.venv/bin/pip install -r requirements.txt && sudo systemctl restart unimate   # Native
 ```
 
 Trên máy Windows của bạn, đẩy code lên GitHub: `git add -A && git commit -m "..." && git push`
@@ -372,7 +372,7 @@ Trên máy Windows của bạn, đẩy code lên GitHub: `git add -A && git comm
 
 ## Đăng nhập Claude là bước duy nhất bắt buộc
 
-"Bộ não" của Javis là Claude Code CLI. Token đăng nhập nằm trong `~/.claude`
+"Bộ não" của UNI MATE là Claude Code CLI. Token đăng nhập nằm trong `~/.claude`
 (Docker: volume `claude-auth`). Đăng nhập 1 lần → tồn tại qua mọi restart/update.
 Nếu đã đăng nhập trên máy khác, có thể copy thư mục `~/.claude` sang.
 

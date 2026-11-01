@@ -9,7 +9,7 @@ A team runs at one of two levels (`teams.work_mode`, the owner's switch on the t
 - `full`: the owner lets the team act without asking. Nothing here runs, the step gets the private chat's `full` level.
 
 One gate per tool step, open while the engine runs. The host binds its id into the turn (`turn_context`, key
-`team_gate`), so the hub finds it from the turn key a CLI engine sends (`X-Javis-Turn`) or from the ContextVar of an
+`team_gate`), so the hub finds it from the turn key a CLI engine sends (`X-UniMate-Turn`) or from the ContextVar of an
 in-process engine; the Claude engine also gets it directly for its PreToolUse hook. A refused call is recorded (tool,
 exact arguments, fingerprint) and becomes the step's approval request: data the host saw, not the model's words.
 
@@ -37,7 +37,7 @@ import turn_context
 
 GATED = "gated"
 FULL = "full"
-HUB_MODE = "gated"          # X-Javis-Mode of a gated step: lists like full, caps like auto, the gate decides the rest
+HUB_MODE = "gated"          # X-UniMate-Mode of a gated step: lists like full, caps like auto, the gate decides the rest
 MAX_BLOCKED = 5             # recorded refusals per step (an approval card lists at most this many actions)
 
 # Claude Code native tools a gated step may use without asking: reading, searching, writing files inside the step's
@@ -64,10 +64,10 @@ _GIT_READ = frozenset({"status", "diff", "log", "show", "ls-files", "rev-parse",
 # git flags that write a file or run a configured program
 _GIT_BAD = ("--output", "--ext-diff", "--textconv", "-o")
 # Paths inside the step's folders whose content runs or configures code: writing them is never "in scope" (a vault plugin
-# loads into the server, Claude/Grok/Codex settings carry hooks, git config runs fsmonitor, Javis/ holds loops and
+# loads into the server, Claude/Grok/Codex settings carry hooks, git config runs fsmonitor, UniMate/ holds loops and
 # reminders that run on their own).
-PROTECTED_PARTS = ("plugins", ".claude", ".git", ".grok", ".codex", ".agents", ".gemini", ".antigravity", "Javis",
-                   ".javis")
+PROTECTED_PARTS = ("plugins", ".claude", ".git", ".grok", ".codex", ".agents", ".gemini", ".antigravity", "UNI MATE",
+                   ".unimate")
 PROTECTED_FILES = (".mcp.json", ".mcp_hub.json", "CLAUDE.md", "AGENTS.md", "GEMINI.md")
 _FIND_ACT = frozenset({"-exec", "-execdir", "-delete", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"})
 _SHELL_CHARS = set(">|&;<`$\n")
@@ -85,10 +85,10 @@ _READ_VERBS = ("get", "list", "search", "read", "fetch", "query", "find", "descr
                "download", "export", "suggest")
 
 BLOCK_NOTE = ("ERROR: Hành động này ra ngoài phạm vi nên cần chủ nhóm duyệt trước (nhóm đang ở quyền 'cần duyệt'). "
-              "Javis đã ghi lại ĐÚNG lời gọi này thành yêu cầu duyệt, chưa có gì được thực hiện. Đừng tìm cách khác để làm "
+              "UNI MATE đã ghi lại ĐÚNG lời gọi này thành yêu cầu duyệt, chưa có gì được thực hiện. Đừng tìm cách khác để làm "
               "cùng việc. Làm xong phần trong phạm vi rồi kết thúc bước, nêu ngắn gọn vì sao cần hành động này.")
 NO_GATE_NOTE = ("ERROR: Hành động ra ngoài của nhóm cần chủ nhóm duyệt, mà lời gọi này không gắn với bước nào đang mở nên "
-                "Javis không ghi được yêu cầu. Chưa có gì được thực hiện.")
+                "UNI MATE không ghi được yêu cầu. Chưa có gì được thực hiện.")
 
 
 class Gate:
@@ -259,7 +259,7 @@ def bash_readonly(command: str) -> bool:
 
 
 def protected_rel(rel: Any) -> bool:
-    """A path (relative to a step folder) that runs or configures code: plugins/, .claude/, .git/, Javis/..."""
+    """A path (relative to a step folder) that runs or configures code: plugins/, .claude/, .git/, UniMate/..."""
     parts = [x for x in Path(str(rel or "")).parts if x not in ("", ".")]
     if not parts:
         return False
@@ -307,7 +307,7 @@ def _native_args(tool: str, inp: dict) -> Any:
 def is_native(tool: str) -> bool:
     """A tool name an approval request declares that the PreToolUse hook (not the hub) will see at call time."""
     t = str(tool or "")
-    return t in NATIVE_DECLARABLE or (t.startswith("mcp__") and not t.startswith("mcp__javis__"))
+    return t in NATIVE_DECLARABLE or (t.startswith("mcp__") and not t.startswith("mcp__unimate__"))
 
 
 def short_text(text: Any, n: int = LABEL_COMMAND_MAX) -> str:
@@ -328,7 +328,7 @@ def native_label(tool: str, inp: Any) -> str:
 def classify_native(tool: str, inp: dict, roots: list) -> str:
     """'free' (runs) or 'outside' (needs approval)."""
     name = str(tool or "")
-    if name.startswith("mcp__javis__") or name.startswith("mcp__javis-plugins__"):
+    if name.startswith("mcp__unimate__") or name.startswith("mcp__unimate-plugins__"):
         return "free"           # the hub and the plugin host apply the gate themselves
     if name in NATIVE_FREE:
         return "free"
@@ -357,12 +357,12 @@ def native_check(gate_id: Optional[str], tool: str, inp: dict) -> tuple:
 
 # ---- protected files: fingerprint before a gated step, report what it changed ----
 # Defense in depth for engines whose own file tools are not hooked (Codex in its workspace sandbox): a gated step that
-# changed a file that runs or configures code is stopped for the owner, like a refused action. Javis/ (written by the
+# changed a file that runs or configures code is stopped for the owner, like a refused action. UniMate/ (written by the
 # server itself all the time) and .claude/skills (the server's skill mirror) are left out so the server's own writes
 # never look like the step's.
 
 PROTECT_MAX_FILES = 2000
-_PROTECT_SKIP = ("Javis", ".javis")
+_PROTECT_SKIP = ("UNI MATE", ".unimate")
 
 
 def _protected_files(root: Path) -> list:
@@ -426,7 +426,7 @@ def provider_support(provider: str, *, codex_sandbox: Optional[str] = "workspace
     if p == CODEX:
         if codex_sandbox != "workspace-write":
             return {"ok": False, "approved_actions": False,
-                    "reason": ("Codex đang chạy không có sandbox riêng (JAVIS_CODEX_SANDBOX=off) nên Javis không chặn "
+                    "reason": ("Codex đang chạy không có sandbox riêng (UNIMATE_CODEX_SANDBOX=off) nên UNI MATE không chặn "
                                "được lệnh máy của nó trước khi chạy")}
         return {"ok": True, "approved_actions": True, "reason": ""}
     if p in api_providers:
@@ -436,7 +436,7 @@ def provider_support(provider: str, *, codex_sandbox: Optional[str] = "workspace
         # turn can rewrite to full while this step runs, and its own Write is not limited to the step folders.
         return {"ok": False, "approved_actions": False,
                 "reason": ("Grok Build đọc mức quyền từ một file cấu hình dùng chung cho cả bộ não và ghi file không giới "
-                           "hạn thư mục, nên Javis không bảo đảm chặn được trước khi chạy")}
+                           "hạn thư mục, nên UNI MATE không bảo đảm chặn được trước khi chạy")}
     if p == ANTIGRAVITY:
         return {"ok": False, "approved_actions": False,
                 "reason": "Antigravity CLI không có cách chặn công cụ của chính nó trước khi chạy ở mức này"}

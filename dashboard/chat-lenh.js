@@ -6,9 +6,9 @@
 // dính vào DOM và fetch. Phần định dạng và phần quyết định của /goal vẫn là hàm thuần, xuất ra
 // module.exports để test (tests/js/test_chat_lenh.js), giống chat-ask.js và chat-slash.js.
 //
-// Nguyên tắc: máy chủ Javis tự xử lý, KHÔNG mượn lệnh có sẵn của Claude Code. Sáu engine API,
+// Nguyên tắc: máy chủ UNI MATE tự xử lý, KHÔNG mượn lệnh có sẵn của Claude Code. Sáu engine API,
 // Codex, Grok, Antigravity đều không có /compact hay /plan của Claude Code, nên nếu dựa vào đó thì
-// năng lực đổi theo bộ não - trái với nguyên tắc "năng lực của Javis không đổi theo model".
+// năng lực đổi theo bộ não - trái với nguyên tắc "năng lực của UNI MATE không đổi theo model".
 //
 // Trả lời của lệnh hiện thành một bong bóng CỤC BỘ (appendLenhReply trong app.js): không gửi cho
 // model, không lưu vào hội thoại. Ngoại lệ là /plan, /goal và /retry - ba lệnh này gửi một tin thật.
@@ -18,9 +18,9 @@
   // Trần số vòng của /goal. Model đề xuất "chưa xong", MÃ quyết định có chạy tiếp không - nếu không
   // có trần thì một mục tiêu không bao giờ đạt được là một vòng lặp đốt token vô hạn.
   var GOAL_TOI_DA = 5;   // 0.173.1: five rounds, then stop and say why (owner request)
-  var GOAL_RE = /<!--\s*JAVIS_GOAL:\s*([\s\S]*?)\s*-->/g;
+  var GOAL_RE = /<!--\s*UNIMATE_GOAL:\s*([\s\S]*?)\s*-->/g;
   // Hidden line the server puts inside the /goal block of an automatic round (lenh_he_thong.GOAL_ROUND_TAG).
-  var ROUND_RE = /<!--\s*JAVIS_GOAL_ROUND:\s*(\{[\s\S]*?\})\s*-->/;
+  var ROUND_RE = /<!--\s*UNIMATE_GOAL_ROUND:\s*(\{[\s\S]*?\})\s*-->/;
 
   // Chữ hiện ra lấy từ từ điển. Trong trình duyệt là window.t; dưới node (test) không có window
   // nên đọc thẳng vi.json. Tên hàm là tw chứ không phải t vì test_i18n quét mặt chữ các lời gọi tw để
@@ -38,11 +38,11 @@
 
   // ===================== HÀM THUẦN (test bằng node) =====================
 
-  // Bóc dòng ẩn JAVIS_GOAL khỏi câu trả lời. Dòng CUỐI thắng; dòng hỏng (JSON sai, thiếu `done`
+  // Bóc dòng ẩn UNIMATE_GOAL khỏi câu trả lời. Dòng CUỐI thắng; dòng hỏng (JSON sai, thiếu `done`
   // kiểu boolean) coi như không có - bên gọi khi đó DỪNG chứ không đoán "chưa xong".
   function tachMucTieu(text) {
     var s = String(text == null ? "" : text);
-    if (s.indexOf("JAVIS_GOAL") < 0) return { clean: s, goal: null };
+    if (s.indexOf("UNIMATE_GOAL") < 0) return { clean: s, goal: null };
     var goal = null;
     var clean = s.replace(GOAL_RE, function (_m, j) {
       goal = null;
@@ -79,7 +79,7 @@
     });
   }
 
-  // HTML of the collapsible "Javis nudged itself to continue" line. `active`: the goal is still running, so the
+  // HTML of the collapsible "UNI MATE nudged itself to continue" line. `active`: the goal is still running, so the
   // Stop goal button can be pressed; otherwise the button shows disabled.
   function vongHtml(r, active) {
     if (!r) return "";
@@ -95,7 +95,7 @@
 
   // Sau MỘT vòng của /goal: chạy tiếp hay dừng, và dừng vì sao. `st` = {vong, toiDa, left},
   // `ket` = {loi, hoiLai, marker}. Thứ tự các cổng là thứ tự an toàn: lỗi và câu hỏi ngược đứng
-  // trước mọi thứ vì lúc đó người dùng đang cần lên tiếng, không phải Javis cần chạy thêm.
+  // trước mọi thứ vì lúc đó người dùng đang cần lên tiếng, không phải UNI MATE cần chạy thêm.
   function quyetDinhVongTiep(st, ket) {
     ket = ket || {};
     if (ket.loi) return { act: "dung", ly: "loi" };
@@ -215,22 +215,22 @@
     return dong.join("\n");
   }
 
-  // Bỏ mọi khối điều khiển <!-- JAVIS_...: ... --> khỏi tin của Javis trước khi xuất. Chúng vô
+  // Bỏ mọi khối điều khiển <!-- UNIMATE_...: ... --> khỏi tin của UNI MATE trước khi xuất. Chúng vô
   // hình trong khung chat nhưng sẽ hiện nguyên hình trong file markdown.
   function boKhoiDieuKhien(s) {
-    return String(s || "").replace(/<!--\s*JAVIS_[A-Z_]+:[\s\S]*?-->/g, "").replace(/\n{3,}/g, "\n\n").trim();
+    return String(s || "").replace(/<!--\s*UNIMATE_[A-Z_]+:[\s\S]*?-->/g, "").replace(/\n{3,}/g, "\n\n").trim();
   }
 
   function dinhDangXuat(sess, gio, lamSachTinNguoi) {
     sess = sess || {};
     var sachNguoi = lamSachTinNguoi || function (x) { return x; };
-    var dong = ["# " + (sess.title || "Javis"), "", "_" + tw("lenh.ex_head", { gio: gio || "" }) + "_"];
+    var dong = ["# " + (sess.title || "UNI MATE"), "", "_" + tw("lenh.ex_head", { gio: gio || "" }) + "_"];
     (sess.messages || []).forEach(function (m) {
       var nguoi = m.role === "user";
       if (!nguoi && m.role !== "assistant") return;
       var noi = nguoi ? sachNguoi(m.content || "") : boKhoiDieuKhien(m.content || "");
       if (!String(noi).trim()) return;
-      dong.push("", "## " + (nguoi ? tw("lenh.ex_you") : "Javis"), "", String(noi).trim());
+      dong.push("", "## " + (nguoi ? tw("lenh.ex_you") : "UNI MATE"), "", String(noi).trim());
     });
     return dong.join("\n") + "\n";
   }
@@ -238,7 +238,7 @@
   function tenFileXuat(title, ngay) {
     var slug = String(title || "").normalize("NFD").replace(/[̀-ͯ]/g, "")
       .replace(/[\u0111\u0110]/g, "d").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
-    return "javis-" + (slug || "hoi-thoai") + "-" + (ngay || "") + ".md";
+    return "unimate-" + (slug || "hoi-thoai") + "-" + (ngay || "") + ".md";
   }
 
   // Khớp tên theo hai bậc: đúng nguyên tên thì thắng, không thì khớp một phần. Ra nhiều hơn một
@@ -258,7 +258,7 @@
 
   // ===================== PHẦN DOM / MẠNG (chỉ trình duyệt) =====================
 
-  function chatApi() { return (typeof window !== "undefined" && window.JavisChatApi) || null; }
+  function chatApi() { return (typeof window !== "undefined" && window.UniMateChatApi) || null; }
   function ghi(md) { var a = chatApi(); if (a) a.note(md); }
 
   async function layJson(url, opt) {
@@ -280,7 +280,7 @@
   }
 
   function lenhHelp() {
-    var ds = window.JavisSlash ? window.JavisSlash.buildMenu([], [], []) : [];
+    var ds = window.UniMateSlash ? window.UniMateSlash.buildMenu([], [], []) : [];
     ds = ds.filter(function (x) { return x.kind === "session" || x.kind === "system"; });
     var dong = [tw("lenh.help_title")];
     ds.forEach(function (x) { dong.push("- `/" + x.cmd + "` - " + x.desc); });
@@ -297,7 +297,7 @@
   }
 
   async function lenhModel(arg) {
-    var mb = window.JavisModelBar;
+    var mb = window.UniMateModelBar;
     if (!mb) return ghi(tw("lenh.err_net"));
     if (!arg) {
       // Bảng chọn nằm ở thanh model dưới khung chat; ẩn (điện thoại, đang thu gọn) thì nói model
@@ -332,7 +332,7 @@
     if (k.hit) {
       var v = giaTri(k.hit);
       sel.value = v;
-      try { localStorage.setItem("javis.graphSource", v); } catch (e) { /* chế độ riêng tư */ }
+      try { localStorage.setItem("unimate.graphSource", v); } catch (e) { /* chế độ riêng tư */ }
       sel.dispatchEvent(new Event("change"));
       return ghi(tw("lenh.brain_set", { ten: k.hit.label || k.hit.name }));
     }
@@ -418,7 +418,7 @@
   // thì mục tiêu CHỜ chứ không tắt; nó chỉ chạy tiếp khi chat của nó đang mở (vòng tự động là trình duyệt
   // gửi tin vào khung đang xem). Bấm Dừng hay gõ chen ngang thì TẠM DỪNG, bấm chạy tiếp trên thanh là đi tiếp.
   function kho() {
-    if (typeof window !== "undefined" && window.JavisGoals) return window.JavisGoals;
+    if (typeof window !== "undefined" && window.UniMateGoals) return window.UniMateGoals;
     try { return require("./chat-goal.js"); } catch (e) { return null; }
   }
   var choId = null;   // mục tiêu vừa đặt trong chat mới, chờ id phiên của tin đầu
@@ -589,7 +589,7 @@
     var k = kho();
     var g = k && k.theoId(id);
     if (!g) return;
-    var s = (typeof window !== "undefined") && window.JavisSessions;
+    var s = (typeof window !== "undefined") && window.UniMateSessions;
     if (act === "del") {
       var cuaChatNay = g.sid === sidHienTai();
       ketThucMucTieu(g);
@@ -665,9 +665,9 @@
   };
 
   if (typeof window !== "undefined") {
-    window.JavisLenh = api;
+    window.UniMateLenh = api;
     // Mở lại chat có mục tiêu đang chờ thì nó chạy tiếp.
-    window.addEventListener("javis:sessions-changed", function () {
+    window.addEventListener("unimate:sessions-changed", function () {
       var k = kho(), sid = sidHienTai();
       if (k && sid) thuTiep(k.theoSid(sid));
     });

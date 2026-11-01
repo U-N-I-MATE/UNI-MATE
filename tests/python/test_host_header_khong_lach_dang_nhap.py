@@ -12,7 +12,7 @@ Bối cảnh 0.59.16. _auth_guard quyết định "đường này có công khai
     -> router vẫn chọn                /agents -> endpoint thật chạy, KHÔNG cần đăng nhập
 
 Đo thật ngày 16/09 trên chính app này (uvicorn + socket thô, và cả TestClient): request đó
-trả 200 kèm danh sách trợ lý thay vì 401. Tức mọi Javis mở ra Internet (VPS, Docker, bất cứ
+trả 200 kèm danh sách trợ lý thay vì 401. Tức mọi UNI MATE mở ra Internet (VPS, Docker, bất cứ
 máy nào đặt mật khẩu) đều bị đọc và ghi API không cần đăng nhập, chỉ bằng một header.
 
 Hai lớp canh, test cả hai:
@@ -25,8 +25,8 @@ import os
 import re
 import tempfile
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-hosthdr-")
-os.environ["JAVIS_REQUIRE_LOGIN"] = "1"   # bật cổng đăng nhập mà không cần đặt mật khẩu
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-hosthdr-")
+os.environ["UNIMATE_REQUIRE_LOGIN"] = "1"   # bật cổng đăng nhập mà không cần đặt mật khẩu
 
 from fastapi.testclient import TestClient   # noqa: E402
 import main            # noqa: E402
@@ -73,7 +73,7 @@ for xau in ("127.0.0.1:7777/static", "a.com@evil.com", "a.com\\static", "a b.com
             "a.com?x=1", "a.com#f"):
     check(f"host_hop_le({xau!r}) là False", web_security.host_hop_le(xau) is False)
 
-for tot in ("127.0.0.1:7777", "localhost", "[::1]:7777", "javis.example.com", ""):
+for tot in ("127.0.0.1:7777", "localhost", "[::1]:7777", "unimate.example.com", ""):
     check(f"host_hop_le({tot!r}) là True", web_security.host_hop_le(tot) is True)
 
 d = web_security.csrf_decision("GET", "127.0.0.1:7777/static", None, True)

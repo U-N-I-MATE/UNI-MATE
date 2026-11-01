@@ -75,7 +75,7 @@ import tempfile  # noqa: E402
 
 import config    # noqa: E402
 
-_brain = tempfile.mkdtemp(prefix="javis-mediagc-")
+_brain = tempfile.mkdtemp(prefix="unimate-mediagc-")
 
 
 def _tao(rel, mb, tuoi_ngay):
@@ -129,7 +129,7 @@ check("keep_md=False thi .md cung bi xoa",
 check("keep_md mac dinh van chua .md",
       media_gc.plan_deletions([muc("rac.md", 1, 40)], NOW, 30, 300) == [])
 
-_stg = tempfile.mkdtemp(prefix="javis-staging-")
+_stg = tempfile.mkdtemp(prefix="unimate-staging-")
 
 
 def _tao_stg(ten, tuoi_ngay):
@@ -164,7 +164,7 @@ for _dong in ("attachments/", "Attachments/", "*attachments/", "*Attachments/", 
     check(f"gitignore co dong {_dong}", _dong + "\n" in git_brain._GITIGNORE)
 
 if git_brain.has_git():
-    _repo = tempfile.mkdtemp(prefix="javis-mediagit-")
+    _repo = tempfile.mkdtemp(prefix="unimate-mediagit-")
 
     def _g(*a):
         return subprocess.run(["git", "-C", _repo, *a], capture_output=True, text=True,

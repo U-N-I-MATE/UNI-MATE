@@ -13,7 +13,7 @@ Chuỗi nhân quả:
      chờ quá `tran_dial()` (20 giây) thì bị cắt.
   3. Nhánh xử lý quá hạn `invalidate` phiên - mà đóng phiên stdio là SIGKILL cả cây tiến
      trình (`McpStdioSession.close`). Tức là GIẾT LUÔN cái đơn đang lên dở.
-  4. Vòng sau nguồn vắng mặt trong hộp công cụ, nên Javis nói "POS rớt kết nối".
+  4. Vòng sau nguồn vắng mặt trong hộp công cụ, nên UNI MATE nói "POS rớt kết nối".
 
 Lý do gốc của dòng `invalidate` đó vẫn đúng và phải giữ: huỷ từ ngoài GIỮA một request NDJSON
 để lại nửa câu trả lời trong ống, lần đọc sau lệch pha vĩnh viễn. Nhưng nó chỉ đúng khi request
@@ -87,7 +87,7 @@ mcp_client.SessionPool._make = staticmethod(_make_gia)
 pool = mcp_client.SessionPool()
 mcp_client.pool = pool          # discover_resolved/warm_pool dùng biến module
 spec1 = mcp_client._conn_spec(conn(1))
-os.environ["JAVIS_MCP_DISCOVER_TIMEOUT"] = "0.15"      # ngắn hơn hẳn _LAU
+os.environ["UNIMATE_MCP_DISCOVER_TIMEOUT"] = "0.15"      # ngắn hơn hẳn _LAU
 
 
 async def _kich_ban():
@@ -167,7 +167,7 @@ async def _kich_ban_treo():
 
 asyncio.run(_kich_ban_treo())
 
-os.environ.pop("JAVIS_MCP_DISCOVER_TIMEOUT", None)
+os.environ.pop("UNIMATE_MCP_DISCOVER_TIMEOUT", None)
 
 print()
 if _fails:

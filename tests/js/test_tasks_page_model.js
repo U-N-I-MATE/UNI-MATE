@@ -58,12 +58,12 @@ const byId = id => m.items.find(i => i.id === id);
 check("today is 2026-10-30", m.today === "2026-10-30");
 check("a running Kanban job is 'run' and keeps its assistant", byId("k:t1").st === "run" && byId("k:t1").who === "nd");
 check("a job waiting for input asks the owner", byId("k:t2").st === "ask" && byId("k:t2").reason === "Reconnect Pancake");
-check("a transient block is handled by Javis (calm), not an ask", byId("k:t3").st === "calm" && !m.ask.some(a => a.id === "k:t3"));
+check("a transient block is handled by UNI MATE (calm), not an ask", byId("k:t3").st === "calm" && !m.ask.some(a => a.id === "k:t3"));
 check("a job in review asks for approval", byId("k:t6").st === "ask");
 check("ready jobs wait their turn today", byId("k:t4").st === "queue" && byId("k:t4").date === "2026-10-30");
 check("a job held to a future time is scheduled on that day", byId("k:t8").st === "sched" && byId("k:t8").date === "2026-10-31");
 check("the agent prefix of the idempotency key names the assistant", byId("k:t8").who === "kt");
-check("unassigned work belongs to Javis Core", byId("k:t4").who === "javis-core");
+check("unassigned work belongs to UNI MATE Core", byId("k:t4").who === "unimate-core");
 check("a done Kanban job is dated when it finished, with its run time", byId("k:t5").st === "done" && byId("k:t5").date === "2026-10-29" && byId("k:t5").took === 360);
 check("a cron reminder is a recurring job", m.recurring.some(r => r.id === "r:r1" && r.on && r.sc === "8:00 every day"));
 check("its next run is an item tomorrow at 08:00", byId("r:r1").date === "2026-10-31" && byId("r:r1").time === "08:00");
@@ -76,7 +76,7 @@ check("a running loop is recurring, running, and its next run is today", m.recur
 check("a page watch is a recurring job", m.recurring.some(r => r.id === "w:w1" && r.on));
 check("a done one-time reminder from history is in done", byId("rh:h1").st === "done");
 check("a failed reminder is in the error history, not open", m.fails.some(f => f.id === "rf:h2" && !f.open));
-check("a failing watch is an open error Javis retries", m.fails.some(f => f.id === "wf:w1" && f.open && f.self));
+check("a failing watch is an open error UNI MATE retries", m.fails.some(f => f.id === "wf:w1" && f.open && f.self));
 check("an incident of this brain is an open error that needs the owner", m.fails.some(f => f.id === "i:inc1" && f.open && f.needYou));
 check("an incident of another brain is left out", !m.fails.some(f => f.id === "i:inc2"));
 check("the loop log becomes log entries", m.log.some(e => /ads/.test(e.title) && /Checked 3 ads/.test(e.text)));
@@ -115,7 +115,7 @@ const store = { projects: [], tasks: [
   { id: "c", title: "Find a printer", date: null, status: "open" },
   { id: "d", title: "Run PLR ads", date: "2026-10-29", status: "done", done_at: 1 },
   { id: "e", title: "Read 30 min", date: "2026-10-01", time: "21:00", repeat: { unit: "day", n: 1 }, status: "open", done_dates: { "2026-10-28": { at: 1, by: "me" } } },
-  { id: "f", title: "Swim", date: "2026-09-01", repeat: { unit: "week", n: 1, days: [2, 4, 6] }, status: "open", done_dates: { "2026-10-29": { at: 1, by: "javis" } } },
+  { id: "f", title: "Swim", date: "2026-09-01", repeat: { unit: "week", n: 1, days: [2, 4, 6] }, status: "open", done_dates: { "2026-10-29": { at: 1, by: "unimate" } } },
 ] };
 const mm = M.mineModel(store, "2026-10-30");
 const mi = id => mm.items.find(i => i.id === id);
@@ -133,8 +133,8 @@ check("repeating tasks are listed as recurring", mm.recurring.map(r => r.id).sor
 check("Overdue holds the one-off and the missed occurrence", JSON.stringify(mids("over")) === JSON.stringify(["m:b", "mo:e:2026-10-29"]));
 check("a project list holds its open tasks", JSON.stringify(mids("proj:p1")) === JSON.stringify(["m:a"]));
 check("repeat text", M.repHuman({ unit: "week", n: 1, days: [6, 2] }) .indexOf("nv.rep.weekly") === 0);
-check("a weekly Javis schedule is a cron", M.javisSchedule({ unit: "week", n: 1, days: [4, 2] }, "2026-11-03", "06:30").cron === "30 6 * * 2,4");
-check("every 3 days for Javis is a fixed step", M.javisSchedule({ unit: "day", n: 3 }, "2026-11-03", "06:30").repeat_min === 4320);
+check("a weekly UNI MATE schedule is a cron", M.unimateSchedule({ unit: "week", n: 1, days: [4, 2] }, "2026-11-03", "06:30").cron === "30 6 * * 2,4");
+check("every 3 days for UNI MATE is a fixed step", M.unimateSchedule({ unit: "day", n: 3 }, "2026-11-03", "06:30").repeat_min === 4320);
 
 // ---- habits (0.424.0) ----
 const dn = (iso, n) => M.addDays(iso, n);
@@ -155,7 +155,7 @@ check("habit: a weekday habit rests on Friday (no freeze)", hk.rest && !hk.froze
 const st = M.habitStats([read, swim], T0);
 check("habit stats: only habits with a session today count as due", st.due === 1 && st.done === 0 && st.ice === 1);
 const moods = M.habitLines(st, T0).map(l => l.mood);
-check("habit lines: a frozen habit makes Javis sulk first", moods[0] === "suspicious");
+check("habit lines: a frozen habit makes UNI MATE sulk first", moods[0] === "suspicious");
 check("habit lines: a rest day gets the sleepy line", moods.indexOf("sleepy") >= 0);
 check("usual time needs three ticks", M.usualTime({ done_dates: dd([T0]) }) === "");
 
@@ -188,7 +188,7 @@ check("Today lists today's events, Upcoming the later ones", M.inList(g1, "today
 // 0.429.0: jobs a chatbot made sit under the bot's assistant, or under the bot when that assistant is not in the brain
 const bsrc = Object.assign({}, src, {
   agents: [{ slug: "vu", name: "Vu" }],
-  bots: { bots: [{ id: "bot_vu", name: "Javis Vu", agent: "vu" }, { id: "bot_shop", name: "Shop", agent: "ghost" }],
+  bots: { bots: [{ id: "bot_vu", name: "Uni Vu", agent: "vu" }, { id: "bot_shop", name: "Shop", agent: "ghost" }],
     jobs: { "r:r1": "bot_vu", "l:ads": "bot_shop", "r:h1": "bot_vu" } },
 });
 bsrc.kanban = JSON.parse(JSON.stringify(src.kanban));
@@ -200,14 +200,14 @@ check("a Kanban job created by bot:<id> belongs to that bot", bid("k:t4").who ==
 check("a Kanban job with its own assistant keeps it", bid("k:t1").who === "nd");
 check("the history and the log follow the bot too", bid("rh:h1").who === "vu" && bm.log.some(l => l.ref === "rh:h1" && l.who === "vu"));
 check("the loop log line follows its loop", bm.log.some(l => /^ads/.test(l.title) && l.who === "bot:bot_shop"));
-check("the rest stays with Javis Core", bid("r:r2").who === "javis-core" && brec("w:w1").who === "javis-core");
+check("the rest stays with UNI MATE Core", bid("r:r2").who === "unimate-core" && brec("w:w1").who === "unimate-core");
 
 // no Vietnamese text in the running code of the page (it goes through i18n)
 const js = fs.readFileSync(path.join(__dirname, "..", "..", "dashboard", "tasks.js"), "utf8");
 check("the nav points to the Tasks page", /ids: \["tasks", "webhooks"\]/.test(fs.readFileSync(path.join(__dirname, "..", "..", "dashboard", "console.js"), "utf8")));
 check("old page ids open the Tasks page", /kanban: "tasks", selfimprove: "tasks"/.test(fs.readFileSync(path.join(__dirname, "..", "..", "dashboard", "console.js"), "utf8")));
 check("the page asks which chatbot made which job", /getJSON\("\/tasks\/bots\?brain=" \+ enc\)/.test(js));
-check("the page exposes mount and unmount", /window\.JavisTasks = \{ mount: mount, unmount: unmount/.test(js));
+check("the page exposes mount and unmount", /window\.UniMateTasks = \{ mount: mount, unmount: unmount/.test(js));
 
 console.log(fails ? `\n${fails} FAILED` : "\nall passed");
 process.exit(fails ? 1 : 0);

@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 from pathlib import Path
 
-os.environ['JAVIS_STATE_DIR'] = tempfile.mkdtemp(prefix='quality-state-')
+os.environ['UNIMATE_STATE_DIR'] = tempfile.mkdtemp(prefix='quality-state-')
 import sessions
 import task_store
 import team_runner

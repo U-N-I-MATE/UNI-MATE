@@ -10,7 +10,7 @@ from _paths import ROOT, SERVER  # noqa: E402,F401
 import tempfile
 from pathlib import Path
 
-TEMP = Path(tempfile.mkdtemp(prefix="javis-fix-cancel-"))
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-fix-cancel-"))
 
 import agent_pulse as AP  # noqa: E402
 import feedback_projector as FP  # noqa: E402

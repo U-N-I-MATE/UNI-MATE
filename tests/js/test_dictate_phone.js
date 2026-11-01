@@ -2,7 +2,7 @@
 
        node tests/js/test_dictate_phone.js
 
-   Owner report 2026-10-26 (iPhone, Javis installed as an app): press the mic, the timer runs, the meter stays flat
+   Owner report 2026-10-26 (iPhone, UNI MATE installed as an app): press the mic, the timer runs, the meter stays flat
    and no word ever reaches the box. A phone lets only one thing capture the mic (voice.js learned that in 0.59.35),
    and dictate.js opened the recorder and the level meter next to Web Speech, so both went deaf. These cases pin the
    rule: with an upload ear a phone records only, without one it runs Web Speech only, and a run that hears nothing
@@ -19,7 +19,7 @@ const ANDROID = { userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebK
 const MAC = { userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/130", platform: "MacIntel", maxTouchPoints: 0 };
 
 // ───────── fakes ─────────
-let runs = [], mics = [], recorders = [], ear = "upload", sttText = "chào Javis";
+let runs = [], mics = [], recorders = [], ear = "upload", sttText = "chào Uni";
 class FakeSR {
   constructor() { runs.push(this); }
   start() {}
@@ -96,7 +96,7 @@ function fresh() {
   check("iPhone + ear: the meter gets that same stream", streams.length === 1 && streams[0] === mics[0]);
   d.stop(); for (let i = 0; i < 6; i++) await tick();
   check("iPhone + ear: stop transcribes, then the ear's text lands as final",
-    states.indexOf("transcribing") !== -1 && texts.length === 1 && texts[0][0] === "chào Javis" && texts[0][1] === true);
+    states.indexOf("transcribing") !== -1 && texts.length === 1 && texts[0][0] === "chào Uni" && texts[0][1] === true);
   check("iPhone + ear: ends idle, mic released, no error", states[states.length - 1] === "idle"
     && mics[0].getTracks()[0].stopped === true && errors.length === 0);
 
@@ -142,7 +142,7 @@ function fresh() {
   d.start(); await tick(); await tick();
   d.stop(); for (let i = 0; i < 6; i++) await tick();
   check("ear returned no words: error 'nothing', no empty text", errors.indexOf("nothing") !== -1 && texts.length === 0);
-  sttText = "chào Javis";
+  sttText = "chào Uni";
 
   // Android behaves as a phone too.
   reset(ANDROID, "upload");

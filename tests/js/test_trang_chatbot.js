@@ -53,9 +53,9 @@ const noi = (k, chu) => CB.includes(k) && tu(k, chu);
 check("index.html có nạp module trang Chatbot", /chatbots\.js\?v=/.test(HTML));
 // So bằng thẻ <script> chứ không bằng tên file: console.js được NHẮC trong hơn chục comment
 // nằm phía trên, nên indexOf("console.js") trần trụi trỏ vào comment đầu tiên.
-check("nạp TRƯỚC console.js (console gọi window.JavisChatbots)",
+check("nạp TRƯỚC console.js (console gọi window.UniMateChatbots)",
   HTML.indexOf('src="/static/chatbots.js') < HTML.indexOf('src="/static/console.js'));
-check("module phơi ra đúng một cửa vào", /window\.JavisChatbots\s*=\s*\{\s*render:\s*render\s*\}/.test(CB));
+check("module phơi ra đúng một cửa vào", /window\.UniMateChatbots\s*=\s*\{\s*render:\s*render\s*\}/.test(CB));
 // RAIL_ITEMS nay là danh sách ID phẳng (nhãn lấy từ từ điển i18n). Id `chatbots` VẪN còn (nó
 // là nguồn icon + nhãn, và là bí danh cho lệnh nói / bookmark cũ) nhưng KHÔNG được hiện thành
 // một mục trên thanh bên: trang Chatbot là tab của trang Hội thoại từ 0.61.0.
@@ -69,7 +69,7 @@ check("CANARY: mục chưa xếp nhóm cũng phải đi qua RAIL_AN",
 check("console định tuyến sang trang Chatbot",
   /if \(id === "chatbots"\) return renderChatbots\(el\)/.test(CON));
 check("console uỷ quyền cho module chứ không tự vẽ lại",
-  /window\.JavisChatbots/.test(CON));
+  /window\.UniMateChatbots/.test(CON));
 check("có icon riêng cho mục Chatbot", /chatbots:\s*"[a-z-]+"/.test(CON));
 check("CSS của trang đã có", /\.cb-grid/.test(CSS) && /\.cb-card/.test(CSS));
 
@@ -108,7 +108,7 @@ check("CANARY: form bot KHÔNG còn ô token", CB.indexOf('id="cbToken"') === -1
 check("CANARY: form bot KHÔNG còn tự gọi verify-token", CB.indexOf("/chatbots/verify-token") === -1);
 check("CANARY: form bot KHÔNG còn gửi token lên server", !/chung\.token = /.test(CB));
 check("nối kênh mới thì gọi lại modal Thêm tài khoản của tab Kênh",
-  /JavisConversations && window\.JavisConversations\.themTaiKhoan/.test(CB) &&
+  /UniMateConversations && window\.UniMateConversations\.themTaiKhoan/.test(CB) &&
   noi("cb.noi_kenh_moi", "Kết nối kênh mới"));
 check("nối xong thì nạp lại danh sách tài khoản và TÍCH SẴN con vừa nối",
   /function noiKenhMoi\(/.test(CB) && /onXong: async function \(tk\)/.test(CB) &&
@@ -159,7 +159,7 @@ check("cảnh báo nói thẳng người điều khiển là người nhắn cho
   noi("cb.intro_6", "người điều khiển bot là người nhắn cho nó")
   || noi("cb.mq_full", "Người điều khiển là người nhắn cho nó"));
 // CANARY - chữ trên trang phải tả theo LOẠI THAO TÁC, không kể tên việc của một ngành.
-// Bản đầu viết "tạo đơn, tiêu tiền quảng cáo, đăng bài": người dùng Javis để quản lý dự án hay
+// Bản đầu viết "tạo đơn, tiêu tiền quảng cáo, đăng bài": người dùng UNI MATE để quản lý dự án hay
 // dạy học đọc xong tưởng cảnh báo không áp cho mình. Chủ repo bác (2026-08-05).
 ["đơn hàng", "tạo đơn", "tiêu tiền", "quảng cáo", "đăng bài", "cửa hàng", "bán hàng", "bảng giá"]
   .forEach((n) => {
@@ -207,7 +207,7 @@ check("trang chỉ cách xem brain khác", noi("cb.intro_8", "Đổi brain ở �
 check("thẻ bot không nhắc lại brain", !/ic\("brain"\) \+ ' ' \+ esc\(b\.brain\)/.test(CB));
 // Trang "Agents" riêng đã gộp vào trang Cộng sự, nên nút này phải dẫn tới "workspace": dẫn
 // sang một id trang không còn tồn tại thì rail không sáng mục nào và khung giữa trắng trơn.
-check("có nút sang trang Cộng sự để tạo trợ lý", /id="cbNewAgent"/.test(CB) && /JavisNav\.go\("workspace"\)/.test(CB));
+check("có nút sang trang Cộng sự để tạo trợ lý", /id="cbNewAgent"/.test(CB) && /UniMateNav\.go\("workspace"\)/.test(CB));
 // Vai trò dài làm <option> tràn ngang khỏi hộp, mà <option> thì không tạo kiểu được.
 check("vai trò Agent bị cắt ngắn trước khi vào option", /vai\.slice\(0, 34\)/.test(CB));
 check("CSS chặn select nở rộng ra khỏi form", /\.cb-form select \{[^}]*text-overflow: ellipsis/.test(CSS));
@@ -215,7 +215,7 @@ check("CSS chặn select nở rộng ra khỏi form", /\.cb-form select \{[^}]*t
 // `{ go: navigateTo }` thành object có thêm openGroup/setCollapsed và `go` đi qua store Alpine
 // để bung luôn nhóm chứa trang. Khoá cứng nguyên văn thì mỗi lần thêm cửa là test đỏ oan.
 check("console phơi cửa chuyển trang cho module ngoài",
-  /window\.JavisNav = \{/.test(CON) && /\bgo\((id)?\)/.test(CON));
+  /window\.UniMateNav = \{/.test(CON) && /\bgo\((id)?\)/.test(CON));
 // Vai trò dài làm <option> tràn ngang khỏi hộp, mà <option> thì không tạo kiểu được.
 check("vai trò Agent bị cắt ngắn trước khi vào option", /vai\.slice\(0, 34\)/.test(CB));
 check("CSS chặn select nở rộng ra khỏi form", /\.cb-form select \{[^}]*text-overflow: ellipsis/.test(CSS));
@@ -283,7 +283,7 @@ check("gợi ý chế độ riêng tư chỉ hiện khi có tài khoản Telegra
       /class="cb-hint cb-chi-tg" id="cbRwTg"/.test(CB) && /a\.channel === "telegram"[\s\S]{0,160}cbRwTg/.test(CB));
 check("lựa chọn 'được gọi tên' KHÔNG được chọn sẵn khi bot đang ở Tự đánh giá",
       /var rw0 = \(b && \(b\.reply_when === "auto" \|\| b\.reply_when === "always"\)\) \? b\.reply_when : "mention"/.test(CB));
-// Chế độ riêng tư của Telegram chặn Ở PHÍA TELEGRAM, trước khi Javis nhìn thấy tin nào. Đây là
+// Chế độ riêng tư của Telegram chặn Ở PHÍA TELEGRAM, trước khi UNI MATE nhìn thấy tin nào. Đây là
 // nguyên nhân số một của "nhắn riêng thì được, trong nhóm tag tên thì im re", nên cảnh báo phải
 // hiện cho MỌI bot có dùng nhóm - không riêng bot đặt "trả lời mọi tin" như bản trước.
 check("cảnh báo chế độ riêng tư cho mọi bot có dùng nhóm",
@@ -347,7 +347,7 @@ check("và KHÔNG gửi id nhóm thừa lên server",
   /var co = coNhomForm\(\)/.test(CB) && /groups: co \? ds\("group"\)\.join\("\\n"\) : ""/.test(CB));
 check("thẻ bot nói thẳng khi chưa có kênh nào",
   noi("cb.chua_token", "chưa có kênh"));
-check("mở form từ tab Tài khoản bot với tài khoản tích sẵn", /javis:chatbot-new/.test(CB) && /chonSan/.test(CB));
+check("mở form từ tab Tài khoản bot với tài khoản tích sẵn", /unimate:chatbot-new/.test(CB) && /chonSan/.test(CB));
 check("cảnh báo riêng tư chỉ hiện khi bot có tài khoản Telegram",
   /a\.channel === "telegram"/.test(CB) && /coTelegram && duNhom/.test(CB));
 check("bộ lọc kênh chỉ hiện khi có từ hai kênh trở lên",

@@ -2,7 +2,7 @@
 
 Owner request 2026-10-22: "khi nhắn tin bot có thể quyết định nhắn nhiều tin ngắn cho khách chứ không gom vào 1 tin dài
 rất khó đọc, phần này bot tự quyết định được". The Agent decides: it writes a line holding only `SPLIT_MARK` between the
-messages, the channel sends each part as its own message. Javis never splits on its own (a blank line inside one
+messages, the channel sends each part as its own message. UNI MATE never splits on its own (a blank line inside one
 message is normal writing), it only honours the marker.
 
 Only channels in `SPLIT_CHANNELS` send parts separately; everywhere else (and in the inbox, the bot log, a draft for

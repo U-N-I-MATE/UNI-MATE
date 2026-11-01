@@ -4,12 +4,12 @@
 
 Không cần pytest, không chạm mạng.
 
-Chủ repo (2026-07-31): "phần Effort đang thiếu nhiều cấp độ". Javis vốn chỉ có off/low/medium/
+Chủ repo (2026-07-31): "phần Effort đang thiếu nhiều cấp độ". UNI MATE vốn chỉ có off/low/medium/
 high, trong khi Claude Code cho tới Ultra. Đã thêm hai nấc xhigh + ultra.
 
 Chỗ NGUY HIỂM khi thêm nấc: giá trị này được nhét thẳng vào payload của nhà cung cấp. API chỉ
 nhận low|medium|high; gửi "ultra" là ăn 400 và hỏng CẢ LƯỢT CHAT. Nên phải có một cửa ải dịch
-mức Javis sang giá trị API an toàn, và mọi chỗ gửi đều phải đi qua nó.
+mức UNI MATE sang giá trị API an toàn, và mọi chỗ gửi đều phải đi qua nó.
 
 Chỗ dễ quên thứ hai: đường LƯU và đường ĐỌC có hai whitelist RIÊNG. Sửa một bên thì giao diện
 cho chọn nấc mới mà server lặng lẽ hạ về "off" (đúng lỗi đã đo được trong trình duyệt).
@@ -66,7 +66,7 @@ check("budget token tăng dần theo nấc",
 check("CANARY: xhigh và ultra KHÔNG cùng budget (nếu bằng nhau thì nấc mới chỉ là nhãn suông)",
       budget["xhigh"] != budget["ultra"], budget)
 # Anthropic có thang RIÊNG và rộng hơn: Messages API nhận đủ low|medium|high|xhigh|max. Dùng
-# chung `api_effort` (bảng cho các nhà kiểu OpenAI) là bóp ba nấc trên cùng của Javis thành
+# chung `api_effort` (bảng cho các nhà kiểu OpenAI) là bóp ba nấc trên cùng của UNI MATE thành
 # "high" - người dùng bấm "Tối đa" mà không có gì đổi, không lỗi, không dấu hiệu nào.
 HOP_LE_ANT = {"low", "medium", "high", "xhigh", "max"}
 _eff = lambda m, r: engine._anthropic_reasoning(m, r)["output_config"]["effort"]  # noqa: E731
@@ -75,7 +75,7 @@ for _m in ("claude-opus-4-8", "claude-opus-5", "claude-sonnet-5", "claude-fable-
     for _r in engine.REASONING_LEVELS[1:]:
         check(f"{_m} nấc {_r} -> effort Anthropic hợp lệ", _eff(_m, _r) in HOP_LE_ANT,
               _eff(_m, _r))
-check("CANARY: không bao giờ gửi tên nấc RIÊNG của Javis ('ultra') lên Anthropic",
+check("CANARY: không bao giờ gửi tên nấc RIÊNG của UNI MATE ('ultra') lên Anthropic",
       all(_eff(m, "ultra") != "ultra" for m in ("claude-opus-5", "claude-sonnet-4-6")))
 check("CANARY: model đời mới thì xhigh và ultra khác 'high' THẬT, không phải nhãn suông",
       (_eff("claude-opus-5", "xhigh"), _eff("claude-opus-5", "ultra")) == ("xhigh", "max"))
@@ -108,16 +108,16 @@ check("nấc bật thì có chèn gợi ý", "ultrathink" in srv._cli_think("ult
 # ---- 6b. Claude Code CLI: đi bằng CỜ `--effort`, từ khoá chỉ là đường dự phòng ----
 # Bảng từ khoá ở trên cho "xhigh" và "ultra" CÙNG một chữ `ultrathink`, tức "Rất cao" và
 # "Tối đa" y hệt nhau - hai nấc mà một nghĩa. Cờ `--effort` của Claude Code thì trùng khít
-# thang của Javis (low|medium|high|xhigh|max) nên chọn nấc nào ra nấc đó.
+# thang của UNI MATE (low|medium|high|xhigh|max) nên chọn nấc nào ra nấc đó.
 check("CANARY: bảng từ khoá cũ ĐÚNG LÀ có hai nấc trùng nhau (lý do phải đổi sang cờ)",
       srv._CLI_THINK_KW["xhigh"] == srv._CLI_THINK_KW["ultra"])
 check("bảng cờ effort phủ đủ mọi nấc bật",
       all(srv._CLI_EFFORT.get(r) for r in engine.REASONING_LEVELS[1:]), srv._CLI_EFFORT)
 check("CANARY: sang cờ thì hai nấc trên cùng KHÁC nhau thật",
       srv._CLI_EFFORT["xhigh"] != srv._CLI_EFFORT["ultra"])
-check("nấc trên cùng của Javis ('ultra') dịch sang tên của Claude Code ('max')",
+check("nấc trên cùng của UNI MATE ('ultra') dịch sang tên của Claude Code ('max')",
       srv._CLI_EFFORT["ultra"] == "max")
-check("CANARY: không gửi tên nấc riêng của Javis cho CLI",
+check("CANARY: không gửi tên nấc riêng của UNI MATE cho CLI",
       "ultra" not in set(srv._CLI_EFFORT.values()))
 
 _HOP_LE_CLI = {"low", "medium", "high", "xhigh", "max"}
@@ -155,7 +155,7 @@ finally:
 
 # ---- 6c. Codex / Grok Build / Antigravity: cần gạt thật, và KHÔNG dùng từ khoá của Claude ----
 # Ba engine này trước đây nhận độ sâu suy nghĩ bằng đúng bảng từ khoá của Claude Code, tức là
-# Javis dán chữ "ultrathink" vào cuối câu hỏi của người dùng rồi gửi cho Grok hay Gemini - một
+# UNI MATE dán chữ "ultrathink" vào cuối câu hỏi của người dùng rồi gửi cho Grok hay Gemini - một
 # chữ chúng không hiểu. Không lỗi, không dấu hiệu, chỉ là không có tác dụng gì.
 import antigravity_cli  # noqa: E402
 import codex_models  # noqa: E402

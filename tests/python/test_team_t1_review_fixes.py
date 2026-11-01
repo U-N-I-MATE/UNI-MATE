@@ -19,8 +19,8 @@ import tempfile
 import time
 from pathlib import Path
 
-os.environ["JAVIS_STATE_DIR"] = tempfile.mkdtemp(prefix="javis-team-t1fix-")
-TEMP = Path(tempfile.mkdtemp(prefix="javis-team-t1fix-w-"))
+os.environ["UNIMATE_STATE_DIR"] = tempfile.mkdtemp(prefix="unimate-team-t1fix-")
+TEMP = Path(tempfile.mkdtemp(prefix="unimate-team-t1fix-w-"))
 
 import resonance_store  # noqa: E402
 import sessions  # noqa: E402
@@ -39,7 +39,7 @@ def check(name, cond, extra=""):
 
 
 def directive(**op):
-    return f"\n<!-- JAVIS_TEAM: {json.dumps(op, ensure_ascii=False)} -->"
+    return f"\n<!-- UNIMATE_TEAM: {json.dumps(op, ensure_ascii=False)} -->"
 
 
 class Admin:
@@ -336,21 +336,21 @@ def server_row():
     return next(x for x in r.limits_table(T["team_id"]) if x["key"] == "server_call_ceiling")
 
 
-old_env = os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+old_env = os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 cases = [("", None, "rule"), ("7", 7, "count"), ("+10", 10, "count"), ("-5", 0, "count"), ("abc", 0, "count"),
          (" 12 ", 12, "count")]
 for raw, want, unit in cases:
     if raw == "":
-        os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+        os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
     else:
-        os.environ["JAVIS_RESONANCE_CALL_CEILING"] = raw
+        os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = raw
     row = server_row()
     check(f"F3 trần máy chủ {raw!r}: bảng hiện {want} ({unit}), khớp call_ceiling()",
           row["value"] == want and row["unit"] == unit and row["value"] == resonance_store.call_ceiling(), row)
 if old_env is None:
-    os.environ.pop("JAVIS_RESONANCE_CALL_CEILING", None)
+    os.environ.pop("UNIMATE_RESONANCE_CALL_CEILING", None)
 else:
-    os.environ["JAVIS_RESONANCE_CALL_CEILING"] = old_env
+    os.environ["UNIMATE_RESONANCE_CALL_CEILING"] = old_env
 
 # ═════ F4: bật Auto được ghi, đánh thức lỗi ═════
 r, tm, ts, ss, fake, admin, T, _ = world("wake-fail")
