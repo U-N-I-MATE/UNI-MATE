@@ -3208,7 +3208,7 @@ function connectGraphWatch() {
 const vaultBanner = document.getElementById("vaultBanner");
 const vbText = document.getElementById("vbText");
 const vbInit = document.getElementById("vbInit");
-// Người dùng bấm ✕ trên khung báo thiếu cấu trúc thì NHỚ cho đúng bộ não đó và đúng danh sách
+// Người dùng bấm nút đóng trên khung báo thiếu cấu trúc thì NHỚ cho đúng bộ não đó và đúng danh sách
 // thiếu lúc ấy, không nhắc lại mỗi lần mở app hay đổi bộ não. Kho ghi chú có sẵn (Obsidian...)
 // thường cố ý không có các thư mục mẫu này (chủ dự án nối kho Bonao_AI 01/11/2026). Nhớ theo
 // bộ não chứ không theo danh sách thiếu: danh sách tự đổi khi UNI MATE tạo `memory/` lúc trò
