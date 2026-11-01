@@ -114,7 +114,13 @@ QUALIFIED_PROFILES = {('win32', '2.1.308',
     ('win32', '2.1.310',
     'f9a3920634ae3b961ee92c2eb58d0051f5f8852b120983d0a4f57b6a5efeba61', '0.2.116',
     'claude-isolated-roles-v2', '276464004a290d8f25bd1f66f4fb4095ac8bd31f4ef959602c3f032c79d12eec'):
-    '5ddd34eb0d32c18a8d8f10a6ab5ecca29d0edb0685f7035e75d18787788f69b7'}
+    '5ddd34eb0d32c18a8d8f10a6ab5ecca29d0edb0685f7035e75d18787788f69b7',
+    # UNI MATE 01 after re-pinning three CLI discovery functions; same CLI 2.1.310; all20 native checks rerun on Windows 01/11/2026.
+    # docs/superpowers/evidence/2026-11-01-unimate01b-native-qualification-cli310.json
+    ('win32', '2.1.310',
+    'f9a3920634ae3b961ee92c2eb58d0051f5f8852b120983d0a4f57b6a5efeba61', '0.2.116',
+    'claude-isolated-roles-v2', '56b42420562d8c04d1db861b044bdbe192b436db83a4d5f9f2528645abe51ca5'):
+    '42282a566f3617fc2eba372a16fe32ea693a526603b25425a7be9626225f290b'}
 
 
 def profile_qualification(pin, platform):

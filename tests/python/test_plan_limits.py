@@ -142,7 +142,7 @@ x = pl.tu_codex({"rateLimits": {"planType": "pro", "primary": {"usedPercent": 1,
 check("Codex báo planType thì giữ lại", x["goi"] == "pro", x)
 
 import hashlib  # noqa: E402
-ev_pin = json.loads((ROOT / "docs/superpowers/evidence/2026-11-01-unimate01-native-qualification-cli310.json").read_text())
+ev_pin = json.loads((ROOT / "docs/superpowers/evidence/2026-11-01-unimate01b-native-qualification-cli310.json").read_text())
 check("CANARY: claude_sdk_engine.py giữ nguyên đúng bản đã kiểm định native",
       hashlib.sha256((ROOT / "server/claude_sdk_engine.py").read_bytes()).hexdigest()
       == ev_pin["source_hashes"]["claude_sdk_engine.py"])

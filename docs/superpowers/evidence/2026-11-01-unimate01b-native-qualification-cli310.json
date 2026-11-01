@@ -1,0 +1,692 @@
+{
+  "version": 1,
+  "label": "synthetic/current-native-enforcement-only",
+  "evidence_class": "technical",
+  "platform": "win32",
+  "cli_version": "2.1.310",
+  "cli_hash": "f9a3920634ae3b961ee92c2eb58d0051f5f8852b120983d0a4f57b6a5efeba61",
+  "sdk_version": "0.2.116",
+  "profile_version": "claude-isolated-roles-v2",
+  "profile_hash": "56b42420562d8c04d1db861b044bdbe192b436db83a4d5f9f2528645abe51ca5",
+  "source_base_commit": "684f5d082174f4f67587026f9cc17e8a5fab4445",
+  "source_pins_authoritative": true,
+  "source_hashes": {
+    "improvement_claude.py": "f399b5a359a879f4f1c4b851e6cb572a054155fae4f43253d38640f0f6c3c58d",
+    "improvement_sandbox.py": "cb80224cb0dfaeaccf93a88853c6dc0250c4c054f19f11f5ac0c11c324c9669c",
+    "improvement_worker.py": "42fc4d4a452972d054af3032db222a6ae9955d6ac11773fb975b5a76ebea0b8e",
+    "claude_sdk_engine.py": "fc47350ea8c143ca0d729e3e6f25d87b7a0143ae36866cdc7ec350180b794703",
+    "improvement_native_transport.py": "0816041d385791ab2daa2cdf9e221a3d35a0851cdc491ee9d999961d080e8db5",
+    "improvement_operation_adapter.py": "5bba123910675589f1b0e147b01df608fa80c45f30fcfce58746183f2008451e",
+    "improvement_operation_worker.py": "df25c05e3a92a2901005023318327c04d6388c87c3fd3f27df77c030346e5dec",
+    "improvement_operation_profile.py": "b18c1e9483dffd76309559d30eea7b2a33020f70419d70fbc8fa784db2bd2dde",
+    "improvement_operation_workspace.py": "891f37bc37551d92d2dd0a4c8d09118db4aa0fc3bc65e8ff0af56b5aba5246b3",
+    "improvement_operation_protocol.py": "f9dd577cf66c23df4839b3c39ed68375241a0818e9f49796a77beeca8a2f03e7",
+    "improvement_operation_execution.py": "26541bfe0db07b1a2da1eb28ba4155698aeebc4e958d72551616522e9a24e6ca",
+    "improvement_operation_evidence.py": "151faac4e8a5bbf9609cd4ba4b29b82b5206d18e88ee5079798c48f4b8f9a19c",
+    "improvement_trial_evidence.py": "8a1dcb04853bc3acacf4e47699790e0f37fe0346b6fb54531fd5162c6075da23",
+    "improvement_operation_checks.py": "b86ece92eb641e2401ca5ea162a2cd3c02b4694e30e11004c756930f4aca98a8",
+    "improvement_operation_results.py": "526906e505e7ee796175df86d5f6b6e734bf8716cb3d57072b9e33149e443441",
+    "improvement_trial_checks.py": "c2393e894452499a575502785b97bcaad920dc037f5f2ae37f94cbb3f0c6e3b6",
+    "improvement_operation_runner.py": "1b391c4f3da59a8f246fcb4485ff556528def8cd437e9f8653f4dd612c71611d",
+    "improvement_operation_tasks.py": "b3f39697914070342ad9953fe21956b9264b8ccc2839ecb3e01f65bdb6a98106",
+    "improvement_operation_recovery.py": "7139f70cbe1b846effb16a3f6ebfe83acd979cec0789f695b1e206c05b7201e4",
+    "improvement_operation_retry.py": "aeeb0ee5c361b1d0b21f11e4cb02abee6755ae5a333e4c231c78ba08558c3c08",
+    "improvement_operation_schema.py": "bbc003106209ce4404cd88a8d44c004e2dd5e8fe3561d77e7982aaf9c198fec1",
+    "improvement_operation_records.py": "0f1cdd4ef35cc4b365323c9b3172f94c2aff30f6b482dde18a691ef3f5ec7af5",
+    "improvement_compose_schema.py": "a33edf30ba19d73918d8e48138ca62c56dcfc67fa01b2b44e386e95fd192096f",
+    "improvement_recipe_schema.py": "464965eb793f53c6e9280d899f4d0b78845b1fd57a7694ee09531e109c44cf9a",
+    "improvement_recipe_view_schema.py": "fb07bb2c4404f5ca1a0ecf16003bc19b39f8d62347e6b94160af03589f219577",
+    "improvement_compose_protocol.py": "726bcf6420ccd17b9cfd036fbf0bb2dc427cbd75f5fbada8fc096ed87b704f4d",
+    "improvement_harness2_compose.py": "9f1d4495309bfa2819e47f2e5ae31ab074a70db1ce89ddeb1d79839c738415f7",
+    "improvement_recipe_sources.py": "fea6886fc6fbcfa56f50f79aefb90c07d4222d1c7b3cc82e589d680a51f0d986",
+    "improvement_compose_permissions.py": "c48a214d8e1c5812d8b4c19a546570897370a23855e55e9099e779565949eb1a",
+    "improvement_compose_inputs.py": "4bfcd69c96696fc8dad6d4478a8edbc319ce9313114f1aff3b85f5417a40046b",
+    "improvement_compositions.py": "dfeae9b6cc8233299aa90d219a5f8c568004b6a52fd85c6bebad84e42b3f440d",
+    "improvement_compose_candidates.py": "07d1e4e55fee99c3def969f081622eb71f02ed5224a126c83598ef207006657f",
+    "turn_context.py": "31831471e2c10a2e59fb32d8d3f82acb4ef267936a2fad1a95a1e1672d57dd22",
+    "improvement_telemetry.py": "8102e12591e31b87099739ced156eb2d3fe96205c60698cb13ae25b7c8df0aeb",
+    "improvement_native_protocol.py": "1e5244b1460e34d582800dc069a23c7af029e4dadd807dbac34c2a97f20b6050",
+    "improvement_improver_inputs.py": "4d30dc3aa5151c0138c629ca20b994d2c31a24a1c0334475c91168098f7593e5",
+    "improvement_tuning_history.py": "4689e2aa937f0e76cba277f70133930843d5eea0bee2d78b1e5802e40b259f60",
+    "improvement_generation_protocol.py": "8fc2eaac09a07428a2c70596432133b2c439043b8e57e69cd20d6289c6aeb1c7",
+    "improvement_comparison_plans.py": "4e9d8c7d9b941620bad3f376cfd9f57298426cd74bb41ab38ed23990fcbb82f7",
+    "improvement_proposals.py": "75862866ef6ff0fe3f6518a21a702d227c12f442fca60ef10c3074faf89fcd36",
+    "improvement_skill_candidates.py": "9a359ff8f43e8c3fea04b80c66970c046f4e36595e6fa1198d689f08ed598a2b",
+    "improvement_role_workflow.py": "559b0381d6800bda0b8effa3aa8d8bd7073b216c1b3566c115d0d488733f0a42",
+    "improvement_semantic_review.py": "1ca22d0d3e0a4b96dac472ed1f50ac15bbc2d1b92f8384953338e34690151abe",
+    "improvement_semantic_protocol.py": "4fe16034f9461cc15f624c3bfa8574b0de68dcdfe18d62b37b9e5a4fff684a98",
+    "improvement_semantic_records.py": "7fb620313eacc8f4548e371face9c0698012cf7f48cca277a2aff34b6a6a0b79",
+    "improvement_dependency_evidence.py": "08df1576dfe0e146c5bdcb12cafc1e769c737565b1b49938e35aa7e7957dff09",
+    "improvement_execution_limits.py": "cd004f5f6ab6d010b96ec364ae91d31c16f7ba2fce1b1d2b015562878a9ae737",
+    "improvement_native_lifetime.py": "4b9ee58c36732ff5cea7463163725e5f43cb3aaea8063cb03d6d707acc44bf6f",
+    "improvement_trials.py": "949744d831362532fa6100ae074eafde9fcaebaa73c5c6afa9414e9167eacf49",
+    "improvement_trial_host.py": "cf26c43a9f3f8fc51c6ff651fd6588d878a78cffb9c9553fa367a5376b11fac6",
+    "improvement_trial_records.py": "58c958cc8d424eea0fb4592c9ae1df49ff86f64c795a1922511f26c28bf56d12",
+    "improvement_trial_admission.py": "c10d47c68fee11dfae88974f8c1e37de395737ae90737f5af16f502feaba0bf5",
+    "improvement_trial_context.py": "cd18fbeb5904ac1147dc2b9877bcb9e289bb5a6c4137c3ece92db4b7a905227f",
+    "improvement_trial_sources.py": "1d4c1f0162f2fe9b7e135681d3f6bd3e644f82e2e3a04324234ab38418109669",
+    "improvement_trial_sql_context.py": "1079187f392478ead14ebf05c45c1681415c7d6317eea9d04a055629bb88e4ca",
+    "improvement_trial_dashboard.py": "9d848b99a883334bf7775c593b83435782a7df79135682bc6b13c96ffa2e8036",
+    "improvement_trial_file_sources.py": "df07158a0c97a789ef1f5f2dee064fcba276c3179ddb9a5264d6cc28735e755e",
+    "improvement_trial_selection.py": "48b765f846ed4889d5038a5d1e3d8e9148c647786f68cfa95af52a734afe9971",
+    "improvement_trial_service.py": "a60c0682b901d564dfb78a932a3ee83cceddf4b0f64c35780051f26697c6bbf8",
+    "improvement_trial_associations.py": "c3d59f5d0b4edd4b965e026bb221238f6dc55ca7111ea30bc2fe39a064fdbfcc",
+    "improvement_trial_runner.py": "3181274126c4c05124d7a3eeb967c1e5354077e11d753ef35acedea7e8876e92",
+    "improvement_trial_tasks.py": "7d3b19b70f6ae99d86a7189d37f4816726bdf3322ae0680f2d96ff558ed816f6",
+    "improvement_trial_results.py": "e6e3a72212353b0cd63c45bd32e4147a3505267f9aff325ff028f347dfa14f14",
+    "improvement_trial_products.py": "302c3614f3b868bd466fbac241b5f0f8613edab01ec4602b0ecb40501de59047",
+    "improvement_trial_decisions.py": "734e77449747da37c8274bd95de77b11774309ab280e99a81e7fabce1e35a40d",
+    "improvement_trial_views.py": "604a9d9fc0dc0a4d071c675bb098d5f28a999903fac27c5d0e55c3821a5cc1bc",
+    "improvement_trial_schema.py": "ac7066cdac48cf35213ed2591ed462d53d4f22955ea127904f568c69643dcae1",
+    "improvement_experiment_lineage.py": "f03a72a8421f181215b64f70d5b15127de291cfae7117dc585ac67761e718f94",
+    "improvement_experiment_admission.py": "54512117065e28cc4f6ca108b35c84e4cf28ff7f7ec7808f9978b786d3652e6e",
+    "improvement_experiment_service.py": "7d4befa308bf3615b85729ad60452d85e32c8c6fe284fea0b72304801c82c951",
+    "improvement_experiment_protocol.py": "d223937a367157cf672b9807b64cb6e7a810bf3567b5f4dcd17bc80ba678ca08",
+    "improvement_experiment_qualification.py": "d5392286d7476996001561bba3e1960daa599d785f6a57ef2b1e3b420652e960",
+    "improvement_experiments.py": "e48b74bac4a8f8cbfc31b20049019fc7ec6ff80b551e3c2add1c835f78b138b2",
+    "improvement_experiment_schema.py": "ac545c99df80d3bdcfef74951bd1b7342827de62820cbedd0c832b3f19abe61d",
+    "improvement_comparison_results.py": "575d476181320fa17b8ba6f4b1a3edea4e007c1e58e66be8034df6d991774d7b",
+    "improvement_comparison_links.py": "532b7ae5b40059d8b14a8100da5fcab6a859645fc3464b94124579a14a922eaa",
+    "improvement_views.py": "f050fcca0a92e338baae2cb06b1e6771eb659521685ab2bbc791817210d4854a",
+    "improvement_view_sources.py": "f571c733e39fc4332a0bc2dcf3722554a2e69c76d4fbb2e0ba5426fe3339b5cb",
+    "improvement_view_history.py": "7b3525d0b7c481bc071cc494945d42f86d29f0262c42ea7fd5d05e41efc72df0",
+    "improvement_view_lineage.py": "cf48a7ba84bad94d62df499383d2407a52af8037eb88406b6b02f1e4005b9841",
+    "improvement_view_trial_protocol.py": "1bbb63cc22ac174e2fe2eb3479a49a03ea91d57d05bd518bd2b61ac8e533e521",
+    "improvement_view_protocol.py": "d4078958db236cf2afe8d9ef2b91c9c71797d4db2a665cc8fd4d58dfbcd89147",
+    "improvement_view_schema.py": "50b6f5c5e7a210adb76df3271d593ea5b7f53a403078145906d7f30dc3f7d172",
+    "improvement_store.py": "6b61b3e014beef60a1f650ff2e223497d9f12e0d339d959a11a66a29a56f5f35",
+    "improvement_blobs.py": "cca420e46e961fc2bbc6cea4a0929cd2f3ef8b9ccf1de6cc4a1ff7598f7bb4b6",
+    "improvement_cases.py": "561d848331eca7ce6b4e84d6b68b1cac031a62f8dc0e4ce14250bda7f80d2b9d",
+    "improvement_case_schema.py": "54554b40dc20e58d37cdcb3964fc8384ff11ae95683277352a949ad37dad6865",
+    "improvement_candidate_records.py": "0a864da2e6dff8b85f37372836d4054b2901ac26fd909df32245979878092b27",
+    "improvement_candidate_schema.py": "6d29c83299ecc9e081912f4b3cf6f549890f71abeeb3af9684e9d3f0e66ee5da",
+    "improvement_skill_patch.py": "c06eb301c2c8d9ab7d68368f42256b9cb55108780c3782e3cf06aa0cdcbd87d3",
+    "improvement_comparison_schedule.py": "f4740950202536462b0753e008fb00bd66ae688b79110a99549c5c75f6040d92",
+    "improvement_view_admission.py": "37bf2d61daa78dcb57900d09842f94c09f4db5893ca8586ceebb56b9d988f9b6",
+    "improvement_view_materialization.py": "494c49141b15284fc1bb99049806e691e8d5af2ca617ffef20f290178cbbf477",
+    "improvement_view_qualification.py": "50d997a63e365710144551c266c8d964214728dc788540c8417f615f69f53a58",
+    "improvement_view_qualification_history.py": "2a286713de44512a44e6c60f1e89b3cb79fe76dcaa793f74d39cf4e1cc429675",
+    "improvement_skill_asset_broker.py": "113aef9b31c1fd6ba978c258863d47dcde0ae31bfe94239db4df6851968570f8",
+    "improvement_skill_asset_proof.py": "d899663eb2d79483aad15b865439456a6a7d091d37b42c9e2624c93023941f99",
+    "improvement_native_formats.py": "a6bc586610cf827bdb8392e8af432dbd52438a1ace2ec221a6091d947d10ced1",
+    "improvement_qualification_session.py": "7fd6891d23aa8e5d88dca7d7e436c91d1b17928f2a9ade40ad408ccee264b24c",
+    "improvement_qualification_results.py": "c42c53e2f42b7fd39d07faa892b240ba169e8e99624d866fee90df0f4ed16d0a",
+    "improvement_activation_schema.py": "38ee22c4ac65eb279c70418b0b7074af160675fce99319d97966fc41064e4af8",
+    "improvement_canary_schema.py": "b00cb959377545e64115f4340bd1f2630b373d072a98ece5b2adb5306589d5b6",
+    "improvement_routing_schema.py": "9ee335533b21b65195d78e441cf087bc29f285bc969fc3e04fa7d2adec251715",
+    "improvement_agent_schema.py": "48b3fc693c2fbc185ea2d311a02136dd6c50b3cc6fd593ad05e0c081a9806fe7",
+    "improvement_bundle_schema.py": "2894c60a82f5853ba6bc03bc9a2c7cbbae5735070f36392e5de7a1341516a815",
+    "improvement_team_schema.py": "573c2b7fcef2756dc4f37f2934f26ade05ce67f66ee596f7e032e3c5d2ab48b3",
+    "improvement_library_schema.py": "03752c4c6093e36a61a8266615602685027d1a49627d02c8dff351483611d287"
+  },
+  "runtime": {
+    "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "production_billing": false,
+  "selected_account_calls": 0,
+  "business_proof": false,
+  "native_trialrunner_proof": false,
+  "auth_readiness_proof": false,
+  "positive_final_exercised": false,
+  "live_activation_granted": false,
+  "observed_reasoning": "unknown",
+  "observed_asset_use": "see_exact_paired_scenarios",
+  "registration_at_checkpoint": "not_added",
+  "results": [
+    {
+      "command": [
+        "python.exe",
+        "tests/python/test_improvement_view_native_qualification.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 26.42,
+      "tests": 1,
+      "log": "Ghepcap.log",
+      "log_sha256": "d80650cf016e9af3af97aec50e93e6ea3e2a541610cb3af138e4f3cb27303067",
+      "evidence": "Ghepcap.json",
+      "evidence_sha256": "2e3a8e49d3d582baa524e1002460d5a45c5203bc436b9f227fcb43bd37d083a7"
+    },
+    {
+      "command": [
+        "python.exe",
+        "tests/python/test_improvement_runtime_qualification.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 6.93,
+      "tests": 5,
+      "log": "Bogiai.log",
+      "log_sha256": "89dd11bc618c9516a51a885b8dd62728dc268b3ac8012aeb16fd9569c73c5687",
+      "evidence": "Bogiai.json",
+      "evidence_sha256": "788fcf215a35347fd82d0f8d8265be8b17eb2a6ee9a42c9eb60d93f2c9519120"
+    },
+    {
+      "command": [
+        "python.exe",
+        "tests/python/test_improvement_role_qualification.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 27.53,
+      "tests": 5,
+      "log": "Vaitro.log",
+      "log_sha256": "a7c013b90289e2608a8ef4012f99ebe5629445f9e6072c892edae3fe5858b374",
+      "evidence": "Vaitro.json",
+      "evidence_sha256": "fa51bd5e6ba3f77fe9b0ea828f6d30e4d38ef3a795e151aff361a1df03c63c8e"
+    },
+    {
+      "command": [
+        "python.exe",
+        "tests/python/test_improvement_worker_quiescence.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 0.79,
+      "tests": 9,
+      "log": "Dungyen.log",
+      "log_sha256": "2247b16055118810f0f77b5fcc9de56c808bb565e1faa0074b79fe01d197c0a2"
+    }
+  ],
+  "total_tests": 20,
+  "total_recorded_seconds": 61.67,
+  "seconds_basis": "Four sequential subprocesses on identical full server/test source maps (wall clock from the run log).",
+  "full_source_record_sha256": {
+    "Banghi_Nguon.json": "53550ab1e6420f9ad2de43ab42a9cd10f70257a5f3a0d57c71ace4396a55aa27"
+  },
+  "qualification_test_hashes": {
+    "tests/python/test_improvement_view_native_qualification.py": "9fd336c9deb6959f8a08471ba50cc3e16d6ab29c6e73753875c74ad0507b4b86",
+    "tests/python/test_improvement_runtime_qualification.py": "ab3c8fb0143a197e5ea29b18b0fa1d73b63fc85082a9172ff2de48f3054aa7cb",
+    "tests/python/test_improvement_role_qualification.py": "c8fb69b2739c6cb5285f0a296c808bdb88004d6397f580f6c89df725e0d8d514",
+    "tests/python/test_improvement_native.py": "881159357fce37c4f7cf21e1e40ed45a974a6ea10360ad8eaa7775234bd80025",
+    "tests/python/test_improvement_worker_quiescence.py": "a4326bedc6893749281145465f34d2ace628c222e0e4f81d59af99d262653e8d",
+    "tests/python/test_improvement_native_skill_reads.py": "a664a6c6bd431ea5fd7a63b9516be6e2d4027b004f29441138a04088bd96c515"
+  },
+  "raw_evidence_sha256": {
+    "Ghepcap.json": "2e3a8e49d3d582baa524e1002460d5a45c5203bc436b9f227fcb43bd37d083a7",
+    "Bogiai.json": "788fcf215a35347fd82d0f8d8265be8b17eb2a6ee9a42c9eb60d93f2c9519120",
+    "Vaitro.json": "fa51bd5e6ba3f77fe9b0ea828f6d30e4d38ef3a795e151aff361a1df03c63c8e"
+  },
+  "logs_sha256": {
+    "Ghepcap.log": "d80650cf016e9af3af97aec50e93e6ea3e2a541610cb3af138e4f3cb27303067",
+    "Bogiai.log": "89dd11bc618c9516a51a885b8dd62728dc268b3ac8012aeb16fd9569c73c5687",
+    "Vaitro.log": "a7c013b90289e2608a8ef4012f99ebe5629445f9e6072c892edae3fe5858b374",
+    "Dungyen.log": "2247b16055118810f0f77b5fcc9de56c808bb565e1faa0074b79fe01d197c0a2"
+  },
+  "scenarios": [
+    {
+      "scenario": "actual-v3-view-native-local-enforcement",
+      "variant": "baseline",
+      "production_billing": false,
+      "profile_hash": "56b42420562d8c04d1db861b044bdbe192b436db83a4d5f9f2528645abe51ca5",
+      "seconds": 3.296,
+      "view": {
+        "binding_hash": "de0bfe103c63b852dd3170d071cb4e18c344ba43bb506e4e2d749f8c7eb325d5",
+        "view_hash": "2c6c188976fd6ce423e99e6f7a77ad7717753b58b8d676b9692d5d46af49e9e9",
+        "view_id": "ivw_608ca3b39dcba0b84adee24a"
+      },
+      "manifest_hash": "e71f5a15ef85e6cefe1c24cf2759df1d8e6011fb5b96aa91767eda3a009e8b0a",
+      "engine_config_hash": "8035ff000ab678463fcffe25fbc038ab8f1a26a81fdd4878854fa8790e2197cf",
+      "receipt_hash": "2d9602156a6c71a057781e4aceafc712772e84acf10137441cf2fc1bdd82ef6e",
+      "request_hashes": [
+        "b313565d8ffa947f26cc57ffe05acc3b338ca7e4c462a92af49f061d32ded36b",
+        "e328c067c289443be53ee51203f476b793ede17cf053b73ab2ff034dca49ce0e"
+      ],
+      "native_session_hash": "fa65c69d32b505b1f8edc7768a669df67972074e2e2d65c0fb54e601c442ca30",
+      "all_owned_processes_closed": true,
+      "plaintext_cleaned_after_job_drain": true,
+      "observed_reasoning": "unknown",
+      "observed_asset_use": "unknown",
+      "asset_read_reason": "native_asset_error_telemetry_unobserved",
+      "native_read_results": [
+        {
+          "id": "asset-hit",
+          "native_is_error": null,
+          "content_hash": "bd8b5329e2bb3213a22ee84ca778372f913d1fbbd42906b2dbff2fb3bf2af344"
+        }
+      ],
+      "asset_response_hash": "2e4352816dd50b88714bf0e2d5a434bb5c9f9468b7ce83c1be67a1fcb51d5f75",
+      "foreign_asset_denied": false
+    },
+    {
+      "scenario": "actual-v3-view-native-local-enforcement",
+      "variant": "candidate",
+      "production_billing": false,
+      "profile_hash": "56b42420562d8c04d1db861b044bdbe192b436db83a4d5f9f2528645abe51ca5",
+      "seconds": 3.152,
+      "view": {
+        "binding_hash": "de0bfe103c63b852dd3170d071cb4e18c344ba43bb506e4e2d749f8c7eb325d5",
+        "view_hash": "d9117a7d4a8786bea161f2ca1974a0ff7cacb4d838272e37c55fb4e4c7774b67",
+        "view_id": "ivw_20afe63d729baa68e40bd35b"
+      },
+      "manifest_hash": "9bbe477788b8400ab353c360cf5fe65339ac698d894e16e512774198a5ab7718",
+      "engine_config_hash": "8035ff000ab678463fcffe25fbc038ab8f1a26a81fdd4878854fa8790e2197cf",
+      "receipt_hash": "ccf10afd27af01bad051dd9641b3ead379f448ad7ee83e08bad24ffb2bbfb5dc",
+      "request_hashes": [
+        "dea5dd7737eed19fa49991bdd51909c26563194e8d5b807d9cda9a0c92f0bbad",
+        "52d78017f2c121803a9e02b35fe6f4215ac5631950b3c191fdde90b009da8337"
+      ],
+      "native_session_hash": "3d379eafeb5257705f763dea37437b740c2065cd43ffb309063b843824a23427",
+      "all_owned_processes_closed": true,
+      "plaintext_cleaned_after_job_drain": true,
+      "observed_reasoning": "unknown",
+      "observed_asset_use": "unknown",
+      "asset_read_reason": "native_asset_error_telemetry_unobserved",
+      "native_read_results": [
+        {
+          "id": "asset-hit",
+          "native_is_error": null,
+          "content_hash": "8400f553fc091c99030c92ff94b23fdc721d0ff24c3dcc7aa8cab3cb5782669b"
+        },
+        {
+          "id": "asset-miss",
+          "native_is_error": true,
+          "content_hash": "d9a022ba6d3798c7476f46911ec2f84eb30622ec8ec9e4d667f60509bb11ac69"
+        }
+      ],
+      "asset_response_hash": "f1a6308cd55e0c7b821d0e7d83d1ece1e1333f28fd6ba2abde9d01be473934d0",
+      "foreign_asset_denied": true
+    },
+    {
+      "scenario": "synthetic/native-pending-query-cancellation",
+      "elapsed_s": 2.534,
+      "production_billing": false,
+      "query_count": 1,
+      "owned_process_count": 5,
+      "all_owned_processes_closed": true,
+      "sdk_spawn_flags": [
+        134217728,
+        134217728
+      ],
+      "requests": [
+        "/v1/messages"
+      ],
+      "usage_coverage": "unknown: cancelled before synthetic response",
+      "retry_count": 0
+    },
+    {
+      "scenario": "synthetic/native-local-fake-provider",
+      "elapsed_s": 2.899,
+      "production_billing": false,
+      "runtime": {
+        "version": "2.1.310",
+        "sha256": "f9a3920634ae3b961ee92c2eb58d0051f5f8852b120983d0a4f57b6a5efeba61",
+        "sdk": "0.2.116"
+      },
+      "sdk_spawn_flags": [
+        134217728,
+        134217728
+      ],
+      "worker_has_console": false,
+      "requests": [
+        {
+          "path": "/v1/messages",
+          "model": "claude-opus-5-5",
+          "method": "POST",
+          "dummy_auth_only": true,
+          "effort": "medium",
+          "tools": [
+            "mcp__fixture__fixture_read"
+          ],
+          "fast_requested": false,
+          "ambient_markers": [],
+          "results": {}
+        },
+        {
+          "path": "/v1/messages",
+          "model": "claude-opus-5-5",
+          "method": "POST",
+          "dummy_auth_only": true,
+          "effort": "medium",
+          "tools": [
+            "mcp__fixture__fixture_read"
+          ],
+          "fast_requested": false,
+          "ambient_markers": [],
+          "results": {
+            "bad-bash": true,
+            "bad-read": true,
+            "bad-web": true,
+            "bad-mcp": true,
+            "hit": false,
+            "miss": true,
+            "bad-agent": true,
+            "bad-task": true,
+            "bad-skill": true,
+            "bad-search": true,
+            "bad-deferred": true
+          }
+        }
+      ],
+      "tool_denials": [
+        "bad-agent",
+        "bad-task",
+        "bad-skill",
+        "bad-search",
+        "bad-deferred"
+      ],
+      "fixture_statuses": [
+        "fixture_hit",
+        "fixture_miss"
+      ],
+      "ambient_plugin_hook_ran": false,
+      "session_transcripts_persisted": false,
+      "coverage": {
+        "model": "observed",
+        "reasoning": "unknown",
+        "asset_use": "unknown"
+      },
+      "sdk_children_closed": true
+    },
+    {
+      "scenario": "typed-role-pending-query-cancellation",
+      "kind": "propose",
+      "production_billing": false,
+      "owned_process_count": 5,
+      "all_owned_processes_closed": true,
+      "query_count": 1,
+      "scope": "Actual owned native profile process tree; no production ledger or auth claim."
+    },
+    {
+      "scenario": "typed-role-pending-query-cancellation",
+      "kind": "repair",
+      "production_billing": false,
+      "owned_process_count": 5,
+      "all_owned_processes_closed": true,
+      "query_count": 1,
+      "scope": "Actual owned native profile process tree; no production ledger or auth claim."
+    },
+    {
+      "scenario": "typed-role-pending-query-cancellation",
+      "kind": "semantic",
+      "production_billing": false,
+      "owned_process_count": 5,
+      "all_owned_processes_closed": true,
+      "query_count": 1,
+      "scope": "Actual owned native profile process tree; no production ledger or auth claim."
+    },
+    {
+      "scenario": "actual-guardian-death-fail-closed",
+      "kind": "semantic",
+      "production_billing": false,
+      "both_recovery_fences_retained": true,
+      "native_processes_exited": true,
+      "automatic_recovery_granted": false
+    },
+    {
+      "scenario": "actual-native-owner-death-observation",
+      "kind": "propose",
+      "production_billing": false,
+      "owned_process_count": 5,
+      "all_exited_before_barrier_release": true
+    },
+    {
+      "scenario": "actual-native-owner-death",
+      "kind": "propose",
+      "production_billing": false,
+      "owned_process_count": 5,
+      "all_exited_before_barrier_release": true
+    },
+    {
+      "scenario": "actual-native-owner-death-observation",
+      "kind": "semantic",
+      "production_billing": false,
+      "owned_process_count": 5,
+      "all_exited_before_barrier_release": true
+    },
+    {
+      "scenario": "actual-native-owner-death",
+      "kind": "semantic",
+      "production_billing": false,
+      "owned_process_count": 5,
+      "all_exited_before_barrier_release": true
+    },
+    {
+      "scenario": "typed-role-local-enforcement",
+      "kind": "propose",
+      "production_billing": false,
+      "owned_before_close": [
+        1260
+      ],
+      "alive_immediately_after_close": [],
+      "cache_path_lengths": [
+        320
+      ],
+      "profile_hash": "56b42420562d8c04d1db861b044bdbe192b436db83a4d5f9f2528645abe51ca5",
+      "runtime": {
+        "version": "2.1.310",
+        "sha256": "f9a3920634ae3b961ee92c2eb58d0051f5f8852b120983d0a4f57b6a5efeba61",
+        "sdk": "0.2.116"
+      },
+      "requests": [
+        {
+          "path": "/v1/messages",
+          "method": "POST",
+          "model": "claude-opus-5-5",
+          "effort": "medium",
+          "tools": [
+            "mcp__fixture__fixture_read"
+          ],
+          "dummy_auth_only": true,
+          "ambient_markers": [],
+          "authorized_data_present": true,
+          "fast_requested": false,
+          "results": {}
+        },
+        {
+          "path": "/v1/messages",
+          "method": "POST",
+          "model": "claude-opus-5-5",
+          "effort": "medium",
+          "tools": [
+            "mcp__fixture__fixture_read"
+          ],
+          "dummy_auth_only": true,
+          "ambient_markers": [],
+          "authorized_data_present": true,
+          "fast_requested": false,
+          "results": {
+            "bash": true,
+            "read": true,
+            "web": true,
+            "mcp": true,
+            "fixture": true,
+            "traversal": true,
+            "agent": true,
+            "task": true,
+            "skill": true,
+            "search": true,
+            "deferred": true
+          }
+        }
+      ],
+      "spawns": [
+        {
+          "kind": "version",
+          "pid": 512,
+          "creationflags": 134217728
+        },
+        {
+          "kind": "query",
+          "pid": 30472,
+          "creationflags": 134217728
+        }
+      ],
+      "plaintext_cleaned": true,
+      "ambient_hooks_ran": false,
+      "session_transcripts_persisted": false,
+      "input_markers_persisted_after_cleanup": false,
+      "model_coverage": "observed",
+      "actual_reasoning": "unknown",
+      "actual_input_use": "unknown",
+      "scope": "Native typed-profile enforcement only; no auth readiness or actual worker/CallLedger feasibility claim."
+    },
+    {
+      "scenario": "typed-role-local-enforcement",
+      "kind": "repair",
+      "production_billing": false,
+      "owned_before_close": [
+        9440
+      ],
+      "alive_immediately_after_close": [],
+      "cache_path_lengths": [
+        319
+      ],
+      "profile_hash": "56b42420562d8c04d1db861b044bdbe192b436db83a4d5f9f2528645abe51ca5",
+      "runtime": {
+        "version": "2.1.310",
+        "sha256": "f9a3920634ae3b961ee92c2eb58d0051f5f8852b120983d0a4f57b6a5efeba61",
+        "sdk": "0.2.116"
+      },
+      "requests": [
+        {
+          "path": "/v1/messages",
+          "method": "POST",
+          "model": "claude-opus-5-5",
+          "effort": "medium",
+          "tools": [
+            "mcp__fixture__fixture_read"
+          ],
+          "dummy_auth_only": true,
+          "ambient_markers": [],
+          "authorized_data_present": true,
+          "fast_requested": false,
+          "results": {}
+        },
+        {
+          "path": "/v1/messages",
+          "method": "POST",
+          "model": "claude-opus-5-5",
+          "effort": "medium",
+          "tools": [
+            "mcp__fixture__fixture_read"
+          ],
+          "dummy_auth_only": true,
+          "ambient_markers": [],
+          "authorized_data_present": true,
+          "fast_requested": false,
+          "results": {
+            "bash": true,
+            "read": true,
+            "web": true,
+            "mcp": true,
+            "fixture": true,
+            "traversal": true,
+            "agent": true,
+            "task": true,
+            "skill": true,
+            "search": true,
+            "deferred": true
+          }
+        }
+      ],
+      "spawns": [
+        {
+          "kind": "version",
+          "pid": 36632,
+          "creationflags": 134217728
+        },
+        {
+          "kind": "query",
+          "pid": 29600,
+          "creationflags": 134217728
+        }
+      ],
+      "plaintext_cleaned": true,
+      "ambient_hooks_ran": false,
+      "session_transcripts_persisted": false,
+      "input_markers_persisted_after_cleanup": false,
+      "model_coverage": "observed",
+      "actual_reasoning": "unknown",
+      "actual_input_use": "unknown",
+      "scope": "Native typed-profile enforcement only; no auth readiness or actual worker/CallLedger feasibility claim."
+    },
+    {
+      "scenario": "typed-role-local-enforcement",
+      "kind": "semantic",
+      "production_billing": false,
+      "owned_before_close": [
+        13688
+      ],
+      "alive_immediately_after_close": [],
+      "cache_path_lengths": [
+        321
+      ],
+      "profile_hash": "56b42420562d8c04d1db861b044bdbe192b436db83a4d5f9f2528645abe51ca5",
+      "runtime": {
+        "version": "2.1.310",
+        "sha256": "f9a3920634ae3b961ee92c2eb58d0051f5f8852b120983d0a4f57b6a5efeba61",
+        "sdk": "0.2.116"
+      },
+      "requests": [
+        {
+          "path": "/v1/messages",
+          "method": "POST",
+          "model": "claude-opus-5-5",
+          "effort": "medium",
+          "tools": [
+            "mcp__fixture__fixture_read"
+          ],
+          "dummy_auth_only": true,
+          "ambient_markers": [],
+          "authorized_data_present": true,
+          "fast_requested": false,
+          "results": {}
+        },
+        {
+          "path": "/v1/messages",
+          "method": "POST",
+          "model": "claude-opus-5-5",
+          "effort": "medium",
+          "tools": [
+            "mcp__fixture__fixture_read"
+          ],
+          "dummy_auth_only": true,
+          "ambient_markers": [],
+          "authorized_data_present": true,
+          "fast_requested": false,
+          "results": {
+            "bash": true,
+            "read": true,
+            "web": true,
+            "mcp": true,
+            "fixture": true,
+            "traversal": true,
+            "agent": true,
+            "task": true,
+            "skill": true,
+            "search": true,
+            "deferred": true
+          }
+        }
+      ],
+      "spawns": [
+        {
+          "kind": "version",
+          "pid": 9176,
+          "creationflags": 134217728
+        },
+        {
+          "kind": "query",
+          "pid": 5476,
+          "creationflags": 134217728
+        }
+      ],
+      "plaintext_cleaned": true,
+      "ambient_hooks_ran": false,
+      "session_transcripts_persisted": false,
+      "input_markers_persisted_after_cleanup": false,
+      "model_coverage": "observed",
+      "actual_reasoning": "unknown",
+      "actual_input_use": "unknown",
+      "scope": "Native typed-profile enforcement only; no auth readiness or actual worker/CallLedger feasibility claim."
+    }
+  ],
+  "constraints": [
+    "UNI MATE 01 (after the rename from JAVIS 0.429.1): exact107-source footprint, CLI 2.1.310 (official npm package @anthropic-ai/claude-code-win32-x64, hash f9a39206)/SDK 0.2.116 only.",
+    "Same four enforcement suites as the 2026-10-26 M8 qualification; dummy HOME, localhost providers.",
+    "No selected-account query, model swap, deadline increase, retry or activation. Registration added separately.",
+    "Technical enforcement only: no account readiness, business quality or live readiness is claimed. Raw evidence, logs and the source record are kept with the release owner, not in this repository (they contain local machine paths)."
+  ]
+}
