@@ -69,7 +69,7 @@ _HTTP_NGUON = frozenset({"bundled", "pack", "user"})
 _RESERVED_TOOLS = {"unimate_connections", "unimate_read_file", "unimate_list_dir",
                    "unimate_write_file", "unimate_use_skill", "unimate_edit_file", "unimate_search_files",
                    "unimate_run_command", "unimate_terminal", "unimate_process",
-                   "unimate_web_search", "unimate_web_fetch", "unimate_browser_read", "unimate_browser"}
+                   "unimate_web_search", "unimate_web_fetch"}
 
 # Name of the in-process plugin MCP server the Claude Agent SDK engine mounts (claude_sdk_engine).
 PLUGIN_SERVER = "unimate-plugins"
