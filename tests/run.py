@@ -43,6 +43,8 @@ TIMINGS = ROOT / "tests" / "test_timings.json"
 CHAY_RIENG = frozenset({
     "test_khoi_dong_nhe.py", "test_khoi_dong_cham.py", "test_settings_khong_treo_theo_cli.py",
     "test_dua_token_claude.py", "test_terminal.py", "test_claude_khong_tu_dang_xuat.py",
+    # Bật Chromium thật và đo các mốc chờ tải trang: 3 luồng khác giành CPU thì trang chậm vẽ, đỏ oan (CI 02/11/2026).
+    "test_browser_pane.py",
 })
 
 

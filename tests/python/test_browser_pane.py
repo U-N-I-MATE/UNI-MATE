@@ -147,7 +147,7 @@ async def chay_that():
         nx = bp.NguoiXem(gui_chu, gui_anh)
         tb.them_nguoi_xem(nx)
         await tb.xu_ly({"type": "nav", "url": trang})
-        for _ in range(50):
+        for _ in range(150):
             await asyncio.sleep(0.2)
             t = tb.tabs.get(tb.dang_xem)
             if t and t.title == "Trang thu" and nhan["khung"]:
@@ -160,7 +160,12 @@ async def chay_that():
         await tb.xu_ly({"type": "text", "text": "Việt Nam "})
         await tb.xu_ly({"type": "key", "ev": "down", "key": "a", "code": "KeyA", "keyCode": 65, "text": "a"})
         await tb.xu_ly({"type": "key", "ev": "up", "key": "a", "code": "KeyA", "keyCode": 65})
-        await asyncio.sleep(0.6)
+        for _ in range(30):
+            await asyncio.sleep(0.2)
+            r = await tb.cdp.call("Runtime.evaluate", {"expression": "document.getElementById('q').value",
+                                                       "returnByValue": True}, session=s)
+            if (r.get("result") or {}).get("value") == "Việt Nam a":
+                break
         r = await tb.cdp.call("Runtime.evaluate", {"expression": "document.getElementById('q').value",
                                                    "returnByValue": True}, session=s)
         gt = (r.get("result") or {}).get("value")
@@ -169,7 +174,7 @@ async def chay_that():
         for ev in ("down", "up"):
             await tb.xu_ly({"type": "mouse", "ev": ev, "x": 50, "y": 120, "button": "left",
                             "buttons": 1 if ev == "down" else 0, "clicks": 1})
-        for _ in range(40):
+        for _ in range(120):
             await asyncio.sleep(0.2)
             if len(tb.tabs) > so_tab and tb.tabs.get(tb.dang_xem) and tb.tabs[tb.dang_xem].title == "Hai":
                 break
@@ -178,7 +183,7 @@ async def chay_that():
               [(x.title, x.url[:30]) for x in tb.tabs.values()])
         moi = tb.dang_xem
         await tb.dong_tab(moi)
-        for _ in range(20):
+        for _ in range(60):
             await asyncio.sleep(0.2)
             if moi not in tb.tabs and tb.dang_xem:
                 break
