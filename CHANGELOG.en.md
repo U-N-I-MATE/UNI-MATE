@@ -10,6 +10,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ### Fixed
 - **After the brain timelapse you can zoom the graph out again.** It used to stay locked at the close-up level of the first few notes.
 - **The GitHub sync status line shows your local time**, not UTC, when UNI MATE runs on a VPS.
+- **Syncing a brain between two machines no longer adds a `.conflict-*` file every round** for the operations index `UniMate/index.md`: each machine builds its own.
 
 ## [0.429.5] - 2026-11-01
 ### Improved

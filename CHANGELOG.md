@@ -10,6 +10,7 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 ### Sửa lỗi
 - **Xem timelapse bộ não xong vẫn thu nhỏ được đồ thị.** Trước đây chiếu xong là đồ thị bị khoá ở mức phóng to của vài ghi chú đầu phim.
 - **Dòng trạng thái đồng bộ GitHub ghi đúng giờ của bạn**, không còn ghi giờ quốc tế (UTC) khi chạy trên VPS.
+- **Đồng bộ bộ não giữa hai máy không còn sinh tệp `.conflict-*` mỗi lượt** từ chỉ mục vận hành `UniMate/index.md`: mỗi máy tự dựng bản của mình.
 
 ## [0.429.5] - 2026-11-01
 ### Cải thiện

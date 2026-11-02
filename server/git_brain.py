@@ -577,7 +577,12 @@ _BACKUP_SKIP_SUBSTR = ("/memory/conversations/", "/Memory/conversations/",
                        # ĐÚNG file mcp_config.json chứ không chặn cả `.agents/`: thư mục đó
                        # còn là một trong các chỗ chứa skill của brain, phải được sao lưu.
                        "/.agents/mcp_config.json/",
-                       "/.antigravity/", "/.antigravitycli/", "/.gemini/")
+                       "/.antigravity/", "/.antigravitycli/", "/.gemini/",
+                       # Chỉ mục tầng vận hành SINH TỰ ĐỘNG trên từng máy (ops_index_watch dựng lại từ file).
+                       # Hai máy cài khác nhau (gói kho, plugin, bản app) dựng ra nội dung khác nhau, nên đồng
+                       # bộ nó là mỗi lượt lại sinh một tệp .conflict-* mới (chủ dự án thấy 02/11/2026 khi nối máy
+                       # nhà với VPS). Mỗi máy tự dựng bản của mình, không cần mang qua lại.
+                       "/UniMate/index.md/")
 
 
 def _raw_kept_out(rel: str) -> bool:

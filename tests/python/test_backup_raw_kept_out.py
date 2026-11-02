@@ -149,6 +149,12 @@ check("Gone: sync ok", r.get("ok"))
 check("Gone: mirror folder removed, so it cannot come back after the tombstone expires",
       not (Path(Am) / "Gone").exists())
 
+# The operations index each machine rebuilds for itself (UniMate/index.md) stays out of the sync both ways:
+# two installs render it differently, so syncing it left a new .conflict-* file on every round (owner, 02/11/2026).
+check("ops index UniMate/index.md is kept out of the sync", gb._backup_skip("Brain/UniMate/index.md"))
+check("other UniMate notes and wiki/index.md still sync",
+      not gb._backup_skip("Brain/UniMate/README.md") and not gb._backup_skip("Brain/wiki/index.md"))
+
 print()
 print("ALL PASS" if not _fails else f"{len(_fails)} FAIL: {_fails}")
 sys.exit(1 if _fails else 0)
