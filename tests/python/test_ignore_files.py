@@ -88,6 +88,8 @@ NHAY_CAM = [
     "server/.secret_key", "server/.hub_token", "server/.oauth_mcp.json",
     "server/.sessions.json", "server/settings.json", "server/mcp_servers.json",
     "server/.mcp_hub_auto.json", "server/mcp_audit.jsonl", ".env",
+    # Hồ sơ khung trình duyệt (0.430.0): cookie và phiên đăng nhập thật.
+    "server/browser-profile/Default/Cookies",
 ]
 CHAY = [
     "server/conversations.db", "server/usage_index.db", "server/session_brain.db",

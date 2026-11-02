@@ -60,6 +60,8 @@ server/plugin-data/
 # connector tự giữ (workspace-mcp); purge-trash giữ tạm chính những thư mục đó 30 ngày sau khi
 # người dùng xoá kết nối, để bấm nhầm còn lấy lại được. Cả hai TUYỆT ĐỐI không lên repo.
 server/connector-home/
+server/browser-profile/
+server/browsers/
 server/connector-files/
 server/connector-cred/
 server/purge-trash/
