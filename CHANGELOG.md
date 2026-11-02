@@ -7,8 +7,11 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
 ## [0.430.2] - 2026-11-02
+### Thay đổi
+- **Gỡ khung trình duyệt (nút quả địa cầu).** Google chặn trình duyệt tự động nên khung không dùng được cho việc chính là vào Google. Lần khởi động đầu sau khi cập nhật, UNI MATE tự tắt trình duyệt chạy ngầm và xoá hồ sơ đăng nhập của khung; thư mục `downloads` trong brain giữ nguyên.
+
 ### Cải thiện
-- **Thẻ Google Workspace tải được tệp đính kèm trong Gmail** (ví dụ file Excel báo cáo hằng ngày) và lưu thẳng lên Google Drive. Trên VPS, đăng nhập Google cho thẻ này ngay trong khung trình duyệt của UNI MATE.
+- **Thẻ Google Workspace tải được tệp đính kèm trong Gmail** (ví dụ file Excel báo cáo hằng ngày) để lưu lên Google Drive.
 
 ## [0.430.1] - 2026-11-02
 ### Cải thiện

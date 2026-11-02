@@ -7,8 +7,11 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
 ## [0.430.2] - 2026-11-02
+### Changed
+- **The browser pane (globe button) is removed.** Google blocks automated browsers, so the pane could not do its main job of reaching Google. On the first start after updating, UNI MATE closes the background browser and deletes the pane's sign-in profile; the brain's `downloads` folder is kept.
+
 ### Improved
-- **The Google Workspace card can download Gmail attachments** (for example a daily Excel report) and save them straight to Google Drive. On a VPS, sign in to Google for this card right inside UNI MATE's browser pane.
+- **The Google Workspace card can download Gmail attachments** (for example a daily Excel report) to save them to Google Drive.
 
 ## [0.430.1] - 2026-11-02
 ### Improved
