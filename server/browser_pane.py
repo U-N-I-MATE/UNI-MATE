@@ -253,9 +253,11 @@ class TrinhDuyet:
         self.view = VIEW_MAC_DINH
         self.thu_muc_tai = ""
         self.tai_ve: dict[str, str] = {}     # guid -> tên tệp
+        self.da_tai: list[tuple[float, str]] = []   # (lúc xong, tên tệp) gần đây, để AI biết tệp vừa tải
         self.hop_thoai: dict[str, dict] = {}  # session -> hộp thoại đang chờ
         self.lan_cuoi_dung = time.time()
         self._khoa = asyncio.Lock()
+        self._lan_hoi_tab = 0.0
         self._canh: asyncio.Task | None = None
 
     # ---------- bật / tắt ----------
@@ -582,6 +584,10 @@ class TrinhDuyet:
                 data = base64.b64decode(p.get("data") or "")
                 for nx in list(self.nguoi_xem):
                     nx.khung(data)
+                # Trang đang vẽ lại là lúc tiêu đề có thể đã đổi: hỏi lại, thưa thôi (tối đa 2 giây một lần).
+                if time.time() - self._lan_hoi_tab > 2.0:
+                    self._lan_hoi_tab = time.time()
+                    asyncio.create_task(self.lam_moi_tabs())
             return
         if method == "Target.targetCreated":
             ti = p.get("targetInfo") or {}
@@ -650,6 +656,8 @@ class TrinhDuyet:
             st = p.get("state")
             if st in ("completed", "canceled"):
                 ten = self.tai_ve.pop(p.get("guid", ""), "")
+                if st == "completed" and ten:
+                    self.da_tai = (self.da_tai + [(time.time(), ten)])[-20:]
                 self._phat({"type": "download", "state": st, "name": ten, "folder": "downloads"})
             return
         if method == "__closed__":
@@ -658,6 +666,22 @@ class TrinhDuyet:
             self.thu_tu.clear()
             self.dang_xem = ""
             self._phat({"type": "closed"})
+
+    async def lam_moi_tabs(self):
+        """Hỏi lại tiêu đề + địa chỉ mọi tab. Trang tự đổi tiêu đề bằng mã (Gmail đếm thư chưa đọc, trang gửi form)
+        thì Chromium không phải lúc nào cũng báo qua Target.targetInfoChanged."""
+        self._lan_hoi_tab = time.time()
+        try:
+            res = await self.cdp.call("Target.getTargets", timeout=5)
+        except Exception:
+            return
+        doi = False
+        for ti in res.get("targetInfos") or []:
+            tab = self.tabs.get(ti.get("targetId"))
+            if tab and (ti.get("title") != tab.title or ti.get("url") != tab.url):
+                tab.title, tab.url, doi = ti.get("title", tab.title), ti.get("url", tab.url), True
+        if doi:
+            self._phat_tabs()
 
     async def _hoi_tieu_de(self, tid: str):
         try:

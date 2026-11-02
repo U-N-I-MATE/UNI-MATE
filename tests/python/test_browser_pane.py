@@ -48,6 +48,13 @@ check("hồ sơ riêng trong STATE_DIR (đăng nhập sống qua cập nhật)",
 check("file chạy lấy từ cùng nguồn sự thật với trang Công cụ", "optional_tools.duong_dan_chrome()" in SRV)
 check("tắt được bằng UNIMATE_BROWSER_PANE=0", "UNIMATE_BROWSER_PANE" in SRV and "browser_pane.bat()" in RT)
 check("main đăng ký routes/browser", "browser_routes.register(app, browser_routes.BrowserDeps(" in MAIN)
+HUB = (ROOT / "server" / "mcp_hub.py").read_text(encoding="utf-8")
+_owner = HUB[HUB.index("OWNER_ONLY_TOOLS = frozenset("):HUB.index("})", HUB.index("OWNER_ONLY_TOOLS = frozenset("))]
+check("CANARY: tool lái trình duyệt chỉ dành cho phiên của chủ (bot của khách không bao giờ thấy)",
+      '"unimate_browser_read"' in _owner and '"unimate_browser"' in _owner)
+check("tool hành động ở mức quyền full, tool đọc ở mức chỉ đọc",
+      re.search(r'add\("unimate_browser", browser_ai\.MO_TA_LAM,.*?effect="full"\)', HUB, re.S) is not None
+      and re.search(r'add\("unimate_browser_read", browser_ai\.MO_TA_DOC,[^)]*\], _browser_read\)', HUB) is not None)
 check("thao tác chuột/phím đi làn riêng, không đứng sau việc chậm", "hang.put_nowait(m)" in RT and "NHANH" in RT)
 
 sys.path.insert(0, str(ROOT / "server"))
@@ -94,7 +101,7 @@ for ten, s in (("browser_pane.py", SRV), ("routes/browser.py", RT), ("browser-pa
 
 # ---- 3. Chạy thật khi máy có trình duyệt ----
 async def chay_that():
-    tb = bp.TrinhDuyet()
+    tb = bp.TRINH_DUYET
     if not tb.file_chay():
         print("bỏ qua phần chạy thật: máy này không có Chrome/Chromium")
         return
@@ -115,6 +122,8 @@ async def chay_that():
              "<a id=l href='/hai' target=_blank style='display:block;position:absolute;left:0;top:100px;"
              "width:300px;height:60px'>mo</a>",
         "/hai": "<meta charset=utf-8><title>Hai</title>hai",
+        "/form": "<meta charset=utf-8><title>Dang nhap</title><input id=u placeholder='Ten dang nhap'>"
+                 "<input id=p type=password placeholder='Mat khau'><button onclick=\"document.title='Gui '+u.value\">Gui</button>",
     }
 
     class H(http.server.BaseHTTPRequestHandler):
@@ -176,6 +185,22 @@ async def chay_that():
         check("đóng tab thì quay về tab đã mở ra nó", moi not in tb.tabs and tb.tabs.get(tb.dang_xem) is not None
               and tb.tabs[tb.dang_xem].title == "Trang thu")
         tb.bo_nguoi_xem(nx)
+
+        # ---- AI dùng chung trình duyệt (browser_ai) ----
+        import browser_ai
+        kq = await browser_ai.lam_tool({"op": "open", "url": trang + "form"})
+        check("AI mở trang ở tab mới và đọc lại được trang", "Title: Dang nhap" in kq and "[1] input" in kq, kq[:300])
+        so = {ln.split(']')[0][1:]: ln for ln in kq.splitlines() if ln.startswith("[")}
+        ref_u = next((k for k, v in so.items() if "Ten dang nhap" in v), None)
+        ref_p = next((k for k, v in so.items() if "Mat khau" in v), None)
+        ref_b = next((k for k, v in so.items() if '"Gui"' in v), None)
+        kq = await browser_ai.lam_tool({"op": "type", "ref": int(ref_p or 0), "text": "bimat"})
+        check("CANARY: AI không gõ vào ô mật khẩu", kq.startswith("ERROR: refused"), kq[:200])
+        await browser_ai.lam_tool({"op": "type", "ref": int(ref_u or 0), "text": "Huấn"})
+        kq = await browser_ai.lam_tool({"op": "click", "ref": int(ref_b or 0)})
+        check("AI gõ chữ có dấu rồi bấm nút bằng chuột thật", "Title: Gui Huấn" in kq, kq[:200])
+        kq = await browser_ai.doc_tool({"op": "tabs"})
+        check("AI liệt kê tab, đánh dấu tab đang xem", "* Gui Huấn" in kq, kq)
     finally:
         await tb.tat()
         may.shutdown()

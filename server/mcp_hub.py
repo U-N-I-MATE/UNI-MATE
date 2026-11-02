@@ -120,7 +120,9 @@ OWNER_ONLY_TOOLS = frozenset({"unimate_reply_policy", "unimate_reply_policy_tune
                               "unimate_plugin",
                               # 0.259.0: tìm và đọc web. Bot nói chuyện với khách lạ không được biến
                               # máy chủ của chủ thành máy đi đọc web hộ bất kỳ ai nhắn tới.
-                              "unimate_web_search", "unimate_web_fetch"})
+                              "unimate_web_search", "unimate_web_fetch",
+                              # 0.430.0: lái khung trình duyệt đang đăng nhập bằng tài khoản của chủ (Gmail công ty...).
+                              "unimate_browser_read", "unimate_browser"})
 
 
 # ============================================================
@@ -950,6 +952,36 @@ def _builtin_tools(mode, vault_root, include_ambient=False, hidden=None, lang=""
         {"url": {"type": "string"}, "offset": {"type": "integer"},
          "limit": {"type": "integer", "description": "số ký tự, mặc định 15000, tối đa 50000"}},
         ["url"], _web_fetch)
+
+    # 0.430.0: AI dùng CHUNG khung trình duyệt cạnh khung chat (browser_ai.py). Đọc là readonly; bấm/gõ/mở trang là
+    # hành động ra ngoài nên ở mức full. Máy tắt tính năng (UNIMATE_BROWSER_PANE=0) thì không liệt kê.
+    try:
+        import browser_pane as _bp
+        _co_khung = _bp.bat()
+    except Exception:  # noqa: BLE001
+        _co_khung = False
+    if _co_khung:
+        import browser_ai
+
+        async def _browser_read(args):
+            return await browser_ai.doc_tool(args, vault_root)
+
+        async def _browser_act(args):
+            return await browser_ai.lam_tool(args, vault_root)
+
+        add("unimate_browser_read", browser_ai.MO_TA_DOC,
+            {"op": {"type": "string", "enum": ["read", "tabs"]}, "offset": {"type": "integer"},
+             "limit": {"type": "integer"}}, [], _browser_read)
+        add("unimate_browser", browser_ai.MO_TA_LAM,
+            {"op": {"type": "string", "enum": ["open", "click", "type", "press", "scroll", "back", "forward",
+                                               "reload", "select_tab", "close_tab", "wait"]},
+             "url": {"type": "string"}, "new_tab": {"type": "boolean"}, "ref": {"type": "integer"},
+             "x": {"type": "number"}, "y": {"type": "number"}, "text": {"type": "string"},
+             "clear": {"type": "boolean"}, "submit": {"type": "boolean"}, "key": {"type": "string"},
+             "direction": {"type": "string", "enum": ["up", "down"]}, "amount": {"type": "integer"},
+             "index": {"type": "integer"}, "seconds": {"type": "number"}, "read": {"type": "boolean"},
+             "limit": {"type": "integer"}},
+            ["op"], _browser_act, effect="full")
     # Mô tả tool = router thu nhỏ: liệt kê slug + mô tả ngắn để engine biết KHI NÀO gọi skill nào.
     # Trần lấy từ skill_router (CHUNG với system prompt) - trước đây hub tự cắt 60, system prompt
     # cắt 100 - người viết skill không biết mình bị chấm theo thước nào.
