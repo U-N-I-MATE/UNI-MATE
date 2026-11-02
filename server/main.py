@@ -6333,7 +6333,11 @@ def _do_backup(brain: str = "") -> dict:
         if res.get("restored"):
             bits.append("khôi phục từ backup")
         detail = (" · " + ", ".join(bits)) if bits else ""
-        cfg["backup"]["last_status"] = "✓ Đồng bộ 2 chiều " + time.strftime("%H:%M %d/%m") + detail
+        # Giờ theo múi giờ người dùng (Cài đặt), không theo đồng hồ máy chủ: container Docker chạy UTC nên
+        # dòng này từng ghi "17:26 01/11" cho một lần đồng bộ lúc 00:26 ngày 02/11 giờ Việt Nam.
+        import datetime as _dt_bk
+        _luc = _dt_bk.datetime.now(localefmt.tz()).strftime("%H:%M %d/%m")
+        cfg["backup"]["last_status"] = "✓ Đồng bộ 2 chiều " + _luc + detail
     else:
         cfg["backup"]["last_status"] = "✗ " + (res.get("error") or "lỗi")[:150]
     cfg["backup"]["last_report"] = {

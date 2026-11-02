@@ -370,6 +370,9 @@ class UniMateGraph {
       // Sau khi fit: chặn zoom-out nhỏ hơn mức "mọi node vừa khung". Đặt sau khi hoạt ảnh
       // fit chạy xong, nếu không nó đọc phải mức zoom giữa chừng.
       setTimeout(() => {
+        // Đang chiếu timelapse thì KHÔNG kẹp: lúc đó mới có vài chục note, mức "vừa khung" là mức rất
+        // gần, kẹp vào thì chiếu xong không thu nhỏ được nữa (chủ dự án báo trên bản VPS, 02/11/2026).
+        if (this._tlTimer) return;
         try { this.graph.minZoom(Math.min(this.graph.zoom() * 0.95, 1.2)); } catch (e) {}
       }, ms + 100);
     } catch (e) {}
@@ -555,6 +558,9 @@ class UniMateGraph {
     if (this._tlTimer) { clearInterval(this._tlTimer); this._tlTimer = null; }
     try { this.graph.warmupTicks(24); } catch (e) {}
     if (this._tlFull) { this.graph.graphData(this._tlFull); this._tlFull = null; }
+    // Trả mạng đủ rồi canh lại khung cho MỌI note: refit() mở lại minZoom (lỡ bị kẹp ở mức của vài note
+    // đầu phim) rồi mới kẹp theo mạng đầy đủ. Đợi một nhịp cho lực d3 dàn note ra trước khi canh.
+    setTimeout(() => { try { this.refit(600); } catch (e) {} }, 800);
     try { window.dispatchEvent(new Event("unimate-timelapse-end")); } catch (e) {}
   }
 

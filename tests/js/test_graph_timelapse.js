@@ -91,6 +91,16 @@ const links = [
   check("dừng giữa chừng: có sự kiện end", _events.includes("unimate-timelapse-end"));
   check("dừng xong: timelapseRunning=false", g.timelapseRunning === false);
 
+  // Chiếu xong vẫn thu nhỏ được (chủ dự án báo 02/11/2026): lúc chiếu không kẹp minZoom theo vài note đầu phim,
+  // và dừng/hết phim thì refit() (mở lại minZoom rồi canh khung theo mạng đầy đủ).
+  {
+    const src = require("fs").readFileSync(require("path").join(__dirname, "..", "..", "dashboard", "graph.js"), "utf8");
+    const fit = src.slice(src.indexOf("_fit(ms = 400) {"), src.indexOf("refit(ms = 400) {"));
+    check("lúc chiếu timelapse không kẹp mức thu nhỏ", /if \(this\._tlTimer\) return;[\s\S]{0,80}minZoom/.test(fit));
+    const stop = src.slice(src.indexOf("stopTimelapse() {"), src.indexOf("get timelapseRunning()"));
+    check("dừng timelapse thì canh lại khung cho mọi note", /this\.refit\(/.test(stop));
+  }
+
   console.log();
   if (fails) { console.log(`FAIL ${fails} test`); process.exit(1); }
   console.log("TẤT CẢ PASS");

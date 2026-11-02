@@ -6,6 +6,11 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.429.6] - 2026-11-02
+### Sửa lỗi
+- **Xem timelapse bộ não xong vẫn thu nhỏ được đồ thị.** Trước đây chiếu xong là đồ thị bị khoá ở mức phóng to của vài ghi chú đầu phim.
+- **Dòng trạng thái đồng bộ GitHub ghi đúng giờ của bạn**, không còn ghi giờ quốc tế (UTC) khi chạy trên VPS.
+
 ## [0.429.5] - 2026-11-01
 ### Cải thiện
 - **Đồng bộ bộ não với GitHub đặt được chu kỳ ngắn tới 15 phút** (ô nhập nhận 0,25 giờ). Máy nhà và VPS khớp nhau nhanh hơn; trước đây ngắn nhất 1 giờ.

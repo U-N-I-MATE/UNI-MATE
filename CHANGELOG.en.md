@@ -6,6 +6,11 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.429.6] - 2026-11-02
+### Fixed
+- **After the brain timelapse you can zoom the graph out again.** It used to stay locked at the close-up level of the first few notes.
+- **The GitHub sync status line shows your local time**, not UTC, when UNI MATE runs on a VPS.
+
 ## [0.429.5] - 2026-11-01
 ### Improved
 - **Brain sync with GitHub can run as often as every 15 minutes** (the field takes 0.25 hours). Home computer and VPS stay closer in step; the shortest used to be 1 hour.
