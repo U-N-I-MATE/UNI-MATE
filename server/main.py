@@ -5454,15 +5454,16 @@ async def connect_add(request: Request):
             return {"ok": False, "can_force": True, "error": localefmt.chu(
                     "Kết nối này chạy OAuth trên CHÍNH MÁY cài UNI MATE (Google sẽ chuyển về "
                     "localhost:8000), mà bạn đang mở UNI MATE qua domain public - đăng nhập Google "
-                    "sẽ đứt giữa chừng với lỗi không kết nối được. Trên VPS hãy dùng thẻ Lịch "
-                    "và Gmail riêng (hai thẻ đó đăng nhập ngay trong dashboard). Nếu máy chạy "
-                    "UNI MATE có màn hình và bạn sẽ bấm đồng ý trên đó, bấm Kết nối lần nữa.",
+                    "sẽ đứt giữa chừng nếu mở trang đăng nhập bằng trình duyệt của máy bạn. Trên VPS: "
+                    "bấm Kết nối lần nữa, rồi mở trang đăng nhập Google trong khung trình duyệt của "
+                    "UNI MATE (nút quả địa cầu) - khung chạy trên chính VPS nên đăng nhập đi trọn. "
+                    "Google từ chối đăng nhập trong khung thì dùng thẻ Lịch và Gmail riêng.",
                     "This connection runs OAuth on the SAME MACHINE UNI MATE is installed on (Google "
                     "redirects back to localhost:8000), but you are opening UNI MATE through a public "
-                    "domain, so the Google sign-in will break halfway with a connection error. On a "
-                    "VPS, use the separate Calendar and Gmail cards (those two sign in right inside "
-                    "the dashboard). If the machine running UNI MATE has a screen and you will click "
-                    "Allow there, click Connect again.")}
+                    "domain, so the Google sign-in breaks halfway if you open it in your own browser. On a "
+                    "VPS: click Connect again, then open the Google sign-in page in UNI MATE's browser "
+                    "pane (the globe button) - the pane runs on the VPS itself, so the sign-in completes. "
+                    "If Google refuses the sign-in there, use the separate Calendar and Gmail cards.")}
         if _deploy_mode() == "docker":
             # Issue #855: UNI MATE in Docker on the same computer. Google sends the browser back to localhost:8000 on that
             # computer, which reaches the sign-in listener only when the container publishes port 8000

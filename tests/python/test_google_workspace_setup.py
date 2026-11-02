@@ -124,6 +124,14 @@ thieu_canh_bao = [c["id"] for c in chay_workspace_mcp
 check("mọi connector workspace-mcp đều cảnh báo trước về VPS/màn hình: "
       + (", ".join(thieu_canh_bao) or "đạt"), not thieu_canh_bao)
 
+# ---- 0.430.2: tải tệp đính kèm Gmail (chủ repo: VPS tự lấy file Excel báo cáo MT hằng ngày) ----
+check("thẻ Workspace chạy tier extended (có get_gmail_attachment_content; tier core không có)",
+      ws.get("args") == ["workspace-mcp@latest", "--tool-tier", "extended"])
+check("kết nối cũ còn y lệnh tier core được nâng lên lệnh mới (lenh_cu)",
+      {"command": "uvx", "args": ["workspace-mcp@latest", "--tool-tier", "core"]} in (ws.get("lenh_cu") or []))
+check("hướng dẫn chỉ cách đăng nhập trên VPS bằng khung trình duyệt của UNI MATE",
+      "khung trình duyệt" in (steps[0].get("text", "") if steps else ""))
+
 if _fails:
     print(f"\nFAIL - test_google_workspace_setup: {len(_fails)} lỗi: {_fails}")
     sys.exit(1)
