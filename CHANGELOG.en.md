@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.430.0] - 2026-11-02
+### Added
+- **A browser pane right next to the chat.** Open pages, switch tabs, type an address, click and type directly; the AI browses in this same browser, so you see what it is doing and can take over when needed. Sign in once and it remembers, the same on your own computer and on a VPS.
+
 ## [0.429.7] - 2026-11-02
 ### Fixed
 - **Clicking the UNI MATE icon on Windows while it is already open brings the open window to the front** (restoring it if minimised) instead of opening another one. However many times you click, there is only one window.
