@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.430.1] - 2026-11-02
+### Cải thiện
+- **Nút trình duyệt (quả địa cầu) có ở mọi màn**, ngay cạnh nút Thông báo. Bấm là trình duyệt mở thành cột bên phải màn đang xem: ở màn Hội thoại thì chat bên trái, trình duyệt bên phải. Kéo mép trái của khung để chỉnh rộng hẹp.
+
 ## [0.430.0] - 2026-11-02
 ### Thêm mới
 - **Khung trình duyệt ngay cạnh khung chat.** Mở trang web, chuyển tab, gõ địa chỉ, bấm và gõ trực tiếp; AI duyệt web trên cùng trình duyệt này nên bạn thấy nó đang làm gì và giành quyền bấm khi cần. Đăng nhập một lần là nhớ, chạy giống nhau trên máy nhà và VPS.
