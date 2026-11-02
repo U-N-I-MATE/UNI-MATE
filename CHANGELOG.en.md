@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.430.2] - 2026-11-02
+### Improved
+- **The Google Workspace card can download Gmail attachments** (for example a daily Excel report) and save them straight to Google Drive. On a VPS, sign in to Google for this card right inside UNI MATE's browser pane.
+
 ## [0.430.1] - 2026-11-02
 ### Improved
 - **The browser button (globe) is on every screen except the Graph**, right next to Notifications. Clicking it opens the browser as a column on the right of the screen you are on: on the Chat screen the chat stays left and the browser sits on the right. Drag the pane's left edge to resize it.
