@@ -40,6 +40,13 @@ curl -sf -m 2 -o nul %URL%/health 2>nul
 if not %errorlevel%==0 goto :wait
 
 :open
+REM Da co cua so UNI MATE dang mo thi chi dua cua so do len truoc (mo lai neu dang thu nho),
+REM KHONG mo them cua so moi - bam bieu tuong bao nhieu lan cung chi mot cua so (chu repo 02/11/2026).
+REM focus-unimate.ps1 tra 0 = da dua len; 1 = chua co cua so hoac do khong duoc -> mo moi nhu cu.
+if exist "%~dp0focus-unimate.ps1" (
+  powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%~dp0focus-unimate.ps1" >nul 2>&1
+  if not errorlevel 1 goto :eof
+)
 REM Uu tien cua so app (khong thanh dia chi). Edge co san tren moi Windows 10/11;
 REM khong thay thi thu Chrome; cung khong co thi mo trinh duyet mac dinh.
 set "EDGE=%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"

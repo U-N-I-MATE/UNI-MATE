@@ -48,7 +48,7 @@ Function PortTuEnv()
 End Function
 
 Sub MoDashboard()
-  Dim port, url, i, http, ok, cands, c
+  Dim port, url, i, http, ok, cands, c, focusPs1
   port = sh.ExpandEnvironmentStrings("%UNIMATE_PORT%")
   If port = "%UNIMATE_PORT%" Or port = "" Then port = PortTuEnv()
   url = "http://127.0.0.1:" & port
@@ -67,6 +67,11 @@ Sub MoDashboard()
     On Error GoTo 0
     If ok Then Exit For
   Next
+  ' Da co cua so UNI MATE dang mo thi dua cua so do len, khong mo them (giong UNI MATE.bat).
+  focusPs1 = root & "\focus-unimate.ps1"
+  If fso.FileExists(focusPs1) Then
+    If sh.Run("powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File """ & focusPs1 & """", 0, True) = 0 Then Exit Sub
+  End If
   cands = Array(sh.ExpandEnvironmentStrings("%ProgramFiles(x86)%") & "\Microsoft\Edge\Application\msedge.exe", _
                 sh.ExpandEnvironmentStrings("%ProgramFiles%") & "\Microsoft\Edge\Application\msedge.exe", _
                 sh.ExpandEnvironmentStrings("%ProgramFiles%") & "\Google\Chrome\Application\chrome.exe", _

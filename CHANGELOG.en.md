@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.429.7] - 2026-11-02
+### Fixed
+- **Clicking the UNI MATE icon on Windows while it is already open brings the open window to the front** (restoring it if minimised) instead of opening another one. However many times you click, there is only one window.
+
 ## [0.429.6] - 2026-11-02
 ### Fixed
 - **After the brain timelapse you can zoom the graph out again.** It used to stay locked at the close-up level of the first few notes.

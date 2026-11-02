@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.429.7] - 2026-11-02
+### Sửa lỗi
+- **Bấm biểu tượng UNI MATE trên Windows khi đã mở sẵn thì chỉ đưa cửa sổ đang mở lên trước** (mở lại nếu đang thu nhỏ), không sinh thêm cửa sổ mới. Bấm bao nhiêu lần cũng chỉ một cửa sổ.
+
 ## [0.429.6] - 2026-11-02
 ### Sửa lỗi
 - **Xem timelapse bộ não xong vẫn thu nhỏ được đồ thị.** Trước đây chiếu xong là đồ thị bị khoá ở mức phóng to của vài ghi chú đầu phim.
