@@ -169,7 +169,7 @@ class Cdp:
                     fut.set_exception(CdpError("mất kết nối tới trình duyệt"))
             for cb in list(self._nghe):
                 try:
-                    cb("__closed__", {}, None)
+                    cb("__closed__", {"cdp": self}, None)
                 except Exception:
                     pass
 
@@ -328,8 +328,15 @@ class TrinhDuyet:
             # Như Playwright mặc định (chromiumSandbox=false): container chạy user thường thiếu
             # user namespace, sandbox bật là Chromium chết ngay lúc mở.
             args.insert(1, "--no-sandbox")
-        self.proc = subprocess.Popen(args, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                                     stderr=subprocess.DEVNULL, creationflags=winproc.no_window())
+        # Lời Chromium tự kể (vì sao nó thoát) ghi đè vào một tệp nhỏ, để soi được khi khung báo trình duyệt đã đóng.
+        try:
+            nhat_ky = open(cfgmod.STATE_DIR / "browser-pane.log", "wb")
+        except OSError:
+            nhat_ky = subprocess.DEVNULL
+        self.proc = subprocess.Popen(args, stdin=subprocess.DEVNULL, stdout=nhat_ky,
+                                     stderr=nhat_ky, creationflags=winproc.no_window())
+        if nhat_ky is not subprocess.DEVNULL:
+            nhat_ky.close()
         het = time.time() + CHO_KHOI_DONG_GIAY
         while time.time() < het:
             if self.proc.poll() is not None:
@@ -466,7 +473,6 @@ class TrinhDuyet:
         s = tab.session
         try:
             await self.cdp.call("Page.enable", session=s)
-            await self._dat_kich_thuoc(s)
         except CdpError:
             pass
         if tid in self.cho_chon or tab.opener or not self.dang_xem:
@@ -489,6 +495,9 @@ class TrinhDuyet:
         self.dang_xem = tid
         try:
             await self.cdp.call("Target.activateTarget", {"targetId": tid})
+            # Đặt cỡ màn hình CHỈ cho tab đang xem, đúng lúc nó được chọn. Đặt cho tab nền là Chromium chạy ẩn sập
+            # hẳn (SIGSEGV, thấy thật với Chromium 153 khi khôi phục 3 tab rồi đổi cỡ khung, 02/11/2026).
+            await self._dat_kich_thuoc(tab.session)
         except CdpError:
             pass
         await self._bat_chieu(tab.session)
@@ -661,6 +670,10 @@ class TrinhDuyet:
                 self._phat({"type": "download", "state": st, "name": ten, "folder": "downloads"})
             return
         if method == "__closed__":
+            # Chỉ khi chính kết nối ĐANG DÙNG đóng. Một kết nối cũ (Chromium trước đó đã chết, hay lần nối lại hụt) đóng
+            # muộn mà xoá luôn kết nối mới là khung đứng hình với lỗi "'NoneType' object has no attribute 'call'".
+            if p.get("cdp") is not self.cdp:
+                return
             self.cdp = None
             self.tabs.clear()
             self.thu_tu.clear()
@@ -714,14 +727,13 @@ class TrinhDuyet:
         if (w, h) == self.view:
             return
         self.view = (w, h)
-        for t in list(self.tabs.values()):
-            if t.session:
-                try:
-                    await self._dat_kich_thuoc(t.session)
-                except CdpError:
-                    pass
+        # Chỉ tab đang xem (xem chon_tab): tab nền nhận cỡ mới lúc được chọn.
         s = self._session_dang_xem()
         if s:
+            try:
+                await self._dat_kich_thuoc(s)
+            except CdpError:
+                pass
             await self._bat_chieu(s)
         self._phat({"type": "view", "view": [w, h]})
 

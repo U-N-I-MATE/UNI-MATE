@@ -4677,13 +4677,22 @@ select option, select optgroup { background-color: var(--bg2); color: var(--text
 .gh-table th, .gh-table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
 
 /* ============================================================
-   KHUNG TRÌNH DUYỆT (0.430.0, browser-pane.js) - đè lên khoang não như trình sửa note, nhưng NẰM DƯỚI nó
-   (z-index 11 < 12): mở note thì note nổi lên, đóng note là thấy lại trang web đang mở.
+   KHUNG TRÌNH DUYỆT (0.430.0, browser-pane.js)
    ============================================================ */
-.browser-pane { position: absolute; inset: 0; z-index: 11; display: flex; flex-direction: column;
-  background: var(--panel-solid); }
+/* 0.430.1 (chủ repo chốt "Mọi màn", rồi "Ở đồ thị thì k cần màn web"): khung là CỘT BÊN PHẢI cố định dưới thanh trên
+   cùng, rộng --bp-w (kéo mép trái để đổi); trang đang xem (.cview) chừa đúng bề rộng đó. Màn Đồ thị (body không có
+   in-console) không có trình duyệt: ẩn cả nút lẫn khung, browser-pane.js ngắt luồng hình cho đỡ tốn. */
+:root { --bp-w: 640px; }
+.browser-pane { position: fixed; top: var(--topbar-h, 52px); right: 0; bottom: 0; width: var(--bp-w); z-index: 45;
+  display: flex; flex-direction: column; background: var(--panel-solid); border-left: 1px solid var(--border); }
+body:not(.in-console) .browser-pane, body:not(.in-console) .hud-icon-btn.bp-toggle { display: none; }
+body.bp-on.in-console .cview { right: var(--bp-w); }
+.bp-resize { position: absolute; top: 0; bottom: 0; left: -4px; width: 8px; z-index: 6; cursor: col-resize; }
+.bp-resize:hover, .bp-resize.dang-keo { background: var(--accent-line); }
+body.bp-keo, body.bp-keo * { cursor: col-resize !important; user-select: none !important; }
+.browser-pane.bp-full .bp-resize { display: none; }
 .browser-pane[hidden] { display: none; }
-.browser-pane.bp-full { position: fixed; inset: 0; z-index: 1000;
+body.bp-full-on .browser-pane.bp-full { position: fixed; inset: 0; width: auto; z-index: 1000; border-left: none;
   padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
            env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
 body.bp-full-on .cview { z-index: 250; }

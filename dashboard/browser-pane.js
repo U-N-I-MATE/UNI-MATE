@@ -26,6 +26,8 @@
 
   var WS_GOC = (location.protocol === "https:" ? "wss://" : "ws://") + location.host;
   var KHOA_MO = "uni.bp.open";
+  var KHOA_RONG = "uni.bp.w";
+  var RONG_MIN = 360, RONG_MAC_DINH = 640;
 
   var pane, btn, view, canvas, ctx, ime, urlIn, tabsEl, msgEl, dlgEl, toastEl, backBtn, fwdBtn, reloadBtn, fullBtn;
   var ws = null, mo = false, ketNoi = false, thuLai = 0, henNoi = null, henToast = null;
@@ -39,6 +41,7 @@
     btn = document.getElementById("browserPaneBtn");
     if (!pane || !btn) return false;
     pane.innerHTML =
+      '<div class="bp-resize" id="bpResize" role="separator" aria-orientation="vertical" title="' + esc(t("bp.resize")) + '"></div>' +
       '<div class="bp-top">' +
         '<div class="bp-tabs" id="bpTabs" role="tablist"></div>' +
         '<button type="button" class="bp-ic" id="bpNewTab" title="' + esc(t("bp.new_tab")) + '" aria-label="' + esc(t("bp.new_tab")) + '">' + icon("plus") + '</button>' +
@@ -110,6 +113,14 @@
     msgEl.addEventListener("click", function () { if (!ketNoi && mo) noi(); });
     ganChuot();
     ganPhim();
+    ganKeoRong();
+    var w0 = parseInt(doc(KHOA_RONG), 10);
+    if (w0 >= RONG_MIN) document.documentElement.style.setProperty("--bp-w", w0 + "px");
+    // Màn Đồ thị không có trình duyệt (CSS ẩn khung): rời sang Đồ thị thì ngắt luồng hình, quay lại màn khác thì nối lại.
+    // console.js bật/tắt lớp in-console trên <body> khi đổi màn.
+    if (window.MutationObserver) {
+      new MutationObserver(theoMan).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    }
     if (window.ResizeObserver) {
       var hen = null;
       new ResizeObserver(function () {
@@ -128,19 +139,30 @@
     fullBtn.setAttribute("aria-label", fullBtn.title);
   }
 
+  function oManDoThi() { return !document.body.classList.contains("in-console"); }
+
+  /** Đổi màn: Đồ thị không có trình duyệt (chủ repo 02/11/2026), nên ngắt luồng hình khi sang đó và nối lại khi về. */
+  function theoMan() {
+    if (!mo) return;
+    if (oManDoThi()) { if (ws) { clearTimeout(henNoi); ngat(); } }
+    else if (!ws) noi();
+  }
+
   function moKhung() {
     mo = true;
     ghi(KHOA_MO, "1");
+    document.body.classList.add("bp-on");
     pane.hidden = false;
     btn.classList.add("active");
     btn.setAttribute("aria-pressed", "true");
-    if (!ws) noi();
+    if (!ws && !oManDoThi()) noi();
     setTimeout(function () { try { ime.focus({ preventScroll: true }); } catch (e) {} }, 50);
   }
 
   function dong() {
     mo = false;
     ghi(KHOA_MO, null);
+    document.body.classList.remove("bp-on");
     phongTo(false);
     pane.hidden = true;
     btn.classList.remove("active");
@@ -177,7 +199,7 @@
       if (msgEl.getAttribute("data-err") === "1") return;   // lỗi cứng (chưa có trình duyệt): không tự nối lại
       thuLai = Math.min(thuLai + 1, 6);
       baoTin(t("bp.lost"), true);
-      henNoi = setTimeout(function () { if (mo && !ws) noi(); }, 800 * thuLai);
+      henNoi = setTimeout(function () { if (mo && !ws && !oManDoThi()) noi(); }, 800 * thuLai);
     };
   }
 
@@ -320,6 +342,39 @@
     toastEl.hidden = false;
     clearTimeout(henToast);
     henToast = setTimeout(function () { toastEl.hidden = true; }, 5000);
+  }
+
+  // ---------- kéo rộng hẹp ----------
+
+  function datRong(w) {
+    var tran = Math.max(RONG_MIN, window.innerWidth - 420);
+    w = Math.round(Math.max(RONG_MIN, Math.min(tran, w)));
+    document.documentElement.style.setProperty("--bp-w", w + "px");
+    return w;
+  }
+
+  function ganKeoRong() {
+    var tay = document.getElementById("bpResize");
+    if (!tay) return;
+    tay.addEventListener("mousedown", function (e) {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      var phai = pane.getBoundingClientRect().right;
+      var w = pane.getBoundingClientRect().width;
+      tay.classList.add("dang-keo");
+      document.body.classList.add("bp-keo");
+      function di(ev) { w = datRong(phai - ev.clientX); }
+      function tha() {
+        document.removeEventListener("mousemove", di);
+        document.removeEventListener("mouseup", tha);
+        tay.classList.remove("dang-keo");
+        document.body.classList.remove("bp-keo");
+        ghi(KHOA_RONG, w);
+      }
+      document.addEventListener("mousemove", di);
+      document.addEventListener("mouseup", tha);
+    });
+    tay.addEventListener("dblclick", function () { ghi(KHOA_RONG, datRong(RONG_MAC_DINH)); });
   }
 
   // ---------- chuột ----------
