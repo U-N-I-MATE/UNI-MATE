@@ -19567,6 +19567,12 @@ async def terminal_ws(ws: WebSocket, session: str = Query(""), brain: str = Quer
         phien.go_ra(q)
 
 
+# Khung trình duyệt cạnh khung chat (0.430.0): GET /browser/status + WS /ws/browser, ở routes/browser.py.
+# Đứng ngay sau terminal vì cùng loại: một công cụ sống trên máy chủ, dashboard chỉ là màn hình của nó.
+import routes.browser as browser_routes   # noqa: E402
+browser_routes.register(app, browser_routes.BrowserDeps(brain_root=lambda b: _brain_root(b)))
+
+
 # ============================================================
 # Phiên hội thoại - list / view / search / rename / delete (sqlite + fts5)
 # /sessions/search KHAI BÁO TRƯỚC /sessions/{id} để không bị nuốt làm path param.

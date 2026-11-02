@@ -45,6 +45,11 @@ server/mcp_audit.jsonl*
 # connector tự giữ (workspace-mcp); purge-trash giữ tạm chính những thư mục đó 30 ngày sau khi
 # người dùng xoá kết nối, để bấm nhầm còn lấy lại được. Cả hai TUYỆT ĐỐI không lên repo.
 server/connector-home/
+# Hồ sơ Chromium của khung trình duyệt (0.430.0, browser_pane.py): chứa cookie, phiên đăng nhập THẬT của chủ máy.
+# STATE_DIR mặc định là chính server/, nên không che thì `git add -A` đẩy cả phiên đăng nhập lên repo.
+server/browser-profile/
+# Chromium UNI MATE tự tải (optional_tools.py, 0.375.0): vài trăm MB mỗi máy.
+server/browsers/
 server/connector-files/
 server/connector-cred/
 server/purge-trash/

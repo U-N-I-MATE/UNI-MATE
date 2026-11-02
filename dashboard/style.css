@@ -4675,3 +4675,69 @@ select option, select optgroup { background-color: var(--bg2); color: var(--text
 .gh-table-wrap { overflow-x: auto; margin-top: 10px; }
 .gh-table { border-collapse: collapse; width: 100%; font-size: 16px; }
 .gh-table th, .gh-table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+
+/* ============================================================
+   KHUNG TRÌNH DUYỆT (0.430.0, browser-pane.js) - đè lên khoang não như trình sửa note, nhưng NẰM DƯỚI nó
+   (z-index 11 < 12): mở note thì note nổi lên, đóng note là thấy lại trang web đang mở.
+   ============================================================ */
+.browser-pane { position: absolute; inset: 0; z-index: 11; display: flex; flex-direction: column;
+  background: var(--panel-solid); }
+.browser-pane[hidden] { display: none; }
+.browser-pane.bp-full { position: fixed; inset: 0; z-index: 1000;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+           env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+body.bp-full-on .cview { z-index: 250; }
+.bp-top { display: flex; align-items: center; gap: 4px; padding: 6px 8px 0; background: var(--bg2); min-width: 0; }
+.bp-tabs { display: flex; gap: 2px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.bp-tabs::-webkit-scrollbar { display: none; }
+.bp-tab { display: flex; align-items: center; gap: 6px; max-width: 220px; min-width: 90px; height: 32px; padding: 0 6px 0 10px;
+  border: 1px solid transparent; border-bottom: none; border-radius: 8px 8px 0 0; color: var(--text2); cursor: pointer;
+  font-size: 12.5px; flex: 0 1 auto; }
+.bp-tab:hover { background: var(--surface-2); color: var(--text); }
+.bp-tab.active { background: var(--panel-solid); border-color: var(--border); color: var(--text); }
+.bp-tab-ten { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bp-tab-x { flex: none; width: 20px; height: 20px; padding: 0; border: none; border-radius: 4px; background: transparent;
+  color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.bp-tab-x:hover { background: var(--surface-3); color: var(--text); }
+.bp-tab-x svg { width: 13px; height: 13px; }
+.bp-spin { flex: none; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent-line);
+  border-top-color: var(--accent); animation: bp-quay 0.8s linear infinite; }
+@keyframes bp-quay { to { transform: rotate(360deg); } }
+.bp-sp { flex: 1; }
+.bp-ic { flex: none; width: 30px; height: 30px; padding: 0; border: 1px solid transparent; border-radius: 6px;
+  background: transparent; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.bp-ic:hover { background: var(--surface-2); color: var(--accent); border-color: var(--accent-line); }
+.bp-ic svg { width: 16px; height: 16px; }
+.bp-fwd svg { transform: scaleX(-1); }
+.bp-bar { display: flex; align-items: center; gap: 4px; padding: 6px 8px; border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border); background: var(--panel-solid); }
+.bp-url { flex: 1; min-width: 0; height: 30px; padding: 0 12px; border-radius: 15px; border: 1px solid var(--border);
+  background: var(--field-bg); color: var(--text); font-size: 13px; font-family: var(--font); }
+.bp-url:focus { outline: none; border-color: var(--accent-line); box-shadow: var(--accent-ring); }
+.bp-view { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #ffffff; }
+.bp-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* Ô nhận bàn phím: phủ kín canvas, trong suốt hoàn toàn. Nó nhận cả chuột (browser-pane.js đổi toạ độ) và là chỗ
+   bộ gõ của hệ điều hành (Unikey, Vietnamese IME) gõ vào. */
+.bp-ime { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: none; outline: none;
+  resize: none; background: transparent; color: transparent; caret-color: transparent; opacity: 0;
+  cursor: default; overflow: hidden; z-index: 1; }
+.bp-msg { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center;
+  padding: 24px; text-align: center; background: var(--panel-solid); color: var(--text2); font-size: 14px; }
+.bp-msg[hidden] { display: none; }
+.bp-msg.bp-msg-click { cursor: pointer; }
+.bp-dialog { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; flex-wrap: wrap;
+  align-items: center; gap: 8px 12px; padding: 10px 12px; background: var(--panel-solid);
+  border-bottom: 1px solid var(--accent2-line); box-shadow: var(--shadow-2); color: var(--text); font-size: 13px; }
+.bp-dialog .gcard-btn { padding: 4px 14px; font-size: 13px; }
+.bp-dialog[hidden] { display: none; }
+.bp-dlg-msg { flex: 1 1 260px; min-width: 0; white-space: pre-wrap; word-break: break-word; }
+.bp-dlg-in { flex: 1 1 200px; height: 28px; padding: 0 8px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--field-bg); color: var(--text); }
+.bp-dlg-btns { display: flex; gap: 6px; }
+.bp-toast { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 3; max-width: 80%;
+  padding: 8px 14px; border-radius: 8px; background: var(--panel-solid); border: 1px solid var(--border);
+  color: var(--text); font-size: 13px; box-shadow: var(--shadow-2); }
+.bp-toast[hidden] { display: none; }
+.hud-icon-btn.bp-toggle.active { color: var(--accent); }
+/* Bản đầu chưa làm giao diện điện thoại (chốt 02/11/2026): màn hẹp không hiện nút. */
+@media (max-width: 900px) { .hud-icon-btn.bp-toggle { display: none; } }
