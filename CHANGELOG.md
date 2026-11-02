@@ -57,4 +57,8 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 - **Gọi bằng giọng nói là "Uni"**, tên hiển thị là "UNI MATE". Tai nghe tự sửa các cách nghe nhầm hay gặp như "Diu ni", "Yu ni", "U ni mết".
 - **Linh vật UNI MATE mới, cũng là logo và biểu tượng app.** Thân tím, chấm vàng, má hồng, mắt to tròng trắng. Mặc định không có miệng; miệng chỉ hiện lúc đang đọc câu trả lời, lúc xong việc, lúc bạn thả tim và lúc micro bắt được giọng. Có việc nền trả kết quả thì chấm vàng bật lên trên đầu.
 - **Giao diện theo bộ nhận diện UNI TECH:** màu nhấn Tím công nghệ, nhấn phụ vàng kim, nền sáng Sương xanh; phông chữ thương hiệu UNI Sans (tự chứa trong app, không gọi Google Fonts).
-- **Kho tiện ích riêng `unimate-store`** (377 gói) và **công cụ Zalo riêng `unimate-zalo`**.
+- **Kho tiện ích riêng `unimate-store`** (377 gói) và **công cụ Zalo riêng `unimate-zalo`**.## [0.430.1] - 2026-11-02
+### Cải thiện
+- **Nút trình duyệt (quả địa cầu) có ở mọi màn**, ngay cạnh nút Thông báo. Bấm là trình duyệt mở thành cột bên phải màn đang xem: ở màn Hội thoại thì chat bên trái, trình duyệt bên phải. Kéo mép trái của khung để chỉnh rộng hẹp.
+
+

@@ -57,4 +57,8 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **The voice wake name is "Uni"**, the display name is "UNI MATE". The ear fixes common mishearings such as "Diu ni", "Yu ni" and "U ni met".
 - **A new UNI MATE mascot, which is also the logo and app icon.** Purple body, gold dot, pink cheeks, big white-eyed look. No mouth by default; the mouth shows only while reading an answer aloud, when a job finishes, when you heart a reply and when the mic catches your voice. When background work returns a result, the gold dot pops up above its head.
 - **The look follows the UNI TECH brand:** tech-purple accent, gold secondary accent, a cool light background; the brand typeface UNI Sans ships inside the app (no Google Fonts call).
-- **Its own pack store `unimate-store`** (377 packs) and **its own Zalo tool `unimate-zalo`**.
+- **Its own pack store `unimate-store`** (377 packs) and **its own Zalo tool `unimate-zalo`**.## [0.430.1] - 2026-11-02
+### Improved
+- **The browser button (globe) is on every screen**, right next to Notifications. Clicking it opens the browser as a column on the right of the screen you are on: on the Chat screen the chat stays left and the browser sits on the right. Drag the pane's left edge to resize it.
+
+
