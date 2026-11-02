@@ -8,7 +8,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.430.1] - 2026-11-02
 ### Cải thiện
-- **Nút trình duyệt (quả địa cầu) có ở mọi màn**, ngay cạnh nút Thông báo. Bấm là trình duyệt mở thành cột bên phải màn đang xem: ở màn Hội thoại thì chat bên trái, trình duyệt bên phải. Kéo mép trái của khung để chỉnh rộng hẹp.
+- **Nút trình duyệt (quả địa cầu) có ở mọi màn trừ Đồ thị**, ngay cạnh nút Thông báo. Bấm là trình duyệt mở thành cột bên phải màn đang xem: ở màn Hội thoại thì chat bên trái, trình duyệt bên phải. Kéo mép trái của khung để chỉnh rộng hẹp.
+
+### Sửa lỗi
+- **Trình duyệt không còn tự tắt khi vừa mở** lúc có sẵn nhiều tab (ví dụ mở lại các tab của lần trước) rồi đổi cỡ khung.
 
 ## [0.430.0] - 2026-11-02
 ### Thêm mới

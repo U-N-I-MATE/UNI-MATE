@@ -8,7 +8,10 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.430.1] - 2026-11-02
 ### Improved
-- **The browser button (globe) is on every screen**, right next to Notifications. Clicking it opens the browser as a column on the right of the screen you are on: on the Chat screen the chat stays left and the browser sits on the right. Drag the pane's left edge to resize it.
+- **The browser button (globe) is on every screen except the Graph**, right next to Notifications. Clicking it opens the browser as a column on the right of the screen you are on: on the Chat screen the chat stays left and the browser sits on the right. Drag the pane's left edge to resize it.
+
+### Fixed
+- **The browser no longer closes right after opening** when several tabs were already open (for example the tabs restored from last time) and the pane changed size.
 
 ## [0.430.0] - 2026-11-02
 ### Added

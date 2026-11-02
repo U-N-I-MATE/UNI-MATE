@@ -79,10 +79,22 @@ check("chrome:// (trang nội bộ trình duyệt) không mở từ ô địa ch
 
 # ---- 2. Dashboard ----
 check("có nút bật khung trên thanh trên cùng", 'id="browserPaneBtn"' in HTML and 'data-ic="globe"' in HTML)
-check("có khung trong khoang giữa", 'id="browserPane"' in HTML)
+check("có khung trình duyệt", 'id="browserPane"' in HTML)
+# 0.430.1: chủ repo chốt "Mọi màn" - nút nằm cạnh Thông báo (luôn hiện), không trong .hud-actions (bị ẩn ở mọi màn
+# ngoài Đồ thị: đúng lý do bản 0.430.0 không thấy nút ở màn Hội thoại).
+_i_noti = HTML.find('id="notificationTrigger"')
+_i_btn = HTML.find('id="browserPaneBtn"')
+_i_act = HTML.find('<div class="hud-actions">')
+check("CANARY: nút trình duyệt nằm cạnh Thông báo, KHÔNG trong cụm nút bị ẩn ở các màn khác",
+      0 < _i_noti < _i_btn < _i_act, (_i_noti, _i_btn, _i_act))
+check("khung là cột cố định bên phải, trang đang xem chừa đúng bề rộng đó",
+      re.search(r"\.browser-pane \{ position: fixed;", CSS) is not None
+      and "body.bp-on.in-console .cview { right: var(--bp-w); }" in CSS)
+check("màn Đồ thị không có trình duyệt: ẩn nút và khung, ngắt luồng hình (chủ repo 02/11/2026)",
+      "body:not(.in-console) .browser-pane, body:not(.in-console) .hud-icon-btn.bp-toggle { display: none; }" in CSS
+      and "function theoMan()" in JS)
+check("kéo mép trái để đổi rộng hẹp, nhớ bề rộng", 'class="bp-resize"' in JS and "--bp-w" in JS and "KHOA_RONG" in JS)
 check("nạp browser-pane.js", "/static/browser-pane.js" in HTML)
-check("khung nằm DƯỚI trình sửa note (mở note thì note nổi lên)",
-      re.search(r"\.browser-pane \{[^}]*z-index: 11", CSS) is not None and ".note-editor { position: absolute; inset: 0; z-index: 12" in CSS)
 check("ô nhận bàn phím trong suốt phủ canvas (bộ gõ tiếng Việt gõ vào đây)", ".bp-ime {" in CSS and "compositionend" in JS)
 check("dán chữ đi qua sự kiện paste", '"paste"' in JS and 'type: "text"' in JS)
 check("hộp thoại của trang nổi trên hình, không chen bố cục", re.search(r"\.bp-dialog \{ position: absolute", CSS) is not None)
@@ -204,6 +216,14 @@ async def chay_that():
         await browser_ai.lam_tool({"op": "type", "ref": int(ref_u or 0), "text": "Huấn"})
         kq = await browser_ai.lam_tool({"op": "click", "ref": int(ref_b or 0)})
         check("AI gõ chữ có dấu rồi bấm nút bằng chuột thật", "Title: Gui Huấn" in kq, kq[:200])
+        # Đổi cỡ khung khi có nhiều tab: bản 0.430.0 đặt cỡ cho cả tab nền và Chromium chạy ẩn sập (SIGSEGV).
+        await tb.doi_kich_thuoc(700, 500)
+        await asyncio.sleep(0.8)
+        await tb.chon_tab(tb.thu_tu[0])
+        await asyncio.sleep(0.5)
+        await tb.chon_tab(tb.thu_tu[-1])
+        await asyncio.sleep(0.5)
+        check("CANARY: đổi cỡ khung khi có nhiều tab không làm sập trình duyệt", tb.dang_chay() and len(tb.tabs) >= 2)
         kq = await browser_ai.doc_tool({"op": "tabs"})
         check("AI liệt kê tab, đánh dấu tab đang xem", "* Gui Huấn" in kq, kq)
     finally:

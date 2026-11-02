@@ -6626,5 +6626,6 @@
   "bp.dl_done": "Saved to the brain's downloads folder: {name}",
   "bp.dl_cancel": "Download cancelled: {name}",
   "bp.dialog_ok": "OK",
-  "bp.dialog_cancel": "Cancel"
+  "bp.dialog_cancel": "Cancel",
+  "bp.resize": "Drag to resize (double-click: default width)"
 }

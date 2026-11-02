@@ -6626,5 +6626,6 @@
   "bp.dl_done": "Đã tải về thư mục downloads của brain: {name}",
   "bp.dl_cancel": "Đã huỷ tải: {name}",
   "bp.dialog_ok": "Đồng ý",
-  "bp.dialog_cancel": "Huỷ"
+  "bp.dialog_cancel": "Huỷ",
+  "bp.resize": "Kéo để chỉnh rộng hẹp (nhấp đúp: về cỡ mặc định)"
 }
