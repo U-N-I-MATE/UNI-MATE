@@ -5454,16 +5454,15 @@ async def connect_add(request: Request):
             return {"ok": False, "can_force": True, "error": localefmt.chu(
                     "Kết nối này chạy OAuth trên CHÍNH MÁY cài UNI MATE (Google sẽ chuyển về "
                     "localhost:8000), mà bạn đang mở UNI MATE qua domain public - đăng nhập Google "
-                    "sẽ đứt giữa chừng nếu mở trang đăng nhập bằng trình duyệt của máy bạn. Trên VPS: "
-                    "bấm Kết nối lần nữa, rồi mở trang đăng nhập Google trong khung trình duyệt của "
-                    "UNI MATE (nút quả địa cầu) - khung chạy trên chính VPS nên đăng nhập đi trọn. "
-                    "Google từ chối đăng nhập trong khung thì dùng thẻ Lịch và Gmail riêng.",
+                    "sẽ đứt giữa chừng với lỗi không kết nối được. Trên VPS hãy dùng thẻ Lịch "
+                    "và Gmail riêng (hai thẻ đó đăng nhập ngay trong dashboard). Nếu máy chạy "
+                    "UNI MATE có màn hình và bạn sẽ bấm đồng ý trên đó, bấm Kết nối lần nữa.",
                     "This connection runs OAuth on the SAME MACHINE UNI MATE is installed on (Google "
                     "redirects back to localhost:8000), but you are opening UNI MATE through a public "
-                    "domain, so the Google sign-in breaks halfway if you open it in your own browser. On a "
-                    "VPS: click Connect again, then open the Google sign-in page in UNI MATE's browser "
-                    "pane (the globe button) - the pane runs on the VPS itself, so the sign-in completes. "
-                    "If Google refuses the sign-in there, use the separate Calendar and Gmail cards.")}
+                    "domain, so the Google sign-in will break halfway with a connection error. On a "
+                    "VPS, use the separate Calendar and Gmail cards (those two sign in right inside "
+                    "the dashboard). If the machine running UNI MATE has a screen and you will click "
+                    "Allow there, click Connect again.")}
         if _deploy_mode() == "docker":
             # Issue #855: UNI MATE in Docker on the same computer. Google sends the browser back to localhost:8000 on that
             # computer, which reaches the sign-in listener only when the container publishes port 8000
@@ -19568,10 +19567,10 @@ async def terminal_ws(ws: WebSocket, session: str = Query(""), brain: str = Quer
         phien.go_ra(q)
 
 
-# Khung trình duyệt cạnh khung chat (0.430.0): GET /browser/status + WS /ws/browser, ở routes/browser.py.
-# Đứng ngay sau terminal vì cùng loại: một công cụ sống trên máy chủ, dashboard chỉ là màn hình của nó.
-import routes.browser as browser_routes   # noqa: E402
-browser_routes.register(app, browser_routes.BrowserDeps(brain_root=lambda b: _brain_root(b)))
+# 0.430.2: khung trình duyệt (0.430.0-0.430.1) đã gỡ. Máy từng dùng còn Chromium mồ côi chạy ngầm và hồ sơ chứa cookie
+# đăng nhập thật: dọn ở luồng nền lúc khởi động (browser_cleanup.py), không có dấu vết thì không làm gì.
+import browser_cleanup   # noqa: E402
+browser_cleanup.chay_nen()
 
 
 # ============================================================

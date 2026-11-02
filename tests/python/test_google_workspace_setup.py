@@ -129,8 +129,6 @@ check("thẻ Workspace chạy tier extended (có get_gmail_attachment_content; t
       ws.get("args") == ["workspace-mcp@latest", "--tool-tier", "extended"])
 check("kết nối cũ còn y lệnh tier core được nâng lên lệnh mới (lenh_cu)",
       {"command": "uvx", "args": ["workspace-mcp@latest", "--tool-tier", "core"]} in (ws.get("lenh_cu") or []))
-check("hướng dẫn chỉ cách đăng nhập trên VPS bằng khung trình duyệt của UNI MATE",
-      "khung trình duyệt" in (steps[0].get("text", "") if steps else ""))
 
 if _fails:
     print(f"\nFAIL - test_google_workspace_setup: {len(_fails)} lỗi: {_fails}")

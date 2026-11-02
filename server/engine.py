@@ -2205,8 +2205,7 @@ async def _cc_tool_loop(url, headers, model, messages, mcp_tools, mcp_route, rea
 _PHIEN_CODING: contextvars.ContextVar = contextvars.ContextVar("unimate_phien_coding", default=False)
 CAT_KET_QUA_CODING = 60_000
 CAT_RONG = frozenset({"unimate_read_file", "unimate_terminal", "unimate_process", "unimate_search_files",
-                      "unimate_edit_file", "unimate_web_fetch", "unimate_web_search", "unimate_run_command",
-                      "unimate_browser_read", "unimate_browser"})
+                      "unimate_edit_file", "unimate_web_fetch", "unimate_web_search", "unimate_run_command"})
 # Còn ngần này vòng thì nhắc model chốt việc, để lượt kết thúc bằng một bản tóm tắt chứ không bị
 # cắt ngang giữa chừng.
 NHAC_KHI_CON = 10
