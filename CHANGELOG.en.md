@@ -6,6 +6,11 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.437.0] - 2026-11-03
+### Improved
+- **New Claude Code chats use less of your plan allowance.** The instructions sent along (about 43,000 characters) used to differ between chats only by the clock, the chat id and today's usage, so Claude loaded them from scratch for every new chat. They now stay identical and are read back from the prompt cache.
+- The current time still rides on every message; the chat id and today's usage ride on the first message of the chat, so UNI MATE knows as much as before.
+
 ## [0.433.0] - 2026-11-03
 ### Added
 - **Pick a time zone in Settings → Language.** Vietnam (UTC+7) by default; when the device is in another zone, a button uses the device zone. A mistyped zone is rejected instead of saved silently.

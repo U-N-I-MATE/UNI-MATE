@@ -126,6 +126,7 @@ import turn_context      # who is talking in this turn, for tool hooks (`turn` i
 import capability_registry   # Phase 2: registry dẫn xuất, không phải nguồn sự thật
 import capability_resolver   # Phase 3: resolver deterministic chỉ chạy shadow
 import context_compiler      # Phase 4: capsule + quota preflight + quality gate shadow
+import cli_prompt_cache      # 0.437.0: one Claude Code system prompt for every new chat (prompt cache)
 import fast_path_runtime     # Phase 5: dashboard API canary, hard quota + single model call
 import evidence_store        # Phase 6: encrypted provenance/artifact store
 import capability_executor   # Phase 6: one-use read lease + schema validation
@@ -4344,17 +4345,28 @@ def _cli_think(reasoning, message):
     return f"{message}\n\n(Suy nghĩ kỹ trước khi trả lời - {kw})"
 
 
-def _gio_luot_noi_mach(cli, prompt, lang: str = ""):
-    """Gắn giờ gửi tin vào đầu prompt khi lượt này NỐI LẠI phiên Claude Code (`cli.session_id` có giá trị).
+def _gio_luot_noi_mach(cli, prompt, lang: str = "", session_id: str = ""):
+    """Gắn giờ gửi tin vào đầu MỌI prompt gửi Claude Code; lượt MỞ phiên mới gắn thêm mã phiên và mức dùng hôm nay.
 
     Claude Code giữ system prompt của lượt đầu phiên khi --resume, nên câu đồng hồ trong system prompt đông cứng
-    (xem context_compiler.dong_ho_ngan). Phiên MỚI không gắn: system prompt của nó vừa dựng, giờ trong đó đúng.
+    (xem context_compiler.dong_ho_ngan). Từ 0.437.0 system prompt không còn giờ, mã phiên hay mức dùng nữa
+    (cli_prompt_cache.stable_prompt) để mọi cuộc chat mới dùng lại được bộ nhớ đệm, nên các giá trị đó đi theo tin
+    nhắn: giờ ở mọi lượt, mã phiên và mức dùng ở lượt mở phiên (Claude Code giữ tin đó trong mạch khi nối lại).
     Lỗi gì cũng trả nguyên prompt: thiếu dòng giờ không được làm hỏng lượt chat.
     """
-    if not getattr(cli, "session_id", None) or not isinstance(prompt, str):
+    if not isinstance(prompt, str):
         return prompt
     try:
-        return context_compiler.dong_ho_ngan(lang=lang or lang_mod.detect(prompt)[0]) + "\n" + prompt
+        head = context_compiler.dong_ho_ngan(lang=lang or lang_mod.detect(prompt)[0])
+        if not getattr(cli, "session_id", None):
+            try:
+                _today = usage_store.summary().get("today", {}).get("total", {})
+            except Exception:  # noqa: BLE001
+                _today = {}
+            line = cli_prompt_cache.session_line(session_id, _today)
+            if line:
+                head += "\n" + line
+        return head + "\n" + prompt
     except Exception:  # noqa: BLE001
         return prompt
 
@@ -18139,6 +18151,8 @@ async def websocket_endpoint(ws: WebSocket):
                     }))
                 sysprompt, _sub_plan = await _subscription_system_prompt(
                     "cli", cli.model or mcfg.get("claude_model") or "mặc định", kind)
+                # 0.437.0: the same text for every new chat, so Claude Code reads it from the prompt cache.
+                sysprompt = cli_prompt_cache.stable_prompt(sysprompt, conv_sid or "")
                 cli.system_prompt = sysprompt
                 # mode: `full` cho mọi phiên như xưa nay; riêng phiên coding lấy theo chip Mức
                 # quyền của trang đó, vì ở trang ấy người dùng CHỌN mức chứ không thừa kế.
@@ -18146,7 +18160,8 @@ async def websocket_endpoint(ws: WebSocket):
                 _streamed = ""      # phần đã stream - phương án dự phòng khi luồng đứt trước 'final'
                 _cli_sid = None
                 _cost = None
-                _cli_prompt = _gio_luot_noi_mach(cli, _cli_do_sau(cli, reasoning, user_message), _lang_qd.lang)
+                _cli_prompt = _gio_luot_noi_mach(cli, _cli_do_sau(cli, reasoning, user_message), _lang_qd.lang,
+                                                 session_id=conv_sid or "")
                 _cli_fast(cli)
                 if not cli.session_id:
                     # Bỏ --resume là Claude Code mất sạch mạch cũ. Mở mạch mới mà không mang
@@ -23627,7 +23642,8 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
             # khi cwd không còn khớp brain - không thì lượt sau vẫn ghi file vào brain cũ.
             sess["cli"] = claude_engine(system_prompt=sysprompt, cwd=_goc, tag=f"telegram:{chat_id}")
         cli = sess["cli"]
-        cli.system_prompt = sysprompt
+        # 0.437.0: no clock, session id or usage in the prompt itself (prompt cache), see cli_prompt_cache.
+        cli.system_prompt = cli_prompt_cache.stable_prompt(sysprompt, conv_sid or "")
         # Cùng luật với nhánh CLI của web: tên model nhà khác không đưa cho `claude`.
         cli.model = ((api_model if prov == "anthropic-cli" else "")
                      or mcfg.get("claude_model") or None)
@@ -23639,7 +23655,7 @@ async def _tg_answer_engine(text, meta, progress, *, chat_id, sess, brain, mcfg,
         _streamed = ""   # phần đã stream - phương án dự phòng khi luồng đứt trước 'final'
         loi = []
         _pinged = False
-        _cli_prompt = _gio_luot_noi_mach(cli, _cli_do_sau(cli, reasoning, text))
+        _cli_prompt = _gio_luot_noi_mach(cli, _cli_do_sau(cli, reasoning, text), session_id=conv_sid or "")
         _cli_fast(cli)
         if not getattr(cli, "session_id", None):
             # Chưa có mạch native (phiên mới, hoặc vừa restart nên object engine dựng lại từ

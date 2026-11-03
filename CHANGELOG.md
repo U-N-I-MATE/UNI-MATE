@@ -6,6 +6,11 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.437.0] - 2026-11-03
+### Cải thiện
+- **Mở chat mới bằng Claude Code đỡ tốn hạn mức gói hơn.** Trước đây phần hướng dẫn gửi kèm (khoảng 43.000 ký tự) khác nhau giữa các cuộc chat chỉ vì giờ, mã phiên và mức dùng trong ngày, nên mỗi cuộc mới Claude phải nạp lại từ đầu. Giờ phần này giữ y nguyên nên được đọc lại từ bộ nhớ đệm.
+- Giờ hiện tại vẫn đi theo mỗi tin nhắn; mã phiên và mức dùng hôm nay đi theo tin nhắn đầu cuộc chat, nên UNI MATE vẫn biết đủ như cũ.
+
 ## [0.433.0] - 2026-11-03
 ### Thêm mới
 - **Chọn múi giờ ở Cài đặt → Ngôn ngữ.** Mặc định là Việt Nam (UTC+7); máy đang ở múi khác thì có nút dùng múi giờ của thiết bị. Múi giờ gõ sai bị từ chối thay vì lưu ngầm.
