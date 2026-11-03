@@ -616,7 +616,7 @@
   "models.chrome_note": "With two browsers connected, chat only uses the Chrome on your computer, and a schedule with \"Use the server's own Chrome\" on only uses the Chrome on the server. Get the device ids by asking chat to \"list connected browsers\". Leave the schedule id empty and no schedule can use Chrome. Anyone who can open the dashboard can drive these signed-in browsers.",
   "models.chrome_chat": "Chrome device for chat",
   "models.chrome_job": "Chrome device for schedules",
-  "models.chrome_ph": "e.g. 9b3b586d-991d-...",
+  "models.chrome_ph": "For example: 9b3b586d-991d-...",
   "models.chrome_saved": "Chrome devices saved.",
   "models.chrome_bad": "A device id has only letters, digits and dashes.",
   "models.key_change_ph": "Change key (•••{duoi})",

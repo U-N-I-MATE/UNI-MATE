@@ -616,7 +616,7 @@
   "models.chrome_note": "Khi có hai trình duyệt cùng kết nối, chat chỉ dùng Chrome trên máy bạn, còn lịch đã bật \"Dùng Chrome riêng của máy chủ\" chỉ dùng Chrome trên máy chủ. Mã thiết bị lấy bằng cách hỏi chat \"liệt kê trình duyệt đang kết nối\". Bỏ trống mã cho lịch thì không lịch nào được dùng Chrome. Ai vào được dashboard là điều khiển được các Chrome đang đăng nhập này.",
   "models.chrome_chat": "Mã Chrome cho chat",
   "models.chrome_job": "Mã Chrome cho lịch tự động",
-  "models.chrome_ph": "vd 9b3b586d-991d-...",
+  "models.chrome_ph": "Ví dụ: 9b3b586d-991d-...",
   "models.chrome_saved": "Đã lưu mã Chrome.",
   "models.chrome_bad": "Mã thiết bị chỉ gồm chữ, số và dấu gạch ngang.",
   "models.key_change_ph": "Đổi key (•••{duoi})",
