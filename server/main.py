@@ -5,6 +5,8 @@ Kiến trúc: Voice (browser) ⇄ FastAPI WebSocket ⇄ Claude Code CLI subproce
 UNI MATE KHÔNG gọi Anthropic API trực tiếp. Mọi reasoning + tool calling đi qua
 `claude` CLI đã cài trên máy → tự kế thừa MCP, skills, auth.
 """
+import telemetry_off   # 0.438.0: usage statistics off for every child process (before anything starts one)
+telemetry_off.apply()
 import brain_seed_i18n   # file hạt giống của brain mới theo ngôn ngữ người dùng
 import brain_label   # tên hiển thị của brain, tách khỏi thư mục (0.219.0)
 import localefmt   # múi giờ theo cấu hình, thay UTC+7 nhúng cứng

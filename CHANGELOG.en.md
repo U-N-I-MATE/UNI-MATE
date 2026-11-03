@@ -6,6 +6,11 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.438.0] - 2026-11-03
+### Security
+- **UNI MATE turns off usage statistics sent to skill authors.** The Hyperframes pack in the store (1.0.1) sends your HeyGen e-mail and username to its author's statistics server. Every command, skill and engine UNI MATE runs now carries the switch that turns this off, on your PC and on a VPS, so nothing is sent.
+- The common `DO_NOT_TRACK` switch also turns off statistics in the many other tools that honour it.
+
 ## [0.437.1] - 2026-11-03
 ### Fixed
 - **Fewer false reds in the automatic checks.** The start-up speed measurement sometimes went over its ceiling only because the check machine had a slow moment; it now measures up to 3 rounds and keeps the best. Nothing changes in the app.

@@ -140,6 +140,11 @@ ENV UNIMATE_HOST=0.0.0.0 \
 # `security_opt: [apparmor:unconfined]`) để bubblewrap khởi động được.
 ENV UNIMATE_CODEX_SANDBOX=off
 
+# 0.438.0: usage statistics off for anything started in the container, also outside the server (docker exec, the host
+# panel terminal). The server sets the same two at start-up for its own children (server/telemetry_off.py).
+ENV DO_NOT_TRACK=1 \
+    HYPERFRAMES_NO_TELEMETRY=1
+
 # 0.267.0: the release workflow stamps where this image is published (ghcr.io/u-n-i-mate/uni-mate). An image built
 # somewhere else (a PC's `docker build`, then `docker save` / `docker load` onto a VPS) leaves it empty, and the Update
 # page then says that pulling cannot update it, instead of telling the owner to Redeploy (a user's VPS, 21/10/2026, ran
