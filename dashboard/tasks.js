@@ -1225,7 +1225,9 @@
     var lv = f.mq || "full";
     return (f.mode === "do" ? '<div class="nv-fld"><span>' + esc(tw("nv.lp.mode")) + "</span>" + '<div class="nv-seg" role="group">' + [["suggest", "nv.lp.m_suggest"], ["auto", "nv.lp.m_auto"], ["full", "nv.lp.m_full"]].map(function (o) { return '<button type="button" data-act="fset" data-k="mq" data-v="' + o[0] + '" aria-pressed="' + (lv === o[0]) + '">' + esc(tw(o[1])) + "</button>"; }).join("") + "</div>"
         + '<small class="nv-hint' + (lv === "full" ? " full" : "") + '" role="status">' + esc(tw(LP_NOTE[lv])) + "</small></div>" : "")
-      + '<div class="nv-fld nv-opts">' + box("call", "nv.f.call") + box("speak", "nv.f.speak") + (f.mode === "do" ? box("last", "nv.f.last") : "") + "</div>";
+      + '<div class="nv-fld nv-opts">' + box("call", "nv.f.call") + box("speak", "nv.f.speak") + (f.mode === "do" ? box("last", "nv.f.last") : "")
+        // 0.431.0: the dedicated server Chrome (job device on the Claude Code card), full level only.
+        + (f.mode === "do" && lv === "full" ? box("chrome", "nv.f.chrome") : "") + "</div>";
   }
 
   // 0.426.0: a job queued right away keeps the old board's "review the result when done" box, its explanation behind (i).
@@ -1286,7 +1288,7 @@
     } else if (it && it.src === "reminder") {
       var raw = it.raw || {}, ts = stamp(raw.due_at);
       S.form = { edit: it.ref, who: "ai", text: raw.text || it.title, mode: raw.mode === "notify" ? "remind" : "do", date: ts.date, time: ts.time, rule: null, cronLocked: !!(raw.cron || raw.repeat_min),
-        mq: raw.muc_quyen || "full", call: raw.call ? "1" : "", speak: raw.speak ? "1" : "", last: raw.remember_last ? "1" : "", script: raw.mode === "script" };
+        mq: raw.muc_quyen || "full", call: raw.call ? "1" : "", speak: raw.speak ? "1" : "", last: raw.remember_last ? "1" : "", chrome: raw.chrome ? "1" : "", script: raw.mode === "script" };
     } else {
       var inHabit = S.tab === "me" && (S.view === "habit" || (S.phone.screen === "list" && S.phone.list === "habit"));
       S.form = { who: S.tab === "me" ? "me" : "ai", text: "", mode: "do", date: null, time: "", rule: inHabit ? { unit: "day", n: 1 } : null, habit: inHabit ? "1" : "",
@@ -1317,7 +1319,8 @@
         interval_min: String(Math.max(5, Number(f.iv) || 60)) });
     } else if (f.edit) {
       var fields = f.script ? { id: f.edit, brain: b, text: txt } : { id: f.edit, brain: b, text: txt, mode: f.mode === "remind" ? "notify" : "task", muc_quyen: f.mq || "full",
-        call: f.call ? "true" : "false", speak: f.speak ? "true" : "false", remember_last: f.mode === "do" && f.last ? "true" : "false" };
+        call: f.call ? "true" : "false", speak: f.speak ? "true" : "false", remember_last: f.mode === "do" && f.last ? "true" : "false",
+        chrome: f.mode === "do" && (f.mq || "full") === "full" && f.chrome ? "true" : "false" };
       if (!f.cronLocked && f.date) fields.at = f.date + "T" + (f.time || "08:00");
       r = await postForm("/reminders/update", fields);
     } else if (f.kind === "appt") {
@@ -1338,12 +1341,14 @@
     } else if (!f.date && !f.rule && f.mode === "do") {
       r = await postForm("/kanban/task", { brain: b, title: txt.slice(0, 120), intent: txt, priority: 2, needs_approval: f.appr ? "1" : "0" });
     } else {
-      r = await createReminder(txt, f.mode, f.date, f.time, f.rule, { muc_quyen: f.mq || "full", call: !!f.call, speak: !!f.speak, remember_last: f.mode === "do" && !!f.last });
+      r = await createReminder(txt, f.mode, f.date, f.time, f.rule, { muc_quyen: f.mq || "full", call: !!f.call, speak: !!f.speak, remember_last: f.mode === "do" && !!f.last,
+        chrome: f.mode === "do" && (f.mq || "full") === "full" && !!f.chrome });
       if (r === null) return;
     }
     if (r && r.ok === false) { f.err = r.error || tw("nv.err.generic"); renderLayer(); return; }
     S.layer = null; S.form = null; renderLayer();
-    toast(f.edit || f.loop ? tw("nv.saved") : f.kind === "appt" ? tw("nv.ap.added") : f.who === "me" ? (f.habit && f.rule ? tw("nv.h.added") : tw("nv.f.added")) : tw("nv.f.given"));
+    var chromeNote = r && (r.chrome_note || (r.reminder && r.reminder.chrome_note));   // Chrome on but it cannot run
+    if (chromeNote) toast(chromeNote); else toast(f.edit || f.loop ? tw("nv.saved") : f.kind === "appt" ? tw("nv.ap.added") : f.who === "me" ? (f.habit && f.rule ? tw("nv.h.added") : tw("nv.f.added")) : tw("nv.f.given"));
     await load(); render(); schedulePoll();
   }
   async function createReminder(txt, mode, date, time, rule, opts) {

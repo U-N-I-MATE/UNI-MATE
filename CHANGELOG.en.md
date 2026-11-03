@@ -8,7 +8,10 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.431.0] - 2026-11-03
 ### Added
-- (in progress) Scheduled jobs can use a dedicated Chrome on the VPS.
+- **Scheduled jobs can use the server's own Chrome.** Each schedule has a "Use the server's own Chrome" switch (off by default, full level only). When on, the AI uses only the server's Chrome at run time and never touches the Chrome on your computer.
+- **Chat uses the Chrome on your computer automatically**, with no "which browser?" question when two browsers are connected.
+- **Set both browser ids on the Claude Code card (Models page)**: one for chat, one for schedules. Changing machines only means editing these two fields. With no schedule id set, no schedule can use Chrome.
+- Note: anyone who can open the dashboard can drive the signed-in Chrome, so keep the dashboard password safe. Customer bots and schedules made by a bot never get Chrome.
 
 ## [0.430.3] - 2026-11-03
 ### Improved

@@ -29,8 +29,8 @@ check("typed name and interval survive a re-render", /S\.form\.name = g\("#nvLn"
 
 // ---- reminder options
 check("options only when it will be a reminder", /if \(f\.script \|\| \(!f\.edit && !f\.date && !f\.rule && f\.mode !== "remind"\)\) return "";/.test(js));
-check("create sends level, call, read aloud and remember last",
-  /createReminder\(txt, f\.mode, f\.date, f\.time, f\.rule, \{ muc_quyen: f\.mq \|\| "full", call: !!f\.call, speak: !!f\.speak, remember_last: f\.mode === "do" && !!f\.last \}\)/.test(js));
+check("create sends level, call, read aloud, remember last and the server Chrome switch (0.431.0)",
+  /createReminder\(txt, f\.mode, f\.date, f\.time, f\.rule, \{ muc_quyen: f\.mq \|\| "full", call: !!f\.call, speak: !!f\.speak, remember_last: f\.mode === "do" && !!f\.last,\s*chrome: f\.mode === "do" && \(f\.mq \|\| "full"\) === "full" && !!f\.chrome \}\)/.test(js));
 check("createReminder merges the options before the schedule", /opts \|\| \{\}, unimateSchedule\(rule/.test(js));
 check("edit loads the stored options", /mq: raw\.muc_quyen \|\| "full", call: raw\.call \? "1" : "", speak: raw\.speak \? "1" : "", last: raw\.remember_last \? "1" : ""/.test(js));
 

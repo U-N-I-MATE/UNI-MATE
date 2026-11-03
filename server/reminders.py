@@ -119,6 +119,27 @@ MAX_FIRE_PER_TICK = 6          # trần số nhắc bắn mỗi nhịp (chống 
 # The reminder a task run belongs to, so its engine is tagged "reminder:<id>" and POST /reminders/stop
 # can end that one run (a context variable, not a parameter: test stubs replace _run_task).
 _RUN_RID: contextvars.ContextVar = contextvars.ContextVar("reminder_run_id", default="")
+# 0.431.0: the running reminder has its "Dùng Chrome" switch on (claude_chrome.py pins it to the job browser).
+_RUN_CHROME: contextvars.ContextVar = contextvars.ContextVar("reminder_run_chrome", default=False)
+
+
+def chrome_note(rem: dict) -> str:
+    """Why a reminder with its Chrome switch on will still run without a browser ("" when it will get one)."""
+    if not (rem or {}).get("chrome"):
+        return ""
+    if muc_quyen_cua(rem) != "full":
+        return localefmt.chu("Chrome chỉ dùng được ở mức toàn quyền; lịch này sẽ chạy không có trình duyệt.",
+                             "Chrome needs the full level; this schedule will run without a browser.")
+    try:
+        import claude_chrome
+        if not claude_chrome.devices().get("job_device"):
+            return localefmt.chu("Chưa khai mã Chrome cho việc nền ở thẻ Claude Code (trang Models); "
+                                 "lịch này sẽ chạy không có trình duyệt.",
+                                 "No background Chrome device is set on the Claude Code card (Models page); "
+                                 "this schedule will run without a browser.")
+    except Exception:  # noqa: BLE001
+        return ""
+    return ""
 
 
 def _engine_tag() -> str:
@@ -423,7 +444,7 @@ class RemindersFeature:
     def _create(self, brain: str, text: str, *, delay_min=None, at=None, due_at=None,
                 chat_id="", mode="notify", repeat_min=0, label="", cron=None, script="",
                 created_by="user", allow_no_channel=False, muc_quyen=None,
-                remember_last=False, speak=False, call=False, bot_id="") -> dict:
+                remember_last=False, speak=False, call=False, bot_id="", chrome=False) -> dict:
         mode = mode if mode in VALID_MODE else "notify"
         mq = str(muc_quyen or "").strip().lower()
         mq = mq if mq in VALID_MUC_QUYEN else MUC_QUYEN_MAC_DINH
@@ -463,6 +484,9 @@ class RemindersFeature:
             "script": script_name, "label": (label or "")[:120], "status": "pending",
             "muc_quyen": mq,
             "remember_last": bool(remember_last),
+            # 0.431.0: may drive the dedicated job Chrome (task mode only; needs a job device in settings).
+            # A chatbot-made schedule (bot_id) never gets it: customer bots stay away from the owner's browsers.
+            "chrome": bool(chrome) and mode == "task" and not str(bot_id or "").strip(),
             "speak": bool(speak) and mode != "script",
             # 0.203.0: ring the open dashboard as an incoming call at its time (dashboard/incoming-call.js).
             "call": bool(call) and mode != "script",
@@ -499,6 +523,7 @@ class RemindersFeature:
                 # nó SẼ chạy, chứ không phải để trống rồi người dùng tự đoán.
                 "muc_quyen": muc_quyen_cua(r),
                 "remember_last": bool(r.get("remember_last")),
+                "chrome": bool(r.get("chrome")), "chrome_note": chrome_note(r),
                 "speak": bool(r.get("speak")),
                 "call": bool(r.get("call")),
                 # 0.429.0: who made it. bot_id names the chatbot whose turn created it ("" = the owner or UNI MATE Core).
@@ -512,7 +537,7 @@ class RemindersFeature:
 
     def update(self, brain: str, rid: str, *, text=None, label=None, mode=None, chat_id=None,
                cron=None, at=None, delay_min=None, due_at=None, muc_quyen=None,
-               remember_last=None, speak=None, call=None) -> dict:
+               remember_last=None, speak=None, call=None, chrome=None) -> dict:
         """Sửa 1 nhắc/lịch ĐANG CHỜ: nội dung, tên, kiểu, và thời điểm. Trả {"ok", "error",
         "reminder"}. Chỉ nhận tham số được truyền (None = giữ nguyên) nên gọi sửa một phần
         được. Đổi lịch thì tính lại due_at ngay để người dùng thấy lần chạy kế tiếp mới."""
@@ -550,6 +575,10 @@ class RemindersFeature:
             cur["remember_last"] = _truthy(remember_last)
         if speak is not None:
             cur["speak"] = _truthy(speak) and cur.get("mode") != "script"
+        if chrome is not None:
+            cur["chrome"] = _truthy(chrome)
+        if cur.get("mode") != "task" or str(cur.get("bot_id") or "").strip():
+            cur["chrome"] = False   # only an owner's task run can open a browser
         if call is not None:
             cur["call"] = _truthy(call) and cur.get("mode") != "script"
         has_when = any(v not in (None, "") for v in (cron, at, delay_min, due_at))
@@ -819,9 +848,11 @@ class RemindersFeature:
                     "reminder", chat_id=str(rem.get("chat_id") or ""), job=job))
                 try:
                     rid_tok = _RUN_RID.set(str(rem.get("id") or ""))
+                    chrome_tok = _RUN_CHROME.set(bool(rem.get("chrome")))
                     try:
                         body, err = await self._run_task(brain, text, muc_quyen_cua(rem), **extra)
                     finally:
+                        _RUN_CHROME.reset(chrome_tok)
                         _RUN_RID.reset(rid_tok)
                 finally:
                     turn_context.reset(tok)
@@ -1137,6 +1168,12 @@ class RemindersFeature:
                     cli.mcp_config = mcpf
                     cli.mcp_strict = True
         cli = aux_engine.apply(self.deps, cli, mode=mq, tag="reminder")
+        if _RUN_CHROME.get() and mq == "full":
+            # Read by claude_chrome.wanted(); set after aux_engine.apply, which may hand back another engine.
+            try:
+                setattr(cli, "chrome_job", True)
+            except Exception:  # noqa: BLE001 - an engine without attributes simply runs without Chrome
+                pass
         # Trần chung cho fork nền (mặc định 1 giờ, env UNIMATE_BG_MAX_WALL_S). Số cứng 300s cũ
         # từng giết việc lịch thật đang chạy dở - xem doc tại aux_engine.bg_max_wall_s.
         cli.max_wall_s = aux_engine.bg_max_wall_s()
@@ -1223,6 +1260,7 @@ class RemindersFeature:
                         speak=_truthy(p.get("speak")),
                         call=_truthy(p.get("call")),
                         bot_id=str(p.get("bot_id") or ""),
+                        chrome=_truthy(p.get("chrome")),
                     )
             except NotifyNotReady as e:
                 # can_force: chỗ gọi (dashboard/chat) hỏi lại người dùng rồi tạo tiếp với
@@ -1239,6 +1277,8 @@ class RemindersFeature:
                     "remember_last": rem.get("remember_last", False),
                     "speak": rem.get("speak", False),
                     "call": rem.get("call", False),
+                    "chrome": rem.get("chrome", False),
+                    "chrome_note": chrome_note(rem),
                     "next_runs": next_runs(rem["cron"]) if rem["cron"] else [],
                     # Kèm lời đọc để chỗ gọi (chat) nhắc lại lịch bằng tiếng Việt, khỏi bắt user
                     # tự dịch "0 7 * * *".
@@ -1276,13 +1316,15 @@ class RemindersFeature:
                                    cron: str = Form(None), at: str = Form(None),
                                    delay_min: str = Form(None), due_at: str = Form(None),
                                    muc_quyen: str = Form(None), remember_last: str = Form(None),
-                                   speak: str = Form(None), call: str = Form(None)):
+                                   speak: str = Form(None), call: str = Form(None),
+                                   chrome: str = Form(None)):
             """Sửa nhắc/lịch đang chờ (trang Việc định kỳ: nút Sửa). Bỏ trống trường nào thì giữ
             nguyên trường đó; truyền cron HOẶC at/delay_min/due_at để đổi thời điểm."""
             async with self._io:
                 return self.update(brain, id, text=text, label=label, mode=mode, chat_id=chat_id,
                                    cron=cron, at=at, delay_min=delay_min, due_at=due_at,
-                                   muc_quyen=muc_quyen, remember_last=remember_last, speak=speak, call=call)
+                                   muc_quyen=muc_quyen, remember_last=remember_last, speak=speak, call=call,
+                                   chrome=chrome)
 
         @router.post("/reminders/pause")
         async def reminders_pause(id: str = Form(...), brain: str = Form("brain"), paused: str = Form("1")):

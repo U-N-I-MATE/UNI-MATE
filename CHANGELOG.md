@@ -8,7 +8,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.431.0] - 2026-11-03
 ### Thêm mới
-- (đang làm) Lịch tự động dùng được Chrome riêng trên VPS.
+- **Lịch tự động dùng được Chrome riêng trên máy chủ.** Mỗi lịch có công tắc "Dùng Chrome riêng của máy chủ" (mặc định tắt, chỉ ở mức toàn quyền). Bật lên thì lúc tới giờ AI chỉ dùng Chrome của máy chủ, không bao giờ đụng tới Chrome trên máy bạn.
+- **Chat tự dùng đúng Chrome trên máy bạn**, không hỏi lại "dùng trình duyệt nào" khi có hai trình duyệt cùng kết nối.
+- **Khai mã hai trình duyệt ở thẻ Claude Code (trang Models)**: một mã cho chat, một mã cho lịch. Đổi máy chỉ cần sửa hai ô này. Chưa khai mã cho lịch thì không lịch nào được dùng Chrome.
+- Lưu ý: ai vào được dashboard là điều khiển được Chrome đang đăng nhập, nên giữ kỹ mật khẩu dashboard. Bot khách và lịch do bot tạo không bao giờ được dùng Chrome.
 
 ## [0.430.3] - 2026-11-03
 ### Cải thiện

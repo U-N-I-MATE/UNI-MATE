@@ -3580,6 +3580,7 @@
               <span><b>${esc(t("models.auth_key"))}</b>
               ${p.auth_api_key_set ? "" : ` <i>${esc(t("models.auth_key_none"))}</i>`}</span></label>
           </div>
+          ${byKey ? "" : chromeDevices(p)}
           ${planAccts(p, ord)}
         </div>`;
       }
@@ -3624,6 +3625,23 @@
       </div>`;
     };
 
+    // 0.431.0: which Claude in Chrome device the chat and the schedules use (server/claude_chrome.py).
+    // Plan login only: Claude Code turns Chrome off on an API key, so the block hides there.
+    function chromeDevices(p) {
+      const d = p.chrome_devices || {};
+      return `<div class="prov-auth">
+        <div class="prov-auth-title">${esc(t("models.chrome_title"))}${infoBtn()}</div>
+        ${infoBody(`<div class="prov-auth-note">${esc(t("models.chrome_note"))}</div>`)}
+        <div class="prov-action" style="flex-wrap:wrap">
+          <label class="gcard-meta" for="ccChat" style="flex:1 1 100%">${esc(t("models.chrome_chat"))}</label>
+          <input class="js-input" id="ccChat" spellcheck="false" autocomplete="off" style="flex:1 1 100%" value="${esc(d.chat_device || "")}" placeholder="${esc(t("models.chrome_ph"))}">
+          <label class="gcard-meta" for="ccJob" style="flex:1 1 100%">${esc(t("models.chrome_job"))}</label>
+          <input class="js-input" id="ccJob" spellcheck="false" autocomplete="off" style="flex:1 1 100%" value="${esc(d.job_device || "")}" placeholder="${esc(t("models.chrome_ph"))}">
+          <button class="gcard-btn" id="ccSave">${esc(t("common.save"))}</button>
+          <span id="ccMsg" class="gcard-meta" style="margin-left:10px;flex:1"></span>
+        </div>
+      </div>`;
+    }
     const swapRow = (i) => `<div class="ord-swap-row"><button type="button" class="ord-swap" data-swap="${i}" aria-label="${esc(t("models.ord_swap_aria", { a: connList[i - 1].label, b: connList[i].label }))}">${ORD_SWAP} ${esc(t("models.ord_swap"))}</button></div>`;
     const bgName = bgCfg.model || defName(bgCfg.provider);
     const useP = bgUse ? (pById(bgUse.provider) || {}) : {};
@@ -3672,6 +3690,19 @@
         renderModelsCloudTab(el);
       };
     });
+    const ccSave = document.getElementById("ccSave");
+    if (ccSave) ccSave.onclick = async () => {
+      const msg = document.getElementById("ccMsg");
+      const chat = (document.getElementById("ccChat").value || "").trim();
+      const job = (document.getElementById("ccJob").value || "").trim();
+      // Same shape the server keeps (claude_chrome.clean_device); anything else would be saved as empty.
+      const okId = (v) => !v || /^[0-9A-Za-z][0-9A-Za-z-]{3,63}$/.test(v);
+      if (!okId(chat) || !okId(job)) { msg.textContent = t("models.chrome_bad"); return; }
+      ccSave.disabled = true;
+      const r = await saveSetting("model", { claude_chrome: { chat_device: chat, job_device: job } });
+      ccSave.disabled = false;
+      msg.textContent = r && r.ok !== false ? t("models.chrome_saved") : ((r && r.error) || t("app.err_cap"));
+    };
     el.querySelectorAll(".gcard-btn[data-pk]").forEach(b => {
       b.onclick = async () => {
         const pid = b.dataset.pk;

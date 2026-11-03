@@ -79,6 +79,7 @@ import antigravity_cli   # bộ não thứ 10: Antigravity CLI (`agy`) - bản G
 import grok_cli          # bộ não thứ 11: Grok Build CLI (`grok`) - gói SuperGrok / X Premium+
 import totp            # xác thực 2 lớp (TOTP) cho cổng đăng nhập - thuần toán, không đụng cấu hình
 import claude_auth     # gói Claude Code xác thực bằng gì: phiên subscription hay API key
+import claude_chrome   # Claude in Chrome device ids for chat and schedules (0.431.0)
 import aux_engine   # engine việc nền: Claude / Codex / API rẻ
 import model_routing   # 0.350.0: provider order, per-card model/effort, several accounts per provider
 import plan_accounts   # 0.353.0: several accounts on one subscription plan card (Codex, Grok, Claude Code)
@@ -1988,6 +1989,8 @@ def _providers_view(cfg):
             item["auth_mode"] = claude_auth.che_do(cfg)
             item["auth_api_key_set"] = bool(claude_auth.api_key(cfg))
             item["auth_warning"] = claude_auth.canh_bao_neu_can(cfg)
+            # 0.431.0: Claude in Chrome device ids (chat on the owner's PC, schedules on a VPS Chromium).
+            item["chrome_devices"] = claude_chrome.devices(cfg)
             # Cùng lý do với cli_found của Codex: key_field=None làm configured luôn True,
             # nhưng bản cài tay thiếu binary `claude` thì chat chết ngay lượt đầu.
             item["cli_found"] = bool(find_claude_cli())
@@ -5999,6 +6002,12 @@ async def settings_set(section: str = Form(...), data: str = Form("{}")):
         # Gói Claude Code xác thực bằng gì: phiên subscription sẵn có, hay API key riêng.
         # Giá trị lạ về "subscription" thay vì báo lỗi - đây là ô hai lựa chọn, gõ sai thì lui
         # về cái không tốn tiền của người dùng chứ không làm chết đường chat.
+        if isinstance(patch.get("claude_chrome"), dict):
+            # 0.431.0: which Claude in Chrome device the chat and the schedules use (claude_chrome.py).
+            cc = m.setdefault("claude_chrome", {})
+            for key in ("chat_device", "job_device"):
+                if key in patch["claude_chrome"]:
+                    cc[key] = claude_chrome.clean_device(patch["claude_chrome"][key])
         if "claude_auth" in patch:
             m["claude_auth"] = (claude_auth.API_KEY
                                 if str(patch["claude_auth"] or "").strip().lower() == claude_auth.API_KEY
@@ -6274,8 +6283,8 @@ async def settings_set(section: str = Form(...), data: str = Form("{}")):
         try:
             if "claude_auth" in patch:
                 connect_health.engine_reconnected("claude")
-            elif set(patch) == {claude_update.SETTING_KEY}:
-                pass   # the update switch changes no engine, so there is nothing to re-probe
+            elif patch and set(patch) <= {claude_update.SETTING_KEY, "claude_chrome"}:
+                pass   # the update switch and Chrome device ids change no engine, so there is nothing to re-probe
             else:
                 connect_health.probe_engines()
         except Exception as e:

@@ -391,6 +391,10 @@ async def _post_reminder(payload: dict, brain_name: str = "") -> str:
         ra += f" Mức quyền {mq} ({ten})." + (FULL_LEVEL_NOTE if mq == "full" else "")
     if data.get("remember_last"):
         ra += " Mỗi lần chạy sẽ nhận lại kết quả lần trước."
+    if data.get("chrome"):
+        ra += " Lịch này được dùng Chrome riêng của máy chủ (không đụng Chrome trên máy cá nhân)."
+        if data.get("chrome_note"):
+            ra += f" LƯU Ý: {data.get('chrome_note')}"
     if data.get("speak"):
         ra += " Kết quả sẽ kèm tin thoại đọc thành tiếng."
     if data.get("call"):
@@ -469,6 +473,8 @@ async def _do_create(vault_root: str, args: dict) -> str:
         payload["speak"] = True
     if args.get("call"):
         payload["call"] = True
+    if args.get("chrome") and not notify_only:
+        payload["chrome"] = True
     if _turn_bot():
         payload["bot_id"] = _turn_bot()
     payload.update(_reminder_time_payload(schedule))
@@ -551,11 +557,12 @@ async def _do_update(vault_root: str, args: dict) -> str:
     if isinstance(args.get("remember_last"), bool):
         fields["remember_last"] = args["remember_last"]
     call = args.get("call") if isinstance(args.get("call"), bool) else None
-    if not fields and call is None:
+    chrome = args.get("chrome") if isinstance(args.get("chrome"), bool) else None
+    if not fields and call is None and chrome is None:
         return "ERROR: không có gì để sửa - truyền ít nhất một trong name / prompt / schedule."
     if (_loops_dir(vault_root) / f"{rid}.md").is_file():
         if not fields:
-            return "ERROR: việc lặp không gọi điện được; 'call' chỉ dành cho nhắc hẹn."
+            return "ERROR: việc lặp không gọi điện, không dùng Chrome được; 'call' và 'chrome' chỉ dành cho nhắc hẹn."
         return _update_loop_file(vault_root, rid, fields)
     # Kho nhắc hẹn: đổi lịch thì dịch chuỗi lịch sang tham số thời gian như lúc tạo.
     payload = {}
@@ -569,6 +576,8 @@ async def _do_update(vault_root: str, args: dict) -> str:
         payload["remember_last"] = "true" if fields["remember_last"] else "false"
     if call is not None:
         payload["call"] = "true" if call else "false"
+    if chrome is not None:
+        payload["chrome"] = "true" if chrome else "false"
     return await _update_reminder(vault_root, rid, payload)
 
 
@@ -688,6 +697,10 @@ def register(ctx) -> None:
                 "call": {"type": "boolean",
                          "description": ("true = tới giờ UNI MATE GỌI ĐẾN như cuộc gọi trên trang UNI MATE đang mở, user bấm "
                                          "Nghe thì UNI MATE đọc kết quả và nói chuyện tiếp (\"7h gọi đọc báo cáo cho anh\").")},
+                "chrome": {"type": "boolean",
+                           "description": ("true = nhắc hẹn tự làm này được dùng Chrome RIÊNG của máy chủ (mã thiết bị chủ "
+                                           "khai ở thẻ Claude Code, trang Models), cần mức full. Chỉ đặt khi user bảo việc "
+                                           "cần trình duyệt; không bao giờ dùng Chrome trên máy cá nhân của chủ.")},
                 "remember_last": {"type": "boolean",
                                   "description": ("true = mỗi lần chạy nhận lại kết quả lần trước (theo dõi, "
                                                   "báo cái mới). Chỉ cho nhắc hẹn tự làm, không cho loop.")},
