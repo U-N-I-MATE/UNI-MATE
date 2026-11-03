@@ -6,6 +6,12 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.436.0] - 2026-11-03
+### Improved
+- **Teams retry a passing engine error on their own.** An overload, 503, 429 or dropped connection mid-step now reruns the step up to 2 times after a few seconds, instead of waiting for you to press Run again. The team chat shows "Temporary engine error, retrying on its own" meanwhile.
+- **Never a second send or post.** A step with tools that already reached the model is not rerun, since it may have sent a message, posted or written a file. It stops with a note so you can check first.
+- A plan limit, a login error or a bad request is not retried: a few more seconds will not fix it.
+
 ## [0.433.0] - 2026-11-03
 ### Added
 - **Pick a time zone in Settings → Language.** Vietnam (UTC+7) by default; when the device is in another zone, a button uses the device zone. A mistyped zone is rejected instead of saved silently.

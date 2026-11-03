@@ -4509,6 +4509,7 @@
   "teams.archive_confirm": "Archive the team? It will be read only.",
   "teams.reply.queued": "Waiting",
   "teams.reply.answering": "Answering",
+  "teams.reply.auto_retry": "Temporary engine error, retrying on its own (try {n})",
   "teams.typing_reply": "{name} is replying",
   "teams.typing_work": "{name} is working",
   "teams.typing_more": "and {n} more",

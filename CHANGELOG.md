@@ -6,6 +6,12 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.436.0] - 2026-11-03
+### Cải thiện
+- **Team tự thử lại khi engine lỗi thoáng qua.** Gặp lỗi quá tải, 503, 429 hay rớt mạng giữa chừng, bước của Team tự chạy lại tối đa 2 lần sau vài giây, không còn đứng chờ anh bấm Chạy lại. Trong lúc đó khung chat Team hiện "Engine lỗi tạm thời, đang tự thử lại".
+- **Không bao giờ gửi hay đăng hai lần.** Bước có dùng công cụ mà đã chạm tới model rồi mới lỗi thì không tự chạy lại, vì có thể nó đã gửi tin, đăng bài hay ghi file. Bước đó dừng kèm ghi chú để anh kiểm tra trước.
+- Hết hạn mức gói, lỗi đăng nhập hay yêu cầu sai thì không thử lại, vì chờ thêm vài giây cũng không hết lỗi.
+
 ## [0.433.0] - 2026-11-03
 ### Thêm mới
 - **Chọn múi giờ ở Cài đặt → Ngôn ngữ.** Mặc định là Việt Nam (UTC+7); máy đang ở múi khác thì có nút dùng múi giờ của thiết bị. Múi giờ gõ sai bị từ chối thay vì lưu ngầm.
