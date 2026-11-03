@@ -6,6 +6,11 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.440.0] - 2026-11-03
+### Cải thiện
+- **Team tổng hợp tốn ít token hơn.** Trước đây lượt tổng hợp đọc mỗi kết quả của thành viên hai lần (trong lịch sử nhóm và ở phần đầu vào). Giờ mỗi kết quả chỉ có một lần.
+- **Thành viên báo kết quả gọn và thật.** Cuối mỗi bước, thành viên tóm tắt tối đa 3 câu và kể tên file đã ghi. Ai không làm được phần mình thì nói rõ vì sao, việc dừng lại chờ anh quyết, không tốn thêm lượt tổng hợp một kết quả dở. Bấm Chạy lại bước là làm lại đúng phần đó.
+
 ## [0.439.0] - 2026-11-03
 ### Cải thiện
 - **Bước của Team chờ đúng phần nó cần.** Trưởng nhóm giờ ghi được phần nào cần kết quả của phần nào. Ví dụ "B viết bài, C làm ảnh, cả hai dựa trên số liệu của A": B và C cùng làm ngay sau A, thay vì lần lượt như trước.

@@ -52,8 +52,8 @@ OPS_BY_ROLE = {
     "leader_reply": {"propose_job"},
     "member_reply": set(),
     "plan": {"assign", "ask_approval"},
-    "work": {"request_help", "ask_approval"},
-    "help": {"request_help", "ask_approval"},
+    "work": {"request_help", "ask_approval", "not_done"},
+    "help": {"request_help", "ask_approval", "not_done"},
     "synthesize": {"ask_approval"},
     # T3 phần J (0.156.0): lượt tự lên tiếng khi không ai gọi (bộ phán xử chọn). Không lệnh quản trị, không mở việc.
     "member_volunteer": set(),
@@ -2279,6 +2279,10 @@ class TeamRunner:
         # thành viên (kể cả của bạn), có trần số tin và số ký tự (review T1, R2). Tin sau lượt trước của bạn có nhãn "mới".
         after = self.sessions.last_message_id_by(sid, agent_key)
         recent = self.sessions.team_messages_after(sid, 0, NEW_MSG_LIMIT)
+        # 0.440.0: a message that is one of this step's inputs is printed in full under "Đầu vào" below; the history
+        # keeps only a pointer to it, so a summary does not read every result twice. A message longer than an input's cap
+        # stays in full here, since the input copy is cut.
+        in_inputs = {int(r) for r in ((step or {}).get("input_refs") or []) if str(r).isdigit()}
         rendered, size = [], 0
         for m in reversed(recent):
             who = ("Chủ nhóm" if m["author_kind"] == "owner" else
@@ -2286,7 +2290,10 @@ class TeamRunner:
             if m["author_kind"] == "agent" and m["author_ref"] == agent_key:
                 who += " (bạn)"
             mark = " mới" if int(m["id"]) > int(after) else ""
-            row = f"[#{m['id']}{mark} {who}] {m['content']}"
+            body = m["content"]
+            if int(m["id"]) in in_inputs and len(body) <= INPUT_CHARS:
+                body = "(nội dung ở phần Đầu vào bên dưới)"
+            row = f"[#{m['id']}{mark} {who}] {body}"
             if size + len(row) > NEW_MSG_CHARS:
                 break
             rendered.append(row)
@@ -3626,7 +3633,11 @@ class TeamRunner:
                     "file hay link nào, còn vướng gì. Không kể lại từng bước. Một thành viên có nhiều tin thì tin mới nhất "
                     "(số # lớn hơn) thay cho tin cũ.")
         return ("Làm phần việc của bạn và trả kết quả. Cần hỏi thành viên khác thì dùng: "
-                '<!-- UNIMATE_TEAM: {"op": "request_help", "agent": "<mã thành viên>", "question": "..."} -->')
+                '<!-- UNIMATE_TEAM: {"op": "request_help", "agent": "<mã thành viên>", "question": "..."} -->\n'
+                "Cuối câu trả lời, tóm tắt kết quả trong tối đa 3 câu và kể tên file đã ghi (nếu có). Không làm được "
+                "phần của mình thì nói thật vì sao và thêm: "
+                '<!-- UNIMATE_TEAM: {"op": "not_done", "reason": "..."} --> - việc sẽ dừng để chủ nhóm quyết, không '
+                "tổng hợp một kết quả dở.")
 
     def _approved_block(self, step: dict) -> str:
         """The exact calls the owner approved for this step (0.207.0), so the agent repeats them to the letter."""
@@ -3695,9 +3706,15 @@ class TeamRunner:
                              "after": kept_after})
             # Trưởng nhóm CÓ giao mà mọi lệnh giao đều hỏng: không được coi kế hoạch là kết quả việc.
             return kept, ({"assign_dropped": len(ops)} if ops and not kept else {})
+        # 0.440.0: the member says plainly it could not do its part. The job stops for the owner (see _apply_step_locked)
+        # instead of spending a synthesis turn on a broken result. The first one counts.
+        not_done = [op for op in ops if op.get("op") == "not_done"]
+        ops = [op for op in ops if op.get("op") != "not_done"]
+        if not_done:
+            kept.append({"op": "not_done", "reason": str(not_done[0].get("reason") or "").strip()[:500]})
         # work, help: nhờ hỗ trợ (spec 7.4) với trần độ sâu và chặn nhờ ngược
         for op in ops:
-            if kept:
+            if any(k["op"] == "request_help" for k in kept):
                 notes.append("Mỗi lượt chỉ nhờ được một người, đã bỏ lời nhờ thêm")
                 continue
             key = self._resolve(team, op.get("agent"))
@@ -3862,6 +3879,8 @@ class TeamRunner:
     def _clean_outcome(self, team: dict, task: dict, step: dict, out: dict) -> bool:
         if out.get("status") != "done" or not out.get("applied"):
             return False
+        if any(o.get("op") == "not_done" for o in out.get("ops") or []):
+            return False   # 0.440.0: it stops the job, so the good results of the wave go first
         try:
             return self._approval_need(team, task, step, out) is None
         except Exception:  # noqa: BLE001 - unsure: apply it in the second pass
@@ -4076,7 +4095,17 @@ class TeamRunner:
             self.teams.finish_step(sid, "done", mid, True)
             return self._finish(team, task["id"], mid, out["text"], int(step["job_revision"]))
         # work, help
-        helps = out["ops"]
+        stop = next((o for o in out["ops"] if o.get("op") == "not_done"), None)
+        if stop is not None:
+            # 0.440.0: the member could not do its part. Its message stays as the evidence; the step is failed so "Run the
+            # step again" reruns exactly it, and the job waits for the owner instead of summarising a broken result.
+            self.teams.finish_step(sid, "failed", mid, False, "thành viên báo chưa làm được")
+            who = self._name(team, step["agent_key"])
+            why = stop.get("reason") or ""
+            return self._block(task["id"], "failed", localefmt.chu(
+                f"{who} báo chưa làm được phần của mình" + (f": {why}" if why else "") + ". Xem tin của họ rồi chạy lại bước.",
+                f"{who} could not do their part" + (f": {why}" if why else "") + ". Read their message, then run the step again."))
+        helps = [o for o in out["ops"] if o.get("op") == "request_help"]
         if helps:
             h = helps[0]
             ok = self._add_steps(team, task, [{"kind": "help", "agent": h["agent"], "brief": h["question"],

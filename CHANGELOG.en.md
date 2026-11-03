@@ -6,6 +6,11 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.440.0] - 2026-11-03
+### Improved
+- **Team summaries use fewer tokens.** The summary turn used to read every member result twice (in the team history and in its inputs). Each result is now there once.
+- **Members report briefly and honestly.** At the end of a step a member sums up in at most 3 sentences and names the files it wrote. One that could not do its part says why, and the job waits for you instead of spending a summary turn on a broken result. Run the step again to redo just that part.
+
 ## [0.439.0] - 2026-11-03
 ### Improved
 - **Team steps wait for exactly the parts they need.** The leader can now say which part needs the results of which. For "B writes the post, C makes the images, both from A's numbers", B and C work side by side right after A instead of one after the other.
