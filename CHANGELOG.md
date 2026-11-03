@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.434.0] - 2026-11-03
+### Cải thiện
+- **Bảng từ 4 cột trở lên hiện rộng hết khung chat**, không còn bị ép trong cột đọc hẹp rồi phải kéo ngang trên màn hình lớn. Chữ quanh bảng vẫn giữ độ rộng dễ đọc; bảng quá rộng so với màn hình vẫn kéo ngang được.
+
 ## [0.431.0] - 2026-11-03
 ### Thêm mới
 - **Lịch tự động dùng được Chrome riêng trên máy chủ.** Mỗi lịch có công tắc "Dùng Chrome riêng của máy chủ" (mặc định tắt, chỉ ở mức toàn quyền). Bật lên thì lúc tới giờ AI chỉ dùng Chrome của máy chủ, không bao giờ đụng tới Chrome trên máy bạn.
