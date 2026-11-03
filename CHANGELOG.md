@@ -6,6 +6,11 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.439.0] - 2026-11-03
+### Cải thiện
+- **Bước của Team chờ đúng phần nó cần.** Trưởng nhóm giờ ghi được phần nào cần kết quả của phần nào. Ví dụ "B viết bài, C làm ảnh, cả hai dựa trên số liệu của A": B và C cùng làm ngay sau A, thay vì lần lượt như trước.
+- Phần phải chờ chỉ nhận kết quả của đúng các phần nó chờ làm đầu vào. Việc yêu cầu "làm lần lượt" vẫn chạy như cũ.
+
 ## [0.438.0] - 2026-11-03
 ### Bảo mật
 - **UNI MATE tự tắt thống kê gửi về tác giả của skill.** Gói Hyperframes trong Kho cài đặt (bản 1.0.1) gửi email và tên tài khoản HeyGen về máy chủ thống kê của tác giả. Giờ mọi lệnh, skill và engine UNI MATE chạy đều mang sẵn công tắc tắt thống kê, cả bản trên máy lẫn bản VPS, nên không gì được gửi đi.
