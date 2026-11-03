@@ -89,8 +89,11 @@ class _Cli:
 p1 = main._gio_luot_noi_mach(_Cli("abc"), "mấy giờ rồi", "vi")
 check("nối phiên: giờ gửi tin đứng đầu, câu người dùng giữ nguyên ở sau",
       p1.startswith("[") and p1.endswith("\nmấy giờ rồi"), p1)
-check("phiên mới: không gắn (system prompt vừa dựng đã có giờ đúng)",
-      main._gio_luot_noi_mach(_Cli(None), "mấy giờ rồi", "vi") == "mấy giờ rồi")
+# 0.437.0: the system prompt carries no clock any more (prompt cache), so a NEW chat gets the clock line too,
+# plus the session id on the line after it.
+p0 = main._gio_luot_noi_mach(_Cli(None), "mấy giờ rồi", "vi", session_id="abcdef0123456789")
+check("new chat: clock line first, then the session line, the owner's words last",
+      p0.startswith("[") and "abcdef0123456789" in p0.splitlines()[1] and p0.endswith("\nmấy giờ rồi"), p0)
 SRC = (SERVER / "main.py").read_text(encoding="utf-8")
 check("lượt dashboard và lượt Telegram trên Claude Code đều gắn giờ",
       SRC.count("_gio_luot_noi_mach(cli, _cli_do_sau(cli, reasoning,") == 2)
