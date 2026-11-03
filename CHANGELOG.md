@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.431.0] - 2026-11-03
+### Thêm mới
+- (đang làm) Lịch tự động dùng được Chrome riêng trên VPS.
+
 ## [0.430.3] - 2026-11-03
 ### Cải thiện
 - **Chat trên dashboard điều khiển được Chrome thật của bạn** khi dùng Claude Code bằng gói thuê bao. Cài tiện ích Claude in Chrome, mở Claude Code một lần, gõ `/chrome` và chọn Enabled by default là xong; từ lượt chat sau AI mở tab, đọc trang, bấm và điền giúp bạn. Việc nền, bot khách và chế độ API key không được dùng Chrome.

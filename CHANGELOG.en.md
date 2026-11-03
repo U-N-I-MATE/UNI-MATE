@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.431.0] - 2026-11-03
+### Added
+- (in progress) Scheduled jobs can use a dedicated Chrome on the VPS.
+
 ## [0.430.3] - 2026-11-03
 ### Improved
 - **Dashboard chat can drive your real Chrome** when Claude Code runs on a subscription plan. Install the Claude in Chrome extension, open Claude Code once, type `/chrome` and pick Enabled by default; from the next chat turn the AI opens tabs, reads pages, clicks and fills forms for you. Background jobs, customer bots and API key mode never get Chrome.
