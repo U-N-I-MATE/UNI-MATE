@@ -616,6 +616,7 @@ window.UniMateVoiceMode = { refresh: napCaiDatGiong, get: () => voiceMode };
 // Bậc Live: mic bấm là mở phiên nghe nói thẳng thay cho Web Speech. Bản ghi chữ hai chiều
 // vào khung chat như tin thường; orb theo cùng đạo diễn (nói / nghe / gọi tool).
 let _liveUserBubble = null, _liveUniMateText = "", _liveUniMateBubble = null, _liveCtxTimer = null;
+const _livePaint = {};   // pending stream paint of the live voice bubble (stream-paint.js)
 let _liveStartSeq = 0;
 let _liveWaitingWake = false, _liveBusyUntil = 0;
 // Nối lại NHANH (0.65.24, chủ dự án duyệt 02/10). Đo trên server thử: từ lúc người dùng ngừng nói tới
@@ -843,6 +844,7 @@ async function batLive(wakeText = "", { som = false, lanThu = 0 } = {}) {
       clearInterval(_liveCtxTimer); _liveCtxTimer = null; nhapGiong("");
       if (_liveUniMateText.trim() && cuocGoiTrenManHinh()) recordTurn("unimate", _liveUniMateText.trim(), null, null);
       if (_theoLoi && _theoLoi.live) ketThucTheoLoi(true);
+      flushStreamPaint(_livePaint);
       _liveUniMateText = ""; _liveUniMateBubble = null;
       voiceBtn.classList.remove("recording"); runActions(turn.micOff());
     },
@@ -856,7 +858,7 @@ async function batLive(wakeText = "", { som = false, lanThu = 0 } = {}) {
     },
     onSpeakStart: () => runActions(turn.ttsStart()),
     onSpeakEnd: () => { _liveBusyUntil = 0; attention.keepActive(); runActions(turn.ttsEnd()); },
-    onInterrupted: () => { ketThucTheoLoi(true); attention.keepActive(); _liveBusyUntil = Date.now() + 120000; _liveUniMateText = ""; _liveUniMateBubble = null; },
+    onInterrupted: () => { ketThucTheoLoi(true); attention.keepActive(); _liveBusyUntil = Date.now() + 120000; flushStreamPaint(_livePaint); _liveUniMateText = ""; _liveUniMateBubble = null; },
     // Kết quả ĐẦY ĐỦ của bộ não chính (bảng, link, file) thành bong bóng riêng: model nói chuyện
     // chỉ đọc phần tóm tắt, không có bong bóng này thì số liệu chi tiết mất hút (0.65.17).
     onToolResult: (name, text) => {
@@ -885,12 +887,13 @@ async function batLive(wakeText = "", { som = false, lanThu = 0 } = {}) {
       if (!_liveUniMateBubble) _liveUniMateBubble = createStreamingBubble();
       _liveUniMateBubble.dataset.md = _liveUniMateText;   // copy ra markdown gốc, kể cả hội thoại bằng giọng
       if (dangTheoLoi()) batTheoLoi(_liveUniMateBubble, _liveUniMateText, null, true);   // V3: chữ theo tiếng
-      else { _liveUniMateBubble.querySelector(".bubble").innerHTML = markdownToHtml(_liveUniMateText, undefined, _liveUniMateBubble.dataset.anhV); scrollBottom(); }
+      else queueStreamPaint(_livePaint, _liveUniMateBubble, _liveUniMateText);
     },
     onTurnDone: () => {
       _liveBusyUntil = 0; attention.keepActive();
       if (_liveUniMateText.trim() && cuocGoiTrenManHinh()) recordTurn("unimate", _liveUniMateText.trim(), null, null);
       if (_theoLoi && _theoLoi.live && _theoLoi.el === _liveUniMateBubble) _theoLoi.chuaXong = false;   // vẽ đủ khi loa im
+      flushStreamPaint(_livePaint);
       _liveUniMateText = ""; _liveUniMateBubble = null;
       runActions(turn.turnDone());
     },
@@ -1345,7 +1348,7 @@ function handleMessage(data) {
       t.bubble.dataset.md = t.text;   // copy giữa chừng vẫn ra markdown gốc, kể cả khi đang đọc theo giọng
       // V3: đang nói chuyện bằng giọng thì chữ hiện THEO LỜI ĐỌC, không hiện trước loa.
       if (dangTheoLoi() && data.tts !== false && !t.imLoa) batTheoLoi(t.bubble, t.text, null, false);
-      else { t.bubble.querySelector(".bubble").innerHTML = markdownToHtml(t.text, undefined, t.bubble.dataset.anhV); scrollBottom(); }
+      else queueStreamPaint(t, t.bubble, t.text);   // at most one render per frame (stream-paint.js)
       // Đọc NGAY đoạn trung gian (chỉ đọc phiên đang xem). OpenRouter gửi tts:false → đọc 1 lần ở cuối.
       // Voice V3: gom chữ stream thành CỤM đọc được (voice-chunker.js) thay vì đọc từng mẩu.
       // Trước đây mỗi khung stream của bộ não chính (vài từ) là một yêu cầu TTS riêng nên nghe
@@ -1379,6 +1382,7 @@ function handleMessage(data) {
     const finalText = askClean || (t && t.text) || "";
     const shownText = finalText || window.t("app.no_content");
     if (t) t.text = shownText;
+    stopStreamPaint(t);   // a late stream frame must not overwrite the final render below
     if (isActive) {
       hideActivity();
       veKhoiBuoc(t, false);   // het luot: khoi tien trinh gap thanh mot dong "Da chay N buoc"
@@ -1429,6 +1433,7 @@ function handleMessage(data) {
     refreshUsage();     // cập nhật panel Mức dùng sau mỗi lượt
   } else if (data.type === "error") {
     if (t && data.limit) t.limit = data.limit;
+    flushStreamPaint(t);   // the words that did arrive stay on screen above the error
     if (t) t.errored = true;   // khung response rỗng theo sau không vẽ thêm "(không có nội dung)"
     try { if (window.UniMateLenh) window.UniMateLenh.baoLoi(sid); } catch (e) {}   // /goal không chạy tiếp qua một vòng lỗi
     if (isActive) {
@@ -1458,6 +1463,7 @@ function handleMessage(data) {
     // 0.354.0: đường đang chạy hết lượt TRƯỚC khi viết chữ hay gọi công cụ nào, server chạy lại đúng lượt
     // này bằng đường kế tiếp. Bỏ những gì lần chạy đầu đã vẽ (câu "hết lượt" lỡ stream ra), để lại một dòng
     // nói vì sao đổi đường, rồi chờ câu trả lời của đường mới như một lượt thường.
+    stopStreamPaint(t);
     if (t) { t.text = ""; t.limit = null; t.errored = false; t.spoke = false; }
     if (isActive) {
       if (t && t.bubble) { try { t.bubble.remove(); } catch (e) {} t.bubble = null; }
@@ -2636,6 +2642,21 @@ function appendLenhReply(md) {
   chatAppend(div); scrollBottom(true);
   return div;
 }
+// Stream frames are painted through stream-paint.js: the newest text, at most once per
+// frame, slower when a render gets expensive. Rendering every chunk re-parsed the whole
+// answer each time and froze the tab on long replies. `holder` is the turn (or _livePaint).
+function paintStreamJob(job) {
+  if (!job.el.isConnected || dangTheoLoi()) return;   // switched chat, or voice took over the bubble
+  job.el.querySelector(".bubble").innerHTML = markdownToHtml(job.text, undefined, job.el.dataset.anhV);
+  scrollBottom();
+}
+function queueStreamPaint(holder, el, text) {
+  if (!window.UniMateStreamPaint) { paintStreamJob({ el, text }); return; }
+  if (!holder.paint) holder.paint = window.UniMateStreamPaint.make(paintStreamJob);
+  holder.paint.push({ el, text });
+}
+function stopStreamPaint(holder) { if (holder && holder.paint) holder.paint.cancel(); }
+function flushStreamPaint(holder) { if (holder && holder.paint) holder.paint.flush(); }
 function createStreamingBubble() {
   const div = document.createElement("div");
   div.className = "msg msg-unimate";

@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.435.0] - 2026-11-03
+### Fixed
+- **Long answers no longer freeze the page while they stream in.** Every chunk used to redraw the whole answer, so the longer it got the more it stuttered, then stalled. Text now paints at most once per frame and backs off on very long answers; voice calls get the same fix.
+
 ## [0.431.0] - 2026-11-03
 ### Added
 - **Scheduled jobs can use the server's own Chrome.** Each schedule has a "Use the server's own Chrome" switch (off by default, full level only). When on, the AI uses only the server's Chrome at run time and never touches the Chrome on your computer.

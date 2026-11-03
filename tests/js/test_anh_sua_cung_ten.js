@@ -59,7 +59,8 @@ check("mọi chỗ vẽ lại bong bóng của UNI MATE đều chuyển phiên b
   /markdownToHtml\(t\.text, undefined, t\.bubble\.dataset\.anhV\)/.test(app)
   && /markdownToHtml\(shownText, undefined, msgEl\.dataset\.anhV\)/.test(app)
   && /markdownToHtml\(s\.text, undefined, s\.el\.dataset\.anhV\)/.test(app)
-  && /markdownToHtml\(_liveUniMateText, undefined, _liveUniMateBubble\.dataset\.anhV\)/.test(app));
+  // 0.43x: streamed text (chat and live voice) is painted by paintStreamJob, once per frame.
+  && /markdownToHtml\(job\.text, undefined, job\.el\.dataset\.anhV\)/.test(app));
 
 if (fails.length) { console.log("\nFAIL:", fails.length, fails); process.exit(1); }
 console.log("\nOK - ảnh sửa cùng tên hiện ảnh mới");
