@@ -106,7 +106,7 @@ def clean_repeat(r) -> Optional[dict]:
 def clean_habit(h) -> Optional[dict]:
     if not isinstance(h, dict):
         return None
-    out = {"start": _clean_date(h.get("start")) or time.strftime("%Y-%m-%d"),
+    out = {"start": _clean_date(h.get("start")) or localefmt.today_str(),
            "remind": h.get("remind") if h.get("remind") in REMINDS else "auto",
            "at": _clean_time(h.get("at")) or "21:00"}
     if h.get("off"):
@@ -514,7 +514,7 @@ class MyTasks:
             return _err("không thấy việc này", "task not found")
         by = "unimate" if by == "unimate" else "me"
         if task.get("repeat"):
-            d = _clean_date(date) or time.strftime("%Y-%m-%d")
+            d = _clean_date(date) or localefmt.today_str()
             dd = task.setdefault("done_dates", {})
             if done:
                 dd[d] = {"at": _now(), "by": by}

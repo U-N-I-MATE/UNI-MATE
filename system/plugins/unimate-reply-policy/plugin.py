@@ -64,7 +64,13 @@ def _int(v, default=None):
 
 
 def _ts(t) -> str:
-    return time.strftime("%Y-%m-%d %H:%M", time.localtime(float(t or 0))) if t else "chưa"
+    if not t:
+        return "chưa"
+    try:
+        import localefmt   # the owner's clock, not the server's
+        return localefmt.clock(float(t))
+    except Exception:  # noqa: BLE001
+        return time.strftime("%Y-%m-%d %H:%M", time.localtime(float(t)))
 
 
 # ============================================================

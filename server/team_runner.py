@@ -586,8 +586,12 @@ class TeamRunner:
         return None
 
     def _day_start(self) -> float:
-        lt = time.localtime(self.clock())
-        return time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, 0, 0, 0, 0, 0, -1))
+        try:
+            import localefmt   # the owner's day, not the machine's (a VPS runs on UTC)
+            return localefmt.day_start(self.clock())
+        except Exception:  # noqa: BLE001 - a daily cap must never fail over a settings read
+            lt = time.localtime(self.clock())
+            return time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, 0, 0, 0, 0, 0, -1))
 
     def _daily_left(self, team: dict) -> bool:
         return self._daily_left_for(team, None)

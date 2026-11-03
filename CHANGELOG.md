@@ -6,6 +6,13 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.433.0] - 2026-11-03
+### Thêm mới
+- **Chọn múi giờ ở Cài đặt → Ngôn ngữ.** Mặc định là Việt Nam (UTC+7); máy đang ở múi khác thì có nút dùng múi giờ của thiết bị. Múi giờ gõ sai bị từ chối thay vì lưu ngầm.
+
+### Sửa lỗi
+- **"Hôm nay" theo múi giờ đã chọn, không theo đồng hồ máy chủ.** Trên VPS chạy UTC, từ 0 giờ đến 7 giờ sáng UNI MATE còn tưởng là hôm qua: hạn mức theo ngày của cộng sự và Team, thói quen đã tick, nhật ký và giờ in trong ghi chú đều lệch 7 tiếng. Nay tất cả lấy cùng một mốc ngày.
+
 ## [0.432.0] - 2026-11-03
 ### Sửa lỗi
 - **Claude báo "You've hit your 5-hour limit" giờ được nhận ra là hết hạn mức.** Trước đây câu tiếng Anh này hiện ra như câu trả lời và không có thẻ tự chạy lại; giờ chat báo hết lượt trong cửa sổ 5 giờ, có thẻ hẹn chạy lại đúng lúc mở. Câu báo hết hạn mức tuần cũng nhận đúng gói Claude.

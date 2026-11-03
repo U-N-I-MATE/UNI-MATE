@@ -65,12 +65,20 @@ def ensure(store, force: bool = False) -> None:
 
 
 def day_start(at: float) -> float:
-    lt = time.localtime(at)
-    return time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, 0, 0, 0, 0, 0, -1))
+    try:
+        import localefmt   # the owner's day, not the machine's (a VPS runs on UTC)
+        return localefmt.day_start(at)
+    except Exception:  # noqa: BLE001 - a daily cap must never fail over a settings read
+        lt = time.localtime(at)
+        return time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, 0, 0, 0, 0, 0, -1))
 
 
 def day_tag(at: float) -> str:
-    return time.strftime("%Y-%m-%d", time.localtime(at))
+    try:
+        import localefmt
+        return localefmt.day_tag(at)
+    except Exception:  # noqa: BLE001
+        return time.strftime("%Y-%m-%d", time.localtime(at))
 
 
 def get_cap(store, agent_key: str) -> Optional[int]:

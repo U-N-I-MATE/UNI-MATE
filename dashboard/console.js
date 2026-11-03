@@ -6819,6 +6819,49 @@
   }
 
   // ---- Lưu 1 section settings ----
+  // ---- time zone picker helpers (Settings > Language) ----
+  function deviceTimeZone() {
+    try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) { return ""; }
+  }
+  // "GMT+7" style offset of a zone right now; "" when the browser cannot tell.
+  function tzOffsetLabel(zone) {
+    try {
+      const part = new Intl.DateTimeFormat("en-US", { timeZone: zone, timeZoneName: "shortOffset" })
+        .formatToParts(new Date()).find(p => p.type === "timeZoneName");
+      return part ? part.value.replace("GMT", "UTC") : "";
+    } catch (e) { return ""; }
+  }
+  const TZ_FALLBACK = ["Asia/Ho_Chi_Minh", "Asia/Bangkok", "Asia/Singapore", "Asia/Shanghai", "Asia/Tokyo",
+    "Asia/Seoul", "Asia/Kolkata", "Asia/Dubai", "Australia/Sydney", "Europe/London", "Europe/Paris",
+    "Europe/Berlin", "America/New_York", "America/Chicago", "America/Los_Angeles", "UTC"];
+  let _tzList = null;
+  // Every zone the browser knows, the saved one and this device's one always included, the
+  // device's zone first so the usual pick is one click away.
+  function tzChoices(saved, device) {
+    if (!_tzList) {
+      let all = [];
+      try { all = (Intl.supportedValuesOf && Intl.supportedValuesOf("timeZone")) || []; } catch (e) { all = []; }
+      if (!all.length) all = TZ_FALLBACK.slice();
+      if (!all.includes("UTC")) all.push("UTC");
+      _tzList = all.map(z => ({ ma: z, nhan: z.replace(/_/g, " "), off: tzOffsetLabel(z) }));
+    }
+    const rows = _tzList.slice();
+    for (const z of [saved, device]) {
+      if (z && !rows.some(r => r.ma === z)) rows.push({ ma: z, nhan: z.replace(/_/g, " "), off: tzOffsetLabel(z) });
+    }
+    const label = r => `${r.nhan}${r.off ? ` (${r.off})` : ""}${r.ma === device ? ` - ${t("settings.tz.this_device")}` : ""}`;
+    const first = rows.filter(r => r.ma === device);
+    return first.concat(rows.filter(r => r.ma !== device)).map(r => ({ ma: r.ma, ten: label(r) }));
+  }
+  function tzClockLine(zone) {
+    try {
+      const now = new Intl.DateTimeFormat(UniMateI18n.lang() === "en" ? "en-GB" : "vi-VN", {
+        timeZone: zone, weekday: "long", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
+      }).format(new Date());
+      return t("settings.tz.now", { now });
+    } catch (e) { return ""; }
+  }
+
   async function saveSetting(section, dataObj) {
     const fd = new FormData();
     fd.append("section", section);
@@ -7609,6 +7652,10 @@
     const langs = (s.lang_list || []);
     const replyLang = lc.reply_lang || "auto";
     const uiLang = (window.UniMateI18n && UniMateI18n.lang()) || "vi";
+    // Time zone: decides what "today" means for daily caps, habits, reminders and every clock
+    // UNI MATE prints. Stored on the server because background work has no browser to ask.
+    const tzSaved = lc.tz || (s.locale_fmt && s.locale_fmt.tz) || "Asia/Ho_Chi_Minh";
+    const tzDevice = deviceTimeZone();
     // MỘT thẻ cho cả hai ô ngôn ngữ (0.58.8). Trước là hai thẻ riêng nằm cạnh nhau trong lưới,
     // mỗi thẻ đúng một ô chọn - hai cái khung cho hai dòng chữ.
     const langHtml = `
@@ -7630,6 +7677,15 @@
           </select>
         </div>
         ${infoBody(esc(t("settings.lang.hint")))}
+        <div class="qs-field">
+          <label class="qs-lbl" for="vpTz">${esc(t("settings.tz.title"))}${infoBtn()}</label>
+          <select class="js-input" id="vpTz">
+            ${tzChoices(tzSaved, tzDevice).map(z => opt(z.ma, z.ten, tzSaved)).join("")}
+          </select>
+        </div>
+        ${infoBody(esc(t("settings.tz.hint")))}
+        <div class="gcard-meta" id="vpTzMeta">${esc(tzClockLine(tzSaved))}</div>
+        ${tzDevice && tzDevice !== tzSaved ? `<button class="gcard-btn ghost" id="vpTzDevice">${esc(t("settings.tz.use_device", { tz: tzDevice }))}</button>` : ""}
       </div>`;
 
     el.innerHTML = `<div class="settings-page">
@@ -7717,6 +7773,15 @@
         const r = await saveSetting("locale", { reply_lang: sel.value });
         toast(r && r.ok ? t("settings.lang.saved") : t("settings.save_failed"), !(r && r.ok));
       };
+      const selTz = document.getElementById("vpTz");
+      const saveTz = async (zone) => {
+        const r = await saveSetting("locale", { tz: zone });
+        toast(r && r.ok ? t("settings.tz.saved", { tz: zone }) : ((r && r.error) || t("settings.save_failed")), !(r && r.ok));
+        if (r && r.ok) refreshSettings();
+      };
+      if (selTz) selTz.onchange = () => saveTz(selTz.value);
+      const tzBtn = document.getElementById("vpTzDevice");
+      if (tzBtn) tzBtn.onclick = () => saveTz(tzDevice);
       const selUi = document.getElementById("vpUiLang");
       if (selUi) selUi.onchange = async () => {
         // Đổi NGAY trên máy này trước, rồi mới lưu lên server. Ngôn ngữ giao diện là lựa chọn

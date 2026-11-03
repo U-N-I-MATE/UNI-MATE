@@ -70,8 +70,8 @@ def _proposal(args: dict) -> dict:
 
 def _when(ts) -> str:
     try:
-        import time
-        return time.strftime("%Y-%m-%d %H:%M", time.localtime(float(ts)))
+        import localefmt   # the owner's clock, not the server's
+        return localefmt.clock(float(ts))
     except Exception:  # noqa: BLE001
         return "?"
 

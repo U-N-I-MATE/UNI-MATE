@@ -245,10 +245,7 @@ class TasksFeature:
             for task in tasks:
                 task["log"] = [
                     {
-                        "ts": time.strftime(
-                            "%Y-%m-%d %H:%M",
-                            time.localtime(float(event.get("created_at") or 0)),
-                        ),
+                        "ts": localefmt.clock(float(event.get("created_at") or 0)),
                         "msg": event.get("message") or event.get("event_type") or "",
                     }
                     for event in events.get(task["id"], [])
