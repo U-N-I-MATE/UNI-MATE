@@ -126,7 +126,8 @@ def _env_sach() -> dict:
     env.setdefault("PATH", os.defpath)
     # Chặn pytest/python đọc nhầm cấu hình của chính UNI MATE.
     env["PYTHONDONTWRITEBYTECODE"] = "1"
-    return env
+    import telemetry_off   # 0.438.0: built from scratch, so it does not inherit the statistics switches
+    return dict(telemetry_off.apply(env))
 
 
 def tach(command: str) -> tuple[list[str], str]:

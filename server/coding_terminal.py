@@ -101,7 +101,8 @@ def env_sach() -> Dict[str, str]:
     # đứng chờ nhập mật khẩu git là một lệnh treo tới hết giờ.
     env.update({"TERM": "dumb", "PAGER": "cat", "GIT_PAGER": "cat", "NO_COLOR": "1",
                 "GIT_TERMINAL_PROMPT": "0", "PYTHONUNBUFFERED": "1", "UNIMATE_TERMINAL": "1"})
-    return env
+    import telemetry_off   # 0.438.0: this environment is built from scratch, so it does not inherit the switches
+    return dict(telemetry_off.apply(env))
 
 
 # ---------------------------------------------------------------------------------------
