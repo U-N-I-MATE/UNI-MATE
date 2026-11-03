@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.435.0] - 2026-11-03
+### Fixed
+- **Long answers no longer freeze the page while they stream in.** Every chunk used to redraw the whole answer, so the longer it got the more it stuttered, then stalled. Text now paints at most once per frame and backs off on very long answers; voice calls get the same fix.
+
 ## [0.434.0] - 2026-11-03
 ### Improved
 - **Tables with 4 or more columns use the full chat width** instead of a narrow reading column that had to be scrolled sideways on a big screen. Text around the table keeps its readable width; a table wider than the screen still scrolls sideways.

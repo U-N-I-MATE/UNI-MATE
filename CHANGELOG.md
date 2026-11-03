@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.435.0] - 2026-11-03
+### Sửa lỗi
+- **Câu trả lời dài không còn làm đơ trang khi chữ đang chảy về.** Trước đây mỗi mẩu chữ vẽ lại toàn bộ câu trả lời, nên câu càng dài càng giật rồi đứng hẳn. Nay chữ được vẽ tối đa một lần mỗi khung hình và tự giãn nhịp khi câu rất dài; áp dụng cả cho cuộc gọi bằng giọng.
+
 ## [0.434.0] - 2026-11-03
 ### Cải thiện
 - **Bảng từ 4 cột trở lên hiện rộng hết khung chat**, không còn bị ép trong cột đọc hẹp rồi phải kéo ngang trên màn hình lớn. Chữ quanh bảng vẫn giữ độ rộng dễ đọc; bảng quá rộng so với màn hình vẫn kéo ngang được.

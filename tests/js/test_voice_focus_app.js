@@ -32,6 +32,7 @@ const box = {
   _tinChoTimer: null, _tinChoLuot: null, _tinDutMangTimer: null, _tinDutMang: [], _choTaiLen: null,
   _sendEpoch: 0, _tuGiong: false,
   _theoLoi: null, _liveCtxTimer: null, _callSid: null,
+  _livePaint: {}, flushStreamPaint: noop, queueStreamPaint: noop,
   runActions: noop, petReact: noop, nhapGiong: t => drafts.push(t), veTinTuGiong: t => t, sendMessage: t => sent.push(t),
   capNhatOrb: noop, appendUserMessage: noop, recordTurn: (role, text) => stored.push([role, text]),
   currentBrainPath: () => 'brain', persistSession: noop, guiNguCanhLive: noop,
