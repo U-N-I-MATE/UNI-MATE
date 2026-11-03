@@ -157,6 +157,25 @@ SUBSCRIPTION_LABEL = {
 }
 
 
+def _reset_clock_text(reset: float, now: float) -> str:
+    """"15:00", or "15:00 ngày 04/11" when the reset falls on another day, in the owner's time zone.
+
+    Read in the time zone chosen in Settings (localefmt), not the machine clock: on a VPS the
+    machine runs on UTC, so the notice used to say 08:00 for a reset at 15:00 Vietnam time."""
+    from datetime import datetime
+    try:
+        import localefmt
+        zone = localefmt.tz()
+    except Exception:   # noqa: BLE001 - a notice must never fail over a settings read
+        zone = None
+    at = datetime.fromtimestamp(reset, zone) if zone else datetime.fromtimestamp(reset)
+    today = datetime.fromtimestamp(now, zone) if zone else datetime.fromtimestamp(now)
+    text = at.strftime("%H:%M")
+    if at.date() != today.date():
+        text += " ngày " + at.strftime("%d/%m")
+    return text
+
+
 def subscription_blocked_hint(limit, configured_providers=(), now=None) -> str:
     """Câu giải thích khi GÓI THUÊ BAO hết lượt, kèm lối ra.
 
@@ -179,7 +198,7 @@ def subscription_blocked_hint(limit, configured_providers=(), now=None) -> str:
     if reset > ts:
         con = int(reset - ts)
         gio, phut = con // 3600, (con % 3600) // 60
-        khi_nao = _time.strftime("%H:%M", _time.localtime(reset))
+        khi_nao = _reset_clock_text(reset, ts)
         cho = f"{gio} giờ {phut} phút" if gio else f"{phut} phút"
         # Keep the provider's own words too: they carry its time zone ("resets 1:50am (Asia/Bangkok)"),
         # which the local HH:MM above has converted away.

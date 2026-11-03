@@ -294,8 +294,16 @@ _SUB_PATTERNS: tuple[tuple[str, str, str, re.Pattern], ...] = (
      re.compile(r"claude\s+(ai\s+)?(usage|api)?\s*limit\s+reached", re.I)),
     ("claude_reached", "claude-code", "",
      re.compile(r"(you'?ve\s+)?reached\s+your\s+(current\s+)?usage\s+limit", re.I)),
+    # "You've hit your 5-hour limit · resets 3pm (UTC)" and the weekly twin: Claude Code's newer
+    # wording names the window. Neither "5-hour limit reached" nor "hit your limit" matches it, so
+    # the English line used to land in chat as if it were the answer, with no retry card. The text
+    # names no engine (Codex words its weekly limit the same way), so the caller's hint decides.
+    ("sub_5h", "", "5 giờ",
+     re.compile(r"(you'?ve\s+)?(hit|reached)\s+your\s+5[\s-]?hour\s+limit", re.I)),
+    ("sub_weekly", "", "tuần",
+     re.compile(r"(you'?ve\s+)?(hit|reached)\s+your\s+weekly\s+limit", re.I)),
     ("codex_hit", "codex", "",
-     re.compile(r"(you'?ve\s+)?(hit|reached)\s+your\s+(usage|plan|weekly)\s+limit", re.I)),
+     re.compile(r"(you'?ve\s+)?(hit|reached)\s+your\s+(usage|plan)\s+limit", re.I)),
     ("codex_quota", "codex", "",
      re.compile(r"usage\s+limit\s+reached|quota\s+exceeded\s+for\s+your\s+plan", re.I)),
     # "You've hit your session limit · resets 12pm (UTC)". Câu này KHÔNG tự nói nhà nào, nên
