@@ -6,6 +6,13 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.433.0] - 2026-11-03
+### Added
+- **Pick a time zone in Settings → Language.** Vietnam (UTC+7) by default; when the device is in another zone, a button uses the device zone. A mistyped zone is rejected instead of saved silently.
+
+### Fixed
+- **"Today" follows the chosen time zone, not the server clock.** On a VPS running UTC, UNI MATE thought it was still yesterday between 00:00 and 07:00: daily caps of partners and Teams, ticked habits, logs and printed clocks were all seven hours off. They now share one day boundary.
+
 ## [0.432.0] - 2026-11-03
 ### Fixed
 - **Claude's "You've hit your 5-hour limit" is now recognised as a plan limit.** The English line used to show up as the answer with no retry card; chat now says the 5-hour window is used up and schedules the retry for when it reopens. The weekly limit message is also tied to the Claude plan.

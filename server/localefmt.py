@@ -48,6 +48,19 @@ def _tu_ten(ten: str) -> tzinfo:
     return z
 
 
+def hop_le_tz(ten: str) -> bool:
+    """True when `ten` is an IANA zone this machine can load ("Asia/Ho_Chi_Minh", "UTC")."""
+    ten = str(ten or "").strip()
+    if not ten or len(ten) > 64:
+        return False
+    try:
+        from zoneinfo import ZoneInfo
+        ZoneInfo(ten)
+        return True
+    except Exception:
+        return False
+
+
 def _cau_hinh() -> dict:
     try:
         return cfgmod.read_settings().get("locale") or {}
@@ -136,6 +149,30 @@ def now() -> datetime:
 
 def today_str() -> str:
     return now().strftime("%Y-%m-%d")
+
+
+def at(ts: float | None = None) -> datetime:
+    """An epoch read in the owner's time zone. `None` means now.
+
+    Replaces `time.localtime(ts)`, which reads the MACHINE zone: a VPS runs on UTC, so every
+    "today", daily cap and printed clock there was seven hours behind the owner."""
+    import time as _time
+    return datetime.fromtimestamp(_time.time() if ts is None else float(ts), tz())
+
+
+def day_start(ts: float | None = None) -> float:
+    """Epoch of 00:00 on the owner's calendar day that contains `ts`."""
+    return at(ts).replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+
+
+def day_tag(ts: float | None = None) -> str:
+    """"YYYY-MM-DD" of the owner's calendar day that contains `ts`."""
+    return at(ts).strftime("%Y-%m-%d")
+
+
+def clock(ts: float | None = None, pattern: str = "%Y-%m-%d %H:%M") -> str:
+    """Format an epoch for people to read, in the owner's time zone."""
+    return at(ts).strftime(pattern)
 
 
 def doi_mui(moc: datetime) -> datetime:

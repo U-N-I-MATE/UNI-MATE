@@ -476,8 +476,12 @@ class MandateEngine:
 
     @staticmethod
     def _day_start(now: float) -> float:
-        lt = time.localtime(now)
-        return time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, 0, 0, 0, 0, 0, -1))
+        try:
+            import localefmt   # the owner's day, not the machine's (a VPS runs on UTC)
+            return localefmt.day_start(now)
+        except Exception:  # noqa: BLE001 - a daily cap must never fail over a settings read
+            lt = time.localtime(now)
+            return time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, 0, 0, 0, 0, 0, -1))
 
     def due(self, m: dict, now: float) -> bool:
         if m["status"] != "active":
