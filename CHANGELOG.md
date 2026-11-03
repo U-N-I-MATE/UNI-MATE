@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.430.3] - 2026-11-03
+### Cải thiện
+- **Chat trên dashboard điều khiển được Chrome thật của bạn** khi dùng Claude Code bằng gói thuê bao. Cài tiện ích Claude in Chrome, mở Claude Code một lần, gõ `/chrome` và chọn Enabled by default là xong; từ lượt chat sau AI mở tab, đọc trang, bấm và điền giúp bạn. Việc nền, bot khách và chế độ API key không được dùng Chrome.
+
 ## [0.430.2] - 2026-11-02
 ### Thay đổi
 - **Gỡ khung trình duyệt (nút quả địa cầu).** Google chặn trình duyệt tự động nên khung không dùng được cho việc chính là vào Google. Lần khởi động đầu sau khi cập nhật, UNI MATE tự tắt trình duyệt chạy ngầm và xoá hồ sơ đăng nhập của khung; thư mục `downloads` trong brain giữ nguyên.

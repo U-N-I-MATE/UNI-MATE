@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.430.3] - 2026-11-03
+### Improved
+- **Dashboard chat can drive your real Chrome** when Claude Code runs on a subscription plan. Install the Claude in Chrome extension, open Claude Code once, type `/chrome` and pick Enabled by default; from the next chat turn the AI opens tabs, reads pages, clicks and fills forms for you. Background jobs, customer bots and API key mode never get Chrome.
+
 ## [0.430.2] - 2026-11-02
 ### Changed
 - **The browser pane (globe button) is removed.** Google blocks automated browsers, so the pane could not do its main job of reaching Google. On the first start after updating, UNI MATE closes the background browser and deletes the pane's sign-in profile; the brain's `downloads` folder is kept.

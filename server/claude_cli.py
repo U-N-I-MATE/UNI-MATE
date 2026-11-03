@@ -1138,6 +1138,12 @@ def claude_engine(system_prompt=None, cwd=None, tag="chat", allowed_tools=None, 
         plan_limits.cai_vao_claude_sdk()
     except Exception:  # noqa: BLE001 - a meter must never stop a turn
         pass
+    # 0.430.3: `--chrome` for the owner's web chat when the user enabled Claude in Chrome (claude_chrome.py).
+    try:
+        import claude_chrome
+        claude_chrome.install()
+    except Exception:  # noqa: BLE001 - the browser bridge must never stop a turn
+        pass
     eng = ClaudeSDK(system_prompt=system_prompt, cwd=cwd, tag=tag,
                     allowed_tools=allowed_tools, model=model)
     # Every run (chat, loops, reminders, bots) skips the repo CLAUDE.md and compacts at ~180k;
