@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.437.1] - 2026-11-03
+### Fixed
+- **Fewer false reds in the automatic checks.** The start-up speed measurement sometimes went over its ceiling only because the check machine had a slow moment; it now measures up to 3 rounds and keeps the best. Nothing changes in the app.
+
 ## [0.437.0] - 2026-11-03
 ### Improved
 - **New Claude Code chats use less of your plan allowance.** The instructions sent along (about 43,000 characters) used to differ between chats only by the clock, the chat id and today's usage, so Claude loaded them from scratch for every new chat. They now stay identical and are read back from the prompt cache.

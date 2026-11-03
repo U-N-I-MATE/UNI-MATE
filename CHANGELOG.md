@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.437.1] - 2026-11-03
+### Sửa lỗi
+- **Kiểm tra tự động bớt báo đỏ oan.** Phép đo tốc độ khởi động đôi khi vượt trần chỉ vì máy kiểm tra chạy chậm một nhịp; giờ vượt trần thì đo lại tối đa 3 lượt và lấy số tốt nhất. Ứng dụng không đổi gì.
+
 ## [0.437.0] - 2026-11-03
 ### Cải thiện
 - **Mở chat mới bằng Claude Code đỡ tốn hạn mức gói hơn.** Trước đây phần hướng dẫn gửi kèm (khoảng 43.000 ký tự) khác nhau giữa các cuộc chat chỉ vì giờ, mã phiên và mức dùng trong ngày, nên mỗi cuộc mới Claude phải nạp lại từ đầu. Giờ phần này giữ y nguyên nên được đọc lại từ bộ nhớ đệm.
