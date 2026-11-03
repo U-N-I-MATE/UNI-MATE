@@ -1161,6 +1161,13 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 .msg-unimate .bubble code, .msg-user .bubble code { word-break: break-word; }
 .msg-unimate .bubble pre, .msg-unimate .bubble .code-wrap { max-width: 100%; min-width: 0; }
 .msg-unimate .bubble { max-width: min(72ch, 100%); }
+/* A table of 4+ columns (chat-render.js marks it .md-tablewrap-wide) lets its answer use the
+   whole chat width, so a comparison table reads at a glance instead of scrolling sideways in
+   a 72ch column. The prose around it keeps the 72ch line length; only the table spreads.
+   Browsers without :has() simply keep the old narrow bubble with its sideways scroll. */
+.msg-unimate .bubble:has(.md-tablewrap-wide) { max-width: 100%; }
+.msg-unimate .bubble:has(.md-tablewrap-wide) > :not(.md-tablewrap-wide) { max-width: 72ch; }
+.msg-unimate .bubble .md-tablewrap-wide > .md-table :is(th, td) { max-width: 40ch; }
 
 /* Hàng nút dưới mỗi tin: giờ gửi + gửi lại / sửa lại / sao chép.
    Ẩn sẵn, hiện khi rê chuột (máy tính) hoặc khi chạm vào tin (điện thoại, .acts-on).

@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.434.0] - 2026-11-03
+### Improved
+- **Tables with 4 or more columns use the full chat width** instead of a narrow reading column that had to be scrolled sideways on a big screen. Text around the table keeps its readable width; a table wider than the screen still scrolls sideways.
+
 ## [0.433.0] - 2026-11-03
 ### Added
 - **Pick a time zone in Settings → Language.** Vietnam (UTC+7) by default; when the device is in another zone, a button uses the device zone. A mistyped zone is rejected instead of saved silently.

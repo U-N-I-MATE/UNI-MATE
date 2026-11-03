@@ -474,6 +474,7 @@
       '<div class="jv-fm-head">' + ic("tag") + " " + esc(tw("crender.fm_title")) + "</div>" +
       '<pre class="jv-fm-body">' + esc(than) + "</pre></div>";
   }
+  var WIDE_TABLE_COLS = 4;
   function tableHtml(tbl) {
     var rows = tbl.trim().split("\n").filter(function (r) { return r.trim(); });
     var cells = function (r) { return r.replace(/^\||\|$/g, "").split("|").map(function (c) { return c.trim(); }); };
@@ -497,7 +498,11 @@
     // Lop boc la mot <div> tron: turndown (ban WYSIWYG cua trinh sua .md) di xuyen qua no va
     // van tra ve dung bang markdown cu - da thu that voi turndown 7.2 + plugin gfm, ket qua y
     // het khi khong boc. Nen KHONG can them luat turndown nao.
-    return '<div class="md-tablewrap"><table class="md-table"><thead><tr>' + th +
+    // 4+ columns: mark the wrapper so the answer bubble may use the full chat width for it
+    // (style.css, ".md-tablewrap-wide"). 72ch fits prose, not a five-column comparison: that
+    // table used to be squeezed into the reading column and scrolled sideways on a wide screen.
+    var wide = head.length >= WIDE_TABLE_COLS ? " md-tablewrap-wide" : "";
+    return '<div class="md-tablewrap' + wide + '"><table class="md-table"><thead><tr>' + th +
       "</tr></thead><tbody>" + trs + "</tbody></table></div>";
   }
 
