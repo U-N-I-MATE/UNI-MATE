@@ -252,6 +252,69 @@ check("guard: resuming runs what is left, then the job closes",
       _resumed and ts.get_task(job["task_id"])["status"] == "done" and ("ag_minh", "work") in fake.order(),
       (ts.get_task(job["task_id"])["status"], fake.order()))
 
+# ================================================================
+# 6. 0.439.0: `after` waits for exactly the parts it names
+# ================================================================
+check("parse_after: list, number and text", TR.parse_after([1, 2], 3) == ([1, 2], [])
+      and TR.parse_after(1, 2) == ([1], []) and TR.parse_after("1, 2", 3) == ([1, 2], []))
+check("parse_after: only earlier parts, duplicates collapse", TR.parse_after([2, 3, 2, 0], 3) == ([2], [3, 0]))
+check("parse_after: nothing given", TR.parse_after(None, 3) == ([], []) and TR.parse_after([], 3) == ([], []))
+
+# "B writes, C makes the images, both from A's numbers": B and C run side by side right after A.
+ss, ts, tm, fake, r, T = world("after_fan", leader="ag_hoa")
+fake.say("ag_hoa", "plan", "Chia." + directive(op="assign", agent="ag_lan", brief="Lấy số liệu")
+         + directive(op="assign", agent="ag_minh", brief="Viết bài từ số liệu", after=[1])
+         + directive(op="assign", agent="ag_hoa", brief="Làm ảnh từ số liệu", after=[1]))
+fake.say("ag_lan", "work", "SỐ LIỆU: 42")
+fake.expect_parallel("ag_minh", "ag_hoa")
+job = r.submit(T["team_id"], "Bài ra mắt", as_job=True, client_msg_id="j1")
+run(r.dispatch_once(wait=True))
+order = fake.order()
+check("after fan-out: A first, then B and C side by side, then the summary",
+      order[:2] == [("ag_hoa", "plan"), ("ag_lan", "work")]
+      and sorted(order[2:4]) == [("ag_hoa", "work"), ("ag_minh", "work")] and order[4:] == [("ag_hoa", "synthesize")]
+      and fake.peak == 2, (order, fake.peak))
+check("after fan-out: both dependent parts receive A's result",
+      all("SỐ LIỆU: 42" in c["prompt"] for c in fake.calls[2:4]))
+check("after fan-out: the job is done", ts.get_task(job["task_id"])["status"] == "done")
+
+# "A researches, B gathers numbers, C writes the plan from A only": C waits for A alone and gets A's result as input.
+ss, ts, tm, fake, r, T = world("after_exact", leader="ag_hoa")
+fake.say("ag_hoa", "plan", "Chia." + directive(op="assign", agent="ag_lan", brief="Nghiên cứu đối thủ")
+         + directive(op="assign", agent="ag_minh", brief="Lấy số liệu")
+         + directive(op="assign", agent="ag_hoa", brief="Viết kế hoạch từ phần nghiên cứu", after=[1]))
+fake.say("ag_lan", "work", "ĐỐI THỦ: X")
+fake.say("ag_minh", "work", "SỐ B: 7")
+fake.say("ag_hoa", "work", "KẾ HOẠCH từ A")
+job = r.submit(T["team_id"], "Kế hoạch", as_job=True, client_msg_id="j1")
+run(r.dispatch_once(wait=True))
+_steps = tm.steps(job["task_id"])
+_c = next((st for st in _steps if st["agent_key"] == "ag_hoa" and st["kind"] == "work"), {})
+_a = next((st for st in _steps if st["agent_key"] == "ag_lan" and st["kind"] == "work"), {})
+_b = next((st for st in _steps if st["agent_key"] == "ag_minh" and st["kind"] == "work"), {})
+_p = next((st for st in _steps if st["kind"] == "plan"), {})
+# The team chat history (shown to every member) still carries B's message; what C WAITS for and gets as inputs is A.
+check("after exact: C's inputs are the plan and A's result only, not B's",
+      _c.get("input_refs") == [_p.get("result_msg_id"), _a.get("result_msg_id")]
+      and _b.get("result_msg_id") not in (_c.get("input_refs") or []), (_c.get("input_refs"), _a, _b))
+check("after exact: the stored step waits for A only", _c.get("after") == [_a.get("step_id")], (_c.get("after"), _a))
+check("after exact: the job closes with a summary of all three",
+      ts.get_task(job["task_id"])["status"] == "done" and fake.order()[-1] == ("ag_hoa", "synthesize"), fake.order())
+
+# A bad `after` (a later part, or one that does not exist) is dropped with a note, the part still runs.
+ss, ts, tm, fake, r, T = world("after_bad", leader="ag_hoa")
+fake.say("ag_hoa", "plan", "Chia." + directive(op="assign", agent="ag_lan", brief="phần 1", after=[2])
+         + directive(op="assign", agent="ag_minh", brief="phần 2", after=[9]))
+job = r.submit(T["team_id"], "Hai phần", as_job=True, client_msg_id="j1")
+run(r.dispatch_once(wait=True))
+check("after bad: both parts still run side by side and the job closes",
+      ts.get_task(job["task_id"])["status"] == "done"
+      and {("ag_lan", "work"), ("ag_minh", "work")} <= set(fake.order()), fake.order())
+check("after bad: no step was left waiting on a part that cannot finish",
+      all(not st.get("after") for st in tm.steps(job["task_id"])))
+check("plan prompt explains `after` with its numbering", '"after": [1, 2]' in fake.calls[0]["prompt"]
+      and "đánh số 1, 2" in fake.calls[0]["prompt"])
+
 print()
 if fails:
     print(f"{len(fails)} FAIL")

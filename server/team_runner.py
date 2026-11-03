@@ -40,8 +40,8 @@ import team_retry
 import team_approval
 import team_gate
 import turn_context
-from team_store import (CAP_MAX, DEFAULT_CAPS, FIXED_CAPS, OWNER_CAPS, REACTION_EMOJI, STEP_OPEN, UNLIMITED_CAPS,
-                        TeamError, TurnCapReached)
+from team_store import (CAP_MAX, DEFAULT_CAPS, FIXED_CAPS, OWNER_CAPS, REACTION_EMOJI, STEP_HELD, STEP_OPEN,
+                        UNLIMITED_CAPS, TeamError, TurnCapReached)
 
 log = logging.getLogger("unimate.team_runner")
 LEASE_REQUEUE_MAX = 2   # số lần một bước được chạy lại vì mất quyền giữ trợ lý trước khi chặn việc
@@ -128,6 +128,28 @@ def fold_text(text: Any) -> str:
 def asks_sequential(text: Any) -> bool:
     """The text asks for parts to run one after another ("lần lượt", "chỉ sau khi bước 1 xong", "only after step 1")."""
     return bool(SEQUENTIAL_RE.search(fold_text(text)))
+
+
+def parse_after(value: Any, own: int) -> tuple:
+    """(valid, invalid) part numbers from a plan block's `after` (0.439.0). Accepts a list, one number or "1, 2". Valid
+    means an earlier part (1 <= n < own); duplicates collapse, order kept."""
+    if value in (None, "", [], False):
+        return [], []
+    items = value if isinstance(value, (list, tuple)) else re.split(r"[,\s]+", str(value).strip())
+    ok, bad = [], []
+    for it in items:
+        try:
+            n = int(str(it).strip())
+        except (TypeError, ValueError):
+            if str(it).strip():
+                bad.append(str(it).strip()[:20])
+            continue
+        if 1 <= n < own:
+            if n not in ok:
+                ok.append(n)
+        else:
+            bad.append(n)
+    return ok, bad
 
 
 def env_int(name: str, default: int, lo: int = 1, hi: int = 64) -> int:
@@ -3020,9 +3042,14 @@ class TeamRunner:
         return self._block(task["id"], "cap_reached", reason)
 
     def _put_steps(self, team: dict, task: dict, specs: list, continues: Optional[str] = None) -> None:
+        ids = []
         for s in specs:
-            self.teams.add_step(task["id"], team["team_id"], s["kind"], s["agent"], int(s.get("rev") or task["team_rev"]),
-                                s.get("brief", ""), s.get("inputs", []), s.get("parent"), held=bool(s.get("held")))
+            # 0.439.0: `after_idx` points at specs earlier in this same batch (a plan's parts).
+            after = [ids[j] for j in (s.get("after_idx") or []) if 0 <= j < len(ids)]
+            st = self.teams.add_step(task["id"], team["team_id"], s["kind"], s["agent"],
+                                     int(s.get("rev") or task["team_rev"]), s.get("brief", ""), s.get("inputs", []),
+                                     s.get("parent"), held=bool(s.get("held")), after=after or None)
+            ids.append(st["step_id"])
         if continues:
             # Bước tiếp nối một bước đã nhờ hỗ trợ: bước cũ thành `continued`, bước mới (vừa thêm, cuối danh sách) chạy.
             cont = self.teams.steps(task["id"])[-1]
@@ -3085,6 +3112,35 @@ class TeamRunner:
         return [int(m["id"]) for m in self.sessions.team_messages_after(sid, max(refs), NEW_MSG_LIMIT)
                 if m["author_kind"] == "agent" and m["author_ref"] in authors and (not top or int(m["id"]) < top)
                 and not (m.get("meta") or {}).get("superseded")]
+
+    def _dep_result(self, steps: list, dep_id: str, rev: int) -> Optional[int]:
+        """The result message of step `dep_id` once it is done, else None. A part that asked a teammate for help ends in
+        a continuation step (same member, kind, brief and parent, later seq): its result is that step's."""
+        dep = next((s for s in steps if s["step_id"] == dep_id), None)
+        if dep is None:
+            return None
+        chain = [s for s in steps if s["seq"] >= dep["seq"] and s["agent_key"] == dep["agent_key"]
+                 and s["kind"] == dep["kind"] and s["brief"] == dep["brief"]
+                 and s.get("parent_step") == dep.get("parent_step") and int(s["job_revision"]) == int(rev)]
+        last = chain[-1] if chain else dep
+        if last["status"] == "done" and last["applied"] and last.get("result_msg_id"):
+            return int(last["result_msg_id"])
+        return None
+
+    def _release_ready(self, task: dict) -> list:
+        """0.439.0: queue every held step whose `after` steps are all done, with exactly their results as inputs (a part
+        reads what it waited for, not every result so far). Held steps without `after` keep the old rule: they wait for
+        everything before them and `_after_steps` releases them once nothing else is left."""
+        steps = self.teams.steps(task["id"])
+        rev = int(task.get("team_rev") or 0)
+        released = []
+        for st in steps:
+            if st["status"] != STEP_HELD or not st.get("after"):
+                continue
+            got = [self._dep_result(steps, d, rev) for d in st["after"]]
+            if all(g is not None for g in got) and self.teams.queue_held_step(st["step_id"], got):
+                released.append(st["step_id"])
+        return released
 
     def _done_results(self, task: dict) -> list:
         return [s["result_msg_id"] for s in self.teams.steps(task["id"])
@@ -3559,9 +3615,11 @@ class TeamRunner:
         if step["kind"] == "plan":
             return ("Bạn là trưởng nhóm, lập kế hoạch cho việc trên. Giao từng phần cho thành viên phù hợp, mỗi phần một "
                     'khối: <!-- UNIMATE_TEAM: {"op": "assign", "agent": "<mã thành viên>", "brief": "..."} -->\n'
-                    "Mỗi bước của yêu cầu là một khối riêng, kể cả khi cùng một người làm hai bước. Phần nào phải chờ các "
-                    'phần trước làm xong thì thêm "wait": true vào khối của nó: phần đó chỉ chạy khi mọi phần trước đã '
-                    "xong và nhận kết quả của chúng. Các phần không có \"wait\" chạy cùng lúc.\n"
+                    "Mỗi bước của yêu cầu là một khối riêng, kể cả khi cùng một người làm hai bước. Các khối đánh số 1, 2, "
+                    "3... theo thứ tự bạn viết. Phần nào cần kết quả của một vài phần TRƯỚC nó thì thêm "
+                    '"after": [số các phần đó] (ví dụ "after": [1, 2]): phần đó chạy ngay khi đúng các phần ấy xong và '
+                    "chỉ nhận kết quả của chúng. Phần nào phải chờ MỌI phần trước thì thêm \"wait\": true. Các phần không "
+                    "có \"after\" hay \"wait\" chạy cùng lúc.\n"
                     "Việc nhỏ thì tự làm luôn và trả kết quả, không cần giao.")
         if step["kind"] == "synthesize":
             return ("Tổng hợp kết quả các bước (ở phần Đầu vào) thành một kết quả cuối NGẮN cho chủ nhóm: kết quả chính, "
@@ -3612,14 +3670,29 @@ class TeamRunner:
         if role == "synthesize":
             return [], {}
         if role == "plan":
-            for op in ops:
+            # 0.439.0: `after` names earlier parts by their number in the plan (1, 2, 3... in the order written). A part
+            # dropped below (unknown member) keeps its number, so the numbers the leader wrote stay right.
+            position = {}
+            for n, op in enumerate(ops, start=1):
                 key = self._resolve(team, op.get("agent"))
                 if not key:
                     notes.append(f"'{op.get('agent')}' không phải thành viên đang hoạt động của nhóm, đã bỏ")
                     continue
                 brief = str(op.get("brief") or "")[:4000]
+                after, bad = parse_after(op.get("after"), n)
+                kept_after = []
+                for x in after:
+                    if x in position:
+                        kept_after.append(position[x])
+                    else:
+                        bad.append(x)
+                if bad:
+                    notes.append(f"Phần {n}: 'after' chỉ được trỏ tới phần đứng trước và còn trong kế hoạch, đã bỏ "
+                                 f"{', '.join(str(b) for b in bad)}")
+                position[n] = len(kept)
                 kept.append({"op": "assign", "agent": key, "brief": brief,
-                             "wait": op.get("wait") in (True, 1, "true", "yes") or asks_sequential(brief)})
+                             "wait": op.get("wait") in (True, 1, "true", "yes") or asks_sequential(brief),
+                             "after": kept_after})
             # Trưởng nhóm CÓ giao mà mọi lệnh giao đều hỏng: không được coi kế hoạch là kết quả việc.
             return kept, ({"assign_dropped": len(ops)} if ops and not kept else {})
         # work, help: nhờ hỗ trợ (spec 7.4) với trần độ sâu và chặn nhờ ngược
@@ -3702,6 +3775,7 @@ class TeamRunner:
         if team["status"] != "active":
             return ("return", "paused")
         self.tasks.team_heartbeat(task_id, self.worker_id, lease_s=self.job_lease_s)
+        self._release_ready(task)
         step = self.teams.next_queued_step(task_id)
         if step is None:
             res = self._after_steps(team, task)
@@ -3976,9 +4050,15 @@ class TeamRunner:
             # A sequential request (or a part marked `wait`) holds that part until every part before it is done: see
             # `_after_steps`, which releases held parts one at a time with the earlier results as inputs.
             seq = asks_sequential(task.get("intent"))
-            ok = self._add_steps(team, task, [{"kind": "work", "agent": a["agent"], "brief": a["brief"], "inputs": [mid],
-                                               "held": i > 0 and (seq or bool(a.get("wait")))}
-                                              for i, a in enumerate(assigns)])
+            # 0.439.0: a part with `after` (and no stronger ordering) waits only for those parts and gets only their
+            # results; `_release_ready` queues it as soon as they are done, while unrelated parts keep running.
+            specs = []
+            for i, a in enumerate(assigns):
+                wait_all = i > 0 and (seq or bool(a.get("wait")))
+                after = [] if wait_all else [j for j in (a.get("after") or []) if 0 <= j < i]
+                specs.append({"kind": "work", "agent": a["agent"], "brief": a["brief"], "inputs": [mid],
+                              "held": wait_all or bool(after), "after_idx": after})
+            ok = self._add_steps(team, task, specs)
             return None if ok else "team_blocked"
         if kind == "synthesize":
             newer = [] if note.startswith("resynth") else self._newer_member_messages(team, step, mid)

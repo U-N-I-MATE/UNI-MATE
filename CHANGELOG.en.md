@@ -6,6 +6,11 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.439.0] - 2026-11-03
+### Improved
+- **Team steps wait for exactly the parts they need.** The leader can now say which part needs the results of which. For "B writes the post, C makes the images, both from A's numbers", B and C work side by side right after A instead of one after the other.
+- A waiting part gets only the results it waited for as its inputs. A job asked to run "one after another" still runs in order.
+
 ## [0.438.0] - 2026-11-03
 ### Security
 - **UNI MATE turns off usage statistics sent to skill authors.** The Hyperframes pack in the store (1.0.1) sends your HeyGen e-mail and username to its author's statistics server. Every command, skill and engine UNI MATE runs now carries the switch that turns this off, on your PC and on a VPS, so nothing is sent.
