@@ -6,6 +6,11 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.432.0] - 2026-11-03
+### Fixed
+- **Claude's "You've hit your 5-hour limit" is now recognised as a plan limit.** The English line used to show up as the answer with no retry card; chat now says the 5-hour window is used up and schedules the retry for when it reopens. The weekly limit message is also tied to the Claude plan.
+- **The reset time follows the time zone in Settings**, not the server clock. On a VPS the notice used to say 08:00 for a reset at 15:00 Vietnam time; a reset on another day now shows the date.
+
 ## [0.431.0] - 2026-11-03
 ### Added
 - **Scheduled jobs can use the server's own Chrome.** Each schedule has a "Use the server's own Chrome" switch (off by default, full level only). When on, the AI uses only the server's Chrome at run time and never touches the Chrome on your computer.
