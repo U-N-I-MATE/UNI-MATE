@@ -644,7 +644,10 @@
         return '<div class="tm-reply tm-reply-error" role="status">' + face + '<span class="tm-reply-main"><b>' + esc(who) +
           "</b> " + esc(tw("teams.reply.stuck")) + '</span><span class="tm-reply-acts">' + retryBtn + "</span></div>";
       }
-      var label = answering ? tw("teams.reply.answering") : waiting ? (x.detail ? tw("teams.reply.waiting_busy_in",
+      // 0.436.0: a passing engine error (503, overload, dropped connection) is being retried on its own.
+      var retrying = x.status === "running" && x.reason === "retrying";
+      var label = answering ? tw("teams.reply.answering") : retrying ? tw("teams.reply.auto_retry", { n: x.detail || "1" })
+        : waiting ? (x.detail ? tw("teams.reply.waiting_busy_in",
         { team: x.detail }) : tw("teams.reply.waiting_busy")) : tw("teams.reply.queued");
       return '<div class="tm-reply tm-reply-' + (answering ? "answering" : "queued") + '" role="status">' + face +
         '<span class="tm-reply-main"><b>' + esc(who) + "</b> " + esc(label) +

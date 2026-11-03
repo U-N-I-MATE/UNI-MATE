@@ -4509,6 +4509,7 @@
   "teams.archive_confirm": "Lưu trữ team? Team sẽ chỉ còn xem lại được.",
   "teams.reply.queued": "Đang chờ",
   "teams.reply.answering": "Đang trả lời",
+  "teams.reply.auto_retry": "Engine lỗi tạm thời, đang tự thử lại (lần {n})",
   "teams.typing_reply": "{name} đang trả lời",
   "teams.typing_work": "{name} đang làm việc",
   "teams.typing_more": "và {n} cộng sự nữa",

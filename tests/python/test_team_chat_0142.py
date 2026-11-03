@@ -179,7 +179,7 @@ class Script:
             await req["engine_started"]()
             self.calls.append((key, role))
             if act == "error":
-                raise TR.EngineOutcomeError("final_error", "rate limit")
+                raise TR.EngineOutcomeError("final_error", "malformed answer")  # not transient: 0.436.0 retries rate limits
             return {"text": f"{key} trả lời"}
         run_.marks_engine = True
         return "openai-oauth", "gpt-5.5", run_
@@ -228,7 +228,7 @@ check("lỗi dựng engine: error, lý do engine_unavailable, chi tiết đi kè
       rp["agent-one"]["status"] == "error" and rp["agent-one"]["reason"] == "engine_unavailable"
       and "chưa sẵn sàng" in rp["agent-one"]["detail"], rp["agent-one"])
 check("lỗi engine sau khi gọi model: error, lý do engine", rp["agent-two"]["status"] == "error"
-      and rp["agent-two"]["reason"] == "engine" and "rate limit" in rp["agent-two"]["detail"], rp["agent-two"])
+      and rp["agent-two"]["reason"] == "engine" and "malformed answer" in rp["agent-two"]["detail"], rp["agent-two"])
 check("một lượt lỗi không làm mất lượt sau", rp["agent-dup"]["status"] == "done" and len(outs) == 3)
 turns_before = len(tm.turns(t["team_id"]))
 owner_before = [m for m in ss.get_team_messages_page(t["session_id"], limit=200)["messages"]
@@ -292,7 +292,7 @@ run(r.dispatch_once())
 sysm = [m for m in ss.get_team_messages_page(t["session_id"], limit=200)["messages"]
         if m["author_kind"] == "system" and (m.get("meta") or {}).get("kind") == "job_blocked"]
 check("việc bị chặn: có tin hệ thống trong chat kèm lý do", ts.get_task(job)["status"] == "team_blocked"
-      and len(sysm) == 1 and "rate limit" in sysm[0]["content"] and sysm[0]["task_id"] == job, sysm)
+      and len(sysm) == 1 and "malformed answer" in sysm[0]["content"] and sysm[0]["task_id"] == job, sysm)
 
 # ───────────── review 0.142.0 ─────────────
 # #3: lượt cũ về muộn không ghi đè kết cục của lần thử mới.
