@@ -6,6 +6,12 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.436.0] - 2026-11-03
+### Improved
+- **Teams retry a passing engine error on their own.** An overload, 503, 429 or dropped connection mid-step now reruns the step up to 2 times after a few seconds, instead of waiting for you to press Run again. The team chat shows "Temporary engine error, retrying on its own" meanwhile.
+- **Never a second send or post.** A step with tools that already reached the model is not rerun, since it may have sent a message, posted or written a file. It stops with a note so you can check first.
+- A plan limit, a login error or a bad request is not retried: a few more seconds will not fix it.
+
 ## [0.435.0] - 2026-11-03
 ### Fixed
 - **Long answers no longer freeze the page while they stream in.** Every chunk used to redraw the whole answer, so the longer it got the more it stuttered, then stalled. Text now paints at most once per frame and backs off on very long answers; voice calls get the same fix.

@@ -36,6 +36,7 @@ from io_offload import run_io  # noqa: F401 - giữ `team_runner.run_io` cho tea
 import resonance_store
 import team_acceptance
 import team_quality
+import team_retry
 import team_approval
 import team_gate
 import turn_context
@@ -499,6 +500,10 @@ class TeamRunner:
         self.busy_lease_s = BUSY_LEASE_S
         self.job_lease_s = JOB_LEASE_S
         self.lease_renew_s = LEASE_RENEW_S
+        # 0.436.0: a passing engine hiccup (503, overload, dropped connection) is retried on its own, at most
+        # team_retry.MAX_RETRIES times; never a tool step that already reached the model (no second send or post).
+        self.retry_transient = os.environ.get("UNIMATE_TEAM_RETRY", "1") != "0"
+        self.retry_sleep = asyncio.sleep
         # Thao tác của host mà lệnh quản trị Toàn quyền cần (tạo agent, sửa lời nhắc, Cộng hưởng, cấp mã). None: lệnh
         # cần host bị từ chối kèm ghi chú.
         self.admin = admin
@@ -975,8 +980,13 @@ class TeamRunner:
                            reason="waiting_busy", detail=where)
             await self._io(self._publish_replies, team_id, mid)
 
-        return await self._turn(team, key, role, body, reply_to=mid, vet=self._vet_reply, on_engine=started,
-                                on_wait=waiting)
+        async def retrying(n: int, wait: float, out: dict) -> None:
+            await self._io(self.teams.settle_reply, team_id, mid, key, "running", attempt=attempt,
+                           reason="retrying", detail=str(n))
+            await self._io(self._publish_replies, team_id, mid)
+
+        return await self._turn_retrying(team, key, role, body, reply_to=mid, vet=self._vet_reply, on_engine=started,
+                                         on_wait=waiting, on_retry=retrying)
 
     # Lý do lỗi của lượt trả lời (mã ngắn lưu bền; dashboard dịch sang lời thường).
     _REPLY_REASON = {"cap": "cap", "busy_long": "busy", "team_paused": "team_paused", "member_left": "member_left",
@@ -2495,6 +2505,41 @@ class TeamRunner:
         except Exception:  # noqa: BLE001 - documents are context; a broken one must not cost the turn
             return ""
 
+    async def _turn_retrying(self, team: dict, agent_key: str, role: str, body: str, *, on_retry=None,
+                             **kw) -> dict:
+        """`_turn`, retried on a transient engine failure (0.436.0, rules in team_retry.py). Each attempt is a full
+        turn of its own: reserved, counted against the caps, settled. Nothing is posted by a failed attempt, so a text
+        turn can never post twice; a tool step that reached the model is never retried. `on_retry(n, wait_s, out)` runs
+        before retry n (status line of a chat reply)."""
+        out = await self._turn(team, agent_key, role, body, **kw)
+        n = 0
+        while self.retry_transient:
+            wait = team_retry.wait_s(out, n + 1)
+            if wait is None:
+                break
+            n += 1
+            log.info("team %s: %s %s failed transiently (%s), retry %d in %.0fs", team.get("team_id"), agent_key,
+                     role, str(out.get("error") or "")[:160], n, wait)
+            if on_retry is not None:
+                try:
+                    await on_retry(n, wait, out)
+                except Exception:  # noqa: BLE001 - a status line must not break the turn
+                    pass
+            await self.retry_sleep(wait)
+            out = await self._turn(team, agent_key, role, body, **kw)
+        if out.get("status") == "error":
+            out = dict(out)
+            note = localefmt.chu(" (đã tự thử lại {n} lần)", " (retried {n} times on its own)", n=n) if n else ""
+            if not n and team_retry.not_retried_note(out):
+                note = f"; {team_retry.not_retried_note(out)}"
+            if n:
+                out["retries"] = n
+            if note:
+                # Both fields: a job step shows `error`, a chat reply row shows `detail`.
+                for k in ("error", "detail"):
+                    out[k] = f"{out.get(k) or ''}{note}".strip("; ")
+        return out
+
     async def _turn(self, team: dict, agent_key: str, role: str, body: str, *, task: Optional[dict] = None,
                     step: Optional[dict] = None, reply_to=None, vet=None, on_engine=None, on_wait=None,
                     judge_meta: Optional[dict] = None) -> dict:
@@ -2610,7 +2655,8 @@ class TeamRunner:
                     await self._io(self._refund_if_unmarked, turn_id)
                 mins = max(1, int(round(limit / 60)))
                 return {"status": "error", "error": f"quá {mins} phút chưa có câu trả lời", "reason": "timeout",
-                        "detail": f"{mins}", "turn_id": turn_id, "before_engine": not marked}
+                        "detail": f"{mins}", "turn_id": turn_id, "before_engine": not marked,
+                        "tool_turn": bool(req.get("tool_turn"))}
             except asyncio.CancelledError:
                 if marked:
                     await self._io(self._settle_turn, turn_id, "interrupted")
@@ -2630,7 +2676,7 @@ class TeamRunner:
                 detail = (ex.detail or OUTCOME_TEXT.get(ex.kind, ex.kind)) if isinstance(ex, EngineOutcomeError) else str(ex)
                 kind = "auth" if isinstance(ex, EngineOutcomeError) and ex.kind == "auth" else ""
                 return {"status": "error", "error": msg[:500], "detail": detail[:500], "turn_id": turn_id,
-                        "reason": kind}
+                        "reason": kind, "tool_turn": bool(req.get("tool_turn"))}
             finally:
                 if ctx_tok is not None:
                     turn_context.reset(ctx_tok)
@@ -3808,8 +3854,8 @@ class TeamRunner:
         return self._block(task["id"], "failed", "Không còn bước nào để chạy")
 
     async def _run_step(self, team: dict, task: dict, step: dict) -> Optional[str]:
-        out = await self._turn(team, step["agent_key"], step["kind"], self._body(step, task), task=task, step=step,
-                               reply_to=(self._source_id(task) or [None])[0], vet=self._vet_step)
+        out = await self._turn_retrying(team, step["agent_key"], step["kind"], self._body(step, task), task=task,
+                                        step=step, reply_to=(self._source_id(task) or [None])[0], vet=self._vet_step)
         return await self._io(self._apply_step, team, task, step, out)
 
     def _apply_step(self, team: dict, task: dict, step: dict, out: dict) -> Optional[str]:
