@@ -93,6 +93,7 @@
   "top.brain_delete": "Delete the selected brain (type its name to confirm)",
   "top.brain_rename": "Rename the selected brain (its folder and links stay the same)",
   "top.brain_pick": "Pick a brain from any folder",
+  "top.brain_remove_folder": "Remove the selected external folder from the list (nothing on disk is deleted)",
   "top.notifications": "Open notifications",
   "settings.lang.title": "UNI MATE replies in",
   "settings.lang.auto": "Follow whoever is writing",

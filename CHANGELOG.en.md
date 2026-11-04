@@ -6,6 +6,15 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.442.0] - 2026-11-04
+### Fixed
+- **The brain menu no longer lists one folder twice.** When a brain in the brains folder is a link to a notes folder elsewhere, an external folder pointing straight at it used to show again under "External folders". UNI MATE now sees it is the same folder: it drops the duplicate, and if you had it selected it switches to that brain. Picking that folder again with the folder button selects the brain instead of adding a new line.
+- **No more false "This chat belongs to another brain".** Opening a chat of the brain already selected (for example on the Partners page) sometimes showed "This chat belongs to brain Bonao_AI... Switch to Bonao_AI", because chats store the real folder while the brain menu uses the link's path. UNI MATE now compares the real folder, so the line only shows for a genuinely different brain.
+- **The "External folders" group label shows real text.** It sometimes showed the key `app.external_folder` because the group was drawn before the language finished loading.
+
+### Added
+- **Remove external folder button** next to the brain menu, shown only while an external folder is selected. It only takes the folder off the list, nothing on disk is deleted. Rename and Delete brain are hidden then, since they do not apply to external folders.
+
 ## [0.441.0] - 2026-11-04
 ### Added
 - **Groundwork for the ChatGPT and Claude gate.** UNI MATE now offers the functions the "UNI MATE in ChatGPT" pack needs to read your conversations and record what you settled in ChatGPT/Claude as a conversation of its own. Customer, group and Team chats are never read. Update the pack to use it.

@@ -6,6 +6,15 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.442.0] - 2026-11-04
+### Sửa lỗi
+- **Menu chọn não không còn hiện một thư mục hai lần.** Khi một não trong thư mục brains là lối tắt tới thư mục ghi chú ở nơi khác, thư mục ngoài trỏ thẳng tới đó trước đây vẫn hiện thêm ở nhóm "Thư mục ngoài". Giờ UNI MATE nhận ra đó là cùng một thư mục: tự gỡ dòng trùng, và nếu anh đang chọn dòng đó thì chuyển sang chính não ấy. Chọn lại thư mục đó bằng nút mở thư mục cũng chọn thẳng não, không thêm dòng mới.
+- **Không còn báo nhầm "Cuộc chat này thuộc brain khác".** Mở một hội thoại của chính bộ não đang chọn (ví dụ trong trang Cộng sự) có lúc hiện dòng "Cuộc chat này thuộc brain Bonao_AI... Chuyển sang Bonao_AI", vì hội thoại lưu đường dẫn thật còn ô chọn não dùng đường dẫn lối tắt. Giờ UNI MATE so theo thư mục thật nên chỉ báo khi đúng là não khác.
+- **Nhãn nhóm "Thư mục ngoài" hiện đúng chữ.** Trước đây có lúc hiện mã `app.external_folder` vì nhóm được vẽ trước khi ngôn ngữ nạp xong.
+
+### Thêm mới
+- **Nút Gỡ thư mục ngoài** cạnh menu chọn não, chỉ hiện khi đang chọn một thư mục ngoài. Chỉ gỡ khỏi danh sách, không xoá gì trên ổ đĩa. Lúc đó nút Đổi tên và Xoá não được ẩn đi vì không dùng cho thư mục ngoài.
+
 ## [0.441.0] - 2026-11-04
 ### Thêm mới
 - **Chuẩn bị cổng cho ChatGPT và Claude bên ngoài.** UNI MATE có sẵn các hàm để gói "UNI MATE trong ChatGPT" đọc hội thoại của anh và ghi lại những gì anh đã chốt bên ChatGPT/Claude thành một hội thoại riêng. Hội thoại với khách hàng, nhóm và Team không bao giờ được đọc. Cần cập nhật gói lên bản mới để dùng.

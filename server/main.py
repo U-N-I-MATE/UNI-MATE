@@ -7566,7 +7566,14 @@ def _list_brains_sync() -> dict:
                 is_default = False
             # `name` stays the FOLDER (the brain's address: delete, /brains/<folder>/..., backups); `label` is what to show
             # (0.219.0, brain_label): a rename sets the label and never moves the folder.
-            out.append({"name": p.name, "label": brain_label.display(p), "path": str(p), "notes": notes,
+            # `real` (0.442.0): the folder with links followed. A brain is often a link in BRAINS_DIR to a vault elsewhere
+            # (owner's PC: brains/Bonao_AI -> D:/.../Bonao_AI), so the dashboard compares an external folder against this,
+            # not against `path`, to avoid listing the same folder twice.
+            try:
+                real = str(p.resolve())
+            except OSError:
+                real = str(p)
+            out.append({"name": p.name, "label": brain_label.display(p), "path": str(p), "real": real, "notes": notes,
                         "notes_capped": notes >= _BRAINS_MD_CAP,
                         "is_default": is_default})
     except Exception as e:
@@ -7969,14 +7976,50 @@ def unimate_core_session(brain: str = Form("brain")):
     return {"id": sid, "channel": unimate_core.CHANNEL}
 
 
+_BRAINS_DIR_MAP = {"at": 0.0, "map": {}}
+
+
+def _brains_dir_map() -> dict:
+    """{resolved folder: folder as GET /brains lists it} for every brain in BRAINS_DIR, kept 5 seconds (a session list
+    asks once per row)."""
+    now = time.time()
+    if now - _BRAINS_DIR_MAP["at"] < 5:
+        return _BRAINS_DIR_MAP["map"]
+    m = {}
+    try:
+        for p in Path(BRAINS_DIR).iterdir():
+            if p.is_dir() and not p.name.startswith("."):
+                try:
+                    m.setdefault(str(p.resolve()), str(p))
+                except OSError:
+                    pass
+    except OSError:
+        pass
+    _BRAINS_DIR_MAP.update(at=now, map=m)
+    return m
+
+
 def _brain_ui_value(brain_key: str) -> str:
     """The value the dashboard's brain picker uses for a stored brain key: "brain" for the default brain,
-    "path:<dir>" for any other (0.188.0)."""
+    "path:<dir>" for any other (0.188.0).
+
+    0.442.0: a brain in BRAINS_DIR that is a LINK to a vault elsewhere (owner's PC: brains/Bonao_AI ->
+    D:/9. AI/01. BRAIN PROJECT/Bonao_AI) is listed by the picker under its BRAINS_DIR path, while chats store the
+    resolved path (`_brain_key`). Answering the resolved path made the dashboard say an open chat "belongs to brain
+    Bonao_AI" while Bonao_AI was the brain on screen, and offer to switch to the same folder. Return the picker's own
+    value for it."""
     try:
         if _cung_brain(str(brain_key or ""), str(_default_brain_dir())):
             return "brain"
     except Exception:
         pass
+    if brain_key:
+        try:
+            listed = _brains_dir_map().get(str(Path(str(brain_key)).resolve()))
+            if listed:
+                return f"path:{listed}"
+        except OSError:
+            pass
     return f"path:{brain_key}" if brain_key else "brain"
 
 
@@ -14512,7 +14555,12 @@ async def path_exists(path: str = Query("", description="Đường dẫn tuyệt
     if not p:
         return {"path": p, "exists": False, "is_dir": False}
     try:
-        return {"path": p, "exists": os.path.exists(p), "is_dir": os.path.isdir(p)}
+        out = {"path": p, "exists": os.path.exists(p), "is_dir": os.path.isdir(p)}
+        if out["exists"]:
+            # 0.442.0: links followed, compared with /brains `real` so an external folder that IS a linked brain is
+            # recognised even when the two paths are spelled differently.
+            out["real"] = os.path.realpath(p)
+        return out
     except Exception:
         # Lỗi truy cập (path lạ/ổ đĩa rút) → coi như KHÔNG xác định được, báo exists=None để
         # frontend GIỮ entry (không tự xoá khi chưa chắc chắn là đã mất).
