@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.443.0] - 2026-11-04
+### Fixed
+- (in progress) Faster task board copy.
+
 ## [0.441.0] - 2026-11-04
 ### Added
 - **Groundwork for the ChatGPT and Claude gate.** UNI MATE now offers the functions the "UNI MATE in ChatGPT" pack needs to read your conversations and record what you settled in ChatGPT/Claude as a conversation of its own. Customer, group and Team chats are never read. Update the pack to use it.
