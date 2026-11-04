@@ -148,28 +148,28 @@ await new Promise((r) => setTimeout(r, 50));
 const stored2 = JSON.parse(store2["unimate.brains"]);
 check("fail-safe: endpoint 404 → GIỮ nguyên entry (không xoá nhầm)", stored2.length === 1 && sel2.querySelectorAll("option[data-custom]").length === 1);
 
-// ---- Test 3 (0.442.0): não là LỐI TẮT trong thư mục brains, thư mục ngoài trỏ thẳng tới thư mục thật ----
-// Đúng cảnh máy chủ dự án 04/11/2026: brains/Bonao_AI -> D:\9. AI\...\Bonao_AI, menu hiện Bonao_AI hai lần.
+// ---- Test 3 (0.442.0): the brain is a LINK in the brains folder, the external folder points straight at the real one ----
+// The owner's PC on 2026-11-04: brains/Bonao_AI -> D:\9. AI\...\Bonao_AI, the menu showed Bonao_AI twice.
 const LINKED = [
   { name: "Brain Default", path: "D:\\U\\brains\\Brain Default", real: "D:\\U\\brains\\Brain Default", notes: 21, is_default: true },
   { name: "Bonao_AI", path: "D:\\U\\brains\\Bonao_AI", real: "D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI", notes: 1136 },
 ];
-function moi(customs, chon) {
+function makeSelect(customs, picked) {
   const s3 = new Select();
   s3.appendChild(new Opt("brain", "Brain Default"));
   customs.forEach((c) => { const o = new Opt("path:" + c, c); o.dataset.custom = "1"; s3.appendChild(o); });
-  s3.value = chon;
-  const st = { "unimate.brains": JSON.stringify(customs.map((c) => ({ name: "x", path: c }))), "unimate.graphSource": chon };
+  s3.value = picked;
+  const st = { "unimate.brains": JSON.stringify(customs.map((c) => ({ name: "x", path: c }))), "unimate.graphSource": picked };
   const b3 = {};
   global.document.getElementById = (id) => id === "graphSource" ? s3 : (b3[id] || (b3[id] = { hidden: false, addEventListener() {} }));
   global.localStorage = { getItem: (k) => (k in st ? st[k] : null), setItem: (k, v) => { st[k] = String(v); } };
   return { s3, st, b3 };
 }
-// Thư mục ngoài viết khác chữ (gạch chéo xuôi, chữ thường): /path/exists trả `real` đã đi theo lối tắt.
+// External folders spelled differently (forward slashes, lower case): /path/exists returns `real` with links followed.
 const EX3 = {
   "D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI": { exists: true, is_dir: true, real: "D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI" },
-  "E:\\lien-ket\\bonao": { exists: true, is_dir: true, real: "D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI" },
-  "D:\\Ghi chu": { exists: true, is_dir: true, real: "D:\\Ghi chu" },
+  "E:\\links\\bonao": { exists: true, is_dir: true, real: "D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI" },
+  "D:\\Notes": { exists: true, is_dir: true, real: "D:\\Notes" },
 };
 global.fetch = async (url) => {
   if (url === "/brains") return { json: async () => ({ brains: LINKED }) };
@@ -177,55 +177,55 @@ global.fetch = async (url) => {
     const p = decodeURIComponent(url.split("path=")[1]);
     return { ok: true, json: async () => ({ path: p, ...(EX3[p] || { exists: false, is_dir: false }) }) };
   }
-  throw new Error("fetch chưa mock: " + url);
+  throw new Error("fetch not mocked: " + url);
 };
-let t3 = moi(["D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI\\", "E:\\lien-ket\\bonao", "D:\\Ghi chu"],
+let t3 = makeSelect(["D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI\\", "E:\\links\\bonao", "D:\\Notes"],
              "path:D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI\\");
 eval(SRC);
 await new Promise((r) => setTimeout(r, 50));
 let cv3 = t3.s3.querySelectorAll("option[data-custom]").map((o) => o.value);
-check("lối tắt: thư mục ngoài trùng ĐƯỜNG DẪN THẬT của não (khác chữ, có / cuối) bị gỡ", !cv3.some((v) => v.includes("Bonao_AI")));
-check("lối tắt: thư mục ngoài là một lối tắt khác tới cùng thư mục cũng bị gỡ", !cv3.includes("path:E:\\lien-ket\\bonao"));
-check("lối tắt: thư mục ngoài khác vẫn GIỮ", cv3.length === 1 && cv3[0] === "path:D:\\Ghi chu");
-check("đang chọn thư mục trùng: chuyển sang CHÍNH não đó, không về Brain mặc định",
+check("link: an external folder equal to the brain's REAL PATH (spelled differently, trailing /) is removed", !cv3.some((v) => v.includes("Bonao_AI")));
+check("link: an external folder that is another link to the same folder is removed too", !cv3.includes("path:E:\\links\\bonao"));
+check("link: a different external folder is KEPT", cv3.length === 1 && cv3[0] === "path:D:\\Notes");
+check("the duplicate folder is selected: switch to THAT brain, not to the default Brain",
       t3.s3.value === "path:D:\\U\\brains\\Bonao_AI" && t3.st["unimate.graphSource"] === t3.s3.value);
-const lf = await global.window.UniMateBrains.linkedFor("e:/lien-ket/bonao/");
-const lf2 = await global.window.UniMateBrains.linkedFor("E:\\lien-ket\\bonao");
-const lf3 = await global.window.UniMateBrains.linkedFor("D:\\Ghi chu");
-check("linkedFor: chọn thư mục là não đã kết nối -> trả option của não", lf2 === "path:D:\\U\\brains\\Bonao_AI");
-check("linkedFor: thư mục không phải não -> null", lf3 === null && lf === null);
+const lf = await global.window.UniMateBrains.linkedFor("e:/links/bonao/");
+const lf2 = await global.window.UniMateBrains.linkedFor("E:\\links\\bonao");
+const lf3 = await global.window.UniMateBrains.linkedFor("D:\\Notes");
+check("linkedFor: a folder that is a connected brain -> that brain's option", lf2 === "path:D:\\U\\brains\\Bonao_AI");
+check("linkedFor: a folder that is not a brain -> null", lf3 === null && lf === null);
 
-// ---- Test 3b: "cùng não" theo thư mục thật (app.js hỏi trước khi hiện dòng "thuộc brain khác") ----
+// ---- Test 3b: "same brain" by the real folder (app.js asks before showing "belongs to another brain") ----
 const same = global.window.UniMateBrains.same;
-check("same: hội thoại lưu đường dẫn thật = não lối tắt đang chọn",
+check("same: a chat storing the real path = the selected linked brain",
       same("path:D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI", "path:D:\\U\\brains\\Bonao_AI"));
-check("same: khác chữ hoa thường, gạch chéo, / cuối vẫn là một",
+check("same: different case, slashes and trailing / are still one folder",
       same("path:d:/9. ai/01. brain project/bonao_ai/", "path:D:\\U\\brains\\Bonao_AI"));
-check("same: 'brain' = đường dẫn của Brain mặc định", same("brain", "path:D:\\U\\brains\\Brain Default"));
-check("same: hai não khác nhau thì khác", !same("path:D:\\U\\brains\\Bonao_AI", "brain") && !same("path:D:\\Ghi chu", "path:D:\\U\\brains\\Bonao_AI"));
-check("same: rỗng không bằng gì", !same("", "brain"));
+check("same: 'brain' = the default Brain's path", same("brain", "path:D:\\U\\brains\\Brain Default"));
+check("same: two different brains differ", !same("path:D:\\U\\brains\\Bonao_AI", "brain") && !same("path:D:\\Notes", "path:D:\\U\\brains\\Bonao_AI"));
+check("same: empty equals nothing", !same("", "brain"));
 const APP = fs.readFileSync(path.join(__dirname, "../../dashboard/app.js"), "latin1");
-check("app.js mở hội thoại: so cùng não qua UniMateBrains.same, không so chuỗi",
-      APP.includes("window.UniMateBrains.same(sess.brain_ui, graphSource.value)") && APP.includes("if (sess.brain_ui && !cungNao) veNhanBrain"));
+check("app.js opening a chat: compares the brain via UniMateBrains.same, not the strings",
+      APP.includes("window.UniMateBrains.same(sess.brain_ui, graphSource.value)") && APP.includes("if (sess.brain_ui && !inPickedBrain) veNhanBrain"));
 
-// ---- Test 4: nút Gỡ thư mục ngoài + nhãn nhóm sau khi từ điển về ----
-t3 = moi(["D:\\Ghi chu"], "brain");
+// ---- Test 4: Remove external folder button + group label after the dictionary arrives ----
+t3 = makeSelect(["D:\\Notes"], "brain");
 eval(SRC);
 await new Promise((r) => setTimeout(r, 50));
-check("chọn não: ẩn nút Gỡ, hiện Đổi tên + Xoá",
+check("a brain selected: Remove hidden, Rename + Delete shown",
       t3.b3.removeFolderBtn.hidden === true && t3.b3.renameBrainBtn.hidden === false && t3.b3.delBrainBtn.hidden === false);
-t3.s3.value = "path:D:\\Ghi chu";
+t3.s3.value = "path:D:\\Notes";
 t3.s3.dispatchEvent(new Event("change"));
-check("chọn thư mục ngoài: hiện nút Gỡ, ẩn Đổi tên + Xoá",
+check("an external folder selected: Remove shown, Rename + Delete hidden",
       t3.b3.removeFolderBtn.hidden === false && t3.b3.renameBrainBtn.hidden === true && t3.b3.delBrainBtn.hidden === true);
 const SRC_I18N_OK = SRC.includes('window.addEventListener("unimate:i18n", relabel)') && SRC.includes('g.label = window.t("app.external_folder")');
-check("nhãn nhóm thư mục ngoài vẽ lại khi từ điển về (unimate:i18n)", SRC_I18N_OK && (winLs["unimate:i18n"] || []).length > 0);
+check("the external folder group label is redrawn when the dictionary arrives (unimate:i18n)", SRC_I18N_OK && (winLs["unimate:i18n"] || []).length > 0);
 const HTML = fs.readFileSync(path.join(__dirname, "../../dashboard/index.html"), "utf8");
-check("index.html có nút removeFolderBtn, ẩn sẵn, có khoá dịch",
+check("index.html has the removeFolderBtn button, hidden by default, with a translation key",
       /id="removeFolderBtn" hidden[^>]*data-i18n-title="top.brain_remove_folder"/.test(HTML));
 for (const l of ["vi", "en", "de"]) {
   const d = JSON.parse(fs.readFileSync(path.join(__dirname, `../../dashboard/i18n/${l}.json`), "utf8"));
-  check(`${l}.json có top.brain_remove_folder`, typeof d["top.brain_remove_folder"] === "string");
+  check(`${l}.json has top.brain_remove_folder`, typeof d["top.brain_remove_folder"] === "string");
 }
 
 console.log();

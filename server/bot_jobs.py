@@ -237,7 +237,7 @@ class BotJobs:
 
         @self.router.get("/tasks/bots")
         async def tasks_bots(brain: str = Query("brain")):
-            # 0.445.0: job_map đọc nhật ký lượt chạy của từng bot và bảng việc, việc đồng bộ nên chạy ở luồng phụ.
+            # 0.445.0: job_map reads every bot's turn logs and the task board, blocking work, so it runs on a worker thread.
             return {"ok": True, **(await asyncio.to_thread(self.map, brain))}
 
     def map(self, brain: str) -> dict:

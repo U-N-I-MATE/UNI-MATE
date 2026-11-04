@@ -242,16 +242,16 @@ class TasksFeature:
             # MỘT truy vấn cho mọi task thay vì một truy vấn mỗi task (N+1). Với bảng đầy
             # tới trần 5000 thì đây là 5000 lượt round-trip sqlite biến thành 10 lượt.
             events = self.store.list_events_bulk([t["id"] for t in tasks], 20)
-            # Múi giờ lấy MỘT lần cho cả bản sao (0.443.0). `localefmt.clock` đọc lại settings.json từ
-            # đĩa ở mỗi lần gọi để biết múi giờ, mà ở đây gọi cho TỪNG dòng nhật ký: 120 việc x 6 dòng
-            # là 720 lần đọc, ~105 ms giữ GIL nên vòng sự kiện đứng theo dù chạy trong thread; bảng
-            # đầy (5000 việc x 20 dòng) là 100.000 lần. Đó là gốc của test_kanban_snapshot chập chờn
-            # (CI main 9a92ef3e đỏ 04/11/2026: nhịp tim qua to_thread 160 ms).
-            mui = localefmt.tz()
+            # The zone is read ONCE for the whole snapshot (0.443.0). `localefmt.clock` re-read settings.json
+            # from disk on every call to learn the zone, and here it ran for EVERY log line: 120 tasks x 6 lines
+            # is 720 reads, ~105 ms holding the GIL, so the event loop stalled even from a thread; a full board
+            # (5000 tasks x 20 lines) is 100,000 reads. That was the root of the flaky test_kanban_snapshot
+            # (CI main 9a92ef3e red 2026-11-04: heartbeat through to_thread 160 ms).
+            zone = localefmt.tz()
             for task in tasks:
                 task["log"] = [
                     {
-                        "ts": datetime.fromtimestamp(float(event.get("created_at") or 0), mui).strftime("%Y-%m-%d %H:%M"),
+                        "ts": datetime.fromtimestamp(float(event.get("created_at") or 0), zone).strftime("%Y-%m-%d %H:%M"),
                         "msg": event.get("message") or event.get("event_type") or "",
                     }
                     for event in events.get(task["id"], [])

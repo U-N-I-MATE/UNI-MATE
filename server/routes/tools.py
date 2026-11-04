@@ -66,7 +66,7 @@ def register(app, deps: ToolsDeps):
     async def tools_list(request: Request):
         if not _DEPS.co_phien(request):
             return _tu_choi()
-        # 0.445.0: trạng thái công cụ có thể phải đo thư mục cài đặt trên đĩa, chạy ở luồng phụ.
+        # 0.445.0: tool status may have to measure install folders on disk, so it runs on a worker thread.
         return {"ok": True, "tools": await asyncio.to_thread(optional_tools.danh_sach)}
 
     @router.post("/tools/optional/install")

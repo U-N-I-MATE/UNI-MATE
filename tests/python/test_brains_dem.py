@@ -124,7 +124,7 @@ _count_that = main._count_md
 DO_TRE_GIA = 0.15
 
 
-def _count_cham(root, cap, **kw):   # **kw: 0.445.0 thêm chi_dong_bo
+def _count_cham(root, cap, **kw):   # **kw: 0.445.0 added synced_only
     time.sleep(DO_TRE_GIA)      # giả lập ổ đĩa chậm / vault lớn
     return _count_that(root, cap, **kw)
 
