@@ -9,6 +9,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.442.0] - 2026-11-04
 ### Fixed
 - **The brain menu no longer lists one folder twice.** When a brain in the brains folder is a link to a notes folder elsewhere, an external folder pointing straight at it used to show again under "External folders". UNI MATE now sees it is the same folder: it drops the duplicate, and if you had it selected it switches to that brain. Picking that folder again with the folder button selects the brain instead of adding a new line.
+- **No more false "This chat belongs to another brain".** Opening a chat of the brain already selected (for example on the Partners page) sometimes showed "This chat belongs to brain Bonao_AI... Switch to Bonao_AI", because chats store the real folder while the brain menu uses the link's path. UNI MATE now compares the real folder, so the line only shows for a genuinely different brain.
 - **The "External folders" group label shows real text.** It sometimes showed the key `app.external_folder` because the group was drawn before the language finished loading.
 
 ### Added

@@ -7976,14 +7976,50 @@ def unimate_core_session(brain: str = Form("brain")):
     return {"id": sid, "channel": unimate_core.CHANNEL}
 
 
+_BRAINS_DIR_MAP = {"at": 0.0, "map": {}}
+
+
+def _brains_dir_map() -> dict:
+    """{resolved folder: folder as GET /brains lists it} for every brain in BRAINS_DIR, kept 5 seconds (a session list
+    asks once per row)."""
+    now = time.time()
+    if now - _BRAINS_DIR_MAP["at"] < 5:
+        return _BRAINS_DIR_MAP["map"]
+    m = {}
+    try:
+        for p in Path(BRAINS_DIR).iterdir():
+            if p.is_dir() and not p.name.startswith("."):
+                try:
+                    m.setdefault(str(p.resolve()), str(p))
+                except OSError:
+                    pass
+    except OSError:
+        pass
+    _BRAINS_DIR_MAP.update(at=now, map=m)
+    return m
+
+
 def _brain_ui_value(brain_key: str) -> str:
     """The value the dashboard's brain picker uses for a stored brain key: "brain" for the default brain,
-    "path:<dir>" for any other (0.188.0)."""
+    "path:<dir>" for any other (0.188.0).
+
+    0.442.0: a brain in BRAINS_DIR that is a LINK to a vault elsewhere (owner's PC: brains/Bonao_AI ->
+    D:/9. AI/01. BRAIN PROJECT/Bonao_AI) is listed by the picker under its BRAINS_DIR path, while chats store the
+    resolved path (`_brain_key`). Answering the resolved path made the dashboard say an open chat "belongs to brain
+    Bonao_AI" while Bonao_AI was the brain on screen, and offer to switch to the same folder. Return the picker's own
+    value for it."""
     try:
         if _cung_brain(str(brain_key or ""), str(_default_brain_dir())):
             return "brain"
     except Exception:
         pass
+    if brain_key:
+        try:
+            listed = _brains_dir_map().get(str(Path(str(brain_key)).resolve()))
+            if listed:
+                return f"path:{listed}"
+        except OSError:
+            pass
     return f"path:{brain_key}" if brain_key else "brain"
 
 

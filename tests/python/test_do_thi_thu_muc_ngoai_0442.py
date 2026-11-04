@@ -58,6 +58,21 @@ r = cl.get("/path/exists", params={"path": str(that / "khong-co")}).json()
 check("GET /path/exists: thư mục không có thì không trả `real`, giữ đúng câu trả lời cũ",
       r.get("exists") is False and r.get("is_dir") is False and "real" not in r, r)
 
+# Hội thoại lưu đường dẫn THẬT (_brain_key đi theo lối tắt); dashboard phải nhận lại đúng giá trị của ô chọn não,
+# không thì mở hội thoại của chính não đang chọn vẫn hiện "Cuộc chat này thuộc brain Bonao_AI... [Chuyển sang]".
+key = main._brain_key(str(brains / "Bonao_AI"))
+check("hội thoại của não lối tắt lưu đường dẫn thật", key == str(that.resolve()), key)
+main._BRAINS_DIR_MAP["at"] = 0
+check("brain_ui của hội thoại = giá trị trong ô chọn (thư mục brains), không phải đường dẫn thật",
+      main._brain_ui_value(key) == "path:" + str(brains / "Bonao_AI"), main._brain_ui_value(key))
+check("brain_ui: não thường giữ nguyên", main._brain_ui_value(str((brains / "Rieng").resolve())) == "path:" + str(brains / "Rieng"))
+khac = tempfile.mkdtemp(prefix="unimate-0442-ngoai-")
+check("brain_ui: thư mục ngoài (không có trong brains) giữ nguyên đường dẫn", main._brain_ui_value(khac) == "path:" + khac)
+check("brain_ui: Brain mặc định vẫn là 'brain'", main._brain_ui_value(main._brain_key("brain")) == "brain")
+sid = main.get_store().create_session(brain=key, title="x", channel="agent:eco-agent")
+r = cl.get(f"/sessions/{sid}").json()
+check("GET /sessions/<id>: brain_ui khớp ô chọn não", r.get("brain_ui") == "path:" + str(brains / "Bonao_AI"), r.get("brain_ui"))
+
 print()
 if _fails:
     print(f"FAIL {len(_fails)}: {_fails}")

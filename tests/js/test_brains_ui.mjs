@@ -195,6 +195,19 @@ const lf3 = await global.window.UniMateBrains.linkedFor("D:\\Ghi chu");
 check("linkedFor: chọn thư mục là não đã kết nối -> trả option của não", lf2 === "path:D:\\U\\brains\\Bonao_AI");
 check("linkedFor: thư mục không phải não -> null", lf3 === null && lf === null);
 
+// ---- Test 3b: "cùng não" theo thư mục thật (app.js hỏi trước khi hiện dòng "thuộc brain khác") ----
+const same = global.window.UniMateBrains.same;
+check("same: hội thoại lưu đường dẫn thật = não lối tắt đang chọn",
+      same("path:D:\\9. AI\\01. BRAIN PROJECT\\Bonao_AI", "path:D:\\U\\brains\\Bonao_AI"));
+check("same: khác chữ hoa thường, gạch chéo, / cuối vẫn là một",
+      same("path:d:/9. ai/01. brain project/bonao_ai/", "path:D:\\U\\brains\\Bonao_AI"));
+check("same: 'brain' = đường dẫn của Brain mặc định", same("brain", "path:D:\\U\\brains\\Brain Default"));
+check("same: hai não khác nhau thì khác", !same("path:D:\\U\\brains\\Bonao_AI", "brain") && !same("path:D:\\Ghi chu", "path:D:\\U\\brains\\Bonao_AI"));
+check("same: rỗng không bằng gì", !same("", "brain"));
+const APP = fs.readFileSync(path.join(__dirname, "../../dashboard/app.js"), "latin1");
+check("app.js mở hội thoại: so cùng não qua UniMateBrains.same, không so chuỗi",
+      APP.includes("window.UniMateBrains.same(sess.brain_ui, graphSource.value)") && APP.includes("if (sess.brain_ui && !cungNao) veNhanBrain"));
+
 // ---- Test 4: nút Gỡ thư mục ngoài + nhãn nhóm sau khi từ điển về ----
 t3 = moi(["D:\\Ghi chu"], "brain");
 eval(SRC);

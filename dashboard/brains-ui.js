@@ -63,6 +63,24 @@
     return null;
   }
 
+  // Hai giá trị của ô chọn não ("brain", "path:<thư mục>") có cùng MỘT thư mục không. So theo đường dẫn
+  // thật (đi qua lối tắt) đã chuẩn hoá, như _cung_brain phía máy chủ, không so chuỗi.
+  function canon(v) {
+    v = String(v || "");
+    if (!v) return "";
+    if (v === "brain") {
+      const d = _lastBrains.find((b) => b.is_default);
+      return d ? normPath(d.real || d.path) : "brain";
+    }
+    if (!v.startsWith("path:")) return v;
+    const p = normPath(v.slice(5));
+    const b = _lastBrains.find((x) => normPath(x.path) === p || (x.real && normPath(x.real) === p));
+    return b ? normPath(b.real || b.path) : p;
+  }
+  function sameBrain(a, b) {
+    return a === b || (!!a && !!b && canon(a) === canon(b));
+  }
+
   // Dọn danh sách thư mục ngoài (localStorage) đã hỏng: bỏ entry TRÙNG với 1 não thật (kể cả
   // trùng qua lối tắt), và entry mà path KHÔNG còn là thư mục (đã xoá khỏi ổ đĩa). Giữ folder
   // ngoài hợp lệ + entry chưa xác định được (tránh xoá nhầm khi server chớp lỗi). Nguồn sự thật
@@ -284,5 +302,6 @@
   loadBrains(null, true);
 
   // linkedFor: app.js hỏi trước khi thêm một thư mục vừa chọn, để chọn thẳng não đã kết nối khi trùng.
-  window.UniMateBrains = { reload: () => loadBrains(null, false), linkedFor: (p) => linkedFor(p) };
+  // same: app.js hỏi "hội thoại vừa mở có thuộc não đang chọn không" trước khi hiện dòng "thuộc brain khác".
+  window.UniMateBrains = { reload: () => loadBrains(null, false), linkedFor: (p) => linkedFor(p), same: sameBrain };
 })();
