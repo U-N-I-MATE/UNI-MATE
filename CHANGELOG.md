@@ -6,6 +6,11 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.443.0] - 2026-11-04
+### Sửa lỗi
+- **Bảng việc ghi bản sao nhanh hơn nhiều, không làm UNI MATE khựng.** Mỗi lần bảng việc đổi, UNI MATE ghi một bản sao vào brain. Trước đây mỗi dòng nhật ký của từng việc đều đọc lại tệp cài đặt để biết múi giờ: 120 việc mất khoảng 105 ms, bảng đầy còn lâu hơn nhiều, và trong lúc đó UNI MATE đứng hình theo. Giờ múi giờ chỉ đọc một lần, cùng bảng đó còn khoảng 10 ms.
+- Kiểm tra tự động hết báo đỏ chập chờn ở phép đo bảng việc (bản chính 0.441.0 đỏ lúc 07:30 ngày 04/11 vì đúng chỗ này).
+
 ## [0.442.0] - 2026-11-04
 ### Sửa lỗi
 - **Menu chọn não không còn hiện một thư mục hai lần.** Khi một não trong thư mục brains là lối tắt tới thư mục ghi chú ở nơi khác, thư mục ngoài trỏ thẳng tới đó trước đây vẫn hiện thêm ở nhóm "Thư mục ngoài". Giờ UNI MATE nhận ra đó là cùng một thư mục: tự gỡ dòng trùng, và nếu anh đang chọn dòng đó thì chuyển sang chính não ấy. Chọn lại thư mục đó bằng nút mở thư mục cũng chọn thẳng não, không thêm dòng mới.

@@ -242,10 +242,16 @@ class TasksFeature:
             # MỘT truy vấn cho mọi task thay vì một truy vấn mỗi task (N+1). Với bảng đầy
             # tới trần 5000 thì đây là 5000 lượt round-trip sqlite biến thành 10 lượt.
             events = self.store.list_events_bulk([t["id"] for t in tasks], 20)
+            # Múi giờ lấy MỘT lần cho cả bản sao (0.443.0). `localefmt.clock` đọc lại settings.json từ
+            # đĩa ở mỗi lần gọi để biết múi giờ, mà ở đây gọi cho TỪNG dòng nhật ký: 120 việc x 6 dòng
+            # là 720 lần đọc, ~105 ms giữ GIL nên vòng sự kiện đứng theo dù chạy trong thread; bảng
+            # đầy (5000 việc x 20 dòng) là 100.000 lần. Đó là gốc của test_kanban_snapshot chập chờn
+            # (CI main 9a92ef3e đỏ 04/11/2026: nhịp tim qua to_thread 160 ms).
+            mui = localefmt.tz()
             for task in tasks:
                 task["log"] = [
                     {
-                        "ts": localefmt.clock(float(event.get("created_at") or 0)),
+                        "ts": datetime.fromtimestamp(float(event.get("created_at") or 0), mui).strftime("%Y-%m-%d %H:%M"),
                         "msg": event.get("message") or event.get("event_type") or "",
                     }
                     for event in events.get(task["id"], [])
