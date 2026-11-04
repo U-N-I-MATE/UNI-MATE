@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.445.2] - 2026-11-04
+### Improved
+- No change for users. Development conventions updated: GitHub now deletes a branch when its PR is merged; only branches pushed without a PR are recorded for cleanup; the source of the English-code rule is corrected.
+
 ## [0.445.1] - 2026-11-04
 ### Improved
 - No change for users. Development conventions updated: delete a branch as soon as it is merged, without asking again; the base branches are never deleted.

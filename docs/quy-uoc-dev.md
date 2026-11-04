@@ -17,11 +17,13 @@ thuế lên lượt chat nào cả.
   có bản cập nhật. Trước khi merge, kiểm tra số này lớn hơn phiên bản hiện tại trên
   `origin/main`; sau khi merge, xác nhận luồng build/phát hành bản cập nhật thành công.
   Không coi việc merge code là đã phát hành xong nếu bản mới chưa được xuất bản.
-- **Xoá nhánh đã gộp** (chủ repo chốt 2026-11-04): gộp xong thì xoá nhánh luôn, **không hỏi lại**
-  chủ repo và không đưa vào mục "Anh cần làm" của báo cáo. Proxy của phiên Claude Code chặn lệnh
-  xoá nhánh (HTTP 403); khi bị chặn thì ghi tên nhánh vào nhật ký việc 03 của chủ repo
-  (`Nhatky_Boicanh_Yeucau.md`, cột kết quả, ghi "chờ xoá"), luồng kiểm thử sẽ tự đối chiếu mã đã
-  có trong `main` rồi xoá theo đó.
+- **Xoá nhánh đã gộp** (chủ repo chốt 2026-11-04, cập nhật cùng ngày): cả hai kho UNI-MATE và
+  unimate-store đã bật **"Automatically delete head branches"**, nên gộp PR là GitHub tự xoá nhánh.
+  Phiên Claude Code **không cần xoá nhánh**, không ghi "chờ xoá", không hỏi lại chủ repo và không
+  đưa vào mục "Anh cần làm" của báo cáo.
+- **Ngoại lệ duy nhất:** nhánh đẩy thẳng lên GitHub mà KHÔNG qua PR thì không được tự xoá. Ghi tên
+  nhánh đó vào nhật ký việc 03 của chủ repo (`Nhatky_Boicanh_Yeucau.md`, cột kết quả, ghi "chờ
+  xoá") để luồng kiểm thử đối chiếu mã đã có trong `main` rồi dọn.
 - **KHÔNG BAO GIỜ xoá** các nhánh gốc: `main`, `ban-goc` (UNI-MATE); `main`, `theo-goc/tu-dong`
   (unimate-store).
 
@@ -109,7 +111,7 @@ THOẠI, không phải cho lập trình viên đọc diff:
 Repo mở cho người đóng góp quốc tế, nên phần NGƯỜI NGOÀI ĐỌC viết bằng tiếng Anh:
 
 - **Commit message, tiêu đề và mô tả PR:** tiếng Anh.
-- **Mọi code mới viết tiếng Anh** (chủ repo chốt 15/10/2026): tên module, hàm, biến, trường dữ
+- **Mọi code mới viết tiếng Anh** (UNI MATE giữ quy ước này, anh chốt 04/11/2026): tên module, hàm, biến, trường dữ
   liệu, comment, docstring, tên test và câu in trong `check(...)`, kể cả khi thêm vào một file cũ
   đang viết tiếng Việt. Không dịch lại phần code cũ không đụng tới. Chữ hiện cho người dùng đi qua
   i18n (`vi.json` có dấu, `en.json`). Bảng từ điển định danh tiếng Việt cũ cho người nước ngoài ở
