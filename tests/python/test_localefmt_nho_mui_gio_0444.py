@@ -75,7 +75,7 @@ finally:
 check("quay về tệp cũ: lại đúng múi của tệp cũ", str(L.tz()) == "Europe/Paris", L.tz())
 
 # Đọc lỗi thoáng qua (Windows khoá tệp): trả mặc định nhưng KHÔNG nhớ, kẻo kẹt mặc định tới lần ghi sau.
-L._TZ_NHO["dau"] = None
+L._CACHE.pop(L._KHOA_NHO, None)
 
 
 def _hong():
@@ -89,7 +89,7 @@ cfgmod.read_settings = _doc_dem
 check("đọc lỗi không bị nhớ: lần sau đọc được thì đúng múi thật", str(L.tz()) == "Europe/Paris", L.tz())
 
 # Đọc từ bản dự phòng .bak: không nhớ, y như read_settings.
-L._TZ_NHO["dau"] = None
+L._CACHE.pop(L._KHOA_NHO, None)
 
 
 def _tu_bak():
@@ -100,11 +100,28 @@ def _tu_bak():
 
 cfgmod.read_settings = _tu_bak
 L.tz()
-check("đọc từ .bak: không nhớ", L._TZ_NHO["dau"] is None)
+check("đọc từ .bak: không nhớ", L._KHOA_NHO not in L._CACHE)
 cfgmod._DOC_TU_BAK[0] = False
 cfgmod.read_settings = _doc_dem
 L.tz()
-check("đọc tệp thật trở lại: nhớ như thường", L._TZ_NHO["dau"] is not None)
+check("đọc tệp thật trở lại: nhớ như thường", L._KHOA_NHO in L._CACHE)
+
+# Cách các test cũ báo "cấu hình vừa đổi" mà không ghi đĩa (vá read_settings rồi _CACHE.clear()) vẫn đúng.
+_goc = cfgmod.read_settings
+
+
+def _gia():
+    c = _goc()
+    c.setdefault("locale", {})["tz"] = "Asia/Seoul"
+    return c
+
+
+cfgmod.read_settings = _gia
+L._CACHE.clear()
+check("vá read_settings + _CACHE.clear(): theo cấu hình giả ngay", str(L.tz()) == "Asia/Seoul", L.tz())
+cfgmod.read_settings = _goc
+L._CACHE.clear()
+check("gỡ vá + _CACHE.clear(): về múi thật", str(L.tz()) == "Europe/Paris", L.tz())
 
 # Chưa có tệp cài đặt (máy mới): không có dấu để nhớ, vẫn ra múi mặc định.
 cfgmod.SETTINGS_PATH = Path(tempfile.mkdtemp(prefix="unimate-0444-c-")) / "settings.json"

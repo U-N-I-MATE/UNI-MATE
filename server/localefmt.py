@@ -65,6 +65,7 @@ def _cau_hinh() -> dict:
     try:
         return cfgmod.read_settings().get("locale") or {}
     except Exception:
+        _DOC_LOI[0] = True     # tz() không nhớ kết quả của một lần đọc hỏng
         return {}
 
 
@@ -141,7 +142,10 @@ def ten_tz() -> str:
 # (~0,17 ms), mà `clock`/`at`/`now` gọi `tz()` ở đường nóng và trong vòng lặp: bản sao bảng việc từng gọi 720
 # lần cho 120 việc (gốc của test_kanban_snapshot chập chờn, 0.443.0). Giờ mỗi lần chỉ là một lần `stat`.
 # Ghi cài đặt là đổi mtime/size nên múi giờ mới có hiệu lực ngay lần gọi kế tiếp.
-_TZ_NHO: dict = {"dau": None, "tz": None}
+# Nằm CHUNG trong `_CACHE` (khoá không bao giờ là tên múi giờ) để `_CACHE.clear()` xoá cả nó: đó là cách các
+# test giả cấu hình mà không ghi đĩa (vá `read_settings` hay `ten_tz`) báo "cấu hình vừa đổi".
+_KHOA_NHO = "\x00theo-dau-settings"
+_DOC_LOI = [False]
 
 
 def _dau_settings():
@@ -156,21 +160,20 @@ def _dau_settings():
 def tz() -> tzinfo:
     """Múi giờ đang cấu hình. Không bao giờ ném lỗi."""
     dau = _dau_settings()
-    if dau is not None and dau == _TZ_NHO["dau"]:
-        return _TZ_NHO["tz"]
-    nho = dau is not None
+    nho = _CACHE.get(_KHOA_NHO)
+    if dau is not None and nho is not None and nho[0] == dau:
+        return nho[1]
+    _DOC_LOI[0] = False
     try:
-        c = cfgmod.read_settings().get("locale") or {}
-        # Đọc từ bản dự phòng `.bak` (file thật hỏng): không nhớ, y như read_settings, để lần sau thử lại file thật.
-        if getattr(cfgmod, "_DOC_TU_BAK", [False])[0]:
-            nho = False
+        cfgmod._DOC_TU_BAK[0] = False
     except Exception:
-        # Không đọc được (file bị khoá thoáng qua trên Windows): dùng mặc định nhưng KHÔNG nhớ, kẻo kẹt múi
-        # giờ mặc định tới tận lần ghi cài đặt kế tiếp.
-        c, nho = {}, False
-    z = _tu_ten(str(c.get("tz") or TEN_TZ_MAC_DINH))
-    if nho:
-        _TZ_NHO["dau"], _TZ_NHO["tz"] = dau, z
+        pass
+    z = _tu_ten(ten_tz())
+    # Không nhớ khi đọc lỗi (Windows khoá tệp thoáng qua: kẹt múi mặc định tới lần ghi sau) hay đọc từ bản dự
+    # phòng `.bak` (như read_settings, để lần sau thử lại tệp thật).
+    tu_bak = bool(getattr(cfgmod, "_DOC_TU_BAK", [False])[0])
+    if dau is not None and not _DOC_LOI[0] and not tu_bak:
+        _CACHE[_KHOA_NHO] = (dau, z)
     return z
 
 
