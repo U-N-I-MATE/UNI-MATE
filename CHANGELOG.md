@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.446.0] - 2026-11-04
+### Tính năng mới
+- (đang làm) ChatGPT, Claude.ai gửi tin vào khung Trò chuyện của UNI MATE.
+
 ## [0.445.3] - 2026-11-04
 ### Cải thiện
 - Không có thay đổi nào với người dùng. Phần mã, chú thích và tên kiểm thử thêm từ bản 0.441.0 đến 0.445.0 chuyển sang tiếng Anh theo quy ước của dự án; chữ hiện trên màn hình giữ nguyên.

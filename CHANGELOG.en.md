@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.446.0] - 2026-11-04
+### New
+- (in progress) ChatGPT and Claude.ai can send a message into the UNI MATE chat.
+
 ## [0.445.3] - 2026-11-04
 ### Improved
 - No change for users. Code, comments and test names added in 0.441.0 to 0.445.0 are now in English, as the project convention asks; on-screen text is unchanged.
