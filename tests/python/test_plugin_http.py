@@ -93,8 +93,12 @@ check("chủ POST được đường không public", r.status_code == 200 and r.
 check("method không khai -> 404", chu.delete("/ext/demo-http/status",
                                               headers={"Origin": "http://testserver"}).status_code == 404)
 check("đường không tồn tại -> 404 (sau đăng nhập)", chu.get("/ext/demo-http/khong-co").status_code == 404)
-check("plugin không tồn tại, người lạ -> 401 (không dò được plugin nào đang cài)",
-      la.get("/ext/khong-co/x").status_code == 401)
+# 0.446.0 (owner, 04/11/2026): a missing extension answers 404 even to a stranger, so a mistyped connector address fails
+# at once instead of leading an OAuth client into a reconnect loop. The trade-off was accepted: a stranger can tell
+# which extension names exist, and those names are public in the store anyway. A real extension's private path still
+# asks to sign in (the POST check above).
+check("missing extension, stranger -> 404 (owner's decision 0.446.0)",
+      la.get("/ext/khong-co/x").status_code == 404)
 
 # ---- 3. no_cookie: miễn CSRF + gỡ cookie ----
 r = chu.post("/ext/demo-http/hook", content=b"ping", headers={"Origin": "https://trang-la.example"})
@@ -118,7 +122,7 @@ check("well-known không ai khai -> không công khai", la.get("/.well-known/kho
 check("well-known chỉ GET", la.post("/.well-known/demo-meta").status_code in (401, 405))
 
 # ---- 5. plugin trong brain không có đường ----
-check("plugin trong brain: không mở được /ext", la.get("/ext/vault-http/x").status_code == 401
+check("plugin trong brain: không mở được /ext", la.get("/ext/vault-http/x").status_code == 404
       and chu.get("/ext/vault-http/x").status_code == 404)
 check("plugin trong brain: không chiếm được well-known", la.get("/.well-known/vault-meta").status_code == 401)
 

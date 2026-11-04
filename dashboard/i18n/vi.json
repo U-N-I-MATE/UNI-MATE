@@ -6622,5 +6622,6 @@
   "nv.sta.idea_repeat_how": "UNI MATE làm đúng lịch lặp này thay bạn rồi báo kết quả.",
   "nv.sta.idea_save_once": "Tiết kiệm khoảng {t}",
   "nv.sta.idea_save_week": "Khoảng {t} mỗi tuần",
-  "nv.sta.one_thing": "{n} việc"
+  "nv.sta.one_thing": "{n} việc",
+  "app.gate_from": "Gửi từ {src}"
 }

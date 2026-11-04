@@ -6622,5 +6622,6 @@
   "nv.sta.idea_repeat_how": "UNI MATE does it on the same schedule and reports back.",
   "nv.sta.idea_save_once": "Saves about {t}",
   "nv.sta.idea_save_week": "About {t} a week",
-  "nv.sta.one_thing": "{n} task"
+  "nv.sta.one_thing": "{n} task",
+  "app.gate_from": "Sent from {src}"
 }

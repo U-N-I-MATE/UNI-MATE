@@ -4537,6 +4537,8 @@ div.info-body > * { margin: 0; font-size: inherit; }
 select option, select optgroup { background-color: var(--bg2); color: var(--text); }
 /* 0.206.0: a message sent while UNI MATE works shows where it is (read by the running turn, or waiting to run next). */
 .msg-user .steer-note { font-size: 12px; color: var(--text3); text-align: right; margin: 3px 4px 0; }
+/* 0.446.0: a message sent through the outside AI gate says who sent it, above the bubble. */
+.msg-user .gate-from { font-size: 12px; color: var(--text3); text-align: right; margin: 0 4px 3px; }
 .msg-user .steer-note .steer-now { font: inherit; font-weight: 600; color: var(--accent-ink); background: none; border: 0; padding: 0 2px; cursor: pointer; text-decoration: underline; }
 .msg-user .steer-note .steer-now:disabled { opacity: .5; cursor: default; }
 
