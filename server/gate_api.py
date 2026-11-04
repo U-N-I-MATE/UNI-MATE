@@ -20,6 +20,12 @@ as a message typed meanwhile (steer). Only the main chat (`web`, or empty on old
 chats stay read-only for now, Telegram/Zalo/CLI talks answer on their own channel, and customer, group and Team
 conversations are never reachable at all. `chat_result` waits a bounded time and returns what UNI MATE wrote.
 
+New chat and brain list (0.447.0, owner's decision 04/11/2026). `send_chat` with no session id starts a new main-chat
+conversation titled "Từ <source>: <title>" in the given brain and sends into it. `list_brains` gives the pack the brains
+of this machine so the owner can PIN the gate to one: the core's own "brain in use" (the brain of the most recently
+updated conversation, `mcp_hub.resolve_vault`) jumps with any activity, background chats included, which suits a local
+engine but not an outside AI. The pinning itself lives in the pack; the core's brain choice is unchanged.
+
 Never use the em dash character in this file.
 """
 from __future__ import annotations
@@ -29,6 +35,7 @@ import json
 import re
 import sys
 import time
+from pathlib import Path
 from typing import Any, List, Optional
 
 OWNER_CHANNELS = ("", "web", "telegram", "zalo", "cli")
@@ -130,6 +137,35 @@ async def record_note(brain: str, source: str, title: str, note: str, asked: str
 
 # ---------------------------------------------------------------- sending (0.446.0)
 
+def list_brains() -> list:
+    """The brains of this machine: [{"name", "label", "path", "default"}], sorted by folder name. Cheap (no note count),
+    for the gate pack's brain picker."""
+    m = _main()
+    out = []
+    try:
+        base = Path(m.BRAINS_DIR)
+        try:
+            default = m._default_brain_dir().resolve()
+        except Exception:
+            default = None
+        for p in sorted(base.iterdir(), key=lambda x: x.name.lower()):
+            if not p.is_dir() or p.name.startswith("."):
+                continue
+            try:
+                import brain_label
+                label = brain_label.display(p)
+            except Exception:
+                label = p.name
+            try:
+                is_default = default is not None and p.resolve() == default
+            except OSError:
+                is_default = False
+            out.append({"name": p.name, "label": label, "path": str(p), "default": is_default})
+    except OSError:
+        return []
+    return out
+
+
 def can_send(channel: Any) -> bool:
     return str(channel or "") in SEND_CHANNELS
 
@@ -200,14 +236,40 @@ class _StandInSocket:
         return None
 
 
-async def send_chat(session_id: str, brain: str, text: str, source: str) -> dict:
+def _new_main_chat(brain: str, source: str, title: str, text: str) -> str:
+    """A new main-chat conversation in `brain`, titled "Từ <source>: <title>" (title from the message when empty)."""
+    m = _main()
+    from sessions import get_store
+    title = " ".join(str(title or "").split())[:TITLE_CHARS]
+    if not title:
+        first = " ".join(str(text or "").split())
+        title = first[:60].rstrip() + ("..." if len(first) > 60 else "")
+    return get_store().create_session(brain=m._brain_key(brain), title=f"Từ {source_name(source)}: {title}",
+                                      channel="web")
+
+
+async def send_chat(session_id: str, brain: str, text: str, source: str, title: str = "") -> dict:
     """Put `text` into the owner's main-chat conversation `session_id` as if the owner typed it.
 
-    Returns {"chat_id", "title", "mode": "started"|"queued", "after_id"}; `after_id` is the last message id before this
-    one, for `chat_result`. Raises GateError for anything the gate refuses."""
+    No `session_id` (0.447.0): a new main-chat conversation is created in `brain` first ("Từ <source>: <title>"; the
+    title comes from the message when empty), and `created` is True in the result.
+    Returns {"chat_id", "title", "mode": "started"|"queued", "after_id", "created"}; `after_id` is the last message id
+    before this one, for `chat_result`. Raises GateError for anything the gate refuses."""
     m = _main()
     from sessions import get_store
     store = get_store()
+    created = False
+    if not str(session_id or "").strip():
+        # Check the message BEFORE creating anything, so a refused send leaves no empty conversation behind.
+        _t = str(text or "").strip()
+        if not _t:
+            raise GateError("Tin nhắn trống.")
+        if len(_t) > SEND_CHARS:
+            raise GateError(f"Tin quá dài ({len(_t)} ký tự, tối đa {SEND_CHARS}).")
+        if not brain:
+            raise GateError("Chưa có bộ não để tạo hội thoại mới.")
+        session_id = _new_main_chat(brain, source, title, _t)
+        created = True
     row = _owner_row(session_id, brain)
     if not can_send(row.get("channel")):
         raise GateError("Chỉ gửi được vào hội thoại ở khung Trò chuyện chính. Hội thoại với Cộng sự, Telegram, Zalo, "
@@ -240,7 +302,7 @@ async def send_chat(session_id: str, brain: str, text: str, source: str) -> dict
     if not busy and not _running(sid) and _last_id(store, sid) <= before:
         raise GateError("UNI MATE chưa nhận tin này. Thử lại sau ít phút.")
     return {"chat_id": sid, "title": row.get("title") or "", "mode": "queued" if busy else "started",
-            "after_id": before}
+            "after_id": before, "created": created}
 
 
 def _clip(s: str, n: int) -> str:

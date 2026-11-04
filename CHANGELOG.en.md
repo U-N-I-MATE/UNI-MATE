@@ -6,6 +6,11 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.447.0] - 2026-11-04
+### Added
+- **The ChatGPT/Claude.ai gate can start a new conversation** in the main chat when no conversation is given, titled with its source (ChatGPT or Claude) and a short title, and UNI MATE answers right there. Full level only, needs gate pack 1.3.0.
+- Gate pack 1.3.0 lets you pin the gate to one brain (this release provides the brain list). How UNI MATE picks the brain for the engines on this machine is unchanged.
+
 ## [0.446.0] - 2026-11-04
 ### Added
 - **ChatGPT and Claude.ai can send a message into the UNI MATE chat**, as if you typed it: UNI MATE answers right in that conversation, the text streams on every open tab, the Stop button works, and it is saved to History and self-learning. The bubble says "Sent from ChatGPT" or "Sent from Claude". Needs gate pack 1.2.0, Full level only.

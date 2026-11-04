@@ -6,6 +6,11 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.447.0] - 2026-11-04
+### Thêm mới
+- **Cổng ChatGPT, Claude.ai tạo được hội thoại mới** ở khung Trò chuyện chính khi không chỉ định hội thoại nào, tiêu đề "Từ ChatGPT: ..." hoặc "Từ Claude: ...", rồi UNI MATE trả lời ngay trong đó. Chỉ ở mức Toàn quyền, cần gói cổng 1.3.0.
+- Gói cổng 1.3.0 cho chọn bộ não cố định cho cổng (bản lõi này cung cấp danh sách bộ não). Cách UNI MATE chọn bộ não cho các engine trên máy không đổi.
+
 ## [0.446.0] - 2026-11-04
 ### Thêm mới
 - **ChatGPT và Claude.ai gửi được tin vào khung Trò chuyện của UNI MATE**, như anh tự gõ: UNI MATE trả lời ngay trong hội thoại đó, chữ chạy trên mọi tab đang mở, có nút Dừng, lưu vào Lịch sử và vòng tự học. Bong bóng tin ghi rõ "Gửi từ ChatGPT" hoặc "Gửi từ Claude". Cần gói cổng 1.2.0 và chỉ có ở mức Toàn quyền.
