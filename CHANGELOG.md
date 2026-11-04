@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.445.1] - 2026-11-04
+### Cải thiện
+- Không có thay đổi nào với người dùng. Cập nhật quy ước lập trình: gộp xong thì xoá nhánh luôn, không hỏi lại; giữ nguyên các nhánh gốc.
+
 ## [0.445.0] - 2026-11-04
 ### Sửa lỗi
 - **UNI MATE trên VPS nhỏ không còn đứng hình rồi hiện "404 page not found".** Vài trang làm việc nặng ngay trên luồng chính của máy chủ: thống kê trang Việc, danh sách việc của chatbot, danh sách công cụ tuỳ chọn, và lần đầu nén các tệp giao diện sau mỗi lần khởi động. Trên VPS 1 nhân, trong lúc đó máy chủ không kịp trả lời bước kiểm tra sức khoẻ, nên Traefik tạm gỡ đường vào trang. Giờ các việc đó chạy ở luồng phụ, trang khác và bước kiểm tra sức khoẻ không phải chờ.

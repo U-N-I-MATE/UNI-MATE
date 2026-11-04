@@ -17,6 +17,13 @@ thuế lên lượt chat nào cả.
   có bản cập nhật. Trước khi merge, kiểm tra số này lớn hơn phiên bản hiện tại trên
   `origin/main`; sau khi merge, xác nhận luồng build/phát hành bản cập nhật thành công.
   Không coi việc merge code là đã phát hành xong nếu bản mới chưa được xuất bản.
+- **Xoá nhánh đã gộp** (chủ repo chốt 2026-11-04): gộp xong thì xoá nhánh luôn, **không hỏi lại**
+  chủ repo và không đưa vào mục "Anh cần làm" của báo cáo. Proxy của phiên Claude Code chặn lệnh
+  xoá nhánh (HTTP 403); khi bị chặn thì ghi tên nhánh vào nhật ký việc 03 của chủ repo
+  (`Nhatky_Boicanh_Yeucau.md`, cột kết quả, ghi "chờ xoá"), luồng kiểm thử sẽ tự đối chiếu mã đã
+  có trong `main` rồi xoá theo đó.
+- **KHÔNG BAO GIỜ xoá** các nhánh gốc: `main`, `ban-goc` (UNI-MATE); `main`, `theo-goc/tu-dong`
+  (unimate-store).
 
 ## Đặt xí chỗ số phiên bản TRƯỚC khi code
 
