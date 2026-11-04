@@ -8,7 +8,7 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.444.0] - 2026-11-04
 ### Cải thiện
-- (đang làm) Múi giờ nhớ sẵn.
+- **UNI MATE bớt đọc lại tệp cài đặt chỉ để biết múi giờ.** Mọi chỗ hiện giờ, ngày (nhật ký việc, lịch nhắc, mức dùng, tin nhắn...) trước đây mỗi lần đều dựng lại cả tệp cài đặt. Giờ múi giờ được nhớ sẵn và chỉ đọc lại khi tệp cài đặt thật sự đổi: định dạng 720 mốc giờ từ khoảng 105 ms còn khoảng 14 ms. Đổi múi giờ trong Cài đặt vẫn có hiệu lực ngay.
 
 ## [0.441.0] - 2026-11-04
 ### Thêm mới

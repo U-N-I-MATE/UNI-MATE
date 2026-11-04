@@ -136,9 +136,42 @@ def ten_tz() -> str:
     return str(_cau_hinh().get("tz") or TEN_TZ_MAC_DINH)
 
 
+# Múi giờ đã tra, nhớ theo DẤU của settings.json (đường dẫn, mtime_ns, size) - đúng dấu `config.read_settings`
+# dùng cho bộ nhớ đệm của nó (0.444.0). `read_settings` trúng đệm vẫn dựng lại cả cấu hình từ chuỗi JSON
+# (~0,17 ms), mà `clock`/`at`/`now` gọi `tz()` ở đường nóng và trong vòng lặp: bản sao bảng việc từng gọi 720
+# lần cho 120 việc (gốc của test_kanban_snapshot chập chờn, 0.443.0). Giờ mỗi lần chỉ là một lần `stat`.
+# Ghi cài đặt là đổi mtime/size nên múi giờ mới có hiệu lực ngay lần gọi kế tiếp.
+_TZ_NHO: dict = {"dau": None, "tz": None}
+
+
+def _dau_settings():
+    try:
+        p = cfgmod.SETTINGS_PATH
+        st = p.stat()
+        return (str(p), st.st_mtime_ns, st.st_size)
+    except Exception:
+        return None
+
+
 def tz() -> tzinfo:
     """Múi giờ đang cấu hình. Không bao giờ ném lỗi."""
-    return _tu_ten(ten_tz())
+    dau = _dau_settings()
+    if dau is not None and dau == _TZ_NHO["dau"]:
+        return _TZ_NHO["tz"]
+    nho = dau is not None
+    try:
+        c = cfgmod.read_settings().get("locale") or {}
+        # Đọc từ bản dự phòng `.bak` (file thật hỏng): không nhớ, y như read_settings, để lần sau thử lại file thật.
+        if getattr(cfgmod, "_DOC_TU_BAK", [False])[0]:
+            nho = False
+    except Exception:
+        # Không đọc được (file bị khoá thoáng qua trên Windows): dùng mặc định nhưng KHÔNG nhớ, kẻo kẹt múi
+        # giờ mặc định tới tận lần ghi cài đặt kế tiếp.
+        c, nho = {}, False
+    z = _tu_ten(str(c.get("tz") or TEN_TZ_MAC_DINH))
+    if nho:
+        _TZ_NHO["dau"], _TZ_NHO["tz"] = dau, z
+    return z
 
 
 def now() -> datetime:

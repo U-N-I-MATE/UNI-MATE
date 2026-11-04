@@ -8,7 +8,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.444.0] - 2026-11-04
 ### Improved
-- (in progress) Time zone kept in memory.
+- **UNI MATE stops re-reading the settings file just to learn the time zone.** Every place that shows a time or date (task log, reminders, usage, messages...) used to rebuild the whole settings file each time. The zone is now kept in memory and read again only when the settings file really changes: formatting 720 timestamps went from about 105 ms to about 14 ms. Changing the time zone in Settings still applies at once.
 
 ## [0.441.0] - 2026-11-04
 ### Added
