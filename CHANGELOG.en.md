@@ -7,7 +7,7 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
 ## [0.446.0] - 2026-11-04
-### New
+### Added
 - (in progress) ChatGPT and Claude.ai can send a message into the UNI MATE chat.
 
 ## [0.445.3] - 2026-11-04
