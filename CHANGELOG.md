@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.445.3] - 2026-11-04
+### Cải thiện
+- (đang làm) Không có thay đổi nào với người dùng.
+
 ## [0.445.1] - 2026-11-04
 ### Cải thiện
 - Không có thay đổi nào với người dùng. Cập nhật quy ước lập trình: gộp xong thì xoá nhánh luôn, không hỏi lại; giữ nguyên các nhánh gốc.
