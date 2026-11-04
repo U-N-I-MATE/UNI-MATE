@@ -8,7 +8,8 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.443.0] - 2026-11-04
 ### Sửa lỗi
-- (đang làm) Bảng việc ghi bản sao nhanh hơn.
+- **Bảng việc ghi bản sao nhanh hơn nhiều, không làm UNI MATE khựng.** Mỗi lần bảng việc đổi, UNI MATE ghi một bản sao vào brain. Trước đây mỗi dòng nhật ký của từng việc đều đọc lại tệp cài đặt để biết múi giờ: 120 việc mất khoảng 105 ms, bảng đầy còn lâu hơn nhiều, và trong lúc đó UNI MATE đứng hình theo. Giờ múi giờ chỉ đọc một lần, cùng bảng đó còn khoảng 10 ms.
+- Kiểm tra tự động hết báo đỏ chập chờn ở phép đo bảng việc (bản chính 0.441.0 đỏ lúc 07:30 ngày 04/11 vì đúng chỗ này).
 
 ## [0.441.0] - 2026-11-04
 ### Thêm mới

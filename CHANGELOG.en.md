@@ -8,7 +8,8 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.443.0] - 2026-11-04
 ### Fixed
-- (in progress) Faster task board copy.
+- **The task board copy is much faster and no longer makes UNI MATE stall.** Each time the board changes, UNI MATE writes a copy into the brain. Every log line of every task used to read the settings file again to learn the time zone: about 105 ms for 120 tasks, far more for a full board, and UNI MATE froze meanwhile. The time zone is now read once; the same board takes about 10 ms.
+- The automatic checks no longer go red at random on the task board timing test (main 0.441.0 went red at 07:30 on 04/11 for exactly this).
 
 ## [0.441.0] - 2026-11-04
 ### Added
