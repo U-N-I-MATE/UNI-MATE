@@ -92,6 +92,7 @@
   "top.brain_new": "Neues Gehirn im Gehirn-Ordner anlegen",
   "top.brain_delete": "Ausgewähltes Gehirn löschen (zur Bestätigung den Namen eingeben)",
   "top.brain_pick": "Gehirn aus einem beliebigen Ordner wählen",
+  "top.brain_remove_folder": "Ausgewählten externen Ordner aus der Liste entfernen (auf der Festplatte wird nichts gelöscht)",
   "top.notifications": "Benachrichtigungen öffnen",
   "settings.lang.title": "UNI MATE antwortet auf",
   "settings.lang.auto": "Sprache des Schreibenden folgen",

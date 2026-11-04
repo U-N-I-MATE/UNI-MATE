@@ -8,7 +8,11 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.442.0] - 2026-11-04
 ### Fixed
-- (in progress) Graph page: external folders group.
+- **The brain menu no longer lists one folder twice.** When a brain in the brains folder is a link to a notes folder elsewhere, an external folder pointing straight at it used to show again under "External folders". UNI MATE now sees it is the same folder: it drops the duplicate, and if you had it selected it switches to that brain. Picking that folder again with the folder button selects the brain instead of adding a new line.
+- **The "External folders" group label shows real text.** It sometimes showed the key `app.external_folder` because the group was drawn before the language finished loading.
+
+### Added
+- **Remove external folder button** next to the brain menu, shown only while an external folder is selected. It only takes the folder off the list, nothing on disk is deleted. Rename and Delete brain are hidden then, since they do not apply to external folders.
 
 ## [0.441.0] - 2026-11-04
 ### Added

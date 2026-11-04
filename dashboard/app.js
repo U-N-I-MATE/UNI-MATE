@@ -3522,8 +3522,19 @@ document.getElementById("pickFolderBtn").addEventListener("click", () => {
 });
 document.getElementById("fmClose").addEventListener("click", () => folderModal.classList.remove("open"));
 folderModal.addEventListener("click", (e) => { if (e.target === folderModal) folderModal.classList.remove("open"); });
-document.getElementById("fmUse").addEventListener("click", () => {
+document.getElementById("fmUse").addEventListener("click", async () => {
   if (!fmCurrent) return;
+  // 0.442.0: thư mục vừa chọn CHÍNH LÀ một não đã kết nối (kể cả qua lối tắt trong thư mục brains)
+  // thì chọn thẳng não đó, không thêm một dòng "Thư mục ngoài" trùng vào menu.
+  const daNoi = window.UniMateBrains && window.UniMateBrains.linkedFor
+    ? await window.UniMateBrains.linkedFor(fmCurrent).catch(() => null) : null;
+  if (daNoi && [...graphSource.options].some(o => o.value === daNoi)) {
+    graphSource.value = daNoi;
+    localStorage.setItem("unimate.graphSource", daNoi);
+    folderModal.classList.remove("open");
+    graphSource.dispatchEvent(new Event("change"));
+    return;
+  }
   addCustomBrain(fmCurrent);
   graphSource.value = "path:" + fmCurrent;
   localStorage.setItem("unimate.graphSource", graphSource.value);

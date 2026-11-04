@@ -93,6 +93,7 @@
   "top.brain_delete": "Xoá brain đang chọn (xác nhận gõ đúng tên)",
   "top.brain_rename": "Đổi tên brain đang chọn (thư mục và liên kết giữ nguyên)",
   "top.brain_pick": "Chọn brain từ folder ngoài bất kỳ",
+  "top.brain_remove_folder": "Gỡ thư mục ngoài đang chọn khỏi danh sách (không xoá trên ổ đĩa)",
   "top.notifications": "Mở hộp thư Thông báo",
   "settings.lang.title": "UNI MATE trả lời bằng",
   "settings.lang.auto": "Tự động theo người nhắn",

@@ -7566,7 +7566,14 @@ def _list_brains_sync() -> dict:
                 is_default = False
             # `name` stays the FOLDER (the brain's address: delete, /brains/<folder>/..., backups); `label` is what to show
             # (0.219.0, brain_label): a rename sets the label and never moves the folder.
-            out.append({"name": p.name, "label": brain_label.display(p), "path": str(p), "notes": notes,
+            # `real` (0.442.0): the folder with links followed. A brain is often a link in BRAINS_DIR to a vault elsewhere
+            # (owner's PC: brains/Bonao_AI -> D:/.../Bonao_AI), so the dashboard compares an external folder against this,
+            # not against `path`, to avoid listing the same folder twice.
+            try:
+                real = str(p.resolve())
+            except OSError:
+                real = str(p)
+            out.append({"name": p.name, "label": brain_label.display(p), "path": str(p), "real": real, "notes": notes,
                         "notes_capped": notes >= _BRAINS_MD_CAP,
                         "is_default": is_default})
     except Exception as e:
@@ -14512,7 +14519,12 @@ async def path_exists(path: str = Query("", description="Đường dẫn tuyệt
     if not p:
         return {"path": p, "exists": False, "is_dir": False}
     try:
-        return {"path": p, "exists": os.path.exists(p), "is_dir": os.path.isdir(p)}
+        out = {"path": p, "exists": os.path.exists(p), "is_dir": os.path.isdir(p)}
+        if out["exists"]:
+            # 0.442.0: links followed, compared with /brains `real` so an external folder that IS a linked brain is
+            # recognised even when the two paths are spelled differently.
+            out["real"] = os.path.realpath(p)
+        return out
     except Exception:
         # Lỗi truy cập (path lạ/ổ đĩa rút) → coi như KHÔNG xác định được, báo exists=None để
         # frontend GIỮ entry (không tự xoá khi chưa chắc chắn là đã mất).

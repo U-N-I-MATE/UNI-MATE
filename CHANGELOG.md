@@ -8,7 +8,11 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.442.0] - 2026-11-04
 ### Sửa lỗi
-- (đang làm) Trang Đồ thị: nhóm thư mục ngoài.
+- **Menu chọn não không còn hiện một thư mục hai lần.** Khi một não trong thư mục brains là lối tắt tới thư mục ghi chú ở nơi khác, thư mục ngoài trỏ thẳng tới đó trước đây vẫn hiện thêm ở nhóm "Thư mục ngoài". Giờ UNI MATE nhận ra đó là cùng một thư mục: tự gỡ dòng trùng, và nếu anh đang chọn dòng đó thì chuyển sang chính não ấy. Chọn lại thư mục đó bằng nút mở thư mục cũng chọn thẳng não, không thêm dòng mới.
+- **Nhãn nhóm "Thư mục ngoài" hiện đúng chữ.** Trước đây có lúc hiện mã `app.external_folder` vì nhóm được vẽ trước khi ngôn ngữ nạp xong.
+
+### Thêm mới
+- **Nút Gỡ thư mục ngoài** cạnh menu chọn não, chỉ hiện khi đang chọn một thư mục ngoài. Chỉ gỡ khỏi danh sách, không xoá gì trên ổ đĩa. Lúc đó nút Đổi tên và Xoá não được ẩn đi vì không dùng cho thư mục ngoài.
 
 ## [0.441.0] - 2026-11-04
 ### Thêm mới
