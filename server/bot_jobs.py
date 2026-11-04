@@ -17,6 +17,7 @@ A guess, once made, is kept in <brain>/UniMate/bot-jobs.json, because the turn l
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import re
@@ -236,7 +237,8 @@ class BotJobs:
 
         @self.router.get("/tasks/bots")
         async def tasks_bots(brain: str = Query("brain")):
-            return {"ok": True, **self.map(brain)}
+            # 0.445.0: job_map đọc nhật ký lượt chạy của từng bot và bảng việc, việc đồng bộ nên chạy ở luồng phụ.
+            return {"ok": True, **(await asyncio.to_thread(self.map, brain))}
 
     def map(self, brain: str) -> dict:
         hit = self._cache.get(brain)

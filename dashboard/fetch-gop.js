@@ -65,7 +65,7 @@
     return u.pathname.indexOf("/static/") !== 0 && !/stream|events|sse/i.test(u.pathname);
   }
 
-  var api = { khoaGop: khoaGop, gopDuoc: gopDuoc, thuLaiDuoc: thuLaiDuoc, maTam: maTam, CHO_THU_LAI: CHO_THU_LAI, GIU_MS: GIU_MS };
+  var api = { khoaGop: khoaGop, gopDuoc: gopDuoc, thuLaiDuoc: thuLaiDuoc, maTam: maTam, CHO_THU_LAI: CHO_THU_LAI, GIU_MS: GIU_MS, rai: rai };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (typeof window === "undefined" || typeof window.fetch !== "function") return;
 
@@ -97,6 +97,9 @@
   }
 
   function ngu(ms) { return new Promise(function (xong) { setTimeout(xong, ms); }); }
+  // 0.445.0: rải mỗi lần chờ ngẫu nhiên ±30%. Máy chủ vừa chậm lại thì mọi tab, mọi thiết bị cùng thử lại đúng một nhịp
+  // (0,5, 1, 2 giây...) và dồn vào máy chủ cùng một lúc, đúng lúc nó yếu nhất. Tổng thời gian chờ vẫn quanh 10 giây.
+  function rai(ms) { return Math.round(ms * (0.7 + Math.random() * 0.6)); }
 
   // fetch thật, kèm thử lại cho lượt đọc khi máy chủ chưa tới được.
   function goc(input, init) {
@@ -115,14 +118,14 @@
       return gocThat(input, init).then(function (r) {
         if (maTam(r.status) && lan < CHO_THU_LAI.length) {
           bao(true);
-          return ngu(CHO_THU_LAI[lan++]).then(thu);
+          return ngu(rai(CHO_THU_LAI[lan++])).then(thu);
         }
         bao(false);
         return r;
       }, function (loi) {
         if (lan < CHO_THU_LAI.length) {
           bao(true);
-          return ngu(CHO_THU_LAI[lan++]).then(thu);
+          return ngu(rai(CHO_THU_LAI[lan++])).then(thu);
         }
         bao(false);
         throw loi;

@@ -124,9 +124,9 @@ _count_that = main._count_md
 DO_TRE_GIA = 0.15
 
 
-def _count_cham(root, cap):
+def _count_cham(root, cap, **kw):   # **kw: 0.445.0 thêm chi_dong_bo
     time.sleep(DO_TRE_GIA)      # giả lập ổ đĩa chậm / vault lớn
-    return _count_that(root, cap)
+    return _count_that(root, cap, **kw)
 
 
 async def do_do_tre(chay):
@@ -190,10 +190,10 @@ check(f"đường thật KHÔNG khoá loop dù mỗi brain đếm mất {nguong:
 that_count = main._count_md
 
 
-def _count_no(root, cap):
+def _count_no(root, cap, **kw):
     if "Brain A" in str(root):
         raise OSError("giả lập ổ đĩa lỗi")
-    return that_count(root, cap)
+    return that_count(root, cap, **kw)
 
 
 try:

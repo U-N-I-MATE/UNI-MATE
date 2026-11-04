@@ -425,7 +425,9 @@ class _TinhGonStatic(StaticFiles):
         if not full:
             return resp
         try:
-            data, crc = tinh_gon.ban_phuc_vu(Path(full), path)
+            # 0.445.0: lần đầu sau mỗi lần khởi động, thu gọn một tệp là Python thuần mất cả giây trên VPS 1 nhân;
+            # chạy ở luồng phụ để vòng sự kiện không đứng theo (bộ nhớ đệm của tinh_gon giữ các lần sau rẻ).
+            data, crc = await asyncio.to_thread(tinh_gon.ban_phuc_vu, Path(full), path)
         except OSError:
             return resp
         etag = '"' + crc + '"'
@@ -1228,7 +1230,8 @@ async def app_version():
         html = (DASHBOARD_PATH / "index.html").read_text(encoding="utf-8")
     except OSError:
         html = ""
-    return {"version": _app_version() or "0", "assets": _asset_fps(html)}
+    # 0.445.0: vân tay = băm bản thu gọn của từng tệp; lần đầu sau khởi động là việc nặng, chạy ở luồng phụ.
+    return {"version": _app_version() or "0", "assets": await asyncio.to_thread(_asset_fps, html)}
 
 
 @app.get("/")
@@ -1240,7 +1243,8 @@ async def root():
     # sửa đổi frontend trở nên vô hình. Gắn phiên bản vào đây thì mỗi lần bump là tự bể cache.
     ver = _app_version() or "0"
     # Vân tay tính TRƯỚC khi đổi `?v=` - regex tìm theo `?v=` nên thứ tự này bắt buộc.
-    fps = _asset_fps(html)
+    # 0.445.0: ở luồng phụ (xem app_version).
+    fps = await asyncio.to_thread(_asset_fps, html)
     # Khoá cache theo VÂN TAY TỪNG FILE, không theo số phiên bản chung.
     #
     # Trước đây mọi file mang `?v=<phiên bản app>`, nên bump VERSION là 42 URL đổi MỘT LƯỢT
@@ -7557,7 +7561,7 @@ def _list_brains_sync() -> dict:
             if not p.is_dir() or p.name.startswith("."):
                 continue
             try:
-                notes = _count_md(str(p), _BRAINS_MD_CAP)
+                notes = _count_md(str(p), _BRAINS_MD_CAP, chi_dong_bo=True)
             except Exception:
                 notes = 0
             try:
@@ -14390,7 +14394,7 @@ _BROWSE_HERE_BUDGET_S = 1.0     # thư mục đang đứng (here_md)
 _BROWSE_TOTAL_BUDGET_S = 4.0    # cả danh sách thư mục con cộng lại
 
 
-def _count_md(root: str, cap: int, deadline: float | None = None) -> int:
+def _count_md(root: str, cap: int, deadline: float | None = None, chi_dong_bo: bool = False) -> int:
     """Đếm file .md dưới root, có TRẦN THẬT: chạm cap là dừng ngay, không đi nốt cây.
 
     Bản cũ dùng `glob.glob(..., recursive=True)[:500]` - lát cắt chỉ áp lên KẾT QUẢ nên
@@ -14402,9 +14406,15 @@ def _count_md(root: str, cap: int, deadline: float | None = None) -> int:
     trần độ sâu, và lỗi quyền ở một nhánh không giết cả lần đếm.
 
     `deadline` (mốc time.monotonic()) là trần thời gian: quá mốc thì dừng và trả số đã đếm.
-    Xem _BROWSE_DIR_BUDGET_S để biết vì sao trần số file thôi là chưa đủ."""
+    Xem _BROWSE_DIR_BUDGET_S để biết vì sao trần số file thôi là chưa đủ.
+
+    `chi_dong_bo` (0.445.0, số ghi chú của một brain ở ô chọn não): bỏ các tệp mỗi máy tự ghi và KHÔNG đồng bộ
+    (`git_brain._backup_skip`: nhật ký hội thoại hằng ngày, nhật ký tự học, nhật ký vòng lặp, nhật ký chạy của trợ lý,
+    mục lục UniMate/index.md). Đếm cả chúng thì máy nhà và VPS không bao giờ hiện cùng một số dù đồng bộ đúng (chủ dự
+    án thấy 04/11/2026: Brain Default 21 / 17, đúng bằng phần nhật ký riêng của mỗi bên); bỏ đi thì lệch số là lỗi thật."""
     n = 0
     stack = [(root, 0)]
+    goc = os.path.abspath(root)
     while stack:
         if deadline is not None and time.monotonic() >= deadline:
             return n
@@ -14417,6 +14427,8 @@ def _count_md(root: str, cap: int, deadline: float | None = None) -> int:
                             if depth < _BROWSE_DEPTH and not entry.name.startswith((".", "$")):
                                 stack.append((entry.path, depth + 1))
                         elif entry.name.endswith(".md"):
+                            if chi_dong_bo and git_brain._backup_skip(os.path.relpath(entry.path, goc)):
+                                continue
                             n += 1
                             if n >= cap:
                                 return n

@@ -8,7 +8,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.445.0] - 2026-11-04
 ### Sửa lỗi
-- (đang làm) VPS nhỏ không đứng hình.
+- **UNI MATE trên VPS nhỏ không còn đứng hình rồi hiện "404 page not found".** Vài trang làm việc nặng ngay trên luồng chính của máy chủ: thống kê trang Việc, danh sách việc của chatbot, danh sách công cụ tuỳ chọn, và lần đầu nén các tệp giao diện sau mỗi lần khởi động. Trên VPS 1 nhân, trong lúc đó máy chủ không kịp trả lời bước kiểm tra sức khoẻ, nên Traefik tạm gỡ đường vào trang. Giờ các việc đó chạy ở luồng phụ, trang khác và bước kiểm tra sức khoẻ không phải chờ.
+- **Thống kê trang Việc mở nhanh hơn hẳn.** Ô "thời gian đã đỡ cho anh" trước đây hỏi ổ đĩa cho từng ngày kể từ năm 1970 (khoảng 20.000 lần mỗi lần mở trang) để tìm nhật ký vòng lặp. Giờ chỉ đọc đúng các tệp nhật ký đang có.
+- **Số ghi chú ở ô chọn bộ não giờ chỉ đếm phần được đồng bộ.** Trước đây số này đếm cả các tệp mỗi máy tự ghi và không bao giờ đồng bộ (nhật ký hội thoại hằng ngày, nhật ký tự học, nhật ký vòng lặp, nhật ký chạy của trợ lý, mục lục tự sinh), nên máy nhà và VPS luôn lệch vài tệp dù đồng bộ đúng (ví dụ Brain Default 21 so với 17). Giờ hai bên đồng bộ đủ thì hiện cùng một số; còn lệch là có tệp thật chưa sang.
+- Khi máy chủ chậm lại, các tab và thiết bị không còn thử lại cùng một nhịp, tránh dồn vào máy chủ đúng lúc nó yếu nhất.
 
 ## [0.444.0] - 2026-11-04
 ### Cải thiện

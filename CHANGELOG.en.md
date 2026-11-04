@@ -8,7 +8,10 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.445.0] - 2026-11-04
 ### Fixed
-- (in progress) Small VPS no longer stalls.
+- **UNI MATE on a small VPS no longer stalls and shows "404 page not found".** A few pages did heavy work right on the server's main loop: the Tasks page stats, the chatbot job list, the optional tools list, and the first compression of the interface files after each restart. On a 1-core VPS the server then missed its health check, so Traefik briefly dropped the route to the page. That work now runs on a side thread, so other pages and the health check no longer wait.
+- **Tasks page stats open much faster.** The "time given back" figure used to ask the disk about every day since 1970 (about 20,000 times per page load) to find loop logs. It now reads only the log files that exist.
+- **The note count in the brain picker now counts only what syncs.** It used to include files each machine writes for itself and never syncs (daily chat logs, learning logs, loop logs, assistant run logs, the generated index), so home machine and VPS always differed by a few files even when sync was fine (for example Brain Default 21 vs 17). When both sides are in sync they now show the same number; a remaining gap means real files have not crossed yet.
+- When the server slows down, tabs and devices no longer retry on the same beat, so they do not pile onto the server at its weakest moment.
 
 ## [0.444.0] - 2026-11-04
 ### Improved

@@ -16,6 +16,7 @@ Time given back is an estimate: each finished job counts the minutes the owner s
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 import time
@@ -107,31 +108,46 @@ def kanban_events(store, root: str, since: float, until: float) -> list:
     return out
 
 
+_LOOP_FILE = re.compile(r"(\d{4}-\d{2}-\d{2})\.md")
+
+
 def loop_events(brain_root: str, since: float, until: float, tz) -> list:
     out = []
     d0, d1 = _local(since, tz).date(), _local(until, tz).date()
     folder = Path(brain_root) / "UniMate" / "loop-log"
     if not folder.is_dir():
         return out
-    d = d0
-    while d <= d1:
-        p = folder / f"{d.isoformat()}.md"
-        if p.exists():
-            try:
-                text = p.read_text(encoding="utf-8")
-            except Exception:
-                text = ""
-            heads = list(_LOOP_HEAD.finditer(text))
-            for i, m in enumerate(heads):
-                body = text[m.end():heads[i + 1].start() if i + 1 < len(heads) else len(text)]
-                body = body.split("\n", 1)[1] if "\n" in body else ""
-                dt = datetime(*map(int, m.group(1).split("-")), int(m.group(2)), int(m.group(3)), tzinfo=tz)
-                ts = dt.timestamp()
-                if since <= ts < until:
-                    failed = body.strip().startswith("Lỗi:") or "auto-pause" in body
-                    out.append({"ts": ts, "kind": "loop", "status": "fail" if failed else "ok", "seconds": 0,
-                                "agent": "", "agent_name": "", "title": m.group(4).strip(), "ref": m.group(4).strip()})
-        d += timedelta(days=1)
+    # 0.445.0: duyệt đúng các tệp ĐANG CÓ trong thư mục, không hỏi `exists()` cho từng ngày một. `saved_total` gọi với
+    # since=0, tức từ 01/01/1970: khoảng 20.000 lần hỏi đĩa mỗi lần mở trang thống kê, chạy ngay trên vòng sự kiện,
+    # và trên VPS 1 nhân là đủ để bước kiểm tra sức khoẻ lỡ nhịp (Traefik báo 404).
+    ngay = []
+    try:
+        for f in folder.iterdir():
+            m = _LOOP_FILE.fullmatch(f.name)
+            if m:
+                try:
+                    dd = date.fromisoformat(m.group(1))
+                except ValueError:
+                    continue
+                if d0 <= dd <= d1:
+                    ngay.append((dd, f))
+    except OSError:
+        return out
+    for d, p in sorted(ngay):
+        try:
+            text = p.read_text(encoding="utf-8")
+        except Exception:
+            text = ""
+        heads = list(_LOOP_HEAD.finditer(text))
+        for i, m in enumerate(heads):
+            body = text[m.end():heads[i + 1].start() if i + 1 < len(heads) else len(text)]
+            body = body.split("\n", 1)[1] if "\n" in body else ""
+            dt = datetime(*map(int, m.group(1).split("-")), int(m.group(2)), int(m.group(3)), tzinfo=tz)
+            ts = dt.timestamp()
+            if since <= ts < until:
+                failed = body.strip().startswith("Lỗi:") or "auto-pause" in body
+                out.append({"ts": ts, "kind": "loop", "status": "fail" if failed else "ok", "seconds": 0,
+                            "agent": "", "agent_name": "", "title": m.group(4).strip(), "ref": m.group(4).strip()})
     return out
 
 
@@ -438,9 +454,13 @@ class TaskStats:
             d_to = to if _DATE.match(to or "") else today.isoformat()
             d_from = from_ if _DATE.match(from_ or "") else (_day(d_to) - timedelta(days=6)).isoformat()
             try:
-                out = self.compute(brain, d_from, d_to)
-                out["ai"]["saved_total"] = self.saved_total(brain)
-                return out
+                # 0.445.0: đọc nhật ký, bảng việc và tính toán là việc đồng bộ, chạy ở luồng phụ để vòng sự kiện
+                # (mọi trang khác, bước kiểm tra sức khoẻ) không phải chờ.
+                def _tinh():
+                    out = self.compute(brain, d_from, d_to)
+                    out["ai"]["saved_total"] = self.saved_total(brain)
+                    return out
+                return await asyncio.to_thread(_tinh)
             except Exception as e:  # noqa: BLE001
                 print(f"[task-stats] failed: {type(e).__name__}: {e}")
                 return {"ok": False, "error": f"{type(e).__name__}: {str(e)[:200]}"}

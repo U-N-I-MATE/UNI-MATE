@@ -69,7 +69,7 @@ _root = MAIN.split("async def root()", 1)[1].split("\n@app.", 1)[0]
 check("trang nhúng khối unimate-fresh", 'id="unimate-fresh"' in _root)
 # Regex tìm vân tay bám vào `?v=`, nên tính SAU khi đã đổi `?v=` là ra rỗng sạch.
 check("CANARY: vân tay tính TRƯỚC khi viết lại ?v= (tính sau là ra rỗng)",
-      _root.index("_asset_fps(html)") < _root.index("re.sub("), _root[:200])
+      _root.index("_asset_fps") < _root.index("re.sub("), _root[:200])   # 0.445.0: to_thread(_asset_fps, html)
 check("index.html vẫn trả no-store (điểm tựa phải luôn mới)",
       "no-cache, no-store, must-revalidate" in _root)
 
