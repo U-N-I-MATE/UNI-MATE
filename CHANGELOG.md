@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.444.0] - 2026-11-04
+### Cải thiện
+- **UNI MATE bớt đọc lại tệp cài đặt chỉ để biết múi giờ.** Mọi chỗ hiện giờ, ngày (nhật ký việc, lịch nhắc, mức dùng, tin nhắn...) trước đây mỗi lần đều dựng lại cả tệp cài đặt. Giờ múi giờ được nhớ sẵn và chỉ đọc lại khi tệp cài đặt thật sự đổi: định dạng 720 mốc giờ từ khoảng 105 ms còn khoảng 14 ms. Đổi múi giờ trong Cài đặt vẫn có hiệu lực ngay.
+
 ## [0.443.0] - 2026-11-04
 ### Sửa lỗi
 - **Bảng việc ghi bản sao nhanh hơn nhiều, không làm UNI MATE khựng.** Mỗi lần bảng việc đổi, UNI MATE ghi một bản sao vào brain. Trước đây mỗi dòng nhật ký của từng việc đều đọc lại tệp cài đặt để biết múi giờ: 120 việc mất khoảng 105 ms, bảng đầy còn lâu hơn nhiều, và trong lúc đó UNI MATE đứng hình theo. Giờ múi giờ chỉ đọc một lần, cùng bảng đó còn khoảng 10 ms.

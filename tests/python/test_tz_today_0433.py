@@ -40,6 +40,7 @@ check(agent_budget.day_tag(ts) == "2026-11-04", "agent_budget daily key follows 
 check(agent_budget.day_start(ts) == d0, "agent_budget daily window starts at the owner's midnight")
 
 ZONE["name"] = "America/New_York"
+localefmt._CACHE.clear()   # 0.444.0: tz() nhớ múi giờ theo dấu settings.json; test giả ten_tz mà không ghi đĩa
 check(localefmt.day_tag(ts) == "2026-11-03", "another zone moves the day boundary with it")
 check(agent_budget.day_tag(ts) == "2026-11-03", "and agent_budget follows the change at once")
 

@@ -65,6 +65,7 @@ def _cau_hinh() -> dict:
     try:
         return cfgmod.read_settings().get("locale") or {}
     except Exception:
+        _DOC_LOI[0] = True     # tz() không nhớ kết quả của một lần đọc hỏng
         return {}
 
 
@@ -136,9 +137,44 @@ def ten_tz() -> str:
     return str(_cau_hinh().get("tz") or TEN_TZ_MAC_DINH)
 
 
+# Múi giờ đã tra, nhớ theo DẤU của settings.json (đường dẫn, mtime_ns, size) - đúng dấu `config.read_settings`
+# dùng cho bộ nhớ đệm của nó (0.444.0). `read_settings` trúng đệm vẫn dựng lại cả cấu hình từ chuỗi JSON
+# (~0,17 ms), mà `clock`/`at`/`now` gọi `tz()` ở đường nóng và trong vòng lặp: bản sao bảng việc từng gọi 720
+# lần cho 120 việc (gốc của test_kanban_snapshot chập chờn, 0.443.0). Giờ mỗi lần chỉ là một lần `stat`.
+# Ghi cài đặt là đổi mtime/size nên múi giờ mới có hiệu lực ngay lần gọi kế tiếp.
+# Nằm CHUNG trong `_CACHE` (khoá không bao giờ là tên múi giờ) để `_CACHE.clear()` xoá cả nó: đó là cách các
+# test giả cấu hình mà không ghi đĩa (vá `read_settings` hay `ten_tz`) báo "cấu hình vừa đổi".
+_KHOA_NHO = "\x00theo-dau-settings"
+_DOC_LOI = [False]
+
+
+def _dau_settings():
+    try:
+        p = cfgmod.SETTINGS_PATH
+        st = p.stat()
+        return (str(p), st.st_mtime_ns, st.st_size)
+    except Exception:
+        return None
+
+
 def tz() -> tzinfo:
     """Múi giờ đang cấu hình. Không bao giờ ném lỗi."""
-    return _tu_ten(ten_tz())
+    dau = _dau_settings()
+    nho = _CACHE.get(_KHOA_NHO)
+    if dau is not None and nho is not None and nho[0] == dau:
+        return nho[1]
+    _DOC_LOI[0] = False
+    try:
+        cfgmod._DOC_TU_BAK[0] = False
+    except Exception:
+        pass
+    z = _tu_ten(ten_tz())
+    # Không nhớ khi đọc lỗi (Windows khoá tệp thoáng qua: kẹt múi mặc định tới lần ghi sau) hay đọc từ bản dự
+    # phòng `.bak` (như read_settings, để lần sau thử lại tệp thật).
+    tu_bak = bool(getattr(cfgmod, "_DOC_TU_BAK", [False])[0])
+    if dau is not None and not _DOC_LOI[0] and not tu_bak:
+        _CACHE[_KHOA_NHO] = (dau, z)
+    return z
 
 
 def now() -> datetime:

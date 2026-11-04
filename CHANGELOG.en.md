@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.444.0] - 2026-11-04
+### Improved
+- **UNI MATE stops re-reading the settings file just to learn the time zone.** Every place that shows a time or date (task log, reminders, usage, messages...) used to rebuild the whole settings file each time. The zone is now kept in memory and read again only when the settings file really changes: formatting 720 timestamps went from about 105 ms to about 14 ms. Changing the time zone in Settings still applies at once.
+
 ## [0.443.0] - 2026-11-04
 ### Fixed
 - **The task board copy is much faster and no longer makes UNI MATE stall.** Each time the board changes, UNI MATE writes a copy into the brain. Every log line of every task used to read the settings file again to learn the time zone: about 105 ms for 120 tasks, far more for a full board, and UNI MATE froze meanwhile. The time zone is now read once; the same board takes about 10 ms.
