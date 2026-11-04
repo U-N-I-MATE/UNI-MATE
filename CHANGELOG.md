@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.442.0] - 2026-11-04
+### Sửa lỗi
+- (đang làm) Trang Đồ thị: nhóm thư mục ngoài.
+
 ## [0.441.0] - 2026-11-04
 ### Thêm mới
 - **Chuẩn bị cổng cho ChatGPT và Claude bên ngoài.** UNI MATE có sẵn các hàm để gói "UNI MATE trong ChatGPT" đọc hội thoại của anh và ghi lại những gì anh đã chốt bên ChatGPT/Claude thành một hội thoại riêng. Hội thoại với khách hàng, nhóm và Team không bao giờ được đọc. Cần cập nhật gói lên bản mới để dùng.
