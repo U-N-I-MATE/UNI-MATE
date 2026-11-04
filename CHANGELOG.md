@@ -9,6 +9,9 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 ## [0.445.3] - 2026-11-04
 ### Cải thiện
 - Không có thay đổi nào với người dùng. Phần mã, chú thích và tên kiểm thử thêm từ bản 0.441.0 đến 0.445.0 chuyển sang tiếng Anh theo quy ước của dự án; chữ hiện trên màn hình giữ nguyên.
+## [0.445.2] - 2026-11-04
+### Cải thiện
+- Không có thay đổi nào với người dùng. Cập nhật quy ước lập trình: GitHub tự xoá nhánh khi gộp, chỉ ghi lại nhánh nào không đi qua PR; ghi đúng nguồn quy ước viết mã bằng tiếng Anh.
 
 ## [0.445.1] - 2026-11-04
 ### Cải thiện
