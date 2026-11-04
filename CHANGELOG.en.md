@@ -8,7 +8,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.445.2] - 2026-11-04
 ### Improved
-- No change for users. Development conventions updated: GitHub now deletes a branch when its PR is merged; only branches pushed without a PR are recorded for cleanup.
+- No change for users. Development conventions updated: GitHub now deletes a branch when its PR is merged; only branches pushed without a PR are recorded for cleanup; the source of the English-code rule is corrected.
 
 ## [0.445.1] - 2026-11-04
 ### Improved

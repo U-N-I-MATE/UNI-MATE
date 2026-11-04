@@ -111,7 +111,7 @@ THOẠI, không phải cho lập trình viên đọc diff:
 Repo mở cho người đóng góp quốc tế, nên phần NGƯỜI NGOÀI ĐỌC viết bằng tiếng Anh:
 
 - **Commit message, tiêu đề và mô tả PR:** tiếng Anh.
-- **Mọi code mới viết tiếng Anh** (chủ repo chốt 15/10/2026): tên module, hàm, biến, trường dữ
+- **Mọi code mới viết tiếng Anh** (UNI MATE giữ quy ước này, anh chốt 04/11/2026): tên module, hàm, biến, trường dữ
   liệu, comment, docstring, tên test và câu in trong `check(...)`, kể cả khi thêm vào một file cũ
   đang viết tiếng Việt. Không dịch lại phần code cũ không đụng tới. Chữ hiện cho người dùng đi qua
   i18n (`vi.json` có dấu, `en.json`). Bảng từ điển định danh tiếng Việt cũ cho người nước ngoài ở
