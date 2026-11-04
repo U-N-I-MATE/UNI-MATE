@@ -8,7 +8,8 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.447.0] - 2026-11-04
 ### Added
-- (in progress) The ChatGPT/Claude.ai gate can start a new conversation.
+- **The ChatGPT/Claude.ai gate can start a new conversation** in the main chat when no conversation is given, titled "Từ ChatGPT: ..." or "Từ Claude: ...", and UNI MATE answers right there. Full level only, needs gate pack 1.3.0.
+- Gate pack 1.3.0 lets you pin the gate to one brain (this release provides the brain list). How UNI MATE picks the brain for the engines on this machine is unchanged.
 
 ## [0.446.0] - 2026-11-04
 ### Added
