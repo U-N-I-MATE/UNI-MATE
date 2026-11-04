@@ -6,6 +6,12 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.446.0] - 2026-11-04
+### Thêm mới
+- **ChatGPT và Claude.ai gửi được tin vào khung Trò chuyện của UNI MATE**, như anh tự gõ: UNI MATE trả lời ngay trong hội thoại đó, chữ chạy trên mọi tab đang mở, có nút Dừng, lưu vào Lịch sử và vòng tự học. Bong bóng tin ghi rõ "Gửi từ ChatGPT" hoặc "Gửi từ Claude". Cần gói cổng 1.2.0 và chỉ có ở mức Toàn quyền.
+- Chỉ gửi được vào hội thoại ở khung Trò chuyện chính. Hội thoại với Cộng sự, Telegram, Zalo chỉ đọc; hội thoại khách, nhóm Zalo, Team thì không bao giờ đọc hay gửi được.
+- **Gõ sai địa chỉ tiện ích thì báo ngay "không có tiện ích này"**, thay vì hiện cổng đăng nhập. Trước đây gõ sai địa chỉ kết nối trên Claude.ai vẫn cho phép xong, rồi Claude.ai báo không có công cụ và đòi kết nối lại mãi.
+
 ## [0.445.3] - 2026-11-04
 ### Cải thiện
 - Không có thay đổi nào với người dùng. Phần mã, chú thích và tên kiểm thử thêm từ bản 0.441.0 đến 0.445.0 chuyển sang tiếng Anh theo quy ước của dự án; chữ hiện trên màn hình giữ nguyên.

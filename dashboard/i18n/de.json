@@ -117,5 +117,6 @@
   "common.account": "Benutzername",
   "common.password": "Passwort",
   "common.default": "Standard",
-  "top.install_title": "UNI MATE als eigene App installieren: öffnen über Desktop/Dock, kein Suchen mehr zwischen Tabs"
+  "top.install_title": "UNI MATE als eigene App installieren: öffnen über Desktop/Dock, kein Suchen mehr zwischen Tabs",
+  "app.gate_from": "Gesendet von {src}"
 }

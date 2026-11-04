@@ -1234,6 +1234,18 @@ function handleMessage(data) {
     try { if (window.UniMateChatReactions) window.UniMateChatReactions.onFrame(data, { bubble: t && t.bubble }); } catch (e) {}
     return;
   }
+  if (data.type === "external_message") {
+    // 0.446.0: ChatGPT or Claude.ai sent a message into this chat through the outside AI gate (server/gate_api.py). The
+    // server stores it with the turn; the tab showing this chat draws the bubble now, then the answer streams in like
+    // any turn.
+    if (isActive) {
+      appendUserMessage(data.content || "", [], Date.now());
+      recordTurn("user", chuNguoiGo(data.content || ""), null, null);
+      scrollBottom(true);
+    }
+    notifySessions();
+    return;
+  }
   if (data.type === "push") {
     // Tin do việc chạy NỀN đẩy vào (việc Kanban / loop / nhắc hẹn xong), không thuộc lượt
     // hỏi-đáp nào. KHÔNG đụng turns[sid]: lượt đang chạy (nếu có) vẫn stream bình thường,
@@ -2350,7 +2362,17 @@ function lastUserText() {
 // "[SKILL: " là khối do chat-slash.js dựng khi người dùng gõ lệnh "/". Gỡ nó ra thì bong bóng
 // hiện ĐÚNG câu họ đã gõ, thay vì câu máy dựng quanh câu đó - khách báo đúng chuyện này 16/09.
 // Giữ MỘT DÒNG: test_dinh_kem_khong_roi.js bóc đúng dòng này ra để chạy docDinhKem bằng node.
-const _KHOI_NGU_CANH = ["[FILE ĐANG MỞ trong trình sửa của UNI MATE:", "[File đính kèm", "[NGỮ CẢNH GIAO DIỆN:", "[SKILL: ", "[CHẾ ĐỘ KẾ HOẠCH:", "[MỤC TIÊU:"];
+const _KHOI_NGU_CANH = ["[FILE ĐANG MỞ trong trình sửa của UNI MATE:", "[File đính kèm", "[NGỮ CẢNH GIAO DIỆN:", "[SKILL: ", "[CHẾ ĐỘ KẾ HOẠCH:", "[MỤC TIÊU:", "[GỬI QUA CỔNG UNI MATE:"];
+// 0.446.0: a message ChatGPT or Claude.ai sent through the outside AI gate starts with
+// "[GỬI QUA CỔNG UNI MATE: <source>. ...]" (server/gate_api.py `block`). It is stripped like the other blocks; this reads
+// the source back so the bubble can say who sent it.
+const _KHOI_CONG = _KHOI_NGU_CANH[_KHOI_NGU_CANH.length - 1];   // the gate block, last in the list
+function gateSource(text) {
+  const t = String(text == null ? "" : text).replace(/^\s+/, "");
+  if (!t.startsWith(_KHOI_CONG + " ")) return "";
+  const m = /^([^.\]\n]{1,40})/.exec(t.slice(_KHOI_CONG.length + 1));
+  return m ? m[1].trim() : "";
+}
 
 // Gỡ mấy khối đó ra để lấy lại ĐÚNG câu người dùng đã gõ.
 //
@@ -2463,9 +2485,10 @@ function vaAnhHong(root) {
 }
 
 function appendUserMessage(text, attachments, ts) {
+  const via = gateSource(text);
   text = chuNguoiGo(text);
   const div = document.createElement("div");
-  div.className = "msg msg-user";
+  div.className = "msg msg-user" + (via ? " msg-gate" : "");
   div.dataset.text = text || "";   // giữ nguyên văn để tua lại đúng chữ gốc
   const attHtml = attachHtml(attachments);
   // Tin dài (>10 dòng hoặc >900 ký tự) thu gọn lại, bấm "Xem thêm" để mở (chat-acts.js, dùng chung với trang Nhóm)
@@ -2474,7 +2497,8 @@ function appendUserMessage(text, attachments, ts) {
     ? `<div class="utext${isLong ? " clamped" : ""}">${window.UniMateQuote ? window.UniMateQuote.utextHtml(text, escapeHtml) : escapeHtml(text)}</div>` +
       (isLong ? window.UniMateActs.clampButtonHtml(false) : "")
     : "";
-  div.innerHTML = `<div class="bubble">${textHtml}${attHtml}</div>` +
+  const viaHtml = via ? `<div class="gate-from">${escapeHtml(window.t("app.gate_from").replace("{src}", via))}</div>` : "";
+  div.innerHTML = `${viaHtml}<div class="bubble">${textHtml}${attHtml}</div>` +
     actsHtml("user", ts === undefined ? Date.now() : ts, !!(text || "").trim());
   vaAnhHong(div);
   chatAppend(div); scrollBottom(true);

@@ -370,6 +370,14 @@ async def _auth_guard(request: Request, call_next):
                   # khi đúng tiền tố, để request thường không phải đi tra danh sách plugin.
                   or ((path.startswith("/ext/") or path.startswith("/.well-known/"))
                       and plugins_host.http_cong_khai(path, request.method)))
+        # 0.446.0: a path under /ext/ whose extension does not exist answers 404 before the sign-in wall. Behind the
+        # wall, a mistyped connector address (owner saw it 2026-11-04: Claude.ai saved ".../unimate-trong-chagpt/mcp")
+        # got a 401 with no OAuth hint, the client fell back to the domain-wide OAuth metadata, the owner approved, and
+        # every tool call then kept failing on the wrong address. Extension names are public in the store anyway.
+        if not public and path.startswith("/ext/") and not plugins_host.http_slug_known(path):
+            return JSONResponse({"error": "not_found", "detail": localefmt.chu(
+                "Không có tiện ích này. Kiểm tra lại địa chỉ.", "No such extension. Check the address.")},
+                status_code=404)
         if not public and not cfgmod.valid_session(request.cookies.get("unimate_session", "")):
             # Client ngoài trình duyệt (CLI, script, cron) không có cookie. Nhánh token là
             # đường DUY NHẤT của chúng - xem docs/dev/2026-08-cli-spec.md. Đặt SAU nhánh
@@ -17091,6 +17099,16 @@ async def websocket_endpoint(ws: WebSocket):
     if cfgmod.gate_active() and not cfgmod.valid_session(ws.cookies.get("unimate_session", "")):
         await ws.close(code=1008)
         return
+    await _chat_socket(ws)
+
+
+async def _chat_socket(ws):
+    """The chat loop of one connection (0.446.0: split from `websocket_endpoint`, which keeps the sign-in check).
+
+    `gate_api.send_chat` drives it with an in-process stand-in connection that hands over ONE message and then
+    disconnects, so a message from the outside AI gate takes exactly the path of a message typed in the web chat: same
+    turn, same streaming to every open tab, same Stop button, same saving and self-learning. There is no second copy of
+    the chat loop. The stand-in needs only accept, receive_text, send_text and close."""
     await ws.accept()
     # WebSocket chỉ là subscriber. Job chat sống trong _CHAT_RUNTIME nên đóng/F5 tab
     # không huỷ job; kết nối mới nhận snapshot để xem hoặc Stop tiếp.

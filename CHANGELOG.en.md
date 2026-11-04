@@ -6,6 +6,12 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.446.0] - 2026-11-04
+### Added
+- **ChatGPT and Claude.ai can send a message into the UNI MATE chat**, as if you typed it: UNI MATE answers right in that conversation, the text streams on every open tab, the Stop button works, and it is saved to History and self-learning. The bubble says "Sent from ChatGPT" or "Sent from Claude". Needs gate pack 1.2.0, Full level only.
+- Messages go only into the main chat. Partner, Telegram and Zalo conversations are read-only; customer, Zalo group and Team conversations are never read or written.
+- **A mistyped extension address now says "no such extension" at once**, instead of showing the sign-in wall. Before, a mistyped connector address on Claude.ai still let you approve, then Claude.ai reported no tools and kept asking to reconnect.
+
 ## [0.445.3] - 2026-11-04
 ### Improved
 - No change for users. Code, comments and test names added in 0.441.0 to 0.445.0 are now in English, as the project convention asks; on-screen text is unchanged.

@@ -875,6 +875,19 @@ def http_cong_khai(path: str, method: str) -> bool:
         return False
 
 
+def http_slug_known(path: str) -> bool:
+    """Whether some enabled extension serves HTTP under the `/ext/<slug>/` of `path` (0.446.0). The sign-in wall asks
+    this to answer a mistyped extension name with 404 instead of a sign-in prompt. On any doubt (a plugin failed to
+    load, an odd path) it answers True, so the wall behaves exactly as before."""
+    try:
+        t = _tach_ext(path)
+        if not t:
+            return False
+        return any(lp.slug == t[0] for lp in _plugin_http())
+    except Exception:
+        return True
+
+
 def http_khong_cookie(path: str, method: str) -> bool:
     """Hàng rào CSRF hỏi: đường này có được miễn không. Chỉ đường KHÔNG dùng cookie (lõi gỡ
     cookie trước khi giao cho plugin), nên miễn CSRF không cho ai mượn được phiên của chủ."""
