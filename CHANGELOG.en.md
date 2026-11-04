@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.445.1] - 2026-11-04
+### Improved
+- No change for users. Development conventions updated: delete a branch as soon as it is merged, without asking again; the base branches are never deleted.
+
 ## [0.445.0] - 2026-11-04
 ### Fixed
 - **UNI MATE on a small VPS no longer stalls and shows "404 page not found".** A few pages did heavy work right on the server's main loop: the Tasks page stats, the chatbot job list, the optional tools list, and the first compression of the interface files after each restart. On a 1-core VPS the server then missed its health check, so Traefik briefly dropped the route to the page. That work now runs on a side thread, so other pages and the health check no longer wait.
