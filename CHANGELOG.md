@@ -10,6 +10,20 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 ### Cải thiện
 - **UNI MATE bớt đọc lại tệp cài đặt chỉ để biết múi giờ.** Mọi chỗ hiện giờ, ngày (nhật ký việc, lịch nhắc, mức dùng, tin nhắn...) trước đây mỗi lần đều dựng lại cả tệp cài đặt. Giờ múi giờ được nhớ sẵn và chỉ đọc lại khi tệp cài đặt thật sự đổi: định dạng 720 mốc giờ từ khoảng 105 ms còn khoảng 14 ms. Đổi múi giờ trong Cài đặt vẫn có hiệu lực ngay.
 
+## [0.443.0] - 2026-11-04
+### Sửa lỗi
+- **Bảng việc ghi bản sao nhanh hơn nhiều, không làm UNI MATE khựng.** Mỗi lần bảng việc đổi, UNI MATE ghi một bản sao vào brain. Trước đây mỗi dòng nhật ký của từng việc đều đọc lại tệp cài đặt để biết múi giờ: 120 việc mất khoảng 105 ms, bảng đầy còn lâu hơn nhiều, và trong lúc đó UNI MATE đứng hình theo. Giờ múi giờ chỉ đọc một lần, cùng bảng đó còn khoảng 10 ms.
+- Kiểm tra tự động hết báo đỏ chập chờn ở phép đo bảng việc (bản chính 0.441.0 đỏ lúc 07:30 ngày 04/11 vì đúng chỗ này).
+
+## [0.442.0] - 2026-11-04
+### Sửa lỗi
+- **Menu chọn não không còn hiện một thư mục hai lần.** Khi một não trong thư mục brains là lối tắt tới thư mục ghi chú ở nơi khác, thư mục ngoài trỏ thẳng tới đó trước đây vẫn hiện thêm ở nhóm "Thư mục ngoài". Giờ UNI MATE nhận ra đó là cùng một thư mục: tự gỡ dòng trùng, và nếu anh đang chọn dòng đó thì chuyển sang chính não ấy. Chọn lại thư mục đó bằng nút mở thư mục cũng chọn thẳng não, không thêm dòng mới.
+- **Không còn báo nhầm "Cuộc chat này thuộc brain khác".** Mở một hội thoại của chính bộ não đang chọn (ví dụ trong trang Cộng sự) có lúc hiện dòng "Cuộc chat này thuộc brain Bonao_AI... Chuyển sang Bonao_AI", vì hội thoại lưu đường dẫn thật còn ô chọn não dùng đường dẫn lối tắt. Giờ UNI MATE so theo thư mục thật nên chỉ báo khi đúng là não khác.
+- **Nhãn nhóm "Thư mục ngoài" hiện đúng chữ.** Trước đây có lúc hiện mã `app.external_folder` vì nhóm được vẽ trước khi ngôn ngữ nạp xong.
+
+### Thêm mới
+- **Nút Gỡ thư mục ngoài** cạnh menu chọn não, chỉ hiện khi đang chọn một thư mục ngoài. Chỉ gỡ khỏi danh sách, không xoá gì trên ổ đĩa. Lúc đó nút Đổi tên và Xoá não được ẩn đi vì không dùng cho thư mục ngoài.
+
 ## [0.441.0] - 2026-11-04
 ### Thêm mới
 - **Chuẩn bị cổng cho ChatGPT và Claude bên ngoài.** UNI MATE có sẵn các hàm để gói "UNI MATE trong ChatGPT" đọc hội thoại của anh và ghi lại những gì anh đã chốt bên ChatGPT/Claude thành một hội thoại riêng. Hội thoại với khách hàng, nhóm và Team không bao giờ được đọc. Cần cập nhật gói lên bản mới để dùng.

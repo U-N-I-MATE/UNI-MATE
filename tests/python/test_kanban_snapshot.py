@@ -135,6 +135,35 @@ check(f"mọi việc đều có nhật ký trong mirror ({len(co_log)}/{N_TASK})
 check(f"mỗi việc giữ đủ {N_EVENT + 1} dòng nhật ký ({N_EVENT} ghi chú + 1 'created' của enqueue)",
       all(len(t["log"]) == N_EVENT + 1 for t in mirror["tasks"]))
 
+# ---- 5b. Múi giờ đọc MỘT lần cho cả bản sao (0.443.0) ----
+# Gốc của lần chập chờn 04/11/2026 (CI main 9a92ef3e, nhịp tim qua to_thread 160 ms): `localefmt.clock`
+# đọc lại settings.json ở MỖI lần gọi, mà bản sao gọi nó cho từng dòng nhật ký (720 dòng = ~105 ms giữ
+# GIL, vòng sự kiện đứng theo dù chạy trong thread). Đếm số lần hỏi múi giờ là phép kiểm tất định, không
+# phụ thuộc máy nhanh hay chậm như phép đo thời gian ở mục 6.
+import localefmt  # noqa: E402
+import tasks as _tasks_mod  # noqa: E402
+_tz_that = localefmt.tz
+dem_tz = {"n": 0}
+
+
+def _tz_dem():
+    dem_tz["n"] += 1
+    return _tz_that()
+
+
+localefmt.tz = _tz_dem
+try:
+    feat._snapshot(ROOT)
+finally:
+    localefmt.tz = _tz_that
+check(f"một bản sao {N_TASK} việc x {N_EVENT + 1} dòng nhật ký chỉ hỏi múi giờ {dem_tz['n']} lần (phải là 1)",
+      dem_tz["n"] == 1)
+m2 = json.loads((BRAIN / "UniMate" / "kanban.json").read_text(encoding="utf-8"))
+t0 = next(t for t in m2["tasks"] if t["id"] == ids[0])
+ev0 = store.list_events_bulk([ids[0]], 20)[ids[0]]
+check("giờ ghi ra giống hệt localefmt.clock (cùng múi giờ, cùng mẫu)",
+      [x["ts"] for x in t0["log"]] == [localefmt.clock(float(e.get("created_at") or 0)) for e in ev0])
+
 # ---- 6. _asnapshot không khoá event loop ----
 async def do_tre(chay):
     tre = []
