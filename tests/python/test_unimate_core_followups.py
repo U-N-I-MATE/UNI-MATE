@@ -65,7 +65,7 @@ check("the chat shows whose it is, with a switch button", "function veNhanBrain(
       and 'data.type === "brain_follow"' in app
       # 0.442.0: "same brain" compares the real folder (brains-ui.js UniMateBrains.same), not the two strings.
       and "window.UniMateBrains.same(sess.brain_ui, graphSource.value)" in app
-      and "if (sess.brain_ui && !cungNao) veNhanBrain(sess.brain_name" in app)
+      and "if (sess.brain_ui && !inPickedBrain) veNhanBrain(sess.brain_name" in app)
 check("clicking a bell item of another brain switches the brain first, only on that click",
       "if (chuyenBrainNeuCan(item)) { setTimeout(function () { moThuTiep(item); }, 450); return; }" in noti and "gs.dispatchEvent(new Event(\"change\"))" in noti)
 

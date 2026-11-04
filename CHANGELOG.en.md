@@ -8,7 +8,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.445.3] - 2026-11-04
 ### Improved
-- (in progress) No change for users.
+- No change for users. Code, comments and test names added in 0.441.0 to 0.445.0 are now in English, as the project convention asks; on-screen text is unchanged.
 
 ## [0.445.1] - 2026-11-04
 ### Improved

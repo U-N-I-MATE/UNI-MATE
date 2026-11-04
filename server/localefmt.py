@@ -65,7 +65,7 @@ def _cau_hinh() -> dict:
     try:
         return cfgmod.read_settings().get("locale") or {}
     except Exception:
-        _DOC_LOI[0] = True     # tz() không nhớ kết quả của một lần đọc hỏng
+        _READ_FAILED[0] = True     # tz() never memoizes the result of a failed read
         return {}
 
 
@@ -137,18 +137,18 @@ def ten_tz() -> str:
     return str(_cau_hinh().get("tz") or TEN_TZ_MAC_DINH)
 
 
-# Múi giờ đã tra, nhớ theo DẤU của settings.json (đường dẫn, mtime_ns, size) - đúng dấu `config.read_settings`
-# dùng cho bộ nhớ đệm của nó (0.444.0). `read_settings` trúng đệm vẫn dựng lại cả cấu hình từ chuỗi JSON
-# (~0,17 ms), mà `clock`/`at`/`now` gọi `tz()` ở đường nóng và trong vòng lặp: bản sao bảng việc từng gọi 720
-# lần cho 120 việc (gốc của test_kanban_snapshot chập chờn, 0.443.0). Giờ mỗi lần chỉ là một lần `stat`.
-# Ghi cài đặt là đổi mtime/size nên múi giờ mới có hiệu lực ngay lần gọi kế tiếp.
-# Nằm CHUNG trong `_CACHE` (khoá không bao giờ là tên múi giờ) để `_CACHE.clear()` xoá cả nó: đó là cách các
-# test giả cấu hình mà không ghi đĩa (vá `read_settings` hay `ten_tz`) báo "cấu hình vừa đổi".
-_KHOA_NHO = "\x00theo-dau-settings"
-_DOC_LOI = [False]
+# The resolved zone, memoized by the SIGNATURE of settings.json (path, mtime_ns, size), the same signature
+# `config.read_settings` uses for its own cache (0.444.0). A cache hit in `read_settings` still rebuilds the whole
+# config from the JSON string (~0.17 ms), and `clock`/`at`/`now` call `tz()` on hot paths and in loops: the Kanban
+# snapshot once called it 720 times for 120 tasks (root of the flaky test_kanban_snapshot, 0.443.0). Now each call
+# is a single `stat`. Writing settings changes mtime/size, so a new zone applies on the very next call.
+# Kept INSIDE `_CACHE` (the key is never a zone name) so `_CACHE.clear()` drops it too: that is how tests that fake
+# the config without writing to disk (patching `read_settings` or `ten_tz`) signal "the config just changed".
+_MEMO_KEY = "\x00by-settings-signature"
+_READ_FAILED = [False]
 
 
-def _dau_settings():
+def _settings_signature():
     try:
         p = cfgmod.SETTINGS_PATH
         st = p.stat()
@@ -159,21 +159,21 @@ def _dau_settings():
 
 def tz() -> tzinfo:
     """Múi giờ đang cấu hình. Không bao giờ ném lỗi."""
-    dau = _dau_settings()
-    nho = _CACHE.get(_KHOA_NHO)
-    if dau is not None and nho is not None and nho[0] == dau:
-        return nho[1]
-    _DOC_LOI[0] = False
+    sig = _settings_signature()
+    hit = _CACHE.get(_MEMO_KEY)
+    if sig is not None and hit is not None and hit[0] == sig:
+        return hit[1]
+    _READ_FAILED[0] = False
     try:
         cfgmod._DOC_TU_BAK[0] = False
     except Exception:
         pass
     z = _tu_ten(ten_tz())
-    # Không nhớ khi đọc lỗi (Windows khoá tệp thoáng qua: kẹt múi mặc định tới lần ghi sau) hay đọc từ bản dự
-    # phòng `.bak` (như read_settings, để lần sau thử lại tệp thật).
-    tu_bak = bool(getattr(cfgmod, "_DOC_TU_BAK", [False])[0])
-    if dau is not None and not _DOC_LOI[0] and not tu_bak:
-        _CACHE[_KHOA_NHO] = (dau, z)
+    # Never memoize a failed read (a brief Windows file lock would pin the default zone until the next write) or a
+    # read from the `.bak` copy (like read_settings, so the next call retries the real file).
+    from_bak = bool(getattr(cfgmod, "_DOC_TU_BAK", [False])[0])
+    if sig is not None and not _READ_FAILED[0] and not from_bak:
+        _CACHE[_MEMO_KEY] = (sig, z)
     return z
 
 

@@ -425,8 +425,9 @@ class _TinhGonStatic(StaticFiles):
         if not full:
             return resp
         try:
-            # 0.445.0: lần đầu sau mỗi lần khởi động, thu gọn một tệp là Python thuần mất cả giây trên VPS 1 nhân;
-            # chạy ở luồng phụ để vòng sự kiện không đứng theo (bộ nhớ đệm của tinh_gon giữ các lần sau rẻ).
+            # 0.445.0: the first minify of a file after each restart is pure Python and can take a second on a
+            # 1-core VPS; run it on a worker thread so the event loop does not stall (tinh_gon's cache keeps later
+            # calls cheap).
             data, crc = await asyncio.to_thread(tinh_gon.ban_phuc_vu, Path(full), path)
         except OSError:
             return resp
@@ -1230,7 +1231,8 @@ async def app_version():
         html = (DASHBOARD_PATH / "index.html").read_text(encoding="utf-8")
     except OSError:
         html = ""
-    # 0.445.0: vân tay = băm bản thu gọn của từng tệp; lần đầu sau khởi động là việc nặng, chạy ở luồng phụ.
+    # 0.445.0: a fingerprint hashes each file's minified copy; the first run after a restart is heavy, so it runs
+    # on a worker thread.
     return {"version": _app_version() or "0", "assets": await asyncio.to_thread(_asset_fps, html)}
 
 
@@ -1243,7 +1245,7 @@ async def root():
     # sửa đổi frontend trở nên vô hình. Gắn phiên bản vào đây thì mỗi lần bump là tự bể cache.
     ver = _app_version() or "0"
     # Vân tay tính TRƯỚC khi đổi `?v=` - regex tìm theo `?v=` nên thứ tự này bắt buộc.
-    # 0.445.0: ở luồng phụ (xem app_version).
+    # 0.445.0: on a worker thread (see app_version).
     fps = await asyncio.to_thread(_asset_fps, html)
     # Khoá cache theo VÂN TAY TỪNG FILE, không theo số phiên bản chung.
     #
@@ -7561,7 +7563,7 @@ def _list_brains_sync() -> dict:
             if not p.is_dir() or p.name.startswith("."):
                 continue
             try:
-                notes = _count_md(str(p), _BRAINS_MD_CAP, chi_dong_bo=True)
+                notes = _count_md(str(p), _BRAINS_MD_CAP, synced_only=True)
             except Exception:
                 notes = 0
             try:
@@ -14394,7 +14396,7 @@ _BROWSE_HERE_BUDGET_S = 1.0     # thư mục đang đứng (here_md)
 _BROWSE_TOTAL_BUDGET_S = 4.0    # cả danh sách thư mục con cộng lại
 
 
-def _count_md(root: str, cap: int, deadline: float | None = None, chi_dong_bo: bool = False) -> int:
+def _count_md(root: str, cap: int, deadline: float | None = None, synced_only: bool = False) -> int:
     """Đếm file .md dưới root, có TRẦN THẬT: chạm cap là dừng ngay, không đi nốt cây.
 
     Bản cũ dùng `glob.glob(..., recursive=True)[:500]` - lát cắt chỉ áp lên KẾT QUẢ nên
@@ -14408,13 +14410,14 @@ def _count_md(root: str, cap: int, deadline: float | None = None, chi_dong_bo: b
     `deadline` (mốc time.monotonic()) là trần thời gian: quá mốc thì dừng và trả số đã đếm.
     Xem _BROWSE_DIR_BUDGET_S để biết vì sao trần số file thôi là chưa đủ.
 
-    `chi_dong_bo` (0.445.0, số ghi chú của một brain ở ô chọn não): bỏ các tệp mỗi máy tự ghi và KHÔNG đồng bộ
-    (`git_brain._backup_skip`: nhật ký hội thoại hằng ngày, nhật ký tự học, nhật ký vòng lặp, nhật ký chạy của trợ lý,
-    mục lục UniMate/index.md). Đếm cả chúng thì máy nhà và VPS không bao giờ hiện cùng một số dù đồng bộ đúng (chủ dự
-    án thấy 04/11/2026: Brain Default 21 / 17, đúng bằng phần nhật ký riêng của mỗi bên); bỏ đi thì lệch số là lỗi thật."""
+    `synced_only` (0.445.0, the note count of a brain in the brain picker): skip the files each machine writes for
+    itself and NEVER syncs (`git_brain._backup_skip`: daily chat logs, learning logs, loop logs, assistant run logs,
+    the UniMate/index.md index). Counting them means the home machine and the VPS never show the same number even
+    when sync is fine (owner saw it 2026-11-04: Brain Default 21 / 17, exactly each side's private logs); without
+    them a gap is a real sync gap."""
     n = 0
     stack = [(root, 0)]
-    goc = os.path.abspath(root)
+    base = os.path.abspath(root)
     while stack:
         if deadline is not None and time.monotonic() >= deadline:
             return n
@@ -14427,7 +14430,7 @@ def _count_md(root: str, cap: int, deadline: float | None = None, chi_dong_bo: b
                             if depth < _BROWSE_DEPTH and not entry.name.startswith((".", "$")):
                                 stack.append((entry.path, depth + 1))
                         elif entry.name.endswith(".md"):
-                            if chi_dong_bo and git_brain._backup_skip(os.path.relpath(entry.path, goc)):
+                            if synced_only and git_brain._backup_skip(os.path.relpath(entry.path, base)):
                                 continue
                             n += 1
                             if n >= cap:

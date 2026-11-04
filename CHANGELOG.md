@@ -8,7 +8,7 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.445.3] - 2026-11-04
 ### Cải thiện
-- (đang làm) Không có thay đổi nào với người dùng.
+- Không có thay đổi nào với người dùng. Phần mã, chú thích và tên kiểm thử thêm từ bản 0.441.0 đến 0.445.0 chuyển sang tiếng Anh theo quy ước của dự án; chữ hiện trên màn hình giữ nguyên.
 
 ## [0.445.1] - 2026-11-04
 ### Cải thiện

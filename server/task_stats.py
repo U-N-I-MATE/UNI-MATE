@@ -117,10 +117,10 @@ def loop_events(brain_root: str, since: float, until: float, tz) -> list:
     folder = Path(brain_root) / "UniMate" / "loop-log"
     if not folder.is_dir():
         return out
-    # 0.445.0: duyệt đúng các tệp ĐANG CÓ trong thư mục, không hỏi `exists()` cho từng ngày một. `saved_total` gọi với
-    # since=0, tức từ 01/01/1970: khoảng 20.000 lần hỏi đĩa mỗi lần mở trang thống kê, chạy ngay trên vòng sự kiện,
-    # và trên VPS 1 nhân là đủ để bước kiểm tra sức khoẻ lỡ nhịp (Traefik báo 404).
-    ngay = []
+    # 0.445.0: list the files that EXIST in the folder instead of asking `exists()` for every single day. `saved_total`
+    # calls this with since=0, i.e. from 1970-01-01: about 20,000 disk lookups per stats page load, right on the event
+    # loop, which on a 1-core VPS was enough to make the health check miss a beat (Traefik answered 404).
+    days = []
     try:
         for f in folder.iterdir():
             m = _LOOP_FILE.fullmatch(f.name)
@@ -130,10 +130,10 @@ def loop_events(brain_root: str, since: float, until: float, tz) -> list:
                 except ValueError:
                     continue
                 if d0 <= dd <= d1:
-                    ngay.append((dd, f))
+                    days.append((dd, f))
     except OSError:
         return out
-    for d, p in sorted(ngay):
+    for d, p in sorted(days):
         try:
             text = p.read_text(encoding="utf-8")
         except Exception:
@@ -454,13 +454,13 @@ class TaskStats:
             d_to = to if _DATE.match(to or "") else today.isoformat()
             d_from = from_ if _DATE.match(from_ or "") else (_day(d_to) - timedelta(days=6)).isoformat()
             try:
-                # 0.445.0: đọc nhật ký, bảng việc và tính toán là việc đồng bộ, chạy ở luồng phụ để vòng sự kiện
-                # (mọi trang khác, bước kiểm tra sức khoẻ) không phải chờ.
-                def _tinh():
+                # 0.445.0: reading logs and the task board and computing is blocking work; run it on a worker
+                # thread so the event loop (every other page, the health check) does not wait.
+                def _compute():
                     out = self.compute(brain, d_from, d_to)
                     out["ai"]["saved_total"] = self.saved_total(brain)
                     return out
-                return await asyncio.to_thread(_tinh)
+                return await asyncio.to_thread(_compute)
             except Exception as e:  # noqa: BLE001
                 print(f"[task-stats] failed: {type(e).__name__}: {e}")
                 return {"ok": False, "error": f"{type(e).__name__}: {str(e)[:200]}"}

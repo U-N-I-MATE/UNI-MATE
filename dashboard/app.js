@@ -2271,11 +2271,11 @@ async function openStoredSession(id, stillCurrent) {
       : null;
     datMoiTinCu();
     // 0.188.0: a chat of another brain (opened from the bell, history, a link) says whose it is.
-    // 0.442.0: "cùng não" so theo thư mục thật (brains-ui.js), không so chuỗi: một não là lối tắt trong thư mục brains
-    // thì hội thoại của nó lưu đường dẫn thật, khác chữ với giá trị trong ô chọn.
-    const cungNao = window.UniMateBrains && window.UniMateBrains.same
+    // 0.442.0: "same brain" compares the real folder (brains-ui.js), not the strings: when a brain is a link in the
+    // brains folder, its chats store the resolved path, which is spelled differently from the picker value.
+    const inPickedBrain = window.UniMateBrains && window.UniMateBrains.same
       ? window.UniMateBrains.same(sess.brain_ui, graphSource.value) : sess.brain_ui === graphSource.value;
-    if (sess.brain_ui && !cungNao) veNhanBrain(sess.brain_name || "", sess.brain_ui);
+    if (sess.brain_ui && !inPickedBrain) veNhanBrain(sess.brain_name || "", sess.brain_ui);
     savedSessionId = id;          // lượt gửi tiếp theo → server resume đúng phiên này
     try { if (window.UniMateInbox) window.UniMateInbox.docPhien(id); } catch (e) {}
     // Phiên này đang generate NỀN → gắn bong bóng SỐNG (kèm phần đã stream) để xem tiếp trực tiếp.
@@ -3528,13 +3528,13 @@ document.getElementById("fmClose").addEventListener("click", () => folderModal.c
 folderModal.addEventListener("click", (e) => { if (e.target === folderModal) folderModal.classList.remove("open"); });
 document.getElementById("fmUse").addEventListener("click", async () => {
   if (!fmCurrent) return;
-  // 0.442.0: thư mục vừa chọn CHÍNH LÀ một não đã kết nối (kể cả qua lối tắt trong thư mục brains)
-  // thì chọn thẳng não đó, không thêm một dòng "Thư mục ngoài" trùng vào menu.
-  const daNoi = window.UniMateBrains && window.UniMateBrains.linkedFor
+  // 0.442.0: when the folder just picked IS a connected brain (even through a link in the brains folder), select
+  // that brain directly instead of adding a duplicate "External folder" row to the menu.
+  const linked = window.UniMateBrains && window.UniMateBrains.linkedFor
     ? await window.UniMateBrains.linkedFor(fmCurrent).catch(() => null) : null;
-  if (daNoi && [...graphSource.options].some(o => o.value === daNoi)) {
-    graphSource.value = daNoi;
-    localStorage.setItem("unimate.graphSource", daNoi);
+  if (linked && [...graphSource.options].some(o => o.value === linked)) {
+    graphSource.value = linked;
+    localStorage.setItem("unimate.graphSource", linked);
     folderModal.classList.remove("open");
     graphSource.dispatchEvent(new Event("change"));
     return;
