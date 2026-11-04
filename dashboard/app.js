@@ -2271,7 +2271,11 @@ async function openStoredSession(id, stillCurrent) {
       : null;
     datMoiTinCu();
     // 0.188.0: a chat of another brain (opened from the bell, history, a link) says whose it is.
-    if (sess.brain_ui && sess.brain_ui !== graphSource.value) veNhanBrain(sess.brain_name || "", sess.brain_ui);
+    // 0.442.0: "cùng não" so theo thư mục thật (brains-ui.js), không so chuỗi: một não là lối tắt trong thư mục brains
+    // thì hội thoại của nó lưu đường dẫn thật, khác chữ với giá trị trong ô chọn.
+    const cungNao = window.UniMateBrains && window.UniMateBrains.same
+      ? window.UniMateBrains.same(sess.brain_ui, graphSource.value) : sess.brain_ui === graphSource.value;
+    if (sess.brain_ui && !cungNao) veNhanBrain(sess.brain_name || "", sess.brain_ui);
     savedSessionId = id;          // lượt gửi tiếp theo → server resume đúng phiên này
     try { if (window.UniMateInbox) window.UniMateInbox.docPhien(id); } catch (e) {}
     // Phiên này đang generate NỀN → gắn bong bóng SỐNG (kèm phần đã stream) để xem tiếp trực tiếp.
@@ -3522,8 +3526,19 @@ document.getElementById("pickFolderBtn").addEventListener("click", () => {
 });
 document.getElementById("fmClose").addEventListener("click", () => folderModal.classList.remove("open"));
 folderModal.addEventListener("click", (e) => { if (e.target === folderModal) folderModal.classList.remove("open"); });
-document.getElementById("fmUse").addEventListener("click", () => {
+document.getElementById("fmUse").addEventListener("click", async () => {
   if (!fmCurrent) return;
+  // 0.442.0: thư mục vừa chọn CHÍNH LÀ một não đã kết nối (kể cả qua lối tắt trong thư mục brains)
+  // thì chọn thẳng não đó, không thêm một dòng "Thư mục ngoài" trùng vào menu.
+  const daNoi = window.UniMateBrains && window.UniMateBrains.linkedFor
+    ? await window.UniMateBrains.linkedFor(fmCurrent).catch(() => null) : null;
+  if (daNoi && [...graphSource.options].some(o => o.value === daNoi)) {
+    graphSource.value = daNoi;
+    localStorage.setItem("unimate.graphSource", daNoi);
+    folderModal.classList.remove("open");
+    graphSource.dispatchEvent(new Event("change"));
+    return;
+  }
   addCustomBrain(fmCurrent);
   graphSource.value = "path:" + fmCurrent;
   localStorage.setItem("unimate.graphSource", graphSource.value);

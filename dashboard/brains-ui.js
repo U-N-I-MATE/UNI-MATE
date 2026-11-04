@@ -40,21 +40,65 @@
     }
   }
 
-  // Dọn danh sách thư mục ngoài (localStorage) đã hỏng: bỏ entry TRÙNG path với 1 não thật,
-  // và entry mà path KHÔNG còn là thư mục (đã xoá khỏi ổ đĩa). Giữ folder ngoài hợp lệ + entry
-  // chưa xác định được (tránh xoá nhầm khi server chớp lỗi). Nguồn sự thật là localStorage nên
-  // dọn cả nó → lần app.js render sau vẫn đúng, không "sống lại" qua update.
+  // Não đã kết nối, khoá theo đường dẫn ĐÃ CHUẨN HOÁ (cả `path` lẫn `real`) -> giá trị option của nó.
+  // 0.442.0: so cả `real` (server đã đi theo lối tắt). Một não thường là lối tắt trong thư mục brains
+  // trỏ tới kho ghi chú ở nơi khác (máy chủ dự án: brains/Bonao_AI -> D:/9. AI/.../Bonao_AI). Chỉ so
+  // `path` thì thư mục ngoài trỏ thẳng tới D:/... không khớp, và menu hiện cùng một thư mục hai lần.
+  let _lastBrains = [];
+  function linkedMap(realBrains) {
+    const m = new Map();
+    (realBrains || []).forEach((b) => {
+      const v = b.is_default ? "brain" : "path:" + b.path;
+      [b.path, b.real].forEach((p) => { if (p) m.set(normPath(p), v); });
+    });
+    return m;
+  }
+
+  // Thư mục ngoài `p` có chính là một não đã kết nối không. Trả giá trị option của não đó, hoặc null.
+  async function linkedFor(p, realBrains) {
+    const m = linkedMap(realBrains || _lastBrains);
+    if (m.has(normPath(p))) return m.get(normPath(p));
+    const chk = await pathExists(p);
+    if (chk && chk.real && m.has(normPath(chk.real))) return m.get(normPath(chk.real));
+    return null;
+  }
+
+  // Hai giá trị của ô chọn não ("brain", "path:<thư mục>") có cùng MỘT thư mục không. So theo đường dẫn
+  // thật (đi qua lối tắt) đã chuẩn hoá, như _cung_brain phía máy chủ, không so chuỗi.
+  function canon(v) {
+    v = String(v || "");
+    if (!v) return "";
+    if (v === "brain") {
+      const d = _lastBrains.find((b) => b.is_default);
+      return d ? normPath(d.real || d.path) : "brain";
+    }
+    if (!v.startsWith("path:")) return v;
+    const p = normPath(v.slice(5));
+    const b = _lastBrains.find((x) => normPath(x.path) === p || (x.real && normPath(x.real) === p));
+    return b ? normPath(b.real || b.path) : p;
+  }
+  function sameBrain(a, b) {
+    return a === b || (!!a && !!b && canon(a) === canon(b));
+  }
+
+  // Dọn danh sách thư mục ngoài (localStorage) đã hỏng: bỏ entry TRÙNG với 1 não thật (kể cả
+  // trùng qua lối tắt), và entry mà path KHÔNG còn là thư mục (đã xoá khỏi ổ đĩa). Giữ folder
+  // ngoài hợp lệ + entry chưa xác định được (tránh xoá nhầm khi server chớp lỗi). Nguồn sự thật
+  // là localStorage nên dọn cả nó → lần app.js render sau vẫn đúng, không "sống lại" qua update.
+  // Đang chọn đúng thư mục ngoài trùng thì chuyển sang chính não đó, không về Brain mặc định.
   async function pruneCustomBrains(realBrains) {
     let list;
     try { list = JSON.parse(localStorage.getItem("unimate.brains") || "[]"); }
     catch (e) { list = []; }
     if (!Array.isArray(list)) list = [];
-    const realPaths = new Set((realBrains || []).map((b) => normPath(b.path)));
+    const m = linkedMap(realBrains);
+    const thay = new Map();   // "path:<thư mục ngoài>" -> option của não trùng
     const kept = [];
     for (const b of list) {
       if (!b || !b.path) continue;
-      if (realPaths.has(normPath(b.path))) continue;   // đã là não thật -> bỏ thư mục ngoài trùng
+      if (m.has(normPath(b.path))) { thay.set("path:" + b.path, m.get(normPath(b.path))); continue; }
       const chk = await pathExists(b.path);
+      if (chk && chk.real && m.has(normPath(chk.real))) { thay.set("path:" + b.path, m.get(normPath(chk.real))); continue; }
       if (chk && chk.is_dir === true) { kept.push(b); continue; }   // còn thư mục → giữ
       if (chk && chk.exists === null) { kept.push(b); continue; }   // chưa xác định → giữ
       // còn lại: đã bị xoá / không phải thư mục → loại
@@ -66,10 +110,13 @@
     const keepVals = new Set(kept.map((b) => "path:" + b.path));
     [...sel.querySelectorAll("option[data-custom]")].forEach((o) => {
       if (keepVals.has(o.value)) return;
-      if (sel.value === o.value) {           // đang chọn đúng cái bị gỡ → về brain mặc định
-        sel.value = "brain";
-        localStorage.setItem("unimate.graphSource", "brain");
+      if (sel.value === o.value) {           // đang chọn đúng cái bị gỡ → về não trùng, không có thì brain mặc định
+        const ve = thay.get(o.value) || "brain";
+        o.remove();
+        sel.value = [...sel.options].some((x) => x.value === ve) ? ve : "brain";
+        localStorage.setItem("unimate.graphSource", sel.value);
         sel.dispatchEvent(new Event("change"));
+        return;
       }
       o.remove();
     });
@@ -78,7 +125,31 @@
     [...sel.querySelectorAll("optgroup")].forEach((g) => {
       if (!g.querySelector || !g.querySelector("option")) g.remove();
     });
+    relabel();
+    syncButtons();
   }
+
+  // Nhãn nhóm "Thư mục ngoài". app.js vẽ nhóm này ngay lúc nạp trang, có khi TRƯỚC khi từ điển về,
+  // nên nhãn ra mã khoá `app.external_folder` (chủ dự án gặp 04/11/2026). Vẽ lại khi từ điển về.
+  function relabel() {
+    const g = sel.querySelector("optgroup[data-custom-group]");
+    if (g) g.label = window.t("app.external_folder");
+  }
+  window.addEventListener("unimate:i18n", relabel);
+
+  // Nút theo loại đang chọn. Thư mục ngoài: hiện nút Gỡ khỏi danh sách, ẩn Đổi tên và Xoá (hai nút đó
+  // chỉ dành cho não trong thư mục brains). Não: ngược lại.
+  const removeBtn = document.getElementById("removeFolderBtn");
+  function syncButtons() {
+    const opt = sel.options[sel.selectedIndex];
+    const ngoai = !!(opt && opt.dataset && opt.dataset.custom);
+    if (removeBtn) removeBtn.hidden = !ngoai;
+    ["renameBrainBtn", "delBrainBtn"].forEach((id) => {
+      const b = document.getElementById(id);
+      if (b) b.hidden = ngoai;
+    });
+  }
+  sel.addEventListener("change", syncButtons);
 
   async function loadBrains(selectPath, restoreSaved) {
     let data;
@@ -88,6 +159,7 @@
       return; // server chưa sẵn sàng → giữ nguyên dropdown, thử lại lần sau
     }
     const brains = (data && data.brains) || [];
+    _lastBrains = brains;
     [...sel.querySelectorAll("option[data-brain]")].forEach((o) => o.remove());
 
     const defOpt = sel.querySelector('option[value="brain"]');
@@ -153,8 +225,18 @@
       localStorage.setItem("unimate.graphSource", "brain");
     }
     opt.remove();
+    [...sel.querySelectorAll("optgroup")].forEach((g) => {
+      if (!g.querySelector("option")) g.remove();
+    });
     sel.dispatchEvent(new Event("change"));
     alert(window.t("brains.removed_custom", { ten: name }));
+  }
+
+  // Nút Gỡ thư mục ngoài (0.442.0): trước đây chỉ gỡ được bằng nút Xoá brain, mà nút đó ghi "Xoá
+  // brain đang chọn" nên không ai đoán ra.
+  function removeSelectedFolder() {
+    const opt = sel.options[sel.selectedIndex];
+    if (opt && opt.dataset.custom) removeCustomFromList(opt);
   }
 
   async function deleteBrain() {
@@ -214,8 +296,12 @@
   if (nb) nb.addEventListener("click", newBrain);
   const db = document.getElementById("delBrainBtn");
   if (db) db.addEventListener("click", deleteBrain);
+  if (removeBtn) removeBtn.addEventListener("click", removeSelectedFolder);
 
+  syncButtons();
   loadBrains(null, true);
 
-  window.UniMateBrains = { reload: () => loadBrains(null, false) };
+  // linkedFor: app.js hỏi trước khi thêm một thư mục vừa chọn, để chọn thẳng não đã kết nối khi trùng.
+  // same: app.js hỏi "hội thoại vừa mở có thuộc não đang chọn không" trước khi hiện dòng "thuộc brain khác".
+  window.UniMateBrains = { reload: () => loadBrains(null, false), linkedFor: (p) => linkedFor(p), same: sameBrain };
 })();
