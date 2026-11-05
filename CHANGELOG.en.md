@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.450.0] - 2026-11-05
+### Fixed
+- (in progress)
+
 ## [0.449.0] - 2026-11-05
 ### Added
 - **The personal Zalo bot hears customers' voice messages.** They used to be skipped. UNI MATE turns them into words for the bot, and the inbox shows "Heard: ..." under the voice message. When nothing could be heard, the bot says so and asks the customer to type, never guessing.

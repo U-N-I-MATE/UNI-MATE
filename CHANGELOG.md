@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.450.0] - 2026-11-05
+### Sửa lỗi
+- (đang viết)
+
 ## [0.449.0] - 2026-11-05
 ### Thêm mới
 - **Bot Zalo cá nhân nghe được tin thoại của khách.** Trước đây tin thoại bị bỏ qua. Giờ UNI MATE nghe thành chữ cho bot đọc, Hộp thư hiện "Đã nghe: ..." ngay dưới tin thoại. Chưa nghe được thì bot nói thật và nhờ khách gõ chữ, không đoán.
