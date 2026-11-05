@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.448.0] - 2026-11-05
+### Added
+- In progress: Facebook Page comments in the inbox.
+
 ## [0.447.0] - 2026-11-04
 ### Added
 - **The ChatGPT/Claude.ai gate can start a new conversation** in the main chat when no conversation is given, titled with its source (ChatGPT or Claude) and a short title, and UNI MATE answers right there. Full level only, needs gate pack 1.3.0.

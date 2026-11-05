@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.448.0] - 2026-11-05
+### Thêm mới
+- Đang làm: đọc bình luận Facebook Fanpage vào Hộp thư.
+
 ## [0.447.0] - 2026-11-04
 ### Thêm mới
 - **Cổng ChatGPT, Claude.ai tạo được hội thoại mới** ở khung Trò chuyện chính khi không chỉ định hội thoại nào, tiêu đề "Từ ChatGPT: ..." hoặc "Từ Claude: ...", rồi UNI MATE trả lời ngay trong đó. Chỉ ở mức Toàn quyền, cần gói cổng 1.3.0.
