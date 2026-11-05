@@ -5672,6 +5672,8 @@
       // Connected Facebook Pages (messenger-connect.js), one card in this same list, drawn only once a Page is
       // connected. 0.332.0: it used to be a section of its own further down, with the form open in the page.
       + '<div class="prov-list" id="mcpMessenger"></div>'
+      // Facebook Page comments (fb-pages.js, 0.448.0), same frame as the Messenger card.
+      + '<div class="prov-list" id="mcpFbPages"></div>'
       + '<div class="mp-empty" id="connNone" hidden>' + esc(window.t("cs.cn_conn_search_none")) + '</div></div>'
       // Lối đi tiếp, đặt ngay dưới danh sách. Không có nó thì tab này là ngõ cụt với
       // người chưa đấu gì: họ nhìn một ô trống mà không biết bước kế tiếp ở đâu.
@@ -5694,6 +5696,8 @@
       // other service (0.332.0), filed under the same category as Zalo so the category chips find it.
       + (window.UniMateMessenger && window.UniMateMessenger.catCard
         ? window.UniMateMessenger.catCard((cat.find(c => c.id === "zalo") || {}).category || "") : "")
+      + (window.UniMateFbPages && window.UniMateFbPages.catCard
+        ? window.UniMateFbPages.catCard((cat.find(c => c.id === "zalo") || {}).category || "") : "")
       + catSolo(cat).map(catalogCard).join("") + '</div></div>'
       // Hai khu kết nối sẵn của CLI: GẬP mặc định (dân thường không cần thấy) + LAZY:
       // chỉ gọi /mcp/ambient (chậm - phải health check) khi người dùng thật sự mở ra.
@@ -5719,7 +5723,9 @@
     // messenger-connect.js opens its form in this page's shared connection dialog.
     window.UniMateConnModal = { open: connModal, head: mHead, close: closeConnModal };
     if (window.UniMateMessenger) window.UniMateMessenger.mount(document.getElementById("mcpMessenger"));
+    if (window.UniMateFbPages) window.UniMateFbPages.mount(document.getElementById("mcpFbPages"));
     if (window.UniMateGithubRepos) window.UniMateGithubRepos.mount(document.getElementById("mcpGithub"));
+    if (window.UniMateFbPages) window.UniMateFbPages.wire(document.getElementById("catGrid") || el);
     el.querySelectorAll("#catGrid [data-msc-open]").forEach(b => b.onclick = () => {
       if (window.UniMateMessenger && window.UniMateMessenger.openForm) window.UniMateMessenger.openForm(null);
     });

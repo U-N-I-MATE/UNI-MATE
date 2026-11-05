@@ -8,7 +8,10 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.448.0] - 2026-11-05
 ### Added
-- In progress: Facebook Page comments in the inbox.
+- **Facebook comments in the inbox:** connect your Pages with Log in with Facebook on the Connections page, one inbox account per Page and one conversation per post. Read only, every 3 minutes; posts from the last 30 days plus followed posts (an older post with an ad running).
+- Adding a Page later needs no redo: log in again and tick it, Pages already connected keep their comments.
+- While the Facebook app is in development mode commenters have no name: the inbox shows "Facebook user" with an "Open on Facebook" link. Names arrive once Meta approves the app.
+- Comments are kept 12 months (adjustable), disconnecting a Page deletes all of its data. Guide: docs/en/36-facebook-comments.md.
 
 ## [0.447.0] - 2026-11-04
 ### Added

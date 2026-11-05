@@ -8,7 +8,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.448.0] - 2026-11-05
 ### Thêm mới
-- Đang làm: đọc bình luận Facebook Fanpage vào Hộp thư.
+- **Bình luận Facebook vào Hộp thư:** nối Fanpage bằng nút Đăng nhập Facebook ở trang Kết nối, mỗi trang là một tài khoản riêng, mỗi bài đăng là một cuộc hội thoại. Chỉ đọc, 3 phút đọc một lần; bài 30 ngày gần nhất và bài theo dõi thêm (bài cũ đang chạy quảng cáo).
+- Thêm trang sau không phải làm lại: đăng nhập lại và tick trang mới, trang đã nối giữ nguyên bình luận.
+- Ứng dụng Facebook còn ở chế độ phát triển nên chưa có tên người bình luận: Hộp thư ghi "Khách Facebook" kèm nút "Mở trên Facebook". Meta duyệt xong thì tên tự có.
+- Bình luận giữ 12 tháng (chỉnh được), ngắt trang là xoá sạch dữ liệu của trang. Hướng dẫn: docs/36-binh-luan-facebook.md.
 
 ## [0.447.0] - 2026-11-04
 ### Thêm mới

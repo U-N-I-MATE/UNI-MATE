@@ -202,6 +202,18 @@
         '<path fill="#fff" d="M6.4 14.3l3.06-4.86a1.2 1.2 0 0 1 1.74-.32l2.43 1.82 2.23-1.69c.3-.23.69.13.49.45' +
         'l-3.06 4.86a1.2 1.2 0 0 1-1.74.32l-2.43-1.82-2.23 1.69c-.3.23-.69-.13-.49-.45z"/>',
     },
+    // Facebook Page comments (0.448.0): a plain comment bubble with two text lines on blue. A generic glyph, not the
+    // platform's own mark; the label next to it names the channel.
+    facebook: {
+      nhan: "Facebook",
+      mau: "#1877F2",
+      than:
+        '<rect width="24" height="24" rx="7" fill="#1877F2"/>' +
+        '<path fill="#fff" d="M6.2 6.5h11.6c.8 0 1.4.6 1.4 1.4v6.6c0 .8-.6 1.4-1.4 1.4H11l-3.4 2.7v-2.7H6.2' +
+        'c-.8 0-1.4-.6-1.4-1.4V7.9c0-.8.6-1.4 1.4-1.4z"/>' +
+        '<rect x="7.6" y="9.3" width="8.8" height="1.3" rx=".65" fill="#1877F2"/>' +
+        '<rect x="7.6" y="11.8" width="5.6" height="1.3" rx=".65" fill="#1877F2"/>',
+    },
     // Discord (0.85.0): the controller-face mark on blurple.
     discord: {
       nhan: "Discord",

@@ -1513,6 +1513,78 @@ def stats_accounts() -> List[dict]:
     return [{"id": r["id"], "channel": r["channel"], "name": r["display_name"] or r["id"]} for r in rows]
 
 
+def count_account(account_key: str) -> dict:
+    """How many conversations and messages one channel account holds (0.448.0, asked before a Page is disconnected)."""
+    with _lock:
+        db = _conn()
+        c = db.execute("SELECT COUNT(*) FROM conversations WHERE channel_account_id=?", (account_key,)).fetchone()[0]
+        m = db.execute("SELECT COUNT(*) FROM messages WHERE conversation_id IN"
+                       " (SELECT id FROM conversations WHERE channel_account_id=?)", (account_key,)).fetchone()[0]
+    return {"conversations": int(c or 0), "messages": int(m or 0)}
+
+
+def delete_account_data(account_key: str) -> dict:
+    """Delete EVERYTHING stored for one channel account: messages, tags on its conversations, conversations, customers,
+    the account row and its sync state (0.448.0, a Facebook Page being disconnected). Returns what was deleted."""
+    with _lock:
+        db = _conn()
+        ids = [r[0] for r in db.execute("SELECT id FROM conversations WHERE channel_account_id=?", (account_key,))]
+        m = 0
+        for i in range(0, len(ids), 500):
+            part = ids[i:i + 500]
+            marks = ",".join("?" * len(part))
+            m += db.execute(f"DELETE FROM messages WHERE conversation_id IN ({marks})", part).rowcount
+            db.execute(f"DELETE FROM conversation_tags WHERE conversation_id IN ({marks})", part)
+        c = db.execute("DELETE FROM conversations WHERE channel_account_id=?", (account_key,)).rowcount
+        k = db.execute("DELETE FROM customers WHERE channel_account_id=?", (account_key,)).rowcount
+        db.execute("DELETE FROM channel_accounts WHERE id=?", (account_key,))
+        db.execute("DELETE FROM sync_state WHERE key LIKE ?", (account_key + "%",))
+        db.commit()
+    return {"conversations": int(c), "messages": int(m), "customers": int(k)}
+
+
+def purge_before(account_key: str, before_ts: float) -> int:
+    """Delete one account's messages older than `before_ts`, then conversations left empty (0.448.0, the retention
+    period of Facebook comments). Counters and the last message of what remains are recomputed. Returns messages
+    deleted."""
+    with _lock:
+        db = _conn()
+        ids = [r[0] for r in db.execute("SELECT id FROM conversations WHERE channel_account_id=?", (account_key,))]
+        n = 0
+        for cid in ids:
+            n += db.execute("DELETE FROM messages WHERE conversation_id=? AND created_at<?", (cid, float(before_ts))).rowcount
+            left = db.execute("SELECT COUNT(*) FROM messages WHERE conversation_id=?", (cid,)).fetchone()[0]
+            if not left:
+                db.execute("DELETE FROM conversation_tags WHERE conversation_id=?", (cid,))
+                db.execute("DELETE FROM conversations WHERE id=?", (cid,))
+                continue
+            last = db.execute("SELECT text, created_at, sender_type FROM messages WHERE conversation_id=?"
+                              " ORDER BY id DESC LIMIT 1", (cid,)).fetchone()
+            db.execute("UPDATE conversations SET message_count=?, last_message=?, last_message_at=?, last_sender_type=?"
+                       " WHERE id=?", (int(left), _s(last["text"], 300), last["created_at"], last["sender_type"], cid))
+        db.commit()
+    return n
+
+
+def set_message_sender(account_key: str, external_chat_id: str, external_message_id: str,
+                       sender_id: str, sender_name: str) -> bool:
+    """Put who wrote it on a message stored without a sender (0.448.0: Facebook comments read before Meta allowed the
+    name). Only fills a blank sender; never overwrites one."""
+    if not external_message_id:
+        return False
+    with _lock:
+        db = _conn()
+        row = db.execute("SELECT id FROM conversations WHERE channel_account_id=? AND external_chat_id=?",
+                         (account_key, str(external_chat_id))).fetchone()
+        if not row:
+            return False
+        cur = db.execute("UPDATE messages SET sender_id=?, sender_name=? WHERE conversation_id=? AND"
+                         " external_message_id=? AND sender_id='' AND sender_type='customer'",
+                         (_s(sender_id, 200), _s(sender_name, MAX_TEN), row["id"], str(external_message_id)))
+        db.commit()
+    return cur.rowcount > 0
+
+
 def xoa_trang_thai(tien_to: str) -> None:
     try:
         with _lock:

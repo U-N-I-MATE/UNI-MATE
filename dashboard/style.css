@@ -4563,6 +4563,28 @@ select option, select optgroup { background-color: var(--bg2); color: var(--text
 .msc-row-detail { color: var(--text2); font-size: 13px; word-break: break-all; }
 .msc-row-fix { color: var(--text2); font-size: 14px; margin-top: 2px; }
 
+/* Facebook Page comments card (fb-pages.js, 0.448.0) and its comments in the inbox */
+.fbp-list { display: flex; flex-direction: column; gap: 10px; }
+.fbp-sec { display: flex; align-items: center; gap: 8px; font-size: 16px; margin: 4px 0 8px; }
+.fbp-copy { display: flex; gap: 8px; }
+.fbp-copy .js-input { flex: 1; min-width: 0; }
+.fbp-form select.js-input { max-width: 200px; }
+.fbp-st { font-size: 13px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.fbp-st.ok { color: var(--green, #2c7a4b); background: color-mix(in srgb, var(--green, #2c7a4b) 14%, transparent); }
+.fbp-st.warn { color: var(--warn-ink, #b9821f); background: color-mix(in srgb, var(--warn, #e0a33e) 18%, transparent); }
+.fbp-st.bad { color: var(--danger-ink, #b3261e); background: color-mix(in srgb, var(--danger-ink, #b3261e) 12%, transparent); }
+.fbp-st.off { color: var(--text3); background: color-mix(in srgb, var(--text3) 12%, transparent); }
+.fbp-fols { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.fbp-fol-head { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text2); }
+.fbp-fol { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.fbp-fol a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fbp-fol-add { display: flex; gap: 8px; }
+.fbp-fol-add .js-input { flex: 1; min-width: 0; }
+.fbp-page .s-btn-ghost.danger { color: var(--danger-ink, #b3261e); }
+.cb-st-chip.warn { color: var(--warn-ink, #b9821f); }
+.ht-msg.ht-fb-reply { margin-left: 28px; }
+.ht-msg-h .ht-fb-link { color: inherit; text-decoration: underline; }
+
 /* Searchable agent picker (agent-picker.js). The native <select> stays in the DOM, hidden; this button opens a
    popover on desktop and a bottom sheet on phones. Every text here is at least 16px (owner rule, also stops iOS zoom). */
 .ap-native { display: none !important; }

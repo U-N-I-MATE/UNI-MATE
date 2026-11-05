@@ -58,8 +58,11 @@ def check(name, cond):
 # 1. Sổ đăng ký kênh
 # ============================================================
 # 0.71.0: thêm Slack và WhatsApp (cả hai kind=bot, tài khoản là token).
-check("sổ có tám kênh: Zalo Bot, Zalo cá nhân, Zalo OA (0.412.0), Messenger, Telegram, Slack, WhatsApp, Lark",
-      set(channels.ids()) == {"zalo", "zalo_personal", "zalo_oa", "messenger", "telegram", "slack", "whatsapp", "lark"})
+# 0.448.0: Facebook comments (kind=account, read only).
+check("registry has nine channels: Zalo Bot, personal Zalo, Zalo OA (0.412.0), Messenger, Facebook comments (0.448.0), "
+      "Telegram, Slack, WhatsApp, Lark",
+      set(channels.ids()) == {"zalo", "zalo_personal", "zalo_oa", "messenger", "facebook", "telegram", "slack",
+                              "whatsapp", "lark"})
 # 0.64.80: Zalo cá nhân có Transport (bot tự trả lời) nhưng không có token, nên `bot_ids` có ba
 # kênh còn `bot_token_ids` (kênh tạo tài khoản bằng token) vẫn hai.
 check("kênh gắn được bot = kênh có Transport",

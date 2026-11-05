@@ -67,6 +67,7 @@ CAP = [
     ("docs/27-tab-code-terminal.md", "docs/en/27-code-terminal.md"),
     ("docs/29-slack-whatsapp.md", "docs/en/29-slack-whatsapp.md"),
     ("docs/34-github-trong-chat.md", "docs/en/34-github-in-chat.md"),
+    ("docs/36-binh-luan-facebook.md", "docs/en/36-facebook-comments.md"),
 ]
 
 # ============================================================

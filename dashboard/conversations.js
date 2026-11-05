@@ -1940,7 +1940,10 @@
   function veTin(t) {
     var lop = t.sender_type === "customer" ? "khach" : t.sender_type === "ai" ? "bot"
             : t.sender_type === "human" ? "nguoi" : "hethong";
-    var ai = t.sender_type === "customer" ? (t.sender_name || "")
+    // Facebook comments (0.448.0) carry `metadata.fb`: a link to the comment, whether it answers another comment, and
+    // whether Meta hid who wrote it (development mode). A hidden author reads "Facebook user" instead of a blank.
+    var fb = (t.metadata && t.metadata.fb) || null;
+    var ai = t.sender_type === "customer" ? (t.sender_name || (fb && fb.anon ? window.t("ht.fb_anon") : ""))
            : t.sender_type === "ai" ? (t.sender_name || window.t("ht.bot"))
            : t.sender_type === "human" ? window.t("ht.ban") : "";
     if (t.message_type === "reaction") return renderReaction(t, lop, ai);
@@ -1967,9 +1970,12 @@
     // Who and when go under the bubble (0.397.0). A private chat's customer is named in the head already, so only a
     // group shows who wrote each message.
     if (lop === "khach" && _conv && _conv.chat_type !== "group") ai = "";
-    return '<div class="ht-msg ' + lop + '">' +
+    var fbLink = fb && /^https:\/\//.test(fb.permalink || "")
+      ? ' · <a class="ht-fb-link" href="' + esc(fb.permalink) + '" target="_blank" rel="noopener">' + esc(window.t("ht.fb_open")) + '</a>'
+      : "";
+    return '<div class="ht-msg ' + lop + (fb && fb.reply ? ' ht-fb-reply' : '') + '">' +
       '<div class="ht-bubble">' + loai + than + '</div>' + loi +
-      '<div class="ht-msg-h">' + esc(ai) + (ai ? ' · ' : '') + esc(gio(t.created_at)) + '</div>' +
+      '<div class="ht-msg-h">' + esc(ai) + (ai ? ' · ' : '') + esc(gio(t.created_at)) + fbLink + '</div>' +
     '</div>';
   }
 
