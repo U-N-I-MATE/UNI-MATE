@@ -86,3 +86,8 @@ yt-dlp>=2026.8.19
 # đính kèm thay vì một đống mã nhị phân. Thuần Python, giấy phép BSD, không kéo dependency nào. Thiếu nó app VẪN chạy: đọc PDF
 # trả một câu báo thiếu thư viện thay cho chữ.
 pypdf==6.18.1
+
+# psutil (0.450.0): CPU and RAM of the server and its child processes for the log (server/res_watch.py), so a server
+# that stops answering shows whether the machine was overloaded. Prebuilt wheels for Windows, Mac and Linux, BSD
+# licence, no dependencies. Missing it the app STILL runs: Linux reads /proc, Windows logs machine memory only.
+psutil>=6.0,<8

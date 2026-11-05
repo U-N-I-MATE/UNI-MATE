@@ -29,6 +29,8 @@ function makeCtx(turnState, opts = {}) {
     savedSessionId: "s1",
     turns: { s1: turnState },
     activityEl: opts.chip ? { id: "chip" } : null,
+    activityT0: 0,
+    _turnT0BeforeDrop: opts.t0 || 0,
     window: { t: k => "T(" + k + ")" },
     Icons: { msg: (icon, text) => icon + ":" + text },
     dangTheoLoi: () => !!opts.voiceFollow,
@@ -117,6 +119,17 @@ function makeCtx(turnState, opts = {}) {
   const hello = appJs.slice(i, appJs.indexOf("guiTinDutMang();", i));
   const a = hello.indexOf("baoDutMang(false);"), b = hello.indexOf("redrawRunningTurn();");
   assert.ok(a > 0 && b > a, "hello must call redrawRunningTurn() after baoDutMang(false)");
+}
+
+// 0.450.0: the turn's clock carries on from the turn's start, not from the reconnect; the saved start is used once.
+{
+  const { ctx } = makeCtx({ text: "", bubble: null, running: true }, { t0: 12345 });
+  ctx.redrawRunningTurn();
+  assert.equal(ctx.activityT0, 12345, "the chip counts from the turn's start");
+  assert.equal(ctx._turnT0BeforeDrop, 0, "the saved start is cleared");
+  const idle = makeCtx({ text: "", bubble: null, running: false }, { t0: 999 });
+  idle.ctx.redrawRunningTurn();
+  assert.equal(idle.ctx._turnT0BeforeDrop, 0, "no running turn: the saved start is dropped");
 }
 
 console.log("OK - running turn redrawn after reconnect");

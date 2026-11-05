@@ -70,3 +70,24 @@ def update_outcome(health_ok: bool, current: str, old: str, target=None) -> str:
     if ver_newer(current, old):
         return "success"
     return "version_mismatch"
+
+
+SETTLE_PHASES = ("restarting", "health_check")
+
+
+def settle_patch(st: dict, current: str, now_iso: str):
+    """0.450.0: the patch that closes an update left half-way although the new version is running, or None.
+
+    The phase "restarting" is written just before the old server goes away, and nothing on the new side ever closed it:
+    Docker (Watchtower replaces the container, no updater survives) and a native updater killed together with the old
+    process both left /update/status on "restarting" for good (VPS, 0.449.0, 05/11/2026). The new server knows its
+    own version, so it can say "done" itself once it runs the version the update was going to.
+    """
+    if not isinstance(st, dict) or st.get("phase") not in SETTLE_PHASES:
+        return None
+    target, old = st.get("target_version"), st.get("old_version")
+    ct, tt = ver_tuple(current), ver_tuple(target)
+    reached = bool(target and ct and tt and ct >= tt) or bool(old and ver_newer(current, old))
+    if not reached:
+        return None
+    return {"phase": "done", "result": "success", "finished_at": now_iso, "settled_on_boot": True}

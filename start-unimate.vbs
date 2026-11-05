@@ -11,13 +11,53 @@ Set sh = CreateObject("WScript.Shell")
 ' kế thừa (CurrentDirectory không đáng tin tuỳ nơi gọi, từng làm bước stop chết
 ' im lặng với lỗi 'stop-unimate.bat is not recognized').
 
-' Tắt instance cũ trước (ẩn, chờ xong). Output ghi server\stop-last.log để soi khi trục trặc.
-' GỌI BẰNG ĐƯỜNG DẪN TUYỆT ĐỐI: tên trần "stop-unimate.bat" bị cmd từ chối tìm theo thư mục
-' hiện tại khi môi trường có NoDefaultCurrentDirectoryInExePath (đường dẫn có "\" thì không sao).
-sh.Run "cmd /c cd /d """ & root & """ && call """ & root & "\stop-unimate.bat"" > server\stop-last.log 2>&1", 0, True
+' 0.450.0 (chu repo 05/11/2026): BAM HAI LAN KHONG BAT HAI MAY CHU. Truoc day bam bieu tuong lan hai trong
+' luc may chu dang khoi dong (/health chua tra loi) la goi lai file nay, file nay tat ngay ban vua bat roi bat
+' ban khac. Nay: lan bat nao cung ghi server\start.lock; con lock moi (duoi 60 giay) thi lan sau KHONG tat,
+' KHONG bat gi ca, chi cho va mo dashboard nhu thuong. May chu len xong tu xoa lock (main.py), nut Cap nhat
+' cung xoa lock truoc khi goi file nay (updater.py) nen khong bao gio bi chan nham.
+lockF = root & "\server\start.lock"
+dangKhoi = False
+If fso.FileExists(lockF) Then
+  If DateDiff("s", fso.GetFile(lockF).DateLastModified, Now) < 60 Then dangKhoi = True
+End If
 
-' Chạy server ẩn (0 = cửa sổ ẩn, False = không chờ). Output -> server\unimate.log
-sh.Run "cmd /c cd /d """ & root & """ && .venv\Scripts\python.exe server\main.py > server\unimate.log 2>&1", 0, False
+If Not dangKhoi Then
+  On Error Resume Next
+  Set lk = fso.CreateTextFile(lockF, True)
+  lk.WriteLine CStr(Now)
+  lk.Close
+  Err.Clear
+  On Error GoTo 0
+
+  ' Tắt instance cũ trước (ẩn, chờ xong). Output ghi server\stop-last.log để soi khi trục trặc.
+  ' GỌI BẰNG ĐƯỜNG DẪN TUYỆT ĐỐI: tên trần "stop-unimate.bat" bị cmd từ chối tìm theo thư mục
+  ' hiện tại khi môi trường có NoDefaultCurrentDirectoryInExePath (đường dẫn có "\" thì không sao).
+  sh.Run "cmd /c cd /d """ & root & """ && call """ & root & "\stop-unimate.bat"" > server\stop-last.log 2>&1", 0, True
+
+  ' 0.450.0: GIU NHAT KY CU. Lenh chay ben duoi ghi DE server\unimate.log, nen truoc day moi lan khoi dong lai
+  ' la mat sach nhat ky cua lan treo vua roi (dung luc can soi nhat). Nay chuyen no sang unimate.prev.log truoc.
+  ' Ban cu da bi tat o buoc tren nen file khong con bi giu; lo con bi giu thi chep thay vi chuyen.
+  logF = root & "\server\unimate.log"
+  prevF = root & "\server\unimate.prev.log"
+  On Error Resume Next
+  If fso.FileExists(logF) Then
+    If fso.GetFile(logF).Size > 0 Then
+      If fso.FileExists(prevF) Then fso.DeleteFile prevF, True
+      Err.Clear
+      fso.MoveFile logF, prevF
+      If Err.Number <> 0 Then
+        Err.Clear
+        fso.CopyFile logF, prevF, True
+      End If
+    End If
+  End If
+  Err.Clear
+  On Error GoTo 0
+
+  ' Chạy server ẩn (0 = cửa sổ ẩn, False = không chờ). Output -> server\unimate.log
+  sh.Run "cmd /c cd /d """ & root & """ && .venv\Scripts\python.exe server\main.py > server\unimate.log 2>&1", 0, False
+End If
 
 ' 0.306.0: /open = cho server len roi MO dashboard (luc dang nhap may, luc cai xong). Chu repo 24/10/2026:
 ' "cai unimate tren win hoac mac thi cai khoi dong cung trinh duyet". Khong co /open (nut Cap nhat, start-unimate.bat)

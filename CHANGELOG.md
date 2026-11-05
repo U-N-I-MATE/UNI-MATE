@@ -6,6 +6,15 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.450.0] - 2026-11-05
+### Sửa lỗi
+- **Khởi động lại không còn xoá nhật ký của lần trước.** Máy chủ treo rồi mở lại thì nhật ký của lần treo được giữ ở `server\unimate.prev.log`, đủ để soi nguyên nhân.
+- **Dòng "Mất kết nối tới máy chủ" đếm đúng thời gian mất kết nối.** Trước đây nó mượn đồng hồ của lượt chat (ví dụ 12m55s là tuổi của lượt, không phải thời gian mất mạng). Nối lại xong, lượt chat đếm tiếp từ lúc bắt đầu.
+- **Bấm biểu tượng 2 lần không còn bật 2 máy chủ.** Lần bấm sau trong lúc máy chủ đang khởi động chỉ chờ và mở cửa sổ, không tắt bản vừa bật.
+- Trang trạng thái cập nhật (VPS) không còn kẹt ở "đang khởi động lại": bản mới chạy lên đúng phiên bản thì tự ghi "xong".
+### Cải thiện
+- Trong lúc chạy lượt chat, quy trình hay tiến trình claude, nhật ký máy chủ ghi CPU, RAM của máy, của máy chủ và các tiến trình con mỗi 30 giây (một dòng gọn). Máy rảnh thì không ghi. Lần treo sau sẽ biết ngay có phải quá tải không.
+
 ## [0.449.0] - 2026-11-05
 ### Thêm mới
 - **Bot Zalo cá nhân nghe được tin thoại của khách.** Trước đây tin thoại bị bỏ qua. Giờ UNI MATE nghe thành chữ cho bot đọc, Hộp thư hiện "Đã nghe: ..." ngay dưới tin thoại. Chưa nghe được thì bot nói thật và nhờ khách gõ chữ, không đoán.

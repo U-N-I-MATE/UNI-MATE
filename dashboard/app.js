@@ -1611,12 +1611,27 @@ let _luotDaDung = {}, _luotSeq = 0;
 // Chờ 2,5 giây mới báo: iOS đóng socket mỗi lần trang bị ẩn rồi nối lại sau một nhịp, báo
 // ngay là nhấp nháy suốt ngày vì một chuyện tự khỏi.
 let _dutMangTimer = null, _dangBaoDutMang = false;
+// 0.450.0 (owner 05/11/2026): the note used to sit in the running turn's chip and kept ITS clock, so "12m55s" read
+// as twelve minutes offline when it was the turn's age. While the note shows, the clock counts the time offline
+// (activityDownT0); the turn's own start is kept (_turnT0BeforeDrop) and given back when the socket returns.
+let _turnT0BeforeDrop = 0;
+function markOffline(since) {
+  if (!activityDownT0) {
+    if (activityEl && activityT0) _turnT0BeforeDrop = activityT0;
+    activityDownT0 = since || Date.now();
+  }
+}
 function baoDutMang(dut) {
   if (dut) {
     if (_dutMangTimer || _dangBaoDutMang) return;
+    const dropAt = Date.now();
     _dutMangTimer = setTimeout(() => {
       _dutMangTimer = null;
-      if (!ws || ws.readyState !== WebSocket.OPEN) { _dangBaoDutMang = true; showActivity(Icons.warn(window.t("app.ws_mat_ket_noi"))); }
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        _dangBaoDutMang = true;
+        markOffline(dropAt);
+        showActivity(Icons.warn(window.t("app.ws_mat_ket_noi")));
+      }
     }, 2500);
     return;
   }
@@ -1646,6 +1661,7 @@ function giuTinKhiDutMang(msg) {
   chatInput.value = ""; chatInput.style.height = "auto";
   clearTimeout(_dutMangTimer); _dutMangTimer = null;
   _dangBaoDutMang = true;
+  markOffline();
   showActivity(Icons.warn(window.t("app.ws_giu_tin")));
   clearTimeout(_tinDutMangTimer);
   _tinDutMangTimer = setTimeout(traTinDutMang, CHO_NOI_LAI_MS);
@@ -2752,7 +2768,7 @@ function escapeHtml(t) { return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").rep
 // ---- Chip hoạt động trong transcript (thay #toolBar cũ nằm ngoài #chatArea nên
 //      biến mất khi phóng to chat). Chip là 1 "bong bóng" 3 chấm nhún + dòng trạng thái
 //      + đồng hồ đếm giây, luôn nằm CUỐI khung chat, đi theo cả chế độ zoom. ----
-let activityEl = null, activityT0 = 0, activityTimer = null;
+let activityEl = null, activityT0 = 0, activityTimer = null, activityDownT0 = 0;
 // Thời lượng đọc được cho task dài: "45s" → "1m 56s" → "1h 30m 40s". Chủ repo báo (2026-08-24)
 // việc nền chạy hàng chục phút mà đồng hồ đếm "1856s" thì không ai nhẩm ra là bao lâu.
 function fmtElapsed(s) {
@@ -2773,7 +2789,7 @@ function showActivity(html) {
     activityT0 = Date.now();
     activityTimer = setInterval(() => {
       if (!activityEl) return;
-      const s = Math.floor((Date.now() - activityT0) / 1000);
+      const s = Math.floor((Date.now() - (activityDownT0 || activityT0)) / 1000);
       // 3s đầu khỏi hiện số cho đỡ rối; câu chậm (CLI/MCP) thì thấy rõ đã đợi bao lâu
       activityEl.querySelector(".act-time").textContent = s >= 3 ? fmtElapsed(s) : "";
     }, 1000);
@@ -2794,6 +2810,7 @@ function veKhoiBuoc(t, dangChay) {
   return t.buocEl;
 }
 function hideActivity() {
+  activityDownT0 = 0;
   if (activityTimer) { clearInterval(activityTimer); activityTimer = null; }
   if (activityEl && activityEl.parentNode) activityEl.parentNode.removeChild(activityEl);
   activityEl = null;
@@ -2804,15 +2821,19 @@ function hideActivity() {
 // chip, and the text the server has so far (from `hello`) in its bubble.
 function redrawRunningTurn() {
   const sid = savedSessionId, t = sid ? turns[sid] : null;
-  if (!t || !t.running) return;
+  if (!t || !t.running) { _turnT0BeforeDrop = 0; return; }
   veKhoiBuoc(t, true);
   if (t.text) {
     if (!(t.bubble && t.bubble.isConnected)) t.bubble = createStreamingBubble();
     t.bubble.dataset.md = t.text;
     if (!dangTheoLoi()) t.bubble.querySelector(".bubble").innerHTML = markdownToHtml(t.text, undefined, t.bubble.dataset.anhV);
   }
-  if (!activityEl) showActivity(t.text ? Icons.msg("pen-line", window.t("app.act_writing")) : window.t("app.act_thinking"));
-  else chatAppend(activityEl);   // keep the chip under the bubble
+  if (!activityEl) {
+    showActivity(t.text ? Icons.msg("pen-line", window.t("app.act_writing")) : window.t("app.act_thinking"));
+    // 0.450.0: the turn's clock goes on from when the turn started, not from the reconnect.
+    if (_turnT0BeforeDrop) activityT0 = _turnT0BeforeDrop;
+  } else chatAppend(activityEl);   // keep the chip under the bubble
+  _turnT0BeforeDrop = 0;
   scrollBottom();
 }
 function setProcessing(s) { isProcessing = s; sendBtn.disabled = s || sendBtn.dataset.wsLock === "1"; }
