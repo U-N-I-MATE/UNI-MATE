@@ -6,6 +6,13 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.448.0] - 2026-11-05
+### Thêm mới
+- **Bình luận Facebook vào Hộp thư:** nối Fanpage bằng nút Đăng nhập Facebook ở trang Kết nối, mỗi trang là một tài khoản riêng, mỗi bài đăng là một cuộc hội thoại. Chỉ đọc, 3 phút đọc một lần; bài 30 ngày gần nhất và bài theo dõi thêm (bài cũ đang chạy quảng cáo).
+- Thêm trang sau không phải làm lại: đăng nhập lại và tick trang mới, trang đã nối giữ nguyên bình luận.
+- Ứng dụng Facebook còn ở chế độ phát triển nên chưa có tên người bình luận: Hộp thư ghi "Khách Facebook" kèm nút "Mở trên Facebook". Meta duyệt xong thì tên tự có.
+- Bình luận giữ 12 tháng (chỉnh được), ngắt trang là xoá sạch dữ liệu của trang. Hướng dẫn: docs/36-binh-luan-facebook.md.
+
 ## [0.447.0] - 2026-11-04
 ### Thêm mới
 - **Cổng ChatGPT, Claude.ai tạo được hội thoại mới** ở khung Trò chuyện chính khi không chỉ định hội thoại nào, tiêu đề "Từ ChatGPT: ..." hoặc "Từ Claude: ...", rồi UNI MATE trả lời ngay trong đó. Chỉ ở mức Toàn quyền, cần gói cổng 1.3.0.

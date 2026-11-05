@@ -14389,6 +14389,12 @@ async def _start_scheduler():
         zalo_personal_channel.start()
     except Exception as e:
         print(f"[zalo-personal start] {type(e).__name__}: {e}", file=__import__('sys').stderr)
+    try:
+        # 0.448.0: Facebook Page comments, read on a timer (Meta's development mode pushes no customer events).
+        import fb_pages
+        fb_pages.start()
+    except Exception as e:
+        print(f"[fb-pages start] {type(e).__name__}: {e}", file=__import__('sys').stderr)
 
 
 _BROWSE_MD_CAP = 500        # trần đếm .md cho mỗi thư mục con
@@ -25609,6 +25615,8 @@ async def chatbots_delete(bot_id: str):
 # (Telegram, Zalo Bot) và tài khoản Zalo cá nhân về một chỗ. Đăng ký NGAY SAU khối Chatbot vì
 # cùng một họ: đây là mặt "đọc lại hội thoại" của chính những bot ở trên.
 import routes.channels as channels_routes   # noqa: E402
+import routes.fb_pages as fb_pages_routes   # noqa: E402
+fb_pages_routes.register(app)   # 0.448.0: Facebook Page comments card (read only)
 import routes.conversations as conversations_routes   # noqa: E402
 
 # Kênh và tài khoản kênh (0.61.0): một API cho mọi kênh, đọc sổ đăng ký `channels`.

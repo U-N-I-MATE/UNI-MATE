@@ -6,6 +6,13 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.448.0] - 2026-11-05
+### Added
+- **Facebook comments in the inbox:** connect your Pages with Log in with Facebook on the Connections page, one inbox account per Page and one conversation per post. Read only, every 3 minutes; posts from the last 30 days plus followed posts (an older post with an ad running).
+- Adding a Page later needs no redo: log in again and tick it, Pages already connected keep their comments.
+- While the Facebook app is in development mode commenters have no name: the inbox shows "Facebook user" with an "Open on Facebook" link. Names arrive once Meta approves the app.
+- Comments are kept 12 months (adjustable), disconnecting a Page deletes all of its data. Guide: docs/en/36-facebook-comments.md.
+
 ## [0.447.0] - 2026-11-04
 ### Added
 - **The ChatGPT/Claude.ai gate can start a new conversation** in the main chat when no conversation is given, titled with its source (ChatGPT or Claude) and a short title, and UNI MATE answers right there. Full level only, needs gate pack 1.3.0.
