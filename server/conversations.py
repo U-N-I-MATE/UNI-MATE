@@ -1585,6 +1585,25 @@ def set_message_sender(account_key: str, external_chat_id: str, external_message
     return cur.rowcount > 0
 
 
+def set_message_meta(account_key: str, external_chat_id: str, external_message_id: str, patch: dict) -> bool:
+    """Merge `patch` into one stored message's metadata (0.449.0: the words heard in a customer's voice message or
+    video, shown under it in the inbox). False when the message is not stored (yet)."""
+    if not external_message_id or not isinstance(patch, dict):
+        return False
+    with _lock:
+        db = _conn()
+        row = db.execute("SELECT m.id, m.metadata_json FROM messages m JOIN conversations c ON c.id=m.conversation_id"
+                         " WHERE c.channel_account_id=? AND c.external_chat_id=? AND m.external_message_id=?",
+                         (account_key, str(external_chat_id), str(external_message_id))).fetchone()
+        if not row:
+            return False
+        md = _loads(row["metadata_json"], {})
+        md.update({k: (_s(v) if isinstance(v, str) else v) for k, v in patch.items()})
+        db.execute("UPDATE messages SET metadata_json=? WHERE id=?", (_json(md), row["id"]))
+        db.commit()
+    return True
+
+
 def xoa_trang_thai(tien_to: str) -> None:
     try:
         with _lock:

@@ -691,9 +691,23 @@ class Transport:
         vao_nhom = md0.get("member_join")
         if vao_nhom and loai != "group":
             return
-        if loai not in ("private", "group") or (kieu not in ("text", "image", "file", "reaction") and not vao_nhom):
+        if loai not in ("private", "group") or (kieu not in ("text", "image", "file", "reaction", "audio", "video")
+                                                  and not vao_nhom):
             return
         nhom = loai == "group"
+        # 0.449.0: voice messages and videos in a PRIVATE chat (a merged turn carries them in `metadata.media`). Groups
+        # keep the old rule: a voice message cannot tag the bot, so it is not a call to it.
+        if md0.get("gop"):
+            media = [m for m in (md0.get("media") or []) if isinstance(m, dict)]
+        elif kieu in ("audio", "video"):
+            media = [{"type": kieu, "url": str(md0.get("media_url") or ""), "id": str(ev.get("external_message_id") or "")}]
+        else:
+            media = []
+        if media and (nhom or str(ev.get("account_id") or "") != self.conn_id or ev.get("sender_type") != "customer"
+                      or str(ev.get("sender_id") or "") != str(ev.get("external_chat_id") or "")):
+            media = []
+        if kieu in ("audio", "video") and not media:
+            return
         # A customer's emoji reaction (0.334.0) reaches the bot as its describing line. Nothing here decides whether it
         # deserves an answer: the judge does in a group ("Tự đánh giá"), the Agent everywhere else.
         is_reaction = kieu == "reaction"
@@ -731,7 +745,7 @@ class Transport:
         thread = str(ev.get("external_chat_id") or "")
         if not thread:
             return
-        if not text:
+        if not text and not media:
             # Ảnh TRƠN trong nhóm (không chú thích) không gọi bot, nhưng phải được NHỚ: cách gửi hay gặp nhất là
             # gửi ảnh rồi nhắn "@bot xem giúp". Trước 0.88.3 ảnh trơn bị bỏ ngay ở đây, trước cả bước nhớ ảnh
             # (nằm trong precheck), nên bot báo "chưa thấy ảnh"; ảnh có vài chữ chú thích thì lại thấy - đúng
@@ -773,6 +787,18 @@ class Transport:
         chu_nhuong = zc.chu_vua_nhan_tay(self.conn_id, thread)
         if chu_nhuong and (not nhom or not zc.yield_explicit(self.conn_id)):
             return
+        video_frames: list = []
+        if media:
+            # 0.449.0: hear the voice messages, cut frames of the videos (`zalo_media`). Only now, after every rule that
+            # can keep the bot silent, so nothing is downloaded or sent to a listener for a turn that is not answered.
+            import zalo_media
+            got = await zalo_media.prepare(self.conn_id, thread, media)
+            text = (text + "\n" + got["text"]).strip() if got["text"] else text
+            video_frames = got["frames"]
+            for mid, words in got["heard"].items():
+                conversations.set_message_meta(f"{SPEC.id}:{self.conn_id}", thread, mid, {"heard": words})
+            if not text:
+                return
         meta = {
             "chat_id": thread, "chat_type": "group" if nhom else "private",
             "chat_title": str(ev.get("chat_title") or "") if nhom else "",
@@ -797,6 +823,18 @@ class Transport:
         except Exception as e:      # noqa: BLE001
             meta["zalo_labels"] = []
             print(f"[zalo-personal bot {self.conn_id}] tag Zalo lỗi: {type(e).__name__}", file=sys.stderr)
+        if video_frames:
+            meta["video_frames"] = video_frames
+        elif not nhom and not co_anh and not vao_nhom and not is_reaction:
+            # 0.449.0: a message right after a video ("xem giúp em với") still shows the bot that video for 10 minutes.
+            import zalo_media
+            rv = zalo_media.recent_video(self.conn_id, thread)
+            if rv:
+                from datetime import datetime
+                meta["video_frames"] = rv["frames"]
+                text = (text + "\n[Kèm khung hình video khách gửi lúc "
+                        + datetime.fromtimestamp(rv["ts"], localefmt.tz()).strftime("%H:%M") + " trong cuộc chat này"
+                        + ("; lời nói trong video: " + rv["heard"] if rv.get("heard") else "") + "]")
         if co_anh:
             meta["co_anh"] = True
             # 0.74.1: the photo's link, so the bot can actually look at it (see `chatbot_runtime.anh_cho_bot`).

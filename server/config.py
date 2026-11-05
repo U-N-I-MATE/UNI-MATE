@@ -72,6 +72,9 @@ _DEFAULT = {
         # lưu thì voice_ear.setting vẫn coi là đã chọn Groq. Có mặc định thì mất phân biệt đó.
         "stt_provider": "browser",     # browser (Web Speech) | groq (Whisper, key model.groq_api_key)
         "stt_model": "",               # rỗng = whisper-large-v3 (stt.STT_MODEL_MAC_DINH)
+        # 0.449.0: who listens to voice messages and video sound that come through the chat channels (Telegram, Zalo):
+        # auto (Groq key, then OpenAI key) | groq | openai | offline (on this machine, not installed yet) | off.
+        "chat_ear": "auto",
         "live_provider": "gemini",     # gemini | openai (đều cần API key ở trang Models)
         "live_model": "",              # rỗng = gợi ý trong voice_live.PROVIDERS
         "live_voice": "",
