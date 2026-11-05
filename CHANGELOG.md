@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.449.0] - 2026-11-05
+### Thêm mới
+- Đang làm: bot Zalo cá nhân nghe tin thoại và xem video của khách.
+
 ## [0.448.0] - 2026-11-05
 ### Thêm mới
 - **Bình luận Facebook vào Hộp thư:** nối Fanpage bằng nút Đăng nhập Facebook ở trang Kết nối, mỗi trang là một tài khoản riêng, mỗi bài đăng là một cuộc hội thoại. Chỉ đọc, 3 phút đọc một lần; bài 30 ngày gần nhất và bài theo dõi thêm (bài cũ đang chạy quảng cáo).

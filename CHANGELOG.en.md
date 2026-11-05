@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.449.0] - 2026-11-05
+### Added
+- In progress: the personal Zalo bot listens to voice messages and watches videos.
+
 ## [0.448.0] - 2026-11-05
 ### Added
 - **Facebook comments in the inbox:** connect your Pages with Log in with Facebook on the Connections page, one inbox account per Page and one conversation per post. Read only, every 3 minutes; posts from the last 30 days plus followed posts (an older post with an ad running).
