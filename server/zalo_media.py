@@ -89,8 +89,9 @@ async def _run(args: List[str], timeout: int = FFMPEG_TIMEOUT) -> tuple:
     """Run ffmpeg/ffprobe at low priority. (returncode, stdout, stderr)."""
     pre = ["nice", "-n", "10"] if shutil.which("nice") else []
     try:
+        import winproc      # no console window flashing on Windows (canary test_windows_no_console)
         p = await asyncio.create_subprocess_exec(*pre, *args, stdout=asyncio.subprocess.PIPE,
-                                                 stderr=asyncio.subprocess.PIPE)
+                                                 stderr=asyncio.subprocess.PIPE, **winproc.kwargs_no_window())
         out, err = await asyncio.wait_for(p.communicate(), timeout)
         return p.returncode, out, err
     except asyncio.TimeoutError:
