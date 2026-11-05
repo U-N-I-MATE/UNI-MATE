@@ -8,7 +8,12 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.450.0] - 2026-11-05
 ### Fixed
-- (in progress)
+- **A restart no longer wipes the previous log.** When the server froze and was reopened, the log of that run is kept as `server\unimate.prev.log`, enough to find the cause.
+- **"Lost the connection to the server" now counts the time offline.** It used to borrow the chat turn's clock (12m55s was the age of the turn, not the time offline). After the reconnect the turn's clock carries on from its start.
+- **Clicking the icon twice no longer starts two servers.** A second click while the server is starting just waits and opens the window, without stopping the server that was just started.
+- The update status page (VPS) no longer stays on "restarting": once the new version runs, it marks the update done.
+### Improved
+- While a chat turn, a workflow or a claude process runs, the server log records CPU and RAM of the machine, the server and its child processes every 30 seconds (one short line). Nothing is written while the machine is idle. The next freeze shows at once whether it was overload.
 
 ## [0.449.0] - 2026-11-05
 ### Added

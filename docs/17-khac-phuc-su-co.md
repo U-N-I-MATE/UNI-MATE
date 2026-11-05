@@ -148,7 +148,8 @@ Có vài nơi xem "nhật ký" tùy loại thông tin:
 2. **Nhật ký tự học**: trang **Tự học** (nhóm **Bộ não**) có hai khung riêng là **UNI MATE đã tự học gì (commit gần nhất)** và **Nhật ký học**. Xem [Tự học](22-tu-hoc.md).
 3. **Trang Cập nhật** (nhóm **Hệ thống**, tiêu đề trang là **Nhật ký cập nhật**): đây là nơi xem phiên bản đang chạy và lịch sử tính năng mới theo từng bản. Không còn trang "Logs" hay "Nhật ký hoạt động" riêng nào nữa; mục `logs` trên rail chính là trang này.
 4. **Log kỹ thuật của server** (khi cần soi lỗi sâu):
-   - Windows chạy ngầm bằng `start-unimate.vbs`: log ghi ở `server\unimate.log`.
+   - Windows chạy ngầm bằng `start-unimate.vbs`: log ghi ở `server\unimate.log`. Log của lần chạy TRƯỚC (ví dụ lần máy chủ treo rồi được mở lại) nằm ở `server\unimate.prev.log`.
+   - Trong lúc đang chạy lượt chat, quy trình hay tiến trình claude, log có thêm dòng `[res]` mỗi 30 giây: CPU, RAM của máy, của máy chủ và các tiến trình con. Máy chủ ngừng trả lời thì mấy dòng cuối cho biết máy có quá tải hay không. Máy rảnh thì không ghi dòng nào.
    - Docker / VPS: `docker compose logs unimate` (thêm `-f` để xem trực tiếp: `docker compose logs -f`).
    - Linux systemd: `journalctl -u unimate -f`.
 5. **Log cập nhật** khi bấm nút cập nhật trong app: file `update.log` nằm trong thư mục state, tức `server/update.log` khi chạy local và `/data/state/update.log` trên Docker (đường dẫn theo biến `UNIMATE_STATE_DIR`). Thường bạn không cần mở tệp: khi cập nhật lỗi, giao diện đã hiện sẵn thông báo và app cũng đọc 50 dòng cuối của tệp này để báo trạng thái.

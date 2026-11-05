@@ -78,6 +78,8 @@ else
       kill $PIDS 2>/dev/null || true
       sleep 2
     fi
+    # 0.450.0: keep the previous run's log (the one that shows why it stopped) instead of overwriting it.
+    [ -s server/unimate.log ] && mv -f server/unimate.log server/unimate.prev.log
     ( cd server && UNIMATE_STATE_DIR="$PWD" nohup ../.venv/bin/python -m uvicorn main:app \
         --host "${UNIMATE_HOST:-127.0.0.1}" --port "$PORT" > unimate.log 2>&1 & )
     echo "==> Restarted (nohup). Logs: server/unimate.log"

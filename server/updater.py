@@ -225,6 +225,12 @@ def start_server(mode, port=""):
             log(f"Khởi động lại {name}.service bằng tín hiệu (PID {p})…")
             _kill_pid(p, 30)
     elif mode == "windows":
+        # 0.450.0: a fresh start lock would make the vbs skip the start (it guards against a double click). The update
+        # just stopped the server on purpose, so the start must happen.
+        try:
+            (ROOT / "server" / "start.lock").unlink(missing_ok=True)
+        except OSError:
+            pass
         subprocess.Popen(["wscript.exe", "//nologo", str(ROOT / "start-unimate.vbs")],
                          cwd=str(ROOT), creationflags=0x00000008)  # DETACHED_PROCESS
     elif mode == "systemd":

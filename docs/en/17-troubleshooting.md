@@ -148,7 +148,8 @@ There are several places, depending on what you want to see:
 2. **The self-learning log**: the **Self-learning** page (**Brain** group) has two separate panels, **What UNI MATE taught itself (latest commit)** and **Learning log**. See [Self-learning](22-self-learning.md).
 3. **The Updates page** (**System** group, the page title is **Update log**): this is where you see the running version and the feature history per release. There is no separate "Logs" or "Activity log" page any more; the `logs` item on the rail is this page.
 4. **The server's technical log** (when you need to dig into an error):
-   - Windows running in the background through `start-unimate.vbs`: the log is at `server\unimate.log`.
+   - Windows running in the background through `start-unimate.vbs`: the log is at `server\unimate.log`. The log of the PREVIOUS run (for example the run that froze before you reopened UNI MATE) is at `server\unimate.prev.log`.
+   - While a chat turn, a workflow or a claude process runs, the log gets a `[res]` line every 30 seconds: CPU and RAM of the machine, the server and its child processes. When the server stops answering, the last lines show whether the machine was overloaded. An idle machine writes none.
    - Docker / VPS: `docker compose logs unimate` (add `-f` to follow: `docker compose logs -f`).
    - Linux systemd: `journalctl -u unimate -f`.
 5. **The update log** when you click the update button in the app: the `update.log` file in the state folder, so `server/update.log` locally and `/data/state/update.log` on Docker (the path follows `UNIMATE_STATE_DIR`). You usually do not need to open it: when an update fails the interface already shows the notice, and the app reads the last 50 lines of this file to report the state.

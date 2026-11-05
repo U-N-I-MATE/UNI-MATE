@@ -158,6 +158,12 @@ def start(loop: Optional[asyncio.AbstractEventLoop] = None, state_dir: Optional[
     return True
 
 
+def lag() -> Optional[float]:
+    """Seconds since the event loop last ticked (None before start). Safe from any thread."""
+    last = _state["tick"]
+    return (time.monotonic() - last) if last else None
+
+
 def _clean_drop(d) -> dict:
     d = d if isinstance(d, dict) else {}
 

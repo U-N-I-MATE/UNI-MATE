@@ -14786,6 +14786,38 @@ async def update_status():
 
 _UPDATE_ACTIVE = {"preparing", "pulling", "installing", "restarting", "health_check", "rolling_back"}
 
+# 0.450.0: an update that left "restarting" behind (Docker, or an updater killed with the old server) is closed by the
+# new server once it runs the target version. Docker has no updater left, so right away; a git install waits past the
+# updater's own health check (90 s) so a live updater always writes its result first.
+_UPDATE_SETTLE_WAIT_S = {"docker": 5.0}
+_UPDATE_SETTLE_WAIT_DEFAULT_S = 150.0
+
+
+async def _settle_update_state(wait_s: float) -> bool:
+    import asyncio
+    import datetime as _dt
+    first = _read_update_state()
+    if first.get("phase") not in update_state.SETTLE_PHASES:
+        return False
+    await asyncio.sleep(wait_s)
+    st = _read_update_state()
+    if st.get("started_at") != first.get("started_at"):
+        return False   # a new update began meanwhile
+    patch = update_state.settle_patch(st, _read_version(), _dt.datetime.now().isoformat(timespec="seconds"))
+    if not patch:
+        return False
+    _write_update_state(patch)
+    return True
+
+
+@app.on_event("startup")
+async def _start_update_settle():
+    import asyncio
+    wait = _UPDATE_SETTLE_WAIT_S.get(_deploy_mode(), _UPDATE_SETTLE_WAIT_DEFAULT_S)
+    t = asyncio.create_task(_settle_update_state(wait))
+    _UPDATE_TASKS.add(t)
+    t.add_done_callback(_UPDATE_TASKS.discard)
+
 
 def _update_recent(started_at, window_s=900) -> bool:
     """True nếu lần cập nhật đang dở BẮT ĐẦU gần đây (trong window ~15 phút). Guard chỉ chặn khi
@@ -28779,11 +28811,21 @@ async def share_chat_of(session_id: str = Query(...)):
 # ── Event loop watchdog (0.194.0, owner 17/10/2026: "Mất kết nối tới máy chủ" more and more often) ──
 # Synchronous work on the event loop freezes every socket at once; the watchdog names the code (loop_watch.py).
 import loop_watch  # noqa: E402
+# 0.450.0: CPU and RAM of the machine, the server and its children, written to the log while work runs (res_watch.py),
+# so the next "Mất kết nối" tells overload from a stuck server.
+import res_watch  # noqa: E402
 
 
 @app.on_event("startup")
 async def _start_loop_watch():
     loop_watch.start(state_dir=str(cfgmod.STATE_DIR))
+    res_watch.start(loop_lag=loop_watch.lag)
+    # 0.450.0: start-unimate.vbs writes this lock so a second click during startup does not kill this server and start
+    # another one. We are up, so the next start is a real restart again.
+    try:
+        (PROJECT_ROOT / "server" / "start.lock").unlink(missing_ok=True)
+    except OSError:
+        pass
 
 
 @app.on_event("shutdown")
@@ -28799,8 +28841,9 @@ async def _close_warm_engines():
 
 @app.get("/health/loop")
 async def health_loop():
-    """Recent event-loop freezes with the stack where the loop was stuck (loop_watch). Read only."""
-    return loop_watch.report()
+    """Recent event-loop freezes with the stack where the loop was stuck (loop_watch), plus the recent CPU and RAM
+    samples (res_watch, 0.450.0). Read only."""
+    return {**loop_watch.report(), "resources": res_watch.report()}
 
 
 @app.post("/diag/ws-drops")
