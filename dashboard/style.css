@@ -4583,6 +4583,9 @@ select option, select optgroup { background-color: var(--bg2); color: var(--text
 .fbp-page .s-btn-ghost.danger { color: var(--danger-ink, #b3261e); }
 .cb-st-chip.warn { color: var(--warn-ink, #b9821f); }
 .ht-msg.ht-fb-reply { margin-left: 28px; }
+/* 0.449.0: words heard in a customer's voice message or video */
+.ht-heard { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); font-size: 14px; }
+.ht-heard-h { color: var(--text2); font-weight: 600; }
 .ht-msg-h .ht-fb-link { color: inherit; text-decoration: underline; }
 
 /* Searchable agent picker (agent-picker.js). The native <select> stays in the DOM, hidden; this button opens a

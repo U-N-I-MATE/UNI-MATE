@@ -6256,6 +6256,9 @@ async def settings_set(section: str = Form(...), data: str = Form("{}")):
         # Tai nghe lại (0.65.15) thay cho stt_provider: auto | groq | openai | off (voice_ear.CHOICES).
         if patch.get("ear") in voice_ear.CHOICES:
             v["ear"] = patch["ear"]
+        # 0.449.0: listener for voice messages and video sound from the chat channels (see `_stt_nghe`).
+        if patch.get("chat_ear") in ("auto", "groq", "openai", "offline", "off"):
+            v["chat_ear"] = patch["chat_ear"]
         # Giọng của ChatGPT Live (realtime v3 chỉ nhận 9 giọng riêng, mặc định juniper).
         if patch.get("chatgpt_voice") in voice_live.CHATGPT_VOICES:
             v["chatgpt_voice"] = patch["chatgpt_voice"]
@@ -14386,6 +14389,9 @@ async def _start_scheduler():
         # đọc cấu hình mỗi nhịp), để bật từ trang Hội thoại là có tác dụng ngay.
         # Người xin vào nhóm Zalo (0.84.7) báo chủ qua đúng cửa của việc nền: hòm thư + Telegram của chủ.
         zalo_personal_channel.NOTIFY_OWNER = _notify_owner
+        # 0.449.0: the customer bot hears voice messages and the sound of videos with the same listener as Telegram.
+        import zalo_media
+        zalo_media.STT = _stt_nghe
         zalo_personal_channel.start()
     except Exception as e:
         print(f"[zalo-personal start] {type(e).__name__}: {e}", file=__import__('sys').stderr)
@@ -16304,6 +16310,7 @@ async def voice_options(brains: int = 1):
             {k: v.get(k, "") for k in ("mode", "brain_provider", "brain_model", "stt_provider",
                                        "stt_model", "live_provider", "live_model", "live_voice",
                                        "hotwords")},
+            chat_ear=str(v.get("chat_ear") or "auto"),
             # Model đã chọn theo từng bộ não giọng (0.65.26), {bộ não: model}.
             brain_models=v.get("brain_models") if isinstance(v.get("brain_models"), dict) else {},
             # Ô gạt, không phải ô chữ: mặc định BẬT, nên brain cũ chưa có khoá vẫn trả về true.
@@ -24630,9 +24637,31 @@ async def _stt_nghe(data, ten=""):
     # Cùng bộ từ vựng và lớp sửa nghe nhầm như mic trên dashboard (nghe_sua): tin thoại Telegram
     # hay Zalo nói "Diu ni" cũng phải ra "Uni" trước khi vào bộ não.
     _tv = nghe_sua.tu_vung(_cfg)
-    res = await stt.groq_nghe(data, ten, key,
-                              ngon_ngu=(lang_registry.get(_ma).stt if _ma else ""),
-                              hotwords=nghe_sua.goi_y_whisper(_tv))
+    _lang = lang_registry.get(_ma).stt if _ma else ""
+    _hw = nghe_sua.goi_y_whisper(_tv)
+    okey = (_cfg.get("model") or {}).get("openai_api_key") or ""
+    # 0.449.0: which listener is a setting (`voice.chat_ear`), not fixed: the owner has not chosen yet between a Groq
+    # key, the offline listener or both. "auto" tries Groq, then OpenAI. "Nothing heard" is an answer, not a failure:
+    # asking a second service the same silence only costs money.
+    ear = str((_cfg.get("voice") or {}).get("chat_ear") or "auto")
+    order = {"auto": ["groq", "openai"], "groq": ["groq"], "openai": ["openai"], "offline": ["offline"],
+             "off": []}.get(ear, ["groq", "openai"])
+    res = {"ok": False, "ly_do": "thieu_key", "noi_voi_unimate": stt.loi_thanh_dong("thieu_key")}
+    for who in order:
+        if who == "groq":
+            r = await stt.groq_nghe(data, ten, key, ngon_ngu=_lang, hotwords=_hw)
+        elif who == "openai":
+            if not okey:
+                continue
+            r = await stt.openai_nghe(data, ten, okey, "", _lang, hotwords=_hw)
+        else:
+            # The offline listener waits for the owner's decision (item 8): said plainly, never pretended.
+            r = {"ok": False, "ly_do": "chua_cai_offline"}
+        if r.get("ok") or r.get("ly_do") in ("khong_nghe_ro", "rong", "qua_lon"):
+            res = r
+            break
+        if res.get("ly_do") == "thieu_key" or r.get("ly_do") != "thieu_key":
+            res = r
     if res.get("ok") and res.get("text"):
         res["text"] = nghe_sua.sua(res["text"], _tv)
     return res

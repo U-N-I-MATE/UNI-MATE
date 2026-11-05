@@ -6,6 +6,12 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.449.0] - 2026-11-05
+### Thêm mới
+- **Bot Zalo cá nhân nghe được tin thoại của khách.** Trước đây tin thoại bị bỏ qua. Giờ UNI MATE nghe thành chữ cho bot đọc, Hộp thư hiện "Đã nghe: ..." ngay dưới tin thoại. Chưa nghe được thì bot nói thật và nhờ khách gõ chữ, không đoán.
+- **Bot xem được video khách gửi:** UNI MATE cắt 4 khung hình rải đều trong video đưa bot xem như ảnh, nghe cả lời nói trong video nếu có bộ nghe. Khách hỏi tiếp trong 10 phút thì bot vẫn thấy video đó. Video tối đa 60 MB.
+- Bộ nghe tin thoại chọn được bằng cài đặt: Groq, OpenAI, tự động (Groq trước, OpenAI sau) hoặc tắt; bộ nghe trên máy (offline) chờ chốt. File thoại và video xoá ngay sau khi nghe, khung hình xoá sau 10 phút, chỉ chữ đã nghe được lưu trong Hộp thư.
+
 ## [0.448.0] - 2026-11-05
 ### Thêm mới
 - **Bình luận Facebook vào Hộp thư:** nối Fanpage bằng nút Đăng nhập Facebook ở trang Kết nối, mỗi trang là một tài khoản riêng, mỗi bài đăng là một cuộc hội thoại. Chỉ đọc, 3 phút đọc một lần; bài 30 ngày gần nhất và bài theo dõi thêm (bài cũ đang chạy quảng cáo).

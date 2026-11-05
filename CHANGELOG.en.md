@@ -6,6 +6,12 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.449.0] - 2026-11-05
+### Added
+- **The personal Zalo bot hears customers' voice messages.** They used to be skipped. UNI MATE turns them into words for the bot, and the inbox shows "Heard: ..." under the voice message. When nothing could be heard, the bot says so and asks the customer to type, never guessing.
+- **The bot watches videos customers send:** UNI MATE cuts 4 frames spread over the video for the bot to look at like photos, and hears the speech in it when a listener is set up. A follow-up question within 10 minutes still shows the bot that video. Videos up to 60 MB.
+- The listener is a setting: Groq, OpenAI, automatic (Groq, then OpenAI) or off; the on-machine (offline) listener is pending a decision. Voice and video files are deleted right after use, frames after 10 minutes; only the words heard stay in the inbox.
+
 ## [0.448.0] - 2026-11-05
 ### Added
 - **Facebook comments in the inbox:** connect your Pages with Log in with Facebook on the Connections page, one inbox account per Page and one conversation per post. Read only, every 3 minutes; posts from the last 30 days plus followed posts (an older post with an ad running).

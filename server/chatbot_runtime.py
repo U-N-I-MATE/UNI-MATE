@@ -497,6 +497,16 @@ async def anh_cho_bot(text_engine: str, meta: dict, cfg: dict) -> tuple:
     for p in meta.get("_anh_cho") or []:      # photo this person sent just before, untagged (see `nho_anh_khong_goi`)
         if Path(p).exists():
             paths.append(str(p))
+    # 0.449.0: frames cut from a customer's video (`zalo_media`), only from UNI MATE's own frame folder.
+    try:
+        import zalo_media
+        froot = zalo_media._frames_root().resolve()
+        for p in meta.get("video_frames") or []:
+            rp = Path(p).resolve()
+            if froot in rp.parents and rp.is_file():
+                paths.append(str(rp))
+    except Exception:      # noqa: BLE001 - frames we cannot read must never cost the customer the reply
+        pass
     p = str(meta.get("image_path") or "")
     if p and vision_input.is_image_path(p):
         try:
@@ -584,7 +594,7 @@ def gan_anh_cho(bot_id: str, meta: dict, text: str) -> dict:
     a reply to the bot, which left out the Auto-evaluate case: "xem giúp ảnh trên" with no @ is answered by the judge, but the
     photo just above it was never shown."""
     m = dict(meta or {})
-    if m.get("co_anh") or m.get("image_path"):
+    if m.get("co_anh") or m.get("image_path") or m.get("video_frames"):
         return m
     if vision_input.take_image_markers(text)[1]:
         return m

@@ -490,7 +490,9 @@ def chuan_hoa_tin(conn: dict, msg: dict, ten: Dict[str, dict]) -> Optional[dict]
                          **({"member_join": vao_nhom} if vao_nhom is not None else {}),
                          **({"join_request": xin_vao} if xin_vao is not None else {}),
                          **({"attachment": normalize_attachment(msg)} if loai == "file" else {}),
-                         **({"image_url": _link_anh(msg)} if loai == "image" and _link_anh(msg) else {})),
+                         **({"image_url": _link_anh(msg)} if loai == "image" and _link_anh(msg) else {}),
+                         # 0.449.0: the file of a voice message or a video, for the bot to listen to / look at.
+                         **({"media_url": _link_anh(msg)} if loai in ("audio", "video") and _link_anh(msg) else {})),
     }
 
 
@@ -1492,6 +1494,9 @@ def _co_chu(ev: dict) -> bool:
         return bool(str(ev.get("text") or "").strip())
     if loai == "image":
         return bool(conversations.chu_thich_anh(ev.get("text")))
+    if loai in ("audio", "video"):
+        # 0.449.0: the bot hears / looks at it, so it is content of the turn like words.
+        return bool((ev.get("metadata") or {}).get("media_url"))
     return False
 
 
@@ -1504,7 +1509,7 @@ def gop_tin(evs: List[dict]) -> dict:
     ảnh rồi nhắn 'xem giúp em'" tới bot thành một câu hỏi kèm ảnh. File đi theo lượt trong
     `metadata.attachments` (tối đa `MAX_FILE_GOP` file mới nhất), nên "gửi file rồi nhắn 'xem giúp
     em'" cũng thành một câu hỏi kèm file; lượt chỉ có file là tin file. Tiếng, sticker chỉ tính là
-    khách còn đang nhắn, không góp chữ. Cảm xúc khách thả (0.334.0) góp dòng mô tả của nó; lượt chỉ có cảm
+    khách còn đang nhắn, không góp chữ; từ 0.449.0 tin thoại và video đi theo lượt trong `metadata.media`. Cảm xúc khách thả (0.334.0) góp dòng mô tả của nó; lượt chỉ có cảm
     xúc là tin `reaction`.
     `metadata.gop` = số tin đã gộp: `xu_ly` lấy chữ nguyên như đã gộp, không bóc chú thích lại.
     `metadata.react_to` = mã tin khách cuối có nội dung, tin bot được thả cảm xúc vào ("" khi lượt chỉ có cảm xúc)."""
@@ -1513,6 +1518,7 @@ def gop_tin(evs: List[dict]) -> dict:
     phan: List[str] = []
     co_anh, link = False, ""
     files: List[dict] = []
+    media: List[dict] = []
     react_to, react_to_cli = "", ""
     for e in evs:
         loai = e.get("message_type")
@@ -1524,6 +1530,14 @@ def gop_tin(evs: List[dict]) -> dict:
             att = (e.get("metadata") or {}).get("attachment")
             if isinstance(att, dict):
                 files.append(att)
+            continue
+        if loai in ("audio", "video"):
+            # 0.449.0: voice messages and videos go with the turn; the bot hears / looks at them (`zalo_media`).
+            media.append({"type": loai, "url": str((e.get("metadata") or {}).get("media_url") or ""),
+                          "id": str(e.get("external_message_id") or "")})
+            if e.get("external_message_id"):
+                react_to = str(e["external_message_id"])
+                react_to_cli = str((e.get("metadata") or {}).get("cliMsgId") or "")
             continue
         if loai in ("text", "reaction"):
             # A reaction (0.334.0) reads as its describing line, in order with the messages around it.
@@ -1541,11 +1555,15 @@ def gop_tin(evs: List[dict]) -> dict:
         md["image_url"] = link
     if files:
         md["attachments"] = files[-MAX_FILE_GOP:]
+    md.pop("media_url", None)
+    if media:
+        md["media"] = media[-3:]
     md["gop"] = len(evs)
     md.pop("reaction", None)
     md["react_to"], md["react_to_cli"] = react_to, react_to_cli
     only_reactions = all(e.get("message_type") == "reaction" for e in evs)
-    kieu = "image" if co_anh else ("reaction" if only_reactions else ("text" if phan or not files else "file"))
+    kieu = "image" if co_anh else ("reaction" if only_reactions else (
+        "text" if phan or not (files or media) else ("file" if files else media[-1]["type"])))
     return dict(cuoi, message_type=kieu, text=bot_gateway.noi_tin(phan), metadata=md)
 
 

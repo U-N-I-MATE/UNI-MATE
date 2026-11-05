@@ -1967,6 +1967,9 @@
         ' ' + esc(t.message_type) + '</span>' : "";
     var loi = t.metadata && t.metadata.loi
       ? '<div class="ht-msg-loi">' + ic("triangle-alert") + ' ' + esc(t.metadata.loi) + '</div>' : "";
+    // 0.449.0: what UNI MATE heard in a customer's voice message or video (machine listening, may be off by a word).
+    var heard = t.metadata && t.metadata.heard
+      ? '<div class="ht-heard"><span class="ht-heard-h">' + esc(window.t("ht.heard")) + '</span> ' + esc(t.metadata.heard) + '</div>' : "";
     // Who and when go under the bubble (0.397.0). A private chat's customer is named in the head already, so only a
     // group shows who wrote each message.
     if (lop === "khach" && _conv && _conv.chat_type !== "group") ai = "";
@@ -1974,7 +1977,7 @@
       ? ' · <a class="ht-fb-link" href="' + esc(fb.permalink) + '" target="_blank" rel="noopener">' + esc(window.t("ht.fb_open")) + '</a>'
       : "";
     return '<div class="ht-msg ' + lop + (fb && fb.reply ? ' ht-fb-reply' : '') + '">' +
-      '<div class="ht-bubble">' + loai + than + '</div>' + loi +
+      '<div class="ht-bubble">' + loai + than + heard + '</div>' + loi +
       '<div class="ht-msg-h">' + esc(ai) + (ai ? ' · ' : '') + esc(gio(t.created_at)) + fbLink + '</div>' +
     '</div>';
   }
