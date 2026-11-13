@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.451.0] - 2026-11-13
+### Added
+- (in progress)
+
 ## [0.450.0] - 2026-11-05
 ### Fixed
 - **A restart no longer wipes the previous log.** When the server froze and was reopened, the log of that run is kept as `server\unimate.prev.log`, enough to find the cause.
