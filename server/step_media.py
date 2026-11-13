@@ -157,8 +157,8 @@ def _split(content):
                 if x.get(k) not in (None, "", [], {}):
                     walk(x[k], depth + 1)
                     return
-            if any(k in x for k in keys):
-                return          # a known shape that simply produced nothing (a silent command)
+            if any(k in x for k in keys) or x.get("type"):
+                return          # a known or typed shape that produced nothing (a silent command, a bare Codex item)
             texts.append(json.dumps(x, ensure_ascii=False)[:2000])
             return
         texts.append(str(x))

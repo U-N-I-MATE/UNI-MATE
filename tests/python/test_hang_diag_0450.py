@@ -197,7 +197,10 @@ check("the held-message note counts offline time too", "markOffline();\n  showAc
 check("hiding the chip clears the offline clock", "function hideActivity() {\n  activityDownT0 = 0;" in app)
 check("the running turn gets its own clock back after the reconnect",
       "if (_turnT0BeforeDrop) activityT0 = _turnT0BeforeDrop;" in app and "_turnT0BeforeDrop = activityT0" in app)
-check("dashboard loads the new app.js", "/static/app.js?v=158" in read("dashboard/index.html"))
+import re  # noqa: E402
+_appv = re.search(r"/static/app\.js\?v=(\d+)", read("dashboard/index.html"))
+check("dashboard loads the new app.js (0.450.0 bumped it to v=158; later releases bump it further)",
+      bool(_appv) and int(_appv.group(1)) >= 158)
 
 # ---------------------------------------------------------------- E. update status settles
 NOW = "2026-11-05T16:40:00"

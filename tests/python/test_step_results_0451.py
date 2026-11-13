@@ -134,7 +134,8 @@ check("an error result is flagged", sm.build("x", {}, "ERROR: tool failed", sid=
 check("Codex: a silent command shows nothing, a file change one line per file",
       sm.build("command_execution", {}, {"type": "command_execution", "aggregated_output": ""}, sid="s")["text"] == ""
       and sm.build("file_change", {}, {"changes": [{"path": "a.py", "kind": "update"}]}, sid="s")["text"]
-      == "a.py (update)")
+      == "a.py (update)"
+      and sm.build("pos", {}, {"id": "i2", "type": "mcp_tool_call", "tool": "pos"}, sid="s")["text"] == "")
 
 # ---------------------------------------------------------------- route and deletion
 check("route name check: only 32 hex + a picture extension",

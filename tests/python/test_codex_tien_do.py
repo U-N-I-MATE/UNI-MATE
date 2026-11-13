@@ -115,7 +115,10 @@ khung = [(g.get("type"), g.get("tool") or g.get("content")) for g in ws.sent
          if g.get("type") in ("tool_call", "tool_result")]
 check("web: bước bắt đầu thành tool_call, xong thành tool_result, không bước đôi",
       khung[:2] == [("tool_call", "command_execution"), ("tool_result", "added 312 packages")], khung)
-check("web: bước không có item.started vẫn hiện một tool_call", khung[2:] == [("tool_call", "pos_statistics")], khung)
+# 0.451.0: such a step is also closed by a tool_result at once; the bare item has no output, so its text is empty
+# (never the item dumped as JSON).
+check("web: bước không có item.started vẫn hiện một tool_call (rồi đóng ngay, không chữ thừa)",
+      khung[2:] == [("tool_call", "pos_statistics"), ("tool_result", "")], khung)
 first = next((g for g in ws.sent if g.get("type") == "tool_call"), {})
 check("web: bước đang chạy có chi tiết câu lệnh cho chip", "npm install" in str(first.get("detail") or ""), first)
 check("web: lượt vẫn chạy trọn", any(g.get("type") == "response" and g.get("content") == "Xong rồi anh."
