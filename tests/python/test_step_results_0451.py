@@ -167,9 +167,57 @@ check("API loops: tool_result yielded in all three loops, each behind STEP_RESUL
 check("API loops: tool_call carries the provider's call id",
       eng.count('"id": str(tc.get("id") or "")}') >= 1 and '"id": str(fc.get("call_id") or "")}' in eng
       and '"id": str(tu.get("id") or "")}' in eng)
-sdk = read("server/claude_sdk_engine.py")
-check("Claude Code keeps picture blocks and 4000 characters of text (`raw`) next to the old 500-character content",
-      '"raw": raw' in sdk and 'x.get("type") == "image"' in sdk and '[:4000]' in sdk)
+import hashlib  # noqa: E402
+pin = json.loads(read("docs/superpowers/evidence/2026-11-01-unimate01b-native-qualification-cli310.json"))
+check("claude_sdk_engine.py is untouched (pinned by the native qualification evidence)",
+      hashlib.sha256((ROOT / "server/claude_sdk_engine.py").read_bytes()).hexdigest()
+      == pin["source_hashes"]["claude_sdk_engine.py"])
+
+# Claude Code: the wrapper in claude_cli adds `raw` from the SDK's ToolResultBlock, run here on fake SDK objects.
+import types  # noqa: E402
+import claude_cli  # noqa: E402
+
+
+class ToolResultBlock:
+    def __init__(self, tid, content):
+        self.tool_use_id, self.content, self.is_error = tid, content, False
+
+
+class UserMessage:
+    def __init__(self, content):
+        self.content = content
+
+
+def _orig_map(msg):
+    return [{"type": "tool_result", "content": "short", "tool_use_id": b.tool_use_id} for b in msg.content], None
+
+
+fake = types.ModuleType("claude_sdk_engine")
+fake.map_message = _orig_map
+_real = sys.modules.get("claude_sdk_engine")
+sys.modules["claude_sdk_engine"] = fake
+try:
+    claude_cli._cai_ket_qua_buoc()
+    claude_cli._cai_ket_qua_buoc()
+    depth, f = 0, fake.map_message
+    while f is not None:
+        depth, f = depth + 1, getattr(f, "__wrapped__", None)
+    evs, _ = fake.map_message(UserMessage([
+        ToolResultBlock("u1", [{"type": "text", "text": "z" * 9000},
+                               {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": B64}}]),
+        ToolResultBlock("u2", "plain")]))
+finally:
+    if _real is not None:
+        sys.modules["claude_sdk_engine"] = _real
+    else:
+        sys.modules.pop("claude_sdk_engine", None)
+check("Claude Code wrapper: installed once even when called twice", depth == 2, depth)
+check("Claude Code wrapper: `raw` keeps the picture block and 4000 characters, `content` untouched",
+      evs[0]["content"] == "short" and len(evs[0]["raw"][0]["text"]) == 4000 and evs[0]["raw"][1]["type"] == "image"
+      and evs[1]["raw"] == "plain", evs)
+cli_src = read("server/claude_cli.py")
+check("Claude Code wrapper goes on before plan_limits, like the cache counter",
+      cli_src.index("_cai_dem_cache()\n") < cli_src.index("_cai_ket_qua_buoc()\n") < cli_src.index("plan_limits.cai_vao_claude_sdk()"))
 
 # The switch and the frame helper, run for real without importing the whole server.
 import engine  # noqa: E402

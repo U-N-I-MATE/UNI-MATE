@@ -65,7 +65,7 @@ check("main.py gửi detail ở >= 7 chỗ", MAIN.count('"detail": tool_label.ch
 ENG = (SERVER / "engine.py").read_text(encoding="utf-8")
 check("engine API kèm input trong sự kiện tool_call",
       ENG.count('"type": "tool_call", "name": fn, "input": args') == 1
-      and ENG.count('"input": args}') >= 3)
+      and ENG.count('"input": args') >= 3)   # 0.451.0: the three tool loops also carry the call "id" after it
 
 # Không có gạch dài trong file mới
 SRC = (SERVER / "tool_label.py").read_text(encoding="utf-8")

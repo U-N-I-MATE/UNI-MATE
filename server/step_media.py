@@ -167,6 +167,21 @@ def _split(content):
     return "\n".join(texts), imgs
 
 
+def raw_result(c):
+    """A Claude Code tool result kept for `build`: picture blocks whole, text up to 4000 characters, 20 items."""
+    if isinstance(c, list):
+        out = []
+        for x in c[:20]:
+            if isinstance(x, dict) and x.get("type") == "image":
+                out.append(x)
+            elif isinstance(x, dict):
+                out.append({"type": "text", "text": str(x.get("text", ""))[:4000]})
+            else:
+                out.append({"type": "text", "text": str(x)[:4000]})
+        return out
+    return str(c or "")[:4000]
+
+
 def _save_img(sid: str, mime: str, data: str, budget: dict):
     ext = IMG_MIME.get(str(mime or "").lower())
     if not ext or budget.get("imgs", 0) >= MAX_IMGS_TURN:
