@@ -1133,6 +1133,12 @@ def claude_engine(system_prompt=None, cwd=None, tag="chat", allowed_tools=None, 
         _cai_dem_cache()
     except Exception:  # noqa: BLE001 - a counter must never stop a turn
         pass
+    # 0.451.0: what each step produced (pictures, longer text) for the chat's progress block. Same rule: walks the
+    # chain, goes on before plan_limits.
+    try:
+        _cai_ket_qua_buoc()
+    except Exception:  # noqa: BLE001 - a progress detail must never stop a turn
+        pass
     try:
         import plan_limits
         plan_limits.cai_vao_claude_sdk()
@@ -1230,6 +1236,42 @@ def _cai_dem_cache() -> bool:
                 pass
         return out
     map_message._dem_cache = True
+    map_message.__wrapped__ = goc
+    eng.map_message = map_message
+    return True
+
+
+def _cai_ket_qua_buoc() -> bool:
+    """Add `raw` (picture blocks whole, text up to 4000 characters) to Claude Code's tool_result events.
+
+    The pinned map_message keeps only 500 characters of text and drops pictures; the chat's progress block
+    (step_media) needs both. Wrapped here, like _cai_dem_cache, so claude_sdk_engine.py stays byte for byte the
+    qualified version. The `content` field is left exactly as it was."""
+    import claude_sdk_engine as eng
+    f = eng.map_message
+    while f is not None:
+        if getattr(f, "_ket_qua_buoc", False):
+            return True
+        f = getattr(f, "__wrapped__", None)
+    goc = eng.map_message
+
+    def map_message(msg):
+        out = goc(msg)
+        if type(msg).__name__ == "UserMessage" and isinstance(getattr(msg, "content", None), list):
+            try:
+                import step_media
+                raws = {}
+                for b in msg.content:
+                    if type(b).__name__ == "ToolResultBlock":
+                        raws[getattr(b, "tool_use_id", "") or ""] = step_media.raw_result(getattr(b, "content", None))
+                for ev in out[0]:
+                    if isinstance(ev, dict) and ev.get("type") == "tool_result" and \
+                            (ev.get("tool_use_id") or "") in raws:
+                        ev.setdefault("raw", raws[ev.get("tool_use_id") or ""])
+            except Exception:  # noqa: BLE001 - a progress detail must never break a turn
+                pass
+        return out
+    map_message._ket_qua_buoc = True
     map_message.__wrapped__ = goc
     eng.map_message = map_message
     return True

@@ -6,6 +6,13 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.451.0] - 2026-11-13
+### Thêm mới
+- **Khối tiến trình hiện kết quả của từng bước, giống Claude.** Ảnh chụp trình duyệt, ảnh công cụ trả về, ảnh tạo ra hay đọc trong bộ não hiện ngay trong bước (bấm để phóng to). Tệp Word, Excel, PDF, PowerPoint mà bước tạo, sửa hay đọc hiện thành thẻ tệp, bấm để mở trong trình xem của app.
+- Bước chạy lệnh hay sửa mã chỉ có vài dòng chữ kết quả, bấm vào bước để xem. Không có ảnh.
+- Kết quả được lưu cùng lịch sử hội thoại. Ảnh chỉ chủ xem được và bị xoá khi xoá hội thoại. Khoá, mật khẩu trong chữ kết quả được che trước khi gửi xuống.
+- Khối tiến trình vẫn gấp sẵn như cũ. Telegram, Zalo không đổi.
+
 ## [0.450.0] - 2026-11-05
 ### Sửa lỗi
 - **Khởi động lại không còn xoá nhật ký của lần trước.** Máy chủ treo rồi mở lại thì nhật ký của lần treo được giữ ở `server\unimate.prev.log`, đủ để soi nguyên nhân.

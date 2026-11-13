@@ -88,6 +88,30 @@
     return ten || tw("app.step_unknown");
   }
 
+  /* 0.451.0: what a step produced, as the server sends it in tool_result.res (server/step_media.py). Cleaned here
+     again because it is drawn and kept in the browser: only our own picture and file addresses, short text, a few
+     pictures and documents per step. */
+  var RES_TEXT = 600, RES_IMGS = 4, RES_FILES = 4;
+  var KIND = { "Word": 1, "Excel": 1, "PDF": 1, "PowerPoint": 1 };
+  function srcOk(u) {
+    u = String(u || "");
+    return /^\/step-media\/[A-Za-z0-9_.:%-]+\/[0-9a-f]{32}\.(png|jpg|webp|gif)$/.test(u) || /^\/files\/raw\?/.test(u);
+  }
+  function gonRes(r, tran) {
+    if (!r || typeof r !== "object") return null;
+    var t = String(r.text || "").slice(0, tran || RES_TEXT);
+    var imgs = (Array.isArray(r.imgs) ? r.imgs : []).filter(function (x) { return x && srcOk(x.src); })
+      .slice(0, RES_IMGS).map(function (x) { return { src: String(x.src), path: String(x.path || "").slice(0, 300) }; });
+    var files = (Array.isArray(r.files) ? r.files : []).filter(function (f) {
+      return f && f.path && KIND[f.kind] && !/(^|\/)\.\.(\/|$)/.test(String(f.path));
+    }).slice(0, RES_FILES).map(function (f) {
+      return { name: String(f.name || "").slice(0, 120), path: String(f.path).slice(0, 300), kind: String(f.kind) };
+    });
+    var more = Math.max(0, parseInt(r.more, 10) || 0);
+    if (!t && !imgs.length && !files.length && !r.err) return null;
+    return { text: t, more: more, err: !!r.err, imgs: imgs, files: files };
+  }
+
   function chuanHoa(st) {
     var ds = (st && Array.isArray(st.ds)) ? st.ds : [];
     var so = (st && typeof st.so === "number" && isFinite(st.so)) ? st.so : ds.length;
@@ -101,19 +125,27 @@
     var cu = chuanHoa(st);
     var loai = ev && ev.type;
     if (loai === "tool_call") {
-      var ds = cu.ds.concat([{ tool: String((ev && ev.tool) || ""), label: nhanBuoc(ev), xong: false }]);
+      var b0 = { tool: String((ev && ev.tool) || ""), label: nhanBuoc(ev), xong: false };
+      if (ev && ev.id) b0.id = String(ev.id);
+      var ds = cu.ds.concat([b0]);
       if (ds.length > TRAN) ds = ds.slice(ds.length - TRAN);   // giu cac buoc MOI NHAT
       return { ds: ds, so: cu.so + 1 };
     }
     if (loai === "tool_result") {
-      // Danh dau buoc dang chay la xong. Khung tool_result lac long (chua co buoc nao) thi bo
-      // qua - khong phai loi, chi la engine ban ket qua cua thu khong di qua day.
-      for (var i = cu.ds.length - 1; i >= 0; i--) {
-        if (!cu.ds[i].xong) {
-          var ds2 = cu.ds.slice();
-          ds2[i] = { tool: cu.ds[i].tool, label: cu.ds[i].label, xong: true };
-          return { ds: ds2, so: cu.so };
-        }
+      // Danh dau buoc la xong va gan ket qua. Co ma buoc (0.451.0) thi khop dung buoc do; khong
+      // co (may chu cu) thi buoc dang chay cuoi cung nhu truoc. Khung tool_result lac long (chua
+      // co buoc nao) thi bo qua - khong phai loi.
+      var idx = -1, id = ev && ev.id ? String(ev.id) : "";
+      if (id) for (var j = cu.ds.length - 1; j >= 0; j--) { if (cu.ds[j].id === id) { idx = j; break; } }
+      if (idx < 0) for (var i = cu.ds.length - 1; i >= 0; i--) { if (!cu.ds[i].xong) { idx = i; break; } }
+      if (idx >= 0) {
+        var ds2 = cu.ds.slice();
+        var nb = { tool: cu.ds[idx].tool, label: cu.ds[idx].label, xong: true };
+        if (cu.ds[idx].id) nb.id = cu.ds[idx].id;
+        var res = gonRes(ev && ev.res);
+        if (res) nb.res = res;
+        ds2[idx] = nb;
+        return { ds: ds2, so: cu.so };
       }
     }
     return cu;
@@ -124,6 +156,25 @@
   function tomTat(st) {
     var cu = chuanHoa(st);
     return { hien: cu.ds.length > 0, so: cu.so, nhan: tw("app.steps_done", { n: cu.so }) };
+  }
+
+  /* Ban gon de luu vao lich su cua trinh duyet (app.js recordTurn): localStorage co han,
+     nen moi buoc giu toi da 300 ky tu chu va ca luot toi da 4000; anh va the tep la duong dan
+     ngan nen giu nguyen. */
+  function gon(st) {
+    var cu = chuanHoa(st), con = 4000;
+    return { so: cu.so, ds: cu.ds.map(function (b) {
+      var o = { tool: b.tool, label: b.label, xong: !!b.xong };
+      if (b.id) o.id = b.id;
+      if (b.res) {
+        var t = String(b.res.text || "").slice(0, Math.max(0, Math.min(300, con)));
+        con -= t.length;
+        o.res = gonRes({ text: t, more: b.res.more + (t.length < String(b.res.text || "").length ? 1 : 0),
+                         err: b.res.err, imgs: b.res.imgs, files: b.res.files }, 300);
+        if (!o.res) delete o.res;
+      }
+      return o;
+    }) };
   }
 
   function chevron() {
@@ -148,7 +199,54 @@
       });
       nut.setAttribute("aria-expanded", "false");
     }
+    // Bam vao mot buoc co ket qua -> mo/gap phan chu cua buoc do. Anh va the tep ben trong
+    // da co bo bam chung cua khung chat (lightbox, mo tep), nen chi bat dong nhan buoc.
+    var ds = el.querySelector(".steps-list");
+    if (ds && ds.addEventListener) {
+      ds.addEventListener("keydown", function (e) {
+        if ((e.key === "Enter" || e.key === " ") && e.target && e.target.classList &&
+            e.target.classList.contains("step-row")) { e.preventDefault(); e.target.click(); }
+      });
+      ds.addEventListener("click", function (e) {
+        var row = e.target && e.target.closest ? e.target.closest(".step-row") : null;
+        if (!row) return;
+        var st = row.closest(".step");
+        if (!st || !st.classList.contains("has-text")) return;
+        var k = st.getAttribute("data-k") || "";
+        el._moBuoc = el._moBuoc || {};
+        el._moBuoc[k] = !el._moBuoc[k];
+        st.classList.toggle("step-open", !!el._moBuoc[k]);
+        row.setAttribute("aria-expanded", el._moBuoc[k] ? "true" : "false");
+      });
+    }
     return el;
+  }
+
+  /* Phan ket qua duoi nhan buoc. Anh va the tep hien san (nhu Claude), chu chi hien khi bam. */
+  function veRes(r) {
+    if (!r) return "";
+    var h = "";
+    if (r.imgs && r.imgs.length) {
+      h += '<div class="step-imgs">' + r.imgs.map(function (x) {
+        var vp = x.path ? ' data-vault-path="' + esc(x.path) + '"' : "";
+        return '<a class="jv-img-link" href="' + esc(x.src) + '"' + vp + ' target="_blank" rel="noopener" title="' +
+          esc(tw("chat.att_zoom")) + '"><img class="chat-img step-img" src="' + esc(x.src) +
+          '" alt="" loading="lazy" onerror="jvImgGone(this)"></a>';
+      }).join("") + "</div>";
+    }
+    if (r.files && r.files.length) {
+      h += '<div class="step-files">' + r.files.map(function (f) {
+        return '<a class="jv-floc step-file" href="#open=' + esc(encodeURIComponent(f.path)) + '" data-vault-path="' +
+          esc(f.path) + '" title="' + esc(f.path) + '">' + (typeof ic === "function" ? ic("file-text") : "") +
+          '<span class="step-file-name">' + esc(f.name) + '</span><span class="step-file-kind">' + esc(f.kind) +
+          "</span></a>";
+      }).join("") + "</div>";
+    }
+    if (r.text || r.err) {
+      h += '<div class="step-out' + (r.err ? " step-out-err" : "") + '">' + esc(r.text || tw("app.step_err")) +
+        (r.more ? '<span class="step-more">' + esc(tw("app.step_more", { n: r.more })) + "</span>" : "") + "</div>";
+    }
+    return h;
   }
 
   /* Ve lai khoi theo mach buoc. MAC DINH GAP, ca luc dang chay: dong tom tat da noi dang
@@ -167,17 +265,26 @@
     }
     var ds = el.querySelector(".steps-list");
     if (ds) {
+      var mo = el._moBuoc || {};
       ds.innerHTML = cu.ds.map(function (b, i) {
         var song = dangChay && i === cu.ds.length - 1 && !b.xong;
+        var r = b.res || null;
+        var coChu = !!(r && (r.text || r.err));
+        var k = b.id ? "i:" + b.id : "n:" + i;
         return '<div class="step' + (song ? " step-live" : "") + (b.xong ? " step-done" : "") +
-               '" title="' + esc(b.label) + '">' + esc(b.label) + "</div>";
+               (coChu ? " has-text" : "") + (r && r.err ? " step-err" : "") + (coChu && mo[k] ? " step-open" : "") +
+               '" data-k="' + esc(k) + '">' +
+               '<div class="step-row"' + (coChu ? ' role="button" tabindex="0" aria-expanded="' + (mo[k] ? "true" : "false") +
+               '" title="' + esc(tw("app.step_open_res")) + '"' : ' title="' + esc(b.label) + '"') + ">" +
+               esc(b.label) + "</div>" + veRes(r) + "</div>";
       }).join("");
     }
     el.classList.toggle("steps-fold", el._moTay !== true);
     return el;
   }
 
-  var API = { nhan: nhan, tomTat: tomTat, taoKhoi: taoKhoi, ve: ve, nhanDong: nhanBuoc, TRAN: TRAN };
+  var API = { nhan: nhan, tomTat: tomTat, taoKhoi: taoKhoi, ve: ve, nhanDong: nhanBuoc, TRAN: TRAN, gon: gon,
+              gonRes: gonRes, veRes: veRes };
   if (typeof window !== "undefined") window.UniMateSteps = API;
   // Mở lại hội thoại (restoreSession) vẽ khối bước TRƯỚC khi từ điển tải xong, lúc đó t() trả
   // về chính cái khoá, nên người dùng thấy chữ thô "app.steps_done" (chủ repo báo 27/09). Từ

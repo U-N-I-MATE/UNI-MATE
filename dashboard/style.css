@@ -1512,6 +1512,44 @@ li.task-done > .dv-ttext { text-decoration: line-through; text-decoration-color:
 /* Bước cuối đang chạy: đậm hơn một chút để mắt biết đang đứng ở đâu trong danh sách. */
 .steps-list .step-live { color: var(--text2); }
 
+/* 0.451.0: what a step produced, like Claude's progress steps. Pictures and document cards show under the step as soon
+   as it is done; the text output opens on a click on the step. The row keeps the old one-line look. */
+.steps-list .step { white-space: normal; overflow: visible; }
+.steps-list .step-row { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.steps-list .step.has-text > .step-row { cursor: pointer; }
+.steps-list .step.has-text > .step-row:hover { color: var(--text2); }
+.steps-list .step.has-text > .step-row::after {
+  content: " ›"; opacity: 0.6; display: inline-block; transition: transform 0.15s ease;
+}
+.steps-list .step.has-text.step-open > .step-row::after { transform: rotate(90deg); }
+.steps-list .step-err > .step-row { color: var(--danger, #b4232c); }
+.step-out {
+  display: none; margin: 3px 0 4px; padding: 6px 8px; border-radius: 6px;
+  background: var(--bg2, rgba(127, 127, 127, 0.08)); color: var(--text2);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace); font-size: 11.5px;
+  white-space: pre-wrap; word-break: break-word; max-height: 160px; overflow: auto;
+}
+.step.step-open > .step-out { display: block; }
+.step-out-err { border-left: 2px solid var(--danger, #b4232c); }
+.step-more { display: block; margin-top: 2px; opacity: 0.7; font-family: var(--font); }
+.step-imgs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+.step-imgs .jv-img-link { display: block; line-height: 0; }
+.step-imgs .step-img {
+  max-width: 220px; max-height: 140px; width: auto; height: auto; border-radius: 6px;
+  border: 1px solid var(--line); object-fit: cover; cursor: zoom-in; margin: 0;
+}
+.step-files { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 2px; }
+.step-file {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+  padding: 5px 9px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg2, transparent); color: var(--text); text-decoration: none; font-size: 12.5px;
+}
+.step-file:hover { border-color: var(--accent, var(--text3)); }
+.step-file svg { width: 14px; height: 14px; flex-shrink: 0; }
+.step-file-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.step-file-kind { color: var(--text3); font-size: 11.5px; flex-shrink: 0; }
+@media (max-width: 600px) { .step-imgs .step-img { max-width: 46vw; } }
+
 /* Dòng ghi chú thoáng qua (cửa tạp âm bỏ một lượt). Nhạt và căn giữa để mắt lướt qua chứ
    không đọc như một lượt hội thoại - nó tự tắt sau vài giây. */
 .msg-ghichu {
