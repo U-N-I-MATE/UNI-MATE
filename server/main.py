@@ -106,6 +106,65 @@ import webpush       # thông báo đẩy trình duyệt (Web Push, tự mã ho�
 import stt            # nghe tin thoại (Whisper qua Groq) -> chữ, cho kênh Telegram/Zalo
 import luot_dang_chay # sổ lượt chat đang chạy theo brain: tool giao việc tự biết khung chat nào hỏi
 import tool_label     # một dòng mô tả lệnh gọi công cụ (lệnh nào, file nào) cho khối tiến trình
+import step_media     # 0.451.0: what each progress step produced (text, pictures, document cards)
+
+
+async def _with_step_results(gen):
+    """Run an API engine stream with step results switched on (engine.STEP_RESULTS), for the owner's chat only.
+
+    The switch is set around each step of the stream and reset before the event goes back to the caller, so nothing
+    else running in the same task (a bot reply, a background job) ever sees tool_result events it does not expect."""
+    it = gen.__aiter__()
+    while True:
+        tok = engine.STEP_RESULTS.set(True)
+        try:
+            ev = await it.__anext__()
+        except StopAsyncIteration:
+            return
+        finally:
+            engine.STEP_RESULTS.reset(tok)
+        yield ev
+
+
+def _step_state() -> dict:
+    """Per-turn bookkeeping for step results: arguments by step id, steps still open, picture budget."""
+    return {"calls": {}, "open": [], "seq": 0, "budget": step_media.new_budget()}
+
+
+def _step_call(st: dict, ev: dict) -> str:
+    """Note a tool call and return its step id (the engine's own id, or a made-up one when it has none)."""
+    sid = str(ev.get("id") or ev.get("tool_use_id") or "").strip()
+    if not sid:
+        st["seq"] += 1
+        sid = "s%d" % st["seq"]
+    st["calls"][sid] = (str(ev.get("name") or ""), ev.get("input") or ev.get("item") or {})
+    if sid not in st["open"]:
+        st["open"].append(sid)
+    return sid
+
+
+def _step_result_frame(st: dict, ev: dict, content, conv_sid: str, brain: str, is_error: bool = False) -> dict:
+    """The tool_result frame for the chat: the step id it closes plus what the step produced (step_media.build).
+
+    A result without an id closes the oldest open step, the order engines run them in. `content` stays as the
+    first 200 characters for dashboards older than 0.451.0."""
+    sid = str(ev.get("id") or ev.get("tool_use_id") or "").strip()
+    if not sid or sid not in st["calls"]:
+        sid = st["open"][0] if st["open"] else sid
+    if sid in st["open"]:
+        st["open"].remove(sid)
+    name, inp = st["calls"].get(sid, (str(ev.get("name") or ""), {}))
+    try:
+        root = _brain_root(brain) if brain else None
+    except Exception:
+        root = None
+    try:
+        res = step_media.build(name, inp, content, sid=conv_sid, brain_root=root, budget=st["budget"],
+                               is_error=is_error)
+    except Exception:
+        res = {"text": "", "more": 0, "err": bool(is_error), "imgs": [], "files": []}
+    short = res.get("text") or ""
+    return {"type": "tool_result", "id": sid, "content": short[:200], "res": res}
 import nghe_sua       # sửa chữ nghe nhầm theo ngữ cảnh (Diu ni -> Uni, U ni mết -> UNI MATE) + hotwords cho Whisper
 import phien_am       # từ tiếng Anh -> cách đọc kiểu Việt (đọc loa + so âm câu nghe được)
 import voice_privacy
@@ -17617,14 +17676,19 @@ async def _chat_socket(ws):
                          {"role": "user", "content": _k_prompt}],
                         provider="grok-cli", model=actual_model or "")
                     _k_loi = False
+                    _st = _step_state()
                     async for ev in kcli.query(_k_prompt):
                         et = ev.get("type")
                         if et == "tool_call":
                             await ws.send_text(json.dumps({
-                                "type": "tool_call", "tool": ev.get("name", ""),
+                                "type": "tool_call", "tool": ev.get("name", ""), "id": _step_call(_st, ev),
                                 "detail": tool_label.chi_tiet(ev),
                                 "content": localefmt.chu(f"⚙ Đang gọi: {ev.get('name', '')}",
                                                          f"⚙ Calling: {ev.get('name', '')}")}))
+                        elif et == "tool_result":
+                            await ws.send_text(json.dumps(_step_result_frame(
+                                _st, ev, ev.get("content"), conv_sid, brain,
+                                is_error=str(ev.get("status") or "").lower() in ("failed", "error"))))
                         elif et == "final":
                             final_text = ev.get("content") or ""
                         elif et == "usage":
@@ -17693,14 +17757,19 @@ async def _chat_socket(ws):
                         [{"role": "system", "content": sysprompt},
                          {"role": "user", "content": _a_prompt}],
                         provider="antigravity-cli", model=actual_model or "")
+                    _st = _step_state()
                     async for ev in acli.query(_a_prompt):
                         et = ev.get("type")
                         if et == "tool_call":
                             await ws.send_text(json.dumps({
-                                "type": "tool_call", "tool": ev.get("name", ""),
+                                "type": "tool_call", "tool": ev.get("name", ""), "id": _step_call(_st, ev),
                                 "detail": tool_label.chi_tiet(ev),
                                 "content": localefmt.chu(f"⚙ Đang gọi: {ev.get('name', '')}",
                                                          f"⚙ Calling: {ev.get('name', '')}")}))
+                        elif et == "tool_result":
+                            await ws.send_text(json.dumps(_step_result_frame(
+                                _st, ev, ev.get("content"), conv_sid, brain,
+                                is_error=str(ev.get("status") or "").lower() in ("failed", "error"))))
                         elif et == "final":
                             final_text = ev.get("content") or ""
                         elif et == "usage":
@@ -17812,6 +17881,7 @@ async def _chat_socket(ws):
                             provider="codex", model=actual_model,
                         )
                         dang_chay = set()   # id các bước Codex đã báo bắt đầu, chưa báo xong
+                        _st = _step_state()
                         async for ev in ccli.query(prompt):
                             et = ev["type"]
                             if et == "session":
@@ -17826,14 +17896,21 @@ async def _chat_socket(ws):
                                 # 0.86.1 bước chỉ hiện lúc đã xong, lệnh dài trông như treo.
                                 if ev.get("id"):
                                     dang_chay.add(ev["id"])
-                                await ws.send_text(json.dumps({"type": "tool_call", "tool": ev.get("name", ""), "detail": tool_label.chi_tiet(ev), "content": f"⚙ {ev.get('name', '')}"}))
+                                await ws.send_text(json.dumps({"type": "tool_call", "tool": ev.get("name", ""), "id": _step_call(_st, ev), "detail": tool_label.chi_tiet(ev), "content": f"⚙ {ev.get('name', '')}"}))
                             elif et == "tool_call" and ev.get("id") and ev["id"] in dang_chay:
                                 # Bước đã hiện lúc bắt đầu: giờ chỉ đánh dấu xong, không thêm bước đôi.
                                 dang_chay.discard(ev["id"])
-                                out = str((ev.get("item") or {}).get("aggregated_output") or "")
-                                await ws.send_text(json.dumps({"type": "tool_result", "content": out[:200]}))
+                                _it = ev.get("item") or {}
+                                await ws.send_text(json.dumps(_step_result_frame(
+                                    _st, ev, _it, conv_sid, brain,
+                                    is_error=str(_it.get("status") or "") == "failed" or bool(_it.get("error")))))
                             elif et == "tool_call":
-                                await ws.send_text(json.dumps({"type": "tool_call", "tool": ev.get("name", ""), "detail": tool_label.chi_tiet(ev), "content": f"⚙ {ev.get('name', '')}"}))
+                                # 0.451.0: an item that arrives already finished (a web search) opens and closes its step.
+                                await ws.send_text(json.dumps({"type": "tool_call", "tool": ev.get("name", ""), "id": _step_call(_st, ev), "detail": tool_label.chi_tiet(ev), "content": f"⚙ {ev.get('name', '')}"}))
+                                _it = ev.get("item") or {}
+                                await ws.send_text(json.dumps(_step_result_frame(
+                                    _st, ev, _it, conv_sid, brain,
+                                    is_error=str(_it.get("status") or "") == "failed" or bool(_it.get("error")))))
                             elif et == "text":
                                 final_text += ev["content"]
                                 await ws.send_text(json.dumps({"type": "stream", "content": ev["content"], "tts": False}))
@@ -18153,7 +18230,8 @@ async def _chat_socket(ws):
                                 mode=_muc_quyen_luot_chat(_row0, user_message),
                                 coding_row=_row0, owner_sid=conv_sid,
                             )
-                            async for ev in gen:
+                            _st = _step_state()
+                            async for ev in _with_step_results(gen):
                                 if ev["type"] == "meta":
                                     actual_model = ev.get("model") or actual_model
                                     _CONTEXT_RUNTIME.set_route(runtime_trace, prov, actual_model)
@@ -18169,10 +18247,13 @@ async def _chat_socket(ws):
                                     _limit_hit = ev
                                 elif ev["type"] == "tool_call":
                                     await ws.send_text(json.dumps({
-                                        "type": "tool_call", "tool": ev.get("name", ""),
+                                        "type": "tool_call", "tool": ev.get("name", ""), "id": _step_call(_st, ev),
                                         "detail": tool_label.chi_tiet(ev),
                                         "content": f"⚙ MCP: {ev.get('name', '')}",
                                     }))
+                                elif ev["type"] == "tool_result":
+                                    await ws.send_text(json.dumps(_step_result_frame(
+                                        _st, ev, ev.get("content"), conv_sid, brain)))
                                 elif ev["type"] == "text":
                                     final_text += ev["content"]
                                     await ws.send_text(json.dumps({
@@ -18327,6 +18408,7 @@ async def _chat_socket(ws):
                     """Một lần gọi `claude`. Trả True nếu mạch cũ không còn (resume trượt)."""
                     nonlocal final_text, _streamed, _cli_sid, _cost, _ctx_in, _ctx_cache, _cli_err
                     resume_failed = False
+                    _st = _step_state()
                     async for event in claude_warm.query(cli, prompt, conv_sid):
                         etype = event["type"]
                         if etype == "warm":
@@ -18340,7 +18422,8 @@ async def _chat_socket(ws):
                         elif etype in ("final", "error"):
                             _engine_outcome_note(conv_sid, event)
                         if etype == "tool_call":
-                            await ws.send_text(json.dumps({"type": "tool_call", "tool": event["name"], "detail": tool_label.chi_tiet(event),
+                            await ws.send_text(json.dumps({"type": "tool_call", "tool": event["name"], "id": _step_call(_st, event),
+                                                           "detail": tool_label.chi_tiet(event),
                                                            "content": localefmt.chu(f"⚙ Đang gọi: {event['name']}",
                                                                                     f"⚙ Calling: {event['name']}")}))
                             # Nhặt mọi thứ trông giống đường dẫn trong tham số tool (Write/Edit có
@@ -18350,7 +18433,9 @@ async def _chat_socket(ws):
                             except Exception:
                                 pass
                         elif etype == "tool_result":
-                            await ws.send_text(json.dumps({"type": "tool_result", "content": event["content"][:200]}))
+                            await ws.send_text(json.dumps(_step_result_frame(
+                                _st, event, event.get("raw", event.get("content")), conv_sid, brain,
+                                is_error=bool(event.get("is_error")))))
                         elif etype == "text":
                             _streamed += event["content"]
                             await ws.send_text(json.dumps({"type": "stream", "content": event["content"]}))
@@ -29541,3 +29626,15 @@ async def plan_limits_get(goi: int = 0):
                "grok": plan_limits.ten_goi(grok_k.get("plan") or ""), "agy": ""}
     return {"claude": d.get("claude"), "codex": d.get("codex"), "grok": d.get("grok"), "agy": d.get("agy"),
             "plan": co_goi, "ten_goi": ten, "nguong": {"canh_bao": plan_limits.CANH_BAO, "sat": plan_limits.SAT}}
+
+
+@app.get("/step-media/{session_id}/{name}")
+def step_media_get(session_id: str, name: str):
+    """A picture a progress step produced (0.451.0). Behind the sign-in wall like every chat route; only names
+    step_media wrote (32 hex + a picture extension) are served, never SVG."""
+    p = step_media.media_path(session_id, name)
+    if not p:
+        return JSONResponse({"error": "not_found"}, status_code=404)
+    mt = {".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif"}[p.suffix]
+    return FileResponse(str(p), media_type=mt, headers={"X-Content-Type-Options": "nosniff",
+                                                        "Cache-Control": "private, max-age=86400"})

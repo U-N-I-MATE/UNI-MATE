@@ -8,7 +8,10 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.451.0] - 2026-11-13
 ### Added
-- (in progress)
+- **The progress block shows what each step produced, like Claude.** Browser screenshots, pictures a tool returned, and pictures made or read in the brain show inside the step (click to enlarge). Word, Excel, PDF and PowerPoint files a step made, changed or read show as file cards that open in the app viewer.
+- Command and code steps only get a few lines of result text, shown when you click the step. No pictures.
+- Results are kept with the conversation history. Pictures are visible to the owner only and are deleted with the conversation. Keys and passwords in the result text are masked before they are sent.
+- The progress block stays folded by default. Telegram and Zalo are unchanged.
 
 ## [0.450.0] - 2026-11-05
 ### Fixed

@@ -323,9 +323,17 @@ def map_message(msg):
             for b in content:
                 if isinstance(b, ToolResultBlock):
                     c = b.content
+                    # 0.451.0: keep what the step produced for the chat's progress block (step_media): the text up
+                    # to 4000 characters and picture blocks whole. `content` stays the 500-character text it was.
                     if isinstance(c, list):
+                        raw = [x if (isinstance(x, dict) and x.get("type") == "image")
+                               else ({"type": "text", "text": str(x.get("text", ""))[:4000]} if isinstance(x, dict)
+                                     else {"type": "text", "text": str(x)[:4000]})
+                               for x in c[:20]]
                         c = " ".join(x.get("text", "") for x in c if isinstance(x, dict))
-                    events.append({"type": "tool_result", "content": str(c or "")[:500],
+                    else:
+                        raw = str(c or "")[:4000]
+                    events.append({"type": "tool_result", "content": str(c or "")[:500], "raw": raw,
                                    "tool_use_id": getattr(b, "tool_use_id", "") or "",
                                    "is_error": bool(getattr(b, "is_error", False))})
         return events, None

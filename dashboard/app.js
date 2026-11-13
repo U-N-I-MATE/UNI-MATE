@@ -2083,7 +2083,8 @@ function recordTurn(role, text, atts, ask, buoc) {
                // Mach buoc chi ghi khi luot that su co goi cong cu - luot tra loi thang
                // khong co truong nay, nen tin cu luu truoc ban nay cung khong sao.
                buoc: (buoc && window.UniMateSteps && window.UniMateSteps.tomTat(buoc).hien)
-                 ? buoc : undefined });
+                 // 0.451.0: steps now carry what they produced; keep a short copy (browser storage is small).
+                 ? (window.UniMateSteps.gon ? window.UniMateSteps.gon(buoc) : buoc) : undefined });
   if (convo.length > 200) convo = convo.slice(-200);
   persistSession();
 }

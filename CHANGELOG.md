@@ -8,7 +8,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.451.0] - 2026-11-13
 ### Thêm mới
-- (đang viết)
+- **Khối tiến trình hiện kết quả của từng bước, giống Claude.** Ảnh chụp trình duyệt, ảnh công cụ trả về, ảnh tạo ra hay đọc trong bộ não hiện ngay trong bước (bấm để phóng to). Tệp Word, Excel, PDF, PowerPoint mà bước tạo, sửa hay đọc hiện thành thẻ tệp, bấm để mở trong trình xem của app.
+- Bước chạy lệnh hay sửa mã chỉ có vài dòng chữ kết quả, bấm vào bước để xem. Không có ảnh.
+- Kết quả được lưu cùng lịch sử hội thoại. Ảnh chỉ chủ xem được và bị xoá khi xoá hội thoại. Khoá, mật khẩu trong chữ kết quả được che trước khi gửi xuống.
+- Khối tiến trình vẫn gấp sẵn như cũ. Telegram, Zalo không đổi.
 
 ## [0.450.0] - 2026-11-05
 ### Sửa lỗi

@@ -1709,6 +1709,12 @@ class SessionStore:
     def delete(self, session_id: str) -> None:
         # ON DELETE CASCADE xoá messages; trigger dọn messages_fts.
         self._write(lambda c: c.execute("DELETE FROM sessions WHERE id = ?", (session_id,)))
+        # 0.451.0: pictures the conversation's progress steps produced go with it.
+        try:
+            import step_media
+            step_media.drop(session_id)
+        except Exception:
+            pass
 
     def archive(self, session_id: str, archived: bool = True) -> None:
         self._write(lambda c: c.execute(

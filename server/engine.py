@@ -30,6 +30,11 @@ import localefmt
 import vision_input
 import steer_inbox   # 0.206.0: messages the owner sends while a turn runs
 
+# 0.451.0: the tool loops below also yield {"type": "tool_result"} so the owner's chat can show what each step produced.
+# Off by default: bots, background jobs and the many other readers of these loops never see the new event. The owner's
+# chat switches it on around each step (main._with_step_results).
+STEP_RESULTS: contextvars.ContextVar = contextvars.ContextVar("unimate_step_results", default=False)
+
 
 TEAM_REQUEST_OBSERVER = contextvars.ContextVar("team_request_observer", default=None)
 
@@ -2137,10 +2142,12 @@ async def _cc_tool_loop(url, headers, model, messages, mcp_tools, mcp_route, rea
                 except json.JSONDecodeError:
                     args = {}
                 if _schedule_tool_allowed(messages, fn, args):
-                    yield {"type": "tool_call", "name": fn, "input": args}
+                    yield {"type": "tool_call", "name": fn, "input": args, "id": str(tc.get("id") or "")}
                     result = await mcp_client.call_route(mcp_route, fn, args)
                 else:
                     result = _schedule_tool_blocked_result()
+                if STEP_RESULTS.get():
+                    yield {"type": "tool_result", "name": fn, "id": str(tc.get("id") or ""), "content": result}
                 msgs.append({"role": "tool", "tool_call_id": tc.get("id"), "content": _clip_tool_result(result, ten=fn)})
             guard.ghi([((tc.get("function") or {}).get("name"),
                         (tc.get("function") or {}).get("arguments") or "") for tc in tcs])
@@ -2530,10 +2537,14 @@ async def responses_with_mcp(access_token, account_id, model, messages, reasonin
                     except json.JSONDecodeError:
                         args = {}
                     if _schedule_tool_allowed(messages, fc.get("name"), args):
-                        yield {"type": "tool_call", "name": fc.get("name"), "input": args}
+                        yield {"type": "tool_call", "name": fc.get("name"), "input": args,
+                               "id": str(fc.get("call_id") or "")}
                         result = await mcp_client.call_route(mcp_route, fc.get("name"), args)
                     else:
                         result = _schedule_tool_blocked_result()
+                    if STEP_RESULTS.get():
+                        yield {"type": "tool_result", "name": fc.get("name"), "id": str(fc.get("call_id") or ""),
+                               "content": result}
                     items.append({"type": "function_call_output", "call_id": fc.get("call_id"), "output": _clip_tool_result(result, ten=fc.get("name") or "")})
                 guard.ghi([(fc.get("name"), fc.get("arguments") or "") for fc in fcalls])
                 nhac = guard.loi_nhac() + _nhac_sap_het(_vong, _n_vong)
@@ -2659,10 +2670,12 @@ async def anthropic_chat_with_mcp(api_key, model, messages, reasoning, mcp_tools
                 for tu in tool_uses:
                     args = tu.get("input") or {}
                     if _schedule_tool_allowed(messages, tu.get("name"), args):
-                        yield {"type": "tool_call", "name": tu.get("name"), "input": args}
+                        yield {"type": "tool_call", "name": tu.get("name"), "input": args, "id": str(tu.get("id") or "")}
                         res = await mcp_client.call_route(mcp_route, tu.get("name"), args)
                     else:
                         res = _schedule_tool_blocked_result()
+                    if STEP_RESULTS.get():
+                        yield {"type": "tool_result", "name": tu.get("name"), "id": str(tu.get("id") or ""), "content": res}
                     results.append({"type": "tool_result", "tool_use_id": tu.get("id"),
                                     "content": _clip_tool_result(res, ten=tu.get("name") or "")})
                 guard.ghi([(tu.get("name"), json.dumps(tu.get("input") or {}, sort_keys=True,
