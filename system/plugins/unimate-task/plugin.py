@@ -38,7 +38,12 @@ người:
   Telegram đầu tiên trong whitelist, mà máy chưa đấu Telegram thì MẤT HÚT. Model phải lấy mã
   phiên từ khối "KÊNH HỘI THOẠI HIỆN TẠI" và truyền vào.
 
-Phạm vi: `add`, `list` và `answer` (0.235.0). Chuyển cột, huỷ, duyệt việc chờ phê duyệt vẫn làm
+`cancel` (0.454.0): chủ nói "huỷ việc X" trong chat thì huỷ được ngay, cùng đường với nút Huỷ ở trang Nhiệm vụ
+(dừng tiến trình đang chạy). Chỉ lượt chat CỦA CHỦ được huỷ; bot khách, nhóm, việc nền và lịch tự chạy thì không.
+Việc khác đang chờ việc vừa huỷ KHÔNG bị huỷ theo: tool trả danh sách để model hỏi chủ, chủ đồng ý thì gọi lại
+với `with_waiting=true`.
+
+Phạm vi: `add`, `list`, `answer` (0.235.0), `cancel` (0.454.0). Chuyển cột, duyệt việc chờ phê duyệt vẫn làm
 ở trang Nhiệm vụ - đó là những thao tác cần nhìn thấy bảng, và mô tả tool nói thẳng như vậy thay vì
 để model đoán.
 
@@ -347,6 +352,76 @@ def _dang_cho(f, vault_root) -> list:
     return [t for t in (cols.get("blocked") or []) if _cau_hoi(t)]
 
 
+# 0.454.0: how each status reads to the owner when a cancel is reported.
+_TEN_TRANG_THAI = {"triage": "đang phân tích", "todo": "đang chờ việc khác xong", "ready": "đang chờ tới lượt chạy",
+                   "running": "đang chạy", "review": "đã làm xong, đang chờ duyệt", "blocked": "đang kẹt"}
+_KENH_KHONG_HUY = ("kanban", "reminder", "loop", "team", "schedule")
+
+
+def _ten_truoc(d: dict) -> str:
+    if d.get("before") == "blocked" and d.get("block_kind") == "needs_input":
+        return "đang hỏi chủ"
+    return _TEN_TRANG_THAI.get(str(d.get("before") or ""), str(d.get("before") or ""))
+
+
+def _chu_dang_hoi() -> str:
+    """"" when the turn is the OWNER's own chat; else why a cancel is refused (owner 16/11/2026: only the owner)."""
+    try:
+        import turn_context
+        turn = turn_context.current()
+    except Exception:
+        turn = None
+    if not turn:
+        return "không rõ ai đang hỏi (lượt không có danh tính)"
+    if turn.get("bot_id") or not turn.get("la_chu"):
+        return "người đang nhắn không phải chủ (bot khách, khách hàng)"
+    if turn.get("chat_type") == "group":
+        return "đây là nhóm chat, không phải chat riêng của chủ"
+    job = str(turn.get("job") or "")
+    if turn.get("kenh") in _KENH_KHONG_HUY or turn.get("team_gate") or (job and not job.startswith("noitiep:")):
+        return "đây là việc nền hoặc lịch tự chạy, không phải chủ đang chat"
+    return ""
+
+
+def _ma_viec(args) -> list:
+    raw = (args or {}).get("ids") or (args or {}).get("id") or ""
+    if isinstance(raw, (list, tuple)):
+        items = [str(x) for x in raw]
+    else:
+        items = re.split(r"[\s,;]+", str(raw))
+    return [x.strip() for x in items if x.strip()]
+
+
+async def _huy(args, ctx) -> str:
+    if not ctx.vault_root:
+        return "ERROR: chưa biết đang làm việc trên brain nào nên không huỷ được."
+    vi_sao = _chu_dang_hoi()
+    if vi_sao:
+        return f"ERROR: chỉ chủ mới huỷ được việc nền từ chat ({vi_sao}). Chủ huỷ ở trang Nhiệm vụ."
+    ids = _ma_viec(args)
+    if not ids:
+        return "ERROR: thiếu mã việc cần huỷ (ids, vd 't_abc123,t_def456'). Gọi op=list để xem mã."
+    f, loi = _feature()
+    if loi:
+        return loi
+    kem = (args or {}).get("with_waiting") in (True, "true", "1", 1)
+    kq = await f.cancel(ctx.vault_root, ids, with_waiting=kem)
+    ra = []
+    if kq.get("cancelled"):
+        ra.append("Đã huỷ " + str(len(kq["cancelled"])) + " việc:")
+        ra += [f"- {d['id']} · {d.get('title', '')} (trước khi huỷ: {_ten_truoc(d)})" for d in kq["cancelled"]]
+    if kq.get("failed"):
+        ra.append("Không huỷ được:")
+        ra += [f"- {d['id']}" + (f" · {d['title']}" if d.get("title") else "") + f": {d.get('error', '')}"
+               for d in kq["failed"]]
+    if kq.get("waiting"):
+        ra.append("CHƯA HUỶ các việc đang chờ việc vừa huỷ (chúng sẽ không bao giờ chạy nếu để nguyên):")
+        ra += [f"- {w['id']} · {w['title']}" for w in kq["waiting"]]
+        ra.append("Hỏi chủ có huỷ luôn các việc này không. Chủ đồng ý thì gọi lại op=cancel với ids là mã các việc "
+                  "vừa huỷ và with_waiting=true; KHÔNG tự huỷ khi chủ chưa nói.")
+    return "\n".join(ra) or "Không có việc nào được huỷ."
+
+
 async def _tra_loi(args, ctx) -> str:
     if not ctx.vault_root:
         return "ERROR: chưa biết đang làm việc trên brain nào nên không chuyển câu trả lời được."
@@ -399,12 +474,19 @@ def register(ctx):
         "op=list: liệt kê việc theo cột, việc đang dừng hỏi có ghi CHỜ TRẢ LỜI. "
         "op=answer: người dùng trả lời câu hỏi của một việc nền đang chờ -> truyền id và answer "
         "(chép nguyên văn); việc chạy tiếp với câu trả lời đó. "
-        "Chuyển cột, huỷ việc và duyệt việc chờ phê duyệt thì làm ở trang Nhiệm vụ, tool này không có.",
+        "op=cancel: CHỦ bảo huỷ việc -> ids='t_a,t_b' (một hoặc nhiều mã, lấy từ op=list); huỷ được việc đang chờ, "
+        "đang chạy (dừng tiến trình), đang hỏi hay đang kẹt, rồi báo lại việc nào đã huỷ và trạng thái trước đó. "
+        "Việc khác đang chờ việc bị huỷ thì tool KHÔNG tự huỷ mà trả danh sách: hỏi chủ, chủ đồng ý mới gọi lại "
+        "với with_waiting=true. Chỉ chat của chủ được huỷ. "
+        "Chuyển cột và duyệt việc chờ phê duyệt thì làm ở trang Nhiệm vụ, tool này không có.",
         _chay,
         schema={
             "type": "object",
             "properties": {
-                "op": {"type": "string", "enum": ["add", "list", "answer"]},
+                "op": {"type": "string", "enum": ["add", "list", "answer", "cancel"]},
+                "ids": {"type": "string", "description": "Mã các việc cần huỷ, cách nhau dấu phẩy (op=cancel)"},
+                "with_waiting": {"type": "boolean", "description": "Huỷ luôn các việc đang chờ việc bị huỷ, CHỈ khi "
+                                 "chủ đã đồng ý (op=cancel)"},
                 "id": {"type": "string", "description": "Mã việc đang chờ trả lời (op=answer)"},
                 "answer": {"type": "string", "description": "Câu trả lời nguyên văn của người dùng (op=answer)"},
                 "title": {"type": "string", "description": "Tên việc, ngắn gọn (op=add)"},
@@ -432,5 +514,7 @@ async def _chay(args, ctx) -> str:
         return _liet_ke(args, ctx)
     if op == "answer":
         return await _tra_loi(args, ctx)
-    return ("ERROR: op phải là 'add' (giao việc), 'list' (xem việc đang có) hoặc 'answer' "
-            "(chuyển câu trả lời cho việc đang chờ).")
+    if op == "cancel":
+        return await _huy(args, ctx)
+    return ("ERROR: op phải là 'add' (giao việc), 'list' (xem việc đang có), 'answer' "
+            "(chuyển câu trả lời cho việc đang chờ) hoặc 'cancel' (huỷ việc).")

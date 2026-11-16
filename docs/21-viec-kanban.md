@@ -294,6 +294,20 @@ Cũng từ 0.25.2, cuối mỗi lượt chat server dò xem câu trả lời có
 
 Đây không phải kiểm duyệt: nó không chặn và không sửa câu trả lời, chỉ nói thêm sự thật ở dưới. Lý do là một lượt trả lời kết thúc ngay khi UNI MATE nói xong - không có cơ chế nào đánh thức nó dậy để làm nốt, nên một lời hẹn không kèm việc nền là một lời hẹn sẽ không bao giờ tới.
 
+## Huỷ việc ngay trong chat (từ 0.454.0)
+
+Nói "huỷ việc t_abc123" (hay nhiều mã một lúc) trong chat của anh, UNI MATE huỷ ngay, đi đúng đường của nút **Huỷ** ở trang này:
+
+- việc **đang chạy**: dừng cả tiến trình của việc, không để tiến trình chạy mồ côi;
+- việc **đang chờ, đang hỏi, đang kẹt, chờ duyệt**: chuyển sang Đã huỷ;
+- sau đó UNI MATE báo lại từng việc đã huỷ và trạng thái của nó trước khi huỷ.
+
+Việc khác **đang chờ việc vừa huỷ** thì không bị huỷ theo. UNI MATE liệt kê và hỏi anh trước; anh đồng ý thì mới huỷ cả chuỗi. Chỉ chat của chủ mới huỷ được: bot trả lời khách, nhóm chat, việc nền và lịch tự chạy không huỷ được việc.
+
+## Điều kiện hoàn thành chỉ chấm phần việc (từ 0.454.0)
+
+Điều kiện về **nội dung công việc** (đã có tệp, đã đẩy ổ H, đủ số câu giọng...) mới quyết định đạt hay chưa đạt. Điều kiện về **hình thức tin báo** (ví dụ "Tin báo kết quả không quá 3 câu") không còn làm trượt việc: việc vẫn vào cột Xong, UNI MATE tự rút gọn tin báo về khung chat còn đúng số câu cho phép, bản báo cáo đầy đủ vẫn nằm trong kết quả của việc ở trang này.
+
 ## Giao việc bằng lời trong chat
 
 Bạn không bắt buộc phải mở trang này. Nói thẳng trong chat kiểu "giao việc nền: rà lại toàn bộ note trong Wiki tháng này rồi liệt kê note thiếu liên kết" là UNI MATE tự tạo một việc trong hàng đợi và gắn danh tính người đang nói để báo kết quả về đúng chỗ.
