@@ -43,6 +43,7 @@
   var _cache = {};        // mã -> Promise<từ điển | null>, để dò trình duyệt không tải hai lần
   var _batDau = Date.now();
   var _hoiHen = 0;        // hẹn giờ thử lại khi từ điển gốc không về (xem _choMayChu)
+  var _cu = {};           // 0.453.2: mã -> true khi bản vừa nhận là bản CŨ sw.js đưa ra lúc máy chủ chưa trả lời
   var KHOA_HOI_SUC = "unimate.i18n_reload_at";
 
   function _doc_luu() {
@@ -127,7 +128,13 @@
     // code mới gọi khoá mới, từ điển cũ không có, cả trang in nguyên mã khoá kiểu
     // `models.st_connected` (khách báo 2026-08-30, bản 0.52.1).
     var p = fetch("/static/i18n/" + ma + ".json", { cache: "no-cache" })
-      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (r) {
+        if (!r.ok) return null;
+        // 0.453.2: sw.js gắn dấu này khi đưa ra bản đã lưu vì máy chủ chưa trả lời (ngay sau cập nhật). Bản đó có thể
+        // thiếu khoá mới, cả khối mới hiện mã thô (mcl.this, nt.on...): dùng tạm rồi hỏi lại tới khi có bản mới.
+        _cu[ma] = !!(r.headers && r.headers.get && r.headers.get("X-UniMate-Cu"));
+        return r.json();
+      })
       .catch(function () { return null; });
     // Hỏng thì bỏ khỏi cache: lần sau (mạng đã về) còn được thử lại.
     _cache[ma] = p.then(function (d) { if (!d) delete _cache[ma]; return d; });
@@ -181,7 +188,7 @@
       if (luot !== _luot) return _lang;   // đã có lượt init mới hơn, đừng ghi đè nó
       var lang = x[0], kq = x[1];
       // Từ điển gốc rỗng = không tải được (vi.json không bao giờ rỗng): chờ máy chủ rồi hồi lại, xem _choMayChu.
-      if (!kq[0] || !Object.keys(kq[0]).length) _choMayChu(ma, 0);
+      if (!kq[0] || !Object.keys(kq[0]).length || _cu[GOC] || _cu[lang]) _choMayChu(ma, 0);
       _lang = lang;
       _goc = kq[0] || {};
       _en = kq[1] || {};
@@ -227,8 +234,10 @@
     if (_hoiHen) return;
     _hoiHen = setTimeout(function () {
       _hoiHen = 0;
+      if (_cu[GOC]) delete _cache[GOC];   // bản cũ từ sw.js: hỏi lại máy chủ, không dùng lại lời hứa đã có
       _thu(GOC).then(function (d) {
-        if (!d) { _choMayChu(ma, lan + 1); return; }
+        if (!d || _cu[GOC]) { _choMayChu(ma, lan + 1); return; }
+        Object.keys(_cu).forEach(function (k) { if (_cu[k]) delete _cache[k]; });
         if (_nenTaiLai()) { location.reload(); return; }
         init(ma);
       });

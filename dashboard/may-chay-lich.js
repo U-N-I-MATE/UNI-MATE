@@ -193,6 +193,9 @@
     document.addEventListener("click", onClick);
     var start = function () { if ($("mclBox")) load(); };
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+    // 0.453.2: the dictionary may arrive after the first draw (right after an update the server is still starting and
+    // i18n/index.js retries vi.json): draw again with the real words instead of leaving raw keys like mcl.this.
+    if (window.addEventListener) window.addEventListener("unimate:i18n", function () { if (_st) render(); });
     // The Settings page opens later: draw (or refresh) when the block becomes visible.
     document.addEventListener("click", function (e) {
       if (e.target && e.target.closest && e.target.closest("#settingsBtn")) setTimeout(load, 50);

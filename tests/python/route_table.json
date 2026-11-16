@@ -7774,5 +7774,15 @@
    "POST"
   ],
   "trong": null
+ },
+ {
+  "order": 781,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/remote/lich",
+  "name": "may_chay_lich_remote_lich",
+  "methods": [
+   "GET"
+  ],
+  "trong": null
  }
 ]

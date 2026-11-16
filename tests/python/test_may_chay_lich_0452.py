@@ -376,7 +376,8 @@ check("link endpoints are public paths (no cookie from the other machine)",
                              '"/may-chay-lich/remote/register"', '"/may-chay-lich/remote/sync"')))
 remote = mn[mn.index('@app.get("/may-chay-lich/remote/runner")'):]
 check("every link endpoint checks the link key first",
-      remote.count("if not _pair_ok(request):") == 5 and "may_chay_lich.check_pair(request.headers.get(may_chay_lich.HEADER" in mn)
+      # 0.453.2 adds /remote/lich, the sixth link endpoint.
+      remote.count("if not _pair_ok(request):") == 6 and "may_chay_lich.check_pair(request.headers.get(may_chay_lich.HEADER" in mn)
 check("owner routes behind the sign-in wall (not public)",
       all(f'@app.{m}("/may-chay-lich{p}")' in mn for m, p in (("get", ""), ("post", "/runner"), ("post", "/pair-code"),
                                                               ("post", "/link"), ("post", "/unlink"), ("post", "/pair-revoke")))
@@ -411,7 +412,7 @@ check("unimate_schedule: chay_tren in the schema, on create (reminder and loop f
 
 # dashboard
 idx = read("dashboard/index.html")
-check("Settings block and its script", 'id="mclBox"' in idx and "/static/may-chay-lich.js?v=4" in idx
+check("Settings block and its script", 'id="mclBox"' in idx and "/static/may-chay-lich.js?v=5" in idx
       and 'data-i18n="mcl.title"' in idx)
 tj = read("dashboard/tasks.js")
 check("Tasks page: banner when this machine does not run schedules, per-job picker once a second machine exists",

@@ -58,6 +58,12 @@ SEEN_DAYS = 45                # a machine not heard of for this long no longer c
 REMOTE_FRESH_S = 600          # the VPS answer about who runs is trusted this long
 TICK_S = 60
 HTTP_TIMEOUT_S = 6
+# 0.453.2: a linked home PC reads the state of the schedules the VPS runs (done, next run) from the VPS itself.
+LICH_FRESH_S = 30             # asked again at most this often when a page needs it (plus every tick)
+LICH_MAX_AGE_S = 15 * 60      # older than this, the home PC shows its own (GitHub-synced) copy again
+LICH_ASK_TIMEOUT_S = 2.5      # a page waits this long for the VPS, never more
+_LICH_REM_KEYS = ("status", "due_at", "fired_at", "result", "error", "retry_count")
+_LICH_LOOP_KEYS = ("last_run", "last_status", "last_summary", "fail_streak", "next_run", "auto_paused_reason")
 KEEP_S = 40 * 86400           # ledger rows kept this long
 MAX_PAIR_CODES = 5
 MAX_TAKEN_CACHE = 5000
@@ -148,9 +154,9 @@ def warn_new(pin="") -> str:
         return ""
     import localefmt
     return localefmt.chu(
-        "Lịch này chạy ở VPS nhưng máy này chưa bật đồng bộ GitHub (Cài đặt, Sao lưu GitHub), nên lịch sẽ không tới "
+        "Lịch này chạy ở VPS nhưng máy này chưa bật đồng bộ GitHub (trang Tự học, mục Đồng bộ brain với GitHub), nên lịch sẽ không tới "
         "được VPS và sẽ không chạy. Bật đồng bộ GitHub, hoặc gắn lịch chạy ở máy nhà (chay_tren=home).",
-        "This schedule runs on the VPS but GitHub sync is off on this machine (Settings, GitHub backup), so it will "
+        "This schedule runs on the VPS but GitHub sync is off on this machine (Self-learning page, Sync brains with GitHub), so it will "
         "not reach the VPS and will not run. Switch GitHub sync on, or pin it to the home PC (chay_tren=home).")
 
 
@@ -555,6 +561,105 @@ def unlink() -> None:
     _check_change()
 
 
+# ---------------------------------------------------------------- schedule state from the VPS (0.453.2)
+_lich: dict = {"data": {}, "at": 0.0}
+
+
+def remote_lich() -> dict:
+    """VPS side: the state of every reminder and loop in every brain, keyed by brain folder name. Read straight from the
+    brain files (UniMate/reminders.json, UniMate/loop-state.json), so this module needs neither store."""
+    out = {}
+    for root in _brains_fn() or []:
+        r = Path(str(root))
+        item = {"reminders": {}, "loops": {}}
+        try:
+            d = json.loads((r / "UniMate" / "reminders.json").read_text(encoding="utf-8"))
+            for x in (d.get("reminders") or []) if isinstance(d, dict) else []:
+                if isinstance(x, dict) and x.get("id"):
+                    v = {k: x.get(k) for k in _LICH_REM_KEYS if x.get(k) is not None}
+                    for k in ("result", "error"):
+                        if isinstance(v.get(k), str):
+                            v[k] = v[k][:500]
+                    item["reminders"][str(x["id"])] = v
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            d = json.loads((r / "UniMate" / "loop-state.json").read_text(encoding="utf-8"))
+            for slug, x in (d.items() if isinstance(d, dict) else []):
+                if isinstance(x, dict):
+                    v = {k: x.get(k) for k in _LICH_LOOP_KEYS if x.get(k) is not None}
+                    if isinstance(v.get("last_summary"), str):
+                        v["last_summary"] = v["last_summary"][:500]
+                    item["loops"][str(slug)] = v
+        except Exception:  # noqa: BLE001
+            pass
+        out[r.name] = item
+    return {"brains": out, "at": time.time()}
+
+
+async def pull_lich(force: bool = False) -> bool:
+    """Home PC linked to the VPS: fetch that state (at most every LICH_FRESH_S unless forced). True when fresh now."""
+    if not linked() or machine()["kind"] == "vps":
+        return False
+    if not force and time.time() - _lich["at"] < LICH_FRESH_S:
+        return True
+    try:
+        ans = await asyncio.wait_for(_http("GET", "/may-chay-lich/remote/lich"), LICH_ASK_TIMEOUT_S)
+        if isinstance(ans.get("brains"), dict):
+            _lich.update(data=ans["brains"], at=time.time())
+            return True
+    except Exception as e:  # noqa: BLE001 - the page then shows this machine's own copy
+        _remote["error"] = _remote.get("error") or f"{type(e).__name__}: {e}"[:200]
+    return False
+
+
+def _lich_brain(brain_root) -> dict:
+    if not linked() or machine()["kind"] == "vps" or time.time() - _lich["at"] > LICH_MAX_AGE_S:
+        return {}
+    return (_lich["data"] or {}).get(Path(str(brain_root)).name) or {}
+
+
+def theo_may_chay(brain_root, rem: dict) -> dict:
+    """A reminder as the machine that RUNS it sees it (done, next run, result). Unchanged when this machine runs it or
+    nothing fresh came from the VPS."""
+    if not isinstance(rem, dict) or should_run(rem.get("chay_tren")):
+        return rem
+    v = (_lich_brain(brain_root).get("reminders") or {}).get(str(rem.get("id") or ""))
+    return dict(rem, **v) if v else rem
+
+
+def loop_state_theo_may_chay(brain_root, state: dict, pins: Optional[dict] = None) -> dict:
+    """loop-state.json of a brain with the VPS's run state laid over the loops this machine does not run.
+    `pins` = {slug: chay_tren}."""
+    remote = _lich_brain(brain_root).get("loops") or {}
+    if not remote:
+        return state
+    out = dict(state or {})
+    for slug, v in remote.items():
+        if should_run((pins or {}).get(slug, "")):
+            continue
+        cur = out.get(slug) if isinstance(out.get(slug), dict) else {}
+        out[slug] = dict(cur, **v)
+    return out
+
+
+def ten_may_chay(pin="") -> str:
+    """"VPS (jin.unihq.vn)": the machine that runs a schedule with this pin, for a refusal or a notice."""
+    st = status()
+    kind = where(pin)
+    lbl = st.get("runner_label") if kind == st.get("runner") else ""
+    ten = "VPS" if kind == "vps" else localefmt_chu("máy nhà", "the home PC")
+    return f"{ten} ({lbl})" if lbl else ten
+
+
+def localefmt_chu(vi: str, en: str) -> str:
+    try:
+        import localefmt
+        return localefmt.chu(vi, en)
+    except Exception:  # noqa: BLE001
+        return vi
+
+
 def _remember_remote(ans: dict) -> None:
     r = norm_pin(ans.get("runner"))
     if r:
@@ -781,6 +886,7 @@ async def tick() -> None:
             _remember_remote(await _http("GET", "/may-chay-lich/remote/runner"))
             await _register_remote()
             await _flush_pending()
+            await pull_lich(force=True)
         except Exception as e:  # noqa: BLE001
             _remote["error"] = f"{type(e).__name__}: {e}"[:200]
     _check_change()
@@ -793,6 +899,25 @@ async def run_forever() -> None:
         except Exception as e:  # noqa: BLE001
             print(f"[may_chay_lich] {type(e).__name__}: {e}", file=sys.stderr)
         await asyncio.sleep(TICK_S)
+
+
+def _runner_label(runner: str, me: dict, ln: Optional[dict], vps: Optional[dict], home: Optional[dict]) -> str:
+    """Name of the machine that runs schedules, as the owner knows it. 0.453.2: on a linked home PC the VPS is the
+    address the owner pasted the code from ("jin.unihq.vn"); before, it came only from the VPS record synced through
+    GitHub, which may not have arrived yet, and the banner read "VPS (VPS)"."""
+    if runner == "vps":
+        if me.get("kind") == "vps":
+            return str(me.get("label") or "")
+        if ln and ln.get("url"):
+            try:
+                from urllib.parse import urlparse
+                host = urlparse(str(ln["url"])).hostname or ""
+                if host:
+                    return host[:80]
+            except Exception:  # noqa: BLE001
+                pass
+        return str((_remote.get("vps") or {}).get("label") or (vps or {}).get("label") or "")
+    return str((home or {}).get("label") or "")
 
 
 def status() -> dict:
@@ -811,7 +936,7 @@ def status() -> dict:
         pend = 0
     return {
         "machine": me, "runner": runner, "is_runner": should_run(""),
-        "runner_label": ((vps or {}).get("label") if runner == "vps" else (home or {}).get("label")) or "",
+        "runner_label": _runner_label(runner, me, ln, vps, home),
         "linked": bool(ln), "link_url": ln.get("url", "") if ln else "",
         "link_ok": bool(ln) and bool(_remote.get("ok_at")) and time.time() - _remote["ok_at"] <= REMOTE_FRESH_S,
         "link_error": _remote.get("error", "") if ln else "",

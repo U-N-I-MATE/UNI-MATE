@@ -6,6 +6,15 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.453.2] - 2026-11-16
+### Fixed
+- **The Schedule machine and Continue blocks no longer show raw keys (mcl.this, nt.on...) right after an update.** While the server was still starting, the browser used its kept old texts for now; UNI MATE now asks again until the new texts arrive, then draws both blocks again.
+- **The home PC names the VPS correctly:** the banner reads "Schedules run on the VPS (jin.unihq.vn)" from the linked VPS address, instead of "VPS (VPS)".
+- **Points to the right place for GitHub sync:** the **Self-learning** page, section **Sync brains with GitHub (two-way)**, as the 0.452.0 notices and changelog should have said (they pointed to the Settings page by mistake).
+- **A home PC linked to the VPS sees the state of the schedules the VPS runs at once** (done, result, next run), read straight from the VPS instead of waiting for the GitHub sync. Before, a reminder the VPS had run still showed as pending at home.
+- **The run now button on the machine that does not run a schedule is refused**, saying which machine runs it, so nothing runs twice.
+- **Reminders no longer repeat themselves:** a reminder that already reads "Remind me: ..." goes out as written instead of "Reminder: Remind me: ..."; others start with "Reminder:" and no longer address the owner in a way they never used.
+
 ## [0.453.1] - 2026-11-16
 ### Fixed
 - The new state files of 0.452.0 and 0.453.0 (machine id, schedule ledger, follow-up book, background job book) are kept out of the code repository and the Docker image, like every other runtime data file. Nothing changes on a running machine: the files stay where they are, they just can never be pushed to GitHub by mistake.
@@ -29,7 +38,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **Pin one job to one machine.** **Runs on** on the Tasks page (or say "run it on the home PC" when scheduling by chat), for jobs that need software only the home PC has, such as AdsPower. Each customer bot can also pick the machine that answers.
 - **Shared ledger on the VPS against duplicates.** Every scheduled run, every post or message such a run sends and every customer message is recorded; the machine that records it first goes ahead and the other skips it. With the VPS unreachable, jobs that belong to the VPS do not run at home (a missed run, never a double post), and jobs pinned to the home PC still run and are reported to the VPS later.
 
-- **GitHub sync on by default, every 15 minutes.** A machine with a sync repo syncs automatically, every 15 minutes by default instead of 6 hours. A home PC linked to the VPS with sync off gets it switched on, and you are told. You can still change the interval or switch it off in Settings, GitHub backup.
+- **GitHub sync on by default, every 15 minutes.** A machine with a sync repo syncs automatically, every 15 minutes by default instead of 6 hours. A home PC linked to the VPS with sync off gets it switched on, and you are told. You can still change the interval or switch it off on the Self-learning page, section Sync brains with GitHub (two-way).
 
 ### Fixed
 - GitHub sync no longer lets the newer copy replace the whole `reminders.json` or `loop-state.json` when both machines changed them. Both files merge entry by entry: a reminder made on one machine and a run recorded on the other are both kept, and no `.conflict-*` copy is left.

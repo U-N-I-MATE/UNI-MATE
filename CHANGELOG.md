@@ -6,6 +6,15 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.453.2] - 2026-11-16
+### Sửa lỗi
+- **Khối Máy chạy lịch và Tự làm tiếp không còn hiện mã thô (mcl.this, nt.on...) ngay sau khi cập nhật.** Lúc máy chủ còn đang khởi động, trình duyệt dùng tạm bộ chữ cũ đã lưu; nay UNI MATE tự hỏi lại tới khi có bộ chữ mới rồi vẽ lại hai khối này.
+- **Máy nhà ghi đúng tên VPS:** dòng báo hiện "Lịch đang chạy ở VPS (jin.unihq.vn)" theo địa chỉ VPS đã nối, thay cho "VPS (VPS)".
+- **Chỉ đúng chỗ chỉnh đồng bộ GitHub:** trang **Tự học**, mục **Đồng bộ brain với GitHub (2 chiều)**, như các câu báo và nhật ký 0.452.0 lẽ ra phải ghi (trước đó ghi nhầm sang trang Cài đặt).
+- **Máy nhà đã nối VPS thấy ngay trạng thái lịch do VPS chạy** (đã chạy, kết quả, lần chạy kế tiếp), lấy thẳng từ VPS, không phải chờ lượt đồng bộ GitHub. Trước đây một nhắc hẹn VPS đã chạy vẫn hiện "chưa xong" ở máy nhà.
+- **Nút ▷ (chạy ngay) ở máy không chạy lịch bị chặn**, kèm câu nói rõ lịch đang chạy ở máy nào, để không chạy trùng hai lần.
+- **Câu nhắc không còn lặp chữ:** nhắc hẹn đã tự ghi "Nhắc anh: ..." thì gửi đúng như vậy, thay cho "Nhắc bạn: Nhắc anh: ..."; nhắc khác mở đầu bằng "Nhắc hẹn:", không tự gọi người dùng là "bạn".
+
 ## [0.453.1] - 2026-11-16
 ### Sửa lỗi
 - Các file trạng thái mới của 0.452.0 và 0.453.0 (mã máy, sổ chống chạy trùng lịch, sổ việc chờ tự làm tiếp, sổ việc chạy nền) được loại khỏi kho mã và khỏi ảnh Docker, như mọi file dữ liệu chạy khác. Không đổi gì với máy đang chạy: các file vẫn nằm nguyên, chỉ không bao giờ bị đưa nhầm lên GitHub.
@@ -29,7 +38,7 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 - **Từng việc chạy riêng một máy.** Ô **Chạy ở** trên trang Việc (hoặc nói "chạy trên máy nhà" khi đặt lịch bằng chat), dành cho việc cần phần mềm chỉ có ở máy nhà như AdsPower. Từng bot trả lời khách cũng chọn được máy trả lời.
 - **Sổ chống trùng chung đặt ở VPS.** Mỗi lượt chạy theo lịch, mỗi bài đăng hay tin gửi ra ngoài của lượt đó và mỗi tin khách được ghi sổ; máy ghi trước thì máy kia bỏ qua. VPS mất liên lạc thì việc thuộc VPS không chạy ở máy nhà (lỡ lượt chứ không đăng trùng), việc gắn máy nhà vẫn chạy rồi gửi bù sổ lên VPS.
 
-- **Đồng bộ GitHub bật sẵn, 15 phút một lần.** Máy nào khai kho đồng bộ là tự bật đồng bộ tự động, chu kỳ mặc định 15 phút thay vì 6 tiếng. Máy nhà nối VPS mà đang tắt đồng bộ thì UNI MATE tự bật và báo cho anh. Đổi chu kỳ hoặc tắt vẫn ở Cài đặt, Sao lưu GitHub.
+- **Đồng bộ GitHub bật sẵn, 15 phút một lần.** Máy nào khai kho đồng bộ là tự bật đồng bộ tự động, chu kỳ mặc định 15 phút thay vì 6 tiếng. Máy nhà nối VPS mà đang tắt đồng bộ thì UNI MATE tự bật và báo cho anh. Đổi chu kỳ hoặc tắt ở trang Tự học, mục Đồng bộ brain với GitHub (2 chiều).
 
 ### Sửa lỗi
 - Đồng bộ GitHub không còn để bản mới hơn ghi đè cả tệp `reminders.json` và `loop-state.json` khi hai máy cùng sửa. Hai tệp được hoà từng mục: nhắc hẹn tạo ở máy này và lượt chạy ghi ở máy kia đều được giữ, không sinh tệp `.conflict-*`.

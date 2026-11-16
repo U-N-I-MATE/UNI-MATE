@@ -161,7 +161,7 @@ if feat is not None and hasattr(feat, "_fire"):
     asyncio.run(feat._fire(str(brain), {"id": "r1", "mode": "notify", "text": "Uống nước", "chat_id": "web:s1"}))
     if gui:
         c, t, v, w = gui[-1]
-        check("chạy thật: Telegram/hòm thư vẫn nhận câu đầy đủ", t.startswith("⏰ Nhắc bạn: Uống nước"), t)
+        check("chạy thật: Telegram/hòm thư vẫn nhận câu đầy đủ", t.startswith("⏰ Nhắc hẹn: Uống nước"), t)
         check("chạy thật: thẻ nhắc hẹn đúng trạng thái", v and v["kind"] == "reminder" and v["status"] == "done", repr(v))
         check("chạy thật: bản web gọn đúng lời nhắc", w == "Uống nước", repr(w))
     else:
