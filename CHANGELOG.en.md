@@ -13,6 +13,8 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 - **Pin one job to one machine.** **Runs on** on the Tasks page (or say "run it on the home PC" when scheduling by chat), for jobs that need software only the home PC has, such as AdsPower. Each customer bot can also pick the machine that answers.
 - **Shared ledger on the VPS against duplicates.** Every scheduled run, every post or message such a run sends and every customer message is recorded; the machine that records it first goes ahead and the other skips it. With the VPS unreachable, jobs that belong to the VPS do not run at home (a missed run, never a double post), and jobs pinned to the home PC still run and are reported to the VPS later.
 
+- **GitHub sync on by default, every 15 minutes.** A machine with a sync repo syncs automatically, every 15 minutes by default instead of 6 hours. A home PC linked to the VPS with sync off gets it switched on, and you are told. You can still change the interval or switch it off in Settings, GitHub backup.
+
 ### Fixed
 - GitHub sync no longer lets the newer copy replace the whole `reminders.json` or `loop-state.json` when both machines changed them. Both files merge entry by entry: a reminder made on one machine and a run recorded on the other are both kept, and no `.conflict-*` copy is left.
 

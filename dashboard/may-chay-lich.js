@@ -168,7 +168,7 @@
       if (!code) { _msgErr = true; _msg = t("mcl.paste_empty"); return render(); }
       return act(async function () {
         var r = await postJSON("/may-chay-lich/link", { code: code });
-        _msgErr = !(r && r.ok); _msg = _msgErr ? ((r && r.error) || t("mcl.fail")) : t("mcl.linked_ok");
+        _msgErr = !(r && r.ok); _msg = _msgErr ? ((r && r.error) || t("mcl.fail")) : t("mcl.linked_ok") + (r.note ? " " + r.note : "");
       });
     }
     if (k === "push") {

@@ -386,6 +386,22 @@ check("started with the scheduler, brains wired, bots restart when this machine 
 check("a bot moved to this machine is started when saved",
       '("chay_tren" in form and (chatbot_store.get_bot(bot_id) or {}).get("enabled"))' in mn)
 
+# GitHub sync on by default (owner 16/11 11:40)
+import config  # noqa: E402
+check("GitHub sync: 15 minutes by default", config.DEFAULT_SETTINGS["backup"]["interval_hours"] == 0.25
+      if hasattr(config, "DEFAULT_SETTINGS") else '"interval_hours": 0.25' in read("server/config.py"))
+bk = mn[mn.index('@app.post("/backup/config")'):mn.index('@app.post("/backup/test")')]
+check("declaring the sync repo for the first time switches automatic sync on",
+      "lan_dau = bool(repo_url and repo_url.strip()) and not str(b.get(\"repo_url\") or \"\").strip()" in bk
+      and 'if lan_dau and b.get("token"):' in bk)
+lk = mn[mn.index("def _bat_dong_bo_khi_noi()"):mn.index('@app.post("/may-chay-lich/unlink")')]
+check("linking a home PC switches GitHub sync on if off (15 minutes over the old 6 hours) and tells the owner",
+      'b["enabled"] = True' in lk and 'b["interval_hours"] = 0.25' in lk and "await _notify_owner(" in lk
+      and '"note": ghi_chu' in lk and "chưa khai kho đồng bộ GitHub" in lk)
+cj = read("dashboard/console.js")
+check("Settings form defaults to 15 minutes", 'id="bkInterval" min="0.25" step="0.25" value="0.25"' in cj
+      and 's.interval_hours || 0.25' in cj)
+
 # schedule tool
 sys.path.insert(0, str(ROOT / "system" / "plugins" / "unimate-schedule"))
 pl = read("system/plugins/unimate-schedule/plugin.py")
@@ -395,7 +411,7 @@ check("unimate_schedule: chay_tren in the schema, on create (reminder and loop f
 
 # dashboard
 idx = read("dashboard/index.html")
-check("Settings block and its script", 'id="mclBox"' in idx and "/static/may-chay-lich.js?v=3" in idx
+check("Settings block and its script", 'id="mclBox"' in idx and "/static/may-chay-lich.js?v=4" in idx
       and 'data-i18n="mcl.title"' in idx)
 tj = read("dashboard/tasks.js")
 check("Tasks page: banner when this machine does not run schedules, per-job picker once a second machine exists",

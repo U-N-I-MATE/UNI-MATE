@@ -6473,7 +6473,7 @@ async def backup_status(brain: str = Query("brain")):
         "enabled": bool(b.get("enabled")),
         "repo_url": b.get("repo_url", ""),
         "branch": b.get("branch", "main"),
-        "interval_hours": b.get("interval_hours", 6),
+        "interval_hours": b.get("interval_hours", 0.25),
         "sync_images": bool(b.get("sync_images")),
         "token_set": bool(b.get("token")),
         "last_backup": b.get("last_backup", 0.0),
@@ -6504,6 +6504,9 @@ async def backup_config(
 ):
     cfg = cfgmod.read_settings()
     b = cfg.setdefault("backup", {})
+    # 0.452.0: declaring the sync repo for the first time switches automatic sync on (owner 2026-11-16: every machine
+    # with a sync repo syncs by default, every 15 minutes); the owner can still switch it off afterwards.
+    lan_dau = bool(repo_url and repo_url.strip()) and not str(b.get("repo_url") or "").strip()
     if repo_url is not None:
         b["repo_url"] = repo_url.strip()
     if token:                     # chỉ ghi khi có token MỚI (tránh xoá bằng chuỗi che ••••)
@@ -6512,6 +6515,8 @@ async def backup_config(
         b["branch"] = branch.strip() or "main"
     if enabled is not None:
         b["enabled"] = enabled in ("1", "true", "True", "on")
+    if lan_dau and b.get("token"):
+        b["enabled"] = True
     if sync_images is not None:
         b["sync_images"] = sync_images in ("1", "true", "True", "on")
     if interval_hours is not None:
@@ -14308,7 +14313,7 @@ async def _start_scheduler():
                 try:
                     bcfg = cfgmod.read_settings().get("backup", {}) or {}
                     if bcfg.get("enabled") and bcfg.get("repo_url") and bcfg.get("token") and git_brain.has_git():
-                        interval = backup_interval_hours(bcfg.get("interval_hours", 6)) * 3600
+                        interval = backup_interval_hours(bcfg.get("interval_hours", 0.25)) * 3600
                         if time.time() - float(bcfg.get("last_backup", 0)) >= interval:
                             await asyncio.to_thread(_do_backup)   # 1 lần: toàn bộ thư mục brains, 2 chiều
                 except Exception as be:
@@ -29707,10 +29712,44 @@ def may_chay_lich_pair_code(request: Request):
     return {"ok": True, "code": code, "https": proto == "https"}
 
 
+def _bat_dong_bo_khi_noi() -> str:
+    """0.452.0: a home PC just linked to the VPS: schedules made here reach the VPS through GitHub sync, so switch it on
+    if it is off (and use 15 minutes instead of the old 6-hour default). Returns what was done, for the owner."""
+    cfg = cfgmod.read_settings()
+    b = cfg.setdefault("backup", {})
+    if not (str(b.get("repo_url") or "").strip() and b.get("token")):
+        return localefmt.chu("Máy này chưa khai kho đồng bộ GitHub, nên lịch tạo ở đây chưa tới được VPS. Khai cùng kho "
+                             "với VPS ở Cài đặt, Sao lưu GitHub.",
+                             "This machine has no GitHub sync repo yet, so schedules made here cannot reach the VPS. "
+                             "Set the same repo as the VPS in Settings, GitHub backup.")
+    lam = []
+    if not b.get("enabled"):
+        b["enabled"] = True
+        lam.append(localefmt.chu("đã bật đồng bộ GitHub tự động", "switched automatic GitHub sync on"))
+    try:
+        cu = float(b.get("interval_hours", 0.25))
+    except (TypeError, ValueError):
+        cu = 6.0
+    if cu >= 6:
+        b["interval_hours"] = 0.25
+        lam.append(localefmt.chu("chu kỳ 15 phút", "every 15 minutes"))
+    if not lam:
+        return ""
+    cfgmod.write_settings(cfg)
+    return localefmt.chu("Để lịch tạo ở máy này tới được VPS, UNI MATE " + ", ".join(lam) + ". Đổi lại được ở Cài đặt, "
+                         "Sao lưu GitHub.",
+                         "So that schedules made here reach the VPS, UNI MATE " + ", ".join(lam) + ". You can change it "
+                         "in Settings, GitHub backup.")
+
+
 @app.post("/may-chay-lich/link")
 async def may_chay_lich_link(payload: dict = Body(...)):
     try:
-        return {"ok": True, **(await may_chay_lich.link(str(payload.get("code") or "")))}
+        st = await may_chay_lich.link(str(payload.get("code") or ""))
+        ghi_chu = _bat_dong_bo_khi_noi()
+        if ghi_chu:
+            await _notify_owner("", ghi_chu, kind="system", source="schedule", level="important")
+        return {"ok": True, **st, "note": ghi_chu}
     except ValueError as e:
         why = localefmt.chu("Đây là mã của chính máy này", "This is this machine's own code") if str(e) == "self" \
             else localefmt.chu("Mã nối không đúng dạng", "The link code is not valid")
