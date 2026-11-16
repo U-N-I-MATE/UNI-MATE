@@ -31,7 +31,9 @@ hứa của model thành sự thật, thay vì chỉ bị dán nhãn là hứa s
 
 Giới hạn có chủ ý
 =================
-- Chỉ POSIX. Windows không có nhóm tiến trình kiểu này; ở đó mọi hàm là no-op an toàn.
+- Windows (0.453.0): không có nhóm tiến trình, nên trong lúc engine chạy UNI MATE lấy mẫu con cháu của nó bằng psutil
+  vài giây một lần; hết lượt, con cháu nào còn sống (đúng pid và giờ bật) là việc bị bỏ lại. Thiếu psutil thì như cũ:
+  mọi hàm là no-op an toàn.
 - Tiến trình tự `setsid` thoát khỏi nhóm thì không theo dõi được. Hiếm với lệnh render/build.
 - Không biết mã thoát của tiến trình nhận nuôi (nó không phải con của máy chủ). Thay vào đó
   liệt kê file mới sinh trong thư mục làm việc, là thứ người dùng thật sự cần thấy.
@@ -63,6 +65,18 @@ except Exception:          # chạy lẻ trong test
     _STATE_DIR = Path(os.getenv("UNIMATE_STATE_DIR", str(Path(__file__).parent)))
 
 POSIX = os.name != "nt"
+# 0.453.0: Windows has no process groups. There the engine's descendants are sampled with psutil WHILE the engine runs
+# (a child left behind keeps the pid of its dead parent as ppid, so it cannot be found from the engine afterwards),
+# and a job is the set of (pid, start time) still alive. psutil is in requirements.txt; without it Windows stays a
+# safe no-op as before.
+try:
+    import psutil as _ps
+except Exception:          # noqa: BLE001
+    _ps = None
+WINDOWS = not POSIX and _ps is not None
+HO_TRO = POSIX or WINDOWS
+# Nhịp lấy mẫu con cháu của engine trên Windows trong lúc engine chạy.
+NHIP_LAY_MAU = 2.0
 
 # Nhịp hỏi hệ điều hành. Vài giây là đủ: người dùng chờ phút, không chờ mili giây.
 NHIP_GIAY = 3.0
@@ -83,6 +97,8 @@ _VIEC: Dict[str, dict] = {}                     # mã việc -> bản ghi
 _LOI_DAN: Dict[str, dict] = {}                  # chat_id -> {"text", "ts"} (unimate_job op=then)
 _KHI_XONG: Optional[Callable[[dict], Any]] = None
 _VONG: Optional[asyncio.Task] = None
+_DA_THAY: Dict[str, Dict[int, float]] = {}      # Windows: tag lượt -> {pid con cháu: giờ bật} đã thấy lúc engine chạy
+_LAY_MAU: Optional[threading.Thread] = None
 
 
 # ---------------------------------------------------------------------------------------
@@ -202,6 +218,120 @@ def file_moi(thu_muc: str, tu_luc: float, tran: int = TRAN_FILE_MOI) -> List[str
     return [x[1] for x in ds[:tran]]
 
 
+# Tiến trình phụ của chính Windows: mỗi chương trình console có một conhost đi kèm, không phải "việc chạy nền".
+_PHU_WIN = re.compile(r"(^|[\\/])(conhost|openconsole)(\.exe)?$", re.I)
+
+
+def _win_bat_luc(pid: int) -> float:
+    try:
+        return float(_ps.Process(int(pid)).create_time())
+    except Exception:
+        return 0.0
+
+
+def _win_song(pid: int, bat_luc: float) -> bool:
+    """Tiến trình còn chạy và đúng là tiến trình đó (Windows dùng lại pid: giờ bật phải khớp)."""
+    try:
+        p = _ps.Process(int(pid))
+        return abs(float(p.create_time()) - float(bat_luc)) < 1.0 and p.status() != _ps.STATUS_ZOMBIE
+    except Exception:
+        return False
+
+
+def _win_con_chau(pid: int) -> Dict[int, float]:
+    try:
+        return {int(c.pid): float(c.create_time()) for c in _ps.Process(int(pid)).children(recursive=True)}
+    except Exception:
+        return {}
+
+
+def _win_mo_rong(pids: Dict[int, float]) -> Dict[int, float]:
+    """Những tiến trình còn sống trong tập, cộng con cháu mới sinh của chúng."""
+    song = {p: t for p, t in pids.items() if _win_song(p, t)}
+    for p in list(song):
+        for c, t in _win_con_chau(p).items():
+            song.setdefault(c, t)
+    return song
+
+
+def _win_thanh_vien(pids: Dict[int, float]) -> List[dict]:
+    out: List[dict] = []
+    for pid in pids:
+        try:
+            p = _ps.Process(int(pid))
+            with p.oneshot():
+                cmd = " ".join(p.cmdline() or []) or p.name()
+                try:
+                    cwd = p.cwd()
+                except Exception:
+                    cwd = ""
+                out.append({"pid": int(pid), "cmd": cmd, "cwd": cwd, "state": "R", "ppid": int(p.ppid() or 0),
+                            "ten": p.name()})
+        except Exception:
+            continue
+    return [m for m in out if not _PHU_WIN.search(str(m.get("ten") or ""))]
+
+
+def _lay_mau_mot_luot() -> bool:
+    """Một nhịp lấy mẫu: ghi con cháu của mọi engine còn sống. True khi còn engine nào để theo."""
+    with _KHOA:
+        theo = {t: list(ps) for t, ps in _NHOM_THEO_TAG.items()}
+    con = False
+    for tag, ps in theo.items():
+        for pid in ps:
+            if not _ps.pid_exists(int(pid)):
+                continue
+            con = True
+            moi = _win_con_chau(pid)
+            if moi:
+                with _KHOA:
+                    _DA_THAY.setdefault(tag, {}).update(moi)
+    return con
+
+
+def _vong_lay_mau() -> None:
+    while True:
+        try:
+            if not _lay_mau_mot_luot():
+                return
+        except Exception:
+            return
+        time.sleep(NHIP_LAY_MAU)
+
+
+def _dam_bao_lay_mau() -> None:
+    global _LAY_MAU
+    if not WINDOWS:
+        return
+    with _KHOA:
+        if _LAY_MAU is not None and _LAY_MAU.is_alive():
+            return
+        _LAY_MAU = threading.Thread(target=_vong_lay_mau, name="unimate-nen-lay-mau", daemon=True)
+        _LAY_MAU.start()
+
+
+def _pids(v: dict) -> Dict[int, float]:
+    return {int(p): float(t) for p, t in (v.get("pids") or [])}
+
+
+def viec_con_song(v: dict) -> bool:
+    """Việc còn chạy không, theo kiểu của nó: nhóm tiến trình (POSIX) hay tập pid (Windows)."""
+    if v.get("pids"):
+        if not WINDOWS:
+            return False
+        song = _win_mo_rong(_pids(v))
+        if song:
+            v["pids"] = [[p, t] for p, t in song.items()]
+        return bool(_win_thanh_vien(song))
+    return nhom_con_song(v.get("pgid") or 0)
+
+
+def _thanh_vien_viec(v: dict) -> List[dict]:
+    if v.get("pids"):
+        return _win_thanh_vien(_pids(v)) if WINDOWS else []
+    return _thanh_vien(v.get("pgid") or 0)
+
+
 # ---------------------------------------------------------------------------------------
 # Sổ
 # ---------------------------------------------------------------------------------------
@@ -226,8 +356,8 @@ def _nap() -> None:
 
 
 def ghi_nhom(tag: str, pid: int) -> None:
-    """Engine CLI vừa chạy: nhớ pid (cũng là mã nhóm) theo tag của lượt."""
-    if not POSIX or not tag or not pid:
+    """Engine CLI vừa chạy: nhớ pid (cũng là mã nhóm) theo tag của lượt. Trên Windows bắt đầu lấy mẫu con cháu."""
+    if not HO_TRO or not tag or not pid:
         return
     with _KHOA:
         ds = _NHOM_THEO_TAG.setdefault(str(tag), [])
@@ -236,7 +366,9 @@ def ghi_nhom(tag: str, pid: int) -> None:
         # Tag của việc Kanban, quy trình... không bao giờ đi qua bước nhận nuôi của khung chat.
         # Không có trần thì sổ phình mãi theo thời gian chạy máy chủ.
         while len(_NHOM_THEO_TAG) > 200:
+            _DA_THAY.pop(next(iter(_NHOM_THEO_TAG)), None)
             _NHOM_THEO_TAG.pop(next(iter(_NHOM_THEO_TAG)))
+    _dam_bao_lay_mau()
 
 
 def dat_loi_dan(chat_id: str, text: str) -> None:
@@ -283,10 +415,15 @@ def nhan_nuoi_theo_tag(tag: str, brain_root: str, chat_id: str, *, hua: bool = F
     """
     with _KHOA:
         pids = _NHOM_THEO_TAG.pop(str(tag or ""), [])
+        da_thay = _DA_THAY.pop(str(tag or ""), {})
     loi_dan = _lay_loi_dan(chat_id)
     moi: List[dict] = []
+    if WINDOWS:
+        v = _nhan_nuoi_win(pids, da_thay, brain_root, chat_id, loi_dan, hua, do_sau)
+        if v:
+            moi.append(v)
     if not POSIX:
-        return moi
+        pids = []
     for pgid in pids:
         if not nhom_con_song(pgid):
             continue
@@ -320,17 +457,45 @@ def nhan_nuoi_theo_tag(tag: str, brain_root: str, chat_id: str, *, hua: bool = F
     return [dict(v) for v in moi]
 
 
+def _nhan_nuoi_win(engine_pids: List[int], da_thay: Dict[int, float], brain_root: str, chat_id: str,
+                   loi_dan: str, hua: bool, do_sau: int) -> Optional[dict]:
+    """Windows: con cháu của engine (thấy lúc engine chạy) còn sống sau khi engine thoát là việc bị bỏ lại."""
+    for p in engine_pids:       # engine có khi còn sống nốt nhịp cuối: lấy thêm một lần
+        if _ps.pid_exists(int(p)):
+            da_thay.update(_win_con_chau(p))
+    ung = {p: t for p, t in da_thay.items() if int(p) not in {int(x) for x in engine_pids}}
+    song = _win_mo_rong(ung)
+    tv = _win_thanh_vien(song)
+    if not tv or la_phu_engine(tv):
+        return None
+    cwd = next((m["cwd"] for m in tv if m.get("cwd")), "") or str(brain_root or "")
+    return {
+        "id": "j" + uuid.uuid4().hex[:8],
+        "pgid": 0,
+        "pids": [[m["pid"], song.get(m["pid"], 0.0)] for m in tv],
+        "mo_ta": mo_ta_lenh(tv) or "tiến trình nền",
+        "cwd": cwd,
+        "brain_root": str(brain_root or ""),
+        "chat_id": str(chat_id or ""),
+        "bat_dau": time.time(),
+        "trang_thai": "run",
+        "sau_khi_xong": loi_dan,
+        "noi_tiep": bool(loi_dan) or bool(hua),
+        "do_sau": int(do_sau or 0),
+    }
+
+
 def theo_doi_nhom(pgid: int, mo_ta: str, cwd: str, brain_root: str, chat_id: str) -> str:
     """Nhận theo dõi NGAY một nhóm tiến trình UNI MATE tự bật (terminal của engine API, 0.256.0).
 
     Khác `nhan_nuoi_theo_tag`: không cần đợi hết lượt rồi dò nhóm còn sống, vì chính UNI MATE bật
     tiến trình và biết chắc mã nhóm. Trả mã việc (rỗng nếu không theo dõi được).
     """
-    if not POSIX or not pgid or not chat_id:
+    if not HO_TRO or not pgid or not chat_id:
         return ""
     v = {
         "id": "j" + uuid.uuid4().hex[:8],
-        "pgid": int(pgid),
+        "pgid": int(pgid) if POSIX else 0,
         "mo_ta": str(mo_ta or "tiến trình nền")[:200],
         "cwd": str(cwd or ""),
         "brain_root": str(brain_root or ""),
@@ -342,6 +507,9 @@ def theo_doi_nhom(pgid: int, mo_ta: str, cwd: str, brain_root: str, chat_id: str
         "do_sau": 0,
     }
     v["noi_tiep"] = bool(v["sau_khi_xong"])
+    if not POSIX:
+        # Windows: UNI MATE tự bật tiến trình nên biết chắc pid; con cháu của nó được thêm ở mỗi nhịp theo dõi.
+        v["pids"] = [[int(pgid), _win_bat_luc(pgid)]] + [[p, t] for p, t in _win_con_chau(pgid).items()]
     with _KHOA:
         _VIEC[v["id"]] = v
     _luu()
@@ -379,6 +547,9 @@ def co_nhom_song(tag: str) -> bool:
     định có cần đợi một nhịp ân hạn trước khi nhận nuôi hay không."""
     with _KHOA:
         pids = list(_NHOM_THEO_TAG.get(str(tag or ""), []))
+        da_thay = dict(_DA_THAY.get(str(tag or ""), {}))
+    if WINDOWS:
+        return any(_ps.pid_exists(int(p)) for p in pids) or any(_win_song(p, t) for p, t in da_thay.items())
     return any(nhom_con_song(p) for p in pids)
 
 
@@ -386,6 +557,7 @@ def bo_tag(tag: str) -> None:
     """Lượt không đi tới bước nhận nuôi (lỗi, bị dừng): bỏ ghi nhớ để sổ không phình."""
     with _KHOA:
         _NHOM_THEO_TAG.pop(str(tag or ""), None)
+        _DA_THAY.pop(str(tag or ""), None)
 
 
 def dang_chay(chat_id: str = "", brain_root: str = "") -> List[dict]:
@@ -413,10 +585,18 @@ def huy(job_id: str) -> Optional[dict]:
         if not v or v.get("trang_thai") != "run":
             return None
         v["huy"] = True
-    try:
-        os.killpg(int(v["pgid"]), signal.SIGTERM)
-    except Exception:
-        pass
+    if v.get("pids"):
+        for p, t in _pids(v).items():
+            try:
+                if WINDOWS and _win_song(p, t):
+                    _ps.Process(int(p)).terminate()
+            except Exception:
+                pass
+    else:
+        try:
+            os.killpg(int(v["pgid"]), signal.SIGTERM)
+        except Exception:
+            pass
     _luu()
     return dict(v)
 
@@ -445,11 +625,11 @@ def kiem_mot_luot(now: float = 0.0) -> List[dict]:
     with _KHOA:
         chay = [v for v in _VIEC.values() if v.get("trang_thai") == "run"]
     for v in chay:
-        if nhom_con_song(v.get("pgid") or 0):
+        if viec_con_song(v):
             # Lúc nhận nuôi, lệnh ngầm có khi mới fork xong (chỉ thấy vỏ "sh"). Nhịp sau đã exec
             # thành lệnh thật: cập nhật mô tả và thư mục làm việc cho báo cáo cuối dễ đọc.
             if v.get("mo_ta") in ("", "tiến trình nền") or _VO_VI.match(str(v.get("mo_ta") or "").split(" ")[0]):
-                tv = _thanh_vien(v.get("pgid") or 0)
+                tv = _thanh_vien_viec(v)
                 moi = mo_ta_lenh(tv)
                 if moi and moi != v.get("mo_ta"):
                     v["mo_ta"] = moi

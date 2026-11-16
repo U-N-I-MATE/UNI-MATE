@@ -244,6 +244,13 @@ def _them(args, ctx) -> str:
                 f"{_cu.get('status')}. Hãy nói rõ với người dùng, rồi hoặc đặt tên việc khác đi, "
                 "hoặc xử lý việc cũ ở trang Nhiệm vụ (chạy lại / huỷ) trước khi giao lại.")
 
+    # 0.453.0: lam_tiep=false -> this job opens no follow-up turn when it ends (server/noi_tiep_nen.py).
+    if (args or {}).get("lam_tiep") is False or str((args or {}).get("lam_tiep")).lower() == "false":
+        try:
+            import noi_tiep_nen
+            noi_tiep_nen.dat_lam_tiep("task", tid, False)
+        except Exception:  # noqa: BLE001
+            pass
     ten_mode = {"suggest": "chỉ đọc và đề xuất", "auto": "được ghi file nháp trong brain",
                 "full": "toàn quyền, tự thao tác ra ngoài"}[mode]
     ra = [f"Đã giao việc: {tieu_de}", f"Mã việc: {tid}", f"Mức quyền: {mode} ({ten_mode})"]
@@ -273,6 +280,13 @@ def _them(args, ctx) -> str:
         pass
     if _dieu_phoi_chay(muc):
         ra.append("Việc chạy nền. Kết quả tự về, tiến độ xem ở trang Nhiệm vụ.")
+        try:
+            import noi_tiep_nen
+            if noi_tiep_nen.co("task", tid) and noi_tiep_nen.bat():
+                ra.append("Các việc giao trong lượt này xong hết thì UNI MATE tự mở một lượt trong khung chat này "
+                          "để đọc kết quả và làm bước tiếp theo. Nói đúng như vậy, không hứa gì thêm.")
+        except Exception:  # noqa: BLE001
+            pass
     else:
         ra.append(_CANH_BAO_DIEU_PHOI.format(muc=muc))
     return "\n".join(ra)
@@ -397,6 +411,8 @@ def register(ctx):
                 "intent": {"type": "string", "description": "Mô tả đầy đủ hơn nếu tiêu đề chưa đủ"},
                 "mode": {"type": "string", "enum": ["suggest", "auto", "full"]},
                 "chat_id": {"type": "string", "description": "Người nhận kết quả, vd web:<mã phiên>"},
+                "lam_tiep": {"type": "boolean", "description": "Mặc định true: việc xong thì khung chat tự đọc kết "
+                             "quả và làm tiếp. false khi chỉ cần báo kết quả."},
                 "deps": {"type": "string", "description": "Mã các việc phải xong trước, cách nhau dấu phẩy"},
                 "route": {"type": "string",
                           "description": "auto, hoặc wf:<slug> để chạy một quy trình có thật"},

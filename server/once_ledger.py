@@ -223,6 +223,16 @@ def unknowns(job: str) -> list[dict]:
     return [dict(r) for r in rows]
 
 
+def done_list(job: str, limit: int = 20) -> list[str]:
+    """0.453.0: one line per outside action this job already did (a follow-up chain lists them for the model)."""
+    if not job:
+        return []
+    with _lock:
+        rows = _conn().execute("SELECT target FROM writes WHERE job=? AND status=? ORDER BY started_at LIMIT ?",
+                               (job, SUCCEEDED, int(limit))).fetchall()
+    return [str(r["target"]) for r in rows]
+
+
 def resolve(job: str, done: bool) -> int:
     """Chủ đã kiểm: `done=True` coi như đã làm (lần sau bỏ qua), `False` xoá khỏi sổ để làm lại."""
     with _lock:

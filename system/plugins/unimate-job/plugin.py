@@ -91,7 +91,7 @@ def _cancel(args, ctx) -> str:
 def _chay(args, ctx) -> str:
     if tien_trinh_nen is None:
         return "ERROR: bộ theo dõi việc chạy nền chưa sẵn sàng trên máy chủ này."
-    if not tien_trinh_nen.POSIX:
+    if not getattr(tien_trinh_nen, "HO_TRO", tien_trinh_nen.POSIX):
         return ("ERROR: theo dõi việc chạy nền chưa hỗ trợ Windows. Hãy chạy lệnh trong lượt này "
                 "(không chạy ngầm) để trả kết quả ngay, hoặc giao việc Kanban.")
     op = str((args or {}).get("op") or "").strip().lower()

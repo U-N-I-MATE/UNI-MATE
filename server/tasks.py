@@ -174,6 +174,15 @@ class TasksDeps:
     agent_roster: Optional[Callable[[str], list]] = None
     # 0.199.0: (source, ref, brain=, title=, error=, request=) -> report a broken job to UNI MATE Core (incident_desk.py).
     incident_hook: Optional[Callable] = None
+    # 0.453.0: (task) -> a job given from a chat was just created / just ended (noi_tiep_nen.py: the chat that gave it
+    # opens a follow-up turn once its jobs are done). None = not wired; the queue runs as before.
+    created_hook: Optional[Callable] = None
+    finish_hook: Optional[Callable] = None
+
+
+# 0.453.0: a blocked job that is only WAITING (a question for the owner, a plan limit that reopens, a transient error
+# that is retried) has not ended, so it opens no follow-up turn.
+_WAIT_KINDS = ("needs_input", "limit", "transient")
 
 
 class TasksFeature:
@@ -325,6 +334,13 @@ class TasksFeature:
         self.store.promote_dependencies(root)
         self._snapshot(root)
         self.wake()
+        if chat_id and self.deps.created_hook:
+            try:
+                task = self.store.get_task(tid) or {}
+                if task and time.time() - float(task.get("created_at") or 0) < 5:
+                    self.deps.created_hook(task)
+            except Exception as e:  # noqa: BLE001 - the follow-up book never blocks a job
+                print(f"[kanban] created hook: {type(e).__name__}: {e}", file=sys.stderr)
         return tid
 
     # ------------------------------------------------------------------
@@ -635,6 +651,7 @@ class TasksFeature:
             if final_task and final_task.get("status") in ("done", "review", "blocked"):
                 await self._report(final_task)
                 await self._hoc_tu_viec(root, final_task)
+                self._finish_hook(final_task)
 
     # ------------------------------------------------------------------
     # AI specification and execution lanes
@@ -1522,6 +1539,18 @@ Trả DUY NHẤT một dòng JSON, không markdown:
             )
         except Exception as e:
             print(f"[kanban] báo câu hỏi của việc {tid} lỗi: {type(e).__name__}: {e}", file=sys.stderr)
+
+    def _finish_hook(self, task: dict) -> None:
+        """0.453.0: tell the follow-up book a job ENDED (done, waiting for review, blocked for good)."""
+        if not self.deps.finish_hook:
+            return
+        if task.get("status") == "blocked" and (str(task.get("block_kind") or "") in _WAIT_KINDS
+                                                 or self._cau_hoi_dang_cho(task)):
+            return
+        try:
+            self.deps.finish_hook(task)
+        except Exception as e:  # noqa: BLE001
+            print(f"[kanban] finish hook: {type(e).__name__}: {e}", file=sys.stderr)
 
     async def _report(self, task: dict) -> None:
         if not self.deps.report:

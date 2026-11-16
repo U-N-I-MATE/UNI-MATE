@@ -230,6 +230,36 @@ A cleanly finished job still sits in the bell list for you to review, it just do
 
 The trade-off to know: while you are away, a finished job has **nothing** reminding you. To see it, open the bell, or reopen the conversation that handed the work over.
 
+## UNI MATE goes on by itself when background work ends (since 0.453.0)
+
+Before this release, a job given from a chat dropped its result in the chat and stopped there. To have UNI MATE read the result and do the next step you had to write "the job is done, check it". UNI MATE now does that on its own.
+
+It covers every job **given in one of your chat turns**, in the web chat or on Telegram:
+
+- background commands (video render, build, big download), Windows included;
+- Kanban jobs, including a workflow run (`route wf:<slug>`);
+- jobs given to a Team.
+
+How it runs:
+
+1. The jobs given in **one chat turn** are one batch. Once they have all ended, UNI MATE opens **one** new turn in that same chat. Its opening message says which jobs are done, waiting for review or blocked, with their results.
+2. In that turn UNI MATE judges each job **pass or fail** against the original request, then does the next step of the plan. With no step left it sums up the final result and stops.
+3. If one job runs past **30 minutes** while the others are done, UNI MATE goes on with the finished ones; the late job gets its own turn.
+4. The **bell** rings when a follow-up turn has finished.
+
+Safety limits:
+
+| Rule | Limit |
+|---|---|
+| Follow-up turns in a row for one chain of jobs | at most 3, then it says so and waits for you to write "continue" |
+| Follow-up turns per hour in one chat | at most 10 |
+| A Kanban job waiting for review | UNI MATE reads and judges it, never approves for you |
+| An outside action already done (message, post, order) | not done again by later turns of the same chain |
+
+Out of scope: scheduled runs (reminders, loops) and jobs made by hand on the Tasks page. They report their results as before.
+
+Turn it off in **Settings, Continue when background work ends**. To have one job only report its result, say so when you give it (the `unimate_task` tool takes `lam_tiep=false`). The book behind this lives in `noi_tiep_nen.sqlite3` in the state folder, so a server restart does not lose it.
+
 ## Seeing background work right in the chat box
 
 Since 0.25.2, right above the chat input there is a **background work strip**. It only appears when something is genuinely alive, and it says exactly one thing: is anything running for you right now.
@@ -354,7 +384,7 @@ A running job cannot change state. Click **Stop task** first, wait for the card 
 Work handed over in web chat must carry the chat session id for the result to return to that box. UNI MATE attaches it when you hand over in words in chat; work created by hand on this page or through a curl command has no session id and only goes to Telegram. If the Telegram message is silent: the bot is off, there is no chat id in the whitelist, or the job has no clear owner so the message went to the first Telegram ID rather than the account you had in mind. See [The Telegram channel](11-telegram.md).
 
 **UNI MATE promised "I will wait for the jobs to finish then summarise" and never summarises.**
-That is an empty promise and has been banned since 0.9.289: a UNI MATE answer turn ends the moment it stops speaking, with no mechanism to wake it up to summarise. Background work only pushes its **raw** result back into the chat box. For a summary, hand over one more job dedicated to summarising (with `deps` pointing at the earlier jobs), or send another message once the results are in.
+Since 0.453.0 this happens on its own: once the jobs given in one chat turn have all ended, UNI MATE opens a follow-up turn in that chat to read the results, judge them and go on (see "UNI MATE goes on by itself when background work ends"). No follow-up turn? Check that **Continue when background work ends** is on in Settings, that the job was given from a chat turn (not made by hand on this page), and that the chain has not reached its cap of 3 turns in a row.
 
 **The board is empty although there was work yesterday.**
 Three possibilities, in order of likelihood: you are standing in **another brain** (switch brains at the top of the dashboard), the work finished over 3 days ago and was archived, or someone called a cleanup endpoint.

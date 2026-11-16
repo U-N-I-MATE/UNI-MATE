@@ -59,6 +59,19 @@ def has_turn(chat_id: str) -> bool:
     return bool(cid) and any(v.get("chat_id") == cid for v in list(_DANG.values()))
 
 
+def khoa_cua(chat_id: str) -> str:
+    """0.453.0: key of the ONE turn running in this chat right now (noi_tiep_nen groups the jobs a turn gave by it).
+    "" when none or more than one (never guess which turn gave the job)."""
+    cid = str(chat_id or "").strip()
+    ds = [k for k, v in list(_SONG.items()) if v.get("chat_id") == cid] if cid else []
+    return ds[0] if len(ds) == 1 else ""
+
+
+def con_chay(khoa: str) -> bool:
+    """0.453.0: the turn holding this key has not ended (read from the live book, never from age)."""
+    return bool(khoa) and str(khoa) in _SONG
+
+
 def ket_thuc(khoa: str) -> None:
     _DANG.pop(str(khoa or ""), None)
     _SONG.pop(str(khoa or ""), None)

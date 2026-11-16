@@ -8,7 +8,15 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.453.0] - 2026-11-16
 ### Thêm mới
-- **Việc nền xong thì UNI MATE tự làm tiếp.** (đang làm)
+- **Việc nền xong thì UNI MATE tự làm tiếp, không cần nhắn "xong rồi, kiểm tra đi".** Mọi việc giao từ khung chat (lệnh chạy nền, việc Kanban, việc giao Nhóm, quy trình chạy qua Kanban) khi kết thúc sẽ mở một lượt mới trong đúng khung chat đó: UNI MATE đọc kết quả, tự đánh giá đạt hay chưa đạt, rồi làm bước tiếp theo của kế hoạch. Không còn bước nào thì tóm tắt kết quả cuối rồi dừng.
+- **Gộp theo đợt.** Các việc giao trong cùng một lượt chat xong hết mới mở một lượt tiếp. Có việc chạy quá 30 phút thì UNI MATE mở với những việc đã xong trước, việc xong sau có lượt riêng.
+- **Có trần để không chạy vòng vo.** Tối đa 3 lượt tự làm tiếp liên tiếp cho một chuỗi việc và 10 lượt mỗi giờ cho một khung chat. Quá trần thì UNI MATE báo vào khung chat, anh nhắn "làm tiếp" nếu muốn đi tiếp.
+- **Bật tắt ở Cài đặt**, khối **Tự làm tiếp khi việc nền xong** (mặc định bật). Lượt tự làm tiếp xong thì chuông thông báo báo luôn.
+### Sửa lỗi
+- Việc Kanban đang chờ duyệt: UNI MATE chỉ đọc và đánh giá, không tự duyệt thay anh, chỉ làm các bước không phụ thuộc việc duyệt.
+- Thao tác ra ngoài (gửi tin, đăng bài, tạo đơn) đã làm ở một lượt tự làm tiếp thì các lượt sau của cùng chuỗi không làm lại.
+- Chạy được cả trên Windows (máy nhà), VPS, khung chat web và Telegram, và vẫn làm tiếp sau khi máy chủ khởi động lại. Trước đây chỉ lệnh chạy nền trên Linux/Mac, ở khung chat web mới có lượt tiếp, khởi động lại là mất.
+- Lịch tự chạy (nhắc hẹn, việc lặp) không thuộc phạm vi này, vẫn báo kết quả như cũ.
 
 ## [0.452.0] - 2026-11-16
 ### Thêm mới

@@ -61,6 +61,14 @@ def _dispatch(ops, root, team, args, turn) -> str:
                                  assignee=_s(args.get("assignee") or args.get("slug")),
                                  request_id=_s(args.get("request_id")))
     task = got["task"]
+    if got["created"] and got["report_to"]:
+        # 0.453.0: the job ends -> the chat that gave it reads the result and goes on (server/noi_tiep_nen.py).
+        try:
+            import noi_tiep_nen
+            noi_tiep_nen.dang_ky(got["report_to"], "team", str(got["task_id"]),
+                                 _s(args.get("objective") or args.get("description"))[:200], brain=root)
+        except Exception:  # noqa: BLE001 - the follow-up book never blocks a dispatch
+            pass
     out = [("Việc này đã giao trước đó (cùng mã đối chiếu), KHÔNG tạo việc thứ hai."
             if not got["created"] else f"Đã giao việc cho nhóm {team['name']}."),
            f"Mã việc: {got['task_id']}", f"Mã đối chiếu: {got['correlation_id']}",
