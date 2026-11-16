@@ -354,7 +354,8 @@ _AUTH_PUBLIC_EXACT = ("/", "/favicon.ico", "/auth/status", "/auth/login", "/auth
                       # 0.452.0: the owner's other UNI MATE (home PC) asks this one who runs the schedules and claims
                       # runs. No cookie on that call; each route checks the link key (X-UniMate-Pair) itself.
                       "/may-chay-lich/remote/runner", "/may-chay-lich/remote/claim",
-                      "/may-chay-lich/remote/register", "/may-chay-lich/remote/sync")
+                      "/may-chay-lich/remote/register", "/may-chay-lich/remote/sync",
+                      "/may-chay-lich/remote/lich")
 # Endpoint CHỈ-LOCALHOST: agent (Claude CLI chạy cùng máy/container) curl được mà không cần
 # cookie đăng nhập; request từ ngoài (qua Traefik/Caddy/LAN) đến từ IP khác loopback → vẫn bị chặn.
 # /reminders/cancel đi cùng nhóm với /reminders (TẠO nhắc): huỷ là thao tác YẾU HƠN tạo, nên
@@ -13246,12 +13247,15 @@ async def viec_all():
     để thấy cả việc nằm ở brain chưa từng mở trên dashboard - đây là gốc của cái rối 'tạo qua
     Telegram vào brain mặc định, tìm ở brain khác không thấy'."""
     loop_feature.ensure_migrated()
+    await may_chay_lich.pull_lich()   # 0.453.2: linked home PC: done / next run of what the VPS runs, from the VPS
 
     def _brain_viec(name: str, path: str, is_default: bool) -> dict:
         try:
-            st_all = loop_feature.read_state(path)
+            ds_loop = loop_feature.list_loops(path)
+            st_all = may_chay_lich.loop_state_theo_may_chay(
+                path, loop_feature.read_state(path), {lp["slug"]: lp.get("chay_tren", "") for lp in ds_loop})
             loops = []
-            for lp in loop_feature.list_loops(path):
+            for lp in ds_loop:
                 v = loop_feature.loop_view(path, lp, st_all)
                 v["brain_name"], v["brain_path"] = name, path
                 loops.append(v)
@@ -30101,3 +30105,11 @@ def noi_tiep_dat(enabled: str = Form("1")):
     on = str(enabled).strip().lower() not in ("0", "false", "off", "no", "")
     cfgmod.update_settings({"noi_tiep": {"enabled": on}})
     return {"ok": True, "enabled": on}
+
+
+@app.get("/may-chay-lich/remote/lich")
+def may_chay_lich_remote_lich(request: Request):
+    """0.453.2: the linked home PC reads the state of the schedules this VPS runs (done, next run, result)."""
+    if not _pair_ok(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    return may_chay_lich.remote_lich()

@@ -10,7 +10,10 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ### Fixed
 - **The Schedule machine and Continue blocks no longer show raw keys (mcl.this, nt.on...) right after an update.** While the server was still starting, the browser used its kept old texts for now; UNI MATE now asks again until the new texts arrive, then draws both blocks again.
 - **The home PC names the VPS correctly:** the banner reads "Schedules run on the VPS (jin.unihq.vn)" from the linked VPS address, instead of "VPS (VPS)".
-- **Points to the right place for GitHub sync:** the **Self-learning** page, section **Sync brains with GitHub (two-way)**, not "Settings, GitHub backup" as the 0.452.0 notices and changelog said.
+- **Points to the right place for GitHub sync:** the **Self-learning** page, section **Sync brains with GitHub (two-way)**, as the 0.452.0 notices and changelog should have said (they pointed to the Settings page by mistake).
+- **A home PC linked to the VPS sees the state of the schedules the VPS runs at once** (done, result, next run), read straight from the VPS instead of waiting for the GitHub sync. Before, a reminder the VPS had run still showed as pending at home.
+- **The run now button on the machine that does not run a schedule is refused**, saying which machine runs it, so nothing runs twice.
+- **Reminders no longer repeat themselves:** a reminder that already reads "Remind me: ..." goes out as written instead of "Reminder: Remind me: ..."; others start with "Reminder:" and no longer address the owner in a way they never used.
 
 ## [0.453.1] - 2026-11-16
 ### Fixed

@@ -10,7 +10,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 ### Sửa lỗi
 - **Khối Máy chạy lịch và Tự làm tiếp không còn hiện mã thô (mcl.this, nt.on...) ngay sau khi cập nhật.** Lúc máy chủ còn đang khởi động, trình duyệt dùng tạm bộ chữ cũ đã lưu; nay UNI MATE tự hỏi lại tới khi có bộ chữ mới rồi vẽ lại hai khối này.
 - **Máy nhà ghi đúng tên VPS:** dòng báo hiện "Lịch đang chạy ở VPS (jin.unihq.vn)" theo địa chỉ VPS đã nối, thay cho "VPS (VPS)".
-- **Chỉ đúng chỗ chỉnh đồng bộ GitHub:** trang **Tự học**, mục **Đồng bộ brain với GitHub (2 chiều)**, không phải "Cài đặt, Sao lưu GitHub" như các câu báo và nhật ký 0.452.0 ghi trước đó.
+- **Chỉ đúng chỗ chỉnh đồng bộ GitHub:** trang **Tự học**, mục **Đồng bộ brain với GitHub (2 chiều)**, như các câu báo và nhật ký 0.452.0 lẽ ra phải ghi (trước đó ghi nhầm sang trang Cài đặt).
+- **Máy nhà đã nối VPS thấy ngay trạng thái lịch do VPS chạy** (đã chạy, kết quả, lần chạy kế tiếp), lấy thẳng từ VPS, không phải chờ lượt đồng bộ GitHub. Trước đây một nhắc hẹn VPS đã chạy vẫn hiện "chưa xong" ở máy nhà.
+- **Nút ▷ (chạy ngay) ở máy không chạy lịch bị chặn**, kèm câu nói rõ lịch đang chạy ở máy nào, để không chạy trùng hai lần.
+- **Câu nhắc không còn lặp chữ:** nhắc hẹn đã tự ghi "Nhắc anh: ..." thì gửi đúng như vậy, thay cho "Nhắc bạn: Nhắc anh: ..."; nhắc khác mở đầu bằng "Nhắc hẹn:", không tự gọi người dùng là "bạn".
 
 ## [0.453.1] - 2026-11-16
 ### Sửa lỗi

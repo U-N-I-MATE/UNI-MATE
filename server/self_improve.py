@@ -1276,8 +1276,21 @@ class LoopFeature:
         async def loops_run_now(slug: str = Form(...), brain: str = Form("brain")):
             if self.lock.locked():
                 return {"ok": False, "error": localefmt.chu("Đang chạy một vòng khác", "Another cycle is running")}
-            if not self.get_loop(brain, slug):
+            lp = self.get_loop(brain, slug)
+            if not lp:
                 return {"ok": False, "error": "not found"}
+            try:
+                import may_chay_lich
+                if not may_chay_lich.should_run(lp.get("chay_tren")):
+                    # 0.453.2: the other machine runs this loop; a run here too would do the same work twice.
+                    ten = may_chay_lich.ten_may_chay(lp.get("chay_tren"))
+                    return {"ok": False, "other_machine": True, "error": localefmt.chu(
+                        f"Việc lặp này chạy ở {ten}, máy này không chạy để tránh làm trùng. Muốn chạy ngay thì bấm ▷ "
+                        f"trên trang Nhiệm vụ của {ten}.",
+                        f"This loop runs on {ten}; this machine does not run it, to avoid doing it twice. To run it "
+                        f"now, press ▷ on the Tasks page of {ten}.")}
+            except Exception:  # noqa: BLE001 - the schedule machine never blocks a run by failing
+                pass
             self.register_brain(brain)
             asyncio.create_task(self.run_cycle(brain, slug, "manual"))
             return {"ok": True, "started": True}

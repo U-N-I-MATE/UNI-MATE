@@ -63,6 +63,19 @@ import work_log          # one line per finished run, for the Tasks page stats (
 import turn_context
 
 
+# 0.453.2: the reminder text often already says it ("Nhắc anh: thử máy chạy lịch"), and the bell then read "Nhắc bạn:
+# Nhắc anh: ...", with a "bạn" the owner never used. Such a text goes out as written; any other gets a lead that names
+# nobody ("Nhắc hẹn:"), so the owner's own way of being addressed is the only one on screen.
+_DA_NHAC_RE = re.compile(r"^\s*(⏰\s*)?(nhắc|nhac|reminder|remind)\b", re.I)
+
+
+def _cau_nhac(text: str) -> str:
+    t = str(text or "").strip()
+    if _DA_NHAC_RE.match(t):
+        return t if t.startswith("⏰") else "⏰ " + t
+    return localefmt.chu("⏰ Nhắc hẹn: ", "⏰ Reminder: ") + t
+
+
 def _nhan_kw(fn, ten: str) -> bool:
     """Hàm `fn` có nhận tham số từ khoá `ten` không (hoặc **kwargs). Dùng để gửi thêm thông tin
     thẻ cho khung chat mà không làm vỡ những hàm gửi chỉ nhận (chat_id, text)."""
@@ -654,10 +667,20 @@ class RemindersFeature:
             self._save(brain, data)
         return hit
 
+    def _theo_may_chay(self, brain: str, rems: list) -> list:
+        """0.453.2: reminders the OTHER machine runs, as that machine sees them (done, next run, result): a linked home
+        PC asks the VPS instead of waiting for the GitHub sync. Unchanged when this machine runs them."""
+        try:
+            root = self.deps.brain_root(brain)
+            return [may_chay_lich.theo_may_chay(root, r) for r in rems]
+        except Exception:  # noqa: BLE001
+            return rems
+
     def live_views(self, brain: str) -> list:
         """Pending AND paused reminders of one brain, by next run (the Tasks page lists both;
         a paused one shows its switch off instead of vanishing)."""
-        rems = [r for r in self._load(brain).get("reminders", []) if r.get("status") in LIVE_STATUSES]
+        rems = [r for r in self._theo_may_chay(brain, self._load(brain).get("reminders", []))
+                if r.get("status") in LIVE_STATUSES]
         rems.sort(key=lambda r: float(r.get("due_at") or 0))
         return [self._view(r) for r in rems]
 
@@ -710,6 +733,14 @@ class RemindersFeature:
             cur = self._find(self._load(brain), rid)
         if cur is None or cur.get("status") not in LIVE_STATUSES:
             return {"ok": False, "error": localefmt.chu("không thấy nhắc hẹn đang chờ", "no live reminder with that id")}
+        if not may_chay_lich.should_run(cur.get("chay_tren")):
+            # 0.453.2: the other machine runs it; running it here too is the double post 0.452.0 removed.
+            ten = may_chay_lich.ten_may_chay(cur.get("chay_tren"))
+            return {"ok": False, "other_machine": True, "error": localefmt.chu(
+                f"Lịch này chạy ở {ten}, máy này không chạy để tránh làm trùng. Muốn chạy ngay thì bấm ▷ trên trang "
+                f"Nhiệm vụ của {ten}.",
+                f"This schedule runs on {ten}; this machine does not run it, to avoid doing it twice. To run it now, "
+                f"press ▷ on the Tasks page of {ten}.")}
         if rid in self._dang_chay:
             return {"ok": False, "error": localefmt.chu("nhắc này đang chạy", "this reminder is already running")}
         rem = dict(cur, due_at=_now())
@@ -732,7 +763,8 @@ class RemindersFeature:
     def pending_views(self, brain: str) -> list:
         """View các nhắc ĐANG CHỜ của 1 brain, sắp theo giờ tới. Dùng cho trang Việc gộp mọi
         brain (/viec/all) - tránh main.py thò vào _load/_view riêng tư."""
-        rems = [r for r in self._load(brain).get("reminders", []) if r.get("status") == "pending"]
+        rems = [r for r in self._theo_may_chay(brain, self._load(brain).get("reminders", []))
+                if r.get("status") == "pending"]
         rems.sort(key=lambda r: float(r.get("due_at") or 0))
         return [self._view(r) for r in rems]
 
@@ -961,7 +993,7 @@ class RemindersFeature:
                 else:
                     msg = clean[:SCRIPT_OUT_CAP]
         else:   # notify
-            msg = localefmt.chu("⏰ Nhắc bạn: ", "⏰ Reminder: ") + text
+            msg = _cau_nhac(text)
 
         ok, send_err = True, ""
         voice_rel = ""
@@ -1262,7 +1294,8 @@ class RemindersFeature:
 
         @router.get("/reminders")
         async def reminders_list(brain: str = Query("brain")):
-            rems = sorted(self._load(brain).get("reminders", []),
+            await may_chay_lich.pull_lich()   # 0.453.2: linked home PC: state of what the VPS runs, from the VPS
+            rems = sorted(self._theo_may_chay(brain, self._load(brain).get("reminders", [])),
                           key=lambda r: float(r.get("due_at", 0)))
             pending = [self._view(r) for r in rems if r.get("status") == "pending"]
             paused = [self._view(r) for r in rems if r.get("status") == "paused"]
