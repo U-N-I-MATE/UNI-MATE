@@ -1364,7 +1364,9 @@
     if (r && r.ok === false) { f.err = r.error || tw("nv.err.generic"); renderLayer(); return; }
     S.layer = null; S.form = null; renderLayer();
     var chromeNote = r && (r.chrome_note || (r.reminder && r.reminder.chrome_note));   // Chrome on but it cannot run
-    if (chromeNote) toast(chromeNote); else toast(f.edit || f.loop ? tw("nv.saved") : f.kind === "appt" ? tw("nv.ap.added") : f.who === "me" ? (f.habit && f.rule ? tw("nv.h.added") : tw("nv.f.added")) : tw("nv.f.given"));
+    // 0.452.0: made on a home PC whose schedules run on the VPS while GitHub sync is off here: it would never get there.
+    var mayNote = r && r.canh_bao_may;
+    if (mayNote) toast(mayNote); else if (chromeNote) toast(chromeNote); else toast(f.edit || f.loop ? tw("nv.saved") : f.kind === "appt" ? tw("nv.ap.added") : f.who === "me" ? (f.habit && f.rule ? tw("nv.h.added") : tw("nv.f.added")) : tw("nv.f.given"));
     await load(); render(); schedulePoll();
   }
   async function createReminder(txt, mode, date, time, rule, opts) {

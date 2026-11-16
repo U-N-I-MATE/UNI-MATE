@@ -167,15 +167,104 @@ async def rec_http(method, path, body=None, link=None):
     return {"ok": True}
 
 M._http = rec_http
-M._sync_fn = lambda: calls.append("sync")
-asyncio.run(M._nudge_run(delay=0))
+M._sync_fn = lambda: calls.append("sync") or {"ok": True}
+asyncio.run(M._nudge_run(delay=0, retry_s=()))
 check("linked home: a schedule change syncs the brains then asks the VPS to pull",
       calls == ["sync", "/may-chay-lich/remote/sync"], calls)
 M._sync_fn = None
 check("no backup configured: nothing to nudge", M.nudge_sync_soon() is None)
 check("reminder and loop saves nudge the sync",
       "may_chay_lich.nudge_sync_soon()" in read("server/reminders.py")
-      and "may_chay_lich.nudge_sync_soon()" in read("server/self_improve.py"))
+      and "may_chay_lich.nudge_sync_soon({" in read("server/self_improve.py"))
+
+# a schedule made at home that cannot reach the VPS is reported, never silent (owner 16/11 11:22)
+told = []
+
+
+async def tell(chat_id, text, brain):
+    told.append((chat_id, text))
+
+M.wire(lambda: [brain1, brain2], lambda: {"ok": True}, lambda: sync_on["v"], tell)
+sync_on = {"v": False}
+check("sync off on a linked home PC: said right when a VPS schedule is made", "không tới" in M.warn_new("")
+      or "not reach" in M.warn_new(""), M.warn_new(""))
+check("pinned to the home PC: nothing to say", M.warn_new("home") == "")
+sync_on["v"] = True
+check("sync on: nothing to say", M.warn_new("") == "")
+
+
+async def down(*a, **k):
+    raise RuntimeError("VPS down")
+
+M._http = down
+M._nudge["items"].clear()
+now = time.time()
+M.nudge_sync_soon({"key": "r_soon", "title": "Đăng Mộc Tử", "due_at": now + 600, "chat_id": "web:s1", "brain": "b",
+                   "pin": ""})
+M.nudge_sync_soon({"key": "r_late", "title": "Báo cáo tuần", "due_at": now + 86400, "chat_id": "web:s2", "brain": "b",
+                   "pin": ""})
+M.nudge_sync_soon({"key": "r_home", "title": "AdsPower", "due_at": now + 60, "chat_id": "web:s3", "brain": "b",
+                   "pin": "home"})
+check("only schedules that run on the VPS wait for the hand-over", set(M._nudge["items"]) == {"r_soon", "r_late"})
+t = M._nudge.get("task")
+if t is not None:
+    t.cancel()
+told.clear()
+err = asyncio.run(M._nudge_run(delay=0, retry_s=(0, 0)))
+chats = [c for c, _ in told]
+check("VPS unreachable: retried, then each schedule is reported in the chat that made it, once",
+      err and chats.count("web:s1") == 1 and chats.count("web:s2") == 1 and "web:s3" not in chats, told)
+check("the report names the schedule and says it cannot run yet",
+      "Đăng Mộc Tử" in told[0][1] and ("chưa tới được VPS" in told[0][1] or "has not reached" in told[0][1]))
+st_un = M.status()
+check("the Settings card lists what has not reached the VPS and why", len(st_un["unsent"]) == 2 and st_un["unsent_error"])
+told.clear()
+seq = []
+
+
+async def due_soon_only(method, path, body=None, link=None):
+    seq.append(path)
+    raise RuntimeError("VPS down")
+
+M._http = due_soon_only
+M._nudge["items"].clear()
+M.nudge_sync_soon({"key": "r_now", "title": "Nhắc 30 phút", "due_at": time.time() + 1800, "chat_id": "web:a",
+                   "brain": "b", "pin": ""})
+M.nudge_sync_soon({"key": "r_week", "title": "Việc tuần", "due_at": time.time() + 7 * 86400, "chat_id": "web:b",
+                   "brain": "b", "pin": ""})
+t = M._nudge.get("task")
+if t is not None:
+    t.cancel()
+
+
+async def first_try_only():
+    task = asyncio.ensure_future(M._nudge_run(delay=0, retry_s=(5, 5)))
+    await asyncio.sleep(0.2)
+    first = list(told)
+    task.cancel()
+    return first
+
+first = asyncio.run(first_try_only())
+check("due within the hour: reported at the first failure, a later one waits for the retries",
+      [c for c, _ in first] == ["web:a"], first)
+told.clear()
+
+
+async def back_up(method, path, body=None, link=None):
+    return {"ok": True}
+
+M._http = back_up
+res = asyncio.run(M.push_now())
+check("Send to the VPS button: works once the VPS is back, and the chats told before hear it got there",
+      res["ok"] and not M._nudge["items"] and any("đã tới VPS" in x or "reached the VPS" in x for _, x in told), (res, told))
+rm = read("server/reminders.py")
+check("reminders made or changed at home name themselves for the hand-over; the create answer carries the warning",
+      rm.count("self._ve_vps(brain, ") == 2 and '"canh_bao_may": may_chay_lich.warn_new(' in rm)
+pl2 = read("system/plugins/unimate-schedule/plugin.py")
+check("schedule tool: tells the model to say the warning, loops made by the tool are handed over too",
+      'CẢNH BÁO, nói rõ cho user' in pl2 and 'may_chay_lich.nudge_sync_soon({"key": f"loop:{slug}"' in pl2)
+check("button route", '@app.post("/may-chay-lich/push")' in read("server/main.py"))
+M._sync_fn = None
 
 # ---------------------------------------------------------------- schedule stores merged entry by entry
 import git_brain  # noqa: E402
@@ -306,7 +395,7 @@ check("unimate_schedule: chay_tren in the schema, on create (reminder and loop f
 
 # dashboard
 idx = read("dashboard/index.html")
-check("Settings block and its script", 'id="mclBox"' in idx and "/static/may-chay-lich.js?v=2" in idx
+check("Settings block and its script", 'id="mclBox"' in idx and "/static/may-chay-lich.js?v=3" in idx
       and 'data-i18n="mcl.title"' in idx)
 tj = read("dashboard/tasks.js")
 check("Tasks page: banner when this machine does not run schedules, per-job picker once a second machine exists",

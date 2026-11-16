@@ -7744,5 +7744,15 @@
    "POST"
   ],
   "trong": null
+ },
+ {
+  "order": 778,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/push",
+  "name": "may_chay_lich_push",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
  }
 ]

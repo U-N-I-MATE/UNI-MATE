@@ -14387,8 +14387,15 @@ async def _start_scheduler():
             if bcfg.get("enabled") and bcfg.get("repo_url") and bcfg.get("token") and git_brain.has_git():
                 return _do_backup()
             return None
+        def _dong_bo_bat():
+            bcfg = cfgmod.read_settings().get("backup", {}) or {}
+            return bool(bcfg.get("enabled") and bcfg.get("repo_url") and bcfg.get("token") and git_brain.has_git())
+
+        async def _bao_lich_chua_toi(chat_id, text, brain):
+            # In the chat that made the schedule, plus the bell (inbox), like a reminder's own report.
+            await _notify_owner(chat_id, text, kind="system", source="schedule", brain=brain, level="important")
         may_chay_lich.wire(lambda: [_brain_root(b) for b in dict.fromkeys(["brain", *loop_feature.scheduler_brains()])],
-                           _dong_bo_neu_bat)
+                           _dong_bo_neu_bat, _dong_bo_bat, _bao_lich_chua_toi)
         asyncio.create_task(may_chay_lich.run_forever())
     except Exception as mce:
         print(f"[may_chay_lich] {type(mce).__name__}: {mce}", file=__import__('sys').stderr)
@@ -29774,3 +29781,9 @@ async def may_chay_lich_remote_sync(request: Request):
     if not _pair_ok(request):
         return JSONResponse({"error": "unauthorized"}, status_code=401)
     return await may_chay_lich.remote_sync()
+
+
+@app.post("/may-chay-lich/push")
+async def may_chay_lich_push():
+    """0.452.0: the owner's "Send schedules to the VPS" button (home PC): one hand-over attempt now."""
+    return await may_chay_lich.push_now()

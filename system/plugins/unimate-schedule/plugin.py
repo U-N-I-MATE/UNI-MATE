@@ -269,11 +269,20 @@ def _create_loop_file(vault_root: str, name: str, prompt: str, schedule: str,
     except Exception as e:
         return f"ERROR: ghi file loop lỗi: {type(e).__name__}: {e}"
     where = f" trong brain {brain_name}" if brain_name else ""
+    canh_bao = ""
+    try:
+        import may_chay_lich   # 0.452.0: a loop made on a linked home PC goes to the VPS that runs it now
+        may_chay_lich.nudge_sync_soon({"key": f"loop:{slug}", "title": name, "due_at": 0, "chat_id": owner_chat,
+                                       "brain": vault_root, "pin": chay_tren})
+        canh_bao = may_chay_lich.warn_new(chay_tren)
+    except Exception:
+        pass
     ten_mode = {"full": "toàn quyền, tự thao tác ra ngoài", "auto": "chỉ ghi file nháp",
                 "suggest": "chỉ đọc rồi đề xuất"}[mode]
     return (f"Đã tạo việc lặp '{name}'{where} (UniMate/loops/{slug}.md), chạy mỗi {interval} phút, "
              f"mức quyền {mode} ({ten_mode}). Đang TẮT (enabled: false): người dùng vào tab Việc "
-             f"trong dashboard bấm Bật thì nó mới chạy." + (FULL_LEVEL_NOTE if mode == "full" else ""))
+             f"trong dashboard bấm Bật thì nó mới chạy." + (FULL_LEVEL_NOTE if mode == "full" else "")
+             + (f" CẢNH BÁO, nói rõ cho user: {canh_bao}" if canh_bao else ""))
 
 
 def _list_loops(vault_root: str) -> list:
@@ -402,6 +411,9 @@ async def _post_reminder(payload: dict, brain_name: str = "") -> str:
     if data.get("call"):
         ra += (" Tới giờ UNI MATE sẽ GỌI ĐẾN trên trang UNI MATE đang mở: bấm Nghe là vào cuộc gọi và UNI MATE đọc"
                " kết quả; không mở UNI MATE thì kết quả vẫn tới như tin nhắn thường.")
+    if data.get("canh_bao_may"):
+        # 0.452.0: made on a home PC linked to the VPS that runs it, with GitHub sync off: it would never get there.
+        ra += f" CẢNH BÁO, nói rõ cho user: {data.get('canh_bao_may')}"
     return ra
 
 

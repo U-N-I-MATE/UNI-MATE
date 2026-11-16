@@ -72,7 +72,12 @@ _last_should = {"v": None}
 _published = {}               # brain root -> what was last written there
 _cache = {}                   # short-lived reads of the brain files: (time, value)
 _sync_fn: Optional[Callable[[], object]] = None   # one GitHub sync of the brains (blocking), when backup is on
-_nudge = {"task": None, "again": False}
+_sync_on_fn: Callable[[], bool] = lambda: _sync_fn is not None
+_notify_fn = None             # async (chat_id, text, brain) -> tells the owner, in that chat and on the bell
+# Schedules made or changed here that the VPS has not received yet, by key: {title, due_at, chat_id, brain, warned}.
+_nudge = {"task": None, "again": False, "items": {}, "error": ""}
+NUDGE_RETRY_S = (30, 120, 300)    # waits between the attempts after the first one fails (about 7.5 minutes in all)
+URGENT_S = 3600                   # a schedule due within this long is reported at the first failure
 CACHE_S = 20
 
 
@@ -108,22 +113,57 @@ def configure(state_file=None, ledger_file=None) -> None:
         _cache.clear()
         _remote.update({"runner": "", "updated_at": 0.0, "ok_at": 0.0, "error": "", "vps": {}})
         _last_should["v"] = None
+        _nudge.update({"task": None, "again": False, "items": {}, "error": ""})
 
 
-def wire(brains_fn: Callable[[], Iterable], sync_fn: Optional[Callable[[], object]] = None) -> None:
+def wire(brains_fn: Callable[[], Iterable], sync_fn: Optional[Callable[[], object]] = None,
+         sync_on_fn: Optional[Callable[[], bool]] = None, notify_fn=None) -> None:
     """`brains_fn()` returns the root folders of the brains whose schedules this machine runs. `sync_fn()` runs one
-    GitHub sync of the brains (None when backup is off)."""
-    global _brains_fn, _sync_fn
+    GitHub sync of the brains and returns its report; `sync_on_fn()` says whether GitHub sync is switched on;
+    `notify_fn(chat_id, text, brain)` (async) tells the owner in that chat and on the bell."""
+    global _brains_fn, _sync_fn, _sync_on_fn, _notify_fn
     _brains_fn = brains_fn
     _sync_fn = sync_fn
+    if sync_on_fn is not None:
+        _sync_on_fn = sync_on_fn
+    _notify_fn = notify_fn
 
 
-def nudge_sync_soon() -> None:
+def _hands_off(pin="") -> bool:
+    """A schedule with this pin made on THIS machine runs on the linked VPS, so it must reach it."""
+    me = machine()
+    return linked() and me["kind"] != "vps" and where(pin) != me["kind"]
+
+
+def warn_new(pin="") -> str:
+    """Said right when a schedule is made here (chat tool, Tasks page): it cannot reach the VPS that runs it because
+    GitHub sync is off on this machine. "" when there is nothing to say."""
+    if not _hands_off(pin):
+        return ""
+    try:
+        on = bool(_sync_on_fn())
+    except Exception:  # noqa: BLE001
+        on = False
+    if on:
+        return ""
+    import localefmt
+    return localefmt.chu(
+        "Lịch này chạy ở VPS nhưng máy này chưa bật đồng bộ GitHub (Cài đặt, Sao lưu GitHub), nên lịch sẽ không tới "
+        "được VPS và sẽ không chạy. Bật đồng bộ GitHub, hoặc gắn lịch chạy ở máy nhà (chay_tren=home).",
+        "This schedule runs on the VPS but GitHub sync is off on this machine (Settings, GitHub backup), so it will "
+        "not reach the VPS and will not run. Switch GitHub sync on, or pin it to the home PC (chay_tren=home).")
+
+
+def nudge_sync_soon(item: Optional[dict] = None) -> None:
     """A schedule was made or changed on a linked home PC, but the VPS runs it: sync the brains now and ask the VPS to
     pull, instead of waiting hours for the next sync (a "remind me in 30 minutes" made at home would be missed).
-    Coalesced: changes within a few seconds share one sync."""
+    Coalesced: changes within a few seconds share one sync. `item` ({key, title, due_at, chat_id, brain, pin}) names
+    the schedule, so a failure is reported in the chat that made it."""
     if _sync_fn is None or not linked() or machine()["kind"] == "vps":
         return
+    if item and item.get("key") and _hands_off(item.get("pin")):
+        old = _nudge["items"].get(item["key"]) or {}
+        _nudge["items"][item["key"]] = {**item, "warned": bool(old.get("warned"))}
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
@@ -135,17 +175,100 @@ def nudge_sync_soon() -> None:
     _nudge["task"] = loop.create_task(_nudge_run())
 
 
-async def _nudge_run(delay: float = 5.0) -> None:
+async def _push_once() -> str:
+    """One hand-over to the VPS: GitHub sync here, then ask the VPS to pull. "" when it worked, else why not."""
+    try:
+        if not bool(_sync_on_fn()):
+            return "đồng bộ GitHub đang tắt ở máy này"
+        rep = await asyncio.to_thread(_sync_fn)
+        if isinstance(rep, dict) and rep.get("ok") is False:
+            return str(rep.get("error") or "đồng bộ GitHub lỗi")[:200]
+        if rep is None:
+            return "đồng bộ GitHub đang tắt ở máy này"
+        await _http("POST", "/may-chay-lich/remote/sync", {})
+        return ""
+    except Exception as e:  # noqa: BLE001
+        return f"{type(e).__name__}: {e}"[:200]
+
+
+def _fmt_due(ts) -> str:
+    try:
+        import localefmt
+        from datetime import datetime
+        return datetime.fromtimestamp(float(ts), localefmt.tz()).strftime("%H:%M %d/%m")
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+async def _tell(item: dict, ok: bool, err: str = "", tries: int = 0) -> None:
+    if _notify_fn is None:
+        return
+    import localefmt
+    title = str(item.get("title") or "")[:120]
+    if ok:
+        text = localefmt.chu(f"Lịch \"{title}\" đã tới VPS, sẽ chạy đúng giờ.",
+                             f"Schedule \"{title}\" has reached the VPS and will run on time.")
+    else:
+        due = _fmt_due(item.get("due_at")) if item.get("due_at") else ""
+        text = localefmt.chu(
+            f"⚠ Lịch \"{title}\"" + (f" (chạy lúc {due})" if due else "") + " chưa tới được VPS nên chưa chạy được. "
+            f"Lý do: {err}. UNI MATE đã thử {tries} lần. Thử lại: Cài đặt, Máy chạy lịch, nút Gửi lịch sang VPS; "
+            "hoặc gắn lịch này chạy ở máy nhà.",
+            f"⚠ Schedule \"{title}\"" + (f" (due {due})" if due else "") + " has not reached the VPS, so it cannot run "
+            f"yet. Reason: {err}. UNI MATE tried {tries} times. Retry: Settings, Schedule machine, Send schedules to the "
+            "VPS button; or pin this schedule to the home PC.")
+    try:
+        await _notify_fn(str(item.get("chat_id") or ""), text, str(item.get("brain") or ""))
+    except Exception as e:  # noqa: BLE001
+        print(f"[may_chay_lich] notify: {type(e).__name__}: {e}", file=sys.stderr)
+
+
+async def _nudge_run(delay: float = 5.0, retry_s=None) -> str:
+    """Hand the waiting schedules to the VPS, retrying a few times. The owner hears about a schedule that cannot get
+    there: at once when it is due within the hour, else after the last attempt; and again once it gets through."""
+    waits = tuple(NUDGE_RETRY_S if retry_s is None else retry_s)
     await asyncio.sleep(delay)
+    tries = 0
     while True:
         _nudge["again"] = False
-        try:
-            await asyncio.to_thread(_sync_fn)
-            await _http("POST", "/may-chay-lich/remote/sync", {})
-        except Exception as e:  # noqa: BLE001
-            _remote["error"] = f"{type(e).__name__}: {e}"[:200]
-        if not _nudge["again"]:
-            break
+        snapshot = dict(_nudge["items"])
+        err = await _push_once()
+        tries += 1
+        if not err:
+            _nudge["error"] = ""
+            for k, it in snapshot.items():
+                if it.get("warned"):
+                    await _tell(it, True)
+                _nudge["items"].pop(k, None)
+            tries = 0
+            if not _nudge["again"]:
+                return ""
+            continue
+        _nudge["error"] = err
+        _remote["error"] = err
+        last = tries > len(waits)
+        now = time.time()
+        for k, it in snapshot.items():
+            soon = bool(it.get("due_at")) and float(it["due_at"]) - now < URGENT_S
+            if not it.get("warned") and (last or soon):
+                await _tell(it, False, err, tries)
+                if k in _nudge["items"]:
+                    _nudge["items"][k]["warned"] = True
+        if last:
+            return err
+        await asyncio.sleep(waits[tries - 1])
+
+
+async def push_now() -> dict:
+    """The owner's "Send schedules to the VPS" button: one attempt now, reported back on the page."""
+    if not linked() or machine()["kind"] == "vps":
+        return {"ok": False, "error": "not linked"}
+    t = _nudge.get("task")
+    if t is not None and not t.done():
+        t.cancel()
+    _nudge["task"] = None
+    err = await _nudge_run(delay=0, retry_s=())
+    return {"ok": not err, "error": err, "waiting": len(_nudge["items"])}
 
 
 async def remote_sync() -> dict:
@@ -694,4 +817,15 @@ def status() -> dict:
         "link_error": _remote.get("error", "") if ln else "",
         "last_ok": _remote.get("ok_at", 0.0),
         "peers": ps, "pair_codes": len(_load().get("pair") or []), "pending": pend,
+        # Schedules made here that have not reached the VPS yet, and why the last hand-over failed.
+        "unsent": [str(it.get("title") or "")[:80] for it in _nudge["items"].values()],
+        "unsent_error": _nudge.get("error", ""),
+        "sync_on": bool(_safe_sync_on()),
     }
+
+
+def _safe_sync_on() -> bool:
+    try:
+        return bool(_sync_on_fn())
+    except Exception:  # noqa: BLE001
+        return False

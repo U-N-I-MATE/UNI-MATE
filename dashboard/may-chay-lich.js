@@ -109,7 +109,14 @@
       h += '<div><span class="mcl-lbl">' + esc(t("mcl.linked")) + ":</span> " + esc(st.link_url) + "</div>";
       h += '<div class="' + (st.link_ok ? "mcl-ok" : "mcl-err") + '">' + esc(st.link_ok ? t("mcl.link_ok") : t("mcl.link_bad", { e: st.link_error || "" })) + "</div>";
       if (st.pending) h += '<div class="mcl-hint">' + esc(t("mcl.pending", { n: st.pending })) + "</div>";
-      h += '<div class="mcl-actions"><button type="button" class="gcard-btn" data-mcl="unlink"' + (_busy ? " disabled" : "") + ">" + esc(t("mcl.unlink")) + "</button></div>";
+      // Schedules made here that the VPS has not received (it runs them): name them, say why, offer to send again.
+      if (!st.sync_on) h += '<div class="mcl-warn">' + esc(t("mcl.sync_off")) + "</div>";
+      if (st.unsent && st.unsent.length) {
+        h += '<div class="mcl-warn">' + esc(t("mcl.unsent", { n: st.unsent.length, list: st.unsent.slice(0, 5).join(", ") }))
+          + (st.unsent_error ? " " + esc(st.unsent_error) : "") + "</div>";
+      }
+      h += '<div class="mcl-actions"><button type="button" class="gcard-btn" data-mcl="push"' + (_busy ? " disabled" : "") + ">" + esc(t("mcl.push")) + "</button>"
+        + '<button type="button" class="gcard-btn" data-mcl="unlink"' + (_busy ? " disabled" : "") + ">" + esc(t("mcl.unlink")) + "</button></div>";
     } else {
       h += '<label class="mcl-lbl" for="mclCode">' + esc(t("mcl.paste")) + "</label>";
       h += '<input id="mclCode" type="password" autocomplete="off" spellcheck="false" placeholder="' + esc(t("mcl.paste_ph")) + '">';
@@ -162,6 +169,12 @@
       return act(async function () {
         var r = await postJSON("/may-chay-lich/link", { code: code });
         _msgErr = !(r && r.ok); _msg = _msgErr ? ((r && r.error) || t("mcl.fail")) : t("mcl.linked_ok");
+      });
+    }
+    if (k === "push") {
+      return act(async function () {
+        var r = await postJSON("/may-chay-lich/push", {});
+        _msgErr = !(r && r.ok); _msg = _msgErr ? t("mcl.push_fail", { e: (r && r.error) || "" }) : t("mcl.push_ok");
       });
     }
     if (k === "unlink") {

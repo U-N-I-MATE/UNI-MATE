@@ -513,7 +513,15 @@ class RemindersFeature:
                                  + [r for r in rems if r.get("status") not in LIVE_STATUSES])[:MAX_KEEP]
         self._save(brain, data)
         self._register(brain)
+        self._ve_vps(brain, rem)
         return rem
+
+    def _ve_vps(self, brain: str, rem: dict) -> None:
+        """0.452.0: made or changed on a linked home PC while the VPS runs it: hand it over now, and tell the chat
+        that made it if it cannot get there."""
+        may_chay_lich.nudge_sync_soon({"key": str(rem.get("id") or ""), "title": rem.get("label") or rem.get("text") or "",
+                                       "due_at": float(rem.get("due_at") or 0), "chat_id": rem.get("chat_id", ""),
+                                       "brain": brain, "pin": rem.get("chay_tren", "")})
 
     def _view(self, r: dict) -> dict:
         cron = r.get("cron", "") or ""
@@ -618,6 +626,7 @@ class RemindersFeature:
             cur.pop("retry_of", None)
             cur.pop("retry_count", None)
         self._save(brain, data)
+        self._ve_vps(brain, cur)
         return {"ok": True, "error": "", "reminder": self._view(cur)}
 
     def delete(self, brain: str, rid: str) -> bool:
@@ -1313,6 +1322,8 @@ class RemindersFeature:
                     "chrome": rem.get("chrome", False),
                     "chrome_note": chrome_note(rem),
                     "chay_tren": rem.get("chay_tren", ""), "chay_o": may_chay_lich.where(rem.get("chay_tren")),
+                    # 0.452.0: said at once when it cannot reach the VPS that runs it (GitHub sync off here).
+                    "canh_bao_may": may_chay_lich.warn_new(rem.get("chay_tren")),
                     "next_runs": next_runs(rem["cron"]) if rem["cron"] else [],
                     # Kèm lời đọc để chỗ gọi (chat) nhắc lại lịch bằng tiếng Việt, khỏi bắt user
                     # tự dịch "0 7 * * *".

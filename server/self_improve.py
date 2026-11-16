@@ -404,7 +404,10 @@ class LoopFeature:
         d.mkdir(parents=True, exist_ok=True)
         body = loop["body"].replace("\r\n", "\n")   # chuẩn hoá CRLF (textarea/config cũ) → file .md thuần LF
         self.deps.atomic_write_text(d / f"{slug}.md", f"---\n{y}\n---\n\n{body}\n")
-        may_chay_lich.nudge_sync_soon()   # 0.452.0: a linked home PC hands the change to the VPS now
+        # 0.452.0: a linked home PC hands the change to the VPS now (and says so in the loop's chat if it cannot).
+        may_chay_lich.nudge_sync_soon({"key": f"loop:{slug}", "title": loop["name"], "due_at": 0,
+                                       "chat_id": loop.get("owner_chat", ""), "brain": brain,
+                                       "pin": loop.get("chay_tren", "")})
         return loop
 
     def delete_loop(self, brain: str, slug: str) -> bool:
