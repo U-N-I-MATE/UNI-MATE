@@ -2321,7 +2321,7 @@
           <div class="si-field"><label>${esc(window.t("cs.bk_token_label"))}</label><input id="bkToken" type="password" placeholder="${esc(window.t("cs.bk_token_ph"))}"></div>
           <div class="si-row" style="gap:14px;flex-wrap:wrap">
             <div class="si-field"><label>${esc(window.t("cs.bk_branch"))}</label><input id="bkBranch" value="main" style="max-width:120px"></div>
-            <div class="si-field"><label>${esc(window.t("cs.bk_interval"))}</label><input type="number" id="bkInterval" min="0.25" step="0.25" value="6" style="max-width:120px"></div>
+            <div class="si-field"><label>${esc(window.t("cs.bk_interval"))}</label><input type="number" id="bkInterval" min="0.25" step="0.25" value="0.25" style="max-width:120px"></div>
             <div class="si-field"><label>${esc(window.t("cs.bk_auto"))}</label><button class="si-chip" id="bkAuto">○ ${esc(window.t("settings.tag_off"))}</button></div>
             <div class="si-field"><label for="bkAnhRow">${esc(window.t("cs.bk_images"))}${infoBtn()}</label><button class="si-chip" id="bkAnh">○ ${esc(window.t("settings.tag_off"))}</button></div>
           </div>
@@ -2473,7 +2473,7 @@
       const tk = el.querySelector("#bkToken").value.trim();
       if (tk && !tk.startsWith("••••")) f.append("token", tk);   // chỉ gửi token mới, không gửi chuỗi che
       f.append("branch", el.querySelector("#bkBranch").value.trim() || "main");
-      f.append("interval_hours", el.querySelector("#bkInterval").value || "6");
+      f.append("interval_hours", el.querySelector("#bkInterval").value || "0.25");
       f.append("enabled", bkAutoOn ? "1" : "0");
       f.append("sync_images", bkAnhOn ? "1" : "0");
       return (await fetch("/backup/config", { method: "POST", body: f })).json();
@@ -2510,7 +2510,7 @@
       let s = {}; try { s = await (await fetch(`/backup/status?brain=${encodeURIComponent(fbrain())}`)).json(); } catch (e) { return; }
       el.querySelector("#bkRepo").value = s.repo_url || "";
       el.querySelector("#bkBranch").value = s.branch || "main";
-      el.querySelector("#bkInterval").value = s.interval_hours || 6;
+      el.querySelector("#bkInterval").value = s.interval_hours || 0.25;
       if (s.token_set && !el.querySelector("#bkToken").value) el.querySelector("#bkToken").placeholder = window.t("cs.bk_token_saved_ph");
       bkAutoOn = !!s.enabled; bkAutoBtn.classList.toggle("sel", bkAutoOn); bkAutoBtn.textContent = bkAutoOn ? "● " + window.t("settings.tag_on") : "○ " + window.t("settings.tag_off");
       bkAnhOn = !!s.sync_images; bkAnhBtn.classList.toggle("sel", bkAnhOn); bkAnhBtn.textContent = bkAnhOn ? "● " + window.t("settings.tag_on") : "○ " + window.t("settings.tag_off");

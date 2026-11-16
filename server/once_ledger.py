@@ -60,6 +60,19 @@ UNKNOWN_NOTE = ("ERROR: Thao tác này có thể ĐÃ được thực hiện ở
                 "đúng lúc đang gọi), nên UNI MATE KHÔNG làm lại để tránh gửi trùng. Đừng tìm cách khác để làm cùng "
                 "việc này. Làm nốt phần còn lại rồi kết thúc; UNI MATE sẽ hỏi chủ.")
 BUSY_NOTE = "ERROR: Đúng thao tác này đang được gọi ở một nhánh khác của việc, chờ nó xong, đừng gọi lại."
+OTHER_MACHINE_NOTE = ("[UNI MATE] Thao tác này của lượt lịch này ĐÃ được máy UNI MATE kia (VPS hoặc máy nhà) làm rồi, "
+                      "nên máy này không làm lại để tránh đăng hay gửi trùng. Đừng tìm cách khác để làm cùng việc này.")
+# 0.452.0: jobs whose outside actions are also claimed in the ledger shared by the owner's machines (may_chay_lich):
+# a scheduled reminder exists on both machines through the brain sync. Kanban jobs live on one machine only.
+_SHARED_JOB_PREFIXES = ("reminder:",)
+
+
+def _target(args: Any) -> str:
+    a = args if isinstance(args, dict) else {}
+    for k in _TARGET_KEYS:
+        if a.get(k) not in (None, ""):
+            return str(a[k])[:120]
+    return ""
 
 _lock = threading.RLock()
 _db: Optional[sqlite3.Connection] = None
@@ -147,6 +160,13 @@ async def run(tool: str, args: Any, call: Callable[[Any], Awaitable[Any]], job: 
     job = current_job() if job is None else job
     if not job:
         return await call(args)
+    if job.startswith(_SHARED_JOB_PREFIXES):
+        try:
+            import may_chay_lich
+            if not await may_chay_lich.claim(f"tacvu:{job}:{tool}:{_target(args)}"):
+                return OTHER_MACHINE_NOTE
+        except Exception as e:  # noqa: BLE001 - the shared ledger never blocks a run by failing
+            print(f"[once_ledger] shared claim: {type(e).__name__}: {e}")
     fp = fingerprint(job, tool, args)
     now = time.time()
     with _lock:

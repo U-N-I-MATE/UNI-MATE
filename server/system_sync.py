@@ -61,7 +61,8 @@ MANIFEST_REL = Path(".unimate") / "system-manifest.json"
 # Frontmatter key của loop mà user/UI chỉnh trong vận hành bình thường → KHÔNG tính là "đã sửa"
 # và được BẢO TOÀN khi update. (self_improve.save_loop rewrite các key này khi user bật/tắt.)
 _LOOP_VOLATILE_KEYS = {"enabled", "mode", "interval_min", "goal", "quiet_hours",
-                       "max_runs_per_day", "workspace", "tools_profile", "updated"}
+                       "max_runs_per_day", "workspace", "tools_profile", "updated",
+                       "chay_tren"}   # 0.452.0: which machine runs the loop
 
 _DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 

@@ -54,7 +54,8 @@ check("giá trị hỏng không ghi đè chu kỳ đã lưu", main.cfgmod.read_s
 
 src = (SERVER / "main.py").read_text(encoding="utf-8")
 check("vòng nền tính chu kỳ bằng cùng hàm (không ép giờ chẵn)",
-      'interval = backup_interval_hours(bcfg.get("interval_hours", 6)) * 3600' in src
+      # 0.452.0: the default is 15 minutes (owner 2026-11-16), so the fallback is 0.25 now.
+      'interval = backup_interval_hours(bcfg.get("interval_hours", 0.25)) * 3600' in src
       and 'max(1, int(bcfg.get("interval_hours", 6)))' not in src)
 check("dòng trạng thái đồng bộ ghi giờ theo múi giờ người dùng, không theo giờ máy chủ (VPS chạy UTC)",
       '_dt_bk.datetime.now(localefmt.tz()).strftime("%H:%M %d/%m")' in src

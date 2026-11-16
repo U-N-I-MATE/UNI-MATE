@@ -317,6 +317,20 @@ A **Do it and report** reminder has a **Remember the last result** box. With it 
 
 A cron schedule also shows its **next three runs** on the card. A run missed because the machine was off still runs once when it comes back, and UNI MATE is told it is running late so it works from the current time.
 
+## Two machines (home PC and VPS): one runs the schedules
+
+Since 0.452.0. When you run UNI MATE both at home and on a VPS, the two share the brains through GitHub sync, so every reminder and loop exists on both. Before, both machines ran them and a post could go out twice. Now only **one machine runs the schedules**, the **VPS** by default. The other machine keeps chatting as usual.
+
+- **Pick the schedule machine:** Settings, **Schedule machine** block, press **VPS** or **Home PC**. The machine not picked does not run reminders, loops, habit reminders or customer bots. Its Tasks page says "Schedules run on the VPS".
+- **Link the home PC to the VPS (recommended):** on the VPS press **Make a link code**, copy the code (shown once), paste it into **Paste the link code from the VPS** on the home PC and press **Link**. Do not send the code through chat. Once linked, a change of schedule machine takes effect within about a minute, and a reminder or loop made on the home PC reaches the VPS at once; without the link it waits for the next GitHub sync.
+- **A schedule made at home that has not reached the VPS:** UNI MATE retries a few times, then reports it in the chat that made it and on the bell (at once when it is due within the hour). The Schedule machine block lists them; press **Send schedules to the VPS** to retry. With GitHub sync off on the home PC, UNI MATE says so when the schedule is made.
+- **One job only on the home PC:** open the job on the Tasks page, **Runs on**, pick **Home PC**. Use it when the job needs software only the home PC has (AdsPower, for example). When you schedule by chat, say "run it on the home PC".
+- **Customer bots:** by default they answer only on the schedule machine; the other machine still puts messages in its inbox so you can answer by hand. Change it per bot with **Answers customers on** in the bot form. A Telegram bot cannot poll on two machines at once (Telegram refuses), so the machine that does not answer does not listen to it.
+- **Last line against duplicates:** every scheduled run, every post or message a scheduled run sends, and every customer message is recorded in a shared ledger on the VPS. The first machine to record it goes ahead; the other skips it.
+- **VPS unreachable:** jobs that belong to the VPS do not run at home (a missed run, never a double post); jobs pinned to the home PC still run, are recorded locally and sent to the VPS when it is back.
+- **Only one machine:** nothing to do, it runs the schedules as before.
+- **Sync no longer overwrites:** `reminders.json` and `loop-state.json` are merged entry by entry during GitHub sync, instead of the newer file replacing the whole file and leaving `.conflict-*` copies.
+
 ## Advanced fields (editable only in the .md file)
 
 The dashboard form is deliberately compact. The following require opening `UniMate/loops/<slug>.md` and editing the frontmatter (through [File manager](05-file-manager.md) or Obsidian). Once saved, the dashboard rereads it immediately, with no restart.
@@ -330,6 +344,7 @@ The dashboard form is deliberately compact. The following require opening `UniMa
 | `ambient_mcp` | Off by default. Set `true` to let the loop see connectors installed on the machine (Gmail, Drive, calendar via claude.ai). Even when on, Bash, WebFetch and WebSearch stay hard-blocked. |
 | `owner_chat` | The Telegram chat_id that receives reports. Empty means the first ID in the allow list. |
 | `notify` | `false` to turn off per-iteration reporting for this job only. |
+| `chay_tren` | `home` (run only on the home PC) or `vps` (run only on the VPS). Empty follows the general **Schedule machine**. Also editable in **Runs on** on the Tasks page. |
 | `goal` | The task type. The default, and what the dashboard always creates, is `custom`, meaning each iteration does exactly what the file body says. The legacy values `business`, `brain`, `product` still work for hand-written files, and anything other than `custom` adds a secondary label to the card. |
 
 The **file body** (below the second `---`) is exactly the "Task description" you type in the form.

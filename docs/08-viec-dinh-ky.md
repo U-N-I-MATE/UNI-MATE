@@ -317,6 +317,20 @@ Nhắc hẹn kiểu **Tự làm rồi báo** có thêm ô **Nhớ kết quả l�
 
 Lịch lặp theo cron còn hiện **ba lần chạy tới** ngay trên thẻ. Lần chạy bị trễ vì máy tắt thì vẫn chạy bù một lần khi máy mở lại, và UNI MATE được báo là đang chạy trễ để tính theo giờ hiện tại.
 
+## Hai máy (máy nhà và VPS): chỉ một máy chạy lịch
+
+Từ bản 0.452.0. Anh chạy UNI MATE cả ở máy nhà lẫn trên VPS, hai máy dùng chung bộ não qua đồng bộ GitHub, nên mọi nhắc hẹn và việc lặp đều có mặt ở cả hai. Trước đây cả hai máy cùng chạy, một bài đăng có thể lên hai lần. Nay chỉ **một máy chạy lịch**, mặc định là **VPS**. Máy còn lại vẫn chat bình thường.
+
+- **Chọn máy chạy lịch:** Cài đặt, khối **Máy chạy lịch**, bấm **VPS** hoặc **Máy nhà**. Máy không được chọn không chạy nhắc hẹn, việc lặp, nhắc thói quen và bot trả lời khách. Trang Việc của máy đó hiện dòng "Lịch đang chạy ở VPS".
+- **Nối máy nhà với VPS (nên làm):** trên VPS bấm **Tạo mã nối**, sao chép mã (chỉ hiện một lần), dán vào ô **Dán mã nối từ VPS** ở máy nhà rồi bấm **Nối**. Mã không gửi qua chat. Nối xong, đổi máy chạy lịch có tác dụng trong khoảng một phút, và nhắc hẹn hay việc lặp tạo ở máy nhà được đồng bộ sang VPS ngay; chưa nối thì phải chờ lượt đồng bộ GitHub kế tiếp.
+- **Lịch tạo ở máy nhà chưa tới được VPS:** UNI MATE thử lại vài lần rồi báo vào đúng khung chat đã tạo lịch và chuông thông báo (lịch chạy trong vòng một giờ thì báo ngay). Khối Máy chạy lịch liệt kê các lịch đó, bấm **Gửi lịch sang VPS** để thử lại. Máy nhà tắt đồng bộ GitHub thì UNI MATE nói ngay lúc tạo lịch.
+- **Một việc chạy riêng ở máy nhà:** mở việc trên trang Việc, ô **Chạy ở**, chọn **Máy nhà**. Dùng khi việc cần phần mềm chỉ có ở máy nhà (ví dụ AdsPower). Khi đặt lịch bằng lời trong chat, nói rõ "chạy trên máy nhà".
+- **Bot trả lời khách:** mặc định chỉ trả lời ở máy chạy lịch; máy kia vẫn nhận tin vào Hộp thư để anh trả lời tay. Từng bot đổi được ở ô **Trả lời khách ở máy** trong form bot. Bot Telegram không chạy song song hai máy được (Telegram chặn), nên máy không trả lời thì không nghe bot đó.
+- **Chống trùng lần cuối:** mỗi lượt chạy theo lịch, mỗi bài đăng hay tin gửi ra ngoài của lượt đó, mỗi tin khách được ghi vào sổ chung trên VPS. Máy nào ghi trước thì máy kia bỏ qua.
+- **VPS mất liên lạc:** việc thuộc VPS thì máy nhà không chạy (lỡ lượt chứ không đăng trùng); việc đã gắn máy nhà vẫn chạy, ghi sổ tạm rồi gửi bù lên VPS khi liên lạc lại.
+- **Chỉ có một máy:** không phải làm gì, máy đó chạy lịch như cũ.
+- **Đồng bộ không còn đè nhau:** `reminders.json` và `loop-state.json` được hoà từng mục khi đồng bộ GitHub, không còn cảnh bản mới hơn ghi đè cả tệp và sinh tệp `.conflict-*`.
+
 ## Trường nâng cao (chỉ sửa được trong file .md)
 
 Biểu mẫu trên dashboard cố ý giữ gọn. Những thứ dưới đây phải mở `UniMate/loops/<slug>.md` và sửa phần frontmatter (qua [Quản lý tệp tin](05-quan-ly-tep-tin.md) hoặc Obsidian). Sửa xong, dashboard đọc lại ngay, không cần khởi động lại gì.
@@ -330,6 +344,7 @@ Biểu mẫu trên dashboard cố ý giữ gọn. Những thứ dưới đây ph
 | `ambient_mcp` | Mặc định tắt. Đặt `true` để việc lặp thấy lại các connector cài trên máy (Gmail, Drive, lịch qua claude.ai). Bật thì vẫn chặn cứng Bash, WebFetch, WebSearch. |
 | `owner_chat` | chat_id Telegram nhận báo cáo. Để trống thì báo về ID đầu tiên trong danh sách cho phép. |
 | `notify` | `false` để tắt báo cáo mỗi vòng của riêng việc này. |
+| `chay_tren` | `home` (chỉ chạy ở máy nhà) hoặc `vps` (chỉ chạy ở VPS). Để trống thì theo **Máy chạy lịch** chung. Sửa được cả ở ô **Chạy ở** trên trang Việc. |
 | `goal` | Loại nhiệm vụ. Mặc định và cũng là thứ dashboard luôn tạo ra là `custom`, nghĩa là mỗi vòng làm đúng phần thân file. Các giá trị cũ `business`, `brain`, `product` vẫn chạy được cho file viết tay, và khi khác `custom` thì thẻ hiện thêm nhãn phụ. |
 
 Phần **thân file** (bên dưới dấu `---` thứ hai) chính là ô "Mô tả nhiệm vụ" bạn gõ trên biểu mẫu.

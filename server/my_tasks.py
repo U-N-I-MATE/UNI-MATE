@@ -626,6 +626,13 @@ class MyTasks:
         yet, at the set time or (UNI MATE reminds) half an hour after the usual time. Returns how many went out."""
         if not self.deps.notify:
             return 0
+        # 0.452.0: with two machines (home + VPS) only the one chosen to run schedules sends habit reminders.
+        try:
+            import may_chay_lich
+            if not may_chay_lich.should_run(""):
+                return 0
+        except Exception:
+            pass
         tz = self.deps.tz() if self.deps.tz else None
         now = datetime.now(tz)
         today, hm = now.date().isoformat(), now.strftime("%H:%M")

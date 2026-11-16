@@ -7624,5 +7624,135 @@
    "GET"
   ],
   "trong": null
+ },
+ {
+  "order": 766,
+  "type": "APIRoute",
+  "path": "/may-chay-lich",
+  "name": "may_chay_lich_status",
+  "methods": [
+   "GET"
+  ],
+  "trong": null
+ },
+ {
+  "order": 767,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/runner",
+  "name": "may_chay_lich_set_runner",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 768,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/pair-code",
+  "name": "may_chay_lich_pair_code",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 769,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/link",
+  "name": "may_chay_lich_link",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 770,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/unlink",
+  "name": "may_chay_lich_unlink",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 771,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/pair-revoke",
+  "name": "may_chay_lich_pair_revoke",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 772,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/remote/runner",
+  "name": "may_chay_lich_remote_runner_get",
+  "methods": [
+   "GET"
+  ],
+  "trong": null
+ },
+ {
+  "order": 773,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/remote/runner",
+  "name": "may_chay_lich_remote_runner_set",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 774,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/remote/claim",
+  "name": "may_chay_lich_remote_claim",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 775,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/remote/register",
+  "name": "may_chay_lich_remote_register",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 776,
+  "type": "APIRoute",
+  "path": "/loops/chay-tren",
+  "name": "loops_chay_tren",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 777,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/remote/sync",
+  "name": "may_chay_lich_remote_sync",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
+ },
+ {
+  "order": 778,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/push",
+  "name": "may_chay_lich_push",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
  }
 ]

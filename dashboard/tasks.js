@@ -12,6 +12,8 @@
   "use strict";
 
   // ---------- small helpers ----------
+  // 0.452.0: "VPS" / "Máy nhà" for the schedule-machine banner and picker.
+  function kindOf(k) { return tw(k === "home" ? "mcl.kind_home" : "mcl.kind_vps"); }
   function tw(key, vars) {
     var s = (typeof window !== "undefined" && window.t) ? window.t(key, vars) : key;
     if (vars) s = String(s).replace(/\{(\w+)\}/g, function (m, k) { return Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m; });
@@ -468,8 +470,10 @@
       getJSON("/kanban?brain=" + enc + "&history=40"), getJSON("/viec/all"), getJSON("/reminders?brain=" + enc),
       getJSON("/watch?brain=" + enc), getJSON("/incidents?limit=50"), getJSON("/loops/log?brain=" + enc + "&limit=60"),
       S.agents ? Promise.resolve(null) : getJSON("/agents?brain=" + enc + "&prompt=0&system=1"),
-      getJSON("/my-tasks?brain=" + enc), getJSON("/tasks/bots?brain=" + enc)
+      getJSON("/my-tasks?brain=" + enc), getJSON("/tasks/bots?brain=" + enc), getJSON("/may-chay-lich")
     ]);
+    // 0.452.0: which machine runs the schedules (home PC + VPS on the same brains).
+    S.mcl = res[9] && res[9].machine ? res[9] : null;
     if (res[6]) S.agents = (res[6].agents || res[6] || []).filter(function (a) { return a && a.slug; });
     S.brains = ((res[1] && res[1].brains) || []).map(function (x) { return { name: x.label || x.name, path: x.path, def: x.is_default }; });
     S.notify = (res[2] && res[2].notify) || {};
@@ -770,6 +774,10 @@
       h += '<div class="nv-ask" role="alert">' + ic("triangle-alert", "c-ask") + '<span class="nv-ask-t"><b>' + esc(tw(bad ? "nv.nochan.head" : "nv.chanerr.head")) + ":</b> "
         + esc(bad ? (nt.error || tw("nv.nochan.body")) : nt.warn) + '</span><button type="button" class="nv-btn sm" data-act="gochan">' + esc(tw("nv.nochan.go")) + "</button></div>";
     }
+    // 0.452.0: this machine does not run the schedules: say where they run, so a list of jobs that never start here is not a mystery.
+    if (S.mcl && !S.mcl.is_runner) {
+      h += '<div class="nv-ask" role="status">' + ic("circle-alert", "c-ask") + '<span class="nv-ask-t">' + esc(tw("mcl.banner", { kind: kindOf(S.mcl.runner), label: S.mcl.runner_label || kindOf(S.mcl.runner) })) + "</span></div>";
+    }
     if (S.ai.orch === "off" && S.ai.waiting) {
       h += '<div class="nv-ask" role="status">' + ic("pause", "c-ask") + '<span class="nv-ask-t">' + esc(tw("nv.orch.waiting", { n: S.ai.waiting })) + '</span><button type="button" class="nv-btn sm pri" data-act="orch" data-v="auto">' + esc(tw("nv.orch.on")) + "</button></div>";
     }
@@ -996,6 +1004,14 @@
     var lvl = it.src === "loop" ? (it.raw || {}).mode : it.src === "reminder" && it.mode !== "remind" ? ((it.raw || {}).muc_quyen || "full") : "";
     if (lvl) info += kv(tw("nv.lp.mode"), '<span class="nv-lvl' + (lvl === "full" ? " full" : "") + '">' + esc(tw(LVL[lvl] || LVL.full)) + "</span>");
     info += kv(tw("nv.k.kind"), esc(tw({ kanban: "nv.src.kanban", reminder: "nv.src.reminder", loop: "nv.src.loop", watch: "nv.src.watch" }[it.src] || "nv.src.kanban")));
+    // 0.452.0: which machine runs it (home PC + VPS). Only once a second machine exists, so a one-machine owner sees nothing new.
+    if ((it.src === "reminder" || it.src === "loop") && S.mcl && S.mcl.peers && S.mcl.peers.length) {
+      var pin = (it.raw || {}).chay_tren || "";
+      info += '<div class="nv-kv"><label for="nvRunOn">' + esc(tw("mcl.run_on")) + '</label><select id="nvRunOn" class="nv-psel" data-runon="' + esc(it.id) + '">'
+        + [["", tw("mcl.run_follow", { kind: kindOf(S.mcl.runner) })], ["vps", kindOf("vps")], ["home", kindOf("home")]].map(function (o) {
+          return '<option value="' + o[0] + '"' + (o[0] === pin ? " selected" : "") + ">" + esc(o[1]) + "</option>";
+        }).join("") + "</select></div>";
+    }
     if (r) info += '<div class="nv-kv"><span>' + esc(tw("nv.k.on")) + '</span><button type="button" class="nv-sw" role="switch" aria-checked="' + r.on + '" aria-label="' + esc(tw("nv.k.on")) + '" data-act="rtog" data-id="' + esc(r.id) + '"><span></span></button></div>';
     h += '<div class="nv-sec2">' + info + "</div>";
     if (it.st === "done" && it.src === "kanban") {
@@ -1348,7 +1364,9 @@
     if (r && r.ok === false) { f.err = r.error || tw("nv.err.generic"); renderLayer(); return; }
     S.layer = null; S.form = null; renderLayer();
     var chromeNote = r && (r.chrome_note || (r.reminder && r.reminder.chrome_note));   // Chrome on but it cannot run
-    if (chromeNote) toast(chromeNote); else toast(f.edit || f.loop ? tw("nv.saved") : f.kind === "appt" ? tw("nv.ap.added") : f.who === "me" ? (f.habit && f.rule ? tw("nv.h.added") : tw("nv.f.added")) : tw("nv.f.given"));
+    // 0.452.0: made on a home PC whose schedules run on the VPS while GitHub sync is off here: it would never get there.
+    var mayNote = r && r.canh_bao_may;
+    if (mayNote) toast(mayNote); else if (chromeNote) toast(chromeNote); else toast(f.edit || f.loop ? tw("nv.saved") : f.kind === "appt" ? tw("nv.ap.added") : f.who === "me" ? (f.habit && f.rule ? tw("nv.h.added") : tw("nv.f.added")) : tw("nv.f.given"));
     await load(); render(); schedulePoll();
   }
   async function createReminder(txt, mode, date, time, rule, opts) {
@@ -1612,6 +1630,13 @@
   async function onChange(e) {
     var el = e.target;
     if (!S.root.contains(el)) return;
+    if (el.dataset.runon) {
+      // 0.452.0: pin this reminder or loop to one machine, or let it follow the general choice.
+      var ro = find(el.dataset.runon) || (S.ai.recurring || []).find(function (x) { return x.id === el.dataset.runon; });
+      if (!ro) return;
+      return act(ro.src === "loop" ? postForm("/loops/chay-tren", { brain: brain(), slug: ro.ref, chay_tren: el.value })
+        : postForm("/reminders/update", { brain: brain(), id: ro.ref, chay_tren: el.value }), tw("nv.saved"));
+    }
     if (el.dataset.pproj && el.dataset.pproj !== "new") {
       var it = find(el.dataset.pproj) || find("m:" + el.dataset.pproj); var id = it ? it.raw.id : el.dataset.pproj.replace(/^m:/, "");
       return act(mine({ __url: "/my-tasks/update", id: id, project: el.value }), tw("nv.saved"));

@@ -249,7 +249,8 @@ _DEFAULT = {
     # chống máy tắt xoá chéo ảnh của máy bật - xem git_brain._sync_mirror). Khi bật, máy dọn
     # media tự BỎ QUA attachments/ để ảnh vừa backup không bị dọn rồi lệnh xoá lan đi các máy.
     "backup": {"enabled": False, "repo_url": "", "token": "", "branch": "main",
-               "interval_hours": 6, "sync_images": False,
+               # 0.452.0: 15 minutes by default (owner 2026-11-16: home PC and VPS keep in step without setting each one).
+               "interval_hours": 0.25, "sync_images": False,
                "last_backup": 0.0, "last_status": ""},
     "dashboard": {
         # graph_enabled=False → vào thẳng Console, KHÔNG dựng đồ thị (nhẹ cho VPS/điện thoại).
