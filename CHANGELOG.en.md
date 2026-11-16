@@ -8,7 +8,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.453.1] - 2026-11-16
 ### Fixed
-- (in progress)
+- The new state files of 0.452.0 and 0.453.0 (machine id, schedule ledger, follow-up book, background job book) are kept out of the code repository and the Docker image, like every other runtime data file. Nothing changes on a running machine: the files stay where they are, they just can never be pushed to GitHub by mistake.
 
 ## [0.453.0] - 2026-11-16
 ### Added

@@ -86,6 +86,11 @@ server/usage-events.jsonl*
 server/usage_index.db*
 server/session_brain.db*
 server/kanban.sqlite3*
+server/once_ledger.sqlite3*
+server/tien_trinh_nen.json
+server/may_chay_lich.json
+server/lich_da_chay.sqlite3*
+server/noi_tiep_nen.sqlite3*
 server/improvement/
 server/conversations.db
 server/conversations.db-wal
