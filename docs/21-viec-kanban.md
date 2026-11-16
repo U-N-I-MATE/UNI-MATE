@@ -242,6 +242,36 @@ Việc chạy xong vẫn nằm nguyên trong danh sách chuông để bạn mở
 
 Đánh đổi cần biết: lúc bạn đi vắng, một việc chạy xong sẽ **không** có gì nhắc. Muốn xem thì mở chuông, hoặc mở lại cuộc trò chuyện đã giao việc.
 
+## UNI MATE tự làm tiếp khi việc nền xong (từ 0.453.0)
+
+Trước bản này, việc giao từ khung chat chạy xong chỉ dán kết quả vào khung chat rồi đứng im. Muốn UNI MATE đọc kết quả và làm bước tiếp theo, bạn phải nhắn "việc nền đã xong, kiểm tra đi". Giờ UNI MATE tự làm việc đó.
+
+Áp dụng cho mọi việc **giao từ một lượt chat của bạn**, trên khung chat web hay Telegram:
+
+- lệnh chạy nền (render video, build, tải file lớn), kể cả trên Windows;
+- việc Kanban, kể cả việc chạy một quy trình (`route wf:<slug>`);
+- việc giao cho một Nhóm.
+
+Cách chạy:
+
+1. Các việc giao trong **cùng một lượt chat** là một đợt. Đợt xong hết thì UNI MATE mở **một** lượt mới trong đúng khung chat đó. Tin mở lượt ghi rõ việc nào xong, việc nào chờ duyệt, việc nào bị chặn, kèm kết quả.
+2. Trong lượt đó, UNI MATE tự đánh giá từng việc **đạt hay chưa đạt** so với yêu cầu ban đầu, rồi làm bước tiếp theo của kế hoạch. Không còn bước nào thì tóm tắt kết quả cuối và dừng.
+3. Có việc chạy quá **30 phút** mà các việc khác đã xong thì UNI MATE mở lượt với những việc đã xong; việc xong sau có lượt riêng.
+4. Lượt tự làm tiếp xong thì **chuông thông báo** báo luôn.
+
+Giới hạn an toàn:
+
+| Luật | Mức |
+|---|---|
+| Lượt tự làm tiếp liên tiếp của một chuỗi việc | tối đa 3, quá thì báo và chờ bạn nhắn "làm tiếp" |
+| Lượt tự làm tiếp mỗi giờ của một khung chat | tối đa 10 |
+| Việc Kanban chờ duyệt | UNI MATE chỉ đọc, đánh giá, không tự duyệt thay bạn |
+| Thao tác ra ngoài đã làm (gửi tin, đăng bài, tạo đơn) | các lượt sau của cùng chuỗi không làm lại |
+
+Không thuộc phạm vi: lịch tự chạy (nhắc hẹn, việc lặp) và việc tạo tay ở trang Nhiệm vụ. Những việc này vẫn báo kết quả như cũ.
+
+Tắt hẳn ở **Cài đặt → Tự làm tiếp khi việc nền xong**. Muốn một việc chỉ báo kết quả mà không làm tiếp, nói rõ khi giao việc (công cụ `unimate_task` nhận `lam_tiep=false`). Sổ của cơ chế này nằm ở `noi_tiep_nen.sqlite3` trong thư mục trạng thái, nên máy chủ khởi động lại vẫn làm tiếp được.
+
 ## Thấy việc nền đang chạy ngay trong khung chat
 
 Từ 0.25.2, ngay trên ô nhập của khung chat có một **dải việc nền**. Nó chỉ hiện khi thật sự có gì đó đang sống, và nói đúng một điều: ngay lúc này có cái gì đang chạy cho bạn không.
@@ -366,7 +396,7 @@ Việc đang chạy không cho đổi trạng thái. Bấm **Dừng task** trư�
 Việc giao trong chat web phải mang theo mã phiên chat thì kết quả mới về đúng khung đó. UNI MATE tự gắn khi bạn giao bằng lời trong chat; còn việc tạo tay ở trang này hoặc bằng lệnh curl không có mã phiên nên chỉ đi Telegram. Nếu tin đi Telegram mà im lặng: bot chưa bật, chưa có chat id trong whitelist, hoặc việc không rõ người giao nên tin bay về ID Telegram đầu tiên chứ không về tài khoản bạn nghĩ. Xem [Kênh Telegram](11-telegram.md).
 
 **UNI MATE hứa "em sẽ đợi các việc chạy xong rồi tổng hợp" nhưng chẳng bao giờ tổng hợp.**
-Đó là lời hứa suông và đã bị cấm từ 0.9.289: lượt trả lời của UNI MATE kết thúc ngay khi nó nói xong, không có cơ chế nào đánh thức nó dậy để tổng hợp. Việc nền chỉ tự đẩy kết quả **thô** về khung chat. Muốn có bản tổng hợp, giao thêm một việc chuyên đi tổng hợp (dùng `deps` trỏ vào các việc trước), hoặc nhắn lại một câu sau khi kết quả đã về.
+Từ 0.453.0 việc này tự có: các việc giao trong một lượt chat xong hết thì UNI MATE mở một lượt tiếp trong khung chat đó để đọc kết quả, đánh giá và làm tiếp (xem mục "UNI MATE tự làm tiếp khi việc nền xong"). Không thấy lượt tiếp thì kiểm tra: công tắc **Tự làm tiếp khi việc nền xong** trong Cài đặt có đang bật, việc có được giao từ lượt chat (không phải tạo tay ở trang này), và chuỗi đã chạm trần 3 lượt liên tiếp chưa.
 
 **Bảng trống trơn dù hôm qua còn việc.**
 Ba khả năng, theo thứ tự hay gặp: bạn đang đứng ở **brain khác** (đổi brain ở đầu dashboard), việc đã kết thúc quá 3 ngày nên tự lưu trữ, hoặc ai đó đã gọi endpoint dọn bảng.

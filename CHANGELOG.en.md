@@ -6,6 +6,18 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.453.0] - 2026-11-16
+### Added
+- **When background work ends, UNI MATE goes on by itself, no need to write "it is done, check it".** Every job given from a chat (background command, Kanban job, team job, workflow run through Kanban) opens a new turn in that same chat once it ends: UNI MATE reads the results, judges pass or fail, then does the next step of the plan. With no step left it sums up the final result and stops.
+- **One turn per batch.** The jobs given in one chat turn open one follow-up turn once they have all ended. If one runs longer than 30 minutes, UNI MATE goes on with the finished ones and the late job gets its own turn.
+- **Caps so it never loops.** At most 3 follow-up turns in a row for one chain of jobs and 10 per hour in one chat. Past a cap UNI MATE says so in the chat; write "continue" to go on.
+- **On or off in Settings**, block **Continue when background work ends** (on by default). The bell rings when a follow-up turn has finished.
+### Fixed
+- A Kanban job waiting for review: UNI MATE reads and judges it but never approves for you, and only does the steps that do not depend on the approval.
+- An outside action (message, post, order) done in a follow-up turn is not done again by the later turns of the same chain.
+- Works on Windows (home PC), on the VPS, in the web chat and on Telegram, and still goes on after a server restart. Before, only background commands on Linux or Mac, in the web chat, got a follow-up turn, and a restart lost it.
+- Scheduled runs (reminders, loops) are out of scope and report their results as before.
+
 ## [0.452.0] - 2026-11-16
 ### Added
 - **Two machines (home PC and VPS) no longer run the same schedules.** One machine runs reminders, loops, habit reminders and customer bots, the VPS by default. The other keeps chatting and its Tasks page says "Schedules run on the VPS". Change it in Settings, **Schedule machine**.

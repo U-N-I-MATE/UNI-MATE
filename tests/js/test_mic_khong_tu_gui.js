@@ -109,7 +109,10 @@ const ghiUser = (server.match(/append_message\([^)]*"user"/g) || []).length;
 // session when that turn reads it (steer_inbox sink in _tg_answer). Typed and sent by the owner, never the mic.
 // 0.236.0 adds the ninth, inside voice_live_ws: a message with files TYPED in the chat during a Live call (the "ask"
 // frame) is stored there instead of by an ordinary chat turn. Typed and sent by the owner, never the mic.
-check("chỉ 9 chỗ ghi vai user (web + bot + 3 Live + duyệt quy trình + nối tiếp việc nền + gửi thêm lúc đang chạy, web và kênh)", ghiUser === 9, ghiUser);
+// 0.453.0 adds the tenth: the follow-up turn of a web chat when this process holds no opener for it (after a restart,
+// _noi_tiep_khong_ws) stores its opening message, marked "[UNI MATE tự làm tiếp: ...]", like _start_followup_turn.
+// Written by the server when background work ends, never by the mic.
+check("chỉ 10 chỗ ghi vai user (web + bot + 3 Live + duyệt quy trình + 2 nối tiếp việc nền + gửi thêm lúc đang chạy, web và kênh)", ghiUser === 10, ghiUser);
 check("chỗ thứ sáu nằm TRONG _start_followup_turn",
   /async def _start_followup_turn[\s\S]{0,1600}store\.append_message\(conv_sid, "user", text\)/.test(server));
 const approvalBody = server.slice(server.indexOf('if action == "wf_resume":'), server.indexOf('if action == "resume_now":'));

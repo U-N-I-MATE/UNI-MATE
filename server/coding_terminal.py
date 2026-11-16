@@ -721,9 +721,10 @@ def chay_nen(command: str, sid: str, goc: List[str], workdir: str = "", brain_ro
     except OSError as e:
         return f"ERROR: không bật được tiến trình nền: {type(e).__name__}: {e}"
     job_id = ""
-    if POSIX and chat_id:
+    if chat_id:
         try:
             import tien_trinh_nen
+            # 0.453.0: Windows too (tien_trinh_nen tracks the pid and its children with psutil there).
             job_id = tien_trinh_nen.theo_doi_nhom(p.pid, cmd[:200], cwd, brain_root, chat_id) or ""
         except Exception:
             job_id = ""

@@ -574,6 +574,14 @@
               <div id="mclBox" class="mcl"></div>
             </div>
 
+            <!-- Follow-up turn when background work ends (0.453.0). noi-tiep.js draws #ntBox from /noi-tiep: jobs given from
+                 a chat that have ended open a turn in that chat to read the results and go on (server/noi_tiep_nen.py). -->
+            <div class="qs-block" data-settings-section="general" id="noiTiepBlock">
+              <div class="popover-label"><span data-i18n="nt.title">TỰ LÀM TIẾP KHI VIỆC NỀN XONG</span></div>
+              <div class="opt-sub" data-i18n="nt.sub">Việc giao từ khung chat xong hết thì UNI MATE tự đọc kết quả và làm bước tiếp theo.</div>
+              <div id="ntBox"></div>
+            </div>
+
           </div>
         </details>
       </aside>
@@ -1099,6 +1107,7 @@
   <script src="/static/quick-settings.js?v=11"></script>
   <script src="/static/remote-access.js?v=2"></script>
   <script src="/static/may-chay-lich.js?v=4"></script>
+  <script src="/static/noi-tiep.js?v=1"></script>
   <script src="/static/chat-zoom.js?v=6"></script>
   <script src="/static/brains-ui.js?v=8"></script>
   <script src="/static/sessions-ui.js?v=25"></script>

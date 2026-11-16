@@ -108,6 +108,8 @@ import luot_dang_chay # sổ lượt chat đang chạy theo brain: tool giao vi�
 import tool_label     # một dòng mô tả lệnh gọi công cụ (lệnh nào, file nào) cho khối tiến trình
 import step_media     # 0.451.0: what each progress step produced (text, pictures, document cards)
 import may_chay_lich  # 0.452.0: which of the owner's machines runs the schedules
+import noi_tiep_nen  # 0.453.0: background work given from a chat opens a follow-up turn there when it ends
+import once_ledger
 
 
 async def _with_step_results(gen):
@@ -12808,6 +12810,9 @@ tasks_feature = tasks_mod.register(app, tasks_mod.TasksDeps(
     apply_mcp=_apply_mcp,
     mcp_allow_patterns=_loop_mcp_allow,
     report=_notify_owner,               # báo NGƯỜI YÊU CẦU task khi chạy xong (rỗng → UNI MATE Core của brain việc)
+    # 0.453.0: việc giao từ chat xong thì khung chat đó tự làm tiếp (hàm định nghĩa phía dưới, gọi lúc chạy).
+    created_hook=lambda t: _noi_tiep_kanban_tao(t),
+    finish_hook=lambda t: _noi_tiep_kanban_xong(t),
 ))
 
 # Nối learn → Kanban: engine học đề xuất việc nền → enqueue vào backlog.
@@ -13411,6 +13416,33 @@ async def background_active(brain: str = Query("brain"), chat_id: str = Query(""
 _NOI_TIEP_WEB: dict = {}
 # Độ sâu của lượt nối tiếp ĐANG chạy theo phiên, để chuỗi nối tiếp có trần.
 _DO_SAU_NOI_TIEP: dict = {}
+# 0.453.0: chat ("web:<sid>" or a Telegram chat id) -> {"chuoi", "do_sau"} of the follow-up turn running there now, so
+# the jobs that turn gives join its chain (noi_tiep_nen.py caps a chain at 3 follow-up turns).
+_NOI_TIEP_CHUOI: dict = {}
+
+
+def _noi_tiep_luot(chat: str):
+    """The owner's turn running in this chat now, as noi_tiep_nen groups jobs: {dot, chuoi, do_sau}; None when none."""
+    khoa = luot_dang_chay.khoa_cua(chat)
+    if not khoa:
+        return None
+    c = _NOI_TIEP_CHUOI.get(str(chat)) or {}
+    return {"dot": khoa, "chuoi": c.get("chuoi") or khoa, "do_sau": int(c.get("do_sau") or 0)}
+
+
+def _noi_tiep_bat() -> bool:
+    return bool((cfgmod.read_settings().get("noi_tiep") or {}).get("enabled", True))
+
+
+def _noi_tiep_job(chat: str) -> str:
+    """turn_context `job` of a follow-up turn: its outside actions go in the once-only ledger per chain."""
+    c = _NOI_TIEP_CHUOI.get(str(chat)) or {}
+    return f"noitiep:{c['chuoi']}" if c.get("chuoi") else ""
+
+
+noi_tiep_nen.configure(Path(cfgmod.STATE_DIR) / "noi_tiep_nen.sqlite3")
+noi_tiep_nen.noi(luot_fn=_noi_tiep_luot, dang_chay_fn=luot_dang_chay.con_chay, bat_fn=_noi_tiep_bat,
+                 kenh_fn=lambda: str((turn_context.current() or {}).get("kenh") or ""))
 
 
 def _link_file_trong_brain(brain_root: str, path: str) -> str:
@@ -13441,13 +13473,27 @@ async def _nhan_nuoi_tien_trinh(tag: str, brain: str, owner_chat: str, final_tex
         return ""
     if not ds:
         return ""
+    # 0.453.0: every job left behind in an owner's turn joins that turn's batch: when it ends UNI MATE reads the result
+    # and goes on by itself (noi_tiep_nen.py), not only when the model asked for it or promised.
+    se_tiep = False
+    for v in ds:
+        try:
+            se_tiep = noi_tiep_nen.dang_ky(owner_chat, "job", v["id"], v.get("mo_ta") or "",
+                                           brain=_brain_root(brain)) or se_tiep
+        except Exception as e:  # noqa: BLE001
+            print(f"[noi tiep] đăng ký việc nền: {type(e).__name__}: {e}", file=sys.stderr)
+    se_tiep = se_tiep and noi_tiep_nen.bat()
     # Giọng "mình" như các dòng hệ thống khác (promise_note): dòng này không biết người dùng
     # xưng hô thế nào, "mình" là cách trung tính nhất.
     dong = ["Mình đang theo dõi việc chạy nền của lượt này:"]
     for v in ds:
         dong.append(f"- `{v['mo_ta']}`")
     tiep = next((v.get("sau_khi_xong") for v in ds if v.get("sau_khi_xong")), "")
-    if tu_lam_tiep and tiep:
+    if se_tiep and tiep:
+        dong.append(f"\nXong là mình tự xem kết quả rồi làm tiếp: {tiep}")
+    elif se_tiep:
+        dong.append("\nXong là mình tự xem kết quả và làm bước tiếp theo, không cần nhắn lại.")
+    elif tu_lam_tiep and tiep:
         dong.append(f"\nXong là mình tự báo về đây rồi làm tiếp: {tiep}")
     elif tu_lam_tiep and any(v.get("noi_tiep") for v in ds):
         dong.append("\nXong là mình tự báo về đây rồi làm nốt phần đã hẹn, không cần hỏi lại.")
@@ -13457,8 +13503,8 @@ async def _nhan_nuoi_tien_trinh(tag: str, brain: str, owner_chat: str, final_tex
 
 
 async def _khi_tien_trinh_xong(v: dict) -> None:
-    """Một việc chạy nền vừa kết thúc: báo đúng người (khung chat + hòm thư + thông báo đẩy),
-    rồi mở lượt nối tiếp nếu lượt trước đã dặn hoặc đã hứa."""
+    """Một việc chạy nền vừa kết thúc: báo đúng người (khung chat + hòm thư + thông báo đẩy), rồi ghi vào sổ lượt
+    tiếp (noi_tiep_nen): việc do lượt chat của chủ giao thì UNI MATE tự xem kết quả và làm tiếp."""
     owner = str(v.get("chat_id") or "")
     root = str(v.get("brain_root") or "")
     trang = str(v.get("trang_thai") or "xong")
@@ -13475,15 +13521,17 @@ async def _khi_tien_trinh_xong(v: dict) -> None:
     than = [dau, f"`{mo_ta}`"]
     if files:
         than.append("File mới trong thư mục làm việc:\n" + "\n".join(f"- {x}" for x in files))
-    sid = owner[len(WEB_CHAT_PREFIX):] if owner.startswith(WEB_CHAT_PREFIX) else ""
-    do_sau = int(v.get("do_sau") or 0)
-    muon_tiep = st == "done" and bool(v.get("noi_tiep"))
-    runner = _NOI_TIEP_WEB.get(sid) if sid else None
-    se_tiep = muon_tiep and runner is not None and do_sau < tien_trinh_nen.TRAN_NOI_TIEP
     loi_dan = str(v.get("sau_khi_xong") or "")
-    if se_tiep:
-        than.append("Mình làm tiếp phần còn lại ngay bây giờ.")
-    elif muon_tiep:
+    # 0.453.0: a job given in an owner's turn is followed up by noi_tiep_nen (batch, caps, restart-safe); the old
+    # in-memory runner of the chat is no longer called from here.
+    theo = False
+    try:
+        theo = noi_tiep_nen.co("job", str(v.get("id") or "")) and noi_tiep_nen.bat()
+    except Exception:  # noqa: BLE001
+        theo = False
+    if theo and st == "done":
+        than.append("Mình tự xem kết quả rồi làm tiếp, không cần nhắn lại.")
+    elif st == "done" and v.get("noi_tiep"):
         than.append("Nhắn \"làm tiếp\" để mình làm nốt" + (f": {loi_dan}" if loi_dan else " phần đã hẹn."))
     text = "\n\n".join(than)
     try:
@@ -13493,24 +13541,213 @@ async def _khi_tien_trinh_xong(v: dict) -> None:
                             brain=root, dedup=f"job:{v.get('id') or ''}:{st}")
     except Exception as e:
         print(f"[tien trinh nen] báo lỗi: {type(e).__name__}: {e}", file=sys.stderr)
-    if not se_tiep:
-        return
-    nhac = [f"[Việc chạy nền đã xong] {mo_ta} (chạy {tl})."]
-    if files:
-        nhac.append("File mới: " + ", ".join(v.get("file_moi") or []))
-    nhac.append("Làm tiếp: " + (loi_dan or "hoàn tất phần việc đã hẹn với người dùng ở lượt trước, "
-                                "tự kiểm tra kết quả rồi gửi kết quả cuối cùng vào khung chat này."))
-    # KHÔNG await: lượt nối tiếp có thể phải đợi phiên rảnh tới 10 phút, mà hàm này đang chạy
-    # trong vòng theo dõi chung của mọi việc nền. Giữ tham chiếu kẻo bộ dọn rác nuốt task.
     try:
-        t = asyncio.create_task(runner("\n".join(nhac), do_sau + 1))
-        _PUSH_TASKS.add(t)
-        t.add_done_callback(_PUSH_TASKS.discard)
-    except Exception as e:
-        print(f"[tien trinh nen] lượt nối tiếp lỗi: {type(e).__name__}: {e}", file=sys.stderr)
+        ket = {"done": "xong", "cancelled": "huy", "timeout": "qua_han"}.get(st, "xong")
+        noi_dung = text + (f"\nLời dặn khi xong: {loi_dan}" if loi_dan else "")
+        noi_tiep_nen.xong("job", str(v.get("id") or ""), ket, noi_dung)
+    except Exception as e:  # noqa: BLE001
+        print(f"[noi tiep] việc nền xong: {type(e).__name__}: {e}", file=sys.stderr)
 
 
 tien_trinh_nen.dat_khi_xong(_khi_tien_trinh_xong)
+
+
+# ---- Lượt tự làm tiếp khi việc nền giao từ chat đã xong (noi_tiep_nen, 0.453.0) ----
+#
+# Chủ dự án báo 16/11/2026: việc nền xong thì UNI MATE chỉ dán kết quả rồi đứng im, anh phải nhắn "việc nền đã xong,
+# kiểm tra đi". Vòng dưới đây hỏi sổ noi_tiep_nen mỗi vài giây: đợt nào sẵn sàng (mọi việc của lượt đã giao đều xong,
+# hay việc đầu đã xong 30 phút) thì mở MỘT lượt trong đúng khung chat đó để AI đọc kết quả, tự đánh giá và làm bước
+# tiếp theo. Sổ nằm trên đĩa nên khởi động lại máy chủ vẫn làm tiếp được.
+NOI_TIEP_NHIP = 5.0
+NOI_TIEP_CHO_RANH = 120          # x5 giây: khung chat đang bận thì đợi tối đa 10 phút
+
+
+def _noi_tiep_ket_kanban(task: dict) -> str:
+    st = str(task.get("status") or "")
+    return {"done": "xong", "review": "cho_duyet", "blocked": "bi_chan"}.get(st, "xong")
+
+
+def _noi_tiep_kanban_tao(task: dict) -> None:
+    """A Kanban job was just created with a recipient chat: joins the batch of the owner's turn running there."""
+    noi_tiep_nen.dang_ky(str(task.get("chat_id") or ""), "task", str(task.get("id") or ""),
+                         str(task.get("title") or ""), brain=str(task.get("brain_root") or ""))
+
+
+def _noi_tiep_kanban_xong(task: dict) -> None:
+    st = str(task.get("status") or "")
+    if st == "blocked":
+        nd = "Lý do: " + str(task.get("block_reason") or task.get("block_kind") or "không rõ")
+    else:
+        nd = str(task.get("result") or "")
+    noi_tiep_nen.xong("task", str(task.get("id") or ""), _noi_tiep_ket_kanban(task), nd)
+
+
+# Mã trạng thái của việc Nhóm (team_dispatch.phase) -> kết cục của sổ lượt tiếp. "needs_owner" chờ chủ quyết trên thẻ
+# việc: như việc Kanban chờ duyệt, AI đọc và đánh giá nhưng không quyết thay chủ.
+_NOI_TIEP_KET_NHOM = {"done_pass": "xong", "done_unverified": "xong", "done": "xong", "cancelled": "huy",
+                      "acceptance_failed": "bi_chan", "blocked": "bi_chan", "needs_owner": "cho_duyet"}
+
+
+async def _team_core_report(owner_chat, text, **kw):
+    """The team's report back to the chat that gave the job (team_api.core_reports), then the follow-up book."""
+    res = await _notify_owner(owner_chat, text, **kw)
+    dedup = str(kw.get("dedup") or "")
+    if dedup.startswith("teamcore:"):
+        try:
+            _, task_id, code = dedup.split(":", 3)[:3]
+            ket = _NOI_TIEP_KET_NHOM.get(code)
+            if ket:
+                noi_tiep_nen.xong("team", task_id, ket, str(text or ""))
+        except Exception as e:  # noqa: BLE001
+            print(f"[noi tiep] việc nhóm: {type(e).__name__}: {e}", file=sys.stderr)
+    return res
+
+
+async def _noi_tiep_cho_ranh(chat: str) -> bool:
+    """Wait until no turn runs in this chat (the owner typing is never cut off). False after ten minutes."""
+    sid = chat[len(WEB_CHAT_PREFIX):] if chat.startswith(WEB_CHAT_PREFIX) else ""
+    for _ in range(NOI_TIEP_CHO_RANH):
+        busy = luot_dang_chay.has_turn(chat) or (bool(sid) and bool(_CHAT_RUNTIME.get_job(sid)))
+        if not busy:
+            return True
+        await asyncio.sleep(5)
+    return False
+
+
+def _noi_tiep_cau_cuoi(sid: str) -> str:
+    try:
+        for m in reversed(get_store().get_messages(sid) or []):
+            if m.get("role") == "assistant":
+                return channel_context.strip_control_blocks(str(m.get("content") or "")).strip()
+    except Exception:  # noqa: BLE001
+        pass
+    return ""
+
+
+def _noi_tiep_xong_luot_web(sid: str) -> None:
+    """A follow-up turn in a web chat ended: ring the bell with the start of its answer (the chat already shows it)."""
+    async def _bao():
+        cau = _noi_tiep_cau_cuoi(sid)
+        if not cau:
+            return
+        await _bo_vao_hom_thu(f"{WEB_CHAT_PREFIX}{sid}", "UNI MATE đã tự làm tiếp sau khi việc nền xong.\n\n" + cau[:600],
+                              kind="report", label="Tự làm tiếp", source="job", level="important",
+                              dedup=f"noitiep:{sid}:{int(time.time())}")
+    try:
+        t = asyncio.get_running_loop().create_task(_bao())
+        _PUSH_TASKS.add(t)
+        t.add_done_callback(_PUSH_TASKS.discard)
+    except Exception as e:  # noqa: BLE001
+        print(f"[noi tiep] chuông: {type(e).__name__}: {e}", file=sys.stderr)
+
+
+async def _noi_tiep_khong_ws(sid: str, prompt: str, brain: str, chuoi: dict) -> None:
+    """Follow-up turn in a web chat when this process holds no opener for it (after a restart, or the chat ran no turn
+    since): a server turn bound to that chat, answer pushed into it, like a voice job."""
+    chat = WEB_CHAT_PREFIX + sid
+    if not await _noi_tiep_cho_ranh(chat):
+        await push_to_chat(sid, "Việc nền đã xong nhưng hội thoại đang bận quá lâu, mình chưa làm tiếp được. "
+                                "Nhắn \"làm tiếp\" để mình làm nốt.")
+        return
+    store = get_store()
+    store.append_message(sid, "user", prompt)
+    key = f"noitiep:{sid}:{uuid.uuid4().hex[:8]}"
+    sess = _tg_session(key)
+    try:
+        root = _brain_root(brain or "brain")
+        if os.path.isdir(root):
+            sess["brain"] = root
+    except Exception:  # noqa: BLE001
+        root = ""
+    khoa = luot_dang_chay.bat_dau(chat, root)
+    _NOI_TIEP_CHUOI[chat] = dict(chuoi)
+    out = ""
+    try:
+        out = await _tg_answer(prompt, meta={"chat_id": key}, channel="cli", phien_kho=sid, ghi_kho=False,
+                               noi_tiep_job=f"noitiep:{chuoi.get('chuoi')}")
+    except Exception as e:  # noqa: BLE001
+        out = f"Chưa làm tiếp được: {type(e).__name__}: {e}"
+    finally:
+        luot_dang_chay.ket_thuc(khoa)
+        _NOI_TIEP_CHUOI.pop(chat, None)
+        _TG_SESS.pop(key, None)
+    text = channel_context.strip_control_blocks(str(out.get("text") or "") if isinstance(out, dict) else str(out or ""))
+    await push_to_chat(sid, text or "(lượt tự làm tiếp không có nội dung)")
+    _noi_tiep_xong_luot_web(sid)
+
+
+async def _noi_tiep_telegram(chat: str, prompt: str, brain: str, chuoi: dict) -> None:
+    """Follow-up turn in the owner's Telegram chat: a normal owner turn, answer sent back to that chat (plus inbox)."""
+    if not await _noi_tiep_cho_ranh(chat):
+        await _notify_owner(chat, "Việc nền đã xong nhưng cuộc trò chuyện đang bận quá lâu. Nhắn \"làm tiếp\" để "
+                                  "UNI MATE làm nốt.", kind="report", source="job", brain=brain, level="important")
+        return
+    _NOI_TIEP_CHUOI[chat] = dict(chuoi)
+    out = ""
+    try:
+        out = await _tg_answer(prompt, meta={"chat_id": chat}, noi_tiep_job=f"noitiep:{chuoi.get('chuoi')}")
+    except Exception as e:  # noqa: BLE001
+        out = f"Chưa làm tiếp được: {type(e).__name__}: {e}"
+    finally:
+        _NOI_TIEP_CHUOI.pop(chat, None)
+    text = channel_context.strip_control_blocks(str(out.get("text") or "") if isinstance(out, dict) else str(out or ""))
+    await _notify_owner(chat, text or "(lượt tự làm tiếp không có nội dung)", kind="answer", label="Tự làm tiếp",
+                        source="job", brain=brain, level="important")
+
+
+def _noi_tiep_mo(chat: str, prompt: str, brain: str, chuoi: dict) -> bool:
+    """Start the follow-up turn in this chat. False when this kind of chat cannot take one."""
+    if chat.startswith(WEB_CHAT_PREFIX):
+        sid = chat[len(WEB_CHAT_PREFIX):]
+        runner = _NOI_TIEP_WEB.get(sid)
+        coro = (runner(prompt, int(chuoi.get("do_sau") or 0), chuoi) if runner is not None
+                else _noi_tiep_khong_ws(sid, prompt, brain, chuoi))
+    elif _tg_owner_chat(chat):
+        coro = _noi_tiep_telegram(chat, prompt, brain, chuoi)
+    else:
+        return False
+    t = asyncio.create_task(coro)
+    _PUSH_TASKS.add(t)
+    t.add_done_callback(_PUSH_TASKS.discard)
+    return True
+
+
+async def _noi_tiep_mot_dot(dot: dict) -> str:
+    """One ready batch: open its follow-up turn, or say why not. Returns what happened (for logs and tests)."""
+    kq, so = noi_tiep_nen.quyet(dot)
+    got = noi_tiep_nen.nhan(dot)
+    if not got:
+        return "da_nhan"
+    dot = dict(dot, viec=got)
+    chat, brain = dot["chat"], dot.get("brain") or ""
+    if kq == "tat":
+        return "tat"           # the results are already in the chat; the owner turned follow-ups off
+    if kq == "mo":
+        chuoi = {"chuoi": dot["chuoi"], "do_sau": so}
+        da_lam = once_ledger.done_list(f"noitiep:{dot['chuoi']}")
+        prompt = noi_tiep_nen.loi_nhac(dot, so, da_lam)
+        if _noi_tiep_mo(chat, prompt, brain, chuoi):
+            noi_tiep_nen.ghi_luot(chat, dot["dot"], so)
+            return "mo"
+        kq = "kenh"
+    cau = noi_tiep_nen.cau_khong_mo(kq, dot, so)
+    if cau:
+        await _notify_owner(chat, cau, kind="report", label="Việc nền", source="job", brain=brain, level="important",
+                            dedup=f"noitiep:{dot['dot']}:{kq}")
+    return kq
+
+
+async def _vong_noi_tiep() -> None:
+    while True:
+        try:
+            for dot in noi_tiep_nen.dot_san_sang():
+                try:
+                    await _noi_tiep_mot_dot(dot)
+                except Exception as e:  # noqa: BLE001
+                    print(f"[noi tiep] mở lượt: {type(e).__name__}: {e}", file=sys.stderr)
+        except Exception as e:  # noqa: BLE001
+            print(f"[noi tiep] vòng: {type(e).__name__}: {e}", file=sys.stderr)
+        await asyncio.sleep(NOI_TIEP_NHIP)
 
 
 @app.on_event("startup")
@@ -14404,6 +14641,11 @@ async def _start_scheduler():
         asyncio.create_task(may_chay_lich.run_forever())
     except Exception as mce:
         print(f"[may_chay_lich] {type(mce).__name__}: {mce}", file=__import__('sys').stderr)
+    # 0.453.0: background work given from a chat that has ended opens a follow-up turn in that chat (noi_tiep_nen.py).
+    try:
+        asyncio.create_task(_vong_noi_tiep())
+    except Exception as mce:
+        print(f"[noi tiep] {type(mce).__name__}: {mce}", file=__import__('sys').stderr)
     try:
         # Gói khai `compat.app` nhưng `git pull` / `git reset --hard` không bao giờ chạy lại
         # trình cài, nên không có lượt quét này thì dải đó chỉ có tác dụng ở lần cài đầu.
@@ -18725,7 +18967,10 @@ async def _chat_socket(ws):
             _luot_token = turn_context.bind(turn_context.make(
                 "dashboard", chat_id=conv_sid, la_chu=True, session_id=conv_sid, message_id=user_mid,
                 agent=_ag_luot, authority_seq=(_ag_luot or {}).get("authority_seq"),
-                provider=(_ag_luot or {}).get("provider") or ""))
+                provider=(_ag_luot or {}).get("provider") or "",
+                # 0.453.0: a follow-up turn's outside actions go in the once-only ledger per chain. Read through
+                # globals(): tests exec this function from its source in a namespace without the module's globals.
+                job=(globals().get("_noi_tiep_job") or (lambda _c: ""))(WEB_CHAT_PREFIX + conv_sid)))
             # Ghi vào sổ lượt đang chạy để tool giao việc biết kết quả phải về khung chat này
             # khi model quên truyền chat_id (luot_dang_chay.py, 0.64.49). Kèm id tin và lời người
             # dùng để tool unimate_goal (Resonance) biết đúng tin nhắn nào; 0 thì tool từ chối lập mục tiêu.
@@ -18816,6 +19061,7 @@ async def _chat_socket(ws):
                                                           [i["id"] for i in _steer_left],
                                                           now=steer_inbox.INBOX.pop_now(conv_sid)))
                 tien_trinh_nen.bo_tag(turn_tag)   # lượt lỗi/bị dừng không tới bước nhận nuôi
+                (globals().get("_NOI_TIEP_CHUOI") or {}).pop(WEB_CHAT_PREFIX + conv_sid, None)   # 0.453.0: new chain next
                 turn_context.reset(_luot_token)
                 context_runtime.reset_trace(_trace_token)
                 await send_raw({"type": "turn_done", "session_id": conv_sid,
@@ -19303,7 +19549,7 @@ async def _chat_socket(ws):
             except Exception:
                 pass
 
-        async def _start_followup_turn(conv_sid, text, brain, do_sau):
+        async def _start_followup_turn(conv_sid, text, brain, do_sau, chuoi=None):
             """Lượt nối tiếp sau khi một việc chạy nền xong (tien_trinh_nen, 0.64.66).
 
             Là một job chat bình thường của server, y như lượt tự chạy lại của limit_resume: tab
@@ -19322,9 +19568,14 @@ async def _chat_socket(ws):
             store.append_message(conv_sid, "user", text)
             turn_tag = f"chat:{conv_sid[:12]}:{uuid.uuid4().hex[:8]}"
             _DO_SAU_NOI_TIEP[conv_sid] = int(do_sau or 0)
+            if chuoi:
+                # 0.453.0: the jobs this turn gives join the chain; run_turn drops it when the turn ends.
+                _NOI_TIEP_CHUOI[WEB_CHAT_PREFIX + conv_sid] = dict(chuoi)
             runtime_trace = _CONTEXT_RUNTIME.start_turn(conv_sid, brain, "dashboard")
             task = asyncio.create_task(run_turn(
                 conv_sid, text, brain, turn_tag, runtime_trace, False))
+            if chuoi:
+                task.add_done_callback(lambda _t, _s=conv_sid: _noi_tiep_xong_luot_web(_s))
             _CHAT_RUNTIME.register_job(
                 conv_sid, task, turn_tag,
                 runtime_task_id=runtime_trace.task_id if runtime_trace else "",
@@ -19623,8 +19874,8 @@ async def _chat_socket(ws):
             runtime_trace = _CONTEXT_RUNTIME.start_turn(conv_sid, brain, "dashboard")
             # Để lại cách mở lượt nối tiếp cho phiên này: việc chạy nền mà lượt này bỏ lại xong
             # thì tien_trinh_nen gọi tới đây để làm nốt (ghép tiếng, kiểm tra, gửi file...).
-            _NOI_TIEP_WEB[conv_sid] = (lambda _t, _d, _s=conv_sid, _b=brain:
-                                       _start_followup_turn(_s, _t, _b, _d))
+            _NOI_TIEP_WEB[conv_sid] = (lambda _t, _d, _c=None, _s=conv_sid, _b=brain:
+                                       _start_followup_turn(_s, _t, _b, _d, _c))
             # Phiên workflow:<slug>: mỗi tin là một lần chạy quy trình, không phải một lượt
             # hỏi bộ não chính - rẽ nhánh TRƯỚC cả Voice V2, vì trang Cộng sự không có mic.
             # Khung Trò chuyện đã GỌI cộng sự này bằng lệnh "/" (dashboard gửi kèm mỗi tin).
@@ -22562,7 +22813,7 @@ def _tg_turn_account(sess, prov: str):
 
 
 async def _tg_answer(text, meta=None, progress=None, channel="telegram", bot=None,
-                     phien_kho="", ghi_kho=True, agent=None, project_id=""):
+                     phien_kho="", ghi_kho=True, agent=None, project_id="", noi_tiep_job=""):
     """Vỏ ngoài một lượt KHÔNG-WEBSOCKET: khớp phiên trong kho -> chạy engine -> LƯU lượt.
 
     `channel` mở hàm này cho kênh thứ ba là CLI (xem docs/dev/2026-08-cli-spec.md). Cố ý
@@ -22613,6 +22864,10 @@ async def _tg_answer(text, meta=None, progress=None, channel="telegram", bot=Non
         _luot["bot_id"] = str(bot["id"])
     # ĐA PHIÊN: định tuyến theo chat_id → ngữ cảnh của mỗi tài khoản tách biệt.
     chat_id = str((meta or {}).get("chat_id") or "default")
+    # 0.453.0: a follow-up turn (noi_tiep_nen) keys its outside actions per chain in the once-only ledger.
+    _noi_job = str(noi_tiep_job or "") or (_noi_tiep_job(chat_id) if channel == "telegram" and not bot else "")
+    if _noi_job:
+        _luot["job"] = _noi_job
     if bot:
         # Bot chuyên trách: brain RIÊNG của bot, không phải brain của chủ. Khoá phiên gắn id bot
         # nên hai bot cùng nói chuyện với một khách vẫn là hai mạch tách bạch, và không cái nào
@@ -22683,6 +22938,10 @@ async def _tg_answer(text, meta=None, progress=None, channel="telegram", bot=Non
                                api_model or mcfg.get("claude_model") or "mặc định")
     _trace_token = context_runtime.bind_trace(runtime_trace)
     _luot_token = turn_context.bind(_luot)
+    # 0.453.0: the owner's Telegram turn is in the running-turn book too, so the jobs it gives come back to it as a
+    # follow-up turn (noi_tiep_nen.py) and a tool that forgets chat_id finds the right chat.
+    _khoa_tg = (luot_dang_chay.bat_dau(chat_id, _brain_root(brain))
+                if channel == "telegram" and not bot and chat_id != "default" else "")
     try:
         _hop_acted = [False]
 
@@ -22734,11 +22993,11 @@ async def _tg_answer(text, meta=None, progress=None, channel="telegram", bot=Non
         # nền, nên dán một dòng nội bộ về điều phối Kanban vào đó là lạc chỗ.
         if not bot and isinstance(out, dict) and channel == "telegram":
             # Engine bỏ lại lệnh chạy ngầm trong lượt Telegram: theo dõi, xong báo về đúng người.
-            # Lượt nối tiếp tự động chỉ có ở khung chat web; ở đây mời nhắn "làm tiếp".
+            # 0.453.0: xong thì noi_tiep_nen mở lượt tự làm tiếp ở chính chat Telegram này.
             try:
                 _cau_nuoi = await _nhan_nuoi_tien_trinh(
                     f"telegram:{chat_id}", brain, str(chat_id or ""), out.get("text") or "",
-                    tu_lam_tiep=False)
+                    tu_lam_tiep=False, do_sau=0)
                 if _cau_nuoi:
                     out["text"] = (out.get("text") or "") + "\n\n" + _cau_nuoi
             except Exception as e:
@@ -22795,6 +23054,8 @@ async def _tg_answer(text, meta=None, progress=None, channel="telegram", bot=Non
         _CONTEXT_RUNTIME.finish(runtime_trace, "FAILED", type(e).__name__)
         raise
     finally:
+        if _khoa_tg:
+            luot_dang_chay.ket_thuc(_khoa_tg)
         turn_context.reset(_luot_token)
         context_runtime.reset_trace(_trace_token)
 
@@ -27574,7 +27835,7 @@ _TEAM_API = team_api.register(app, team_api.TeamApiDeps(
     check_command=lambda cmd, cwd: _MandateDeps().run_test(cmd, cwd),
     brain_root=lambda team: Path(_brain_root(team["brain_id"])),
     work_dir=lambda team: coding_store.cwd_cua_phien(team.get("session_id") or "") if team.get("session_id") else "",
-    report=_notify_owner))
+    report=_team_core_report))
 
 
 # ============================================================
@@ -29826,3 +30087,17 @@ async def may_chay_lich_remote_sync(request: Request):
 async def may_chay_lich_push():
     """0.452.0: the owner's "Send schedules to the VPS" button (home PC): one hand-over attempt now."""
     return await may_chay_lich.push_now()
+
+
+@app.get("/noi-tiep")
+def noi_tiep_xem():
+    """0.453.0: the Settings switch "Tự làm tiếp khi việc nền xong" and its caps (noi_tiep_nen.py)."""
+    return {"enabled": _noi_tiep_bat(), "tran_chuoi": noi_tiep_nen.TRAN_CHUOI, "tran_gio": noi_tiep_nen.TRAN_GIO,
+            "cho_dot_phut": noi_tiep_nen.CHO_DOT // 60}
+
+
+@app.post("/noi-tiep")
+def noi_tiep_dat(enabled: str = Form("1")):
+    on = str(enabled).strip().lower() not in ("0", "false", "off", "no", "")
+    cfgmod.update_settings({"noi_tiep": {"enabled": on}})
+    return {"ok": True, "enabled": on}

@@ -7754,5 +7754,25 @@
    "POST"
   ],
   "trong": null
+ },
+ {
+  "order": 779,
+  "type": "APIRoute",
+  "path": "/noi-tiep",
+  "name": "noi_tiep_xem",
+  "methods": [
+   "GET"
+  ],
+  "trong": null
+ },
+ {
+  "order": 780,
+  "type": "APIRoute",
+  "path": "/noi-tiep",
+  "name": "noi_tiep_dat",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
  }
 ]

@@ -248,6 +248,8 @@ _DEFAULT = {
     # không đòi lại dung lượng. Dùng nhiều máy chung repo thì bật trên MỌI máy (dù đã có rào
     # chống máy tắt xoá chéo ảnh của máy bật - xem git_brain._sync_mirror). Khi bật, máy dọn
     # media tự BỎ QUA attachments/ để ảnh vừa backup không bị dọn rồi lệnh xoá lan đi các máy.
+    # 0.453.0: background work given from a chat opens a follow-up turn in that chat when it ends (noi_tiep_nen.py).
+    "noi_tiep": {"enabled": True},
     "backup": {"enabled": False, "repo_url": "", "token": "", "branch": "main",
                # 0.452.0: 15 minutes by default (owner 2026-11-16: home PC and VPS keep in step without setting each one).
                "interval_hours": 0.25, "sync_images": False,
