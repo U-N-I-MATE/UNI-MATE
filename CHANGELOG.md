@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.453.0] - 2026-11-16
+### Thêm mới
+- **Việc nền xong thì UNI MATE tự làm tiếp.** (đang làm)
+
 ## [0.452.0] - 2026-11-16
 ### Thêm mới
 - **Hai máy (máy nhà và VPS) không còn chạy trùng lịch.** Chỉ một máy chạy nhắc hẹn, việc lặp, nhắc thói quen và bot trả lời khách, mặc định là VPS. Máy kia vẫn chat bình thường và hiện dòng "Lịch đang chạy ở VPS" trên trang Việc. Đổi ở Cài đặt, khối **Máy chạy lịch**.

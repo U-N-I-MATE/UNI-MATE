@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.453.0] - 2026-11-16
+### Added
+- **Background work that finishes is picked up again on its own.** (in progress)
+
 ## [0.452.0] - 2026-11-16
 ### Added
 - **Two machines (home PC and VPS) no longer run the same schedules.** One machine runs reminders, loops, habit reminders and customer bots, the VPS by default. The other keeps chatting and its Tasks page says "Schedules run on the VPS". Change it in Settings, **Schedule machine**.
