@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.454.0] - 2026-11-16
+### Added
+- (in progress)
+
 ## [0.453.2] - 2026-11-16
 ### Fixed
 - **The Schedule machine and Continue blocks no longer show raw keys (mcl.this, nt.on...) right after an update.** While the server was still starting, the browser used its kept old texts for now; UNI MATE now asks again until the new texts arrive, then draws both blocks again.

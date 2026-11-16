@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.454.0] - 2026-11-16
+### Thêm mới
+- (đang làm)
+
 ## [0.453.2] - 2026-11-16
 ### Sửa lỗi
 - **Khối Máy chạy lịch và Tự làm tiếp không còn hiện mã thô (mcl.this, nt.on...) ngay sau khi cập nhật.** Lúc máy chủ còn đang khởi động, trình duyệt dùng tạm bộ chữ cũ đã lưu; nay UNI MATE tự hỏi lại tới khi có bộ chữ mới rồi vẽ lại hai khối này.
