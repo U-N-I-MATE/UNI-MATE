@@ -108,6 +108,14 @@ server/web_watch.sqlite3*
 server/improvement/
 # login_vault.sqlite3 (0.251.0): the owner's encrypted sign-ins. Never commit it.
 server/login_vault.sqlite3*
+# tien_trinh_nen.json (0.64.66): background jobs UNI MATE watches, kept across a server restart.
+server/tien_trinh_nen.json
+server/tien_trinh_nen.tmp
+# may_chay_lich.json, lich_da_chay.sqlite3 (0.452.0): this machine's id and the schedule ledger (home PC + VPS).
+server/may_chay_lich.json
+server/lich_da_chay.sqlite3*
+# noi_tiep_nen.sqlite3 (0.453.0): jobs given from a chat, waiting for their follow-up turn.
+server/noi_tiep_nen.sqlite3*
 # workflow_runs.sqlite3: kho lịch sử chạy quy trình (Task 2 Cộng sự), cùng lớp với
 # kanban.sqlite3* trên - test không đặt UNIMATE_STATE_DIR sẽ ghi rơi vào server/ vì
 # execute_workflow giờ luôn chạm workflow_runs.get_store().
