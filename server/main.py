@@ -22991,7 +22991,7 @@ async def _tg_answer(text, meta=None, progress=None, channel="telegram", bot=Non
         # nền, nên dán một dòng nội bộ về điều phối Kanban vào đó là lạc chỗ.
         if not bot and isinstance(out, dict) and channel == "telegram":
             # Engine bỏ lại lệnh chạy ngầm trong lượt Telegram: theo dõi, xong báo về đúng người.
-            # Lượt nối tiếp tự động chỉ có ở khung chat web; ở đây mời nhắn "làm tiếp".
+            # 0.453.0: xong thì noi_tiep_nen mở lượt tự làm tiếp ở chính chat Telegram này.
             try:
                 _cau_nuoi = await _nhan_nuoi_tien_trinh(
                     f"telegram:{chat_id}", brain, str(chat_id or ""), out.get("text") or "",
