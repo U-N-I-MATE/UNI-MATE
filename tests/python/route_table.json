@@ -7734,5 +7734,15 @@
    "POST"
   ],
   "trong": null
+ },
+ {
+  "order": 777,
+  "type": "APIRoute",
+  "path": "/may-chay-lich/remote/sync",
+  "name": "may_chay_lich_remote_sync",
+  "methods": [
+   "POST"
+  ],
+  "trong": null
  }
 ]

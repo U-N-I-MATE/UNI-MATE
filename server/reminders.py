@@ -401,6 +401,7 @@ class RemindersFeature:
     def _save(self, brain: str, data: dict) -> None:
         data["updated"] = _now()
         self.deps.atomic_write_text(self._path(brain), json.dumps(data, ensure_ascii=False, indent=2))
+        may_chay_lich.nudge_sync_soon()   # 0.452.0: a linked home PC hands the change to the VPS now
 
     def _scripts_dir(self, brain: str) -> Path:
         return Path(self.deps.brain_root(brain)) / "UniMate" / "scripts"

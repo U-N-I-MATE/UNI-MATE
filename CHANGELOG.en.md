@@ -9,7 +9,7 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 ## [0.452.0] - 2026-11-16
 ### Added
 - **Two machines (home PC and VPS) no longer run the same schedules.** One machine runs reminders, loops, habit reminders and customer bots, the VPS by default. The other keeps chatting and its Tasks page says "Schedules run on the VPS". Change it in Settings, **Schedule machine**.
-- **Link the home PC to the VPS with a link code.** The VPS makes the code (shown once) and you paste it at home. Once linked, a change of schedule machine takes effect within about a minute instead of waiting for the GitHub sync.
+- **Link the home PC to the VPS with a link code.** The VPS makes the code (shown once) and you paste it at home. Once linked, a change of schedule machine takes effect within about a minute, and a reminder or loop made on the home PC reaches the VPS at once instead of waiting for the next GitHub sync.
 - **Pin one job to one machine.** **Runs on** on the Tasks page (or say "run it on the home PC" when scheduling by chat), for jobs that need software only the home PC has, such as AdsPower. Each customer bot can also pick the machine that answers.
 - **Shared ledger on the VPS against duplicates.** Every scheduled run, every post or message such a run sends and every customer message is recorded; the machine that records it first goes ahead and the other skips it. With the VPS unreachable, jobs that belong to the VPS do not run at home (a missed run, never a double post), and jobs pinned to the home PC still run and are reported to the VPS later.
 

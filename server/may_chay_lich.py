@@ -71,6 +71,8 @@ _db: Optional[sqlite3.Connection] = None
 _last_should = {"v": None}
 _published = {}               # brain root -> what was last written there
 _cache = {}                   # short-lived reads of the brain files: (time, value)
+_sync_fn: Optional[Callable[[], object]] = None   # one GitHub sync of the brains (blocking), when backup is on
+_nudge = {"task": None, "again": False}
 CACHE_S = 20
 
 
@@ -108,10 +110,50 @@ def configure(state_file=None, ledger_file=None) -> None:
         _last_should["v"] = None
 
 
-def wire(brains_fn: Callable[[], Iterable]) -> None:
-    """`brains_fn()` returns the root folders of the brains whose schedules this machine runs."""
-    global _brains_fn
+def wire(brains_fn: Callable[[], Iterable], sync_fn: Optional[Callable[[], object]] = None) -> None:
+    """`brains_fn()` returns the root folders of the brains whose schedules this machine runs. `sync_fn()` runs one
+    GitHub sync of the brains (None when backup is off)."""
+    global _brains_fn, _sync_fn
     _brains_fn = brains_fn
+    _sync_fn = sync_fn
+
+
+def nudge_sync_soon() -> None:
+    """A schedule was made or changed on a linked home PC, but the VPS runs it: sync the brains now and ask the VPS to
+    pull, instead of waiting hours for the next sync (a "remind me in 30 minutes" made at home would be missed).
+    Coalesced: changes within a few seconds share one sync."""
+    if _sync_fn is None or not linked() or machine()["kind"] == "vps":
+        return
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        return
+    t = _nudge.get("task")
+    if t is not None and not t.done():
+        _nudge["again"] = True
+        return
+    _nudge["task"] = loop.create_task(_nudge_run())
+
+
+async def _nudge_run(delay: float = 5.0) -> None:
+    await asyncio.sleep(delay)
+    while True:
+        _nudge["again"] = False
+        try:
+            await asyncio.to_thread(_sync_fn)
+            await _http("POST", "/may-chay-lich/remote/sync", {})
+        except Exception as e:  # noqa: BLE001
+            _remote["error"] = f"{type(e).__name__}: {e}"[:200]
+        if not _nudge["again"]:
+            break
+
+
+async def remote_sync() -> dict:
+    """VPS side: the home PC just pushed a schedule change; pull it now."""
+    if _sync_fn is None:
+        return {"ok": False, "error": "backup off"}
+    asyncio.get_running_loop().create_task(asyncio.to_thread(_sync_fn))
+    return {"ok": True}
 
 
 def on_change(fn: Callable[[], None]) -> None:

@@ -352,7 +352,7 @@ _AUTH_PUBLIC_EXACT = ("/", "/favicon.ico", "/auth/status", "/auth/login", "/auth
                       # 0.452.0: the owner's other UNI MATE (home PC) asks this one who runs the schedules and claims
                       # runs. No cookie on that call; each route checks the link key (X-UniMate-Pair) itself.
                       "/may-chay-lich/remote/runner", "/may-chay-lich/remote/claim",
-                      "/may-chay-lich/remote/register")
+                      "/may-chay-lich/remote/register", "/may-chay-lich/remote/sync")
 # Endpoint CHỈ-LOCALHOST: agent (Claude CLI chạy cùng máy/container) curl được mà không cần
 # cookie đăng nhập; request từ ngoài (qua Traefik/Caddy/LAN) đến từ IP khác loopback → vẫn bị chặn.
 # /reminders/cancel đi cùng nhóm với /reminders (TẠO nhắc): huỷ là thao tác YẾU HƠN tạo, nên
@@ -14382,7 +14382,13 @@ async def _start_scheduler():
     asyncio.create_task(_scheduler_loop())
     # 0.452.0: with a home PC and a VPS on the same brains, only one runs the schedules (may_chay_lich.py).
     try:
-        may_chay_lich.wire(lambda: [_brain_root(b) for b in dict.fromkeys(["brain", *loop_feature.scheduler_brains()])])
+        def _dong_bo_neu_bat():
+            bcfg = cfgmod.read_settings().get("backup", {}) or {}
+            if bcfg.get("enabled") and bcfg.get("repo_url") and bcfg.get("token") and git_brain.has_git():
+                return _do_backup()
+            return None
+        may_chay_lich.wire(lambda: [_brain_root(b) for b in dict.fromkeys(["brain", *loop_feature.scheduler_brains()])],
+                           _dong_bo_neu_bat)
         asyncio.create_task(may_chay_lich.run_forever())
     except Exception as mce:
         print(f"[may_chay_lich] {type(mce).__name__}: {mce}", file=__import__('sys').stderr)
@@ -29760,3 +29766,11 @@ def loops_chay_tren(slug: str = Form(...), chay_tren: str = Form(""), brain: str
     if v is None:
         return {"ok": False, "error": localefmt.chu(f"Không tìm thấy loop '{slug}'", f"Loop '{slug}' not found")}
     return {"ok": True, "loop": v}
+
+
+@app.post("/may-chay-lich/remote/sync")
+async def may_chay_lich_remote_sync(request: Request):
+    """0.452.0: the linked home PC just pushed a schedule change to GitHub; pull it now."""
+    if not _pair_ok(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    return await may_chay_lich.remote_sync()

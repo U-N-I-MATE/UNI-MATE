@@ -158,6 +158,25 @@ M._http = taken
 check("linked home: a key the VPS says is taken is skipped, and not asked about again",
       asyncio.run(M.claim("lich:x:3")) is False and "lich:x:3" in M._taken)
 
+# a schedule made on the linked home PC is handed to the VPS at once (sync, then ask the VPS to pull)
+calls = []
+
+
+async def rec_http(method, path, body=None, link=None):
+    calls.append(path)
+    return {"ok": True}
+
+M._http = rec_http
+M._sync_fn = lambda: calls.append("sync")
+asyncio.run(M._nudge_run(delay=0))
+check("linked home: a schedule change syncs the brains then asks the VPS to pull",
+      calls == ["sync", "/may-chay-lich/remote/sync"], calls)
+M._sync_fn = None
+check("no backup configured: nothing to nudge", M.nudge_sync_soon() is None)
+check("reminder and loop saves nudge the sync",
+      "may_chay_lich.nudge_sync_soon()" in read("server/reminders.py")
+      and "may_chay_lich.nudge_sync_soon()" in read("server/self_improve.py"))
+
 # ---------------------------------------------------------------- schedule stores merged entry by entry
 import git_brain  # noqa: E402
 B = {"reminders": [{"id": "a", "due_at": 1}, {"id": "b"}, {"id": "c", "label": "x"}], "updated": 1}
@@ -265,10 +284,10 @@ mn = read("server/main.py")
 pub = mn[mn.index("_AUTH_PUBLIC_EXACT"):mn.index("_AUTH_PUBLIC_EXACT") + 4000]
 check("link endpoints are public paths (no cookie from the other machine)",
       all(p in pub for p in ('"/may-chay-lich/remote/runner"', '"/may-chay-lich/remote/claim"',
-                             '"/may-chay-lich/remote/register"')))
+                             '"/may-chay-lich/remote/register"', '"/may-chay-lich/remote/sync"')))
 remote = mn[mn.index('@app.get("/may-chay-lich/remote/runner")'):]
 check("every link endpoint checks the link key first",
-      remote.count("if not _pair_ok(request):") == 4 and "may_chay_lich.check_pair(request.headers.get(may_chay_lich.HEADER" in mn)
+      remote.count("if not _pair_ok(request):") == 5 and "may_chay_lich.check_pair(request.headers.get(may_chay_lich.HEADER" in mn)
 check("owner routes behind the sign-in wall (not public)",
       all(f'@app.{m}("/may-chay-lich{p}")' in mn for m, p in (("get", ""), ("post", "/runner"), ("post", "/pair-code"),
                                                               ("post", "/link"), ("post", "/unlink"), ("post", "/pair-revoke")))
