@@ -6,6 +6,14 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.454.0] - 2026-11-16
+### Added
+- **Cancel background jobs right in the chat.** Say "cancel job t_..." (one or more ids) and UNI MATE cancels them at once, exactly like the Cancel button on the Tasks page: a running job has its processes stopped, and waiting, asking or stuck jobs can be cancelled too. UNI MATE reports each cancelled job and its state before.
+- **Jobs waiting on a cancelled job are not cancelled with it.** UNI MATE lists them and asks first; only on a yes is the whole chain cancelled.
+- Only the owner's own chat can cancel. Customer bots, group chats, background jobs and scheduled runs cannot.
+### Fixed
+- **Finished jobs are no longer failed just because the closing report is long.** Only the criteria about the work decide pass or fail. A criterion about the report's form (for example "no more than 3 sentences") no longer fails the job: it goes to Done, UNI MATE shortens the chat message to the allowed number of sentences, and the full report stays on the Tasks page. The 3-sentence rule is kept.
+
 ## [0.453.2] - 2026-11-16
 ### Fixed
 - **The Schedule machine and Continue blocks no longer show raw keys (mcl.this, nt.on...) right after an update.** While the server was still starting, the browser used its kept old texts for now; UNI MATE now asks again until the new texts arrive, then draws both blocks again.

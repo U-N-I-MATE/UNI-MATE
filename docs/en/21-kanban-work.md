@@ -282,6 +282,20 @@ Also since 0.25.2, at the end of each chat turn the server detects whether the a
 
 This is not censorship: it neither blocks nor edits the answer, it only adds the truth underneath. The reason is that an answer turn ends the moment UNI MATE stops speaking, with no mechanism to wake it up to finish, so a promise without background work is a promise that will never arrive.
 
+## Cancelling a job right in the chat (since 0.454.0)
+
+Say "cancel job t_abc123" (or several ids at once) in your chat and UNI MATE cancels it at once, the same way as the **Cancel** button on this page:
+
+- a **running** job has its processes stopped, so nothing keeps running orphaned;
+- a **waiting, asking, stuck or review** job moves to Cancelled;
+- UNI MATE then reports each cancelled job and its state before.
+
+Jobs **waiting on the cancelled job** are not cancelled with it. UNI MATE lists them and asks first; only on a yes is the whole chain cancelled. Only the owner's own chat can cancel: customer bots, group chats, background jobs and scheduled runs cannot.
+
+## Completion criteria judge the work only (since 0.454.0)
+
+Criteria about **the work** (the file exists, it is on drive H, every voice line is there...) decide pass or fail. A criterion about **the report's form** (for example "the report has no more than 3 sentences") no longer fails a job: it still goes to Done, UNI MATE shortens the chat message to the allowed number of sentences, and the full report stays in the job's result on this page.
+
 ## Handing work over in words in chat
 
 You are not required to open this page. Saying it plainly in chat, something like "background job: review every Wiki note from this month then list the ones missing links", makes UNI MATE create a job in the queue and attach the identity of whoever is speaking so the result comes back to the right place.

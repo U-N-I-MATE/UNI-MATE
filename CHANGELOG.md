@@ -6,6 +6,14 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.454.0] - 2026-11-16
+### Thêm mới
+- **Huỷ việc nền ngay trong chat.** Anh nói "huỷ việc t_..." (một hay nhiều mã), UNI MATE huỷ ngay, đúng như bấm nút Huỷ ở trang Nhiệm vụ: việc đang chạy thì dừng cả tiến trình, việc đang chờ, đang hỏi hay đang kẹt đều huỷ được. UNI MATE báo lại từng việc đã huỷ và trạng thái trước khi huỷ.
+- **Việc đang chờ việc bị huỷ không bị huỷ theo.** UNI MATE liệt kê và hỏi anh trước; anh đồng ý thì mới huỷ cả chuỗi.
+- Chỉ chat của chủ mới huỷ được. Bot khách, nhóm chat, việc nền và lịch tự chạy thì không.
+### Sửa lỗi
+- **Việc làm xong không còn bị đánh trượt chỉ vì tin báo dài.** Điều kiện về nội dung công việc mới quyết định đạt hay trượt. Điều kiện về hình thức tin báo (ví dụ "không quá 3 câu") không còn làm trượt việc: việc vào cột Xong, UNI MATE tự rút gọn tin báo còn đúng số câu cho phép rồi gửi, bản đầy đủ vẫn ở trang Nhiệm vụ. Luật 3 câu của anh vẫn giữ.
+
 ## [0.453.2] - 2026-11-16
 ### Sửa lỗi
 - **Khối Máy chạy lịch và Tự làm tiếp không còn hiện mã thô (mcl.this, nt.on...) ngay sau khi cập nhật.** Lúc máy chủ còn đang khởi động, trình duyệt dùng tạm bộ chữ cũ đã lưu; nay UNI MATE tự hỏi lại tới khi có bộ chữ mới rồi vẽ lại hai khối này.
