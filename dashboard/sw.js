@@ -20,6 +20,7 @@ const tam = (s) => s === 502 || s === 503 || s === 504 || (s >= 520 && s <= 530)
 // 0.453.2: a kept copy is marked, so i18n/index.js knows its dictionary may be older than the server and asks again
 // once the server answers (right after an update the old vi.json lacked the new keys and blocks showed raw keys).
 function danhDauCu(r) {
+  if (typeof Headers === "undefined" || typeof Response === "undefined") return r;
   const h = new Headers(r.headers);
   h.set("X-UniMate-Cu", "1");
   return new Response(r.body, { status: r.status, statusText: r.statusText, headers: h });
