@@ -303,7 +303,7 @@ check("unimate_task: lam_tiep=false opts one job out", '"lam_tiep": {"type": "bo
 team_src = (Path(ROOT) / "system/plugins/unimate-team/plugin.py").read_text(encoding="utf-8")
 check("unimate_team dispatch registers the job", 'noi_tiep_nen.dang_ky(got["report_to"], "team"' in team_src)
 html = (Path(ROOT) / "dashboard/index.html").read_text(encoding="utf-8")
-check("Settings block and script", 'id="ntBox"' in html and "/static/noi-tiep.js?v=1" in html)
+check("Settings block and script", 'id="ntBox"' in html and "/static/noi-tiep.js?v=2" in html)
 import json  # noqa: E402
 for lang in ("vi", "en"):
     tr = json.loads((Path(ROOT) / f"dashboard/i18n/{lang}.json").read_text(encoding="utf-8"))

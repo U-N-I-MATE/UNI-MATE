@@ -55,6 +55,8 @@
     load();
   }
 
+  // The dictionary may arrive after the first draw (right after an update): draw again with the real words.
+  if (window.addEventListener) window.addEventListener("unimate:i18n", draw);
   window.UniMateNoiTiep = { load: load };
   if (typeof module !== "undefined" && module.exports) module.exports = { load: load, save: save };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

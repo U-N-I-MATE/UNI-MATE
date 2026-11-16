@@ -148,9 +148,9 @@ def warn_new(pin="") -> str:
         return ""
     import localefmt
     return localefmt.chu(
-        "Lịch này chạy ở VPS nhưng máy này chưa bật đồng bộ GitHub (Cài đặt, Sao lưu GitHub), nên lịch sẽ không tới "
+        "Lịch này chạy ở VPS nhưng máy này chưa bật đồng bộ GitHub (trang Tự học, mục Đồng bộ brain với GitHub), nên lịch sẽ không tới "
         "được VPS và sẽ không chạy. Bật đồng bộ GitHub, hoặc gắn lịch chạy ở máy nhà (chay_tren=home).",
-        "This schedule runs on the VPS but GitHub sync is off on this machine (Settings, GitHub backup), so it will "
+        "This schedule runs on the VPS but GitHub sync is off on this machine (Self-learning page, Sync brains with GitHub), so it will "
         "not reach the VPS and will not run. Switch GitHub sync on, or pin it to the home PC (chay_tren=home).")
 
 
@@ -795,6 +795,25 @@ async def run_forever() -> None:
         await asyncio.sleep(TICK_S)
 
 
+def _runner_label(runner: str, me: dict, ln: Optional[dict], vps: Optional[dict], home: Optional[dict]) -> str:
+    """Name of the machine that runs schedules, as the owner knows it. 0.453.2: on a linked home PC the VPS is the
+    address the owner pasted the code from ("jin.unihq.vn"); before, it came only from the VPS record synced through
+    GitHub, which may not have arrived yet, and the banner read "VPS (VPS)"."""
+    if runner == "vps":
+        if me.get("kind") == "vps":
+            return str(me.get("label") or "")
+        if ln and ln.get("url"):
+            try:
+                from urllib.parse import urlparse
+                host = urlparse(str(ln["url"])).hostname or ""
+                if host:
+                    return host[:80]
+            except Exception:  # noqa: BLE001
+                pass
+        return str((_remote.get("vps") or {}).get("label") or (vps or {}).get("label") or "")
+    return str((home or {}).get("label") or "")
+
+
 def status() -> dict:
     """What the Settings card and the Tasks banner draw."""
     me = machine()
@@ -811,7 +830,7 @@ def status() -> dict:
         pend = 0
     return {
         "machine": me, "runner": runner, "is_runner": should_run(""),
-        "runner_label": ((vps or {}).get("label") if runner == "vps" else (home or {}).get("label")) or "",
+        "runner_label": _runner_label(runner, me, ln, vps, home),
         "linked": bool(ln), "link_url": ln.get("url", "") if ln else "",
         "link_ok": bool(ln) and bool(_remote.get("ok_at")) and time.time() - _remote["ok_at"] <= REMOTE_FRESH_S,
         "link_error": _remote.get("error", "") if ln else "",

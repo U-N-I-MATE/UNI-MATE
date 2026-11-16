@@ -29980,9 +29980,9 @@ def _bat_dong_bo_khi_noi() -> str:
     b = cfg.setdefault("backup", {})
     if not (str(b.get("repo_url") or "").strip() and b.get("token")):
         return localefmt.chu("Máy này chưa khai kho đồng bộ GitHub, nên lịch tạo ở đây chưa tới được VPS. Khai cùng kho "
-                             "với VPS ở Cài đặt, Sao lưu GitHub.",
+                             "với VPS ở trang Tự học, mục Đồng bộ brain với GitHub.",
                              "This machine has no GitHub sync repo yet, so schedules made here cannot reach the VPS. "
-                             "Set the same repo as the VPS in Settings, GitHub backup.")
+                             "Set the same repo as the VPS on the Self-learning page, Sync brains with GitHub.")
     lam = []
     if not b.get("enabled"):
         b["enabled"] = True
@@ -29997,10 +29997,10 @@ def _bat_dong_bo_khi_noi() -> str:
     if not lam:
         return ""
     cfgmod.write_settings(cfg)
-    return localefmt.chu("Để lịch tạo ở máy này tới được VPS, UNI MATE " + ", ".join(lam) + ". Đổi lại được ở Cài đặt, "
-                         "Sao lưu GitHub.",
+    return localefmt.chu("Để lịch tạo ở máy này tới được VPS, UNI MATE " + ", ".join(lam) + ". Đổi lại được ở trang Tự "
+                         "học, mục Đồng bộ brain với GitHub.",
                          "So that schedules made here reach the VPS, UNI MATE " + ", ".join(lam) + ". You can change it "
-                         "in Settings, GitHub backup.")
+                         "on the Self-learning page, Sync brains with GitHub.")
 
 
 @app.post("/may-chay-lich/link")

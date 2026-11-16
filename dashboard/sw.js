@@ -17,6 +17,14 @@
 const KHO = "unimate-khung-v1";
 const tam = (s) => s === 502 || s === 503 || s === 504 || (s >= 520 && s <= 530);
 
+// 0.453.2: a kept copy is marked, so i18n/index.js knows its dictionary may be older than the server and asks again
+// once the server answers (right after an update the old vi.json lacked the new keys and blocks showed raw keys).
+function danhDauCu(r) {
+  const h = new Headers(r.headers);
+  h.set("X-UniMate-Cu", "1");
+  return new Response(r.body, { status: r.status, statusText: r.statusText, headers: h });
+}
+
 function khoaKhung(req) {
   if (req.method !== "GET") return "";
   const u = new URL(req.url);
@@ -44,11 +52,11 @@ self.addEventListener("fetch", (event) => {
         await kho.put(khoa, r.clone()).catch(() => {});
         return r;
       }
-      if (tam(r.status)) { const cu = await caches.match(khoa); if (cu) return cu; }
+      if (tam(r.status)) { const cu = await caches.match(khoa); if (cu) return danhDauCu(cu); }
       return r;
     } catch (loi) {
       const cu = await caches.match(khoa);
-      if (cu) return cu;
+      if (cu) return danhDauCu(cu);
       throw loi;
     }
   })());
