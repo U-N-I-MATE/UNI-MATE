@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.453.1] - 2026-11-16
+### Fixed
+- (in progress)
+
 ## [0.453.0] - 2026-11-16
 ### Added
 - **When background work ends, UNI MATE goes on by itself, no need to write "it is done, check it".** Every job given from a chat (background command, Kanban job, team job, workflow run through Kanban) opens a new turn in that same chat once it ends: UNI MATE reads the results, judges pass or fail, then does the next step of the plan. With no step left it sums up the final result and stops.

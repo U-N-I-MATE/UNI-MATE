@@ -6,6 +6,10 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.453.1] - 2026-11-16
+### Sửa lỗi
+- (đang làm)
+
 ## [0.453.0] - 2026-11-16
 ### Thêm mới
 - **Việc nền xong thì UNI MATE tự làm tiếp, không cần nhắn "xong rồi, kiểm tra đi".** Mọi việc giao từ khung chat (lệnh chạy nền, việc Kanban, việc giao Nhóm, quy trình chạy qua Kanban) khi kết thúc sẽ mở một lượt mới trong đúng khung chat đó: UNI MATE đọc kết quả, tự đánh giá đạt hay chưa đạt, rồi làm bước tiếp theo của kế hoạch. Không còn bước nào thì tóm tắt kết quả cuối rồi dừng.
