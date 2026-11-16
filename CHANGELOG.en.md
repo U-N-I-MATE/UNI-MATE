@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.452.0] - 2026-11-16
+### Added
+- (in progress)
+
 ## [0.451.0] - 2026-11-13
 ### Added
 - **The progress block shows what each step produced, like Claude.** Browser screenshots, pictures a tool returned, and pictures made or read in the brain show inside the step (click to enlarge). Word, Excel, PDF and PowerPoint files a step made, changed or read show as file cards that open in the app viewer.
