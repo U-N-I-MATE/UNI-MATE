@@ -306,7 +306,7 @@ check("unimate_schedule: chay_tren in the schema, on create (reminder and loop f
 
 # dashboard
 idx = read("dashboard/index.html")
-check("Settings block and its script", 'id="mclBox"' in idx and "/static/may-chay-lich.js?v=1" in idx
+check("Settings block and its script", 'id="mclBox"' in idx and "/static/may-chay-lich.js?v=2" in idx
       and 'data-i18n="mcl.title"' in idx)
 tj = read("dashboard/tasks.js")
 check("Tasks page: banner when this machine does not run schedules, per-job picker once a second machine exists",

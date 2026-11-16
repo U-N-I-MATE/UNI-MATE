@@ -112,7 +112,7 @@
       h += '<div class="mcl-actions"><button type="button" class="gcard-btn" data-mcl="unlink"' + (_busy ? " disabled" : "") + ">" + esc(t("mcl.unlink")) + "</button></div>";
     } else {
       h += '<label class="mcl-lbl" for="mclCode">' + esc(t("mcl.paste")) + "</label>";
-      h += '<input id="mclCode" type="password" autocomplete="off" spellcheck="false" placeholder="unimate-may:...">';
+      h += '<input id="mclCode" type="password" autocomplete="off" spellcheck="false" placeholder="' + esc(t("mcl.paste_ph")) + '">';
       h += '<div class="mcl-hint">' + esc(t("mcl.paste_sub")) + "</div>";
       h += '<div class="mcl-actions"><button type="button" class="gcard-btn" data-mcl="link"' + (_busy ? " disabled" : "") + ">" + esc(t("mcl.link")) + "</button></div>";
     }
