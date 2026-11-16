@@ -223,7 +223,7 @@ check("main: Kanban hooks wired", "created_hook=lambda t: _noi_tiep_kanban_tao(t
 check("main: team reports go through the follow-up book", "report=_team_core_report))" in src)
 check("main: the follow-up loop starts with the server", "asyncio.create_task(_vong_noi_tiep())" in src)
 check("main: a web follow-up turn carries the chain's once-only key",
-      "job=_noi_tiep_job(WEB_CHAT_PREFIX + conv_sid)))" in src)
+      'job=(globals().get("_noi_tiep_job") or (lambda _c: ""))(WEB_CHAT_PREFIX + conv_sid)))' in src)
 check("main: an owner Telegram turn is in the running-turn book",
       "_khoa_tg = (luot_dang_chay.bat_dau(chat_id, _brain_root(brain))" in src)
 check("main: shell jobs of a turn register in the book", 'noi_tiep_nen.dang_ky(owner_chat, "job", v["id"]' in src)

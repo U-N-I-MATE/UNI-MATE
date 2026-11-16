@@ -18968,7 +18968,9 @@ async def _chat_socket(ws):
                 "dashboard", chat_id=conv_sid, la_chu=True, session_id=conv_sid, message_id=user_mid,
                 agent=_ag_luot, authority_seq=(_ag_luot or {}).get("authority_seq"),
                 provider=(_ag_luot or {}).get("provider") or "",
-                job=_noi_tiep_job(WEB_CHAT_PREFIX + conv_sid)))
+                # 0.453.0: a follow-up turn's outside actions go in the once-only ledger per chain. Read through
+                # globals(): tests exec this function from its source in a namespace without the module's globals.
+                job=(globals().get("_noi_tiep_job") or (lambda _c: ""))(WEB_CHAT_PREFIX + conv_sid)))
             # Ghi vào sổ lượt đang chạy để tool giao việc biết kết quả phải về khung chat này
             # khi model quên truyền chat_id (luot_dang_chay.py, 0.64.49). Kèm id tin và lời người
             # dùng để tool unimate_goal (Resonance) biết đúng tin nhắn nào; 0 thì tool từ chối lập mục tiêu.
@@ -19059,7 +19061,7 @@ async def _chat_socket(ws):
                                                           [i["id"] for i in _steer_left],
                                                           now=steer_inbox.INBOX.pop_now(conv_sid)))
                 tien_trinh_nen.bo_tag(turn_tag)   # lượt lỗi/bị dừng không tới bước nhận nuôi
-                _NOI_TIEP_CHUOI.pop(WEB_CHAT_PREFIX + conv_sid, None)   # 0.453.0: the next turn starts a new chain
+                (globals().get("_NOI_TIEP_CHUOI") or {}).pop(WEB_CHAT_PREFIX + conv_sid, None)   # 0.453.0: new chain next
                 turn_context.reset(_luot_token)
                 context_runtime.reset_trace(_trace_token)
                 await send_raw({"type": "turn_done", "session_id": conv_sid,
