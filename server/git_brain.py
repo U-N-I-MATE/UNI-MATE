@@ -784,6 +784,78 @@ def _last_commit_ts(root: str, ref: str, path: str) -> int:
         return 0
 
 
+# ---------------------------------------------------------------- 0.452.0: schedule stores merged entry by entry
+# A home PC and a VPS on the same brains both write the schedule stores (a reminder made at home, a run recorded on the
+# VPS). "Newer commit wins the whole file" then drops one side's change and leaves a .conflict-* copy at every sync.
+# These stores are lists of entries with an id, so they merge entry by entry against the common base.
+_JSON_STORES = {"UniMate/reminders.json": "reminders", "UniMate/loop-state.json": None}
+
+
+def _entry_time(e) -> float:
+    if not isinstance(e, dict):
+        return 0.0
+    best = 0.0
+    for k in ("updated_at", "fired_at", "last_run", "created_at"):
+        try:
+            best = max(best, float(e.get(k) or 0))
+        except (TypeError, ValueError):
+            pass
+    return best
+
+
+def _merge3(base: dict, ours: dict, theirs: dict) -> dict:
+    """Three-way merge of {id: entry}: a side that did not change an entry takes the other side's version, an entry
+    deleted on one side and untouched on the other is gone, both changed -> the newer one (`_entry_time`)."""
+    out = {}
+    for k in list(ours) + [k for k in theirs if k not in ours]:
+        b, o, t = base.get(k), ours.get(k), theirs.get(k)
+        if o is None:
+            if t is not None and (b is None or t != b):
+                out[k] = t
+        elif t is None:
+            if b is None or o != b:
+                out[k] = o
+        elif o == t or t == b:
+            out[k] = o
+        elif o == b:
+            out[k] = t
+        else:
+            out[k] = t if _entry_time(t) > _entry_time(o) else o
+    return out
+
+
+def merge_json_store(rel: str, base: bytes, ours: bytes, theirs: bytes):
+    """Merged bytes of a schedule store, or None when it is not one (or does not parse): the caller falls back to
+    the usual whole-file rule."""
+    store = next((v for k, v in _JSON_STORES.items() if rel.replace("\\", "/").endswith(k)), False)
+    if store is False:
+        return None
+    try:
+        B = json.loads(base.decode("utf-8")) if base else {}
+        O = json.loads(ours.decode("utf-8"))
+        T = json.loads(theirs.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError):
+        return None
+    if not all(isinstance(x, dict) for x in (B, O, T)):
+        return None
+    if store is None:          # {slug: state}
+        merged = _merge3(B, O, T)
+    else:                      # {"reminders": [ {id...} ], ...other keys}
+        def by_id(d):
+            return {str(e.get("id")): e for e in (d.get(store) or []) if isinstance(e, dict) and e.get("id")}
+        merged = dict(O)
+        for k, v in T.items():
+            if k != store and (k not in O or O.get(k) == B.get(k)):
+                merged[k] = v
+        if "updated" in O or "updated" in T:
+            try:
+                merged["updated"] = max(float(O.get("updated") or 0), float(T.get("updated") or 0))
+            except (TypeError, ValueError):
+                pass
+        merged[store] = list(_merge3(by_id(B), by_id(O), by_id(T)).values())
+    return (json.dumps(merged, ensure_ascii=False, indent=2)).encode("utf-8")
+
+
 def _merge_with_policy(root: str) -> dict:
     """Merge FETCH_HEAD vào HEAD của mirror. Conflict xử lý theo chính sách:
     bản có commit MỚI HƠN thắng, bản thua lưu thành file .conflict-* cạnh đó (không mất gì);
@@ -806,7 +878,17 @@ def _merge_with_policy(root: str) -> dict:
         has_o, has_t = ours.returncode == 0, theirs.returncode == 0
         fp = Path(root) / p
         try:
+            gop = None
             if has_o and has_t:
+                base = _git_bytes(root, "show", f":1:{p}")
+                gop = merge_json_store(p, base.stdout if base.returncode == 0 else b"", ours.stdout, theirs.stdout)
+            if gop is not None:
+                # 0.452.0: a schedule store merged entry by entry, nothing lost, no .conflict-* copy.
+                fp.parent.mkdir(parents=True, exist_ok=True)
+                fp.write_bytes(gop)
+                _git(root, "add", "--", p)
+                conflicts.append({"path": p, "winner": "merged"})
+            elif has_o and has_t:
                 remote_wins = _last_commit_ts(root, "MERGE_HEAD", p) > _last_commit_ts(root, "HEAD", p)
                 winner = theirs.stdout if remote_wins else ours.stdout
                 loser = ours.stdout if remote_wins else theirs.stdout

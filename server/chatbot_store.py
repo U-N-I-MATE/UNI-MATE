@@ -985,7 +985,8 @@ def _nhan_brain_cho_tk(bot: dict) -> None:
 _PATCHABLE = ("name", "icon", "groups", "people", "audience", "reply_when", "handoff_to",
               "agent_slug", "agent_brain", "brain", "bot_username", "token", "enabled",
               "nguon_tra_loi", "muc_quyen", "ngon_ngu", "account_ids", "reply_policy", "gio_truc",
-              "nhuong_tay_phut", "ngoai_le", "nhan_ket_ban", "skip_labels", "blocked")
+              "nhuong_tay_phut", "ngoai_le", "nhan_ket_ban", "skip_labels", "blocked",
+              "chay_tren")   # 0.452.0: "vps" | "home" | "" (follow the machine chosen to run schedules)
 # `channel` CỐ Ý đứng ngoài danh sách trắng. Đổi kênh của một bot đã tạo là đổi sang một CON
 # BOT KHÁC: token khác, danh tính khác, khách khác, và cả đống id nhóm đang lưu lập tức vô
 # nghĩa. Cho sửa tại chỗ thì bản ghi còn nguyên tên và lịch sử của con cũ trong khi nó đã là
@@ -1092,6 +1093,13 @@ def update_bot(bot_id: str, patch: dict) -> tuple[bool, str]:
                     b["nhan_ket_ban"] = clean_bat(v)
                 elif k == "skip_labels":
                     b["skip_labels"] = clean_skip_labels(v)
+                elif k == "chay_tren":
+                    import may_chay_lich
+                    pin = may_chay_lich.norm_pin(v)
+                    if pin:
+                        b["chay_tren"] = pin
+                    else:
+                        b.pop("chay_tren", None)
 
                 elif k == "handoff_to":
                     b["handoff_to"] = str(v or "").strip()

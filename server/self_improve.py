@@ -69,6 +69,7 @@ from fastapi import APIRouter, Form, Query
 from claude_cli import claude_engine, cancel_all, _empty_mcp_file
 import aux_engine   # engine viec nen theo model phu nguoi dung chon
 import channel_context   # bóc khối UNIMATE_* trước khi báo Telegram - kênh chữ, không phải web
+import may_chay_lich     # 0.452.0: with two machines, only the chosen one runs a loop
 
 LEGACY_SLUG = "vong-lap-goc"
 # Dấu "đã migrate loop_config.json" ghi thẳng vào chính file đó. Có dấu này thì KHÔNG dựng lại
@@ -192,6 +193,7 @@ class LoopFeature:
         self.lock = asyncio.Lock()           # THỰC THI TUẦN TỰ: 1 vòng/lúc trên toàn hệ
         self._viec_nen: set = set()   # vòng loop đang chạy nền (xem _chay_nen)
         self._running: Optional[Tuple[str, str]] = None   # (brain_root_resolved, slug) đang chạy
+        self._lich_khac: set = set()   # 0.452.0: (brain folder, slug, slot) the other machine already ran
         self._migrated = False
         self.router = self._make_router()
 
@@ -336,6 +338,8 @@ class LoopFeature:
             "bot_id": str(fm.get("bot_id", "") or "").strip(),
             "notify": notify,
             "ambient_mcp": ambient_mcp,
+            # 0.452.0: "vps" | "home" pins the loop to one machine; "" follows the general choice.
+            "chay_tren": may_chay_lich.norm_pin(fm.get("chay_tren")),
             "updated": str(fm.get("updated", "") or ""),
             "body": (body or "").strip(),
         }
@@ -393,6 +397,8 @@ class LoopFeature:
             fm["ambient_mcp"] = True
         if loop.get("bot_id"):   # 0.429.0: keep which chatbot made it across edits and toggles
             fm["bot_id"] = loop["bot_id"]
+        if may_chay_lich.norm_pin(loop.get("chay_tren")):   # 0.452.0: pinned to one machine
+            fm["chay_tren"] = may_chay_lich.norm_pin(loop.get("chay_tren"))
         y = yaml.safe_dump(fm, allow_unicode=True, sort_keys=False, default_flow_style=False, width=1000).strip()
         d = self._loops_dir(brain)
         d.mkdir(parents=True, exist_ok=True)
@@ -613,6 +619,9 @@ class LoopFeature:
             except Exception:
                 continue
             for lp in loops:
+                # 0.452.0: the other machine runs this loop, or already ran this slot of it.
+                if not may_chay_lich.should_run(lp.get("chay_tren")) or self._loop_key(brain, lp, now) in self._lich_khac:
+                    continue
                 ov = self._eligible_overdue(lp, st_all.get(lp["slug"], {}), now, hour)
                 if ov is not None and (best is None or ov > best[2]):
                     best = (brain, lp, ov)
@@ -625,10 +634,35 @@ class LoopFeature:
             return
         target = self._pick_due()
         if target:
+            key = self._loop_key(target[0], target[1], time.time())
+            if not await may_chay_lich.claim("lich:" + key):
+                if len(self._lich_khac) > 2000:
+                    self._lich_khac.clear()
+                self._lich_khac.add(key)
+                return
             # Chạy NỀN: một vòng loop có thể mất 20-30 phút (chạy + kiểm chứng). Await ngay
             # trong tick là cả vòng scheduler (nhắc hẹn 7h, Kanban) đứng chờ nó. `self.lock`
             # trong run_cycle vẫn giữ đúng một vòng một lúc; tick sau thấy khoá bận thì bỏ qua.
             self._chay_nen(target[0], target[1]["slug"], "scheduled")
+
+    def _loop_key(self, brain: str, lp: dict, now: float) -> str:
+        """One slot of a loop, the same on both machines: brain folder (the sync keeps the folder name),
+        slug, and the interval window `now` falls in."""
+        try:
+            folder = Path(self.deps.brain_root(brain)).name
+        except Exception:
+            folder = str(brain)
+        span = max(5, int(lp.get("interval_min") or 60)) * 60
+        return f"loop:{folder}:{lp.get('slug')}:{int(now // span)}"
+
+    def set_chay_tren(self, brain: str, slug: str, chay_tren: str) -> Optional[dict]:
+        """0.452.0: pin a loop to one machine ("vps" | "home") or let it follow the general choice (""). Route at the
+        end of main.py (POST /loops/chay-tren) so the route table only grows."""
+        lp = self.get_loop(brain, slug)
+        if not lp:
+            return None
+        lp = self.save_loop(brain, {**lp, "chay_tren": may_chay_lich.norm_pin(chay_tren)})
+        return self.loop_view(brain, lp)
 
     async def run_due(self, reason: str = "scheduled") -> dict:
         """Shim run_loop_cycle của main.py: chạy loop đến hạn nhất (nếu có)."""
@@ -1208,6 +1242,7 @@ class LoopFeature:
                 "quiet_hours": quiet_hours.strip(), "max_runs_per_day": mr,
                 "owner_chat": (oc or "").strip(), "notify": nf, "body": body,
                 "bot_id": old["bot_id"] if old else "",
+                "chay_tren": old.get("chay_tren", "") if old else "",
             })
             self.register_brain(brain)
             return {"ok": True, "loop": self.loop_view(brain, loop)}

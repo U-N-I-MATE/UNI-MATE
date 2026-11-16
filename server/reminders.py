@@ -58,6 +58,7 @@ from fastapi import APIRouter, Body, Form, Query
 import cron_util
 import channel_context   # bóc khối UNIMATE_* trước khi gửi Telegram - kênh chữ, không phải web
 import once_ledger       # outside actions of one firing run once, across retries (0.238.0)
+import may_chay_lich     # 0.452.0: with two machines, only the chosen one runs a schedule
 import work_log          # one line per finished run, for the Tasks page stats (0.428.0)
 import turn_context
 
@@ -444,7 +445,8 @@ class RemindersFeature:
     def _create(self, brain: str, text: str, *, delay_min=None, at=None, due_at=None,
                 chat_id="", mode="notify", repeat_min=0, label="", cron=None, script="",
                 created_by="user", allow_no_channel=False, muc_quyen=None,
-                remember_last=False, speak=False, call=False, bot_id="", chrome=False) -> dict:
+                remember_last=False, speak=False, call=False, bot_id="", chrome=False,
+                chay_tren="") -> dict:
         mode = mode if mode in VALID_MODE else "notify"
         mq = str(muc_quyen or "").strip().lower()
         mq = mq if mq in VALID_MUC_QUYEN else MUC_QUYEN_MAC_DINH
@@ -493,6 +495,9 @@ class RemindersFeature:
             "created_by": created_by, "created_at": _now(),
             "fired_at": 0.0, "result": "", "error": "",
         }
+        # 0.452.0: "vps" | "home" pins it to one machine (a job that needs software only the home PC has).
+        if may_chay_lich.norm_pin(chay_tren):
+            rem["chay_tren"] = may_chay_lich.norm_pin(chay_tren)
         # 0.429.0: made in a dedicated chatbot's turn -> the Tasks page shows it under that bot's assistant.
         bid = str(bot_id or "").strip()
         if re.fullmatch(r"bot_[A-Za-z0-9_-]{1,64}", bid):
@@ -528,6 +533,8 @@ class RemindersFeature:
                 "call": bool(r.get("call")),
                 # 0.429.0: who made it. bot_id names the chatbot whose turn created it ("" = the owner or UNI MATE Core).
                 "created_by": r.get("created_by", ""), "bot_id": r.get("bot_id", ""),
+                # 0.452.0: "" follows the general choice; "vps" | "home" pins it. `chay_o` is where it runs now.
+                "chay_tren": r.get("chay_tren", ""), "chay_o": may_chay_lich.where(r.get("chay_tren")),
                 "next_runs": next_runs(cron) if cron and r.get("status") == "pending" else [],
                 "result": (r.get("result") or "")[:500], "error": r.get("error", ""),
                 # A pending network retry (code 26): which retry the next run is, out of how many.
@@ -537,7 +544,7 @@ class RemindersFeature:
 
     def update(self, brain: str, rid: str, *, text=None, label=None, mode=None, chat_id=None,
                cron=None, at=None, delay_min=None, due_at=None, muc_quyen=None,
-               remember_last=None, speak=None, call=None, chrome=None) -> dict:
+               remember_last=None, speak=None, call=None, chrome=None, chay_tren=None) -> dict:
         """Sửa 1 nhắc/lịch ĐANG CHỜ: nội dung, tên, kiểu, và thời điểm. Trả {"ok", "error",
         "reminder"}. Chỉ nhận tham số được truyền (None = giữ nguyên) nên gọi sửa một phần
         được. Đổi lịch thì tính lại due_at ngay để người dùng thấy lần chạy kế tiếp mới."""
@@ -581,6 +588,12 @@ class RemindersFeature:
             cur["chrome"] = False   # only an owner's task run can open a browser
         if call is not None:
             cur["call"] = _truthy(call) and cur.get("mode") != "script"
+        if chay_tren is not None:
+            pin = may_chay_lich.norm_pin(chay_tren)
+            if pin:
+                cur["chay_tren"] = pin
+            else:
+                cur.pop("chay_tren", None)
         has_when = any(v not in (None, "") for v in (cron, at, delay_min, due_at))
         if has_when:
             try:
@@ -598,6 +611,7 @@ class RemindersFeature:
             except ValueError as e:
                 return {"ok": False, "error": str(e)}
         cur["error"] = ""                      # đã sửa thì lỗi lần chạy trước không còn đúng nữa
+        cur["updated_at"] = _now()             # 0.452.0: the brain sync merge keeps the newer copy of each entry
         if has_when:
             # A new time replaces a pending network retry: the next run is a fresh firing.
             cur.pop("retry_of", None)
@@ -624,6 +638,7 @@ class RemindersFeature:
         for r in data.get("reminders", []):
             if r.get("id") == rid and r.get("status") in LIVE_STATUSES:
                 r["status"] = "cancelled"
+                r["updated_at"] = _now()
                 hit = True
         if hit:
             self._save(brain, data)
@@ -656,6 +671,7 @@ class RemindersFeature:
                 nxt = self._next_regular(cur, now)
                 if nxt:
                     cur["due_at"] = nxt
+        cur["updated_at"] = _now()
         self._save(brain, data)
         return {"ok": True, "reminder": self._view(cur)}
 
@@ -672,6 +688,7 @@ class RemindersFeature:
         cur["due_at"] = nxt
         cur.pop("retry_of", None)
         cur.pop("retry_count", None)
+        cur["updated_at"] = _now()
         self._save(brain, data)
         return {"ok": True, "reminder": self._view(cur)}
 
@@ -778,6 +795,10 @@ class RemindersFeature:
         for rem in due:
             if fired >= MAX_FIRE_PER_TICK:
                 break
+            # 0.452.0: the other machine runs this one (owner's choice, or the reminder's own `chay_tren`).
+            # Nothing is written here: the run state comes back from that machine through the brain sync.
+            if not may_chay_lich.should_run(rem.get("chay_tren")):
+                continue
             if rem.get("mode") in ("task", "script"):
                 if self._khoa(rem.get("mode")).locked() or rem.get("id") in self._dang_chay:
                     continue   # đang có 1 job chạy → để nhịp sau, không xếp hàng chờ trong tick
@@ -785,10 +806,20 @@ class RemindersFeature:
                 # 1 giờ, await ở đây là mọi nhắc "notify" đến hạn sau nó (và cả loop, Kanban
                 # trong cùng vòng scheduler) bị dời theo. Khoá `self.lock` bên trong _fire vẫn
                 # giữ đúng một job engine một lúc.
+                if not await self._claim_slot(rem):
+                    continue
                 self._chay_nen(brain, rem)
             else:
+                if not await self._claim_slot(rem):
+                    continue
                 await self._fire(brain, rem)
             fired += 1
+
+    async def _claim_slot(self, rem: dict) -> bool:
+        """0.452.0: one firing runs on one machine. The same key as the once-only ledger of the run, so a
+        network retry of this firing (same slot) stays with the machine that started it."""
+        slot = rem.get("retry_of") or rem.get("due_at") or ""
+        return await may_chay_lich.claim("lich:" + ledger_job(str(rem.get("id") or ""), slot))
 
     def _khoa(self, mode) -> asyncio.Lock:
         """The lock a background reminder of this mode waits on (see `script_lock`)."""
@@ -1261,6 +1292,7 @@ class RemindersFeature:
                         call=_truthy(p.get("call")),
                         bot_id=str(p.get("bot_id") or ""),
                         chrome=_truthy(p.get("chrome")),
+                        chay_tren=str(p.get("chay_tren") or ""),
                     )
             except NotifyNotReady as e:
                 # can_force: chỗ gọi (dashboard/chat) hỏi lại người dùng rồi tạo tiếp với
@@ -1279,6 +1311,7 @@ class RemindersFeature:
                     "call": rem.get("call", False),
                     "chrome": rem.get("chrome", False),
                     "chrome_note": chrome_note(rem),
+                    "chay_tren": rem.get("chay_tren", ""), "chay_o": may_chay_lich.where(rem.get("chay_tren")),
                     "next_runs": next_runs(rem["cron"]) if rem["cron"] else [],
                     # Kèm lời đọc để chỗ gọi (chat) nhắc lại lịch bằng tiếng Việt, khỏi bắt user
                     # tự dịch "0 7 * * *".
@@ -1317,14 +1350,14 @@ class RemindersFeature:
                                    delay_min: str = Form(None), due_at: str = Form(None),
                                    muc_quyen: str = Form(None), remember_last: str = Form(None),
                                    speak: str = Form(None), call: str = Form(None),
-                                   chrome: str = Form(None)):
+                                   chrome: str = Form(None), chay_tren: str = Form(None)):
             """Sửa nhắc/lịch đang chờ (trang Việc định kỳ: nút Sửa). Bỏ trống trường nào thì giữ
             nguyên trường đó; truyền cron HOẶC at/delay_min/due_at để đổi thời điểm."""
             async with self._io:
                 return self.update(brain, id, text=text, label=label, mode=mode, chat_id=chat_id,
                                    cron=cron, at=at, delay_min=delay_min, due_at=due_at,
                                    muc_quyen=muc_quyen, remember_last=remember_last, speak=speak, call=call,
-                                   chrome=chrome)
+                                   chrome=chrome, chay_tren=chay_tren)
 
         @router.post("/reminders/pause")
         async def reminders_pause(id: str = Form(...), brain: str = Form("brain"), paused: str = Form("1")):

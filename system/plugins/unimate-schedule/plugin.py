@@ -214,7 +214,8 @@ _LOOP_MODE_MAC_DINH = "full"
 
 
 def _create_loop_file(vault_root: str, name: str, prompt: str, schedule: str,
-                      owner_chat: str = "", brain_name: str = "", mode: str = "", bot_id: str = "") -> str:
+                      owner_chat: str = "", brain_name: str = "", mode: str = "", bot_id: str = "",
+                      chay_tren: str = "") -> str:
     """Ghi 1 loop mới vào <vault_root>/UniMate/loops/<slug>.md. enabled luôn false (người dùng bật
     ở trang Việc); mode mặc định full, hạ xuống auto/suggest khi model truyền. Trùng slug (việc đã có) -> báo lỗi rõ, KHÔNG
     ghi đè - self_improve.py lấy định danh loop theo TÊN FILE nên đẻ bản ascii song song sẽ để
@@ -254,6 +255,7 @@ def _create_loop_file(vault_root: str, name: str, prompt: str, schedule: str,
         f"interval_min: {interval}\n"
         f"owner_chat: {_yaml_scalar((owner_chat or '').strip())}\n"
         + (f"bot_id: {_yaml_scalar(bot_id)}\n" if bot_id else "")
+        + (f"chay_tren: {chay_tren}\n" if chay_tren else "")
         + f"updated: {_today()}\n"
         "---\n"
         "\n"
@@ -443,6 +445,12 @@ def _turn_bot() -> str:
     return str(t.get("bot_id") or "").strip()
 
 
+def _chay_tren(args: dict) -> str:
+    """0.452.0: "vps" | "home" pins the job to one of the owner's machines; anything else follows the general choice."""
+    v = str((args or {}).get("chay_tren") or "").strip().lower()
+    return {"vps": "vps", "home": "home", "may_nha": "home"}.get(v, "")
+
+
 async def _do_create(vault_root: str, args: dict) -> str:
     name = str(args.get("name") or "").strip()
     prompt = str(args.get("prompt") or "").strip()
@@ -456,7 +464,8 @@ async def _do_create(vault_root: str, args: dict) -> str:
     if kind == "loop":
         return _create_loop_file(vault_root, name=name, prompt=prompt, schedule=schedule,
                                  owner_chat=chat_id, brain_name=brain_name,
-                                 mode=str(args.get("muc_quyen") or ""), bot_id=_turn_bot())
+                                 mode=str(args.get("muc_quyen") or ""), bot_id=_turn_bot(),
+                                 chay_tren=_chay_tren(args))
     # I2: notify_only=True nghĩa là CHỈ nhắc bằng lời (mode "notify" - reminders.py:342 "⏰ Nhắc
     # anh: ..."), KHÔNG dựng nguyên engine Claude + MCP để "làm hộ" (mode "task" - reminders.py:
     # 418 _run_task, tốn tới max_wall_s=300). Trước đây hard-code "task" nên notify_only vô nghĩa -
@@ -477,6 +486,8 @@ async def _do_create(vault_root: str, args: dict) -> str:
         payload["chrome"] = True
     if _turn_bot():
         payload["bot_id"] = _turn_bot()
+    if _chay_tren(args):
+        payload["chay_tren"] = _chay_tren(args)
     payload.update(_reminder_time_payload(schedule))
     return await _post_reminder(payload, brain_name=brain_name)
 
@@ -522,6 +533,11 @@ def _update_loop_file(vault_root: str, slug: str, fields: dict) -> str:
         fm["name"] = str(fields["name"])
     if fields.get("prompt"):
         body = str(fields["prompt"]).strip() + "\n"
+    if "chay_tren" in fields:
+        if fields["chay_tren"]:
+            fm["chay_tren"] = fields["chay_tren"]
+        else:
+            fm.pop("chay_tren", None)
     if fields.get("schedule"):
         interval = _interval_min(str(fields["schedule"]))
         if interval is None:
@@ -558,6 +574,10 @@ async def _do_update(vault_root: str, args: dict) -> str:
         fields["remember_last"] = args["remember_last"]
     call = args.get("call") if isinstance(args.get("call"), bool) else None
     chrome = args.get("chrome") if isinstance(args.get("chrome"), bool) else None
+    pin = None
+    if "chay_tren" in (args or {}):
+        pin = _chay_tren(args)
+        fields["chay_tren"] = pin
     if not fields and call is None and chrome is None:
         return "ERROR: không có gì để sửa - truyền ít nhất một trong name / prompt / schedule."
     if (_loops_dir(vault_root) / f"{rid}.md").is_file():
@@ -578,6 +598,8 @@ async def _do_update(vault_root: str, args: dict) -> str:
         payload["call"] = "true" if call else "false"
     if chrome is not None:
         payload["chrome"] = "true" if chrome else "false"
+    if pin is not None:
+        payload["chay_tren"] = pin
     return await _update_reminder(vault_root, rid, payload)
 
 
@@ -701,6 +723,10 @@ def register(ctx) -> None:
                            "description": ("true = nhắc hẹn tự làm này được dùng Chrome RIÊNG của máy chủ (mã thiết bị chủ "
                                            "khai ở thẻ Claude Code, trang Models), cần mức full. Chỉ đặt khi user bảo việc "
                                            "cần trình duyệt; không bao giờ dùng Chrome trên máy cá nhân của chủ.")},
+                "chay_tren": {"type": "string", "enum": ["", "vps", "home"],
+                              "description": ("Máy chạy việc này khi chủ có 2 máy UNI MATE (máy nhà + VPS). Bỏ trống = theo "
+                                              "cài đặt chung (mặc định VPS). 'home' = chỉ chạy trên máy nhà, khi việc cần "
+                                              "phần mềm chỉ có ở máy nhà (vd AdsPower). 'vps' = chỉ chạy trên VPS.")},
                 "remember_last": {"type": "boolean",
                                   "description": ("true = mỗi lần chạy nhận lại kết quả lần trước (theo dõi, "
                                                   "báo cái mới). Chỉ cho nhắc hẹn tự làm, không cho loop.")},

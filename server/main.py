@@ -107,6 +107,7 @@ import stt            # nghe tin thoại (Whisper qua Groq) -> chữ, cho kênh 
 import luot_dang_chay # sổ lượt chat đang chạy theo brain: tool giao việc tự biết khung chat nào hỏi
 import tool_label     # một dòng mô tả lệnh gọi công cụ (lệnh nào, file nào) cho khối tiến trình
 import step_media     # 0.451.0: what each progress step produced (text, pictures, document cards)
+import may_chay_lich  # 0.452.0: which of the owner's machines runs the schedules
 
 
 async def _with_step_results(gen):
@@ -347,7 +348,11 @@ _AUTH_PUBLIC_EXACT = ("/", "/favicon.ico", "/auth/status", "/auth/login", "/auth
                       "/messenger/webhook",
                       # /zalo-oa/webhook (0.412.0): Zalo calls it with no cookie; the route checks
                       # X-ZEvent-Signature under the OA secret keys of the Zalo OA accounts.
-                      "/zalo-oa/webhook")
+                      "/zalo-oa/webhook",
+                      # 0.452.0: the owner's other UNI MATE (home PC) asks this one who runs the schedules and claims
+                      # runs. No cookie on that call; each route checks the link key (X-UniMate-Pair) itself.
+                      "/may-chay-lich/remote/runner", "/may-chay-lich/remote/claim",
+                      "/may-chay-lich/remote/register")
 # Endpoint CHỈ-LOCALHOST: agent (Claude CLI chạy cùng máy/container) curl được mà không cần
 # cookie đăng nhập; request từ ngoài (qua Traefik/Caddy/LAN) đến từ IP khác loopback → vẫn bị chặn.
 # /reminders/cancel đi cùng nhóm với /reminders (TẠO nhắc): huỷ là thao tác YẾU HƠN tạo, nên
@@ -14375,6 +14380,12 @@ async def _start_scheduler():
             except Exception as e:
                 print(f"[scheduler] {type(e).__name__}: {e}", file=__import__('sys').stderr)
     asyncio.create_task(_scheduler_loop())
+    # 0.452.0: with a home PC and a VPS on the same brains, only one runs the schedules (may_chay_lich.py).
+    try:
+        may_chay_lich.wire(lambda: [_brain_root(b) for b in dict.fromkeys(["brain", *loop_feature.scheduler_brains()])])
+        asyncio.create_task(may_chay_lich.run_forever())
+    except Exception as mce:
+        print(f"[may_chay_lich] {type(mce).__name__}: {mce}", file=__import__('sys').stderr)
     try:
         # Gói khai `compat.app` nhưng `git pull` / `git reset --hard` không bao giờ chạy lại
         # trình cài, nên không có lượt quét này thì dải đó chỉ có tác dụng ở lần cài đầu.
@@ -14441,6 +14452,13 @@ async def _start_scheduler():
         kq = chatbot_runtime.sync_all()
         if kq.get("errors"):
             print(f"[chatbot] bật lỗi: {kq['errors']}", file=__import__('sys').stderr)
+
+        def _bots_theo_may():
+            # 0.452.0: this machine just started or stopped being the one that answers customers: restart the bots so a
+            # Telegram poller moves to the right machine.
+            chatbot_runtime.stop_all()
+            chatbot_runtime.sync_all()
+        may_chay_lich.on_change(_bots_theo_may)
     except Exception as e:
         print(f"[chatbot start] {type(e).__name__}: {e}", file=__import__('sys').stderr)
     try:
@@ -25675,7 +25693,8 @@ async def chatbots_update(bot_id: str, request: Request):
                             status_code=404 if err == chatbot_store.LOI_KHONG_CO_BOT else 400)
     # Đang chạy mà đổi token/agent/brain thì phải khởi động lại mới ăn. Khởi động lại luôn cho
     # chắc thay vì đoán trường nào cần: sai ở đây là bot chạy bằng cấu hình cũ mà không ai biết.
-    if bot_id in chatbot_runtime._RUNNING:
+    if bot_id in chatbot_runtime._RUNNING or ("chay_tren" in form and (chatbot_store.get_bot(bot_id) or {}).get("enabled")):
+        # 0.452.0: a bot moved to this machine (chay_tren) was not running here; start it.
         chatbot_runtime.start_bot(bot_id)
     if "reply_policy" in form:
         _rp_sau_khi_luu(bot_id)
@@ -29638,3 +29657,106 @@ def step_media_get(session_id: str, name: str):
     mt = {".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif"}[p.suffix]
     return FileResponse(str(p), media_type=mt, headers={"X-Content-Type-Options": "nosniff",
                                                         "Cache-Control": "private, max-age=86400"})
+
+
+# ---------------------------------------------------------------- 0.452.0: which machine runs the schedules
+def _pair_ok(request: Request) -> bool:
+    return may_chay_lich.check_pair(request.headers.get(may_chay_lich.HEADER, ""))
+
+
+@app.get("/may-chay-lich")
+def may_chay_lich_status():
+    """Settings card and Tasks banner: this machine, who runs the schedules, the link to the VPS."""
+    return may_chay_lich.status()
+
+
+@app.post("/may-chay-lich/runner")
+async def may_chay_lich_set_runner(payload: dict = Body(...)):
+    try:
+        return {"ok": True, **(await may_chay_lich.set_runner_everywhere(str(payload.get("runner") or "")))}
+    except ValueError:
+        return JSONResponse({"ok": False, "error": localefmt.chu("Chọn VPS hoặc Máy nhà", "Choose VPS or Home")},
+                            status_code=400)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": localefmt.chu(
+            "Không liên lạc được VPS để đổi máy chạy lịch: ", "Could not reach the VPS to change the schedule machine: ")
+            + f"{type(e).__name__}: {e}"[:200]}, status_code=502)
+
+
+@app.post("/may-chay-lich/pair-code")
+def may_chay_lich_pair_code(request: Request):
+    """A link code for the owner's other machine. Shown once; only a hash of its key stays here."""
+    proto = (request.headers.get("x-forwarded-proto") or request.url.scheme or "http").split(",")[0].strip()
+    host = (request.headers.get("x-forwarded-host") or request.headers.get("host") or "").split(",")[0].strip()
+    if not host:
+        return JSONResponse({"ok": False, "error": "host"}, status_code=400)
+    code = may_chay_lich.make_pair_code(f"{proto}://{host}")
+    return {"ok": True, "code": code, "https": proto == "https"}
+
+
+@app.post("/may-chay-lich/link")
+async def may_chay_lich_link(payload: dict = Body(...)):
+    try:
+        return {"ok": True, **(await may_chay_lich.link(str(payload.get("code") or "")))}
+    except ValueError as e:
+        why = localefmt.chu("Đây là mã của chính máy này", "This is this machine's own code") if str(e) == "self" \
+            else localefmt.chu("Mã nối không đúng dạng", "The link code is not valid")
+        return JSONResponse({"ok": False, "error": why}, status_code=400)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": localefmt.chu(
+            "Không nối được tới máy kia (sai mã, mã đã thu hồi, hoặc máy kia chưa lên bản 0.452.0): ",
+            "Could not reach the other machine (wrong or revoked code, or it is not on 0.452.0 yet): ")
+            + f"{type(e).__name__}: {e}"[:200]}, status_code=502)
+
+
+@app.post("/may-chay-lich/unlink")
+def may_chay_lich_unlink():
+    may_chay_lich.unlink()
+    return {"ok": True, **may_chay_lich.status()}
+
+
+@app.post("/may-chay-lich/pair-revoke")
+def may_chay_lich_pair_revoke():
+    return {"ok": True, "revoked": may_chay_lich.revoke_pairs()}
+
+
+@app.get("/may-chay-lich/remote/runner")
+def may_chay_lich_remote_runner_get(request: Request):
+    if not _pair_ok(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    return may_chay_lich.remote_runner()
+
+
+@app.post("/may-chay-lich/remote/runner")
+def may_chay_lich_remote_runner_set(request: Request, payload: dict = Body(...)):
+    if not _pair_ok(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    try:
+        may_chay_lich.set_runner(str(payload.get("runner") or ""))
+    except ValueError:
+        return JSONResponse({"error": "runner"}, status_code=400)
+    return may_chay_lich.remote_runner()
+
+
+@app.post("/may-chay-lich/remote/claim")
+def may_chay_lich_remote_claim(request: Request, payload: dict = Body(...)):
+    if not _pair_ok(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    return may_chay_lich.remote_claim(str(payload.get("key") or ""), str(payload.get("machine") or ""),
+                                      str(payload.get("label") or ""))
+
+
+@app.post("/may-chay-lich/remote/register")
+def may_chay_lich_remote_register(request: Request, payload: dict = Body(...)):
+    if not _pair_ok(request):
+        return JSONResponse({"error": "unauthorized"}, status_code=401)
+    return may_chay_lich.remote_register(payload)
+
+
+@app.post("/loops/chay-tren")
+def loops_chay_tren(slug: str = Form(...), chay_tren: str = Form(""), brain: str = Form("brain")):
+    """0.452.0: pin a loop to one machine ("vps" | "home") or let it follow the general choice ("")."""
+    v = loop_feature.set_chay_tren(brain, slug, chay_tren)
+    if v is None:
+        return {"ok": False, "error": localefmt.chu(f"Không tìm thấy loop '{slug}'", f"Loop '{slug}' not found")}
+    return {"ok": True, "loop": v}

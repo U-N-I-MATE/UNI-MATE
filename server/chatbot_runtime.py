@@ -52,6 +52,7 @@ import chatbot_tu_dong
 import conversations
 import limit_learner
 import localefmt
+import may_chay_lich       # 0.452.0: with two machines, only the chosen one answers customers
 import vision_input
 
 # Kênh -> lớp vận chuyển: tra SỔ ĐĂNG KÝ KÊNH (server/channels). Trước 0.61.0 là một bảng chép
@@ -1178,6 +1179,12 @@ def _make_precheck_fn(bot_id: str):
         meta = _rp_named_meta(cfg, text, meta)      # gọi tên trơn ("nhi mai ơi") cũng là gọi bot
         _nho_neu_khong_goi(bot_id, cfg, meta, text)
         ly_do = _ly_do_im(cfg, meta or {})
+        if not may_chay_lich.should_run(cfg.get("chay_tren")):
+            # 0.452.0: the other machine answers this bot's customers. A message the bot would have answered still
+            # lands in this machine's inbox, so the owner can read it and reply by hand here.
+            if not ly_do:
+                ghi_tin_khach(cfg, meta or {}, text)
+            return {}
         if not ly_do:
             return None
         if (meta or {}).get("member_join"):
@@ -1615,6 +1622,19 @@ def _luot_cu(meta) -> bool:
         return False
 
 
+async def _may_nay_tra_loi(cfg: dict, meta: dict) -> bool:
+    """0.452.0: this machine answers this message. Not when the other machine is the one that answers the bot's
+    customers; and one message is answered once across machines (the shared ledger, keyed by channel, chat and the
+    message id the channel gave)."""
+    if not may_chay_lich.should_run(cfg.get("chay_tren")):
+        return False
+    mid = str(meta.get("message_id") or "")
+    if not mid:
+        return True
+    kenh = _kenh_kho(cfg, meta)
+    return await may_chay_lich.claim(f"bot:{kenh}:{meta.get('chat_id') or ''}:{mid}")
+
+
 def _make_answer_fn(bot_id: str):
     async def _answer(text, meta=None, progress=None):
         cfg = chatbot_store.get_bot(bot_id)
@@ -1629,6 +1649,8 @@ def _make_answer_fn(bot_id: str):
         # cái canh hai thứ khác nhau: chốt kia để không nhấp nháy tin trạng thái trước mặt
         # người ngoài, chốt này để một kênh tương lai quên nối chốt kia vẫn không lọt.
         if not _nen_tra_loi(cfg, meta or {}):
+            return {"text": "", "files": [], "im_lang": True}
+        if not await _may_nay_tra_loi(cfg, meta or {}):
             return {"text": "", "files": [], "im_lang": True}
         chat_id = str((meta or {}).get("chat_id") or "")
         user_id = str((meta or {}).get("user_id") or "")
@@ -2311,6 +2333,12 @@ def start_bot(bot_id: str) -> tuple[bool, str]:
         if not token:
             continue
         kenh = str(tk.get("channel") or "")
+        if kenh == "telegram" and not may_chay_lich.should_run(cfg.get("chay_tren")):
+            # 0.452.0: two pollers on one Telegram token knock each other off (409), so the machine that does not
+            # answer this bot does not poll it at all.
+            loi.append(localefmt.chu("Bot này đang trả lời ở máy UNI MATE kia (xem Cài đặt, Máy chạy lịch)",
+                                     "This bot answers on your other UNI MATE machine (see Settings, Schedule machine)"))
+            continue
         Lop = _lop_kenh(kenh)
         if not Lop:
             loi.append(localefmt.chu(f"Kênh '{kenh}' chưa có lớp vận chuyển nào",

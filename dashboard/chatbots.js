@@ -967,6 +967,7 @@
                 ' <input type="time" id="cbGioDen" value="' + esc(((b && b.gio_truc) || {}).den || "") + '"></label>' +
             '</div>' +
             infoBody(esc(window.t("cb.hint_gio_truc"))) +
+            chonMay(b) +
             // Owner yield (0.172.0, personal Zalo only): minutes the bot stays out of a chat after the owner types into it
             // by hand; 0 = never. Left blank = not set: the channel default (10 minutes, groups silent as before), shown
             // as a placeholder so saving the form does not turn an unset bot into an explicit 10.
@@ -1481,6 +1482,9 @@
                     nhuong_tay_phut: nhuong, ngoai_le: JSON.stringify(nlDs),
                     nhan_ket_ban: coZaloCaNhan() && (box.querySelector("#cbNhanKetBan") || {}).checked ? "1" : "0",
                     skip_labels: coZaloCaNhan() ? tagLuu() : "[]" };
+      // 0.452.0: which of the owner's machines answers this bot's customers (only drawn once a second machine exists).
+      var mayEl = box.querySelector("#cbChayTren");
+      if (mayEl) chung.chay_tren = mayEl.value;
       if (nang.length) chung.xac_nhan_ngoai_le = "1";
       try {
         if (sua) {
@@ -1492,6 +1496,19 @@
       dong();
       tai();
     }
+  }
+
+  // 0.452.0: "Answers on": the machine chosen to run schedules (default), the VPS or the home PC. Drawn only when the
+  // owner has a second UNI MATE machine (may-chay-lich.js knows), so a one-machine owner sees nothing new.
+  function chonMay(b) {
+    var st = window.UniMateMayChay && window.UniMateMayChay.get();
+    if (!st || !st.peers || !st.peers.length) return "";
+    var pin = (b && b.chay_tren) || "", ten = window.UniMateMayChay.kindName;
+    var opts = [["", window.t("mcl.run_follow", { kind: ten(st.runner) })], ["vps", ten("vps")], ["home", ten("home")]];
+    return '<div class="cb-gio-truc"><label for="cbChayTren">' + esc(window.t("cb.chay_tren")) +
+      ' <select id="cbChayTren">' + opts.map(function (o) {
+        return '<option value="' + o[0] + '"' + (o[0] === pin ? " selected" : "") + ">" + esc(o[1]) + "</option>";
+      }).join("") + "</select></label></div>";
   }
 
   // Tab Kênh bấm "Tạo bot trực" trên một tài khoản: mở form với tài khoản đó tích sẵn. Đợi

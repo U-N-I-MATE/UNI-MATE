@@ -8,7 +8,13 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.452.0] - 2026-11-16
 ### Added
-- (in progress)
+- **Two machines (home PC and VPS) no longer run the same schedules.** One machine runs reminders, loops, habit reminders and customer bots, the VPS by default. The other keeps chatting and its Tasks page says "Schedules run on the VPS". Change it in Settings, **Schedule machine**.
+- **Link the home PC to the VPS with a link code.** The VPS makes the code (shown once) and you paste it at home. Once linked, a change of schedule machine takes effect within about a minute instead of waiting for the GitHub sync.
+- **Pin one job to one machine.** **Runs on** on the Tasks page (or say "run it on the home PC" when scheduling by chat), for jobs that need software only the home PC has, such as AdsPower. Each customer bot can also pick the machine that answers.
+- **Shared ledger on the VPS against duplicates.** Every scheduled run, every post or message such a run sends and every customer message is recorded; the machine that records it first goes ahead and the other skips it. With the VPS unreachable, jobs that belong to the VPS do not run at home (a missed run, never a double post), and jobs pinned to the home PC still run and are reported to the VPS later.
+
+### Fixed
+- GitHub sync no longer lets the newer copy replace the whole `reminders.json` or `loop-state.json` when both machines changed them. Both files merge entry by entry: a reminder made on one machine and a run recorded on the other are both kept, and no `.conflict-*` copy is left.
 
 ## [0.451.0] - 2026-11-13
 ### Added

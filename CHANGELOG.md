@@ -8,7 +8,13 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 ## [0.452.0] - 2026-11-16
 ### Thêm mới
-- (đang viết)
+- **Hai máy (máy nhà và VPS) không còn chạy trùng lịch.** Chỉ một máy chạy nhắc hẹn, việc lặp, nhắc thói quen và bot trả lời khách, mặc định là VPS. Máy kia vẫn chat bình thường và hiện dòng "Lịch đang chạy ở VPS" trên trang Việc. Đổi ở Cài đặt, khối **Máy chạy lịch**.
+- **Nối máy nhà với VPS bằng mã nối.** VPS tạo mã (chỉ hiện một lần), anh dán vào máy nhà. Nối xong, đổi máy chạy lịch có tác dụng trong khoảng một phút, không phải chờ đồng bộ GitHub.
+- **Từng việc chạy riêng một máy.** Ô **Chạy ở** trên trang Việc (hoặc nói "chạy trên máy nhà" khi đặt lịch bằng chat), dành cho việc cần phần mềm chỉ có ở máy nhà như AdsPower. Từng bot trả lời khách cũng chọn được máy trả lời.
+- **Sổ chống trùng chung đặt ở VPS.** Mỗi lượt chạy theo lịch, mỗi bài đăng hay tin gửi ra ngoài của lượt đó và mỗi tin khách được ghi sổ; máy ghi trước thì máy kia bỏ qua. VPS mất liên lạc thì việc thuộc VPS không chạy ở máy nhà (lỡ lượt chứ không đăng trùng), việc gắn máy nhà vẫn chạy rồi gửi bù sổ lên VPS.
+
+### Sửa lỗi
+- Đồng bộ GitHub không còn để bản mới hơn ghi đè cả tệp `reminders.json` và `loop-state.json` khi hai máy cùng sửa. Hai tệp được hoà từng mục: nhắc hẹn tạo ở máy này và lượt chạy ghi ở máy kia đều được giữ, không sinh tệp `.conflict-*`.
 
 ## [0.451.0] - 2026-11-13
 ### Thêm mới
