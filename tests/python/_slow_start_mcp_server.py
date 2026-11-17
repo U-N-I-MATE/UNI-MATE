@@ -42,7 +42,10 @@ def main():
         elif method == "tools/list":
             if a.hang_list:
                 continue
+            # readOnlyHint: the tool tells UNI MATE it only reads. Since 0.455.0 an undeclared tool without it
+            # is treated as danger, and the tests using this server run it on a read-only connection.
             result = {"tools": [{"name": "echo", "description": "Echo a text back",
+                                 "annotations": {"readOnlyHint": True},
                                  "inputSchema": {"type": "object", "properties": {"text": {"type": "string"}}}}]}
         elif method == "tools/call":
             text = ((msg.get("params") or {}).get("arguments") or {}).get("text", "")

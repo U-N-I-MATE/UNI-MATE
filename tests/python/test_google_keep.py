@@ -26,6 +26,8 @@ OFFICIAL_TOOLS = [
     "list_labels", "create_label", "delete_label", "add_label_to_note", "remove_label_from_note",
     "list_note_collaborators", "add_note_collaborator", "remove_note_collaborator",
     "list_note_media",
+    # keep-mcp later added these four (0.455.0 declares them; listed by tools/list of the latest release).
+    "download_media", "move_list_item", "reorder_list_items", "replace_list_items",
 ]
 
 
@@ -85,11 +87,11 @@ env_unsafe = mcp_catalog.build_env(con, {"google_email": "a@gmail.com",
 check("gõ true vào ô unsafe -> env có UNSAFE_MODE=true",
       env_unsafe.get("UNSAFE_MODE") == "true")
 
-# ---- tool_meta phủ đúng 23 tool, không thừa không thiếu ----
+# ---- tool_meta phủ đúng 27 tool, không thừa không thiếu ----
 tm = con.get("tool_meta") or {}
 declared = (tm.get("read") or []) + (tm.get("write") or []) + (tm.get("danger") or [])
 check("không khai trùng tool", len(declared) == len(set(declared)))
-check("phủ đủ 23 tool keep-mcp công bố",
+check("phủ đủ 27 tool keep-mcp công bố",
       sorted(declared) == sorted(OFFICIAL_TOOLS))
 
 # ---- lớp chặn cứng theo mức quyền ----

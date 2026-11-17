@@ -60,7 +60,7 @@ async def fake_call_route(route, fn, args):
     return "sent"
 
 
-def classify(connector, tool, args=None):
+def classify(connector, tool, args=None, hints=None):
     return "danger" if "send" in str(tool) else "read"
 
 
@@ -505,7 +505,7 @@ check("providers: Grok says why it is refused", "file cấu hình" in team_gate.
 EFFECTS.clear()
 WRITE_ENT = {"conn": {"id": "c_mail", "connector_id": "custom", "perm": "full", "label": "Mail"}, "tool": "create_draft",
              "spec": {}}
-with patch.object(mcp_catalog, "classify", side_effect=lambda c, t, a=None: "write"):
+with patch.object(mcp_catalog, "classify", side_effect=lambda c, t, a=None, h=None: "write"):
     out = run(mcp_hub._guard(WRITE_ENT, "mail_create_draft", "gated")({"to": "a"}))
 check("hub: a write-class call at gated is an outside action too (no live gate: refused, nothing runs)",
       str(out).startswith("ERROR") and EFFECTS == [], out)

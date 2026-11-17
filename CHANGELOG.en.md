@@ -8,7 +8,18 @@ Format: each release is a `## [x.y.z] - date` block, with changes grouped under 
 
 ## [0.455.0] - 2026-11-17
 ### Security
-- (in progress)
+- **MCP tools nobody classified no longer run at the Read only level.** Before, a tool the connector template did not declare, whose name had no write hint (create, send...), was guessed to be read-only. Real cases: Google Workspace `run_script_function`, GitHub `run_automation`. UNI MATE now classifies in this order:
+  1. What the connector template declares, as before.
+  2. The MCP's own hints: a tool the MCP marks as possibly destructive is danger, one it marks read-only is read.
+  3. A name with a write hint is write, as before.
+  4. Anything else is **danger**, run only at **Full access**.
+- **Every tool of the connectors built into the app is now declared:** Google Search Console, Google Workspace, Google Ads, Google Keep, NotebookLM, Google Sheets, Gmail, Google Calendar, Botcake. Their read-only tools still run at Read only as before.
+- **Some tools that slipped into the read group are now where they belong:** Google Workspace (insert content, find and replace in Docs, format cells in Sheets, copy Drive files, export to PDF) and Google Sheets (rename a sheet) need Draft writes; Google Keep (replace all the items of a checklist) and Google Ads (create, edit, remove labels) need Full access.
+- A tool blocked only because nobody classified it gets a message that says exactly that, instead of calling it a money, order or messaging action.
+### How to reopen a tool that is blocked by mistake
+- **Connection installed from the Store:** update the pack when the Store shows **Update to v...**. The Store already declares the tools of its current packs.
+- **Need it now, or an MCP you added yourself:** raise that connection to **Full access** on the Connections page. A background job (reminder, loop, Kanban job) set to Read only or Write drafts must also be set to Full access.
+- **An MCP you wrote:** mark read-only tools with `readOnlyHint: true` and UNI MATE puts them in the read group.
 
 ## [0.454.0] - 2026-11-16
 ### Added

@@ -236,16 +236,18 @@ def _guard(ent, fn, mode):
     tool = ent["tool"]
     connector = mcp_catalog.get(conn.get("connector_id"))
 
+    hints = ent.get("annotations")   # 0.455.0: the MCP's own readOnlyHint / destructiveHint
+
     async def _call(args):
-        cls = mcp_catalog.classify(connector, tool, args)
-        ok, why = mcp_catalog.allowed(connector, conn.get("perm"), mode, tool, args)
+        cls = mcp_catalog.classify(connector, tool, args, hints)
+        ok, why = mcp_catalog.allowed(connector, conn.get("perm"), mode, tool, args, hints)
         gated_ask = False
         if mode == team_gate.HUB_MODE and cls != "read":
             # 0.207.0: a gated Team step. Anything that is not a read is an outside action (review: a custom
             # connector's `send_email` is classed `write`, which `auto` would allow). The connection itself must allow
             # it at full; then only the owner's approval of this exact call for this step lets it through
             # (team_gate.py). No live gate means refused.
-            full_ok, full_why = mcp_catalog.allowed(connector, conn.get("perm"), "full", tool, args)
+            full_ok, full_why = mcp_catalog.allowed(connector, conn.get("perm"), "full", tool, args, hints)
             ok, why, gated_ask = (False, full_why, False) if not full_ok else (False, "", True)
         if (ok or gated_ask) and not _rate_ok(conn["id"], connector):
             ok, gated_ask = False, False
@@ -1497,7 +1499,7 @@ async def discover_all(mode="full", vault_root=None, include_plugins=True, inclu
         theo_lenh = mcp_catalog.call_rule(connector, raw["tool"]) is not None
         multiplexed = bool(rules.get("param") and rules["param"] in props) or theo_lenh
         cls = ("read" if multiplexed and not theo_lenh
-               else mcp_catalog.classify(connector, raw["tool"], None))
+               else mcp_catalog.classify(connector, raw["tool"], None, raw.get("annotations")))
         # Lọc lúc LIST: readonly ẩn tool ghi/nguy hiểm tĩnh; safe ẩn tool nguy hiểm tĩnh.
         if (eff == "readonly" and cls in ("write", "danger")) or (eff == "safe" and cls == "danger"):
             h = hidden.setdefault(conn["id"], {"perm": eff, "ns": conn.get("namespace"), "tools": []})

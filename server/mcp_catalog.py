@@ -19,8 +19,8 @@ ROOT = Path(__file__).parent.parent
 CATALOG_PATH = ROOT / "system" / "mcp-catalog.json"
 
 # Heuristic tên tool → nghi là "ghi" (fallback khi connector không khai tool_meta - vd custom).
-# LƯU Ý: đây là denylist heuristic, connector lạ vẫn có thể lọt tool ghi tên khác thường -
-# catalog connector chính chủ luôn khai tool_meta tường minh, custom thì khuyến nghị deny_tools.
+# Từ 0.455.0 tool không khớp từ nào ở đây (và không được khai, MCP không tự gắn nhãn) rơi về
+# DANGER chứ không còn rơi về đọc, xem `classify_detail`.
 WRITE_HINTS = ("create", "update", "delete", "add", "remove", "edit", "send", "set",
                "cancel", "refund", "pay", "post", "write", "upsert", "order", "purchase", "transaction",
                "reply", "accept", "invite", "join", "approve", "deploy", "publish", "upload",
@@ -484,10 +484,48 @@ def call_rule(connector, tool):
     return None
 
 
-def classify(connector, tool, args=None):
+# Where a classification came from (classify_detail). "khai" = the connector template declares it (tool_meta,
+# call_rules, arg_rules); "goi_y" = the MCP server's own annotations; "ten" = WRITE_HINTS on the name;
+# "mac_dinh" = nothing above matched, so the tool is treated as danger (0.455.0).
+NGUON_KHAI, NGUON_GOI_Y, NGUON_TEN, NGUON_MAC_DINH = "khai", "goi_y", "ten", "mac_dinh"
+
+
+def _theo_goi_y(hints):
+    """'danger' | 'read' | None from the MCP tool annotations (`tools/list` -> tool.annotations).
+
+    Only an EXPLICIT true counts, the same reading as the store's `chinh_chu.nhan_tu_chu_thich`:
+    destructiveHint true -> danger (checked first, so a contradictory pair stays on the safe side),
+    readOnlyHint true -> read. Anything else (missing, false, not a dict) gives no answer and the
+    caller goes on to the name rules, then to the danger default."""
+    if not isinstance(hints, dict):
+        return None
+    if hints.get("destructiveHint") is True:
+        return "danger"
+    if hints.get("readOnlyHint") is True:
+        return "read"
+    return None
+
+
+def classify(connector, tool, args=None, hints=None):
     """'read' | 'write' | 'danger' cho MỘT lời gọi tool (tên GỐC, không namespace).
     args=None (lúc tools/list) → tool đa hành động tạm coi 'read' để còn LIỆT KÊ được;
-    chặn thật diễn ra lúc tools/call khi đã có args."""
+    chặn thật diễn ra lúc tools/call khi đã có args. `hints` = annotations của tool do chính MCP
+    trả về (tools/list), xem `classify_detail`."""
+    return classify_detail(connector, tool, args, hints)[0]
+
+
+def classify_detail(connector, tool, args=None, hints=None):
+    """(nhóm, nguồn) cho MỘT lời gọi tool. Thứ tự (0.455.0, chủ repo duyệt 17/11/2026):
+
+    1. khuôn connector khai (tool_meta, call_rules, arg_rules) - như cũ;
+    2. gợi ý của chính MCP: destructiveHint true -> danger, readOnlyHint true -> read;
+    3. WRITE_HINTS theo tên -> write, như cũ;
+    4. còn lại -> DANGER, chỉ chạy ở mức Toàn quyền.
+
+    Trước 0.455.0 bước 4 trả 'read': tool không ai khai, tên không chứa từ ghi nào, chạy được ở mức
+    Chỉ đọc. Vụ có thật: `workspace-mcp` 2.x thêm `run_script_function`, github-mcp-server v2.2.0
+    thêm `run_automation`. Cái giá của chiều mới: tool chỉ đọc mà chưa ai khai cũng phải chờ mức
+    Toàn quyền cho tới khi khuôn khai nó (hoặc MCP tự gắn readOnlyHint)."""
     c = connector or {}
     meta = c.get("tool_meta") or {}
     t = (tool or "").lower()
@@ -496,7 +534,7 @@ def classify(connector, tool, args=None):
         return any(fnmatch(t, str(p).lower()) for p in (patterns or []))
 
     if _in(meta.get("read")):
-        return "read"
+        return "read", NGUON_KHAI
 
     # TOOL CỔNG (vd COMPOSIO_MULTI_EXECUTE_TOOL): một tool chạy HÀNG LOẠT hành động con, mỗi cái
     # một tên riêng nằm trong args (tools[].tool_slug). Phân loại theo tên tool cổng thì chỉ có
@@ -506,8 +544,8 @@ def classify(connector, tool, args=None):
     cr = call_rule(c, tool)
     if cr is not None:
         if not isinstance(args, dict):
-            return call_rule_floor(cr)   # lúc LIỆT KÊ: mức nhẹ nhất có thể, chặn thật lúc gọi
-        return _loai_theo_call_rule(cr, args)
+            return call_rule_floor(cr), NGUON_KHAI   # lúc LIỆT KÊ: mức nhẹ nhất có thể, chặn thật lúc gọi
+        return _loai_theo_call_rule(cr, args), NGUON_KHAI
 
     rules = c.get("arg_rules") or {}
     param = rules.get("param")
@@ -517,20 +555,24 @@ def classify(connector, tool, args=None):
     if param and isinstance(args, dict) and args.get(param) is not None:
         v = str(args.get(param)).lower()
         if v in [str(x).lower() for x in rules.get("read_values", [])]:
-            return "read"
+            return "read", NGUON_KHAI
         if any(v == p or v.startswith(p) for p in [str(x).lower() for x in rules.get("read_prefixes", [])]):
-            return "read"
-        return "danger" if _in(meta.get("danger")) else "write"
+            return "read", NGUON_KHAI
+        return ("danger" if _in(meta.get("danger")) else "write"), NGUON_KHAI
 
     if _in(meta.get("danger")):
-        return "danger"
+        return "danger", NGUON_KHAI
     if _in(meta.get("write")):
-        return "write"
+        return "write", NGUON_KHAI
     if param and not isinstance(args, dict):
-        return "read"   # đa hành động, chưa có args → xem ghi chú docstring
+        return "read", NGUON_KHAI   # đa hành động, chưa có args → xem ghi chú docstring
+    goi_y = _theo_goi_y(hints)
+    if goi_y:
+        return goi_y, NGUON_GOI_Y
     if any(h in t for h in WRITE_HINTS):
-        return "write"
-    return "read"
+        return "write", NGUON_TEN
+    # 0.455.0: không ai khai, MCP không tự nói, tên không gợi ý ghi -> coi là có tác động.
+    return "danger", NGUON_MAC_DINH
 
 
 def effective_perm(perm, mode):
@@ -540,12 +582,12 @@ def effective_perm(perm, mode):
     return perm if PERM_RANK[perm] <= PERM_RANK[cap] else cap
 
 
-def allowed(connector, perm, mode, tool, args=None):
+def allowed(connector, perm, mode, tool, args=None, hints=None):
     """(ok, lý_do_chặn_tiếng_Việt). Lớp CỨNG - không phụ thuộc prompt."""
     eff = effective_perm(perm, mode)
     if eff == "full":
         return True, ""
-    cls = classify(connector, tool, args)
+    cls = classify(connector, tool, args, hints)
     if cls == "read":
         return True, ""
     if eff == "safe" and cls == "write":
@@ -570,5 +612,14 @@ def allowed(connector, perm, mode, tool, args=None):
             return False, (f"Lệnh {', '.join(ten[:8])} qua '{tool}' bị chặn: thao tác {loai} trong khi "
                            f"{vi_sao} (mức hiệu lực: {eff}). {con_chay}. Muốn sửa/gửi/xoá thì bảo "
                            f"người dùng nâng quyền ở trang Kết nối.")
+    if cls == "danger" and classify_detail(connector, tool, args, hints)[1] == NGUON_MAC_DINH:
+        # 0.455.0: blocked only because nobody classified it. Say so, so the model does not report a
+        # "dangerous" action and the owner knows what reopens it.
+        return False, (f"Tool '{tool}' bị chặn: kết nối chưa khai tool này là chỉ đọc và chính MCP cũng không "
+                       f"đánh dấu nó, nên UNI MATE coi là có tác động và chỉ cho chạy ở mức Toàn quyền "
+                       f"({vi_sao}, mức hiệu lực: {eff}). Nếu tool này thật ra chỉ đọc: kết nối từ Kho cài đặt "
+                       f"thì cập nhật gói khi có bản mới, còn muốn dùng ngay thì người dùng nâng kết nối lên "
+                       f"Toàn quyền ở trang Kết nối (việc nền đang ở mức suggest hay auto thì còn phải chạy ở "
+                       f"mức full).")
     return False, (f"Tool '{tool}' bị chặn: thao tác {loai} trong khi {vi_sao} (mức hiệu lực: {eff}). "
                    f"Nâng quyền ở trang Kết nối nếu thật sự cần.")

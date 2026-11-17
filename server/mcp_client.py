@@ -1181,7 +1181,11 @@ async def discover_resolved(conns, bo_qua=None):
             if not tname or tname in deny:
                 continue
             fn = _mk_fn(ns, tname, route)
+            # 0.455.0: the server's own annotations (readOnlyHint, destructiveHint) ride along, so the hub can
+            # classify a tool the connector template does not declare (mcp_catalog.classify_detail).
+            ann = t.get("annotations")
             route[fn] = {"spec": spec, "tool": tname,
+                         "annotations": ann if isinstance(ann, dict) else None,
                          "conn": {"id": conn["id"], "namespace": ns, "perm": conn.get("perm") or "full",
                                   "deny_tools": conn.get("deny_tools") or [], "label": conn.get("label", ""),
                                   "connector_id": conn.get("connector_id", "custom")}}
