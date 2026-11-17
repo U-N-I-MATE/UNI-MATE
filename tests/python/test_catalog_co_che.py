@@ -199,21 +199,23 @@ for tool, mong in LOAI.items():
     got = mc.classify(KHUON_QUYEN, tool)
     check("phân loại " + tool + " -> " + mong, got == mong, got)
 
-# Tool KHÔNG khai trong tool_meta rơi xuống heuristic tên: có dấu hiệu ghi thì là "write",
-# còn lại là "read". KHÔNG có nhánh nào tự đoán ra "danger" - và đó là điều quan trọng nhất
-# phải biết về tầng này:
+# Tool KHÔNG khai trong tool_meta: (1) gợi ý của chính MCP, (2) heuristic tên có dấu hiệu ghi thì là
+# "write", (3) còn lại là "danger" (từ 0.455.0, trước đó là "read"). Điều quan trọng nhất phải biết
+# về tầng này:
 #
-#   Mức NGUY HIỂM chỉ tồn tại khi connector TỰ KHAI nó.
+#   Tool có dấu hiệu ghi mà khuôn quên khai vẫn chỉ là "write", tức mức Ghi nháp tự chạy được.
 #
 # Một server bày hàng trăm tool (Hostinger có hơn 330) thì tool xoá, tool tiêu tiền nằm lẫn
-# trong đó, và nếu khuôn quên khai thì chúng tụt xuống nhóm ghi thường - tức mức Ghi nháp tự
-# chạy được. Từ 0.55.36 phần lớn khuôn sống ở repo kho, nên phép kiểm "đã khai đủ chưa" thuộc
-# về `tools/kiem-tra.py` bên đó. Ở đây chốt đúng một điều: hành vi mặc định là gì, để ai đọc
-# cũng biết mình đang dựa vào lời khai chứ không dựa vào phép màu.
+# trong đó, và nếu khuôn quên khai thì chúng tụt xuống nhóm ghi thường. Từ 0.55.36 phần lớn khuôn
+# sống ở repo kho, nên phép kiểm "đã khai đủ chưa" thuộc về `tools/kiem-tra.py` bên đó. Ở đây chốt
+# hành vi mặc định là gì, để ai đọc cũng biết mình đang dựa vào lời khai chứ không dựa vào phép màu.
 check("tool lạ có dấu hiệu ghi -> write (KHÔNG tự thành danger)",
       mc.classify(KHUON_QUYEN, "delete_dns_record") == "write",
       mc.classify(KHUON_QUYEN, "delete_dns_record"))
-check("tool lạ không dấu hiệu gì -> read", mc.classify(KHUON_QUYEN, "list_domains") == "read")
+check("tool lạ không dấu hiệu gì -> danger (0.455.0), không còn tự thành read",
+      mc.classify(KHUON_QUYEN, "list_domains") == "danger", mc.classify(KHUON_QUYEN, "list_domains"))
+check("tool lạ được chính MCP gắn readOnlyHint -> read",
+      mc.classify(KHUON_QUYEN, "list_domains", None, {"readOnlyHint": True}) == "read")
 
 # Khai theo GLOB là đường duy nhất phủ nổi hàng trăm tool. Hostinger dựa hoàn toàn vào nó
 # (`DNS_delete*V1`), nên hỏng cái này là hỏng lặng lẽ trên diện rộng.

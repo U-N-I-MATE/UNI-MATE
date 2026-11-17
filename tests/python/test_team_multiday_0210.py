@@ -223,7 +223,7 @@ def tick_hours(n, actions=None):
 
 
 patches = [patch.object(mcp_client, "call_route", side_effect=fake_call_route),
-           patch.object(mcp_catalog, "classify", side_effect=lambda c, t, a=None: "danger" if "send" in t else "read"),
+           patch.object(mcp_catalog, "classify", side_effect=lambda c, t, a=None, h=None: "danger" if "send" in t else "read"),
            patch.object(mcp_catalog, "get", side_effect=lambda cid: {"id": cid})]
 for p in patches:
     p.start()

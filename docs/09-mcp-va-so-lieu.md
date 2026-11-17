@@ -203,6 +203,8 @@ Thông minh hơn bản cũ: UNI MATE hiểu cả công cụ "2 trong 1" của Pa
 
 Loop chạy nền còn bị siết thêm theo mode của loop: loop `suggest` chỉ đọc, loop `auto` không bao giờ đụng tiền/đơn/gửi tin - bất kể tài khoản đặt quyền gì.
 
+Tool nào thuộc nhóm nào: UNI MATE xét theo thứ tự (1) khuôn kết nối khai, (2) gợi ý của chính dịch vụ (đánh dấu chỉ đọc hay có thể phá huỷ), (3) tên có chữ gợi ý ghi như create, update, send thì xếp nhóm ghi, (4) còn lại xếp nhóm nguy hiểm. Từ 0.455.0 bước 4 là nguy hiểm chứ không còn là đọc: một tool chưa ai phân loại chỉ chạy ở **Toàn quyền**. Nếu một tool chỉ đọc bị chặn oan, cập nhật gói ở Kho cài đặt khi có bản mới, hoặc nâng tài khoản đó lên Toàn quyền nếu cần dùng ngay. Dịch vụ tự thêm (mục 8) nên đánh dấu `readOnlyHint: true` cho tool chỉ đọc.
+
 ### 8. Tự thêm dịch vụ ngoài kho (nâng cao)
 
 Dịch vụ chưa có trong Kho? Bấm thẻ **Tự thêm (nâng cao)** - form kỹ thuật như bản cũ (URL/lệnh + header/env, hỗ trợ HTTP, SSE, stdio). Dịch vụ đăng nhập kiểu OAuth chuẩn MCP thì UNI MATE tự mở trang đăng nhập và tự giữ token, chạy được cả trên VPS.

@@ -130,8 +130,31 @@
         "label_paths": ["page.name", "data.page_name", "page_name", "name"]
       },
       "tool_meta": {
-        "write": ["botcake_send_flow", "botcake_send_content", "botcake_keyword_create", "botcake_keyword_update", "botcake_customer_fields_set", "botcake_upload_media"],
-        "danger": ["botcake_send_flow", "botcake_send_content"]
+        "read": [
+          "botcake_customers",
+          "botcake_customer",
+          "botcake_customer_fields_get",
+          "botcake_custom_fields",
+          "botcake_tags",
+          "botcake_tag_statistic",
+          "botcake_flows",
+          "botcake_flow_statistics",
+          "botcake_keywords",
+          "botcake_sequences",
+          "botcake_message_templates"
+        ],
+        "write": [
+          "botcake_send_flow",
+          "botcake_send_content",
+          "botcake_keyword_create",
+          "botcake_keyword_update",
+          "botcake_customer_fields_set",
+          "botcake_upload_media"
+        ],
+        "danger": [
+          "botcake_send_flow",
+          "botcake_send_content"
+        ]
       },
       "risk": "Mức Chỉ đọc (mặc định) chỉ xem khách hàng, tag và flow.\n\nMức Toàn quyền cho phép UNI MATE GỬI TIN THẬT tới khách hàng qua chatbot, bằng flow có sẵn hoặc nội dung tự soạn. Tin đã gửi không rút lại được.\n\nChỉ cần xem dữ liệu thì giữ mức Chỉ đọc.",
       "default_perm": "readonly"
@@ -174,13 +197,26 @@
         "guide_url": "https://github.com/xing5/mcp-google-sheets"
       },
       "tool_meta": {
+        "read": [
+          "get_sheet_data",
+          "get_sheet_formulas",
+          "list_sheets",
+          "get_multiple_sheet_data",
+          "get_multiple_spreadsheet_summary",
+          "get_spreadsheet_info",
+          "list_spreadsheets",
+          "list_folders",
+          "search_spreadsheets",
+          "find_in_spreadsheet"
+        ],
         "write": [
           "*create*",
           "*update*",
           "*add*",
           "*write*",
           "*batch*",
-          "*copy*"
+          "*copy*",
+          "rename_sheet"
         ],
         "danger": [
           "*share*"
@@ -217,6 +253,20 @@
         ],
         "guide": "Làm 1 lần:\n1. Tạo service account + key JSON trong Google Cloud Console, nhớ bật Search Console API.\n2. Vào Search Console > Cài đặt > Người dùng và quyền, thêm email của service account.\n3. Dán nội dung file JSON vào đây.",
         "guide_url": "https://github.com/ahonn/mcp-server-gsc"
+      },
+      "tool_meta": {
+        "read": [
+          "list_sites",
+          "search_analytics",
+          "enhanced_search_analytics",
+          "detect_quick_wins",
+          "index_inspect",
+          "list_sitemaps",
+          "get_sitemap"
+        ],
+        "write": [
+          "submit_sitemap"
+        ]
       },
       "default_perm": "readonly"
     },
@@ -280,11 +330,79 @@
         ]
       },
       "tool_meta": {
-        "write": ["*create*", "*update*", "*upload*", "*draft*", "*modify*", "*move*", "*add*", "*set*", "*manage*", "import_*"],
-        "danger": ["*send*", "*delete*", "run_*"]
+        "read": [
+          "generate_trigger_code",
+          "get_contact",
+          "get_contact_group",
+          "get_doc_as_markdown",
+          "get_doc_content",
+          "get_drive_file_content",
+          "get_drive_file_download_url",
+          "get_drive_shareable_link",
+          "get_events",
+          "get_form",
+          "get_gmail_message_content",
+          "get_gmail_messages_content_batch",
+          "get_gmail_thread_content",
+          "get_messages",
+          "get_presentation",
+          "get_script_activity",
+          "get_script_project",
+          "get_script_version",
+          "get_spreadsheet_info",
+          "get_task",
+          "list_calendars",
+          "list_contact_groups",
+          "list_contacts",
+          "list_docs_in_folder",
+          "list_document_comments",
+          "list_drive_items",
+          "list_form_responses",
+          "list_gmail_filters",
+          "list_gmail_labels",
+          "list_script_deployments",
+          "list_sheet_tables",
+          "list_spaces",
+          "list_spreadsheets",
+          "list_tasks",
+          "query_freebusy",
+          "read_sheet_values",
+          "render_page_to_image",
+          "search_contacts",
+          "search_custom",
+          "search_docs",
+          "search_drive_files",
+          "search_gmail_messages",
+          "search_messages",
+          "download_chat_attachment",
+          "get_gmail_attachment_content"
+        ],
+        "write": [
+          "*create*",
+          "*update*",
+          "*upload*",
+          "*draft*",
+          "*modify*",
+          "*move*",
+          "*add*",
+          "*set*",
+          "*manage*",
+          "import_*",
+          "copy_drive_file",
+          "export_doc_to_pdf",
+          "insert_doc_elements",
+          "find_and_replace_doc",
+          "format_sheet_range"
+        ],
+        "danger": [
+          "*send*",
+          "*delete*",
+          "run_*"
+        ]
       },
+      "ghi_da_can_nhac_ly_do": {"list_script_deployments": "Chỉ liệt kê các bản triển khai Apps Script đã có, không triển khai gì (workspace-mcp ghi readOnlyHint: true)."},
       "_tool_meta_doc": "workspace-mcp 2.x thêm run_script_function (CHẠY một hàm Apps Script, tức làm được mọi thứ script đó làm) và import_to_google_*. Tên không chứa từ gợi ý ghi nào nên trước đây classify xếp cả hai vào nhóm ĐỌC. generate_trigger_code chỉ sinh đoạn code, không tạo trigger.",
-      "ghi_da_can_nhac": ["generate_trigger_code"],
+      "ghi_da_can_nhac": ["generate_trigger_code", "list_script_deployments"],
       "default_perm": "safe",
       "risk": "Mức Ghi nháp (mặc định) cho phép UNI MATE soạn nháp thư, tạo lịch, tạo tài liệu, và cả SỬA tài liệu có sẵn lẫn DI CHUYỂN file trong Drive.\nCác tool gộp (manage_event, manage_task...) cũng thuộc mức này, nên UNI MATE sửa và xoá được từng sự kiện lịch hay việc cần làm lẻ.\n\nMức Toàn quyền thêm quyền GỬI EMAIL THẬT, XOÁ file, thư, và CHẠY hàm Apps Script bằng tài khoản Google của bạn.\n\nChỉ cần đọc thì hạ xuống Chỉ đọc."
     },
@@ -425,8 +543,17 @@
       },
       "oauth_file": { "format": "google_adc", "env": "GOOGLE_APPLICATION_CREDENTIALS", "ext": ".json" },
       "tool_meta": {
-        "read": ["customers_*", "metadata_*", "search_*"]
+        "read": [
+          "customers_*",
+          "metadata_*",
+          "search_*"
+        ],
+        "danger": [
+          "labels_manage_labels",
+          "labels_manage_label_associations"
+        ]
       },
+      "risk": "Mức Chỉ đọc: xem tài khoản, chiến dịch và số liệu quảng cáo. Không đổi gì.\n\nMức Toàn quyền mở thêm quyền TẠO, SỬA, GỠ NHÃN (label) trên tài khoản và chiến dịch quảng cáo thật. Nhãn không tiêu tiền nhưng là dữ liệu dùng chung với người quản trị tài khoản khác.",
       "default_perm": "readonly"
     },
     {
@@ -538,9 +665,21 @@
         "label_paths": ["calendars.0.id", "items.0.id", "data.0.id", "0.id", "primary.id"]
       },
       "tool_meta": {
-        "read": ["list_events", "get_event", "list_calendars", "suggest_time"],
-        "write": ["create_event", "update_event", "respond_to_event"],
-        "danger": ["delete_event"]
+        "read": [
+          "list_events",
+          "get_event",
+          "list_calendars",
+          "suggest_time",
+          "search_events"
+        ],
+        "write": [
+          "create_event",
+          "update_event",
+          "respond_to_event"
+        ],
+        "danger": [
+          "delete_event"
+        ]
       },
       "default_perm": "readonly",
       "risk": "Mức Ghi nháp cho phép UNI MATE TẠO và SỬA sự kiện thật trên lịch của bạn (tiện để nhờ \"nhắc tôi gọi nhà cung cấp thứ 5\").\n\nMức Toàn quyền thêm quyền XOÁ sự kiện.\n\nChỉ cần xem lịch thì giữ mức Chỉ đọc."
@@ -599,8 +738,18 @@
         "args": {}
       },
       "tool_meta": {
-        "read": ["list_drafts", "get_thread", "search_threads", "list_labels"],
-        "write": ["create_draft", "create_label", "*label*"],
+        "read": [
+          "list_drafts",
+          "get_thread",
+          "search_threads",
+          "list_labels",
+          "get_message"
+        ],
+        "write": [
+          "create_draft",
+          "create_label",
+          "*label*"
+        ],
         "danger": []
       },
       "default_perm": "readonly",
@@ -719,15 +868,44 @@
         "args": {}
       },
       "tool_meta": {
-        "read": ["find", "get_note", "list_labels", "list_note_collaborators", "list_note_media"],
-        "write": ["create_note", "create_list", "update_note", "add_list_item", "update_list_item",
-                  "delete_list_item", "set_note_color", "pin_note", "archive_note", "restore_note",
-                  "create_label", "add_label_to_note", "remove_label_from_note"],
-        "danger": ["trash_note", "delete_note", "delete_label",
-                   "add_note_collaborator", "remove_note_collaborator"]
+        "read": [
+          "find",
+          "get_note",
+          "list_labels",
+          "list_note_collaborators",
+          "list_note_media",
+          "download_media"
+        ],
+        "write": [
+          "create_note",
+          "create_list",
+          "update_note",
+          "add_list_item",
+          "update_list_item",
+          "delete_list_item",
+          "set_note_color",
+          "pin_note",
+          "archive_note",
+          "restore_note",
+          "create_label",
+          "add_label_to_note",
+          "remove_label_from_note",
+          "move_list_item",
+          "reorder_list_items"
+        ],
+        "danger": [
+          "trash_note",
+          "delete_note",
+          "delete_label",
+          "add_note_collaborator",
+          "remove_note_collaborator",
+          "replace_list_items"
+        ]
       },
+      "ghi_da_can_nhac": ["reorder_list_items"],
+      "ghi_da_can_nhac_ly_do": {"reorder_list_items": "Chỉ đổi thứ tự các dòng trong một danh sách ghi chú, không xoá nội dung, sắp lại được."},
       "default_perm": "readonly",
-      "risk": "Kết nối này dùng Google MASTER TOKEN, loại token có TOÀN QUYỀN tài khoản Google (Gmail, Drive, Photos), không phải OAuth giới hạn phạm vi như Gmail hay Lịch.\n\nMức Ghi nháp cho UNI MATE tạo và sửa note, ghim, lưu trữ, gắn nhãn thật trong Keep.\n\nMức Toàn quyền thêm quyền VỨT, XOÁ note và CHIA SẺ note cho người khác.\n\nNếu đã gõ true vào ô UNSAFE_MODE thì UNI MATE đụng được cả note bạn viết tay, không riêng note nó tạo."
+      "risk": "Kết nối này dùng Google MASTER TOKEN, loại token có TOÀN QUYỀN tài khoản Google (Gmail, Drive, Photos), không phải OAuth giới hạn phạm vi như Gmail hay Lịch.\n\nMức Ghi nháp cho UNI MATE tạo và sửa note, ghim, lưu trữ, gắn nhãn thật trong Keep.\n\nMức Toàn quyền thêm quyền VỨT, XOÁ note, THAY TOÀN BỘ các dòng của một danh sách và CHIA SẺ note cho người khác.\n\nNếu đã gõ true vào ô UNSAFE_MODE thì UNI MATE đụng được cả note bạn viết tay, không riêng note nó tạo."
     },
     {
       "id": "notebooklm",
@@ -773,15 +951,48 @@
       },
       "validate": { "tool": "notebook_list", "args": {} },
       "tool_meta": {
-        "read": ["notebook_list", "notebook_describe", "source_list", "source_read", "source_wait",
-                 "await_upload", "studio_list", "studio_status", "research_status", "share_status",
-                 "suggest_prompts", "server_info"],
-        "write": ["notebook_create", "notebook_rename", "source_add", "source_add_drive_file",
-                  "source_rename", "note_save", "chat_ask", "chat_configure", "studio_generate",
-                  "studio_rename", "studio_retry", "studio_download", "research_start",
-                  "research_import", "research_cancel"],
-        "danger": ["notebook_delete", "source_delete", "studio_delete",
-                   "share_set_access", "share_set_user", "share_remove_user"]
+        "read": [
+          "notebook_list",
+          "notebook_describe",
+          "source_list",
+          "source_read",
+          "source_wait",
+          "await_upload",
+          "studio_list",
+          "studio_status",
+          "research_status",
+          "share_status",
+          "suggest_prompts",
+          "server_info",
+          "chat_status",
+          "source_list_play_books"
+        ],
+        "write": [
+          "notebook_create",
+          "notebook_rename",
+          "source_add",
+          "source_add_drive_file",
+          "source_rename",
+          "note_save",
+          "chat_ask",
+          "chat_configure",
+          "studio_generate",
+          "studio_rename",
+          "studio_retry",
+          "studio_download",
+          "research_start",
+          "research_import",
+          "research_cancel",
+          "chat_start"
+        ],
+        "danger": [
+          "notebook_delete",
+          "source_delete",
+          "studio_delete",
+          "share_set_access",
+          "share_set_user",
+          "share_remove_user"
+        ]
       },
       "default_perm": "readonly",
       "purge_warning": "Xoá kết nối này là mất phiên Google đã dán. Muốn dùng lại phải lấy lại cookie từ trình duyệt một lần nữa.",

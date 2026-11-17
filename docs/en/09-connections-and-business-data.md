@@ -203,6 +203,8 @@ Smarter than the old build: UNI MATE understands Pancake's "2 in 1" tools, where
 
 Background loops are restricted further by their own mode: a `suggest` loop is read-only, and an `auto` loop never touches money, orders or messaging, regardless of what the account permission says.
 
+Which group a tool belongs to: UNI MATE looks at (1) what the connection template declares, (2) the service's own hints (marked read-only or possibly destructive), (3) a name with a write hint such as create, update, send goes to the write group, (4) anything else goes to the danger group. Since 0.455.0 step 4 is danger, no longer read: a tool nobody classified runs only at **Full power**. If a read-only tool is blocked by mistake, update the pack in the Store when a new version is out, or raise that account to Full power if you need it right away. A service you add yourself (section 8) should mark read-only tools with `readOnlyHint: true`.
+
 ### 8. Adding a service that is not in the store (advanced)
 
 Service not in the store? Click the **Add your own (advanced)** card for the technical form from the old build (URL/command + headers/env, supporting HTTP, SSE and stdio). For services using standard MCP OAuth, UNI MATE opens the sign-in page itself and keeps the token, working on a VPS too.

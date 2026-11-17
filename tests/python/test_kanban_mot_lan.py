@@ -145,7 +145,7 @@ def test_ket_noi_mcp_ghi_so_khi_khong_phai_doc(tmp_path, monkeypatch):
     loai = {"cls": "danger"}
     monkeypatch.setattr(mcp_client, "call_route", call_route)
     monkeypatch.setattr(mcp_catalog, "get", lambda cid: {})
-    monkeypatch.setattr(mcp_catalog, "classify", lambda c, t, a: loai["cls"])
+    monkeypatch.setattr(mcp_catalog, "classify", lambda c, t, a, h=None: loai["cls"])
     monkeypatch.setattr(mcp_catalog, "allowed", lambda *a, **k: (True, ""))
     monkeypatch.setattr(mcp_hub, "_audit_append", lambda rec: None)
     ent = {"conn": {"id": "c1", "connector_id": "x", "label": "Shop"}, "tool": "create_order", "spec": {}}

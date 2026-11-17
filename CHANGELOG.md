@@ -6,6 +6,21 @@ Lịch sử phiên bản UNI MATE. Bản mới nhất ở trên cùng. Xem ngay 
 
 Định dạng: mỗi phiên bản là một khối `## [x.y.z] - ngày`, bên dưới nhóm thay đổi theo `### Thêm mới / Sửa lỗi / Cải thiện / Bảo mật`.
 
+## [0.455.0] - 2026-11-17
+### Bảo mật
+- **Tool MCP chưa ai phân loại không còn tự chạy ở mức Chỉ đọc.** Trước đây một tool mà khuôn kết nối không khai, tên lại không có chữ gợi ý ghi (create, send...), bị đoán là chỉ đọc. Ví dụ có thật: `run_script_function` của Google Workspace, `run_automation` của GitHub. Nay UNI MATE xếp nhóm theo thứ tự:
+  1. Khuôn kết nối khai, như cũ.
+  2. Gợi ý của chính MCP: MCP ghi tool có thể phá huỷ thì xếp nguy hiểm, ghi chỉ đọc thì xếp đọc.
+  3. Tên có chữ gợi ý ghi thì xếp ghi, như cũ.
+  4. Còn lại xếp **nguy hiểm**, chỉ chạy ở mức **Toàn quyền**.
+- **Đã khai đủ tool cho các kết nối có sẵn trong app:** Google Search Console, Google Workspace, Google Ads, Google Keep, NotebookLM, Google Sheets, Gmail, Google Lịch, Botcake. Tool chỉ đọc của các kết nối này vẫn chạy ở mức Chỉ đọc như trước.
+- **Một số tool trước đây lọt nhóm đọc nay về đúng nhóm:** Google Workspace (chèn nội dung, tìm và thay trong Docs, định dạng ô trong Sheets, chép tệp Drive, xuất PDF), Google Sheets (đổi tên trang tính) cần mức Ghi nháp; Google Keep (thay toàn bộ các dòng của danh sách) và Google Ads (tạo, sửa, gỡ nhãn) cần mức Toàn quyền.
+- Tool bị chặn vì chưa ai phân loại thì tin báo nói đúng lý do đó, không gọi nhầm là thao tác tiền, đơn hay gửi tin.
+### Cách mở lại một tool bị chặn oan
+- **Kết nối cài từ Kho cài đặt:** cập nhật gói khi trang Kho báo **Có bản mới**. Kho đã khai sẵn cho các gói đang có.
+- **Cần dùng ngay, hoặc MCP anh tự thêm:** nâng kết nối đó lên **Toàn quyền** ở trang Kết nối. Việc nền (nhắc hẹn, vòng lặp, việc Kanban) đang đặt mức Chỉ đọc hay Ghi file nháp thì còn phải đặt mức Toàn quyền.
+- **MCP anh tự viết:** gắn `readOnlyHint: true` cho tool chỉ đọc, UNI MATE sẽ xếp nó vào nhóm đọc.
+
 ## [0.454.0] - 2026-11-16
 ### Thêm mới
 - **Huỷ việc nền ngay trong chat.** Anh nói "huỷ việc t_..." (một hay nhiều mã), UNI MATE huỷ ngay, đúng như bấm nút Huỷ ở trang Nhiệm vụ: việc đang chạy thì dừng cả tiến trình, việc đang chờ, đang hỏi hay đang kẹt đều huỷ được. UNI MATE báo lại từng việc đã huỷ và trạng thái trước khi huỷ.
