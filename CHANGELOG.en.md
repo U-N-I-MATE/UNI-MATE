@@ -6,6 +6,10 @@ UNI MATE release history, newest first. You can also read it inside the app unde
 
 Format: each release is a `## [x.y.z] - date` block, with changes grouped under `### Added / Fixed / Improved / Security`.
 
+## [0.455.0] - 2026-11-17
+### Security
+- (in progress)
+
 ## [0.454.0] - 2026-11-16
 ### Added
 - **Cancel background jobs right in the chat.** Say "cancel job t_..." (one or more ids) and UNI MATE cancels them at once, exactly like the Cancel button on the Tasks page: a running job has its processes stopped, and waiting, asking or stuck jobs can be cancelled too. UNI MATE reports each cancelled job and its state before.
